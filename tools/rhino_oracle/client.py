@@ -229,6 +229,22 @@ class OracleClient:
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             from .point_snap_input import PointSnapPicker
             interaction = PointSnapPicker(request)
+        if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):
+            from .angle_cursor_probe import validate_request
+            from .group_picking import IdlePicker
+            validate_request(request)
+            class AnglePicker(IdlePicker):
+                def send_input(self, name, x, y, window):
+                    # The worker announces the target before RunScript reaches _Pause.
+                    time.sleep(1.0)
+                    subprocess.run(["xdotool", "windowactivate", "--sync", window,
+                                    "mousemove", str(int(x) + 1), y,
+                                    "mousemove", x, y], check=True, timeout=10)
+                    time.sleep(0.5)
+                    subprocess.run(["xdotool", "windowactivate", "--sync", window,
+                                    "click", "1"], check=True, timeout=10)
+                    return True
+            interaction = AnglePicker()
         if any(op.get("op") in ("merge_edge_command", "split_edge_command") and op.get("pick") == "mouse"
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
@@ -276,6 +292,9 @@ class OracleClient:
                 for name in ("point_snap_probe.py", "viewport_capture.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("angle_cursor_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

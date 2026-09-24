@@ -5356,6 +5356,9 @@ def _execute(operation, iterations, tolerance):
         return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":
         return _point_input(operation)
+    if kind == "angle_cursor_diagnostic":
+        from angle_cursor_probe import run
+        return run(operation, globals())
     if kind == "control_point_prompt":
         return _control_point_prompt(operation)
     if kind == "interpolation_point_prompt":

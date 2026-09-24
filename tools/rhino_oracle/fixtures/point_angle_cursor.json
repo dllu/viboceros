@@ -1,0 +1,19 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op": "angle_cursor_diagnostic", "id": "free-east", "angle": null, "aim": [10, 1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-30-east", "angle": 30, "aim": [10, 1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "free-southeast", "angle": null, "aim": [10, -1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-50-southeast", "angle": 50, "aim": [10, -1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-200-southeast", "angle": 200, "aim": [10, -1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "free-northeast", "angle": null, "aim": [8, 8, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-200-northeast", "angle": 200, "aim": [8, 8, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "free-west", "angle": null, "aim": [-10, 1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-270-west", "angle": 270, "aim": [-10, 1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-359-west", "angle": 359, "aim": [-10, 1, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "free-north", "angle": null, "aim": [1, 10, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-0-north", "angle": 0, "aim": [1, 10, 0]},
+    {"op": "angle_cursor_diagnostic", "id": "angle-360-north", "angle": 360, "aim": [1, 10, 0]}
+  ]
+}

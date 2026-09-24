@@ -54,6 +54,9 @@ point-validation and transaction path with mouse picks; see [point input](point-
 `viboceros-drafting/point_filter` composes filtered CPlane/world coordinates
 from a source pick and a final pick. The viewport previews that composite while
 passing the original pick to the app for one-time resolution.
+`viboceros-drafting/point_constraint` applies one-pick 3D distance locks and
+CPlane angle tracking after the filter resolves. Owned Rhino mouse probes pair
+free and constrained clicks at the same screen pixels for numerical replay.
 The command crate's `interchange` module owns the six STL/STEP/3DM import/export
 commands, document-to-file attribute/group adapters, and export mesh aggregation.
 Parsing and file replacement remain in `viboceros-io`; registry transactions

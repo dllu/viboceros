@@ -53,6 +53,28 @@ fn angular_constraint_tracks_cursor_but_does_not_change_typed_coordinates() {
 }
 
 #[test]
+fn zero_angle_releases_cursor_lock_and_large_angle_is_accepted() {
+    let mut app = test_app();
+    for input in ["Line", "0", "<30", "<0"] {
+        enter(&mut app, input);
+    }
+    assert!(!app.point_constraint.unwrap().angle_active());
+    assert!(app.accept_filtered_drafting_point(point(10.0, 1.0, 0.0), false));
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.end(), point(10.0, 1.0, 0.0));
+
+    for input in ["Line", "0", "<270", "w10,1,0"] {
+        enter(&mut app, input);
+    }
+    assert_eq!(app.document.objects().count(), 2);
+    assert!(app.document.objects().any(|object| {
+        matches!(object.geometry(), Geometry::Line(line) if line.end() == point(10.0, 1.0, 0.0))
+    }));
+}
+
+#[test]
 fn rejected_constraint_pick_keeps_lock_until_correction_or_cancel() {
     let mut app = test_app();
     for input in ["Line", "0", "5"] {

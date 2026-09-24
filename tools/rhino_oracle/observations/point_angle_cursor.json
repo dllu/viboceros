@@ -1,0 +1,281 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "free-east",
+      "value": {
+        "click_client": [
+          490,
+          168
+        ],
+        "end": [
+          9.945205479452056,
+          1.0487671232876714,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-30-east",
+      "value": {
+        "click_client": [
+          490,
+          168
+        ],
+        "end": [
+          9.945205479452056,
+          0.0,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "free-southeast",
+      "value": {
+        "click_client": [
+          490,
+          196
+        ],
+        "end": [
+          9.945205479452056,
+          -0.976438356164384,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-50-southeast",
+      "value": {
+        "click_client": [
+          490,
+          196
+        ],
+        "end": [
+          9.81230163360838,
+          -1.7301735208549047,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-200-southeast",
+      "value": {
+        "click_client": [
+          490,
+          196
+        ],
+        "end": [
+          5.355284111996449,
+          4.493616923225766,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "free-northeast",
+      "value": {
+        "click_client": [
+          463,
+          71
+        ],
+        "end": [
+          7.992328767123292,
+          8.064657534246576,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-200-northeast",
+      "value": {
+        "click_client": [
+          463,
+          71
+        ],
+        "end": [
+          0.0,
+          8.064657534246576,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "free-west",
+      "value": {
+        "click_client": [
+          214,
+          168
+        ],
+        "end": [
+          -10.017534246575345,
+          1.0487671232876714,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-270-west",
+      "value": {
+        "click_client": [
+          214,
+          168
+        ],
+        "end": [
+          0.0,
+          1.0487671232876696,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-359-west",
+      "value": {
+        "click_client": [
+          214,
+          168
+        ],
+        "end": [
+          -10.017534246575345,
+          0.0,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "free-north",
+      "value": {
+        "click_client": [
+          366,
+          44
+        ],
+        "end": [
+          0.9764383561643879,
+          10.017534246575343,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-0-north",
+      "value": {
+        "click_client": [
+          366,
+          44
+        ],
+        "end": [
+          0.9764383561643879,
+          10.017534246575343,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "angle-360-north",
+      "value": {
+        "click_client": [
+          366,
+          44
+        ],
+        "end": [
+          0.0,
+          10.017534246575343,
+          0.0
+        ],
+        "history": "End of line ( BothSides )\n",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

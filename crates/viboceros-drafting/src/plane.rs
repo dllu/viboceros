@@ -86,6 +86,51 @@ pub fn ortho_point(
     frame.point_at([projected_x, projected_y, 0.0]).ok()
 }
 
+/// In measured Top-view Rhino point prompts, angle tracking uses a full-turn
+/// polar step and retains the construction plane's Y tracking line. The polar
+/// step is rounded from [0, 360), including a final increment past 360 degrees.
+pub fn angle_constraint_point(
+    cursor: Point3,
+    anchor: Point3,
+    plane: Frame3,
+    angle_degrees: f64,
+) -> Option<Point3> {
+    if !angle_degrees.is_finite() || angle_degrees <= 0.0 {
+        return None;
+    }
+    let frame = plane.with_origin(anchor);
+    let [x, y, _] = frame.coordinates_of(cursor).ok()?;
+    if x == 0.0 && y == 0.0 {
+        return Some(anchor);
+    }
+    let step = angle_degrees.to_radians();
+    if step <= f64::EPSILON {
+        return frame.point_at([x, y, 0.0]).ok();
+    }
+    let polar = y.atan2(x).rem_euclid(std::f64::consts::TAU);
+    let multiple = (polar / step).round();
+    if !multiple.is_finite() {
+        return frame.point_at([x, y, 0.0]).ok();
+    }
+    let direction = multiple * step;
+    let (sine, cosine) = direction.sin_cos();
+    let unit = [cosine, sine].map(|value| {
+        if value.abs() <= 4.0 * f64::EPSILON {
+            0.0
+        } else {
+            value
+        }
+    });
+    let scale = x.abs().max(y.abs());
+    let distance_to_step = ((x / scale) * unit[1] - (y / scale) * unit[0]).abs();
+    if (x / scale).abs() < distance_to_step {
+        return frame.point_at([0.0, y, 0.0]).ok();
+    }
+    let projected_x = x.mul_add(unit[0] * unit[0], y * (unit[1] * unit[0]));
+    let projected_y = y.mul_add(unit[1] * unit[1], x * (unit[0] * unit[1]));
+    frame.point_at([projected_x, projected_y, 0.0]).ok()
+}
+
 /// Resolve the screen-space CPlane Z tracking line through the previous pick.
 /// The projection callback returns screen X/Y and homogeneous camera depth;
 /// parallel views use depth 1. The returned distance is in screen pixels.

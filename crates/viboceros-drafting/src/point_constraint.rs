@@ -62,11 +62,11 @@ impl PointConstraintState {
                 });
             }
             PointConstraintInput::Angle(value) => {
-                if !value.is_finite() || value.abs() > 180.0 {
+                if !value.is_finite() {
                     return Err(PointConstraintError::OutOfRange);
                 }
                 self.plane = plane;
-                self.angle_increment_degrees = Some(value.abs());
+                self.angle_increment_degrees = (value != 0.0).then_some(value.abs());
             }
         }
         Ok(())
@@ -82,13 +82,8 @@ impl PointConstraintState {
     /// 3D distance from the previously accepted point.
     pub fn apply_cursor(self, candidate: Point3) -> Result<Point3, PointConstraintError> {
         let angled = if let Some(step) = self.angle_increment_degrees {
-            plane::ortho_point(
-                candidate,
-                self.anchor,
-                self.plane,
-                if step == 0.0 { 180.0 } else { step },
-            )
-            .ok_or(PointConstraintError::OutOfRange)?
+            plane::angle_constraint_point(candidate, self.anchor, self.plane, step)
+                .ok_or(PointConstraintError::OutOfRange)?
         } else {
             candidate
         };
@@ -132,6 +127,15 @@ impl PointConstraintState {
 mod tests {
     use super::*;
     use viboceros_geometry::{Tolerance, Vector3};
+
+    fn json_point(value: &serde_json::Value) -> Point3 {
+        let coordinates = value.as_array().unwrap();
+        point(
+            coordinates[0].as_f64().unwrap(),
+            coordinates[1].as_f64().unwrap(),
+            coordinates[2].as_f64().unwrap(),
+        )
+    }
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -199,5 +203,98 @@ mod tests {
                 < 1e-14
         );
         assert_eq!(state.apply_cursor(candidate).unwrap(), point(5.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn angle_lock_wraps_a_full_turn_and_retains_vertical_tracking() {
+        let mut state = PointConstraintState::new(point(0.0, 0.0, 0.0), plane());
+        state
+            .set(PointConstraintInput::Angle(50.0), plane())
+            .unwrap();
+        let southeast = state.apply_cursor(point(10.0, -1.0, 0.0)).unwrap();
+        assert!(southeast.y() < -1.0 && southeast.x() > 9.0);
+        state
+            .set(PointConstraintInput::Angle(200.0), plane())
+            .unwrap();
+        assert_eq!(
+            state.apply_cursor(point(8.0, 8.1, 0.0)),
+            Ok(point(0.0, 8.1, 0.0))
+        );
+        let southeast = state.apply_cursor(point(10.0, -1.0, 0.0)).unwrap();
+        assert!(southeast.x() > 5.0 && southeast.y() > 4.0);
+        state
+            .set(PointConstraintInput::Angle(270.0), plane())
+            .unwrap();
+        assert!(
+            state
+                .apply_cursor(point(-10.0, 1.0, 0.0))
+                .unwrap()
+                .distance_to(point(0.0, 1.0, 0.0))
+                .unwrap()
+                < 1e-12
+        );
+        state
+            .set(PointConstraintInput::Angle(359.0), plane())
+            .unwrap();
+        assert_eq!(
+            state.apply_cursor(point(-10.0, 1.0, 0.0)),
+            Ok(point(-10.0, 0.0, 0.0))
+        );
+        state
+            .set(PointConstraintInput::Angle(0.0), plane())
+            .unwrap();
+        assert!(!state.angle_active());
+        assert_eq!(
+            state.apply_cursor(point(1.0, 10.0, 0.0)),
+            Ok(point(1.0, 10.0, 0.0))
+        );
+    }
+
+    #[test]
+    fn mouse_angle_locks_match_recorded_rhino_line_prompts() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/point_angle_cursor.json"
+        ))
+        .unwrap();
+        let observed: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/point_angle_cursor.json"
+        ))
+        .unwrap();
+        let operations = fixture["operations"].as_array().unwrap();
+        let results = observed["results"].as_array().unwrap();
+        assert_eq!(operations.len(), results.len());
+        let mut free = std::collections::BTreeMap::new();
+        for (operation, result) in operations.iter().zip(results) {
+            assert_eq!(operation["id"], result["id"]);
+            let aim = operation["aim"].to_string();
+            let expected = json_point(&result["value"]["end"]);
+            let click = result["value"]["click_client"].as_array().unwrap();
+            let click = [click[0].as_i64().unwrap(), click[1].as_i64().unwrap()];
+            if operation["angle"].is_null() {
+                free.insert(aim, (expected, click));
+                continue;
+            }
+            let &(candidate, free_click) = free
+                .get(&aim)
+                .expect("free mouse control before angle case");
+            assert_eq!(
+                click, free_click,
+                "{} changed mouse target",
+                operation["id"]
+            );
+            let mut state = PointConstraintState::new(point(0.0, 0.0, 0.0), plane());
+            state
+                .set(
+                    PointConstraintInput::Angle(operation["angle"].as_f64().unwrap()),
+                    plane(),
+                )
+                .unwrap();
+            let actual = state.apply_cursor(candidate).unwrap();
+            assert!(
+                actual.distance_to(expected).unwrap() < 1e-10,
+                "{}: actual {actual:?}, Rhino {expected:?}",
+                operation["id"]
+            );
+        }
     }
 }

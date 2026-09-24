@@ -230,15 +230,23 @@ At a point prompt with a previous point, a positive scalar locks the next
 point's 3D distance from that point. A negative scalar snaps the distance to
 the nearest positive multiple of its magnitude; midpoint ties round up. The
 cursor previews the resulting point. Type `<angle` to track the cursor along
-the nearest ray at that angular increment in the active construction plane.
+angular lines in the active construction plane. In the measured Top viewport,
+Rhino rounds the cursor's positive polar angle to the increment, projects onto
+that line, and also offers the plane's Y-axis tracking line when it is closer.
+Increments above 180 degrees are accepted; `<0` clears the angle lock.
 Distance and angle locks can be combined. As observed in Rhino, typed point
 coordinates obey the distance lock but bypass the cursor angle lock. A placed
 point, Escape, replacement command, or draft Undo clears the pending locks.
 The [seven-case live Rhino fixture](../tools/rhino_oracle/fixtures/point_constraints.json)
 and [recorded output](../tools/rhino_oracle/observations/point_constraints.json)
 cover typed distances, 3D directions, rounding ties, and typed angle behavior.
-Angular cursor placement is covered by native tests; it has not yet been
-measured against live Rhino mouse movement.
+The [13-case owned mouse fixture](../tools/rhino_oracle/fixtures/point_angle_cursor.json)
+and [recorded Rhino 8 output](../tools/rhino_oracle/observations/point_angle_cursor.json)
+pair unlocked and locked clicks at the same screen pixels. Native constrained
+points match those records within `1e-10` model units, covering `<0`, `<30`,
+`<50`, `<200`, `<270`, `<359`, and `<360` in a Top viewport. Other CPlanes,
+perspective views, snap combinations, and drag-path-dependent tracking remain
+unmeasured.
 
 Typed input bypasses Osnap, SmartTrack, and Grid Snap. Invalid or overflowing
 coordinates leave the prompt and text intact for correction; a subsequent mouse
