@@ -157,6 +157,17 @@ match Rhino's result. The
 [cylinder/plane fixture](../../tools/rhino_oracle/fixtures/cylinder_plane_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/cylinder_plane_surface_intersection.json)
 cover those cases.
+
+Canonical cones intersect planar patches in exact circles, rational elliptical
+arcs, hyperbola halves, or straight generators. A plane touching only the
+singular apex produces no result, matching Rhino. The two coincident tangent
+generators are retained. Rhino fits some conics as cubics, so its curve lengths
+can differ slightly from the exact rational sections. The base rim tangent
+is returned as one exact point; Rhino's numerical intersection
+returns two tiny curves there. The
+[cone/plane fixture](../../tools/rhino_oracle/fixtures/cone_plane_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/cone_plane_surface_intersection.json)
+record the reference cases. General pole-crossing conics remain unsupported.
 Curve/curve overlaps use the later curve's orientation and parameterization,
 matching Rhino. Pairwise duplicates are intentionally retained when three or
 more source objects meet at one location. Inputs remain in the document and are

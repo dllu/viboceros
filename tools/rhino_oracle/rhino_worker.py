@@ -11824,7 +11824,11 @@ def _execute(operation, iterations, tolerance):
             curve.Dispose()
             brep.Dispose()
 
-    if kind in ("sphere_plane_surface_intersection", "cylinder_plane_surface_intersection"):
+    if kind in (
+        "sphere_plane_surface_intersection",
+        "cylinder_plane_surface_intersection",
+        "cone_plane_surface_intersection",
+    ):
         source_brep = None
         if kind == "sphere_plane_surface_intersection":
             sphere_def = operation["sphere"]
@@ -11832,7 +11836,7 @@ def _execute(operation, iterations, tolerance):
                 _point(sphere_def["center"]),
                 _finite(sphere_def["radius"], "sphere radius"),
             ).ToNurbsSurface()
-        else:
+        elif kind == "cylinder_plane_surface_intersection":
             cylinder_def = operation["cylinder"]
             cylinder_plane = Rhino.Geometry.Plane(
                 _point(cylinder_def["center"]),
@@ -11847,6 +11851,19 @@ def _execute(operation, iterations, tolerance):
                 _finite(cylinder_def["height"], "cylinder height"),
             )
             source_brep = cylinder.ToBrep(False, False)
+            source = source_brep.Faces[0].ToNurbsSurface()
+        else:
+            cone_def = operation["cone"]
+            cone_plane = Rhino.Geometry.Plane(
+                _point(cone_def["apex"]),
+                _vector(cone_def["axis"]),
+            )
+            cone = Rhino.Geometry.Cone(
+                cone_plane,
+                _finite(cone_def["height"], "cone height"),
+                _finite(cone_def["radius"], "cone radius"),
+            )
+            source_brep = cone.ToBrep(False)
             source = source_brep.Faces[0].ToNurbsSurface()
         plane_def = operation["plane"]
         plane = Rhino.Geometry.Plane(

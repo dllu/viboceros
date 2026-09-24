@@ -1,5 +1,7 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
+mod cone_plane;
+
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
     NurbsSurface, Plane, Point3, Polyline3, Real, Tolerance, UnitVector3, WeightedPoint3,
@@ -521,6 +523,9 @@ fn curve_brep_intersection_events_with_transform(
 /// planar finite patches in exact rational circular curves or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
+/// Canonical cones produce exact circular, elliptical, and hyperbolic sections,
+/// plus generators for planes through the apex. The singular apex alone has no
+/// intersection event, following Rhino's surface/surface result.
 /// Parallel disjoint planes return no
 /// events. Other non-planar and more general coincident inputs are reported
 /// explicitly until their intersection-curve paths are implemented.
@@ -529,6 +534,20 @@ pub fn surface_surface_intersection_events(
     second: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    if let Some((frame, radius, height)) = first.canonical_cone(tolerance)?
+        && let Some(plane) = second.plane(tolerance)?
+    {
+        return cone_plane::cone_planar_surface_intersection_events(
+            first, frame, radius, height, second, plane, tolerance,
+        );
+    }
+    if let Some((frame, radius, height)) = second.canonical_cone(tolerance)?
+        && let Some(plane) = first.plane(tolerance)?
+    {
+        return cone_plane::cone_planar_surface_intersection_events(
+            second, frame, radius, height, first, plane, tolerance,
+        );
+    }
     if let Some((frame, radius, height)) = first.canonical_cylinder(tolerance)?
         && let Some(plane) = second.plane(tolerance)?
     {
