@@ -47,13 +47,27 @@ impl PolyCurve3 {
             }
             return Polyline3::try_new(vertices, tolerance)?.try_fillet_corners(radius, tolerance);
         }
-        if self.is_closed()? {
-            return Err(unsupported_curved_corner());
-        }
+        let closed = self.is_closed()?;
         for pair in parts.windows(2) {
             if matches!(pair[0], FilletPart::Curved(_)) || matches!(pair[1], FilletPart::Curved(_))
             {
                 check_smooth_joint(&pair[0], &pair[1], tolerance)?;
+            }
+        }
+        if closed {
+            let last = parts.last().unwrap();
+            let first = &parts[0];
+            if matches!(last, FilletPart::Straight(_)) && matches!(first, FilletPart::Straight(_)) {
+                let (end, incoming) = part_end(last)?;
+                let (start, outgoing) = part_start(first)?;
+                if !curve_points_coincident(end, start) {
+                    return Err(unsupported_straight_polycurve());
+                }
+                if tangent_angle(incoming, outgoing)? > tolerance.angular() {
+                    return fillet_closed_mixed_sharp_seam(parts, radius, tolerance);
+                }
+            } else {
+                check_smooth_joint(last, first, tolerance)?;
             }
         }
         let mut result = Vec::new();
@@ -70,6 +84,56 @@ impl PolyCurve3 {
         append_rounded_run(&mut result, run, radius, tolerance)?;
         Self::try_new(result)
     }
+}
+
+fn fillet_closed_mixed_sharp_seam(
+    parts: Vec<FilletPart>,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let first_curved = parts
+        .iter()
+        .position(|part| matches!(part, FilletPart::Curved(_)))
+        .unwrap();
+    let last_curved = parts
+        .iter()
+        .rposition(|part| matches!(part, FilletPart::Curved(_)))
+        .unwrap();
+    let mut joined = Vec::new();
+    for part in &parts[last_curved + 1..] {
+        let FilletPart::Straight(points) = part else {
+            unreachable!()
+        };
+        append_straight_vertices(&mut joined, points)?;
+    }
+    let seam_corner = joined.len() - 1;
+    for part in &parts[..first_curved] {
+        let FilletPart::Straight(points) = part else {
+            unreachable!()
+        };
+        append_straight_vertices(&mut joined, points)?;
+    }
+    let (seam_run, seam_piece) = Polyline3::try_new(joined, tolerance)?
+        .try_fillet_corners_with_marked_corner(radius, tolerance, seam_corner)?;
+    let seam_segments = seam_run.segments();
+    let mut result = seam_segments[seam_piece..].to_vec();
+    let mut run = Vec::new();
+    for part in parts
+        .into_iter()
+        .skip(first_curved)
+        .take(last_curved - first_curved + 1)
+    {
+        match part {
+            FilletPart::Straight(points) => append_straight_vertices(&mut run, &points)?,
+            FilletPart::Curved(curve) => {
+                append_rounded_run(&mut result, std::mem::take(&mut run), radius, tolerance)?;
+                result.push(curve);
+            }
+        }
+    }
+    append_rounded_run(&mut result, run, radius, tolerance)?;
+    result.extend_from_slice(&seam_segments[..seam_piece]);
+    PolyCurve3::try_new(result)
 }
 
 fn straight_leaf_vertices(segment: &CurveSegment3) -> Result<Option<Vec<Point3>>, GeometryError> {
@@ -305,6 +369,104 @@ mod tests {
                 .try_fillet_corners(0.5, Tolerance::DEFAULT)
                 .is_err()
         );
+    }
+
+    #[test]
+    fn closed_smooth_arc_keeps_its_seam_and_rounds_straight_run() {
+        let diagonal = 2_f64.sqrt();
+        let arc = crate::CircularArc3::try_from_three_points(
+            p(2., 0.),
+            p(2. + diagonal, 2. - diagonal),
+            p(4., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut segments = vec![CurveSegment3::Arc(arc)];
+        for (start, end) in [
+            (p(4., 2.), p(4., 6.)),
+            (p(4., 6.), p(0., 6.)),
+            (p(0., 6.), p(0., 0.)),
+            (p(0., 0.), p(2., 0.)),
+        ] {
+            segments.push(CurveSegment3::Line(
+                LineSegment::try_new(start, end, Tolerance::DEFAULT).unwrap(),
+            ));
+        }
+        let source = PolyCurve3::try_new(segments).unwrap();
+        let result = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+        assert!(result.is_closed().unwrap());
+        assert_eq!(result.segments().len(), 8);
+        assert_eq!(result.segments()[0], CurveSegment3::Arc(arc));
+    }
+
+    #[test]
+    fn closed_mixed_sharp_straight_seam_starts_at_its_incoming_fillet() {
+        let diagonal = 2_f64.sqrt();
+        let arc = crate::CircularArc3::try_from_three_points(
+            p(2., 0.),
+            p(2. + diagonal, 2. - diagonal),
+            p(4., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut segments = vec![
+            CurveSegment3::Line(
+                LineSegment::try_new(p(0., 0.), p(2., 0.), Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::Arc(arc),
+        ];
+        for (start, end) in [
+            (p(4., 2.), p(4., 6.)),
+            (p(4., 6.), p(0., 6.)),
+            (p(0., 6.), p(0., 0.)),
+        ] {
+            segments.push(CurveSegment3::Line(
+                LineSegment::try_new(start, end, Tolerance::DEFAULT).unwrap(),
+            ));
+        }
+        let source = PolyCurve3::try_new(segments).unwrap();
+        let result = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+        assert!(result.is_closed().unwrap());
+        assert_eq!(result.segments().len(), 8);
+        let CurveSegment3::Arc(seam_arc) = result.segments()[0] else {
+            panic!("closed result starts with its seam fillet")
+        };
+        assert!(seam_arc.start().unwrap().distance_to(p(0., 0.5)).unwrap() < 1e-14);
+        assert_eq!(result.segments()[2], CurveSegment3::Arc(arc));
+    }
+
+    #[test]
+    fn closed_mixed_smooth_straight_seam_retains_source_point() {
+        let diagonal = 2_f64.sqrt();
+        let arc = crate::CircularArc3::try_from_three_points(
+            p(2., 0.),
+            p(2. + diagonal, 2. - diagonal),
+            p(4., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = PolyCurve3::try_new(vec![
+            CurveSegment3::Polyline(
+                Polyline3::try_new(vec![p(0., 1.), p(0., 0.), p(2., 0.)], Tolerance::DEFAULT)
+                    .unwrap(),
+            ),
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Polyline(
+                Polyline3::try_new(
+                    vec![p(4., 2.), p(4., 6.), p(0., 6.), p(0., 1.)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ),
+        ])
+        .unwrap();
+        let result = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+        assert!(result.is_closed().unwrap());
+        assert_eq!(
+            result.evaluate(*result.domain().start()).unwrap(),
+            p(0., 1.)
+        );
+        assert_eq!(result.segments()[3], CurveSegment3::Arc(arc));
     }
 
     #[test]

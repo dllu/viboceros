@@ -16963,8 +16963,8 @@ pub enum CommandError {
     #[error("SubCrv requires exactly one selected curve, got {actual}")]
     SubcurveRequiresOneCurve { actual: usize },
 
-    #[error("FilletCorners requires selected polylines or straight polycurves")]
-    FilletCornersRequiresStraightCurves,
+    #[error("FilletCorners requires selected polylines or polycurves")]
+    FilletCornersRequiresSupportedCurves,
 
     #[error("Extend requires exactly one selected curve, got {actual}")]
     ExtendRequiresOneCurve { actual: usize },

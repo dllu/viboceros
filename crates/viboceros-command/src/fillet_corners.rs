@@ -1,4 +1,4 @@
-//! Rounds corners of selected polylines and straight polycurves with exact arcs.
+//! Rounds supported corners of selected polylines and polycurves with exact arcs.
 
 use super::*;
 
@@ -33,7 +33,7 @@ impl Command for FilletCornersCommand {
                 Geometry::PolyCurve(polycurve) => {
                     polycurve.try_fillet_corners(radius, document.tolerance())?
                 }
-                _ => return Err(CommandError::FilletCornersRequiresStraightCurves),
+                _ => return Err(CommandError::FilletCornersRequiresSupportedCurves),
             };
             replacements.push((object.id(), Geometry::PolyCurve(curve)));
         }

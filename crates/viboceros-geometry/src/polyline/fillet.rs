@@ -18,6 +18,29 @@ impl Polyline3 {
         radius: Real,
         tolerance: Tolerance,
     ) -> Result<PolyCurve3, GeometryError> {
+        self.fillet_corners_impl(radius, tolerance, None)
+            .map(|(curve, _)| curve)
+    }
+
+    pub(crate) fn try_fillet_corners_with_marked_corner(
+        &self,
+        radius: Real,
+        tolerance: Tolerance,
+        corner_index: usize,
+    ) -> Result<(PolyCurve3, usize), GeometryError> {
+        let (curve, marked) = self.fillet_corners_impl(radius, tolerance, Some(corner_index))?;
+        let marked = marked.ok_or(GeometryError::InvalidPolyCurve {
+            context: "marked fillet corner has no arc",
+        })?;
+        Ok((curve, marked))
+    }
+
+    fn fillet_corners_impl(
+        &self,
+        radius: Real,
+        tolerance: Tolerance,
+        marked_corner: Option<usize>,
+    ) -> Result<(PolyCurve3, Option<usize>), GeometryError> {
         require_finite([radius], "fillet radius")?;
         if radius <= tolerance.absolute() {
             return Err(GeometryError::Degenerate {
@@ -53,9 +76,13 @@ impl Polyline3 {
             .collect::<Result<Vec<_>, _>>()?;
 
         let mut pieces = Vec::with_capacity(segment_count * 2);
+        let mut marked_piece = None;
         // Rhino retains the source's closed seam at the incoming tangent
         // point of its first corner, then traverses that arc before edge 0.
         if closed && let Some(arc) = corners[0].arc {
+            if marked_corner == Some(0) {
+                marked_piece = Some(pieces.len());
+            }
             pieces.push(CurveSegment3::Arc(arc));
         }
         for index in 0..segment_count {
@@ -78,10 +105,13 @@ impl Polyline3 {
             if (!closed || next != 0)
                 && let Some(arc) = corners[next].arc
             {
+                if marked_corner == Some(next) {
+                    marked_piece = Some(pieces.len());
+                }
                 pieces.push(CurveSegment3::Arc(arc));
             }
         }
-        PolyCurve3::try_new(pieces)
+        Ok((PolyCurve3::try_new(pieces)?, marked_piece))
     }
 }
 

@@ -78,6 +78,38 @@
     },
     {
       "op": "curve_fillet_corners_geometry",
+      "id": "closed-smooth-arc-and-line-corners",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [2, 0, 0],
+          [3.414213562373095, 0.5857864376269049, 0],
+          [4, 2, 0]
+        ]},
+        {"type": "line", "start": [4, 2, 0], "end": [4, 6, 0]},
+        {"type": "line", "start": [4, 6, 0], "end": [0, 6, 0]},
+        {"type": "line", "start": [0, 6, 0], "end": [0, 0, 0]},
+        {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "closed-mixed-sharp-straight-seam",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]},
+        {"type": "arc", "points": [
+          [2, 0, 0],
+          [3.414213562373095, 0.5857864376269049, 0],
+          [4, 2, 0]
+        ]},
+        {"type": "line", "start": [4, 2, 0], "end": [4, 6, 0]},
+        {"type": "line", "start": [4, 6, 0], "end": [0, 6, 0]},
+        {"type": "line", "start": [0, 6, 0], "end": [0, 0, 0]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
       "id": "smooth-quadratic-and-line-corner",
       "curve": {"type": "polycurve", "segments": [
         {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]},
