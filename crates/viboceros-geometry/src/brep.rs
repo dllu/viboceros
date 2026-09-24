@@ -483,6 +483,42 @@ impl Brep {
         Ok(brep)
     }
 
+    /// Combines independent B-reps into one B-rep without mating their edges.
+    /// Each component keeps its geometry and orientation unchanged.
+    pub fn try_disjoint_union(
+        parts: Vec<Self>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut vertices = Vec::new();
+        let mut edges = Vec::new();
+        let mut faces = Vec::new();
+        for mut part in parts {
+            let vertex_offset = vertices.len();
+            let edge_offset = edges.len();
+            for edge in &mut part.edges {
+                for vertex in &mut edge.vertices {
+                    *vertex += vertex_offset;
+                }
+            }
+            for face in &mut part.faces {
+                for face_loop in &mut face.loops {
+                    for trim in &mut face_loop.trims {
+                        for vertex in &mut trim.vertices {
+                            *vertex += vertex_offset;
+                        }
+                        if let Some(edge) = &mut trim.edge {
+                            *edge += edge_offset;
+                        }
+                    }
+                }
+            }
+            vertices.extend(part.vertices);
+            edges.extend(part.edges);
+            faces.extend(part.faces);
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Splits one rectangular surface region at an interior constant-U
     /// isocurve while retaining the complete underlying surface in both
     /// pieces.

@@ -1010,6 +1010,80 @@ def _nurbs_surface_from_definition(definition):
         raise
 
 
+def _offset_surface_face_geometry(operation, iterations, tolerance):
+    corners = operation["corners"]
+    if len(corners) != 4:
+        raise ValueError("offset face requires four corners")
+    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+        *[_point(corner) for corner in corners]
+    )
+    if surface is None or not surface.IsValid:
+        raise ValueError("invalid source surface")
+    source = Rhino.Geometry.Brep.CreateFromSurface(surface)
+    if source is None or not source.IsValid or source.Faces.Count != 1:
+        raise ValueError("invalid source face")
+    distance = _finite(operation["distance"], "offset distance")
+    both_sides = bool(operation.get("both_sides", False))
+    solid = bool(operation.get("solid", False))
+    def create():
+        result = Rhino.Geometry.Brep.CreateFromOffsetFace(
+            source.Faces[0], distance, tolerance["absolute"], both_sides, solid
+        )
+        if result is None:
+            raise ValueError("Rhino could not offset the source face")
+        return result
+    try:
+        def record(result):
+            bounds = result.GetBoundingBox(True)
+            face_samples = []
+            for face in result.Faces:
+                u = (face.Domain(0).T0 + face.Domain(0).T1) * 0.5
+                v = (face.Domain(1).T0 + face.Domain(1).T1) * 0.5
+                point = face.PointAt(u, v)
+                face_normal = face.NormalAt(u, v)
+                face_samples.append({
+                    "point": [float(point.X), float(point.Y), float(point.Z)],
+                    "normal": [float(face_normal.X), float(face_normal.Y), float(face_normal.Z)],
+                    "reversed": bool(face.OrientationIsReversed),
+                })
+            volume = None
+            admitted_volume = None
+            if result.IsSolid:
+                mass = Rhino.Geometry.VolumeMassProperties.Compute(result)
+                if mass is not None:
+                    volume = float(mass.Volume)
+                    mass.Dispose()
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = document.Objects.AddBrep(result)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("Rhino rejected offset B-rep insertion")
+                try:
+                    admitted = document.Objects.FindId(object_id).Geometry
+                    admitted_mass = Rhino.Geometry.VolumeMassProperties.Compute(admitted)
+                    if admitted_mass is not None:
+                        admitted_volume = float(admitted_mass.Volume)
+                        admitted_mass.Dispose()
+                finally:
+                    document.Objects.Delete(object_id, True)
+            return {
+                "created": True,
+                "valid": bool(result.IsValid),
+                "solid": bool(result.IsSolid),
+                "faces": int(result.Faces.Count),
+                "edges": int(result.Edges.Count),
+                "vertices": int(result.Vertices.Count),
+                "face_samples": face_samples,
+                "bbox_min": [float(bounds.Min.X), float(bounds.Min.Y), float(bounds.Min.Z)],
+                "bbox_max": [float(bounds.Max.X), float(bounds.Max.Y), float(bounds.Max.Z)],
+                "volume": volume,
+                "admitted_volume": admitted_volume,
+            }
+        return _measure_disposable(iterations, create, record)
+    finally:
+        source.Dispose()
+        surface.Dispose()
+
+
 def _nurbs_surface_evaluate(operation, iterations):
     definition = {key: operation[key] for key in (
         "degree_u", "degree_v", "control_point_count_u", "control_point_count_v",
@@ -14669,6 +14743,8 @@ def _execute(operation, iterations, tolerance):
 
     if kind == "nurbs_surface_evaluate":
         return _nurbs_surface_evaluate(operation, iterations)
+    if kind == "offset_surface_face_geometry":
+        return _offset_surface_face_geometry(operation, iterations, tolerance)
 
     raise ValueError("unsupported oracle operation: %s" % kind)
 

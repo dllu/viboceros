@@ -1,0 +1,450 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 10498047,
+      "id": "one-side-surface",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          4.0,
+          3.0,
+          2.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          2.0
+        ],
+        "created": true,
+        "edges": 4,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              2.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": false,
+        "valid": true,
+        "vertices": 4,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 2563477,
+      "id": "two-side-surface",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          4.0,
+          3.0,
+          2.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          -2.0
+        ],
+        "created": true,
+        "edges": 8,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              2.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              -2.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 2,
+        "solid": false,
+        "valid": true,
+        "vertices": 8,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 1487732,
+      "id": "one-side-solid",
+      "value": {
+        "admitted_volume": 24.000000000000004,
+        "bbox_max": [
+          4.0,
+          3.0,
+          2.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "created": true,
+        "edges": 12,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              2.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              0.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              -1.0,
+              -0.0
+            ],
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              4.0,
+              1.5,
+              1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "point": [
+              2.0,
+              3.0,
+              1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              0.0,
+              1.5,
+              1.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 6,
+        "solid": true,
+        "valid": true,
+        "vertices": 8,
+        "volume": 24.000000000000004
+      }
+    },
+    {
+      "elapsed_ns": 1411438,
+      "id": "two-side-solid",
+      "value": {
+        "admitted_volume": 48.000000000000014,
+        "bbox_max": [
+          4.0,
+          3.0,
+          2.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          -2.0
+        ],
+        "created": true,
+        "edges": 12,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              2.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              -2.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              -1.0,
+              -0.0
+            ],
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              4.0,
+              1.5,
+              0.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              0.0,
+              1.5,
+              0.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 6,
+        "solid": true,
+        "valid": true,
+        "vertices": 8,
+        "volume": 48.000000000000014
+      }
+    },
+    {
+      "elapsed_ns": 686646,
+      "id": "negative-one-side-surface",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          4.0,
+          3.0,
+          -2.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          -2.0
+        ],
+        "created": true,
+        "edges": 4,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              -2.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": false,
+        "valid": true,
+        "vertices": 4,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 1068115,
+      "id": "negative-one-side-solid",
+      "value": {
+        "admitted_volume": 24.000000000000004,
+        "bbox_max": [
+          4.0,
+          3.0,
+          0.0
+        ],
+        "bbox_min": [
+          0.0,
+          0.0,
+          -2.0
+        ],
+        "created": true,
+        "edges": 12,
+        "face_samples": [
+          {
+            "normal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              -2.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "point": [
+              2.0,
+              1.5,
+              0.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -0.0,
+              1.0,
+              -0.0
+            ],
+            "point": [
+              2.0,
+              0.0,
+              -1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              4.0,
+              1.5,
+              -1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "point": [
+              2.0,
+              3.0,
+              -1.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              0.0,
+              1.5,
+              -1.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 6,
+        "solid": true,
+        "valid": true,
+        "vertices": 8,
+        "volume": -24.000000000000004
+      }
+    }
+  ]
+}

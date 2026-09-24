@@ -1,0 +1,53 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "one-side-surface",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": 2,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "id": "two-side-surface",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": 2,
+      "solid": false,
+      "both_sides": true
+    },
+    {
+      "id": "one-side-solid",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": 2,
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "id": "two-side-solid",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": 2,
+      "solid": true,
+      "both_sides": true
+    },
+    {
+      "id": "negative-one-side-surface",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": -2,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "id": "negative-one-side-solid",
+      "op": "offset_surface_face_geometry",
+      "corners": [[0, 0, 0], [4, 0, 0], [4, 3, 0], [0, 3, 0]],
+      "distance": -2,
+      "solid": true,
+      "both_sides": false
+    }
+  ]
+}
