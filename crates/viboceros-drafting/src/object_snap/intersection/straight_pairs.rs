@@ -126,13 +126,25 @@ fn emit_multi(
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(ObjectId, Point3, Real),
 ) {
-    let Some(&selected) = group.segments.iter().min_by(|&&a, &&b| {
-        segments[a]
-            .hover_distance
-            .total_cmp(&segments[b].hover_distance)
-            .then(segments[a].order.cmp(&segments[b].order))
-            .then(a.cmp(&b))
-    }) else {
+    // Rhino's measured three-source Int picks omit a screen-vertical wire
+    // when a crossing also has a nonvertical wire. Two-source picks retain
+    // their separate depth/hover ordering.
+    let has_nonvertical = group
+        .segments
+        .iter()
+        .any(|&index| !screen_vertical(segments[index]));
+    let Some(&selected) = group
+        .segments
+        .iter()
+        .filter(|&&index| !has_nonvertical || !screen_vertical(segments[index]))
+        .min_by(|&&a, &&b| {
+            segments[a]
+                .hover_distance
+                .total_cmp(&segments[b].hover_distance)
+                .then(segments[a].order.cmp(&segments[b].order))
+                .then(a.cmp(&b))
+        })
+    else {
         return;
     };
     let segment = segments[selected];
@@ -147,6 +159,12 @@ fn emit_multi(
     if let Some(point) = projected_line::point_at_image(segment.a, segment.b, event.image, metric) {
         emit(segment.owner, point, event.distance);
     }
+}
+
+fn screen_vertical(segment: Segment) -> bool {
+    let dx = segment.image_b[0] - segment.image_a[0];
+    let dy = segment.image_b[1] - segment.image_a[1];
+    dx.abs() <= 1e-10 * dx.hypot(dy)
 }
 
 fn emit_pair(

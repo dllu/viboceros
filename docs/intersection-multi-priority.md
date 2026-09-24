@@ -1,16 +1,19 @@
 # Intersection source choice with multiple curves
 
-Twenty-two owned Rhino 8 `GetPoint` captures place three or four straight
+Forty-three owned Rhino 8 `GetPoint` captures place three or four straight
 curves through one projected crossing. Every capture reports `Intersection` at
-the crossing. Each curve has a different height when source ownership matters,
+the crossing. The curves have different heights where source ownership matters,
 so a different source produces a different 3D target.
 
 | Probe | Inputs | Rhino observations | Native matches |
 | --- | --- | --- | ---: |
 | Three/four source orders | [6 inputs](../tools/rhino_oracle/fixtures/intersection_multi_snaps.json) | [6 observations](../tools/rhino_oracle/observations/intersection_multi_snaps.json) | 6/6 |
-| Cursor offsets and order | [6 inputs](../tools/rhino_oracle/fixtures/intersection_multi_detail_snaps.json) | [6 observations](../tools/rhino_oracle/observations/intersection_multi_detail_snaps.json) | 5/6 |
+| Cursor offsets and order | [6 inputs](../tools/rhino_oracle/fixtures/intersection_multi_detail_snaps.json) | [6 observations](../tools/rhino_oracle/observations/intersection_multi_detail_snaps.json) | 6/6 |
 | Source heights | [6 inputs](../tools/rhino_oracle/fixtures/intersection_multi_depth_snaps.json) | [6 observations](../tools/rhino_oracle/observations/intersection_multi_depth_snaps.json) | 6/6 |
-| Line directions | [4 inputs](../tools/rhino_oracle/fixtures/intersection_multi_orientation_snaps.json) | [4 observations](../tools/rhino_oracle/observations/intersection_multi_orientation_snaps.json) | 0/4 |
+| Line directions | [4 inputs](../tools/rhino_oracle/fixtures/intersection_multi_orientation_snaps.json) | [4 observations](../tools/rhino_oracle/observations/intersection_multi_orientation_snaps.json) | 4/4 |
+| Cardinal cursor approaches | [8 inputs](../tools/rhino_oracle/fixtures/intersection_multi_motion_snaps.json) | [8 observations](../tools/rhino_oracle/observations/intersection_multi_motion_snaps.json) | 8/8 |
+| Vertical-source cursor sweep | [9 inputs](../tools/rhino_oracle/fixtures/intersection_vertical_sweep_snaps.json) | [9 observations](../tools/rhino_oracle/observations/intersection_vertical_sweep_snaps.json) | 9/9 |
+| Rotated source directions | [4 inputs](../tools/rhino_oracle/fixtures/intersection_rotated_priority_snaps.json) | [4 observations](../tools/rhino_oracle/observations/intersection_rotated_priority_snaps.json) | 4/4 |
 
 The Python replay API now accepts observed `Intersection` kinds for its
 line/mesh sources. Run a comparison with:
@@ -21,16 +24,13 @@ python3 -m tools.rhino_oracle.point_snap_replay \
   tools/rhino_oracle/observations/intersection_multi_snaps.json
 ```
 
-It exits with status 1 for the retained source and height differences. Across
-the 22 cases, 17 match completely and five select a different source; the
-projected crossing itself is found in every case. Straight-wire crossings at
-the same screen point are grouped, and the source closest to the cursor is
-chosen when at least three distinct non-mesh objects participate. This
-resolves the measured source-order and depth cases while retaining pairwise
-behavior for two sources. The [eight mouse-approach
-inputs](../tools/rhino_oracle/fixtures/intersection_multi_motion_snaps.json)
-and [Rhino observations](../tools/rhino_oracle/observations/intersection_multi_motion_snaps.json)
-try each one-pixel cardinal approach on two of the triple crossings. Both
-returned the same source in all four directions; native replay matches four
-of the eight. Rhino's remaining five source choices cannot be explained by
-cursor distance, source order, depth, or one-pixel approach alone.
+All 43 captures match in kind, source, and 3D point within `1e-9`. Straight-wire
+crossings at the same screen point are grouped. When at least three distinct
+non-mesh objects participate, a screen-vertical wire is excluded if a
+nonvertical wire is available; the closest remaining source to the cursor is
+chosen. The nine-position sweep found that Rhino never chose the vertical
+wire, even when the cursor lay on it. Four rotated-source cases confirmed
+that the preference follows screen direction. The eight cardinal approach
+cases also match. Pairwise behavior for two sources is unchanged. The evidence
+covers exact screen-vertical straight wires; near-vertical and curved
+multi-object crossings still need separate measurement.
