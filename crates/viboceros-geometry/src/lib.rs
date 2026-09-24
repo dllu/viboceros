@@ -17,6 +17,7 @@ mod catenary;
 mod circle_curve;
 mod circular;
 mod curve;
+mod curve_blend_pair;
 mod curve_chamfer_pair;
 mod curve_connect_pair;
 mod curve_edit;
@@ -91,6 +92,7 @@ pub use catenary::{
 pub use circle_curve::Circle3;
 pub use circular::CircularArc3;
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
+pub use curve_blend_pair::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
 pub use curve_chamfer_pair::{try_chamfer_curves_joined, try_chamfer_curves_parts};
 pub use curve_connect_pair::{
     CurveArcExtensionStyle, try_connect_curves_joined, try_connect_curves_joined_with_arc_style,

@@ -9,6 +9,7 @@ Rhino's complete command set is still a work in progress.
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
 - [Connect two curves](connect.md)
+- [Blend two curves](blend.md)
 - [Polyline corner fillets](fillet-corners.md)
 - [Single and repeated point placement](points.md)
 - [Rectangular point grids](point-grid.md)

@@ -112,12 +112,14 @@ pub use context::CommandContext;
 use plane_primitives::{
     BoxCommand, CircleCommand, MeshBoxCommand, MeshPlaneCommand, PolygonCommand, RectangleCommand,
 };
+mod blend;
 mod cap;
 mod chamfer;
 mod connect;
 mod fillet;
 mod fillet_corners;
 mod flip;
+use blend::BlendCurveCommand;
 use chamfer::ChamferCommand;
 use connect::ConnectCommand;
 use fillet::FilletCommand;
@@ -782,6 +784,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ConnectCommand)
+            .expect("unique built-in command");
+        registry
+            .register(BlendCurveCommand)
             .expect("unique built-in command");
         registry
             .register(FilletCornersCommand)
@@ -16986,6 +16991,8 @@ pub enum CommandError {
     ChamferRequiresTwoCurves,
     #[error("Connect requires exactly two selected curves")]
     ConnectRequiresTwoCurves,
+    #[error("Blend requires exactly two selected curves")]
+    BlendRequiresTwoCurves,
 
     #[error("Extend requires exactly one selected curve, got {actual}")]
     ExtendRequiresOneCurve { actual: usize },
