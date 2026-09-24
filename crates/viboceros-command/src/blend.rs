@@ -1,9 +1,9 @@
-//! Creates an independent cubic between two selected curve ends.
+//! Creates an independent blend between two selected curve ends.
 
 use super::*;
 use viboceros_geometry::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
 
-const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=Position|Tangency] [Continuity2=Position|Tangency] [Handle1=length] [Handle2=length]";
+const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=Position|Tangency|Curvature] [Continuity2=Position|Tangency|Curvature] [Handle1=length] [Handle2=length]";
 
 pub(super) struct BlendCurveCommand;
 
@@ -94,6 +94,8 @@ fn parse(arguments: &[&str]) -> Result<BlendOptions, CommandError> {
                 CurveBlendContinuity::Position
             } else if value.eq_ignore_ascii_case("Tangency") {
                 CurveBlendContinuity::Tangency
+            } else if value.eq_ignore_ascii_case("Curvature") {
+                CurveBlendContinuity::Curvature
             } else {
                 return Err(CommandError::Usage(USAGE));
             };
@@ -158,9 +160,30 @@ mod tests {
         assert!(registry.execute(&mut document, "Blend Handle1=0").is_err());
         assert!(
             registry
-                .execute(&mut document, "Blend Continuity2=Curvature")
+                .execute(&mut document, "Blend Continuity2=G3")
                 .is_err()
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn curvature_option_creates_quintic_without_changing_sources() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 1,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,2,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "Blend Continuity1=Curvature")
+            .unwrap();
+        assert_eq!(document.objects().count(), 3);
+        let blend = document
+            .selected_objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .expect("selected quintic blend");
+        assert_eq!(blend.degree(), 5);
     }
 }
