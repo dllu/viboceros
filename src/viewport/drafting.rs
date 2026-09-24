@@ -11,6 +11,7 @@ pub(super) struct DraftingCursor {
     pub(super) point: Point3,
     pub(super) object_snap: Option<ObjectSnap>,
     pub(super) track: Option<OrthogonalTrack>,
+    pub(super) ortho: bool,
     pub(super) grid_snapped: bool,
 }
 
@@ -78,7 +79,19 @@ impl Viewport {
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
         let object_snap = self.object_snap(pointer, rect, document, input.snap_options());
-        let track = if object_snap.is_none() && input.smart_track {
+        let ortho_point = if object_snap.is_none() && input.ortho {
+            raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
+                viboceros_drafting::plane::ortho_point(
+                    cursor,
+                    anchor,
+                    self.construction_plane(),
+                    input.ortho_angle_degrees,
+                )
+            })
+        } else {
+            None
+        };
+        let track = if object_snap.is_none() && ortho_point.is_none() && input.smart_track {
             raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
                 viboceros_drafting::plane::orthogonal_track_projected(
                     cursor,
@@ -104,6 +117,7 @@ impl Viewport {
         };
         let point = object_snap
             .map(ObjectSnap::point)
+            .or(ortho_point)
             .or_else(|| track.map(OrthogonalTrack::point))
             .or(grid_point)
             .or(raw_point)?;
@@ -112,7 +126,11 @@ impl Viewport {
             point,
             object_snap,
             track,
-            grid_snapped: object_snap.is_none() && track.is_none() && grid_point.is_some(),
+            ortho: ortho_point.is_some(),
+            grid_snapped: object_snap.is_none()
+                && ortho_point.is_none()
+                && track.is_none()
+                && grid_point.is_some(),
         })
     }
 
@@ -378,7 +396,7 @@ impl Viewport {
         };
         let marker_color = if cursor.object_snap.is_some() {
             SNAP_COLOR
-        } else if cursor.track.is_some() {
+        } else if cursor.track.is_some() || cursor.ortho {
             TRACK_COLOR
         } else if cursor.grid_snapped {
             GRID_COLOR
@@ -398,6 +416,7 @@ impl Viewport {
             .object_snap
             .map(|snap| snap.kind().label())
             .or_else(|| cursor.track.map(|track| track.axis().label()))
+            .or(cursor.ortho.then_some("Ortho"))
             .or(cursor.grid_snapped.then_some("Grid"));
         if let Some(label) = snap_label {
             painter.text(

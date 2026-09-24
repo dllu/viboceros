@@ -222,6 +222,12 @@ impl VibocerosApp {
                         InterfaceCommand::SetSnap(SwitchAction::Toggle),
                     ),
                     (
+                        self.ortho,
+                        "Ortho",
+                        "Constrain cursor from the last point · F8",
+                        InterfaceCommand::SetOrtho(SwitchAction::Toggle),
+                    ),
+                    (
                         self.osnap,
                         "Osnap",
                         "Object snaps · F4",

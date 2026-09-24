@@ -148,15 +148,33 @@ impl ViewKind {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct DraftingInput {
     pub active: bool,
     pub osnap: viboceros_drafting::ObjectSnapModes,
     pub mesh_edges: bool,
     pub smart_track: bool,
     pub grid_snap: bool,
+    pub ortho: bool,
+    pub ortho_angle_degrees: f64,
     pub anchor: Option<Point3>,
     pub reference: Option<Point3>,
+}
+
+impl Default for DraftingInput {
+    fn default() -> Self {
+        Self {
+            active: false,
+            osnap: Default::default(),
+            mesh_edges: false,
+            smart_track: false,
+            grid_snap: false,
+            ortho: false,
+            ortho_angle_degrees: 90.0,
+            anchor: None,
+            reference: None,
+        }
+    }
 }
 
 impl DraftingInput {
@@ -3882,6 +3900,8 @@ mod tests {
                     mesh_edges: false,
                     smart_track: true,
                     grid_snap: false,
+                    ortho: false,
+                    ortho_angle_degrees: 90.0,
                     anchor: Some(point(0.0, 0.0, 8.0)),
                     reference: None,
                 },
@@ -3916,6 +3936,8 @@ mod tests {
                     mesh_edges: false,
                     smart_track: false,
                     grid_snap: false,
+                    ortho: false,
+                    ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
                 },
@@ -3943,6 +3965,8 @@ mod tests {
                     mesh_edges: false,
                     smart_track: true,
                     grid_snap: false,
+                    ortho: false,
+                    ortho_angle_degrees: 90.0,
                     anchor: Some(anchor),
                     reference: None,
                 },
@@ -3950,6 +3974,75 @@ mod tests {
             .unwrap();
         assert_eq!(cursor.point, point(3.0, 0.0, 5.0));
         assert_eq!(cursor.track.unwrap().axis(), TrackAxis::Horizontal);
+    }
+
+    #[test]
+    fn ortho_constrains_from_the_last_pick_before_smarttrack_and_grid() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 5.0);
+        let pointer = viewport.project(point(3.0, 2.0, 5.0), rect).unwrap();
+        for (angle, expected) in [(90.0, point(3.0, 0.0, 5.0)), (45.0, point(2.5, 2.5, 5.0))] {
+            let cursor = viewport
+                .drafting_cursor(
+                    pointer,
+                    rect,
+                    &Document::default(),
+                    DraftingInput {
+                        active: true,
+                        smart_track: true,
+                        grid_snap: true,
+                        ortho: true,
+                        ortho_angle_degrees: angle,
+                        anchor: Some(anchor),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            assert!(Tolerance::DEFAULT.approx_eq(cursor.point.x(), expected.x()));
+            assert!(Tolerance::DEFAULT.approx_eq(cursor.point.y(), expected.y()));
+            assert_eq!(cursor.point.z(), expected.z());
+            assert!(cursor.ortho);
+            assert!(!cursor.grid_snapped);
+            assert!(cursor.track.is_none());
+        }
+    }
+
+    #[test]
+    fn object_snap_overrides_ortho_and_no_anchor_does_not_constrain() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let target = point(3.0, 2.0, 5.0);
+        let pointer = viewport.project(target, rect).unwrap();
+        let mut document = Document::default();
+        document.add_geometry(Geometry::Point(target)).unwrap();
+        let input = DraftingInput {
+            active: true,
+            osnap: viboceros_drafting::ObjectSnapModes::ALL,
+            ortho: true,
+            ortho_angle_degrees: 90.0,
+            anchor: Some(point(0.0, 0.0, 5.0)),
+            ..Default::default()
+        };
+        let cursor = viewport
+            .drafting_cursor(pointer, rect, &document, input)
+            .unwrap();
+        assert_eq!(cursor.point, target);
+        assert!(cursor.object_snap.is_some());
+        assert!(!cursor.ortho);
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    anchor: None,
+                    ..input
+                },
+            )
+            .unwrap();
+        assert!(!cursor.ortho);
+        assert_eq!(cursor.point, point(3.0, 2.0, 0.0));
     }
 
     #[test]
@@ -3969,6 +4062,8 @@ mod tests {
                     mesh_edges: false,
                     smart_track: true,
                     grid_snap: true,
+                    ortho: false,
+                    ortho_angle_degrees: 90.0,
                     anchor: Some(point(8.0, 8.0, 6.0)),
                     reference: None,
                 },
@@ -4001,6 +4096,8 @@ mod tests {
                     mesh_edges: false,
                     smart_track: false,
                     grid_snap: false,
+                    ortho: false,
+                    ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
                 },

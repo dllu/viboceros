@@ -1853,6 +1853,40 @@ fn f7_toggles_active_grid_display_without_toggling_grid_snap() {
 }
 
 #[test]
+fn ortho_commands_and_f8_preserve_the_active_point_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    enter(&mut app, "SetOrtho On");
+    enter(&mut app, "OrthoAngle 45");
+    assert!(app.ortho);
+    assert_eq!(app.ortho_angle.degrees(), 45.0);
+    assert_eq!(app.active_command, pending);
+    let context = egui::Context::default();
+    for expected in [false, true] {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800., 600.),
+                    )),
+                    events: vec![
+                        key(egui::Key::F8, egui::Modifiers::NONE, true, false),
+                        key(egui::Key::F8, egui::Modifiers::NONE, false, false),
+                    ],
+                    ..Default::default()
+                },
+                |ui| app.handle_interface_shortcuts(ui),
+            )
+            .drop_without_applying_deltas();
+        assert_eq!(app.ortho, expected);
+        assert_eq!(app.active_command, pending);
+    }
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

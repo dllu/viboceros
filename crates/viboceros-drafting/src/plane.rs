@@ -49,6 +49,43 @@ pub fn snap_to_grid(point: Point3, plane: Frame3, spacing: f64) -> Result<Point3
     Ok(plane.point_at([snap(x), snap(y), z])?)
 }
 
+/// Constrain a cursor to the nearest angular ray through the last picked point.
+/// Directions are measured from the construction plane's local X axis.
+pub fn ortho_point(
+    cursor: Point3,
+    anchor: Point3,
+    plane: Frame3,
+    angle_degrees: f64,
+) -> Option<Point3> {
+    if !(angle_degrees.is_finite() && 0.0 < angle_degrees && angle_degrees <= 180.0) {
+        return None;
+    }
+    let frame = plane.with_origin(anchor);
+    let [x, y, _] = frame.coordinates_of(cursor).ok()?;
+    if x == 0.0 && y == 0.0 {
+        return Some(anchor);
+    }
+    let step = angle_degrees.to_radians();
+    // Below floating-point angular resolution, every representable direction
+    // is already within one increment of the cursor direction.
+    if step <= f64::EPSILON {
+        return frame.point_at([x, y, 0.0]).ok();
+    }
+    let direction = (y.atan2(x) / step).round() * step;
+    let unit = [direction.cos(), direction.sin()].map(|value| {
+        if value.abs() <= 4.0 * f64::EPSILON {
+            0.0
+        } else {
+            value
+        }
+    });
+    // Form each projected component directly: the intermediate dot product
+    // can overflow even when both resulting coordinates are representable.
+    let projected_x = x.mul_add(unit[0] * unit[0], y * (unit[1] * unit[0]));
+    let projected_y = y.mul_add(unit[1] * unit[1], x * (unit[0] * unit[1]));
+    frame.point_at([projected_x, projected_y, 0.0]).ok()
+}
+
 /// Track the plane's X/Y axes through an anchor. Candidate acceptance is measured
 /// in the supplied viewport projection, not in world-XY or model-space units.
 pub fn orthogonal_track_projected(

@@ -536,6 +536,8 @@ fn plan_parses_as_a_transparent_interface_command() {
 fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,
+        ortho: false,
+        ortho_angle: OrthoAngle::try_new(90.0).unwrap(),
         osnap: true,
         snap_to_meshes: false,
         smart_track: false,
@@ -560,6 +562,11 @@ fn switches_are_explicit_idempotent_and_toggle_in_both_directions() {
         (
             "SmartTrack",
             (|s: &InterfaceState| s.smart_track) as fn(&InterfaceState) -> bool,
+            false,
+        ),
+        (
+            "SetOrtho",
+            (|s: &InterfaceState| s.ortho) as fn(&InterfaceState) -> bool,
             false,
         ),
     ] {
@@ -588,6 +595,14 @@ fn switches_are_explicit_idempotent_and_toggle_in_both_directions() {
         s.apply(parse("_sNaP").unwrap().unwrap()).unwrap();
         assert_eq!(s.grid_snap, expected);
     }
+    for expected in [true, false] {
+        s.apply(parse("_oRtHo").unwrap().unwrap()).unwrap();
+        assert_eq!(s.ortho, expected);
+    }
+    s.apply(parse("OrthoAngle 45").unwrap().unwrap()).unwrap();
+    assert_eq!(s.ortho_angle.degrees(), 45.0);
+    s.apply(parse("OrthoAngle 180").unwrap().unwrap()).unwrap();
+    assert_eq!(s.ortho_angle.degrees(), 180.0);
 }
 
 #[test]
@@ -627,6 +642,12 @@ fn malformed_known_commands_are_not_treated_as_modeling_input() {
         "SetSnap",
         "SetSnap Yes",
         "SetSnap On Off",
+        "Ortho On",
+        "SetOrtho",
+        "SetOrtho Yes",
+        "OrthoAngle 0",
+        "OrthoAngle 181",
+        "OrthoAngle NaN",
         "SmartTrack",
         "DisableOsnap",
         "DisableOsnap Yes",

@@ -29,6 +29,8 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
+| `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
+| `OrthoAngle <degrees>` | Set the angular increment from the active construction plane's X axis; accepts values above 0 through 180 degrees. |
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
 | `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
@@ -62,7 +64,7 @@ The line still starts at the accepted origin. Interface changes do not consume
 model undo steps or destroy redo history. `DisableOsnap` and `SnapToMeshes` use **Enable/Disable**,
 not On/Off; the toolbar's Osnap indicator is lit when snapping is enabled.
 
-F7 toggles active-viewport grid lines, F9 toggles grid snap, and F4 toggles
+F7 toggles active-viewport grid lines, F8 toggles Ortho, F9 toggles grid snap, and F4 toggles
 object snaps. Home and End run UndoView and
 RedoView when a text field is not focused. Ctrl/Cmd+W starts Zoom Window.
 Ctrl/Cmd+Alt+W, S, and G select
@@ -108,6 +110,7 @@ SmartTrack is reference-axis tracking, not Rhino's
 complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
 interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for
+[Ortho, SetOrtho, and OrthoAngle](https://docs.mcneel.com/rhino/8/help/en-us/commands/ortho.htm),
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),
 [Grid](https://docs.mcneel.com/rhino/8/help/en-us/documentproperties/grid.htm),
 [object snaps](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm),

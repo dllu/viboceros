@@ -349,6 +349,8 @@ impl VibocerosApp {
     pub(super) fn interface_state(&self) -> InterfaceState {
         InterfaceState {
             grid_snap: self.grid_snap,
+            ortho: self.ortho,
+            ortho_angle: self.ortho_angle,
             osnap: self.osnap,
             snap_to_meshes: self.snaps.mesh_edges,
             smart_track: self.smart_track,
@@ -819,6 +821,8 @@ impl VibocerosApp {
                     return;
                 }
                 self.grid_snap = state.grid_snap;
+                self.ortho = state.ortho;
+                self.ortho_angle = state.ortho_angle;
                 self.osnap = state.osnap;
                 self.snaps.mesh_edges = state.snap_to_meshes;
                 self.smart_track = state.smart_track;
@@ -979,6 +983,11 @@ impl VibocerosApp {
                 egui::Modifiers::NONE,
                 egui::Key::F7,
                 InterfaceCommand::ToggleGrid,
+            ),
+            (
+                egui::Modifiers::NONE,
+                egui::Key::F8,
+                InterfaceCommand::SetOrtho(SwitchAction::Toggle),
             ),
             (
                 egui::Modifiers::NONE,

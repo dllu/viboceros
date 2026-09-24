@@ -1,10 +1,14 @@
 //! Untimed interface state transitions through the GUI's actual command reducer.
 use super::*;
-use viboceros_command::interface::{DisplayMode, InterfaceState, parse};
+use viboceros_command::interface::{DisplayMode, InterfaceState, OrthoAngle, parse};
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct InterfaceFixture {
     pub grid_snap: bool,
+    #[serde(default)]
+    pub ortho: Option<bool>,
+    #[serde(default)]
+    pub ortho_angle_degrees: Option<f64>,
     pub osnap: bool,
     #[serde(default, deserialize_with = "present_mesh_setting")]
     pub snap_to_meshes: Option<bool>,
@@ -50,8 +54,31 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
     {
         return Err(invalid());
     }
+    if fixture.ortho.is_none()
+        && commands.iter().any(|command| {
+            matches!(
+                command,
+                viboceros_command::interface::InterfaceCommand::SetOrtho(_)
+            )
+        })
+    {
+        return Err(invalid());
+    }
+    if fixture.ortho_angle_degrees.is_none()
+        && commands.iter().any(|command| {
+            matches!(
+                command,
+                viboceros_command::interface::InterfaceCommand::OrthoAngle(_)
+            )
+        })
+    {
+        return Err(invalid());
+    }
     let mut state = InterfaceState {
         grid_snap: fixture.grid_snap,
+        ortho: fixture.ortho.unwrap_or(false),
+        ortho_angle: OrthoAngle::try_new(fixture.ortho_angle_degrees.unwrap_or(90.0))
+            .ok_or_else(invalid)?,
         osnap: fixture.osnap,
         snap_to_meshes: fixture.snap_to_meshes.unwrap_or(false),
         smart_track: fixture.smart_track,
@@ -67,6 +94,12 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
         if fixture.snap_to_meshes.is_some() {
             value["snap_to_meshes"] = json!(state.snap_to_meshes);
         }
+        if fixture.ortho.is_some() {
+            value["ortho"] = json!(state.ortho);
+        }
+        if fixture.ortho_angle_degrees.is_some() {
+            value["ortho_angle_degrees"] = json!(state.ortho_angle.degrees());
+        }
         value
     };
     let mut states = vec![record(&state)];
@@ -80,6 +113,26 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ortho_fixture_records_switch_and_angle_transitions() {
+        let fixture: InterfaceFixture = serde_json::from_value(json!({
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "osnap": false,
+            "smart_track": false,
+            "active_viewport": 0,
+            "display_modes": ["Wireframe", "Wireframe", "Wireframe", "Wireframe"],
+            "commands": ["SetOrtho On", "OrthoAngle 45", "Ortho"]
+        }))
+        .unwrap();
+        let (result, _) = run(&fixture).unwrap();
+        assert_eq!(result["states"][0]["ortho"], false);
+        assert_eq!(result["states"][1]["ortho"], true);
+        assert_eq!(result["states"][2]["ortho_angle_degrees"], 45.0);
+        assert_eq!(result["states"][3]["ortho"], false);
+    }
 
     #[test]
     fn mesh_snap_switch_states_match_rhino_without_changing_other_settings() {
@@ -138,6 +191,8 @@ mod tests {
         let mut fixture = InterfaceFixture {
             snap_to_meshes: None,
             grid_snap: true,
+            ortho: None,
+            ortho_angle_degrees: None,
             osnap: true,
             smart_track: false,
             active_viewport: 0,

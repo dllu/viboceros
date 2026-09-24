@@ -1,6 +1,49 @@
 use super::*;
 
 #[test]
+fn ortho_uses_plane_axes_and_preserves_the_anchor_elevation() {
+    let plane = frame();
+    let anchor = plane.point_at([2.0, -3.0, 7.0]).unwrap();
+    let local = plane.with_origin(anchor);
+    for (cursor, angle, expected) in [
+        ([3.0, 1.0, 0.0], 90.0, [3.0, 0.0, 0.0]),
+        ([1.0, -4.0, 0.0], 90.0, [0.0, -4.0, 0.0]),
+        ([3.0, 2.0, 0.0], 45.0, [2.5, 2.5, 0.0]),
+        ([-3.0, 2.0, 0.0], 180.0, [-3.0, 0.0, 0.0]),
+    ] {
+        let point = ortho_point(local.point_at(cursor).unwrap(), anchor, plane, angle).unwrap();
+        let actual = local.coordinates_of(point).unwrap();
+        for index in 0..3 {
+            assert!((actual[index] - expected[index]).abs() < 1e-12);
+        }
+    }
+    assert_eq!(ortho_point(anchor, anchor, plane, 90.0), Some(anchor));
+    let fine_cursor = local.point_at([3.0, 2.0, 0.0]).unwrap();
+    let fine_result = ortho_point(fine_cursor, anchor, plane, f64::MIN_POSITIVE).unwrap();
+    for (actual, expected) in fine_result
+        .to_array()
+        .into_iter()
+        .zip(fine_cursor.to_array())
+    {
+        assert!((actual - expected).abs() < 1e-12);
+    }
+    for angle in [0.0, -1.0, 181.0, f64::NAN, f64::INFINITY] {
+        assert_eq!(ortho_point(anchor, anchor, plane, angle), None);
+    }
+    let world = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let huge = point(f64::MAX * 0.8, f64::MAX * 0.8, 0.0);
+    let projected = ortho_point(huge, point(0.0, 0.0, 0.0), world, 45.0).unwrap();
+    assert!((projected.x() - huge.x()).abs() <= 4.0 * f64::EPSILON * huge.x());
+    assert!((projected.y() - huge.y()).abs() <= 4.0 * f64::EPSILON * huge.y());
+}
+
+#[test]
 fn projected_anchor_capture_does_not_require_unrepresentable_axis_candidates() {
     let plane = frame();
     let anchor = point(f64::MAX, 0.0, 7.0);
