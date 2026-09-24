@@ -4,10 +4,10 @@ use crate::{
     Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, CurveRef, CurveSegment3,
     GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
     curve::ArcLengthSampler,
+    curve_connect_pair::connected_ends_with_styles,
     curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end,
     },
-    try_connect_curves_parts_with_styles,
 };
 
 /// Styles used to extend nonmeeting curve ends before chamfering.
@@ -37,7 +37,7 @@ pub fn try_chamfer_curves_joined_with_styles(
     styles: CurveChamferExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
-    let (connected, picks) = connected_for_chamfer(
+    let (connected, picks) = connected_ends_with_styles(
         first,
         first_pick,
         second,
@@ -66,7 +66,7 @@ pub fn try_chamfer_curves_parts_with_styles(
     styles: CurveChamferExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, GeometryError> {
-    let (connected, picks) = connected_for_chamfer(
+    let (connected, picks) = connected_ends_with_styles(
         first.0,
         first.1,
         second.0,
@@ -175,41 +175,6 @@ fn chamfer_parts_from_joined(
         parts.push(segments[first_count].clone().into_curve());
     }
     Ok(parts)
-}
-
-fn connected_for_chamfer(
-    first: &Curve3,
-    first_pick: Point3,
-    second: &Curve3,
-    second_pick: Point3,
-    arc_extension: CurveArcExtensionStyle,
-    other_extension: CurveOtherExtensionStyle,
-    tolerance: Tolerance,
-) -> Result<([Curve3; 2], [Point3; 2]), GeometryError> {
-    let first_at_end = selected_end(first, first_pick, tolerance)?;
-    let second_at_end = selected_end(second, second_pick, tolerance)?;
-    let mut connected = try_connect_curves_parts_with_styles(
-        first,
-        first_pick,
-        second,
-        second_pick,
-        arc_extension,
-        other_extension,
-        tolerance,
-    )?;
-    let second = connected.pop().expect("Connect returns two curves");
-    let first = connected.pop().expect("Connect returns two curves");
-    let first_pick = if first_at_end {
-        first.as_ref().end_point()?
-    } else {
-        first.as_ref().start_point()?
-    };
-    let second_pick = if second_at_end {
-        second.as_ref().end_point()?
-    } else {
-        second.as_ref().start_point()?
-    };
-    Ok(([first, second], [first_pick, second_pick]))
 }
 
 /// Trims or extends terminal straight segments to a bevel whose setbacks are
@@ -358,7 +323,7 @@ fn unsupported() -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{CircularArc3, NurbsCurve};
+    use crate::{CircularArc3, NurbsCurve, try_connect_curves_parts_with_styles};
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.0).unwrap()

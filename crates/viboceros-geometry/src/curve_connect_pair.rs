@@ -99,6 +99,43 @@ pub fn try_connect_curves_parts_with_styles(
     ])
 }
 
+/// Connects selected ends and returns updated picks at their meeting point.
+/// The curves retain their original directions.
+pub(crate) fn connected_ends_with_styles(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
+    tolerance: Tolerance,
+) -> Result<([Curve3; 2], [Point3; 2]), GeometryError> {
+    let first_at_end = selected_end(first, first_pick, tolerance)?;
+    let second_at_end = selected_end(second, second_pick, tolerance)?;
+    let mut connected = try_connect_curves_parts_with_styles(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        arc_extension,
+        other_extension,
+        tolerance,
+    )?;
+    let second = connected.pop().expect("Connect returns two curves");
+    let first = connected.pop().expect("Connect returns two curves");
+    let first_pick = if first_at_end {
+        first.as_ref().end_point()?
+    } else {
+        first.as_ref().start_point()?
+    };
+    let second_pick = if second_at_end {
+        second.as_ref().end_point()?
+    } else {
+        second.as_ref().start_point()?
+    };
+    Ok(([first, second], [first_pick, second_pick]))
+}
+
 /// Connects and joins the selected ends into one native polycurve.
 pub fn try_connect_curves_joined(
     first: &Curve3,

@@ -104,7 +104,10 @@ pub use curve_connect_pair::{
     try_connect_curves_parts_with_styles,
 };
 pub use curve_edit::{Curve3, CurveClosure};
-pub use curve_fillet_pair::{try_fillet_curves_joined, try_fillet_curves_parts};
+pub use curve_fillet_pair::{
+    CurveFilletExtensionStyles, try_fillet_curves_joined, try_fillet_curves_joined_with_styles,
+    try_fillet_curves_parts, try_fillet_curves_parts_with_styles,
+};
 pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};

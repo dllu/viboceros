@@ -17,12 +17,16 @@ only the arc, whether `Join=Yes` or `Join=No`. Zero radius requires trimming.
 The nearest pair of source endpoints determines which ends are filleted. Use
 `Pick1=x,y,z` and `Pick2=x,y,z` to choose different ends. The picks identify
 the end; they do not need to lie exactly on the curves. Line ends may be
-extended to their supporting-line intersection. Already meeting line, arc,
-and NURBS terminal leaves are supported, including terminal leaves of
-polycurves. Existing earlier leaves remain native and unchanged.
+extended to their supporting-line intersection. `ExtendArcsBy=Arc|Line`
+continues nonmeeting arcs on their supporting circle or adds a tangent line.
+`ExtendOtherCurvesBy=Line|Smooth` adds a tangent line or smoothly continues a
+nonmeeting NURBS. The defaults are `Arc` and `Line`. Already meeting line,
+arc, and NURBS terminal leaves are supported, including terminal leaves of
+polycurves. Earlier leaves remain native and unchanged.
 
-Dynamic preview and extension of nonmeeting curved leaves are still to be
-implemented. A pick exactly at an arc endpoint can be
+Dynamic preview is still to be implemented. Fillets that would consume an
+entire newly added tangent segment can be rejected. Smooth rational NURBS
+extension can differ from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.
 
@@ -42,3 +46,9 @@ tools/rhino_oracle/run_headless.sh compare \
 The [separate-output fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pair_parts.json)
 and [saved response](../../tools/rhino_oracle/observations/curve_fillet_pair_parts.json)
 cover `Join` and `Trim` combinations, including zero radius and reversed picks.
+
+The [nonmeeting arc fixture](../../tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json)
+and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_nonmeeting.json)
+compare arc-to-line and line-to-arc selections. Across 65 equal-length stations
+per case, the largest coordinate difference in a live comparison was below
+`3.3e-15`.

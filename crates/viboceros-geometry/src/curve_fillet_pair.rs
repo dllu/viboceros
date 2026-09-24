@@ -1,11 +1,87 @@
 //! Joined, trimmed fillets between selected ends of two open curves.
 
 use crate::{
-    Curve3, CurveSegment3, GeometryError, Point3, PolyCurve3, Real, Tolerance,
+    Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, CurveSegment3, GeometryError, Point3,
+    PolyCurve3, Real, Tolerance,
+    curve_connect_pair::connected_ends_with_styles,
     curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end, unsupported,
     },
 };
+
+/// Styles used to extend nonmeeting curve ends before filleting.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CurveFilletExtensionStyles {
+    pub arc: CurveArcExtensionStyle,
+    pub other: CurveOtherExtensionStyle,
+}
+
+impl Default for CurveFilletExtensionStyles {
+    fn default() -> Self {
+        Self {
+            arc: CurveArcExtensionStyle::Arc,
+            other: CurveOtherExtensionStyle::Line,
+        }
+    }
+}
+
+/// Connects selected ends with the chosen extensions, then creates a fillet.
+pub fn try_fillet_curves_joined_with_styles(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    radius: Real,
+    styles: CurveFilletExtensionStyles,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let (connected, picks) = connected_ends_with_styles(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        styles.arc,
+        styles.other,
+        tolerance,
+    )?;
+    try_fillet_curves_joined(
+        &connected[0],
+        picks[0],
+        &connected[1],
+        picks[1],
+        radius,
+        tolerance,
+    )
+}
+
+/// Creates separate retained curves and a fillet with extension options.
+pub fn try_fillet_curves_parts_with_styles(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    radius: Real,
+    trim: bool,
+    styles: CurveFilletExtensionStyles,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
+    let (connected, picks) = connected_ends_with_styles(
+        first.0,
+        first.1,
+        second.0,
+        second.1,
+        styles.arc,
+        styles.other,
+        tolerance,
+    )?;
+    try_fillet_curves_parts(
+        &connected[0],
+        picks[0],
+        &connected[1],
+        picks[1],
+        radius,
+        trim,
+        tolerance,
+    )
+}
 
 /// Trims or extends selected curve ends to a tangent circular fillet and joins
 /// the two retained curves with that arc. Zero radius joins at a sharp corner.
@@ -131,7 +207,7 @@ pub fn try_fillet_curves_parts(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::LineSegment;
+    use crate::{CircularArc3, LineSegment, NurbsCurve};
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.).unwrap()
@@ -223,5 +299,122 @@ mod tests {
                 .all(|part| matches!(part, CurveSegment3::Line(_)))
         );
         assert!((result.length(Tolerance::DEFAULT).unwrap() - 8.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn nonmeeting_arc_and_line_fillet_preserves_native_arc() {
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let line = line(p(-0.5, 2.), p(-0.5, 3.));
+        let joined = try_fillet_curves_joined_with_styles(
+            &arc,
+            p(0.02, 0.999),
+            &line,
+            p(-0.5, 2.1),
+            0.2,
+            CurveFilletExtensionStyles::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::Arc(_),
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
+        assert!((joined.length(Tolerance::DEFAULT).unwrap() - 4.026276894462145).abs() < 1e-7);
+    }
+
+    #[test]
+    fn tangent_line_option_retains_arc_and_extension() {
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let line = line(p(-0.5, 2.), p(-0.5, 3.));
+        let styles = CurveFilletExtensionStyles {
+            arc: CurveArcExtensionStyle::Line,
+            ..CurveFilletExtensionStyles::default()
+        };
+        let joined = try_fillet_curves_joined_with_styles(
+            &arc,
+            p(0., 1.),
+            &line,
+            p(-0.5, 2.),
+            0.2,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::Arc(_),
+            CurveSegment3::Line(extension),
+            CurveSegment3::Arc(fillet),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("arc, tangent extension, fillet, line")
+        };
+        assert!(extension.end().distance_to(p(-0.3, 1.)).unwrap() < 1e-9);
+        assert!((fillet.radius() - 0.2).abs() < 1e-9);
+        let parts = try_fillet_curves_parts_with_styles(
+            (&arc, p(0., 1.)),
+            (&line, p(-0.5, 2.)),
+            0.2,
+            true,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(parts.len(), 3);
+        assert_eq!(parts[2], Curve3::Arc(*fillet));
+    }
+
+    #[test]
+    fn smooth_nurbs_option_fillet_keeps_native_curve() {
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap(),
+        );
+        let target = line(p(3., 3.), p(3., 4.));
+        let joined = try_fillet_curves_joined_with_styles(
+            &source,
+            p(2., 1.),
+            &target,
+            p(3., 3.),
+            0.2,
+            CurveFilletExtensionStyles {
+                other: CurveOtherExtensionStyle::Smooth,
+                ..CurveFilletExtensionStyles::default()
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::NurbsCurve(_),
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
     }
 }

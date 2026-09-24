@@ -2434,12 +2434,13 @@ fn execute(
             let first_pick = point(*pick0)?;
             let second_pick = point(*pick1)?;
             let (curve, elapsed) = measure(iterations, || {
-                viboceros_geometry::try_fillet_curves_joined(
+                viboceros_geometry::try_fillet_curves_joined_with_styles(
                     &first,
                     first_pick,
                     &second,
                     second_pick,
                     *radius,
+                    viboceros_geometry::CurveFilletExtensionStyles::default(),
                     tolerance,
                 )
             })?;
@@ -2470,23 +2471,23 @@ fn execute(
             let (parts, elapsed) = measure(iterations, || {
                 if *join && *trim {
                     Ok(vec![viboceros_geometry::Curve3::PolyCurve(
-                        viboceros_geometry::try_fillet_curves_joined(
+                        viboceros_geometry::try_fillet_curves_joined_with_styles(
                             &first,
                             first_pick,
                             &second,
                             second_pick,
                             *radius,
+                            viboceros_geometry::CurveFilletExtensionStyles::default(),
                             tolerance,
                         )?,
                     )])
                 } else {
-                    viboceros_geometry::try_fillet_curves_parts(
-                        &first,
-                        first_pick,
-                        &second,
-                        second_pick,
+                    viboceros_geometry::try_fillet_curves_parts_with_styles(
+                        (&first, first_pick),
+                        (&second, second_pick),
                         *radius,
                         *trim,
+                        viboceros_geometry::CurveFilletExtensionStyles::default(),
                         tolerance,
                     )
                 }

@@ -1,6 +1,44 @@
 use super::*;
 
 #[test]
+fn nonmeeting_arc_fillets_match_saved_rhino_samples() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/curve_fillet_nonmeeting.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    assert_eq!(observed["engine"], "rhino");
+    for (row, reference) in actual
+        .results
+        .iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        assert_eq!(row.id, reference["id"].as_str().unwrap());
+        let length = row.value["length"].as_f64().unwrap();
+        let expected = reference["value"]["length"].as_f64().unwrap();
+        assert!((length - expected).abs() < 1e-10, "{}: length", row.id);
+        let samples = row.value["samples"].as_array().unwrap();
+        let reference_samples = reference["value"]["samples"].as_array().unwrap();
+        assert_eq!(samples.len(), reference_samples.len());
+        for (station, (sample, expected)) in samples.iter().zip(reference_samples).enumerate() {
+            for coordinate in 0..3 {
+                let actual = sample[coordinate].as_f64().unwrap();
+                let expected = expected[coordinate].as_f64().unwrap();
+                assert!(
+                    (actual - expected).abs() < 1e-10,
+                    "{}, station {station}, coordinate {coordinate}: {actual} != {expected}",
+                    row.id
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn joined_curve_fillets_match_saved_rhino_samples() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/curve_fillet_pair.json"
