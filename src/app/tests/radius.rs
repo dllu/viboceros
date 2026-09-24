@@ -69,3 +69,32 @@ fn radius_and_diameter_point_input_report_mark_and_cancel() {
         assert!(!app.try_start_interactive_command(&format!("{name} 2,0,0")));
     }
 }
+
+#[test]
+fn radius_prompt_accepts_and_revises_display_units() {
+    for name in ["Radius", "Diameter"] {
+        let mut app = test_app();
+        app.execute_command("Units Meters Scale=No");
+        app.execute_command("Circle 0,0,0 2");
+        let before = format!("{:?}", app.document);
+        assert!(app.try_start_interactive_command(&format!("{name} Units=cm")));
+        let pending = app.active_command;
+        assert!(app.try_continue_radius("Units=invalid"));
+        assert_eq!(app.active_command, pending);
+        assert!(app.try_continue_radius("Units=Model_Units"));
+        assert!(app.try_continue_radius("Units=cm"));
+        assert!(app.try_continue_point_input("2,0,0"));
+        assert_eq!(
+            app.command_log.back().map(String::as_str),
+            Some("Radius = 200 Centimetres; Diameter = 400 Centimetres")
+        );
+        assert_eq!(format!("{:?}", app.document), before);
+
+        app.execute_command("SelAll");
+        assert!(!app.try_start_interactive_command(&format!("{name} Units=cm")));
+        assert!(app.try_start_interactive_command(&format!("{name} Mark{name}=No")));
+        let pending = app.active_command;
+        assert!(app.try_continue_radius("Units=cm"));
+        assert_eq!(app.active_command, pending);
+    }
+}

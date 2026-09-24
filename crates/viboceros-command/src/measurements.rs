@@ -25,6 +25,7 @@ pub use evaluate_uv::{EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv};
 #[cfg(test)]
 mod tests;
 pub(super) use distance::DistanceCommand;
+pub(crate) use distance::display_value;
 pub use distance::distance_display_units;
 
 fn format_measurement(value: Real) -> String {
@@ -41,7 +42,7 @@ pub(super) struct LengthCommand;
 const LENGTH_USAGE: &str =
     "Length [SubCrv Parameter=start,end|SubCrv start_point end_point] [Units=name]";
 
-fn measurement_display_option(
+pub(crate) fn measurement_display_option(
     argument: &str,
     usage: &'static str,
 ) -> Result<Option<LengthUnitSystem>, CommandError> {
@@ -52,7 +53,7 @@ fn measurement_display_option(
     Ok(distance_display_units(value)?.and_then(crate::model_units::parse_units))
 }
 
-fn measurement_display_scale(
+pub(crate) fn measurement_display_scale(
     document: &Document,
     target: Option<&LengthUnitSystem>,
     source_units_error: &'static str,

@@ -1,5 +1,7 @@
 //! Pointwise curve-radius queries sharing differential evaluation and markers.
 use super::*;
+use crate::measurements::{measurement_display_option, measurement_display_scale};
+use viboceros_geometry::LengthUnitSystem;
 
 pub(crate) struct RadiusCommand {
     pub diameter: bool,
@@ -25,7 +27,11 @@ pub fn preselected_circular_radius(document: &Document) -> Result<Option<f64>, C
     })
 }
 
-fn radius_report(radius: f64) -> Result<String, CommandError> {
+fn radius_report(
+    radius: f64,
+    scale: f64,
+    target: Option<&LengthUnitSystem>,
+) -> Result<String, CommandError> {
     let diameter = 2. * radius;
     if !radius.is_finite() || !diameter.is_finite() {
         return Err(GeometryError::Degenerate {
@@ -33,7 +39,12 @@ fn radius_report(radius: f64) -> Result<String, CommandError> {
         }
         .into());
     }
-    Ok(format!("Radius = {radius}; Diameter = {diameter}"))
+    let radius = crate::measurements::display_value(radius, scale)?;
+    let diameter = crate::measurements::display_value(diameter, scale)?;
+    let suffix = target.map_or_else(String::new, |units| format!(" {}", units.name()));
+    Ok(format!(
+        "Radius = {radius}{suffix}; Diameter = {diameter}{suffix}"
+    ))
 }
 
 impl Command for RadiusCommand {
@@ -45,12 +56,12 @@ impl Command for RadiusCommand {
         if arguments.is_empty()
             && let Some(radius) = preselected_circular_radius(document)?
         {
-            return radius_report(radius);
+            return radius_report(radius, 1., None);
         }
         let usage = if self.diameter {
-            "Diameter [MarkDiameter=Yes|No] point-on-curve"
+            "Diameter [MarkDiameter=Yes|No] [Units=name] point-on-curve"
         } else {
-            "Radius [MarkRadius=Yes|No] point-on-curve"
+            "Radius [MarkRadius=Yes|No] [Units=name] point-on-curve"
         };
         let mark_option = if self.diameter {
             "MarkDiameter"
@@ -58,11 +69,20 @@ impl Command for RadiusCommand {
             "MarkRadius"
         };
         let (mut cursor, mut mark, mut point) = (0, false, None);
+        let (mut units_seen, mut target) = (false, None);
         while cursor < arguments.len() {
             if let Some((name, value)) = arguments[cursor].split_once('=')
                 && option_name_eq(name, mark_option)
             {
                 mark = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+                cursor += 1;
+            } else if arguments[cursor]
+                .split_once('=')
+                .is_some_and(|(name, _)| option_name_eq(name, "Units"))
+                && !units_seen
+            {
+                target = measurement_display_option(arguments[cursor], usage)?;
+                units_seen = true;
                 cursor += 1;
             } else if point.is_none() {
                 let (value, consumed) = parse_point(&arguments[cursor..])?;
@@ -74,6 +94,16 @@ impl Command for RadiusCommand {
         }
         let point = point.ok_or(CommandError::Usage(usage))?;
         let preselected = document.selected_object_count() != 0;
+        if units_seen && preselected {
+            return Err(CommandError::Usage(
+                "Radius/Diameter Units is unavailable with preselected objects",
+            ));
+        }
+        let scale = measurement_display_scale(
+            document,
+            target.as_ref(),
+            "Radius/Diameter display conversion requires physical source units",
+        )?;
         let tolerance = document.tolerance();
         let mut best = None;
         let candidates =
@@ -118,9 +148,16 @@ impl Command for RadiusCommand {
                 }
                 .into());
             }
-            Ok(value.to_string())
+            Ok(crate::measurements::display_value(value, scale)?.to_string())
         };
-        let report = format!("Radius = {}; Diameter = {}", length(1.)?, length(2.)?);
+        let suffix = target
+            .filter(|_| magnitude != 0.)
+            .map_or_else(String::new, |units| format!(" {}", units.name()));
+        let report = format!(
+            "Radius = {}{suffix}; Diameter = {}{suffix}",
+            length(1.)?,
+            length(2.)?
+        );
         if mark {
             // Construct all markers before changing the document. Registry
             // transactions also make insertion failures atomic.
@@ -297,5 +334,53 @@ mod tests {
         }
         registry.execute(&mut doc, "Redo").unwrap();
         assert_eq!(doc.objects().count(), 3);
+    }
+
+    #[test]
+    fn radius_display_units_convert_reports_without_scaling_geometry_or_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry.execute(&mut doc, "Units Meters Scale=No").unwrap();
+        registry.execute(&mut doc, "Circle 0,0,0 2").unwrap();
+        registry.execute(&mut doc, "Point 9,9,9").unwrap();
+        registry.execute(&mut doc, "Undo").unwrap();
+        let before = format!("{doc:?}");
+        for name in ["Radius", "Diameter"] {
+            assert_eq!(
+                registry
+                    .execute(&mut doc, &format!("{name} Units=cm 2,0,0"))
+                    .unwrap(),
+                "Radius = 200 Centimetres; Diameter = 400 Centimetres"
+            );
+            assert_eq!(
+                registry
+                    .execute(&mut doc, &format!("{name} 2,0,0 Units=Model_Units"))
+                    .unwrap(),
+                "Radius = 2; Diameter = 4"
+            );
+            for input in [
+                format!("{name} 2,0,0 Units=unknown"),
+                format!("{name} 2,0,0 Units=cm Units=m"),
+            ] {
+                assert!(registry.execute(&mut doc, &input).is_err(), "{input}");
+            }
+            assert_eq!(format!("{doc:?}"), before);
+        }
+        registry.execute(&mut doc, "Line 20,0,0 20,1,0").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut doc, "Radius 20,0.5,0 Units=cm")
+                .unwrap(),
+            "Radius = infinite; Diameter = infinite"
+        );
+        registry.execute(&mut doc, "SelAll").unwrap();
+        let before_selected = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, "Radius 2,0,0 Units=cm").is_err());
+        assert_eq!(format!("{doc:?}"), before_selected);
+        registry.execute(&mut doc, "SelNone").unwrap();
+        registry.execute(&mut doc, "Units None Scale=No").unwrap();
+        let before_unitless = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, "Radius 2,0,0 Units=cm").is_err());
+        assert_eq!(format!("{doc:?}"), before_unitless);
     }
 }

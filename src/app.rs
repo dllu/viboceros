@@ -373,6 +373,7 @@ enum InteractiveCommand {
     Radius {
         diameter: bool,
         mark: bool,
+        display_units: Option<&'static str>,
     },
     DupFaceBorder {
         output_on_current_layer: bool,
@@ -929,9 +930,11 @@ impl InteractiveCommand {
             }
             Self::Radius {
                 diameter: false, ..
-            } => "Radius: pick a curve location (preselection limits curves; Esc cancels)",
+            } => {
+                "Radius: pick a curve location (Units=name; preselection limits curves; Esc cancels)"
+            }
             Self::Radius { diameter: true, .. } => {
-                "Diameter: pick a curve location (preselection limits curves; Esc cancels)"
+                "Diameter: pick a curve location (Units=name; preselection limits curves; Esc cancels)"
             }
             Self::DupFaceBorder { .. } => {
                 "DupFaceBorder: pick a face location on a selected surface or B-rep (Esc to cancel)"
@@ -1559,6 +1562,7 @@ impl VibocerosApp {
         }
         if self.try_continue_points(&input)
             || self.try_continue_distance(&input)
+            || self.try_continue_radius(&input)
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_evaluate_uv(&input)
@@ -1606,6 +1610,7 @@ impl VibocerosApp {
         }
         if self.try_continue_points(input)
             || self.try_continue_distance(input)
+            || self.try_continue_radius(input)
             || self.try_continue_length(input)
             || self.try_continue_angle(input)
             || self.try_continue_evaluate_uv(input)
@@ -2519,6 +2524,8 @@ impl VibocerosApp {
             }
         } else if matches!(normalized.as_str(), "curvature" | "radius" | "diameter") {
             let mut mark = false;
+            let mut display_units = None;
+            let mut units_seen = false;
             let mark_option = match normalized.as_str() {
                 "radius" => "MarkRadius",
                 "diameter" => "MarkDiameter",
@@ -2528,19 +2535,28 @@ impl VibocerosApp {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
-                if !name
-                    .trim_start_matches(['_', '-'])
-                    .eq_ignore_ascii_case(mark_option)
+                let name = name.trim_start_matches(['_', '-']);
+                if name.eq_ignore_ascii_case(mark_option) {
+                    mark = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                } else if name.eq_ignore_ascii_case("Units")
+                    && normalized != "curvature"
+                    && !units_seen
+                    && self.document.selected_object_count() == 0
                 {
-                    return false;
-                }
-                mark = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                    true
-                } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                    false
+                    display_units = match viboceros_command::distance_display_units(value) {
+                        Ok(units) => units,
+                        Err(_) => return false,
+                    };
+                    units_seen = true;
                 } else {
                     return false;
-                };
+                }
             }
             if normalized == "curvature" {
                 InteractiveCommand::Curvature { mark }
@@ -2548,6 +2564,7 @@ impl VibocerosApp {
                 InteractiveCommand::Radius {
                     diameter: normalized == "diameter",
                     mark,
+                    display_units,
                 }
             }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
@@ -4848,8 +4865,12 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
-            InteractiveCommand::Radius { diameter, mark } => {
-                return self.finish_radius(point, diameter, mark);
+            InteractiveCommand::Radius {
+                diameter,
+                mark,
+                display_units,
+            } => {
+                return self.finish_radius(point, diameter, mark, display_units);
             }
             InteractiveCommand::ExtractSrf {
                 copy,

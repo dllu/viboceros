@@ -31,6 +31,15 @@ Markers use the current layer, preserve source selection, and form one undoable
 operation. Flat curves receive a point only. All markers are constructed before
 insertion; failed commands roll back atomically.
 
+With no preselected objects, `Radius 2,0,0 Units=cm` and
+`Diameter 2,0,0 Units=cm` convert the reported lengths to centimeters without
+changing model units or geometry. `Units=Model_Units` restores the model-unit
+report. The option may be given before or after the point, or entered during the
+interactive point prompt. A preselected object makes `Units` unavailable, as in
+[Rhino's Radius/Diameter options](https://docs.mcneel.com/rhino/8/help/en-us/commands/diameter.htm).
+Physical source units are required for conversion; invalid and unrepresentable
+conversions leave the model and its history intact.
+
 Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2),
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,
 invalid-input rollback, read-only history, interactive cancellation, unrestricted
@@ -57,7 +66,7 @@ cleans up its temporary source and restores prior selection, including failures;
 mock tests exercise construction and command-capture failures.
 
 [Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/radius.htm)
-also describes cursor feedback, `SelectCurve`, display `Units`,
+also describes cursor feedback, `SelectCurve`,
 `SubCrv`, and nested numeric input. Those workflows and live hover/status-bar
 curvature feedback are not implemented yet. Point lookup currently uses 3D
 nearest distance, not a screen-space hit aperture. Explicit mixed selections

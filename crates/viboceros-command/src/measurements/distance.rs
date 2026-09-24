@@ -150,7 +150,7 @@ impl Command for DistanceCommand {
     }
 }
 
-pub(super) fn display_value(value: Real, scale: Real) -> Result<Real, CommandError> {
+pub(crate) fn display_value(value: Real, scale: Real) -> Result<Real, CommandError> {
     let result = value * scale;
     if !result.is_finite() || (value != 0. && result == 0.) {
         return Err(viboceros_document::DocumentError::from(
