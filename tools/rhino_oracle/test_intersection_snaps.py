@@ -219,6 +219,11 @@ class IntersectionSnapTests(unittest.TestCase):
                 "rational-nurbs-pair-left": "Intersection",
                 "multispan-nurbs-pair-right": "Intersection",
             },
+            "intersection_nurbs_self_snaps": {
+                "self-cubic-planar": "Intersection",
+                "self-cubic-depth": "Intersection",
+                "self-cubic-depth-reverse": "Intersection",
+            },
         }
         for stem, expected in cases.items():
             with self.subTest(stem=stem):

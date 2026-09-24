@@ -10,6 +10,7 @@ straight wires, circles, arcs, ellipses, and other curved NURBS spans. Mesh wire
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 Curved boundaries can intersect boundaries of the same surface or another surface.
+The same curved NURBS can also cross itself at distinct parameters.
 
 This is a screen-space snap: lines at different depths can cross in the view.
 Segments of one polyline can cross each other, and its ordinary corners also
@@ -108,7 +109,11 @@ with [observations](../tools/rhino_oracle/observations/intersection_nurbs_pair_d
 add two more roots. A validated local camera fit maps both control nets to
 rational screen-space NURBS; the geometry kernel solves their intersections,
 and the original curves supply the 3D points. Shared intervals have no isolated
-interior target. All 124 retained ordinary picks replay with matching kind and source and points
+interior target. [Single-curve cubic inputs](../tools/rhino_oracle/fixtures/intersection_nurbs_self_snaps.json)
+and [Rhino observations](../tools/rhino_oracle/observations/intersection_nurbs_self_snaps.json)
+show a planar and two reversed depth-separated self-crossings; the earlier curve
+parameter supplies the 3D point. All 127 retained ordinary picks replay with
+matching kind and source and points
 within `1e-9` model units.
 
 [Near-tangent inputs](../tools/rhino_oracle/fixtures/intersection_near_tangent_snaps.json)
@@ -124,7 +129,7 @@ lexicographically smaller center. All 22 picks match in kind and
 source; model points agree within `5e-8`. Rhino's observed points differ from
 the exact circle intersection by about `2.4e-8` in the rotated-frame case.
 
-Curved self-intersections, surface isocurves,
+Surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
@@ -135,3 +140,5 @@ high-degree isolation remains open.
 NURBS pair projection currently requires a validated projective camera fit;
 arbitrary nonlinear projection callbacks and partly clipped pairs need a
 separate fallback.
+Self-crossing search stops after 1,024 subcurves or 16 subdivision levels;
+extremely packed loops can still be missed.

@@ -339,6 +339,7 @@ pub(super) fn visit(
         }
     }
     for &curve in &curved_nurbs {
+        nurbs_pair::visit_self(curve, metric, emit);
         for &segment in &segments {
             nurbs_line::visit(curve, segment, metric, emit);
         }
@@ -383,6 +384,7 @@ pub(super) fn visit(
         }
         for surface_curve in &surface_curves {
             let curve = surface_curve.borrowed();
+            nurbs_pair::visit_self(curve, metric, emit);
             for &segment in &segments {
                 nurbs_line::visit(curve, segment, metric, emit);
             }

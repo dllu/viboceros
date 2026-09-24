@@ -1,0 +1,249 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        -0.1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "self-cubic-planar"
+    },
+    {
+      "op": "point_snap",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -3,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                2
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        -0.1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "self-cubic-depth"
+    },
+    {
+      "op": "point_snap",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                -1,
+                -1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        -0.1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "self-cubic-depth-reverse"
+    }
+  ]
+}

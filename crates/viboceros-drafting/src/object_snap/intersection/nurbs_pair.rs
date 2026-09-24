@@ -279,3 +279,155 @@ fn refine(
     let b = second.evaluate(v).ok()?;
     ((a.x() - b.x()).hypot(a.y() - b.y()) <= 1e-10).then_some((u, v))
 }
+
+/// A self-crossing belongs to two disjoint parameter intervals. Comparing a
+/// curve against itself would report its entire identity as an overlap, so
+/// compare different knot spans and recursively compare the two halves of
+/// each span. A rational Bezier span with same-sign weights and a strictly
+/// monotone control coordinate cannot cross itself.
+pub(super) fn visit_self(
+    source: CurvedNurbs<'_>,
+    metric: &impl SnapMetric,
+    emit: &mut impl FnMut(ObjectId, Point3, Real),
+) {
+    const MAX_SELF_NODES: usize = 1024;
+    let Some(fit) = fit(source.curve, source.curve, metric) else {
+        return;
+    };
+    let Some(projected) = fit.curve(source.curve) else {
+        return;
+    };
+    let Ok(tolerance) = Tolerance::try_new(1e-7, 1e-10, 1e-10) else {
+        return;
+    };
+    let spans: Vec<_> = projected
+        .spans()
+        .filter_map(|(start, end)| projected.try_trimmed(start..=end).ok())
+        .filter(|span| span_may_reach_cursor(span, &fit, metric))
+        .collect();
+    for first in 0..spans.len() {
+        for second in first + 1..spans.len() {
+            visit_self_pair(
+                source,
+                &spans[first],
+                &spans[second],
+                metric,
+                tolerance,
+                emit,
+            );
+        }
+    }
+    let mut stack: Vec<_> = spans.into_iter().map(|span| (span, 0_u8)).collect();
+    let mut visited = 0;
+    while let Some((span, depth)) = stack.pop() {
+        visited += 1;
+        if visited > MAX_SELF_NODES {
+            break;
+        }
+        if !span_may_reach_cursor(&span, &fit, metric) {
+            continue;
+        }
+        if monotone_projected_span(&span) || depth >= 16 {
+            continue;
+        }
+        let domain = span.domain();
+        let middle = *domain.start() * 0.5 + *domain.end() * 0.5;
+        if middle <= *domain.start() || middle >= *domain.end() {
+            continue;
+        }
+        let Ok((left, right)) = span.try_split(middle) else {
+            continue;
+        };
+        visit_self_pair(source, &left, &right, metric, tolerance, emit);
+        stack.push((left, depth + 1));
+        stack.push((right, depth + 1));
+    }
+}
+
+fn span_may_reach_cursor(span: &NurbsCurve, fit: &ProjectionFit, metric: &impl SnapMetric) -> bool {
+    let controls = span.control_points();
+    if !controls
+        .iter()
+        .all(|p| p.weight().is_sign_positive() == controls[0].weight().is_sign_positive())
+    {
+        return true;
+    }
+    let bounds = span.control_point_bounds();
+    let center = fit.normalized_image([0., 0.]);
+    let radius = metric.capture_radius() / fit.image_scale + 1e-8;
+    (0..2).all(|axis| {
+        center[axis] >= bounds.min().to_array()[axis] - radius
+            && center[axis] <= bounds.max().to_array()[axis] + radius
+    })
+}
+
+fn monotone_projected_span(curve: &NurbsCurve) -> bool {
+    let controls = curve.control_points();
+    if controls.iter().all(|control| {
+        control.point().x() == controls[0].point().x()
+            && control.point().y() == controls[0].point().y()
+    }) {
+        return true; // A projected point has no isolated self-crossing.
+    }
+    if !controls
+        .iter()
+        .all(|p| p.weight().is_sign_positive() == controls[0].weight().is_sign_positive())
+    {
+        return false;
+    }
+    (0..2).any(|axis| {
+        let increasing = controls
+            .windows(2)
+            .all(|pair| pair[0].point().to_array()[axis] <= pair[1].point().to_array()[axis]);
+        let decreasing = controls
+            .windows(2)
+            .all(|pair| pair[0].point().to_array()[axis] >= pair[1].point().to_array()[axis]);
+        let first = controls[0].point().to_array()[axis];
+        let last = controls[controls.len() - 1].point().to_array()[axis];
+        (increasing && first < last) || (decreasing && first > last)
+    })
+}
+
+fn visit_self_pair(
+    source: CurvedNurbs<'_>,
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    metric: &impl SnapMetric,
+    tolerance: Tolerance,
+    emit: &mut impl FnMut(ObjectId, Point3, Real),
+) {
+    let Ok(events) = first.intersection_events_with_curve(second, tolerance) else {
+        return;
+    };
+    let domain = source.curve.domain();
+    let parameter_slack =
+        128. * Real::EPSILON * domain.start().abs().max(domain.end().abs()).max(1.);
+    for event in events {
+        let CurveCurveIntersectionEvent::Point(hit) = event else {
+            continue;
+        };
+        let Some((u, v)) = refine(first, second, hit.first_parameter(), hit.second_parameter())
+        else {
+            continue;
+        };
+        if (u - v).abs() <= parameter_slack {
+            continue;
+        }
+        let (Some(a), Some(b)) = (source.curve.evaluate(u).ok(), source.curve.evaluate(v).ok())
+        else {
+            continue;
+        };
+        let (Some(image_a), Some(image_b)) = (metric.offset(a), metric.offset(b)) else {
+            continue;
+        };
+        if (image_a[0] - image_b[0]).hypot(image_a[1] - image_b[1])
+            > 1e-8 * metric.capture_radius().max(1.)
+        {
+            continue;
+        }
+        let earlier = if u < v { (a, image_a) } else { (b, image_b) };
+        if let Some(distance) = metric.captured_offset_distance(earlier.1) {
+            emit(source.owner, earlier.0, distance);
+        }
+    }
+}

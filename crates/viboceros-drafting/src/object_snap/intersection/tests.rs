@@ -457,6 +457,82 @@ fn curved_boundaries_of_separate_surfaces_intersect() {
 }
 
 #[test]
+fn cubic_nurbs_self_crossing_uses_earlier_curve_parameter() {
+    for (depths, expected_z) in [
+        ([0., 0., 0., 0.], 0.),
+        ([0., 0., 2., 2.], 0.07048399691022),
+        ([2., 2., 0., 0.], 1.92951600308978),
+    ] {
+        let mut doc = Document::default();
+        doc.add_geometry(Geometry::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                vec![
+                    p(-1., -1., depths[0]),
+                    p(3., 2., depths[1]),
+                    p(-3., 2., depths[2]),
+                    p(1., -1., depths[3]),
+                ],
+                vec![0., 0., 0., 0., 1., 1., 1., 1.],
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+        let hit = ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options_and_view(
+                &doc,
+                (PointCloudProjection::Xy, 1.),
+                p(0., 0., 0.),
+                [0., -0.1],
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+            .unwrap();
+        assert!(hit.point().distance_to(p(0., -0.1, expected_z)).unwrap() < 1e-9);
+    }
+}
+
+#[test]
+fn distinct_nurbs_spans_can_self_intersect() {
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::NurbsCurve(
+        NurbsCurve::try_new(
+            2,
+            vec![
+                p(-2., -2., 0.),
+                p(0., 2., 0.),
+                p(2., -2., 0.),
+                p(-2., 1., 0.),
+                p(0., -3., 0.),
+                p(2., 1., 0.),
+            ],
+            vec![0., 0., 0., 1., 1., 1., 2., 2., 2.],
+        )
+        .unwrap(),
+    ))
+    .unwrap();
+    let hit = ObjectSnapCache::default()
+        .nearest_axis_aligned_with_options(
+            &doc,
+            PointCloudProjection::Xy,
+            p(0., 0., 0.),
+            [1., -0.5],
+            0.2,
+            ObjectSnapOptions {
+                modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                mesh_edges: false,
+            },
+        )
+        .unwrap()
+        .unwrap();
+    assert!(hit.point().distance_to(p(1., -0.5, 0.)).unwrap() < 1e-9);
+}
+
+#[test]
 fn circle_line_crossings_include_tangencies_and_reject_infinite_line_extension() {
     let circle = Geometry::Circle(
         Circle3::try_from_frame(
