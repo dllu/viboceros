@@ -42,6 +42,7 @@ impl Command for BlendCurveCommand {
             CurveBlendOptions {
                 continuity: options.continuity,
                 handles: options.handles,
+                ..Default::default()
             },
             document.tolerance(),
         )?;
@@ -211,5 +212,28 @@ mod tests {
         let control = blend.control_points()[1].point().to_array();
         assert!((control[0] - 2.2).abs() < 1e-12);
         assert_eq!([control[1], control[2]], [0.0, 0.0]);
+    }
+
+    #[test]
+    fn alternate_end_picks_use_endpoint_specific_blend_shape() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 1,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,2,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "Blend Pick1=0,0,0 Pick2=4,2,0")
+            .unwrap();
+        let blend = document
+            .selected_objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .expect("selected cubic blend");
+        assert_eq!(blend.degree(), 3);
+        assert_eq!(blend.domain(), 0.0..=1.0);
+        assert!((blend.control_points()[1].point().x() + 2.205469288332913).abs() < 1e-12);
+        assert!((blend.control_points()[2].point().y() - 3.8443754306663296).abs() < 1e-12);
     }
 }

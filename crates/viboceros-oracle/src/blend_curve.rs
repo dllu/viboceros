@@ -9,6 +9,13 @@ use viboceros_geometry::{
 
 use crate::{ProbeError, curve_join_close::CurveInput};
 
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+enum BlendPickEnd {
+    Start,
+    End,
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct BlendCurveFixture {
     #[serde(default)]
@@ -24,6 +31,10 @@ pub struct BlendCurveFixture {
     continuity_first: Option<String>,
     #[serde(default)]
     continuity_second: Option<String>,
+    #[serde(default)]
+    pick_first: Option<BlendPickEnd>,
+    #[serde(default)]
+    pick_second: Option<BlendPickEnd>,
 }
 
 pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -63,10 +74,18 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
         };
     let first = source(fixture.source_first.as_ref(), fixture.first)?;
     let second = source(fixture.source_second.as_ref(), fixture.second)?;
-    let first_pick = first.as_ref().evaluate(*first.as_ref().domain().end())?;
-    let second_pick = second
-        .as_ref()
-        .evaluate(*second.as_ref().domain().start())?;
+    let first_reference = first.as_ref();
+    let second_reference = second.as_ref();
+    let first_parameter = match fixture.pick_first.unwrap_or(BlendPickEnd::End) {
+        BlendPickEnd::Start => *first_reference.domain().start(),
+        BlendPickEnd::End => *first_reference.domain().end(),
+    };
+    let second_parameter = match fixture.pick_second.unwrap_or(BlendPickEnd::Start) {
+        BlendPickEnd::Start => *second_reference.domain().start(),
+        BlendPickEnd::End => *second_reference.domain().end(),
+    };
+    let first_pick = first_reference.evaluate(first_parameter)?;
+    let second_pick = second_reference.evaluate(second_parameter)?;
     let blend = try_blend_curve(
         &first,
         first_pick,
@@ -74,6 +93,10 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
         second_pick,
         CurveBlendOptions {
             continuity: modes,
+            endpoint_specific: fixture.continuity_first.is_some()
+                || fixture.continuity_second.is_some()
+                || fixture.pick_first.is_some()
+                || fixture.pick_second.is_some(),
             ..Default::default()
         },
         tolerance,
@@ -167,6 +190,15 @@ mod tests {
             include_str!("../../../tools/rhino_oracle/fixtures/blend_mixed_spatial.json"),
             include_str!("../../../tools/rhino_oracle/observations/blend_mixed_spatial.json"),
             96,
+        );
+    }
+
+    #[test]
+    fn alternate_endpoint_picks_match_saved_rhino_control_shapes() {
+        assert_full_line_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_endpoint_picks.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_endpoint_picks.json"),
+            30,
         );
     }
 

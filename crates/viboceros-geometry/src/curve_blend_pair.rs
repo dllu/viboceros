@@ -18,6 +18,10 @@ pub enum CurveBlendContinuity {
 pub struct CurveBlendOptions {
     pub continuity: [CurveBlendContinuity; 2],
     pub handles: [Option<Real>; 2],
+    /// Requests endpoint-specific defaults even for equal continuity at the
+    /// first curve's end and second curve's start. Other picks or mixed
+    /// continuity always use endpoint-specific defaults.
+    pub endpoint_specific: bool,
 }
 
 impl Default for CurveBlendOptions {
@@ -25,6 +29,7 @@ impl Default for CurveBlendOptions {
         Self {
             continuity: [CurveBlendContinuity::Tangency; 2],
             handles: [None, None],
+            endpoint_specific: false,
         }
     }
 }
@@ -42,6 +47,10 @@ pub fn try_blend_curve(
 ) -> Result<NurbsCurve, GeometryError> {
     let first_end = selected_end(first, first_pick, tolerance)?;
     let second_end = selected_end(second, second_pick, tolerance)?;
+    let endpoint_specific = options.endpoint_specific
+        || options.continuity[0] != options.continuity[1]
+        || !first_end
+        || second_end;
     let start = endpoint_point(first, first_end)?;
     let end = endpoint_point(second, second_end)?;
     let chord = start.vector_to(end)?;
@@ -70,11 +79,8 @@ pub fn try_blend_curve(
         });
     }
     if options.continuity == [CurveBlendContinuity::Position; 2] {
-        return NurbsCurve::try_new(
-            1,
-            vec![start, end],
-            vec![0.0, 0.0, chord_length, chord_length],
-        );
+        let domain_end = if endpoint_specific { 1.0 } else { chord_length };
+        return NurbsCurve::try_new(1, vec![start, end], vec![0.0, 0.0, domain_end, domain_end]);
     }
     let degree = continuity_control_count(options.continuity[0])
         + continuity_control_count(options.continuity[1])
@@ -97,7 +103,7 @@ pub fn try_blend_curve(
         Err(_) if options.continuity[1] == CurveBlendContinuity::Position => None,
         Err(error) => return Err(error),
     };
-    if options.continuity[0] != options.continuity[1]
+    if endpoint_specific
         && let (Some(first_direction), Some(second_direction)) = (first_direction, second_direction)
     {
         let chord_direction = chord.normalized_nonzero()?.as_vector();
@@ -148,10 +154,10 @@ pub fn try_blend_curve(
     let mut knots = vec![0.0; degree + 1];
     knots.extend(vec![1.0; degree + 1]);
     let blend = NurbsCurve::try_new(degree, controls, knots)?;
-    if options.continuity[0] == options.continuity[1] {
-        blend.try_reparameterized(0.0..=blend.length(tolerance)?)
-    } else {
+    if endpoint_specific {
         Ok(blend)
+    } else {
+        blend.try_reparameterized(0.0..=blend.length(tolerance)?)
     }
 }
 
@@ -310,6 +316,7 @@ mod tests {
                     CurveBlendContinuity::Tangency,
                 ],
                 handles: [Some(1.), Some(1.)],
+                ..Default::default()
             },
             Tolerance::DEFAULT,
         )
@@ -350,6 +357,7 @@ mod tests {
                     CurveBlendContinuity::Tangency,
                 ],
                 handles: [None, Some(1.)],
+                ..Default::default()
             },
             Tolerance::DEFAULT,
         )
@@ -394,6 +402,7 @@ mod tests {
                     CurveBlendContinuity::Curvature,
                 ],
                 handles: [Some(1.), Some(1.5)],
+                ..Default::default()
             },
             Tolerance::DEFAULT,
         )
@@ -439,6 +448,7 @@ mod tests {
                     CurveBlendContinuity::Curvature,
                 ],
                 handles: [Some(1.), Some(1.)],
+                ..Default::default()
             },
             Tolerance::DEFAULT,
         )
@@ -491,6 +501,7 @@ mod tests {
                     CurveBlendContinuity::Curvature,
                 ],
                 handles: [None, Some(1.)],
+                ..Default::default()
             },
             Tolerance::DEFAULT,
         )

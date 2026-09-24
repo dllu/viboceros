@@ -5,7 +5,8 @@
 Select two open curves and run `Blend`. It creates a new NURBS curve
 between the nearest selected ends. The source curves remain in place, the new
 blend is selected, and `Undo` removes it. `Pick1=x,y,z` and `Pick2=x,y,z`
-choose other source ends.
+choose other source ends. Alternate end picks use Rhino's endpoint-specific
+default blend shape and a normalized `[0,1]` parameter domain.
 
 `Continuity1` and `Continuity2` independently accept `Position`, `Tangency`, or
 `Curvature`; both default to `Tangency`. The blend uses the minimum degree for
@@ -17,9 +18,9 @@ defaults use the endpoint distance for tangency and 40% of it for curvature.
 Mixed blends use Rhino-calibrated defaults from both source tangents when
 available. Explicit handle lengths override those defaults independently.
 
-The [Rhino API comparison](../blend-oracle.md) covers 225 line, arc, polynomial
+The [Rhino API comparison](../blend-oracle.md) covers 255 line, arc, polynomial
 or rational NURBS, polyline, and polycurve inputs, including nonparallel spatial
-mixed-continuity cases.
+cases and alternate endpoint picks.
 
 ```text
 Blend Continuity1=Tangency Continuity2=Position Handle1=2.5

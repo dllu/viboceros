@@ -5250,6 +5250,10 @@ def _execute(operation, iterations, tolerance):
         continuity_second = operation.get("continuity_second", continuity)
         if continuity_first not in ("position", "tangency", "curvature") or continuity_second not in ("position", "tangency", "curvature"):
             raise ValueError("invalid blend continuity")
+        pick_first = operation.get("pick_first", "end")
+        pick_second = operation.get("pick_second", "start")
+        if pick_first not in ("start", "end") or pick_second not in ("start", "end"):
+            raise ValueError("invalid blend endpoint pick")
         first = operation.get("first")
         second = operation.get("second")
         source_first = operation.get("source_first")
@@ -5266,10 +5270,12 @@ def _execute(operation, iterations, tolerance):
             second_curve = _join_close_input(source_second) if source_second is not None else Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
             mode_first = getattr(Rhino.Geometry.BlendContinuity, continuity_first.capitalize())
             mode_second = getattr(Rhino.Geometry.BlendContinuity, continuity_second.capitalize())
-            if "continuity_first" in operation or "continuity_second" in operation:
+            if "continuity_first" in operation or "continuity_second" in operation or "pick_first" in operation or "pick_second" in operation:
+                first_parameter = first_curve.Domain.T0 if pick_first == "start" else first_curve.Domain.T1
+                second_parameter = second_curve.Domain.T0 if pick_second == "start" else second_curve.Domain.T1
                 blend = Rhino.Geometry.Curve.CreateBlendCurve(
-                    first_curve, first_curve.Domain.T1, False, mode_first,
-                    second_curve, second_curve.Domain.T0, True, mode_second)
+                    first_curve, first_parameter, pick_first == "start", mode_first,
+                    second_curve, second_parameter, pick_second == "start", mode_second)
             else:
                 blend = Rhino.Geometry.Curve.CreateBlendCurve(first_curve, second_curve, mode_first)
             if blend is None:

@@ -64,7 +64,16 @@ adds polylines and line/arc polycurves. Its
 [raw Rhino definitions](../tools/rhino_oracle/observations/blend_polycurve_sources.json)
 match every control point and weight within `1e-12`, all mixed domains and
 knots, and all degrees; G2/G2 domain and knot residuals remain below `3e-8`.
-Interactive `Blend`, surface edges, and other source types remain unmeasured.
+
+The [30 endpoint-pick inputs](../tools/rhino_oracle/fixtures/blend_endpoint_picks.json)
+cover three other start/end choices with all nine continuity pairs, plus three
+equal-continuity end-to-start cases using the endpoint-specific overload. Their
+[raw Rhino definitions](../tools/rhino_oracle/observations/blend_endpoint_picks.json)
+match Viboceros in degree, knots, weights, normalized `[0,1]` domain, and every
+control point within `1e-12`. Unlike the three-argument end-to-start API,
+Rhino's endpoint-specific overload uses the chord-projection handle formula
+also for G1/G1 and G2/G2. Interactive `Blend`, surface edges, and other source
+types remain unmeasured.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
