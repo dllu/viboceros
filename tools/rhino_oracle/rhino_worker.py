@@ -1019,6 +1019,19 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
         sphere = Rhino.Geometry.Sphere(_point(definition["center"]), radius)
         surface = None
         source = sphere.ToBrep()
+    elif "cylinder" in operation:
+        definition = operation["cylinder"]
+        radius = _finite(definition["radius"], "cylinder radius")
+        height = _finite(definition["height"], "cylinder height")
+        if radius <= 0.0 or height <= 0.0:
+            raise ValueError("cylinder radius and height must be positive")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        circle = Rhino.Geometry.Circle(plane, radius)
+        cylinder = Rhino.Geometry.Cylinder(circle, height)
+        surface = None
+        source = cylinder.ToBrep(False, False)
     else:
         corners = operation["corners"]
         if len(corners) != 4:
@@ -1074,7 +1087,7 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
                         admitted_mass.Dispose()
                 finally:
                     document.Objects.Delete(object_id, True)
-            return {
+            value = {
                 "created": True,
                 "valid": bool(result.IsValid),
                 "solid": bool(result.IsSolid),
@@ -1087,6 +1100,31 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
                 "volume": volume,
                 "admitted_volume": admitted_volume,
             }
+            if operation.get("topology", False):
+                value["topology"] = {
+                    "edges": [
+                        [int(edge.StartVertex.VertexIndex), int(edge.EndVertex.VertexIndex)]
+                        for edge in result.Edges
+                    ],
+                    "faces": [
+                        [
+                            {
+                                "type": str(loop.LoopType),
+                                "trims": [
+                                    {
+                                        "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                                        "type": str(trim.TrimType),
+                                        "reversed": bool(trim.IsReversed()),
+                                    }
+                                    for trim in loop.Trims
+                                ],
+                            }
+                            for loop in face.Loops
+                        ]
+                        for face in result.Faces
+                    ],
+                }
+            return value
         return _measure_disposable(iterations, create, record)
     finally:
         source.Dispose()

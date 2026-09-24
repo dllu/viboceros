@@ -1,4 +1,4 @@
-//! Exact normal offsets of planar surfaces and single-face B-reps.
+//! Exact normal offsets of planar and canonical analytic surfaces.
 
 use super::*;
 
@@ -31,6 +31,10 @@ impl Command for OffsetSurfaceCommand {
         let mut staged = Vec::with_capacity(selected.len());
         for (id, geometry) in &selected {
             if let Some(offset) = spherical_offset(geometry, options, document.tolerance())? {
+                staged.push((*id, offset));
+                continue;
+            }
+            if let Some(offset) = cylindrical_offset(geometry, options, document.tolerance())? {
                 staged.push((*id, offset));
                 continue;
             }
@@ -239,6 +243,85 @@ fn spherical_offset(
     if options.both_sides {
         let mut positive = face(new_radius, natural_outward)?;
         let mut negative = face(opposite_radius, natural_outward)?;
+        if reversed {
+            positive.reverse_orientation();
+            negative.reverse_orientation();
+        }
+        return Ok(Some(Geometry::Brep(Brep::try_disjoint_union(
+            vec![positive, negative],
+            tolerance,
+        )?)));
+    }
+    let result = scaled(new_radius)?;
+    if brep_source {
+        let mut result = Brep::try_surface_face(result, tolerance)?;
+        if reversed {
+            result.reverse_orientation();
+        }
+        Ok(Some(Geometry::Brep(result)))
+    } else {
+        Ok(Some(Geometry::NurbsSurface(result)))
+    }
+}
+
+fn cylindrical_offset(
+    geometry: &Geometry,
+    options: Options,
+    tolerance: Tolerance,
+) -> Result<Option<Geometry>, CommandError> {
+    let (surface, reversed, brep_source) = match geometry {
+        Geometry::NurbsSurface(surface) => (surface, false, false),
+        Geometry::Brep(brep) if brep.faces().len() == 1 => {
+            let face = &brep.faces()[0];
+            (face.surface(), face.is_reversed(), true)
+        }
+        _ => return Ok(None),
+    };
+    let Some((frame, radius, height)) = surface.canonical_cylinder(tolerance)? else {
+        return Ok(None);
+    };
+    if let Geometry::Brep(brep) = geometry
+        && !brep.faces()[0].is_untrimmed(tolerance)?
+    {
+        return Ok(None);
+    }
+    let u = surface.parameter_at_u(0.125)?;
+    let v = surface.parameter_at_v(0.5)?;
+    let axis_point = frame.point_at([0.0, 0.0, height * 0.5])?;
+    let radial = axis_point.vector_to(surface.evaluate(u, v)?)?;
+    let natural_outward = radial.dot(surface.normal_at(u, v)?.as_vector())? > 0.0;
+    let direction = if natural_outward ^ reversed {
+        1.0
+    } else {
+        -1.0
+    };
+    let new_radius = radius + direction * options.distance;
+    let opposite_radius = radius - direction * options.distance;
+    if new_radius <= tolerance.absolute()
+        || (options.both_sides && opposite_radius <= tolerance.absolute())
+    {
+        return Err(CommandError::OffsetSurfaceCollapsedCylinder);
+    }
+    if options.solid {
+        let radii = if options.both_sides {
+            [new_radius, opposite_radius]
+        } else {
+            [radius, new_radius]
+        };
+        return Ok(Some(Geometry::Brep(Brep::try_offset_cylinder_tube(
+            frame, radii, height, tolerance,
+        )?)));
+    }
+    let scaled = |target_radius: Real| -> Result<NurbsSurface, CommandError> {
+        Ok(surface.transformed(AffineTransform3::try_frame_mapping(
+            frame,
+            frame,
+            [target_radius / radius, target_radius / radius, 1.0],
+        )?)?)
+    };
+    if options.both_sides {
+        let mut positive = Brep::try_surface_face(scaled(new_radius)?, tolerance)?;
+        let mut negative = Brep::try_surface_face(scaled(opposite_radius)?, tolerance)?;
         if reversed {
             positive.reverse_orientation();
             negative.reverse_orientation();
@@ -690,6 +773,154 @@ mod tests {
             .unwrap()
             .unwrap();
         assert!((radius - 1.5).abs() < 1e-10);
+        assert!(offset.faces()[0].is_reversed());
+    }
+
+    #[test]
+    fn exact_cylinder_offsets_match_rhino_wall_and_tube_topology() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cylinder 1,2,3 2 3 Solid=No")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let source = document.objects().cloned().collect::<Vec<_>>();
+
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 DeleteInput=Yes")
+            .unwrap();
+        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
+            panic!("open cylindrical offset is a NURBS surface")
+        };
+        let (_, radius, height) = offset
+            .canonical_cylinder(document.tolerance())
+            .unwrap()
+            .unwrap();
+        assert!((radius - 2.5).abs() < 1e-10);
+        assert!((height - 3.0).abs() < 1e-10);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), source);
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf -0.5 DeleteInput=Yes")
+            .unwrap();
+        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
+            panic!("inward cylindrical offset is a NURBS surface")
+        };
+        let (_, radius, _) = offset
+            .canonical_cylinder(document.tolerance())
+            .unwrap()
+            .unwrap();
+        assert!((radius - 1.5).abs() < 1e-10);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 BothSides=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(open_pair) = document.objects().next().unwrap().geometry() else {
+            panic!("two-sided cylindrical offset is a B-rep")
+        };
+        assert_eq!(
+            (
+                open_pair.faces().len(),
+                open_pair.edges().len(),
+                open_pair.vertices().len()
+            ),
+            (2, 6, 4)
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 Solid=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(tube) = document.objects().next().unwrap().geometry() else {
+            panic!("cylindrical solid offset is a tube")
+        };
+        assert!(
+            (tube.signed_volume(document.tolerance()).unwrap() - 6.75 * std::f64::consts::PI).abs()
+                < 1e-7
+        );
+        assert_eq!(
+            (
+                tube.faces().len(),
+                tube.edges().len(),
+                tube.vertices().len()
+            ),
+            (4, 8, 4)
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "OffsetSrf 0.5 Solid=Yes BothSides=Yes DeleteInput=Yes",
+            )
+            .unwrap();
+        let Geometry::Brep(tube) = document.objects().next().unwrap().geometry() else {
+            panic!("two-sided cylindrical solid offset is a tube")
+        };
+        assert!(
+            (tube.signed_volume(document.tolerance()).unwrap() - 12.0 * std::f64::consts::PI).abs()
+                < 1e-7
+        );
+        assert_eq!(
+            (
+                tube.faces().len(),
+                tube.edges().len(),
+                tube.vertices().len()
+            ),
+            (4, 8, 4)
+        );
+    }
+
+    #[test]
+    fn collapsing_cylinder_offset_is_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cylinder 1,2,3 2 3 Solid=No")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "OffsetSrf -2.5 DeleteInput=Yes"),
+            Err(CommandError::OffsetSurfaceCollapsedCylinder)
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn reversed_cylindrical_brep_offsets_inward() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 3.0).unwrap();
+        let mut source = Brep::try_surface_face(surface, document.tolerance()).unwrap();
+        source.reverse_orientation();
+        document.add_geometry(Geometry::Brep(source)).unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(offset) = document.objects().next().unwrap().geometry() else {
+            panic!("cylindrical B-rep offset remains a B-rep")
+        };
+        let (_, radius, height) = offset.faces()[0]
+            .surface()
+            .canonical_cylinder(document.tolerance())
+            .unwrap()
+            .unwrap();
+        assert!((radius - 1.5).abs() < 1e-10);
+        assert!((height - 3.0).abs() < 1e-10);
         assert!(offset.faces()[0].is_reversed());
     }
 

@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 
+mod analytic_cylinder;
 mod analytic_sphere;
 mod closest_point;
 mod evaluate;
@@ -891,6 +892,41 @@ impl NurbsSurface {
                 tau,
             ],
             vec![0.0, 0.0, radius, radius],
+        )
+    }
+
+    /// Constructs an exact periodic annulus with the outer circle at the
+    /// start of V and the inner circle at its end. The radial seam is a
+    /// natural boundary that a B-rep can represent with one twice-used edge.
+    pub fn try_annulus(
+        frame: Frame3,
+        inner_radius: Real,
+        outer_radius: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([inner_radius, outer_radius], "annulus radii")?;
+        if inner_radius <= 0.0 || outer_radius <= inner_radius {
+            return Err(GeometryError::Degenerate { context: "annulus" });
+        }
+        let disk = Self::try_disk(frame, outer_radius)?;
+        let center = frame.origin();
+        let scale = inner_radius / outer_radius;
+        let mut controls = disk.control_points[9..].to_vec();
+        for control in &disk.control_points[9..] {
+            let radial = center.vector_to(control.point())?;
+            controls.push(WeightedPoint3::try_new(
+                center.translated(radial.scaled(scale)?)?,
+                control.weight(),
+            )?);
+        }
+        let width = outer_radius - inner_radius;
+        Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            disk.knots_u,
+            vec![0.0, 0.0, width, width],
         )
     }
 

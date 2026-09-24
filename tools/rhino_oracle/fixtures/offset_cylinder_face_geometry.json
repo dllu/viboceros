@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "cylinder-positive-open",
+      "op": "offset_surface_face_geometry",
+      "cylinder": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.5
+    },
+    {
+      "id": "cylinder-negative-open",
+      "op": "offset_surface_face_geometry",
+      "cylinder": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": -0.5
+    },
+    {
+      "id": "cylinder-both-open",
+      "op": "offset_surface_face_geometry",
+      "cylinder": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.5,
+      "both_sides": true
+    },
+    {
+      "id": "cylinder-positive-solid",
+      "op": "offset_surface_face_geometry",
+      "cylinder": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.5,
+      "solid": true,
+      "topology": true
+    },
+    {
+      "id": "cylinder-both-solid",
+      "op": "offset_surface_face_geometry",
+      "cylinder": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.5,
+      "both_sides": true,
+      "solid": true,
+      "topology": true
+    }
+  ]
+}

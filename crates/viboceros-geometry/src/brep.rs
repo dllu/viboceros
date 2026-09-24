@@ -2530,6 +2530,65 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs the four-face cylindrical offset solid with two additional
+    /// radial cap seams used by Rhino's `OffsetSrf` result. The ordinary
+    /// `Tube` primitive instead keeps each planar annulus as a trimmed face.
+    pub fn try_offset_cylinder_tube(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut tube = Self::try_tube(frame, radii, height, tolerance)?;
+        let inner = radii[0].min(radii[1]);
+        let outer = radii[0].max(radii[1]);
+        let first_cap = NurbsSurface::try_annulus(frame, inner, outer)?;
+        let last_cap =
+            NurbsSurface::try_annulus(frame_at_height(frame, height, tolerance)?, inner, outer)?;
+        tube.edges.push(BrepEdge::try_new(
+            [0, 2],
+            LineSegment::try_new(
+                tube.vertices[0].point(),
+                tube.vertices[2].point(),
+                tolerance,
+            )?
+            .to_nurbs()?,
+            0.0,
+        )?);
+        tube.edges.push(BrepEdge::try_new(
+            [1, 3],
+            LineSegment::try_new(
+                tube.vertices[1].point(),
+                tube.vertices[3].point(),
+                tolerance,
+            )?
+            .to_nurbs()?,
+            0.0,
+        )?);
+        let first_loop = rectangular_surface_loop(
+            &first_cap,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 2], 6, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([2, 2], 3, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([2, 0], 6, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let last_loop = rectangular_surface_loop(
+            &last_cap,
+            [
+                RectangularTrimSpec::edge([1, 1], 2, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 3], 7, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([3, 3], 5, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([3, 1], 7, true, BrepTrimType::Seam),
+            ],
+        )?;
+        tube.faces[2] = BrepFace::try_new(first_cap, true, vec![first_loop])?;
+        tube.faces[3] = BrepFace::try_new(last_cap, false, vec![last_loop])?;
+        tube.validate(tolerance)?;
+        Ok(tube)
+    }
+
     /// Constructs Rhino's exact capped right circular truncated cone.
     ///
     /// The supplied frame origin is the base center and frame Z points toward
@@ -13141,6 +13200,68 @@ mod tests {
         assert!(Brep::try_tube(frame, [0.0, 1.0], 5.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_tube(frame, [1.0, 3.0], 0.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_tube(frame, [1.0, Real::INFINITY], 5.0, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn offset_cylinder_tube_has_two_radial_cap_seams() {
+        let frame = Frame3::try_from_normal(
+            point(1.0, 2.0, 3.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let tube =
+            Brep::try_offset_cylinder_tube(frame, [2.0, 2.5], 3.0, Tolerance::DEFAULT).unwrap();
+        assert!(tube.is_solid());
+        assert_eq!(
+            (
+                tube.faces().len(),
+                tube.edges().len(),
+                tube.vertices().len()
+            ),
+            (4, 8, 4)
+        );
+        assert_eq!(
+            tube.edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            [
+                [0, 0],
+                [0, 1],
+                [1, 1],
+                [2, 2],
+                [2, 3],
+                [3, 3],
+                [0, 2],
+                [1, 3]
+            ]
+        );
+        let edge_loops = tube
+            .faces()
+            .iter()
+            .map(|face| {
+                assert_eq!(face.loops().len(), 1);
+                face.loops()[0]
+                    .trims()
+                    .iter()
+                    .map(BrepTrim::edge)
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            edge_loops,
+            [
+                vec![Some(0), Some(1), Some(2), Some(1)],
+                vec![Some(3), Some(4), Some(5), Some(4)],
+                vec![Some(0), Some(6), Some(3), Some(6)],
+                vec![Some(2), Some(7), Some(5), Some(7)],
+            ]
+        );
+        assert!(
+            (tube.signed_volume(Tolerance::DEFAULT).unwrap() - 6.75 * std::f64::consts::PI).abs()
+                < 1e-8
+        );
     }
 
     #[test]

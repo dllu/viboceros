@@ -55,7 +55,7 @@ impl NurbsSurface {
     }
 }
 
-fn same_knot_pattern(actual: &[Real], expected: &[Real]) -> bool {
+pub(super) fn same_knot_pattern(actual: &[Real], expected: &[Real]) -> bool {
     if actual.len() != expected.len() {
         return false;
     }

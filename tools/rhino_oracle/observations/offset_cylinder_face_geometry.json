@@ -1,0 +1,586 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 12825012,
+      "id": "cylinder-positive-open",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          3.5,
+          4.5,
+          6.000000000000002
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          2.9999999999999996
+        ],
+        "created": true,
+        "edges": 3,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              4.9325909336576837e-17,
+              0.0
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": false,
+        "valid": true,
+        "vertices": 2,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 1876831,
+      "id": "cylinder-negative-open",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          2.5,
+          3.5,
+          6.000000000000002
+        ],
+        "bbox_min": [
+          -0.5,
+          0.5,
+          2.9999999999999996
+        ],
+        "created": true,
+        "edges": 3,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              1.2331477334144206e-16,
+              0.0
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": false,
+        "valid": true,
+        "vertices": 2,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 1586914,
+      "id": "cylinder-both-open",
+      "value": {
+        "admitted_volume": null,
+        "bbox_max": [
+          3.5,
+          4.5,
+          6.000000000000002
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          2.999999999999999
+        ],
+        "created": true,
+        "edges": 6,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              4.9325909336576837e-17,
+              0.0
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              -1.0,
+              1.2331477334144206e-16,
+              0.0
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 2,
+        "solid": false,
+        "valid": true,
+        "vertices": 4,
+        "volume": null
+      }
+    },
+    {
+      "elapsed_ns": 1533508,
+      "id": "cylinder-positive-solid",
+      "value": {
+        "admitted_volume": 21.20575067342174,
+        "bbox_max": [
+          3.5,
+          4.5,
+          6.000000000000002
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          2.9999999999999996
+        ],
+        "created": true,
+        "edges": 8,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              4.9325909336576837e-17,
+              0.0
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              1.0,
+              -0.0,
+              -0.0
+            ],
+            "point": [
+              -1.0,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              -4.3845252743623854e-16,
+              -1.0
+            ],
+            "point": [
+              -1.25,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -0.0,
+              -8.769050548724773e-16,
+              1.0
+            ],
+            "point": [
+              -1.25,
+              2.0000000000000004,
+              6.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 4,
+        "solid": true,
+        "topology": {
+          "edges": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 0,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 1,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 1,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 3,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 0,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 3,
+                    "reversed": true,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 7,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": true,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 7,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ]
+          ]
+        },
+        "valid": true,
+        "vertices": 4,
+        "volume": 21.20575067342174
+      }
+    },
+    {
+      "elapsed_ns": 2494812,
+      "id": "cylinder-both-solid",
+      "value": {
+        "admitted_volume": 37.69911230830543,
+        "bbox_max": [
+          3.5,
+          4.5,
+          6.000000000000002
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          2.999999999999999
+        ],
+        "created": true,
+        "edges": 8,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              4.9325909336576837e-17,
+              0.0
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              1.0,
+              -1.2331477334144206e-16,
+              -0.0
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              4.5
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              0.0,
+              -4.932590933657684e-16,
+              -1.0
+            ],
+            "point": [
+              -1.0,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": true
+          },
+          {
+            "normal": [
+              -0.0,
+              -9.86518186731537e-16,
+              1.0
+            ],
+            "point": [
+              -1.0,
+              2.0000000000000004,
+              6.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 4,
+        "solid": true,
+        "topology": {
+          "edges": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 0,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 1,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 1,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 3,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 4,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 0,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 3,
+                    "reversed": true,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 6,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ],
+            [
+              {
+                "trims": [
+                  {
+                    "edge": 2,
+                    "reversed": false,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 7,
+                    "reversed": false,
+                    "type": "Seam"
+                  },
+                  {
+                    "edge": 5,
+                    "reversed": true,
+                    "type": "Mated"
+                  },
+                  {
+                    "edge": 7,
+                    "reversed": true,
+                    "type": "Seam"
+                  }
+                ],
+                "type": "Outer"
+              }
+            ]
+          ]
+        },
+        "valid": true,
+        "vertices": 4,
+        "volume": 37.69911230830543
+      }
+    }
+  ]
+}
