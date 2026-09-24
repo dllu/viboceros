@@ -5252,14 +5252,18 @@ def _execute(operation, iterations, tolerance):
             raise ValueError("invalid blend continuity")
         first = operation.get("first")
         second = operation.get("second")
-        if not isinstance(first, list) or len(first) != 2 or not isinstance(second, list) or len(second) != 2:
-            raise ValueError("blend requires two line endpoint pairs")
+        source_first = operation.get("source_first")
+        source_second = operation.get("source_second")
+        if (source_first is None) == (first is None) or (source_second is None) == (second is None):
+            raise ValueError("blend source requires exactly one curve definition")
+        if (first is not None and (not isinstance(first, list) or len(first) != 2)) or (second is not None and (not isinstance(second, list) or len(second) != 2)):
+            raise ValueError("blend line source requires two endpoints")
         first_curve = None
         second_curve = None
         blend = None
         try:
-            first_curve = Rhino.Geometry.LineCurve(_point(first[0]), _point(first[1]))
-            second_curve = Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
+            first_curve = _join_close_input(source_first) if source_first is not None else Rhino.Geometry.LineCurve(_point(first[0]), _point(first[1]))
+            second_curve = _join_close_input(source_second) if source_second is not None else Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
             mode_first = getattr(Rhino.Geometry.BlendContinuity, continuity_first.capitalize())
             mode_second = getattr(Rhino.Geometry.BlendContinuity, continuity_second.capitalize())
             if "continuity_first" in operation or "continuity_second" in operation:

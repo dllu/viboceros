@@ -44,8 +44,14 @@ first  = 2L/n × [1.4 − a + (a − b)(0.3 + 0.5b)]
 second = 2L/n × [1.4 − b + (b − a)(0.3 + 0.5a)]
 ```
 
-The formula is inferred from line-source Rhino observations. Curved source
-defaults and interactive `Blend` behavior still require separate comparison.
+The formula was inferred from line-source Rhino observations. A separate
+[21-case arc-source fixture](../tools/rhino_oracle/fixtures/blend_curved_sources.json)
+compares arc-to-line, line-to-arc, and arc-to-arc blends at all six mixed modes
+and G2/G2. Its [raw Rhino definitions](../tools/rhino_oracle/observations/blend_curved_sources.json)
+match Viboceros in degree, every control point and weight within `1e-12`, and
+all mixed domains and knots. The G2/G2 arc-length domains and knots differ by
+at most `3e-8`. Other curved source types and interactive `Blend` behavior
+still require separate comparison.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600

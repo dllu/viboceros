@@ -17,9 +17,9 @@ defaults use the endpoint distance for tangency and 40% of it for curvature.
 Mixed blends use Rhino-calibrated defaults from both source tangents when
 available. Explicit handle lengths override those defaults independently.
 
-The [Rhino API comparison](../blend-oracle.md) covers 155 line inputs, including
-nonparallel spatial mixed-continuity cases. Curved source defaults remain to be
-compared.
+The [Rhino API comparison](../blend-oracle.md) covers 155 line inputs and 21
+circular-arc inputs, including nonparallel spatial mixed-continuity cases.
+Other curved source types remain to be compared.
 
 ```text
 Blend Continuity1=Tangency Continuity2=Position Handle1=2.5
