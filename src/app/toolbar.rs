@@ -228,6 +228,12 @@ impl VibocerosApp {
                         InterfaceCommand::SetOrtho(SwitchAction::Toggle),
                     ),
                     (
+                        self.planar,
+                        "Planar",
+                        "Keep picks at the last point's CPlane elevation",
+                        InterfaceCommand::SetPlanar(SwitchAction::Toggle),
+                    ),
+                    (
                         self.osnap,
                         "Osnap",
                         "Object snaps · F4",

@@ -1887,6 +1887,25 @@ fn ortho_commands_and_f8_preserve_the_active_point_prompt() {
 }
 
 #[test]
+fn planar_commands_preserve_the_active_point_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    for (command, enabled) in [
+        ("SetPlanar On", true),
+        ("SetPlanar On", true),
+        ("Planar", false),
+        ("SetPlanar Toggle", true),
+        ("SetPlanar Off", false),
+    ] {
+        enter(&mut app, command);
+        assert_eq!(app.planar, enabled, "{command}");
+        assert_eq!(app.active_command, pending);
+    }
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");
@@ -2257,6 +2276,7 @@ fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
         "SnapToMeshes Enable",
         "SnapToMeshes Toggle",
         "SmartTrack Off",
+        "SetPlanar On",
         "-_SetDisplayMode Viewport=All Mode=Ghosted",
         "Help",
         "Help UI",
@@ -2273,7 +2293,7 @@ fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
         assert_eq!(app.document.objects().len(), 1);
         assert!(app.command_input.is_empty());
     }
-    assert!(app.grid_snap && !app.osnap && !app.smart_track);
+    assert!(app.grid_snap && app.planar && !app.osnap && !app.smart_track);
     assert!(
         app.viewports
             .iter()
@@ -2783,6 +2803,8 @@ fn interface_toolbar_is_compact_and_wraps_on_narrow_windows() {
             "Undo",
             "Redo",
             "Grid Snap",
+            "Ortho",
+            "Planar",
             "Osnap",
             "Snap modes",
             "SmartTrack",
@@ -2881,6 +2903,8 @@ fn interface_toolbar_clicks_preserve_partial_input_and_disable_model_undo_during
     for label in [
         "Undo",
         "Grid Snap",
+        "Ortho",
+        "Planar",
         "Osnap",
         "SmartTrack",
         "Millimetres",
@@ -2897,7 +2921,7 @@ fn interface_toolbar_clicks_preserve_partial_input_and_disable_model_undo_during
         assert_eq!(app.active_command, pending);
         assert_eq!(app.document.objects().len(), 1);
     }
-    assert!(!app.grid_snap && !app.osnap && !app.smart_track);
+    assert!(!app.grid_snap && app.ortho && app.planar && !app.osnap && !app.smart_track);
 }
 
 #[test]

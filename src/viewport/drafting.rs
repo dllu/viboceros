@@ -75,7 +75,14 @@ impl Viewport {
         document: &Document,
         input: DraftingInput,
     ) -> Option<DraftingCursor> {
-        let raw_point = self.unproject_drafting_plane(pointer, rect, input.anchor);
+        // Free picks use the CPlane origin elevation. Planar and Ortho instead
+        // resolve the cursor through the previous picked point's elevation.
+        let plane_anchor = if input.planar || input.ortho {
+            input.anchor
+        } else {
+            None
+        };
+        let raw_point = self.unproject_drafting_plane(pointer, rect, plane_anchor);
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
         let object_snap = self.object_snap(pointer, rect, document, input.snap_options());

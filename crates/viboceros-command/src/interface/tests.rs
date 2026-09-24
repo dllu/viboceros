@@ -537,6 +537,7 @@ fn state() -> InterfaceState {
     InterfaceState {
         grid_snap: true,
         ortho: false,
+        planar: false,
         ortho_angle: OrthoAngle::try_new(90.0).unwrap(),
         osnap: true,
         snap_to_meshes: false,
@@ -569,6 +570,11 @@ fn switches_are_explicit_idempotent_and_toggle_in_both_directions() {
             (|s: &InterfaceState| s.ortho) as fn(&InterfaceState) -> bool,
             false,
         ),
+        (
+            "SetPlanar",
+            (|s: &InterfaceState| s.planar) as fn(&InterfaceState) -> bool,
+            false,
+        ),
     ] {
         let mut s = state();
         assert_eq!(read(&s), initial);
@@ -598,6 +604,10 @@ fn switches_are_explicit_idempotent_and_toggle_in_both_directions() {
     for expected in [true, false] {
         s.apply(parse("_oRtHo").unwrap().unwrap()).unwrap();
         assert_eq!(s.ortho, expected);
+    }
+    for expected in [true, false] {
+        s.apply(parse("_pLaNaR").unwrap().unwrap()).unwrap();
+        assert_eq!(s.planar, expected);
     }
     s.apply(parse("OrthoAngle 45").unwrap().unwrap()).unwrap();
     assert_eq!(s.ortho_angle.degrees(), 45.0);
@@ -645,6 +655,9 @@ fn malformed_known_commands_are_not_treated_as_modeling_input() {
         "Ortho On",
         "SetOrtho",
         "SetOrtho Yes",
+        "Planar On",
+        "SetPlanar",
+        "SetPlanar Yes",
         "OrthoAngle 0",
         "OrthoAngle 181",
         "OrthoAngle NaN",

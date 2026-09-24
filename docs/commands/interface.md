@@ -30,6 +30,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
+| `Planar` / `SetPlanar On\|Off\|Toggle` | Toggle or explicitly set whether successive free picks keep the previous point's CPlane elevation. |
 | `OrthoAngle <degrees>` | Set the angular increment from the active construction plane's X axis; accepts values above 0 through 180 degrees. |
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
 | `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
@@ -106,11 +107,14 @@ from Rhino; see the [competition diagnostics](../mesh-snap-order.md).
 incomplete. `Grid` independently controls line spacing, count, major interval,
 grid and axis visibility, and snap spacing per viewport. At most 501 nearby
 lines per axis are submitted per frame, even when the configured grid is larger.
+Planar mode affects free viewport picks; object snaps still choose their exact
+target points. It starts off and follows the active viewport's CPlane.
 SmartTrack is reference-axis tracking, not Rhino's
 complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
 interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for
 [Ortho, SetOrtho, and OrthoAngle](https://docs.mcneel.com/rhino/8/help/en-us/commands/ortho.htm),
+[Planar and SetPlanar](https://docs.mcneel.com/rhino/8/help/en-us/commands/planar.htm),
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),
 [Grid](https://docs.mcneel.com/rhino/8/help/en-us/documentproperties/grid.htm),
 [object snaps](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm),

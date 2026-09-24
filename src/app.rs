@@ -1427,6 +1427,7 @@ pub struct VibocerosApp {
     smart_track: bool,
     grid_snap: bool,
     ortho: bool,
+    planar: bool,
     ortho_angle: viboceros_command::interface::OrthoAngle,
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
@@ -1488,6 +1489,7 @@ impl VibocerosApp {
             smart_track: true,
             grid_snap: true,
             ortho: false,
+            planar: false,
             ortho_angle: viboceros_command::interface::OrthoAngle::try_new(90.0).unwrap(),
             zoom_scale,
             zoom_extents_borders,
@@ -6329,6 +6331,7 @@ impl eframe::App for VibocerosApp {
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,
             ortho: self.ortho,
+            planar: self.planar,
             ortho_angle_degrees: self.ortho_angle.degrees(),
             anchor: if let Some(prompt) = &self.plane_prompt {
                 prompt.anchor()
@@ -6736,6 +6739,7 @@ mod tests {
             smart_track: true,
             grid_snap: true,
             ortho: false,
+            planar: false,
             ortho_angle: viboceros_command::interface::OrthoAngle::try_new(90.0).unwrap(),
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),

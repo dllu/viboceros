@@ -58,7 +58,7 @@ the viewport. Shaded faces at distinct depths retain their nearest-face result.
 Moving over an entry changes the highlight. This is a basic choice interface;
 mouse-wheel cycling and the full set of Rhino menu options are still open.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
-Grid Snap, Ortho, Osnap, and SmartTrack. Modeling commands remain in the command line;
+Grid Snap, Ortho, Planar, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
 a modeling prompt is unfinished.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
@@ -116,6 +116,11 @@ angle from the last picked point, measured in that viewport's construction plane
 take precedence, and Ortho takes precedence over SmartTrack and grid snapping.
 The constraint requires a prior point in the current command. Rhino's temporary
 Shift inversion and CPlane Z Ortho direction are not implemented yet.
+
+Planar mode keeps successive free picks at the previous point's elevation in
+the current viewport's construction plane. With Planar off, free picks use that
+plane's origin elevation. Object snaps retain their target's elevation. `Planar`
+toggles the mode, and `SetPlanar On|Off|Toggle` sets it explicitly.
 
 Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the

@@ -165,6 +165,97 @@ fn edge_on_cplane_has_no_free_pick_but_camera_space_object_snaps_remain_availabl
 }
 
 #[test]
+fn planar_mode_uses_previous_pick_elevation_in_each_viewport() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Plan,
+        ViewKind::Perspective,
+    ] {
+        let view = Viewport::new(kind);
+        let plane = view.construction_plane();
+        let anchor = plane.point_at([0.0, 0.0, 2.5]).unwrap();
+        let target = plane.point_at([2.0, 1.5, 2.5]).unwrap();
+        let pointer = view.project(target, rect).unwrap();
+        for (planar, elevation) in [(false, 0.0), (true, 2.5)] {
+            let cursor = view
+                .drafting_cursor(
+                    pointer,
+                    rect,
+                    &Document::default(),
+                    DraftingInput {
+                        active: true,
+                        planar,
+                        anchor: Some(anchor),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            let coordinates = plane.coordinates_of(cursor.point).unwrap();
+            assert!(
+                (coordinates[2] - elevation).abs() < 1e-8,
+                "{kind:?}, {planar}"
+            );
+            if planar {
+                assert!(cursor.point.distance_to(target).unwrap() < 1e-5, "{kind:?}");
+            }
+        }
+    }
+    let view = Viewport::new(ViewKind::Top);
+    let target = point(2.0, 1.5, 7.0);
+    let mut document = Document::default();
+    document.add_geometry(Geometry::Point(target)).unwrap();
+    let cursor = view
+        .drafting_cursor(
+            view.project(target, rect).unwrap(),
+            rect,
+            &document,
+            DraftingInput {
+                active: true,
+                planar: true,
+                anchor: Some(point(0.0, 0.0, 2.5)),
+                osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(cursor.point, target);
+    assert!(cursor.object_snap.is_some());
+}
+
+#[test]
+fn planar_mode_reinterprets_a_pick_from_another_viewport_in_the_current_cplane() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    let top = Viewport::new(ViewKind::Top);
+    let front = Viewport::new(ViewKind::Front);
+    let previous = point(1.0, 7.0, 3.0);
+    assert!(top.project(previous, rect).is_some());
+    let plane = front.construction_plane();
+    let elevation = plane.coordinates_of(previous).unwrap()[2];
+    assert!(elevation.abs() > 1.0);
+    let target = plane.point_at([2.0, 3.0, elevation]).unwrap();
+    let pointer = front.project(target, rect).unwrap();
+    for (enabled, expected) in [(false, 0.0), (true, elevation)] {
+        let cursor = front
+            .drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    active: true,
+                    planar: enabled,
+                    anchor: Some(previous),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert!((plane.coordinates_of(cursor.point).unwrap()[2] - expected).abs() < 1e-8);
+    }
+}
+
+#[test]
 fn smarttrack_uses_plane_axes_in_front_right_and_oblique_views() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
     for kind in [
