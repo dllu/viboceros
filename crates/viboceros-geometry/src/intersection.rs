@@ -4,6 +4,7 @@ mod cone_cylinder;
 mod cone_plane;
 mod cylinder_cylinder;
 mod sphere_cone;
+mod sphere_cylinder_noncoaxial;
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
@@ -524,7 +525,9 @@ fn curve_brep_intersection_events_with_transform(
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Canonical spheres intersect
 /// each other, coaxial cylinders and cones, and planar finite patches in exact
-/// rational circles or tangent points.
+/// rational circles or tangent points. Smooth noncoaxial sphere/cylinder
+/// branches are fitted as cubic curves within the modeling tolerance and
+/// clipped to the finite cylinder height.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,
@@ -788,9 +791,14 @@ fn sphere_cylinder_surface_intersection_events(
         return Ok(Vec::new());
     }
     if radial_offset > coaxial_tolerance {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "noncoaxial sphere and cylinder",
-        });
+        return sphere_cylinder_noncoaxial::intersect(
+            sphere_center,
+            sphere_radius,
+            cylinder_frame,
+            cylinder_radius,
+            height,
+            tolerance,
+        );
     }
     if cylinder_radius > sphere_radius {
         return Ok(Vec::new());
@@ -3684,10 +3692,28 @@ mod tests {
         assert_eq!(near_tangent.len(), 2);
         let offset_sphere =
             NurbsSurface::try_sphere(frame.with_origin(point(0.5, 0.0, 2.5)), 2.5).unwrap();
-        assert!(matches!(
-            surface_surface_intersection_events(&offset_sphere, &cylinder, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
+        let events =
+            surface_surface_intersection_events(&offset_sphere, &cylinder, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(events.len(), 2);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("offset sphere and cylinder should meet in smooth curves")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+            assert!(
+                (curve.length(Tolerance::DEFAULT).unwrap() - 9.586_621_542_627_289).abs() < 1e-8
+            );
+            let domain = curve.domain();
+            for index in 0..=64 {
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                let sample = curve.evaluate(parameter).unwrap();
+                assert!((sample.x().hypot(sample.y()) - 1.5).abs() < 2e-9);
+                assert!((sample.distance_to(point(0.5, 0.0, 2.5)).unwrap() - 2.5).abs() < 2e-9);
+            }
+        }
     }
 
     #[test]

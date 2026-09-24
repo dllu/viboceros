@@ -198,10 +198,8 @@ mod tests {
             let response = run_request_audit(&request).unwrap();
             assert_eq!(response.outcomes.len(), request.operations.len());
             for (operation, outcome) in request.operations.iter().zip(response.outcomes) {
-                let intentionally_unsupported = matches!(
-                    operation.id(),
-                    "radially_offset" | "noncoaxial" | "parallel_noncoaxial"
-                );
+                let intentionally_unsupported =
+                    matches!(operation.id(), "noncoaxial" | "parallel_noncoaxial");
                 match outcome {
                     OperationOutcome::Success { result } => {
                         assert!(
