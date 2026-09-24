@@ -1,0 +1,16 @@
+# Connect
+
+[Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/connect.htm)
+
+Select two open curves and run `Connect`. The selected ends are trimmed or
+extended to meet at one point. Two updated curves are selected, and one Undo
+restores the originals. `Join=Yes` creates a single selected polycurve.
+
+The nearest pair of endpoints is used by default. `Pick1=x,y,z` and
+`Pick2=x,y,z` choose other ends. Separate outputs inherit their respective
+sources' attributes and groups; a joined output inherits the first source's.
+
+Straight terminal segments may meet by extension. Curved terminal segments
+are supported when their selected endpoints already meet. Extension of
+nonmeeting arcs and NURBS curves, and Rhino's extension-style options, are
+still pending.

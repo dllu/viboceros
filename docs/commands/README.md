@@ -8,6 +8,7 @@ Rhino's complete command set is still a work in progress.
 - [Analytic curve offsets](offset.md)
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
+- [Connect two curves](connect.md)
 - [Polyline corner fillets](fillet-corners.md)
 - [Single and repeated point placement](points.md)
 - [Rectangular point grids](point-grid.md)
