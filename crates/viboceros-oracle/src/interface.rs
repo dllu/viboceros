@@ -8,6 +8,8 @@ pub struct InterfaceFixture {
     #[serde(default)]
     pub ortho: Option<bool>,
     #[serde(default)]
+    pub ortho_snap_to_cplane_z: Option<bool>,
+    #[serde(default)]
     pub planar: Option<bool>,
     #[serde(default)]
     pub ortho_angle_degrees: Option<f64>,
@@ -66,6 +68,16 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
     {
         return Err(invalid());
     }
+    if fixture.ortho_snap_to_cplane_z.is_none()
+        && commands.iter().any(|command| {
+            matches!(
+                command,
+                viboceros_command::interface::InterfaceCommand::OrthoSnapToCPlaneZ(_)
+            )
+        })
+    {
+        return Err(invalid());
+    }
     if fixture.planar.is_none()
         && commands.iter().any(|command| {
             matches!(
@@ -89,6 +101,7 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
     let mut state = InterfaceState {
         grid_snap: fixture.grid_snap,
         ortho: fixture.ortho.unwrap_or(false),
+        ortho_snap_to_cplane_z: fixture.ortho_snap_to_cplane_z.unwrap_or(false),
         planar: fixture.planar.unwrap_or(false),
         ortho_angle: OrthoAngle::try_new(fixture.ortho_angle_degrees.unwrap_or(90.0))
             .ok_or_else(invalid)?,
@@ -109,6 +122,9 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
         }
         if fixture.ortho.is_some() {
             value["ortho"] = json!(state.ortho);
+        }
+        if fixture.ortho_snap_to_cplane_z.is_some() {
+            value["ortho_snap_to_cplane_z"] = json!(state.ortho_snap_to_cplane_z);
         }
         if fixture.planar.is_some() {
             value["planar"] = json!(state.planar);
@@ -135,12 +151,13 @@ mod tests {
         let fixture: InterfaceFixture = serde_json::from_value(json!({
             "grid_snap": false,
             "ortho": false,
+            "ortho_snap_to_cplane_z": false,
             "ortho_angle_degrees": 90.0,
             "osnap": false,
             "smart_track": false,
             "active_viewport": 0,
             "display_modes": ["Wireframe", "Wireframe", "Wireframe", "Wireframe"],
-            "commands": ["SetOrtho On", "OrthoAngle 45", "Ortho"]
+            "commands": ["SetOrtho On", "OrthoAngle 45", "Ortho", "OrthoSnapToCPlaneZ Enable", "OrthoSnapToCPlaneZ Toggle"]
         }))
         .unwrap();
         let (result, _) = run(&fixture).unwrap();
@@ -148,6 +165,8 @@ mod tests {
         assert_eq!(result["states"][1]["ortho"], true);
         assert_eq!(result["states"][2]["ortho_angle_degrees"], 45.0);
         assert_eq!(result["states"][3]["ortho"], false);
+        assert_eq!(result["states"][4]["ortho_snap_to_cplane_z"], true);
+        assert_eq!(result["states"][5]["ortho_snap_to_cplane_z"], false);
     }
 
     #[test]
@@ -227,6 +246,7 @@ mod tests {
             snap_to_meshes: None,
             grid_snap: true,
             ortho: None,
+            ortho_snap_to_cplane_z: None,
             planar: None,
             ortho_angle_degrees: None,
             osnap: true,

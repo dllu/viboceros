@@ -44,6 +44,40 @@ fn ortho_uses_plane_axes_and_preserves_the_anchor_elevation() {
 }
 
 #[test]
+fn cplane_z_tracking_inverts_parallel_and_perspective_projection() {
+    let plane = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let anchor = point(1.0, 2.0, 0.0);
+    let parallel = |candidate: Point3| Some([10.0 * candidate.z(), 0.0, 1.0]);
+    let (candidate, distance) = ortho_z_projected(anchor, plane, [30.0, 4.0], parallel).unwrap();
+    assert_eq!(candidate, point(1.0, 2.0, 3.0));
+    assert_eq!(distance, 4.0);
+
+    let perspective = |candidate: Point3| {
+        let depth = 10.0 + candidate.z();
+        (depth > 0.0).then_some([100.0 * candidate.z() / depth, 0.0, depth])
+    };
+    let target = perspective(point(1.0, 2.0, 3.0)).unwrap();
+    let (candidate, distance) =
+        ortho_z_projected(anchor, plane, [target[0], 4.0], perspective).unwrap();
+    assert!((candidate.z() - 3.0).abs() < 1e-12);
+    assert!((distance - 4.0).abs() < 1e-12);
+    assert_eq!(candidate.x(), 1.0);
+    assert_eq!(candidate.y(), 2.0);
+    let one_sided =
+        |candidate: Point3| (candidate.z() <= 0.0).then_some([10.0 * candidate.z(), 0.0, 1.0]);
+    let (candidate, distance) = ortho_z_projected(anchor, plane, [-20.0, 0.0], one_sided).unwrap();
+    assert_eq!(candidate.z(), -2.0);
+    assert_eq!(distance, 0.0);
+    assert!(ortho_z_projected(anchor, plane, [1.0, 2.0], |_| Some([0.0, 0.0, 1.0])).is_none());
+}
+
+#[test]
 fn projected_anchor_capture_does_not_require_unrepresentable_axis_candidates() {
     let plane = frame();
     let anchor = point(f64::MAX, 0.0, 7.0);

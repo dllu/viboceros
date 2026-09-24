@@ -114,8 +114,10 @@ Ortho (F8) constrains a viewport pick to the nearest multiple of its configured
 angle from the last picked point, measured in that viewport's construction plane.
 `OrthoAngle 45` changes the increment; the default is 90 degrees. Object snaps
 take precedence, and Ortho takes precedence over SmartTrack and grid snapping.
-The constraint requires a prior point in the current command. Rhino's temporary
-Shift inversion and CPlane Z Ortho direction are not implemented yet.
+The constraint requires a prior point in the current command. Holding Shift
+temporarily reverses Ortho without changing its stored setting.
+`OrthoSnapToCPlaneZ Enable` also admits the CPlane Z direction when it projects
+as a visible line; right-click the Ortho toolbar control to toggle this option.
 
 Planar mode keeps successive free picks at the previous point's elevation in
 the current viewport's construction plane. With Planar off, free picks use that

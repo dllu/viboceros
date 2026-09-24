@@ -224,7 +224,7 @@ impl VibocerosApp {
                     (
                         self.ortho,
                         "Ortho",
-                        "Constrain cursor from the last point · F8",
+                        "Constrain cursor from the last point · F8 · right-click for CPlane Z",
                         InterfaceCommand::SetOrtho(SwitchAction::Toggle),
                     ),
                     (
@@ -246,12 +246,14 @@ impl VibocerosApp {
                         InterfaceCommand::SmartTrack(SwitchAction::Toggle),
                     ),
                 ] {
-                    if ui
-                        .selectable_label(enabled, label)
-                        .on_hover_text(hint)
-                        .clicked()
-                    {
+                    let response = ui.selectable_label(enabled, label).on_hover_text(hint);
+                    if response.clicked() {
                         self.apply_interface_command(command);
+                    }
+                    if label == "Ortho" && response.secondary_clicked() {
+                        self.apply_interface_command(InterfaceCommand::OrthoSnapToCPlaneZ(
+                            SwitchAction::Toggle,
+                        ));
                     }
                 }
                 egui::containers::menu::MenuButton::new("Snap modes")

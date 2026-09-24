@@ -156,6 +156,8 @@ pub struct DraftingInput {
     pub smart_track: bool,
     pub grid_snap: bool,
     pub ortho: bool,
+    pub ortho_snap_to_cplane_z: bool,
+    pub shift_inverts_ortho: bool,
     pub planar: bool,
     pub ortho_angle_degrees: f64,
     pub anchor: Option<Point3>,
@@ -171,6 +173,8 @@ impl Default for DraftingInput {
             smart_track: false,
             grid_snap: false,
             ortho: false,
+            ortho_snap_to_cplane_z: false,
+            shift_inverts_ortho: false,
             planar: false,
             ortho_angle_degrees: 90.0,
             anchor: None,
@@ -3903,6 +3907,8 @@ mod tests {
                     smart_track: true,
                     grid_snap: false,
                     ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
                     planar: false,
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(0.0, 0.0, 8.0)),
@@ -3940,6 +3946,8 @@ mod tests {
                     smart_track: false,
                     grid_snap: false,
                     ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
                     planar: false,
                     ortho_angle_degrees: 90.0,
                     anchor: None,
@@ -3970,6 +3978,8 @@ mod tests {
                     smart_track: true,
                     grid_snap: false,
                     ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
                     planar: false,
                     ortho_angle_degrees: 90.0,
                     anchor: Some(anchor),
@@ -4011,6 +4021,79 @@ mod tests {
             assert!(!cursor.grid_snapped);
             assert!(cursor.track.is_none());
         }
+    }
+
+    #[test]
+    fn holding_shift_temporarily_inverts_ortho_without_changing_its_setting() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 5.0);
+        let pointer = viewport.project(point(3.0, 2.0, 5.0), rect).unwrap();
+        for (ortho, shift, expected, constrained) in [
+            (false, false, point(3.0, 2.0, 5.0), false),
+            (false, true, point(3.0, 0.0, 5.0), true),
+            (true, false, point(3.0, 0.0, 5.0), true),
+            (true, true, point(3.0, 2.0, 5.0), false),
+        ] {
+            let cursor = viewport
+                .drafting_cursor(
+                    pointer,
+                    rect,
+                    &Document::default(),
+                    DraftingInput {
+                        active: true,
+                        planar: true,
+                        ortho,
+                        shift_inverts_ortho: shift,
+                        anchor: Some(anchor),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            assert_eq!(cursor.point, expected);
+            assert_eq!(cursor.ortho, constrained);
+        }
+    }
+
+    #[test]
+    fn ortho_cplane_z_tracks_a_visible_axis_in_perspective() {
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 0.0);
+        let target = point(0.0, 0.0, 4.0);
+        let pointer = viewport.project(target, rect).unwrap();
+        let input = DraftingInput {
+            active: true,
+            ortho: true,
+            ortho_snap_to_cplane_z: true,
+            anchor: Some(anchor),
+            ..Default::default()
+        };
+        let cursor = viewport
+            .drafting_cursor(pointer, rect, &Document::default(), input)
+            .unwrap();
+        assert!(cursor.ortho_z);
+        assert!(cursor.point.distance_to(target).unwrap() < 1e-5);
+        let without_z = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    ortho_snap_to_cplane_z: false,
+                    ..input
+                },
+            )
+            .unwrap();
+        assert!(!without_z.ortho_z);
+        assert!(without_z.point.distance_to(target).unwrap() > 1.0);
+        let top = Viewport::new(ViewKind::Top);
+        let top_pointer = top.project(point(3.0, 2.0, 0.0), rect).unwrap();
+        let edge_on = top
+            .drafting_cursor(top_pointer, rect, &Document::default(), input)
+            .unwrap();
+        assert!(!edge_on.ortho_z);
+        assert_eq!(edge_on.point, point(3.0, 0.0, 0.0));
     }
 
     #[test]
@@ -4068,6 +4151,8 @@ mod tests {
                     smart_track: true,
                     grid_snap: true,
                     ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
                     planar: true,
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(8.0, 8.0, 6.0)),
@@ -4103,6 +4188,8 @@ mod tests {
                     smart_track: false,
                     grid_snap: false,
                     ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
                     planar: false,
                     ortho_angle_degrees: 90.0,
                     anchor: None,

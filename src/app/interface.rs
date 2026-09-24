@@ -350,6 +350,7 @@ impl VibocerosApp {
         InterfaceState {
             grid_snap: self.grid_snap,
             ortho: self.ortho,
+            ortho_snap_to_cplane_z: self.ortho_snap_to_cplane_z,
             planar: self.planar,
             ortho_angle: self.ortho_angle,
             osnap: self.osnap,
@@ -823,6 +824,7 @@ impl VibocerosApp {
                 }
                 self.grid_snap = state.grid_snap;
                 self.ortho = state.ortho;
+                self.ortho_snap_to_cplane_z = state.ortho_snap_to_cplane_z;
                 self.planar = state.planar;
                 self.ortho_angle = state.ortho_angle;
                 self.osnap = state.osnap;

@@ -12,6 +12,7 @@ pub(super) struct DraftingCursor {
     pub(super) object_snap: Option<ObjectSnap>,
     pub(super) track: Option<OrthogonalTrack>,
     pub(super) ortho: bool,
+    pub(super) ortho_z: bool,
     pub(super) grid_snapped: bool,
 }
 
@@ -77,7 +78,8 @@ impl Viewport {
     ) -> Option<DraftingCursor> {
         // Free picks use the CPlane origin elevation. Planar and Ortho instead
         // resolve the cursor through the previous picked point's elevation.
-        let plane_anchor = if input.planar || input.ortho {
+        let ortho_active = input.ortho ^ input.shift_inverts_ortho;
+        let plane_anchor = if input.planar || ortho_active {
             input.anchor
         } else {
             None
@@ -86,7 +88,7 @@ impl Viewport {
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
         let object_snap = self.object_snap(pointer, rect, document, input.snap_options());
-        let ortho_point = if object_snap.is_none() && input.ortho {
+        let xy_ortho = if object_snap.is_none() && ortho_active {
             raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
                 viboceros_drafting::plane::ortho_point(
                     cursor,
@@ -97,6 +99,38 @@ impl Viewport {
             })
         } else {
             None
+        };
+        let z_ortho = if object_snap.is_none() && ortho_active && input.ortho_snap_to_cplane_z {
+            input.anchor.and_then(|anchor| {
+                viboceros_drafting::plane::ortho_z_projected(
+                    anchor,
+                    self.construction_plane(),
+                    [Real::from(pointer.x), Real::from(pointer.y)],
+                    |point| {
+                        let [x, y] = self.project_precise(point, rect)?;
+                        let depth = if self.kind == ViewKind::Perspective {
+                            self.view_depth(point)
+                        } else {
+                            1.0
+                        };
+                        Some([x, y, depth])
+                    },
+                )
+            })
+        } else {
+            None
+        };
+        let ortho_z = z_ortho.is_some_and(|(_, z_distance)| {
+            xy_ortho
+                .and_then(|point| self.project_precise(point, rect))
+                .is_none_or(|[x, y]| {
+                    z_distance + 1e-6 < (x - Real::from(pointer.x)).hypot(y - Real::from(pointer.y))
+                })
+        });
+        let ortho_point = if ortho_z {
+            z_ortho.map(|(point, _)| point)
+        } else {
+            xy_ortho
         };
         let track = if object_snap.is_none() && ortho_point.is_none() && input.smart_track {
             raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
@@ -134,6 +168,7 @@ impl Viewport {
             object_snap,
             track,
             ortho: ortho_point.is_some(),
+            ortho_z,
             grid_snapped: object_snap.is_none()
                 && ortho_point.is_none()
                 && track.is_none()
@@ -423,6 +458,7 @@ impl Viewport {
             .object_snap
             .map(|snap| snap.kind().label())
             .or_else(|| cursor.track.map(|track| track.axis().label()))
+            .or(cursor.ortho_z.then_some("Ortho Z"))
             .or(cursor.ortho.then_some("Ortho"))
             .or(cursor.grid_snapped.then_some("Grid"));
         if let Some(label) = snap_label {

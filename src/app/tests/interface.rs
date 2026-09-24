@@ -1859,8 +1859,10 @@ fn ortho_commands_and_f8_preserve_the_active_point_prompt() {
     enter(&mut app, "0");
     let pending = app.active_command;
     enter(&mut app, "SetOrtho On");
+    enter(&mut app, "OrthoSnapToCPlaneZ Enable");
     enter(&mut app, "OrthoAngle 45");
     assert!(app.ortho);
+    assert!(app.ortho_snap_to_cplane_z);
     assert_eq!(app.ortho_angle.degrees(), 45.0);
     assert_eq!(app.active_command, pending);
     let context = egui::Context::default();
@@ -2922,6 +2924,28 @@ fn interface_toolbar_clicks_preserve_partial_input_and_disable_model_undo_during
         assert_eq!(app.document.objects().len(), 1);
     }
     assert!(!app.grid_snap && app.ortho && app.planar && !app.osnap && !app.smart_track);
+    let output = frame(&context, &mut app, 1000.0, vec![]).1;
+    let position = label_position(&output.shapes, "Ortho");
+    output.drop_without_applying_deltas();
+    for pressed in [true, false] {
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![
+                egui::Event::PointerMoved(position),
+                egui::Event::PointerButton {
+                    pos: position,
+                    button: egui::PointerButton::Secondary,
+                    pressed,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        )
+        .1
+        .drop_without_applying_deltas();
+    }
+    assert!(app.ortho && app.ortho_snap_to_cplane_z);
 }
 
 #[test]

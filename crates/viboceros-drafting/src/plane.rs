@@ -86,6 +86,65 @@ pub fn ortho_point(
     frame.point_at([projected_x, projected_y, 0.0]).ok()
 }
 
+/// Resolve the screen-space CPlane Z tracking line through the previous pick.
+/// The projection callback returns screen X/Y and homogeneous camera depth;
+/// parallel views use depth 1. The returned distance is in screen pixels.
+pub fn ortho_z_projected(
+    anchor: Point3,
+    plane: Frame3,
+    pointer: [f64; 2],
+    project: impl Fn(Point3) -> Option<[f64; 3]>,
+) -> Option<(Point3, f64)> {
+    if !pointer.into_iter().all(f64::is_finite) {
+        return None;
+    }
+    let start = project(anchor)?;
+    if !start.into_iter().all(f64::is_finite) || start[2] <= 0.0 {
+        return None;
+    }
+    let frame = plane.with_origin(anchor);
+    for sign in [1.0, -1.0] {
+        let Ok(sample) = frame.point_at([0.0, 0.0, sign]) else {
+            continue;
+        };
+        let Some(end) = project(sample) else {
+            continue;
+        };
+        if !end.into_iter().all(f64::is_finite) || end[2] <= 0.0 {
+            continue;
+        }
+        let delta = [end[0] - start[0], end[1] - start[1]];
+        let length_squared = delta[0].mul_add(delta[0], delta[1] * delta[1]);
+        if !length_squared.is_finite() || length_squared <= 1e-20 {
+            continue;
+        }
+        let screen_parameter = ((pointer[0] - start[0])
+            .mul_add(delta[0], (pointer[1] - start[1]) * delta[1]))
+            / length_squared;
+        let axis = usize::from(delta[1].abs() > delta[0].abs());
+        let nearest = start[axis] + screen_parameter * delta[axis];
+        let depth_scale = start[2].max(end[2]);
+        let d0 = start[2] / depth_scale;
+        let d1 = end[2] / depth_scale;
+        let numerator = (start[axis] - nearest) * d0;
+        let denominator = (nearest - end[axis]).mul_add(d1, -(nearest - start[axis]) * d0);
+        let parameter = numerator / denominator;
+        if !parameter.is_finite() {
+            continue;
+        }
+        let Ok(candidate) = frame.point_at([0.0, 0.0, sign * parameter]) else {
+            continue;
+        };
+        if let Some(screen) = project(candidate) {
+            let distance = (screen[0] - pointer[0]).hypot(screen[1] - pointer[1]);
+            if distance.is_finite() {
+                return Some((candidate, distance));
+            }
+        }
+    }
+    None
+}
+
 /// Track the plane's X/Y axes through an anchor. Candidate acceptance is measured
 /// in the supplied viewport projection, not in world-XY or model-space units.
 pub fn orthogonal_track_projected(

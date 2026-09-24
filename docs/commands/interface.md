@@ -30,6 +30,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
+| `OrthoSnapToCPlaneZ Enable\|Disable\|Toggle` | Let Ortho follow the CPlane Z axis from the previous point when the axis projects visibly in the active view. Right-click the Ortho toolbar control to toggle it. |
 | `Planar` / `SetPlanar On\|Off\|Toggle` | Toggle or explicitly set whether successive free picks keep the previous point's CPlane elevation. |
 | `OrthoAngle <degrees>` | Set the angular increment from the active construction plane's X axis; accepts values above 0 through 180 degrees. |
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
@@ -71,7 +72,7 @@ RedoView when a text field is not focused. Ctrl/Cmd+W starts Zoom Window.
 Ctrl/Cmd+Alt+W, S, and G select
 Wireframe, Shaded, and Ghosted in the active viewport. Ctrl/Cmd+Shift+E zooms to
 active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.
-These shortcuts work while
+Holding Shift temporarily reverses Ortho while picking a point. These shortcuts work while
 editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
 switches among seven standard world directions while retaining its camera
@@ -109,6 +110,10 @@ grid and axis visibility, and snap spacing per viewport. At most 501 nearby
 lines per axis are submitted per frame, even when the configured grid is larger.
 Planar mode affects free viewport picks; object snaps still choose their exact
 target points. It starts off and follows the active viewport's CPlane.
+Ortho CPlane Z tracking starts disabled and competes with the nearest CPlane
+X/Y direction by screen distance. An axis projected edge-on has no usable Z
+tracking line. Cursor paths for Ortho, Planar, and CPlane Z have viewport and
+projection regressions but no live Rhino pick trace comparison yet.
 SmartTrack is reference-axis tracking, not Rhino's
 complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
 interpretation
