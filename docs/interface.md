@@ -48,8 +48,15 @@ face projection. It checks every candidate triangle, including tessellated
 NURBS surfaces and B-reps. Tests cover all four views, both insertion orders,
 all three face representations, and sloped/camera-crossing faces against
 independent ray intersections. Point/curve feature priority and wireframe
-capture remain unchanged; general hidden-point/curve rejection and an
-overlapping-object choice interface are not implemented by this change.
+capture remain unchanged; general hidden-point/curve rejection is still open.
+Coincident or near-coincident same-rank click hits open a Selection Menu instead
+of silently selecting the first object. The menu lists object names and types;
+click an entry to choose it, click None or press Esc to cancel, click the original
+pick location to cycle, or right-click/press Enter to accept the highlighted entry.
+Clicking another object starts a new pick. The current choice is highlighted in
+the viewport. Shaded faces at distinct depths retain their nearest-face result.
+Moving over an entry changes the highlight. This is a basic choice interface;
+mouse-wheel cycling and the full set of Rhino menu options are still open.
 The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while

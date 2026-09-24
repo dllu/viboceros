@@ -182,6 +182,7 @@ impl Viewport {
         self.pick_object_matching_preview(pointer, rect, document, filter, None)
     }
 
+    #[cfg(test)]
     pub(super) fn pick_object_matching_preview(
         &self,
         pointer: Pos2,
@@ -190,7 +191,20 @@ impl Viewport {
         filter: ObjectSelectionFilter,
         preview: Option<ObjectSelectionFilter>,
     ) -> Option<ObjectId> {
-        let mut nearest: Option<(PickHit, ObjectId)> = None;
+        self.pick_object_candidates_matching_preview(pointer, rect, document, filter, preview)
+            .into_iter()
+            .next()
+    }
+
+    pub(super) fn pick_object_candidates_matching_preview(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Vec<ObjectId> {
+        let mut hits = Vec::new();
         for object in document.objects() {
             if !filter.accepts_object(object) || !selection_candidate(document, object, preview) {
                 continue;
@@ -238,11 +252,16 @@ impl Viewport {
             if !hit.distance.is_finite() || hit.distance > PICK_CAPTURE_PIXELS {
                 continue;
             }
-            if nearest.is_none_or(|(best, _)| hit.is_better_than(best)) {
-                nearest = Some((hit, object.id()));
-            }
+            hits.push((hit, object.id()));
         }
-        nearest.map(|(_, id)| id)
+        hits.sort_by(|(a, _), (b, _)| a.rank(*b));
+        let Some((best, _)) = hits.first().copied() else {
+            return Vec::new();
+        };
+        hits.into_iter()
+            .filter(|(hit, _)| hit.is_ambiguous_with(best))
+            .map(|(_, id)| id)
+            .collect()
     }
 
     #[cfg(test)]

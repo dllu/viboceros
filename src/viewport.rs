@@ -57,6 +57,7 @@ const CURVE_SAMPLES_PER_SPAN: usize = 16;
 const CIRCLE_SAMPLES: usize = 64;
 const SURFACE_SAMPLES_PER_SPAN: usize = 8;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
+const PICK_PREVIEW_COLOR: Color32 = Color32::from_rgb(40, 165, 235);
 const LOCKED_COLOR: Color32 = Color32::from_gray(145);
 const GRID_SPACING: Real = 1.0;
 const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
@@ -221,6 +222,7 @@ pub struct ViewportOutput {
     pub edge_parameter: Option<Real>,
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
+    pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
     pub circular_center_pick: Option<(Pos2, usize)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
@@ -232,6 +234,14 @@ pub struct ViewportOutput {
 pub struct SelectionClick {
     pub object_id: Option<ObjectId>,
     pub mode: SelectionMode,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct SelectionChoice {
+    pub object_ids: Vec<ObjectId>,
+    pub mode: SelectionMode,
+    pub pointer: Pos2,
+    pub viewport: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -716,25 +726,43 @@ impl Viewport {
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
-        let selection_click = if selecting
+        let selection_pick = if selecting
             && input.rect_selection_mode.is_none()
             && response.clicked_by(PointerButton::Primary)
         {
-            Some(SelectionClick {
-                object_id: response.interact_pointer_pos().and_then(|pointer| {
-                    self.pick_object_matching_preview(
+            Some(response.interact_pointer_pos().map(|pointer| {
+                (
+                    pointer,
+                    self.pick_object_candidates_matching_preview(
                         pointer,
                         rect,
                         document,
                         object_filter,
                         input.selection_preview,
-                    )
-                }),
-                mode: selection_mode(modifiers),
-            })
+                    ),
+                )
+            }))
         } else {
             None
         };
+        let selection_choice = selection_pick.as_ref().and_then(|pick| {
+            let (pointer, ids) = pick.as_ref()?;
+            (ids.len() > 1).then(|| SelectionChoice {
+                object_ids: ids.clone(),
+                mode: selection_mode(modifiers),
+                pointer: *pointer,
+                viewport: viewport_index,
+            })
+        });
+        let selection_click = selection_pick.and_then(|pick| {
+            if selection_choice.is_some() {
+                return None;
+            }
+            Some(SelectionClick {
+                object_id: pick.and_then(|(_, ids)| ids.into_iter().next()),
+                mode: selection_mode(modifiers),
+            })
+        });
 
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
@@ -928,6 +956,7 @@ impl Viewport {
                 .then(|| drafting_cursor.map(|cursor| cursor.point))
                 .flatten(),
             selection_click,
+            selection_choice,
             selection_window,
             circular_center_pick,
             point_cloud_selection,
@@ -1929,6 +1958,44 @@ mod tests {
             }),
             SelectionMode::Remove
         );
+    }
+
+    #[test]
+    fn coincident_points_offer_a_choice_without_selecting_either() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let mut document = Document::default();
+        let point = point(0.0, 0.0, 0.0);
+        let first = document.add_geometry(Geometry::Point(point)).unwrap();
+        let second = document.add_geometry(Geometry::Point(point)).unwrap();
+        let hidden = document.add_geometry(Geometry::Point(point)).unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        let pointer = Pos2::new(400.0, 300.0);
+        let click = |pressed| egui::Event::PointerButton {
+            pos: pointer,
+            button: PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        };
+        viewport_frame(&context, &mut viewport, &document, vec![]);
+        viewport_frame(
+            &context,
+            &mut viewport,
+            &document,
+            vec![egui::Event::PointerMoved(pointer), click(true)],
+        );
+        let output = viewport_frame(&context, &mut viewport, &document, vec![click(false)]);
+        assert_eq!(output.selection_click, None);
+        assert_eq!(
+            output.selection_choice,
+            Some(SelectionChoice {
+                object_ids: vec![first, second],
+                mode: SelectionMode::Replace,
+                pointer,
+                viewport: 0,
+            })
+        );
+        assert_eq!(document.selected_object_count(), 0);
     }
 
     #[test]

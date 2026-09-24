@@ -11,7 +11,7 @@ use viboceros_command::{
     format_interp_curve_options, parse_curve_closure, parse_curve_degree,
     parse_interp_curve_options, update_interp_curve_options,
 };
-use viboceros_document::{Document, DocumentError, suggested_layer_color};
+use viboceros_document::{Document, DocumentError, ObjectId, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
     MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
@@ -21,8 +21,9 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    CircularSelectionInput, DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind,
-    Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
+    CircularSelectionInput, DisplayMode, DraftingInput, SelectionChoice, SelectionClick,
+    SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders,
+    ZoomTargetInput,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -42,6 +43,29 @@ enum CircularSelectionState {
         center: egui::Pos2,
         viewport: usize,
     },
+}
+
+#[derive(Clone, Debug)]
+struct SelectionMenu {
+    choice: SelectionChoice,
+    highlighted: usize,
+}
+
+impl SelectionMenu {
+    fn highlighted_click(&self) -> SelectionClick {
+        SelectionClick {
+            object_id: self.choice.object_ids.get(self.highlighted).copied(),
+            mode: self.choice.mode,
+        }
+    }
+
+    fn is_original_pick(&self, viewport: usize, pointer: egui::Pos2) -> bool {
+        viewport == self.choice.viewport && self.choice.pointer.distance(pointer) <= 8.0
+    }
+
+    fn cycle(&mut self) {
+        self.highlighted = (self.highlighted + 1) % self.choice.object_ids.len();
+    }
 }
 
 mod command_line;
@@ -1278,6 +1302,7 @@ pub struct VibocerosApp {
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
+    selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
@@ -1328,6 +1353,7 @@ impl VibocerosApp {
             zoom_extents_borders,
             zoom_window_pending: false,
             selection_window_override: None,
+            selection_menu: None,
             circular_selection: None,
             zoom_target: None,
             command_focus_requested: false,
@@ -1348,6 +1374,7 @@ impl VibocerosApp {
     }
 
     fn run_command(&mut self) {
+        self.selection_menu = None;
         self.run_command_input();
         self.discard_inactive_snap_overrides();
     }
@@ -1449,6 +1476,7 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
+        self.selection_menu = None;
         if self.try_continue_edge_command(input) {
             return true;
         }
@@ -5180,6 +5208,60 @@ impl VibocerosApp {
         }
     }
 
+    fn show_selection_menu(&mut self, ui: &egui::Ui) -> Option<Option<ObjectId>> {
+        let menu = self.selection_menu.as_ref()?;
+        let mut picked = None;
+        let mut hovered = None;
+        egui::Window::new("Selection Menu")
+            .id(egui::Id::new("viewport_selection_menu"))
+            .fixed_pos(menu.choice.pointer + egui::vec2(12.0, 12.0))
+            .collapsible(false)
+            .resizable(false)
+            .show(ui.ctx(), |ui| {
+                egui::ScrollArea::vertical()
+                    .max_height(260.0)
+                    .show(ui, |ui| {
+                        for (index, id) in menu.choice.object_ids.iter().copied().enumerate() {
+                            let Some(object) = self.document.object(id) else {
+                                continue;
+                            };
+                            let kind = match object.geometry() {
+                                viboceros_document::Geometry::Point(_) => "point",
+                                viboceros_document::Geometry::PointCloud(_) => "point cloud",
+                                viboceros_document::Geometry::Line(_) => "line",
+                                viboceros_document::Geometry::Circle(_) => "circle",
+                                viboceros_document::Geometry::Arc(_) => "arc",
+                                viboceros_document::Geometry::Ellipse(_) => "ellipse",
+                                viboceros_document::Geometry::Polyline(_) => "polyline",
+                                viboceros_document::Geometry::NurbsCurve(_)
+                                | viboceros_document::Geometry::PolyCurve(_) => "curve",
+                                viboceros_document::Geometry::NurbsSurface(_) => "surface",
+                                viboceros_document::Geometry::Brep(_) => "polysurface",
+                                viboceros_document::Geometry::Mesh(_) => "mesh",
+                            };
+                            let label = object.attributes().name().map_or_else(
+                                || format!("{}. {kind}", index + 1),
+                                |name| format!("{}. {name} ({kind})", index + 1),
+                            );
+                            let response = ui.selectable_label(index == menu.highlighted, label);
+                            if response.hovered() {
+                                hovered = Some(index);
+                            }
+                            if response.clicked() {
+                                picked = Some(Some(id));
+                            }
+                        }
+                        if ui.button("None").clicked() {
+                            picked = Some(None);
+                        }
+                    });
+            });
+        if let Some(index) = hovered {
+            self.selection_menu.as_mut().unwrap().highlighted = index;
+        }
+        picked
+    }
+
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
         self.apply_selection_region(selection, false);
     }
@@ -5261,6 +5343,11 @@ impl VibocerosApp {
             }
         } else if let Some(selection) = output.point_cloud_selection {
             self.select_cloud_points(&selection.indices, selection.mode);
+        } else if let Some(choice) = output.selection_choice {
+            self.selection_menu = Some(SelectionMenu {
+                choice,
+                highlighted: 0,
+            });
         } else if let Some(click) = output.selection_click {
             self.apply_selection_click(click);
         } else if let Some(selection) = output.selection_window {
@@ -5282,6 +5369,7 @@ impl VibocerosApp {
     }
 
     fn apply_sidebar_action(&mut self, action: SidebarAction) {
+        self.selection_menu = None;
         // Sidebar document edits must not join or conflict with a live Points
         // transaction. Finish accepted points before starting another action.
         // A sidebar edit also ends pending group input before changing sources
@@ -5380,7 +5468,9 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.zoom_target.take().is_some() {
+            if self.selection_menu.take().is_some() {
+                // Escape dismisses the choice without changing the selection.
+            } else if self.zoom_target.take().is_some() {
                 self.push_log("Zoom Target canceled".into());
             } else if self.zoom_window_pending {
                 self.zoom_window_pending = false;
@@ -5407,12 +5497,14 @@ impl eframe::App for VibocerosApp {
                 }
             }
         }
-        if !ui.ctx().egui_wants_keyboard_input()
+        if self.selection_menu.is_none()
+            && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Enter))
         {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.selection_menu.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -5464,12 +5556,19 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .filter(|prompt| prompt.special_selection.is_some())
             .map(|prompt| prompt.description.filter);
-        let selection_preview_ids = self
+        let mut selection_preview_ids = self
             .object_prompt
             .as_ref()
             .and_then(|prompt| prompt.special_selection.as_ref())
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
+        if let Some(id) = self
+            .selection_menu
+            .as_ref()
+            .and_then(|menu| menu.choice.object_ids.get(menu.highlighted))
+        {
+            selection_preview_ids.push(*id);
+        }
         let cloud_removal = self
             .object_prompt
             .as_ref()
@@ -5591,12 +5690,54 @@ impl eframe::App for VibocerosApp {
                 });
             }
         });
+        let menu_action = self.show_selection_menu(ui);
+        let mut menu_consumed = menu_action.is_some();
+        if let Some(object_id) = menu_action {
+            let mode = self.selection_menu.take().unwrap().choice.mode;
+            if let Some(object_id) = object_id {
+                self.apply_selection_click(SelectionClick {
+                    object_id: Some(object_id),
+                    mode,
+                });
+            }
+        } else if let Some(menu) = self.selection_menu.as_mut() {
+            if ui.input(|input| {
+                (!ui.ctx().egui_wants_keyboard_input() && input.key_pressed(egui::Key::Enter))
+                    || input.pointer.secondary_clicked()
+            }) {
+                let click = menu.highlighted_click();
+                self.selection_menu = None;
+                self.apply_selection_click(click);
+                menu_consumed = true;
+            } else if ui.input(|input| input.pointer.primary_clicked()) {
+                let pointer = ui.input(|input| input.pointer.interact_pos());
+                let original = pointer.is_some_and(|pointer| {
+                    viewport_outputs.iter().enumerate().any(|(index, output)| {
+                        (output.selection_choice.is_some() || output.selection_click.is_some())
+                            && menu.is_original_pick(index, pointer)
+                    })
+                });
+                if original {
+                    menu.cycle();
+                    menu_consumed = true;
+                } else {
+                    self.selection_menu = None;
+                    menu_consumed = !viewport_outputs.iter().any(|output| {
+                        output.selection_choice.is_some()
+                            || output
+                                .selection_click
+                                .as_ref()
+                                .is_some_and(|click| click.object_id.is_some())
+                    });
+                }
+            }
+        }
         let mut handled_action = false;
         for (index, output) in viewport_outputs.into_iter().enumerate() {
             if output.activated {
                 self.active_viewport = index;
             }
-            if !handled_action {
+            if !handled_action && !menu_consumed {
                 handled_action = self.handle_viewport_action(output);
             }
         }
@@ -5709,6 +5850,7 @@ mod tests {
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
             selection_window_override: None,
+            selection_menu: None,
             circular_selection: None,
             zoom_target: None,
             command_focus_requested: false,
@@ -8864,6 +9006,41 @@ mod tests {
             mode: viboceros_document::SelectionMode::Replace,
         });
         assert_eq!(app.document.selected_object_count(), 0);
+    }
+
+    #[test]
+    fn selection_menu_defers_selection_until_a_choice_is_accepted() {
+        let mut app = test_app();
+        let first = app
+            .document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let second = app
+            .document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        assert!(app.handle_viewport_action(ViewportOutput {
+            selection_choice: Some(SelectionChoice {
+                object_ids: vec![first, second],
+                mode: viboceros_document::SelectionMode::Replace,
+                pointer: egui::Pos2::new(40.0, 50.0),
+                viewport: 2,
+            }),
+            ..Default::default()
+        }));
+        assert_eq!(app.document.selected_object_count(), 0);
+        let menu = app.selection_menu.as_mut().unwrap();
+        assert!(menu.is_original_pick(2, egui::Pos2::new(44.0, 50.0)));
+        assert!(!menu.is_original_pick(1, egui::Pos2::new(40.0, 50.0)));
+        menu.cycle();
+        let click = menu.highlighted_click();
+        assert_eq!(click.object_id, Some(second));
+        app.selection_menu = None;
+        app.apply_selection_click(click);
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            vec![second]
+        );
     }
 
     #[test]

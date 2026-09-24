@@ -25,6 +25,20 @@ impl PickHit {
                 && (self.priority < other.priority
                     || (self.priority == other.priority && self.depth < other.depth)))
     }
+
+    pub(super) fn is_ambiguous_with(self, other: Self) -> bool {
+        if self.priority != other.priority || (self.distance - other.distance).abs() > 0.75 {
+            return false;
+        }
+        self.depth == other.depth
+    }
+
+    pub(super) fn rank(self, other: Self) -> std::cmp::Ordering {
+        self.distance
+            .total_cmp(&other.distance)
+            .then_with(|| self.priority.cmp(&other.priority))
+            .then_with(|| self.depth.total_cmp(&other.depth))
+    }
 }
 
 /// Perspective projection interpolates reciprocal view depth in screen space.
@@ -288,6 +302,16 @@ mod tests {
             assert_eq!(
                 viewport.pick_object(pointer, rect, &document),
                 Some(ids[usize::from(order[0] == 0)])
+            );
+            assert_eq!(
+                viewport.pick_object_candidates_matching_preview(
+                    pointer,
+                    rect,
+                    &document,
+                    ObjectSelectionFilter::Any,
+                    None,
+                ),
+                [ids[usize::from(order[0] == 0)]]
             );
         }
     }

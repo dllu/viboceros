@@ -89,6 +89,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 struct DisplayObject {
     geometry: Rc<DisplayGeometry>,
     color: Color32,
+    highlighted: bool,
     member_colors_enabled: bool,
     width: f32,
     point_radius: f32,
@@ -98,6 +99,7 @@ impl PartialEq for DisplayObject {
     fn eq(&self, other: &Self) -> bool {
         Rc::ptr_eq(&self.geometry, &other.geometry)
             && self.color == other.color
+            && self.highlighted == other.highlighted
             && self.member_colors_enabled == other.member_colors_enabled
             && self.width == other.width
             && self.point_radius == other.point_radius
@@ -282,12 +284,11 @@ impl Viewport {
             if self.display_mode == DisplayMode::Ghosted {
                 color = color_with_alpha(color, 110);
             }
-            let selected = if preview.is_some() {
-                preview_ids.contains(&object.id())
-            } else {
-                document.is_selected(object.id())
-            };
-            if selected {
+            let highlighted = preview_ids.contains(&object.id());
+            let selected = highlighted || (preview.is_none() && document.is_selected(object.id()));
+            if highlighted && preview.is_none() {
+                color = PICK_PREVIEW_COLOR;
+            } else if selected {
                 color = SELECTED_COLOR;
             }
             let width = match self.display_mode {
@@ -298,12 +299,14 @@ impl Viewport {
             objects.push(DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
+                highlighted,
                 member_colors_enabled: !selected
                     && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
             });
         }
+        objects.sort_by_key(|object| object.highlighted);
         cache.retain_visible(&visible);
         drop(cache);
         let key = SceneKey {
@@ -694,6 +697,29 @@ mod tests {
         assert_eq!(unlocked.points.len(), 1);
         assert_ne!(unlocked.points[0].color, color_to_gpu(LOCKED_COLOR));
         assert!(document.object(visible).unwrap().attributes().is_visible());
+    }
+
+    #[test]
+    fn choice_highlight_is_drawn_after_coincident_unselected_points() {
+        let mut document = Document::default();
+        let point = point(0.0, 0.0, 0.0);
+        let first = document.add_geometry(Geometry::Point(point)).unwrap();
+        let second = document.add_geometry(Geometry::Point(point)).unwrap();
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let scene = view.object_scene_with_preview(rect, &document, None, &[first]);
+        assert_eq!(scene.points.len(), 2);
+        assert_ne!(scene.points[0].color, color_to_gpu(PICK_PREVIEW_COLOR));
+        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
+        assert_eq!(document.selected_object_count(), 0);
+        let scene = view.object_scene_with_preview(rect, &document, None, &[second]);
+        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let scene = view.object_scene_with_preview(rect, &document, None, &[first]);
+        assert_eq!(scene.points[0].color, color_to_gpu(SELECTED_COLOR));
+        assert_eq!(scene.points[1].color, color_to_gpu(PICK_PREVIEW_COLOR));
     }
 
     #[test]
