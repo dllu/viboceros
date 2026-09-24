@@ -39,3 +39,11 @@ command preserves unfinished modeling prompts and document undo/redo. A live
 Rhino camera comparison for these commands remains pending.
 The [camera oracle fixture](../oracle.md#setview-cplane-camera-probe) is ready to
 record the corresponding public Rhino viewport properties when Rhino starts.
+
+`NextViewport` and `PrevViewport` cycle through the four viewports, wrapping at
+the ends. Ctrl/Cmd+Tab and Ctrl/Cmd+Shift+Tab run them without moving focus out
+of the command field. `NextOrthoViewport` skips perspective views, while
+`NextPerspectiveViewport` skips orthographic views. When no matching viewport
+exists, the active view stays put. These commands change only the active
+viewport; cameras, modeling prompts, selection, and model history stay intact.
+See [Rhino's viewport navigation commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/nextviewport.htm).

@@ -89,6 +89,30 @@ fn zoom_in_out_parse_and_leave_interface_state_unchanged() {
 }
 
 #[test]
+fn viewport_navigation_commands_parse_without_arguments() {
+    for (name, command) in [
+        ("NextViewport", InterfaceCommand::NextViewport),
+        ("PrevViewport", InterfaceCommand::PrevViewport),
+        ("NextOrthoViewport", InterfaceCommand::NextOrthoViewport),
+        (
+            "NextPerspectiveViewport",
+            InterfaceCommand::NextPerspectiveViewport,
+        ),
+    ] {
+        assert_eq!(parse(name), Some(Ok(command)));
+        assert_eq!(parse(&format!("'_{name}")), Some(Ok(command)));
+        assert!(matches!(
+            parse(&format!("{name} extra")),
+            Some(Err(InterfaceError::Usage(_)))
+        ));
+        let mut current = state();
+        let original = current.clone();
+        current.apply(command).unwrap();
+        assert_eq!(current, original);
+    }
+}
+
+#[test]
 fn view_zoom_scale_option_requires_a_finite_positive_reciprocal() {
     for (input, value) in [
         ("Options View Zoom ScaleFactor=0.9", 0.9),

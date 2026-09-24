@@ -1389,6 +1389,46 @@ fn zoom_factor_prompt_retries_invalid_values_and_preserves_model_input() {
 }
 
 #[test]
+fn viewport_navigation_cycles_by_projection_without_changing_cameras_or_model() {
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Point 4,5,6", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    for (command, expected) in [
+        ("NextViewport", 1),
+        ("NextOrthoViewport", 2),
+        ("NextPerspectiveViewport", 1),
+        ("PrevViewport", 0),
+        ("PrevViewport", 3),
+        ("NextOrthoViewport", 0),
+    ] {
+        enter(&mut app, command);
+        assert_eq!(app.active_viewport, expected, "{command}");
+    }
+    assert_eq!(
+        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        cameras
+    );
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+
+    app.active_viewport = 1;
+    enter(&mut app, "SetView World Top");
+    let active = app.active_viewport;
+    enter(&mut app, "NextPerspectiveViewport");
+    assert_eq!(app.active_viewport, active);
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("No matching viewport")
+    );
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");
@@ -2140,6 +2180,43 @@ fn interface_shortcuts_work_with_command_focus_and_preserve_text_and_prompt() {
     .1
     .drop_without_applying_deltas();
     assert_eq!(app.viewports[0].display_mode, DisplayMode::Ghosted);
+}
+
+#[test]
+fn viewport_cycle_shortcuts_preserve_focused_command_text() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    enter(&mut app, "Line");
+    app.command_input = "1,".into();
+    app.command_focus_requested = true;
+    frame(&context, &mut app, 1000.0, vec![])
+        .1
+        .drop_without_applying_deltas();
+    let focused = context.memory(|memory| memory.focused());
+    let pending = app.active_command;
+    for (modifiers, expected) in [
+        (egui::Modifiers::COMMAND | egui::Modifiers::CTRL, 1),
+        (
+            egui::Modifiers::COMMAND | egui::Modifiers::MAC_CMD | egui::Modifiers::SHIFT,
+            0,
+        ),
+    ] {
+        frame(
+            &context,
+            &mut app,
+            1000.0,
+            vec![
+                key(egui::Key::Tab, modifiers, true, false),
+                key(egui::Key::Tab, modifiers, false, false),
+            ],
+        )
+        .1
+        .drop_without_applying_deltas();
+        assert_eq!(app.active_viewport, expected);
+        assert_eq!(app.command_input, "1,");
+        assert_eq!(app.active_command, pending);
+        assert_eq!(context.memory(|memory| memory.focused()), focused);
+    }
 }
 
 #[test]

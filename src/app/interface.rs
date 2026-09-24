@@ -116,6 +116,42 @@ impl VibocerosApp {
                     return;
                 }
                 self.zoom_factor_pending = None;
+                if matches!(
+                    command,
+                    InterfaceCommand::NextViewport
+                        | InterfaceCommand::PrevViewport
+                        | InterfaceCommand::NextOrthoViewport
+                        | InterfaceCommand::NextPerspectiveViewport
+                ) {
+                    let count = self.viewports.len();
+                    let next = (1..=count).map(|offset| {
+                        if command == InterfaceCommand::PrevViewport {
+                            (self.active_viewport + count - offset) % count
+                        } else {
+                            (self.active_viewport + offset) % count
+                        }
+                    });
+                    let eligible = next.into_iter().find(|&index| match command {
+                        InterfaceCommand::NextOrthoViewport => {
+                            self.viewports[index].kind() != ViewKind::Perspective
+                        }
+                        InterfaceCommand::NextPerspectiveViewport => {
+                            self.viewports[index].kind() == ViewKind::Perspective
+                        }
+                        _ => true,
+                    });
+                    if let Some(index) = eligible {
+                        self.active_viewport = index;
+                        self.push_log(format!(
+                            "Active viewport: {} ({})",
+                            index + 1,
+                            self.viewports[index].view_label()
+                        ));
+                    } else {
+                        self.push_log("No matching viewport".into());
+                    }
+                    return;
+                }
                 if let InterfaceCommand::SelBoundary(mode) = command {
                     if !self.can_capture_selection() {
                         self.push_log("Boundary selection unavailable during this prompt".into());
@@ -500,6 +536,16 @@ impl VibocerosApp {
         // These keys have no text-editing meaning. Text editors retain their
         // own undo history; document undo/redo is not intercepted here.
         let shortcuts = [
+            (
+                egui::Modifiers::COMMAND,
+                egui::Key::Tab,
+                InterfaceCommand::NextViewport,
+            ),
+            (
+                egui::Modifiers::COMMAND | egui::Modifiers::SHIFT,
+                egui::Key::Tab,
+                InterfaceCommand::PrevViewport,
+            ),
             (
                 egui::Modifiers::NONE,
                 egui::Key::Home,
