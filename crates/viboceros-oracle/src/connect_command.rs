@@ -83,7 +83,7 @@ mod tests {
     use crate::{Operation, ProbeRequest, ProbeResponse, run_request};
 
     #[test]
-    fn line_and_smooth_connect_match_saved_rhino_command() {
+    fn line_and_smooth_connect_pairs_match_saved_rhino_command() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/connect_nurbs_line.json"
         ))
@@ -93,7 +93,7 @@ mod tests {
         ))
         .unwrap();
         let native = run_request(&request).unwrap();
-        assert_eq!(native.results.len(), 3);
+        assert_eq!(native.results.len(), 4);
         for (index, (actual, expected)) in native.results.iter().zip(&rhino.results).enumerate() {
             assert!(matches!(
                 request.operations[index],

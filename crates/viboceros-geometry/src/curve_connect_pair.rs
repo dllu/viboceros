@@ -1,9 +1,9 @@
 //! Endpoint connections using exact lines, circular supports, and tangents.
 
 use crate::{
-    CircularArc3, Curve3, CurveExtensionSide, CurveExtensionStyle, CurveSegment3, GeometryError,
-    LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Real, Tolerance, UnitVector3,
-    Vector3,
+    CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveExtensionSide, CurveExtensionStyle,
+    CurveSegment3, GeometryError, LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Real,
+    Tolerance, UnitVector3, Vector3,
     curve_pair_support::{
         curve_from_segments, oriented, original_direction, selected_end,
         supporting_directions_intersection,
@@ -188,6 +188,9 @@ fn connected_oriented(
             (CurveSegment3::Line(line), CurveSegment3::NurbsCurve(curve)) => {
                 return connect_smooth_nurbs_line(&first, &second, curve, *line, false, tolerance);
             }
+            (CurveSegment3::NurbsCurve(before), CurveSegment3::NurbsCurve(after)) => {
+                return connect_smooth_nurbs_pair(&first, &second, before, after, tolerance);
+            }
             _ => {}
         }
         if matches!(tail, CurveSegment3::NurbsCurve(_))
@@ -239,6 +242,70 @@ fn connected_oriented(
         return Err(unsupported());
     }
     Ok((first, second))
+}
+
+fn connect_smooth_nurbs_pair(
+    first: &PolyCurve3,
+    second: &PolyCurve3,
+    before: &NurbsCurve,
+    after: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
+    let before_domain = before.domain();
+    let after_domain = after.domain();
+    let before_end = *before_domain.end();
+    let after_start = *after_domain.start();
+    let a = before.evaluate(before_end)?;
+    let b = after.evaluate(after_start)?;
+    let before_span = before_end - before.spans().last().expect("NURBS has a span").0;
+    let after_span = after.spans().next().expect("NURBS has a span").1 - after_start;
+    let mut before_reach = before_span;
+    let mut after_reach = after_span;
+    for _ in 0..30 {
+        let before_outer = before_end + before_reach;
+        let after_outer = after_start - after_reach;
+        if !before_outer.is_finite() || !after_outer.is_finite() {
+            break;
+        }
+        let extended_before = before.try_extended_to(*before_domain.start()..=before_outer)?;
+        let extended_after = after.try_extended_to(after_outer..=*after_domain.end())?;
+        let mut best = None;
+        for event in extended_before.intersection_events_with_curve(&extended_after, tolerance)? {
+            let CurveCurveIntersectionEvent::Point(hit) = event else {
+                continue;
+            };
+            let first_parameter = hit.first_parameter();
+            let second_parameter = hit.second_parameter();
+            if first_parameter <= before_end || second_parameter >= after_start {
+                continue;
+            }
+            let proximity = a.distance_to(hit.point())? + b.distance_to(hit.point())?;
+            if best.is_none_or(|(prior, _, _)| proximity < prior) {
+                best = Some((proximity, first_parameter, second_parameter));
+            }
+        }
+        if let Some((_, first_parameter, second_parameter)) = best {
+            let before = extended_before.try_trimmed(*before_domain.start()..=first_parameter)?;
+            let after = extended_after.try_trimmed(second_parameter..=*after_domain.end())?;
+            let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
+            first_segments.push(CurveSegment3::NurbsCurve(before));
+            let mut second_segments = vec![CurveSegment3::NurbsCurve(after)];
+            second_segments.extend_from_slice(&second.segments()[1..]);
+            let first = PolyCurve3::try_new(first_segments)?;
+            let second = PolyCurve3::try_new(second_segments)?;
+            if first
+                .evaluate(*first.domain().end())?
+                .distance_to(second.evaluate(*second.domain().start())?)?
+                > tolerance.absolute()
+            {
+                return Err(unsupported());
+            }
+            return Ok((first, second));
+        }
+        before_reach *= 2.0;
+        after_reach *= 2.0;
+    }
+    Err(unsupported())
 }
 
 fn connect_smooth_nurbs_line(

@@ -321,6 +321,61 @@ mod tests {
     }
 
     #[test]
+    fn smooth_option_connects_two_curved_nurbs_ends() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let first = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let second = NurbsCurve::try_new(
+            2,
+            vec![p(3., 3.), p(3., 4.), p(3.2, 5.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let first_id = document.add_geometry(Geometry::NurbsCurve(first)).unwrap();
+        let second_id = document.add_geometry(Geometry::NurbsCurve(second)).unwrap();
+        document
+            .select_objects_direct([first_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(&mut document, "Connect ExtendOtherCurvesBy=Smooth")
+            .unwrap();
+        let curves = document.objects().collect::<Vec<_>>();
+        assert_eq!(curves.len(), 2);
+        let meeting = p(3.02533554003123, 2.28816378244402);
+        assert!(
+            curves[0]
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .end_point()
+                .unwrap()
+                .distance_to(meeting)
+                .unwrap()
+                < 1e-10
+        );
+        assert!(
+            curves[1]
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .start_point()
+                .unwrap()
+                .distance_to(meeting)
+                .unwrap()
+                < 1e-10
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
     fn extend_arcs_by_line_uses_the_endpoint_tangent() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
