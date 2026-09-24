@@ -1654,23 +1654,41 @@ mod tests {
             panic!("curved NURBS sharp join")
         };
         assert_eq!(sharp.domain(), 0.0..=2.0);
-        assert_eq!(sharp.segments().len(), 2);
-        let tip = sharp.segments()[0]
-            .evaluate(*sharp.segments()[0].domain().end())
-            .unwrap();
+        assert_eq!(sharp.segments().len(), 4);
+        let CurveSegment3::Line(first_extension) = &sharp.segments()[1] else {
+            panic!("first sharp tangent extension")
+        };
+        let CurveSegment3::Line(second_extension) = &sharp.segments()[2] else {
+            panic!("second sharp tangent extension")
+        };
+        let tip = first_extension.end();
+        assert!(tip.distance_to(second_extension.start()).unwrap() <= tol.absolute());
+        assert!(
+            tip.distance_to(point(2.149071198499986, -0.149071198499986, 0.0))
+                .unwrap()
+                <= tol.absolute()
+        );
         assert!(
             tip.distance_to(parts[0].as_ref().end_point().unwrap())
                 .unwrap()
                 > tol.absolute()
         );
-        for (index, station) in [(0, 0.5), (1, 1.5)] {
+        for (index, output_index) in [(0, 0), (1, 3)] {
             let Curve3::NurbsCurve(original) = &parts[index] else {
                 unreachable!()
             };
-            let extended = sharp.segments()[index].evaluate(station).unwrap();
+            let output_domain = sharp.segments()[output_index].domain();
+            let original_domain = original.domain();
+            let extended = sharp.segments()[output_index]
+                .evaluate((*output_domain.start() + *output_domain.end()) / 2.0)
+                .unwrap();
             assert!(
                 extended
-                    .distance_to(original.evaluate(station).unwrap())
+                    .distance_to(
+                        original
+                            .evaluate((*original_domain.start() + *original_domain.end()) / 2.0)
+                            .unwrap()
+                    )
                     .unwrap()
                     <= tol.absolute()
             );

@@ -1,4 +1,4 @@
-//! Natural endpoint extensions for sharp NURBS offset corners.
+//! Sharp joins for kinked NURBS offsets.
 
 use super::*;
 
@@ -33,6 +33,31 @@ pub(in crate::curve_offset) fn offset_nurbs_sharp(
             }),
         })
         .collect::<Result<Vec<Vec<NurbsCurve>>, GeometryError>>()?;
+    if !closed {
+        let mut segments = Vec::new();
+        for index in 0..groups.len() {
+            segments.extend(groups[index].iter().cloned().map(CurveSegment3::NurbsCurve));
+            if let Some(next) = groups.get(index + 1) {
+                let left = groups[index].last().expect("offset group has a leaf");
+                let right = &next[0];
+                let a = left.evaluate(*left.domain().end())?;
+                let b = right.evaluate(*right.domain().start())?;
+                let miter = sharp_tangent_miter(left, right, normal, tolerance)?;
+                if a.distance_to(miter)? > tolerance.absolute() {
+                    segments.push(CurveSegment3::Line(LineSegment::try_new(
+                        a, miter, tolerance,
+                    )?));
+                }
+                if miter.distance_to(b)? > tolerance.absolute() {
+                    segments.push(CurveSegment3::Line(LineSegment::try_new(
+                        miter, b, tolerance,
+                    )?));
+                }
+            }
+        }
+        let joined = PolyCurve3::try_new(segments)?.try_reparameterized(curve.domain())?;
+        return Ok(Curve3::PolyCurve(joined));
+    }
     let gap_count = groups.len() - usize::from(!closed);
     let mut start_extensions = vec![None; groups.len()];
     let mut end_extensions = vec![None; groups.len()];
@@ -109,6 +134,34 @@ pub(in crate::curve_offset) fn offset_nurbs_sharp(
         return Err(GeometryError::NurbsOffsetFitLimit);
     }
     Ok(Curve3::PolyCurve(joined))
+}
+
+fn sharp_tangent_miter(
+    left: &NurbsCurve,
+    right: &NurbsCurve,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Point3, GeometryError> {
+    let a = left.evaluate(*left.domain().end())?;
+    let b = right.evaluate(*right.domain().start())?;
+    let u = left.derivative_at(*left.domain().end())?;
+    let v = right.derivative_at(*right.domain().start())?;
+    let denominator = u.cross(v)?.dot(normal.as_vector())?;
+    let angular = u.length()? * v.length()? * tolerance.angular();
+    if denominator.abs() <= angular {
+        return Err(GeometryError::Degenerate {
+            context: "parallel sharp NURBS offset tangents",
+        });
+    }
+    let gap = a.vector_to(b)?;
+    let left_delta = gap.cross(v)?.dot(normal.as_vector())? / denominator;
+    let right_delta = gap.cross(u)?.dot(normal.as_vector())? / denominator;
+    if left_delta <= 0.0 || right_delta >= 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "sharp NURBS offset tangents point away from their corner",
+        });
+    }
+    a.translated(u.scaled(left_delta)?)
 }
 
 fn extend_leaf(

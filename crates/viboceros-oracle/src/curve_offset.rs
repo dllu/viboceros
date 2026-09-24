@@ -101,13 +101,15 @@ pub(super) fn run(
 
 #[cfg(test)]
 mod tests {
+    use crate::{ProbeRequest, ProbeResponse, run_request};
+
     #[test]
     fn curved_offset_fixture_samples_all_corner_styles() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+        let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curve_offset_corners.json"
         ))
         .unwrap();
-        let response = crate::run_request(&request).unwrap();
+        let response = run_request(&request).unwrap();
         assert_eq!(response.results.len(), 4);
         for result in &response.results {
             assert_eq!(result.value["samples"].as_array().unwrap().len(), 8);
@@ -120,6 +122,37 @@ mod tests {
             .collect::<Vec<_>>();
         for (index, point) in corner_points.iter().enumerate() {
             assert!(!corner_points[..index].contains(point));
+        }
+    }
+
+    #[test]
+    fn curved_offset_corner_samples_match_saved_rhino() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_offset_corners.json"
+        ))
+        .unwrap();
+        let rhino: ProbeResponse = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/curve_offset_corners.json"
+        ))
+        .unwrap();
+        let native = run_request(&request).unwrap();
+        assert_eq!(native.results.len(), 4);
+        for (actual, expected) in native.results.iter().zip(&rhino.results) {
+            assert_eq!(actual.id, expected.id);
+            assert_eq!(actual.value["closed"], expected.value["closed"]);
+            for field in ["samples", "queries"] {
+                let actual_points = actual.value[field].as_array().unwrap();
+                let expected_points = expected.value[field].as_array().unwrap();
+                assert_eq!(actual_points.len(), expected_points.len());
+                for (actual_point, expected_point) in actual_points.iter().zip(expected_points) {
+                    for coordinate in 0..3 {
+                        let error = (actual_point[coordinate].as_f64().unwrap()
+                            - expected_point[coordinate].as_f64().unwrap())
+                        .abs();
+                        assert!(error < 1e-7, "{} {field} error {error}", actual.id);
+                    }
+                }
+            }
         }
     }
 }

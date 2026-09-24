@@ -118,5 +118,9 @@ tools/rhino_oracle/run_headless.sh compare \
   --absolute-epsilon 1e-8 --relative-epsilon 1e-10 --timeout 360
 ```
 
-The native fixture passes. A Rhino observation is pending because the current
-Wine launcher exits during .NET startup before the oracle worker runs.
+The [saved Rhino observation](../../tools/rhino_oracle/observations/curve_offset_corners.json)
+covers all four corner styles. Open NURBS `Sharp` corners now meet at the
+intersection of the two offset endpoint tangent lines. The native samples
+match the saved Rhino values within `1e-7`; the largest remaining difference
+is about `3.8e-8` at ordinary offset samples. The regression compares the
+saved values in `viboceros-oracle`.
