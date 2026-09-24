@@ -16,7 +16,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom Target` / `ZT` | Pick or type a view center, then pick or type a window corner; the center becomes the camera rotation target. |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
 | `ZoomEnds [All\|Current\|Next\|Previous\|Mark]` | Fit the active view to selected curve ends, cycle through End Analysis markers, or mark them with point objects. |
-| `ShowEnds` / `ShowEndsOff` | Display or close the End Analysis marker overlay; use its menu to filter marker categories. |
+| `ShowEnds` / `ShowEndsOff` | Display or close End Analysis markers; its menu filters categories, edits color, and adds or removes selected curves. |
 | `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
 | `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |
 | `Options View Zoom ScaleFactor=<number>` | Set the application zoom step; the View options menu exposes the same setting. |

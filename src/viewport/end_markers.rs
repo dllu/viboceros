@@ -44,6 +44,26 @@ impl EndMarkerOptions {
             EndMarkerKind::Joint => self.joints,
         }
     }
+
+    pub fn set(&mut self, kind: EndMarkerKind, enabled: bool) {
+        match kind {
+            EndMarkerKind::Start => self.starts = enabled,
+            EndMarkerKind::End => self.ends = enabled,
+            EndMarkerKind::Seam => self.seams = enabled,
+            EndMarkerKind::Joint => self.joints = enabled,
+        }
+    }
+
+    pub fn toggle_exclusive(&mut self, kind: EndMarkerKind) {
+        let mut only = Self {
+            starts: false,
+            ends: false,
+            seams: false,
+            joints: false,
+        };
+        only.set(kind, true);
+        *self = if *self == only { Self::default() } else { only };
+    }
 }
 
 /// Missing/deleted sources are ignored; a failed endpoint evaluation rejects

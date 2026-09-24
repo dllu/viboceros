@@ -1,12 +1,69 @@
 //! Application adapter: interface actions do not enter the model command lifecycle.
 
 use super::*;
+use std::collections::HashSet;
 use viboceros_command::interface::{
     self, InterfaceCommand, InterfaceState, RectSelectionMode, SwitchAction, ViewportTarget,
     WorldView, ZoomFactor,
 };
 
 impl VibocerosApp {
+    pub(super) fn add_selected_to_end_analysis(&mut self) {
+        let Some(analysis) = &self.end_analysis else {
+            return;
+        };
+        let existing = analysis.sources.iter().copied().collect::<HashSet<_>>();
+        let additions = self
+            .document
+            .selected_object_ids()
+            .filter(|id| {
+                !existing.contains(id)
+                    && self
+                        .document
+                        .object(*id)
+                        .is_some_and(|object| object.geometry().curve_ref().is_some())
+            })
+            .collect::<Vec<_>>();
+        if additions.is_empty() {
+            self.push_log("No new selected curves for End Analysis".into());
+            return;
+        }
+        let mut sources = analysis.sources.clone();
+        sources.extend(additions.iter().copied());
+        if let Err(error) = collect_end_markers(
+            &self.document,
+            sources.iter().copied(),
+            EndMarkerOptions::default(),
+        ) {
+            self.push_log(format!("Error: {error}"));
+            return;
+        }
+        if let Some(analysis) = self.end_analysis.as_mut() {
+            analysis.sources = sources;
+            analysis.current = 0;
+            analysis.all_active = false;
+        }
+        self.push_log(format!(
+            "Added {} curve(s) to End Analysis",
+            additions.len()
+        ));
+    }
+
+    pub(super) fn remove_selected_from_end_analysis(&mut self) {
+        let Some(analysis) = self.end_analysis.as_mut() else {
+            return;
+        };
+        let selected = self.document.selected_object_ids().collect::<HashSet<_>>();
+        let previous = analysis.sources.len();
+        analysis.sources.retain(|id| !selected.contains(id));
+        let removed = previous - analysis.sources.len();
+        if removed != 0 {
+            analysis.current = 0;
+            analysis.all_active = false;
+        }
+        self.push_log(format!("Removed {removed} curve(s) from End Analysis"));
+    }
+
     fn mark_end_analysis(&mut self) {
         let Some(analysis) = &self.end_analysis else {
             self.push_log("Run ShowEnds with visible selected curves first".into());
@@ -171,6 +228,8 @@ impl VibocerosApp {
                                 options,
                                 current: 0,
                                 all_active: false,
+                                marker_color: egui::Color32::from_rgb(170, 35, 150),
+                                use_single_marker_color: false,
                             });
                             self.push_log(format!(
                                 "End Analysis: {} marker(s) displayed",

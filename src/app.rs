@@ -24,9 +24,9 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerOptions, FenceSelectionInput,
-    SelectionChoice, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
-    ViewportOutput, ZoomExtentsBorders, ZoomTargetInput, collect_end_markers,
+    CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerKind, EndMarkerOptions,
+    FenceSelectionInput, SelectionChoice, SelectionClick, SelectionWindow, ViewKind, Viewport,
+    ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput, collect_end_markers,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -68,6 +68,8 @@ struct EndAnalysisState {
     options: EndMarkerOptions,
     current: usize,
     all_active: bool,
+    marker_color: egui::Color32,
+    use_single_marker_color: bool,
 }
 
 impl SelectionMenu {
@@ -6357,6 +6359,11 @@ impl eframe::App for VibocerosApp {
         let current_end_marker = self.end_analysis.as_ref().and_then(|analysis| {
             (!end_markers.is_empty()).then_some(analysis.current % end_markers.len())
         });
+        let end_marker_color = self.end_analysis.as_ref().and_then(|analysis| {
+            analysis
+                .use_single_marker_color
+                .then_some(analysis.marker_color)
+        });
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -6458,6 +6465,7 @@ impl eframe::App for VibocerosApp {
                                         edge_distance_parameters,
                                         end_markers: &end_markers,
                                         current_end_marker,
+                                        end_marker_color,
                                     },
                                     curve_points,
                                     index,

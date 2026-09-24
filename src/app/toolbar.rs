@@ -3,6 +3,21 @@
 use super::*;
 use viboceros_command::interface::{InterfaceCommand, SwitchAction, ViewportTarget, ZoomScale};
 
+fn end_marker_checkbox(
+    ui: &mut egui::Ui,
+    options: &mut EndMarkerOptions,
+    kind: EndMarkerKind,
+    label: &str,
+) {
+    let mut enabled = options.includes(kind);
+    let response = ui.checkbox(&mut enabled, label);
+    if response.secondary_clicked() {
+        options.toggle_exclusive(kind);
+    } else if response.changed() {
+        options.set(kind, enabled);
+    }
+}
+
 impl VibocerosApp {
     pub(super) fn show_toolbar(&mut self, root: &mut egui::Ui) {
         egui::Panel::top("toolbar").show(root, |ui| {
@@ -111,29 +126,79 @@ impl VibocerosApp {
                     }
                 });
                 let mut end_analysis_command = None;
+                let mut add_end_analysis_sources = false;
+                let mut remove_end_analysis_sources = false;
                 if let Some(analysis) = self.end_analysis.as_mut() {
-                    egui::containers::menu::MenuButton::new("End Analysis").ui(ui, |ui| {
-                        ui.checkbox(&mut analysis.options.starts, "Open starts");
-                        ui.checkbox(&mut analysis.options.ends, "Open ends");
-                        ui.checkbox(&mut analysis.options.seams, "Closed seams");
-                        ui.checkbox(&mut analysis.options.joints, "Polycurve joints");
-                        ui.separator();
-                        for (label, command) in [
-                            ("Zoom all", InterfaceCommand::ZoomEnds),
-                            ("Zoom current", InterfaceCommand::ZoomEndsCurrent),
-                            ("Zoom next", InterfaceCommand::ZoomEndsNext),
-                            ("Zoom previous", InterfaceCommand::ZoomEndsPrevious),
-                            ("Mark", InterfaceCommand::ZoomEndsMark),
-                        ] {
-                            if ui.button(label).clicked() {
-                                end_analysis_command = Some(command);
+                    egui::containers::menu::MenuButton::new("End Analysis")
+                        .config(
+                            egui::containers::menu::MenuConfig::default()
+                                .close_behavior(egui::PopupCloseBehavior::CloseOnClickOutside),
+                        )
+                        .ui(ui, |ui| {
+                            end_marker_checkbox(
+                                ui,
+                                &mut analysis.options,
+                                EndMarkerKind::Start,
+                                "Open starts",
+                            );
+                            end_marker_checkbox(
+                                ui,
+                                &mut analysis.options,
+                                EndMarkerKind::End,
+                                "Open ends",
+                            );
+                            end_marker_checkbox(
+                                ui,
+                                &mut analysis.options,
+                                EndMarkerKind::Seam,
+                                "Closed seams",
+                            );
+                            end_marker_checkbox(
+                                ui,
+                                &mut analysis.options,
+                                EndMarkerKind::Joint,
+                                "Polycurve joints",
+                            );
+                            ui.checkbox(
+                                &mut analysis.use_single_marker_color,
+                                "Use one marker color",
+                            );
+                            if analysis.use_single_marker_color {
+                                let color = &mut analysis.marker_color;
+                                let mut rgb = [color.r(), color.g(), color.b()];
+                                ui.horizontal(|ui| {
+                                    ui.label("Marker color");
+                                    ui.color_edit_button_srgb(&mut rgb);
+                                });
+                                *color = egui::Color32::from_rgb(rgb[0], rgb[1], rgb[2]);
                             }
-                        }
-                        ui.separator();
-                        if ui.button("Close").clicked() {
-                            end_analysis_command = Some(InterfaceCommand::ShowEndsOff);
-                        }
-                    });
+                            ui.separator();
+                            for (label, command) in [
+                                ("Zoom all", InterfaceCommand::ZoomEnds),
+                                ("Zoom current", InterfaceCommand::ZoomEndsCurrent),
+                                ("Zoom next", InterfaceCommand::ZoomEndsNext),
+                                ("Zoom previous", InterfaceCommand::ZoomEndsPrevious),
+                                ("Mark", InterfaceCommand::ZoomEndsMark),
+                            ] {
+                                if ui.button(label).clicked() {
+                                    end_analysis_command = Some(command);
+                                }
+                            }
+                            ui.separator();
+                            add_end_analysis_sources = ui.button("Add selected curves").clicked();
+                            remove_end_analysis_sources =
+                                ui.button("Remove selected curves").clicked();
+                            ui.separator();
+                            if ui.button("Close").clicked() {
+                                end_analysis_command = Some(InterfaceCommand::ShowEndsOff);
+                            }
+                        });
+                }
+                if add_end_analysis_sources {
+                    self.add_selected_to_end_analysis();
+                }
+                if remove_end_analysis_sources {
+                    self.remove_selected_from_end_analysis();
                 }
                 if let Some(command) = end_analysis_command {
                     self.apply_interface_command(command);

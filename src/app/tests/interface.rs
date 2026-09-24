@@ -1597,6 +1597,70 @@ fn zoom_ends_mark_creates_one_undo_step_for_current_or_all_markers() {
 }
 
 #[test]
+fn end_analysis_adds_and_removes_selected_curves_without_model_edits() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 1,0,0");
+    enter(&mut app, "Line 10,0,0 11,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document
+        .select_object(ids[0], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "ShowEnds");
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, [ids[0]]);
+    app.document
+        .select_object(ids[1], SelectionMode::Replace)
+        .unwrap();
+    let before_objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let before_history = app.document.undo_label().map(str::to_owned);
+    let selected = app.document.selected_object_ids().collect::<Vec<_>>();
+    app.add_selected_to_end_analysis();
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        selected
+    );
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, ids);
+    assert_eq!(
+        collect_end_markers(
+            &app.document,
+            ids.iter().copied(),
+            EndMarkerOptions::default()
+        )
+        .unwrap()
+        .len(),
+        4
+    );
+    app.add_selected_to_end_analysis();
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources.len(), 2);
+    app.document
+        .select_object(ids[0], SelectionMode::Replace)
+        .unwrap();
+    app.remove_selected_from_end_analysis();
+    assert_eq!(app.end_analysis.as_ref().unwrap().sources, [ids[1]]);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[0]]
+    );
+    app.document
+        .select_object(ids[1], SelectionMode::Replace)
+        .unwrap();
+    app.remove_selected_from_end_analysis();
+    assert!(app.end_analysis.as_ref().unwrap().sources.is_empty());
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        before_objects
+    );
+    assert_eq!(app.document.undo_label(), before_history.as_deref());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[1]]
+    );
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

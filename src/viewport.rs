@@ -34,8 +34,7 @@ mod display_cache;
 mod extents;
 pub(crate) use extents::ZoomExtentsBorders;
 mod end_markers;
-use end_markers::EndMarkerKind;
-pub(crate) use end_markers::{EndMarker, EndMarkerOptions, collect_end_markers};
+pub(crate) use end_markers::{EndMarker, EndMarkerKind, EndMarkerOptions, collect_end_markers};
 mod scene;
 #[cfg(test)]
 use scene::GpuSceneBuilder;
@@ -180,6 +179,7 @@ pub struct ViewportInput<'a> {
     pub edge_distance_parameters: Option<&'a [Real]>,
     pub end_markers: &'a [EndMarker],
     pub current_end_marker: Option<usize>,
+    pub end_marker_color: Option<Color32>,
 }
 
 fn selection_candidate(
@@ -223,6 +223,7 @@ impl Default for ViewportInput<'_> {
             edge_distance_parameters: None,
             end_markers: &[],
             current_end_marker: None,
+            end_marker_color: None,
         }
     }
 }
@@ -803,8 +804,8 @@ impl Viewport {
         );
         for (index, marker) in input.end_markers.iter().enumerate() {
             if let Some(pixel) = self.project(marker.point, rect) {
-                let color = if Some(index) == input.current_end_marker {
-                    Color32::from_rgb(230, 95, 25)
+                let color = if let Some(color) = input.end_marker_color {
+                    color
                 } else {
                     match marker.kind {
                         EndMarkerKind::Start => Color32::from_rgb(30, 170, 80),
@@ -816,7 +817,11 @@ impl Viewport {
                 painter.circle_filled(pixel, 3.5, color);
                 painter.circle_stroke(pixel, 5.5, Stroke::new(1.25, color));
                 if Some(index) == input.current_end_marker {
-                    painter.circle_stroke(pixel, 8., Stroke::new(1.25, color));
+                    painter.circle_stroke(
+                        pixel,
+                        8.,
+                        Stroke::new(1.25, Color32::from_rgb(230, 95, 25)),
+                    );
                 }
             }
         }
@@ -2547,6 +2552,18 @@ mod tests {
         )
         .unwrap();
         assert_eq!(only_joints, vec![markers[4]]);
+    }
+
+    #[test]
+    fn end_marker_right_click_filter_toggles_exclusive_category() {
+        let mut options = EndMarkerOptions::default();
+        options.toggle_exclusive(EndMarkerKind::Seam);
+        assert!(!options.starts && !options.ends && options.seams && !options.joints);
+        options.toggle_exclusive(EndMarkerKind::Seam);
+        assert_eq!(options, EndMarkerOptions::default());
+        options.set(EndMarkerKind::Joint, false);
+        assert!(!options.includes(EndMarkerKind::Joint));
+        assert!(options.includes(EndMarkerKind::Start));
     }
 
     #[test]
