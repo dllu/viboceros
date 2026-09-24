@@ -5,7 +5,7 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 37544250,
+      "elapsed_ns": 51071167,
       "id": "two_coaxial_circles",
       "value": {
         "curves": [
@@ -80,7 +80,7 @@
       }
     },
     {
-      "elapsed_ns": 14221191,
+      "elapsed_ns": 23292542,
       "id": "one_clipped_circle",
       "value": {
         "curves": [
@@ -123,7 +123,7 @@
       }
     },
     {
-      "elapsed_ns": 11024475,
+      "elapsed_ns": 17784119,
       "id": "circle_on_rim",
       "value": {
         "curves": [
@@ -166,7 +166,7 @@
       }
     },
     {
-      "elapsed_ns": 88165283,
+      "elapsed_ns": 172416687,
       "id": "tangent_circle",
       "value": {
         "curves": [
@@ -198,7 +198,7 @@
       }
     },
     {
-      "elapsed_ns": 1403809,
+      "elapsed_ns": 1472473,
       "id": "smaller_sphere",
       "value": {
         "curves": [],
@@ -207,7 +207,7 @@
       }
     },
     {
-      "elapsed_ns": 41267395,
+      "elapsed_ns": 50979614,
       "id": "radially_offset",
       "value": {
         "curves": [
@@ -282,7 +282,7 @@
       }
     },
     {
-      "elapsed_ns": 20675659,
+      "elapsed_ns": 29899597,
       "id": "offset_clipped_at_top_rim",
       "value": {
         "curves": [
@@ -347,7 +347,7 @@
       }
     },
     {
-      "elapsed_ns": 23590088,
+      "elapsed_ns": 27122498,
       "id": "offset_clipped_at_bottom_rim",
       "value": {
         "curves": [
@@ -412,7 +412,7 @@
       }
     },
     {
-      "elapsed_ns": 19531250,
+      "elapsed_ns": 30410767,
       "id": "offset_tangent_at_top_rim",
       "value": {
         "curves": [
@@ -474,6 +474,123 @@
           ]
         ],
         "success": true
+      }
+    },
+    {
+      "elapsed_ns": 44219971,
+      "id": "radial_turning_loop",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 7.445843995387585,
+            "samples": [
+              [
+                1.5,
+                0.0,
+                0.05051025721682194
+              ],
+              [
+                9.184850993605148e-17,
+                1.5,
+                2.5000000000012257
+              ],
+              [
+                1.5,
+                0.0,
+                4.949489742783179
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 7.445843995387584,
+            "samples": [
+              [
+                1.5,
+                0.0,
+                4.949489742783179
+              ],
+              [
+                5.661997243798528e-17,
+                -1.5,
+                2.4999999999996976
+              ],
+              [
+                1.5,
+                0.0,
+                0.05051025721682194
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 13977051,
+      "id": "radial_turning_two_arcs",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 1.0103286455986398,
+            "samples": [
+              [
+                0.06249999999999969,
+                1.4986973510352248,
+                2.0
+              ],
+              [
+                9.184850993605321e-17,
+                1.5,
+                2.4999999999978173
+              ],
+              [
+                0.062499999999999604,
+                1.498697351035225,
+                2.9999999999999996
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 1.010328645598637,
+            "samples": [
+              [
+                0.062499999999999514,
+                -1.4986973510352248,
+                3.0
+              ],
+              [
+                -2.7554552980814693e-16,
+                -1.5,
+                2.5000000000035745
+              ],
+              [
+                0.06250000000000021,
+                -1.4986973510352248,
+                1.9999999999999993
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 14335632,
+      "id": "external_radial_tangent",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
       }
     }
   ]

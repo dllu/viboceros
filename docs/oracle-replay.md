@@ -62,14 +62,17 @@ circle differently, report seam points, or miss an exact tangency. The saved
 samples and lengths are useful diagnostics; three samples alone cannot certify
 that two entire curves lie within a spatial epsilon.
 At absolute epsilon `1e-8` and relative epsilon `1e-10`, the eight saved fixture
-families currently yield 23 full raw matches in 62 cases, two expected native
-noncoaxial-geometry errors, and 37 raw differences. These counts describe the
+families currently yield 23 full raw matches in 65 cases, two expected native
+noncoaxial-geometry errors, and 40 raw differences. These counts describe the
 recorded API fields, not a certified spatial distance between whole curves.
 For the offset sphere/cylinder case, an independent integral gives a branch
 length of `9.58662154262729`; the native cubic curve measures `9.58662154108283`,
 while Rhino reports `9.58662468682217`. The native curve samples pass `2e-9`
 radial and spherical residual checks. Rhino also adds seam points, and
 its clipped arcs may use different directions or ordering.
+The radial-turning intersection is one closed geometric loop; Rhino reports its
+two halves separately. Rhino misses the external radial tangent point in the
+saved fixture.
 
 Replay preflight checks IDs, metadata, and epsilons before launching the native
 process. It does not prove that an arbitrary reference file was produced from

@@ -5,6 +5,7 @@ mod cone_plane;
 mod cylinder_cylinder;
 mod sphere_cone;
 mod sphere_cylinder_noncoaxial;
+mod sphere_cylinder_turning;
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
@@ -3703,7 +3704,7 @@ mod tests {
             assert_eq!(curve.degree(), 3);
             assert!(curve.is_closed().unwrap());
             assert!(
-                (curve.length(Tolerance::DEFAULT).unwrap() - 9.586_621_542_627_289).abs() < 1e-8
+                (curve.length(Tolerance::DEFAULT).unwrap() - 9.586_621_542_627_29).abs() < 1e-8
             );
             let domain = curve.domain();
             for index in 0..=64 {

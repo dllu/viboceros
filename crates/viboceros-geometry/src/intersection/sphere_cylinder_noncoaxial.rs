@@ -28,9 +28,35 @@ pub(super) fn intersect(
     if maximum_radicand < 0.0 {
         return Ok(Vec::new());
     }
-    if minimum_radicand <= 0.0 {
+    if maximum_radicand == 0.0 {
+        if (0.0..=cylinder_height).contains(&center_z) {
+            return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(
+                cylinder_frame.point_at([
+                    cylinder_radius * radial_axis[0],
+                    cylinder_radius * radial_axis[1],
+                    center_z,
+                ])?,
+            )]);
+        }
+        return Ok(Vec::new());
+    }
+    if minimum_radicand < 0.0 {
+        return super::sphere_cylinder_turning::intersect(
+            sphere_center,
+            sphere_radius,
+            cylinder_frame,
+            cylinder_radius,
+            cylinder_height,
+            tolerance,
+            radial_axis,
+            center_z,
+            maximum_radicand,
+            cosine_coefficient,
+        );
+    }
+    if minimum_radicand == 0.0 {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "sphere/cylinder branches meet at a radial turning point",
+            context: "sphere/cylinder branches cross at a radial singularity",
         });
     }
 

@@ -54,6 +54,24 @@
       "op": "sphere_cylinder_surface_intersection",
       "sphere": {"center": [0.5, 0, 2.5], "radius": 2.5},
       "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 1.5, "height": 4}
+    },
+    {
+      "id": "radial_turning_loop",
+      "op": "sphere_cylinder_surface_intersection",
+      "sphere": {"center": [2, 0, 2.5], "radius": 2.5},
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 1.5, "height": 5}
+    },
+    {
+      "id": "radial_turning_two_arcs",
+      "op": "sphere_cylinder_surface_intersection",
+      "sphere": {"center": [2, 0, 2.5], "radius": 2.5},
+      "cylinder": {"center": [0, 0, 2], "axis": [0, 0, 1], "radius": 1.5, "height": 1}
+    },
+    {
+      "id": "external_radial_tangent",
+      "op": "sphere_cylinder_surface_intersection",
+      "sphere": {"center": [2, 0, 2.5], "radius": 0.5},
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 1.5, "height": 5}
     }
   ]
 }

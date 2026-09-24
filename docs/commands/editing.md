@@ -159,16 +159,19 @@ report an unsupported two-dimensional overlap.
 Canonical coaxial spheres and finite cylindrical walls intersect in exact
 rational circles, including tangent circles and sections on the cylinder rims.
 Smooth noncoaxial sphere/cylinder branches are fitted as cubic curves within
-the modeling tolerance and clipped at the cylinder rims. An isolated rim
-contact creates a point.
+the modeling tolerance and clipped at the cylinder rims. This includes the
+single loop formed when the upper and lower branches meet at two radial turns.
+Isolated rim and external radial contacts create points.
 The [sphere/cylinder fixture](../../tools/rhino_oracle/fixtures/sphere_cylinder_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/sphere_cylinder_surface_intersection.json)
 record two circles, clipping to one, rim contact, tangency, and noncoaxial
-full, clipped, and rim-tangent reference geometry. Rhino's surface API also
+full, clipped, rim-tangent, and radial-turning reference geometry. Rhino's surface API also
 reports duplicate seam points on transverse curves and a tiny numerical curve
 at the isolated rim tangency. The native result retains the exact circles and
-point. Noncoaxial branches that meet at a radial turning point still report
-unsupported geometry.
+point. Rhino splits the radial-turning loop into two open halves and misses the
+external radial tangent in the saved observation. The native result retains one
+closed loop and the exact tangent point. The exact singular case where two
+branches cross remains unsupported.
 Canonical coaxial spheres and finite cone walls intersect in exact rational
 circles, including tangent circles and sections on the cone's base rim. A
 contact only at the singular apex produces no event. The
