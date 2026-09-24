@@ -26558,6 +26558,49 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_cone_cylinder_section() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cone(frame, 3.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(frame, 1.5, 0.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(circle) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("coaxial cone and cylinder should produce an exact circle")
+        };
+        assert_eq!(circle.degree(), 2);
+        assert!(circle.is_closed().unwrap());
+        assert!(
+            (circle.length(document.tolerance()).unwrap() - 3.0 * std::f64::consts::PI).abs()
+                < 1e-8
+        );
+        assert!((circle.evaluate(*circle.domain().start()).unwrap().z() - 2.0).abs() < 1e-9);
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_sphere_cone_sections() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

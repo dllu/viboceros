@@ -11832,6 +11832,7 @@ def _execute(operation, iterations, tolerance):
         "cylinder_plane_surface_intersection",
         "cylinder_cylinder_surface_intersection",
         "cone_plane_surface_intersection",
+        "cone_cylinder_surface_intersection",
     ):
         source_brep = None
         patch_brep = None
@@ -11887,11 +11888,12 @@ def _execute(operation, iterations, tolerance):
         elif kind in (
             "sphere_cylinder_surface_intersection",
             "cylinder_cylinder_surface_intersection",
+            "cone_cylinder_surface_intersection",
         ):
             cylinder_def = operation[
-                "cylinder"
-                if kind == "sphere_cylinder_surface_intersection"
-                else "other_cylinder"
+                "other_cylinder"
+                if kind == "cylinder_cylinder_surface_intersection"
+                else "cylinder"
             ]
             cylinder_plane = Rhino.Geometry.Plane(
                 _point(cylinder_def["center"]),

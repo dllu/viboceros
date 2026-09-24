@@ -191,6 +191,14 @@ Coaxial walls overlapping over an area produce no API events, as Rhino does.
 The [cylinder/cylinder fixture](../../tools/rhino_oracle/fixtures/cylinder_cylinder_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/cylinder_cylinder_surface_intersection.json)
 record these cases. Nonparallel wall intersections remain unsupported.
+Coaxial canonical cone and cylinder walls meet in one exact rational circle
+when the cylinder radius occurs within both finite height ranges. Opposed
+surface axes yield two exact semicircles, matching Rhino's event structure.
+The [cone/cylinder fixture](../../tools/rhino_oracle/fixtures/cone_cylinder_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/cone_cylinder_surface_intersection.json)
+cover aligned and opposed axes, rim contacts, clipping, and a noncoaxial pair.
+Rhino also reports two redundant seam points with the full circle; the native
+result retains the circle. Noncoaxial sections remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the

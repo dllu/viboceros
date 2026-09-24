@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "coaxial_circle",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 1.5, "height": 4}
+    },
+    {
+      "id": "circle_on_cylinder_rim",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 2], "axis": [0, 0, 1], "radius": 1.5, "height": 2}
+    },
+    {
+      "id": "circle_on_cone_rim",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4}
+    },
+    {
+      "id": "axially_clipped",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 2.5], "axis": [0, 0, 1], "radius": 1.5, "height": 2}
+    },
+    {
+      "id": "radially_disjoint",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 4, "height": 4}
+    },
+    {
+      "id": "opposed_axis",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0, 0, 4], "axis": [0, 0, -1], "radius": 1.5, "height": 4}
+    },
+    {
+      "id": "parallel_noncoaxial",
+      "op": "cone_cylinder_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 3, "height": 4},
+      "cylinder": {"center": [0.5, 0, 0], "axis": [0, 0, 1], "radius": 1.5, "height": 4}
+    }
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 12374878,
+      "id": "coaxial_circle",
+      "value": {
+        "curves": [
+          {
+            "closed": true,
+            "degree": 2,
+            "length": 9.42477798244132,
+            "samples": [
+              [
+                1.5,
+                0.0,
+                2.0
+              ],
+              [
+                -1.5,
+                1.8369701987210297e-16,
+                2.0
+              ],
+              [
+                1.5,
+                0.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "points": [
+          [
+            1.5,
+            0.0,
+            2.0
+          ],
+          [
+            1.5,
+            0.0,
+            2.0
+          ]
+        ],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 9788513,
+      "id": "circle_on_cylinder_rim",
+      "value": {
+        "curves": [
+          {
+            "closed": true,
+            "degree": 2,
+            "length": 9.42477798244132,
+            "samples": [
+              [
+                1.5,
+                0.0,
+                2.0
+              ],
+              [
+                -1.5,
+                1.8369701987210297e-16,
+                2.0
+              ],
+              [
+                1.5,
+                0.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "points": [
+          [
+            1.5,
+            0.0,
+            2.0
+          ],
+          [
+            1.5,
+            0.0,
+            2.0
+          ]
+        ],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 8834839,
+      "id": "circle_on_cone_rim",
+      "value": {
+        "curves": [
+          {
+            "closed": true,
+            "degree": 2,
+            "length": 18.84955596488264,
+            "samples": [
+              [
+                3.0,
+                0.0,
+                4.0
+              ],
+              [
+                -3.0,
+                3.6739403974420594e-16,
+                4.0
+              ],
+              [
+                3.0,
+                0.0,
+                4.0
+              ]
+            ]
+          }
+        ],
+        "points": [
+          [
+            3.0,
+            0.0,
+            4.0
+          ],
+          [
+            3.0,
+            0.0,
+            4.0
+          ]
+        ],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 106812,
+      "id": "axially_clipped",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
+      }
+    },
+    {
+      "elapsed_ns": 122070,
+      "id": "radially_disjoint",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
+      }
+    },
+    {
+      "elapsed_ns": 7415771,
+      "id": "opposed_axis",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 2,
+            "length": 4.712388991220662,
+            "samples": [
+              [
+                1.5,
+                1.8369701987210297e-16,
+                2.0
+              ],
+              [
+                -9.184850993605148e-17,
+                1.5,
+                2.0
+              ],
+              [
+                -1.5,
+                0.0,
+                2.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 2,
+            "length": 4.712388991220661,
+            "samples": [
+              [
+                -1.5,
+                0.0,
+                2.0
+              ],
+              [
+                2.755455298081545e-16,
+                -1.5,
+                2.0
+              ],
+              [
+                1.5,
+                1.8369701987210297e-16,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 4425049,
+      "id": "parallel_noncoaxial",
+      "value": {
+        "curves": [
+          {
+            "closed": true,
+            "degree": 3,
+            "length": 9.874243699048625,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                2.666666666666667
+              ],
+              [
+                -1.0,
+                -3.0042420177019255e-14,
+                1.3333333333333335
+              ],
+              [
+                2.0,
+                0.0,
+                2.6666666666666665
+              ]
+            ]
+          }
+        ],
+        "points": [
+          [
+            2.0,
+            0.0,
+            2.666666666666667
+          ],
+          [
+            2.0,
+            0.0,
+            2.6666666666666665
+          ]
+        ],
+        "success": true
+      }
+    }
+  ]
+}
