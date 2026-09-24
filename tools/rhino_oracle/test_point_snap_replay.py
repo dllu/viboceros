@@ -23,7 +23,8 @@ class PointSnapReplayTests(unittest.TestCase):
         for stem in ("intersection_multi_snaps", "intersection_multi_detail_snaps",
                      "intersection_multi_depth_snaps", "intersection_multi_orientation_snaps",
                      "intersection_multi_motion_snaps", "intersection_vertical_sweep_snaps",
-                     "intersection_rotated_priority_snaps"):
+                     "intersection_rotated_priority_snaps", "intersection_near_vertical_coarse_snaps",
+                     "intersection_near_vertical_tiny_snaps"):
             with self.subTest(stem=stem):
                 request,observed = inputs(stem)
                 native,evidence = replay.prepare(request,observed)

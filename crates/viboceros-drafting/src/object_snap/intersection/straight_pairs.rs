@@ -163,8 +163,13 @@ fn emit_multi(
 
 fn screen_vertical(segment: Segment) -> bool {
     let dx = segment.image_b[0] - segment.image_a[0];
-    let dy = segment.image_b[1] - segment.image_a[1];
-    dx.abs() <= 1e-10 * dx.hypot(dy)
+    let x_scale = segment.image_a[0]
+        .abs()
+        .max(segment.image_b[0].abs())
+        .max(1.);
+    // Allow only projection roundoff. Rhino selects a line tilted by 1e-12
+    // from vertical at a coincident three-source crossing.
+    dx.abs() <= 8. * Real::EPSILON * x_scale
 }
 
 fn emit_pair(

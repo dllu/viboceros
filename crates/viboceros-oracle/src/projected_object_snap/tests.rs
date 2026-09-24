@@ -504,13 +504,29 @@ fn multi_source_intersections_replay_owned_rhino_picks() {
                 "../../../../tools/rhino_oracle/observations/intersection_rotated_priority_snaps.json"
             ),
         ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_vertical_coarse_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_vertical_coarse_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_vertical_tiny_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_vertical_tiny_snaps.json"
+            ),
+        ),
     ] {
         let fixture: Value = serde_json::from_str(input).unwrap();
         verified += fixture["operations"].as_array().unwrap().len();
         let differences = retained_differences(input, observed);
         assert!(differences.is_empty(), "{differences:?}");
     }
-    assert_eq!(verified, 43);
+    assert_eq!(verified, 51);
 }
 
 #[test]
