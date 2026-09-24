@@ -1,27 +1,28 @@
-//! Joins two selected open curves with a tangent circular fillet.
+//! Bevels selected straight curve ends by two distances.
 
 use super::*;
-use viboceros_geometry::{Curve3, try_fillet_curves_joined, try_fillet_curves_parts};
+use viboceros_geometry::{try_chamfer_curves_joined, try_chamfer_curves_parts};
 
-const USAGE: &str = "Fillet radius [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No]";
+const USAGE: &str =
+    "Chamfer distance1 distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No]";
 
-pub(super) struct FilletCommand;
+pub(super) struct ChamferCommand;
 
-struct FilletOptions {
-    radius: Real,
+struct ChamferOptions {
+    distances: [Real; 2],
     picks: [Option<Point3>; 2],
     join: bool,
     trim: bool,
 }
 
-impl Command for FilletCommand {
+impl Command for ChamferCommand {
     fn name(&self) -> &'static str {
-        "Fillet"
+        "Chamfer"
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let FilletOptions {
-            radius,
+        let ChamferOptions {
+            distances,
             picks,
             join,
             trim,
@@ -34,26 +35,27 @@ impl Command for FilletCommand {
                     object
                         .geometry()
                         .curve_ref()
-                        .ok_or(CommandError::FilletRequiresTwoCurves)?
+                        .ok_or(CommandError::ChamferRequiresTwoCurves)?
                         .to_owned(),
                 ))
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
         let [(first_id, first), (second_id, second)] = selected.as_slice() else {
-            return Err(CommandError::FilletRequiresTwoCurves);
+            return Err(CommandError::ChamferRequiresTwoCurves);
         };
-        let (default_first, default_second) = nearest_ends(first, second)?;
+        let (default_first, default_second) = super::fillet::nearest_ends(first, second)?;
         let picks = [
             picks[0].unwrap_or(default_first),
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join && trim {
-            let joined = try_fillet_curves_joined(
+            let joined = try_chamfer_curves_joined(
                 first,
                 picks[0],
                 second,
                 picks[1],
-                radius,
+                distances[0],
+                distances[1],
                 document.tolerance(),
             )?;
             let outputs = document.copy_object_pieces_into_source_groups([(
@@ -63,12 +65,12 @@ impl Command for FilletCommand {
             document.delete_objects([*first_id, *second_id])?;
             outputs
         } else {
-            let parts = try_fillet_curves_parts(
+            let parts = try_chamfer_curves_parts(
                 first,
                 picks[0],
                 second,
                 picks[1],
-                radius,
+                distances,
                 trim,
                 document.tolerance(),
             )?;
@@ -89,7 +91,7 @@ impl Command for FilletCommand {
             outputs
         };
         document.select_objects_direct(outputs, SelectionMode::Replace)?;
-        Ok("Filleted two curves".to_string())
+        Ok("Chamfered two curves".to_string())
     }
 
     fn object_selection_prompt(
@@ -108,22 +110,18 @@ impl Command for FilletCommand {
     }
 }
 
-fn parse(arguments: &[&str]) -> Result<FilletOptions, CommandError> {
-    let Some(first) = arguments.first() else {
+fn parse(arguments: &[&str]) -> Result<ChamferOptions, CommandError> {
+    if arguments.len() < 2 {
         return Err(CommandError::Usage(USAGE));
-    };
-    let radius = if let Some((name, value)) = first.split_once('=') {
-        if !option_name_eq(name, "Radius") {
-            return Err(CommandError::Usage(USAGE));
-        }
-        parse_finite_real(value)?
-    } else {
-        parse_finite_real(first)?
-    };
+    }
+    let distances = [
+        parse_finite_real(arguments[0])?,
+        parse_finite_real(arguments[1])?,
+    ];
     let mut picks = [None, None];
     let mut join = None;
     let mut trim = None;
-    for argument in &arguments[1..] {
+    for argument in &arguments[2..] {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
         if option_name_eq(name, "Join") {
             if join
@@ -159,38 +157,12 @@ fn parse(arguments: &[&str]) -> Result<FilletOptions, CommandError> {
         }
         picks[index] = Some(pick);
     }
-    Ok(FilletOptions {
-        radius,
+    Ok(ChamferOptions {
+        distances,
         picks,
         join: join.unwrap_or(true),
         trim: trim.unwrap_or(true),
     })
-}
-
-pub(super) fn nearest_ends(
-    first: &Curve3,
-    second: &Curve3,
-) -> Result<(Point3, Point3), CommandError> {
-    let first_ref = first.as_ref();
-    let second_ref = second.as_ref();
-    let first_ends = [
-        first_ref.evaluate(*first_ref.domain().start())?,
-        first_ref.evaluate(*first_ref.domain().end())?,
-    ];
-    let second_ends = [
-        second_ref.evaluate(*second_ref.domain().start())?,
-        second_ref.evaluate(*second_ref.domain().end())?,
-    ];
-    let mut best = (Real::INFINITY, first_ends[0], second_ends[0]);
-    for first_end in first_ends {
-        for second_end in second_ends {
-            let distance = first_end.distance_to(second_end)?;
-            if distance < best.0 {
-                best = (distance, first_end, second_end);
-            }
-        }
-    }
-    Ok((best.1, best.2))
 }
 
 #[cfg(test)]
@@ -198,31 +170,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn joins_selected_lines_and_restores_sources_with_undo() {
+    fn chamfer_options_and_undo() {
         let registry = CommandRegistry::with_builtins();
-        let mut document = Document::default();
-        registry.execute(&mut document, "Line 0,0,0 4,0,0").unwrap();
-        registry.execute(&mut document, "Line 4,0,0 4,4,0").unwrap();
-        registry.execute(&mut document, "SelAll").unwrap();
-        let before = document.objects().cloned().collect::<Vec<_>>();
-        registry.execute(&mut document, "Fillet 0.5").unwrap();
-        assert_eq!(document.objects().count(), 1);
-        assert!(matches!(
-            document.objects().next().unwrap().geometry(),
-            Geometry::PolyCurve(_)
-        ));
-        registry.execute(&mut document, "Undo").unwrap();
-        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
-    }
-
-    #[test]
-    fn join_and_trim_options_control_sources_and_arc() {
-        let registry = CommandRegistry::with_builtins();
-        for (command, expected_count, originals_retained, arc_count) in [
-            ("Fillet 0.5 Join=No Trim=Yes", 3, false, 1),
-            ("Fillet 0.5 Join=No Trim=No", 3, true, 1),
-            ("Fillet 0.5 Join=Yes Trim=No", 3, true, 1),
-            ("Fillet 0 Join=No Trim=Yes", 2, false, 0),
+        for (command, count, sources_retained) in [
+            ("Chamfer 0.5 1", 1, false),
+            ("Chamfer 0 0", 1, false),
+            ("Chamfer 0.5 1 Join=No", 3, false),
+            ("Chamfer 0.5 1 Trim=No", 3, true),
         ] {
             let mut document = Document::default();
             registry.execute(&mut document, "Line 0,0,0 4,0,0").unwrap();
@@ -234,19 +188,10 @@ mod tests {
                 .collect::<Vec<_>>();
             let before = document.objects().cloned().collect::<Vec<_>>();
             registry.execute(&mut document, command).unwrap();
-            assert_eq!(document.objects().count(), expected_count, "{command}");
+            assert_eq!(document.objects().count(), count, "{command}");
             assert_eq!(
                 originals.iter().all(|id| document.object(*id).is_some()),
-                originals_retained,
-                "{command}"
-            );
-            assert_eq!(
-                document
-                    .objects()
-                    .filter(|object| matches!(object.geometry(), Geometry::Arc(_)))
-                    .count(),
-                arc_count,
-                "{command}"
+                sources_retained
             );
             registry.execute(&mut document, "Undo").unwrap();
             assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);

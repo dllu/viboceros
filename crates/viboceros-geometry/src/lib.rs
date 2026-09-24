@@ -17,6 +17,7 @@ mod catenary;
 mod circle_curve;
 mod circular;
 mod curve;
+mod curve_chamfer_pair;
 mod curve_edit;
 mod curve_evaluate;
 mod curve_fillet_pair;
@@ -88,6 +89,7 @@ pub use catenary::{
 pub use circle_curve::Circle3;
 pub use circular::CircularArc3;
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
+pub use curve_chamfer_pair::{try_chamfer_curves_joined, try_chamfer_curves_parts};
 pub use curve_edit::{Curve3, CurveClosure};
 pub use curve_fillet_pair::{try_fillet_curves_joined, try_fillet_curves_parts};
 pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};

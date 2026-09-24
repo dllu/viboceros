@@ -125,7 +125,7 @@ pub fn try_fillet_curves_parts(
     ])
 }
 
-fn original_direction(
+pub(super) fn original_direction(
     curve: Curve3,
     reverse: bool,
     tolerance: Tolerance,
@@ -137,7 +137,7 @@ fn original_direction(
     }
 }
 
-fn curve_from_segments(segments: &[CurveSegment3]) -> Result<Curve3, GeometryError> {
+pub(super) fn curve_from_segments(segments: &[CurveSegment3]) -> Result<Curve3, GeometryError> {
     if segments.len() == 1 {
         Ok(segments[0].clone().into_curve())
     } else {
@@ -145,7 +145,7 @@ fn curve_from_segments(segments: &[CurveSegment3]) -> Result<Curve3, GeometryErr
     }
 }
 
-fn oriented(
+pub(super) fn oriented(
     source: &Curve3,
     pick: Point3,
     pick_at_end: bool,
@@ -159,7 +159,7 @@ fn oriented(
     }
 }
 
-fn selected_end(
+pub(super) fn selected_end(
     source: &Curve3,
     pick: Point3,
     tolerance: Tolerance,
@@ -181,7 +181,7 @@ fn selected_end(
     Ok(end_distance < start_distance)
 }
 
-fn meeting_lines(
+pub(super) fn meeting_lines(
     first: LineSegment,
     second: LineSegment,
     tolerance: Tolerance,
@@ -217,7 +217,7 @@ fn meeting_lines(
 
 fn unsupported() -> GeometryError {
     GeometryError::InvalidPolyCurve {
-        context: "selected curve ends cannot form a supported fillet",
+        context: "selected curve ends cannot form a supported corner operation",
     }
 }
 
