@@ -7,6 +7,10 @@
     {"op": "blend_curve", "id": "right-angle-g1", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "tangency"},
     {"op": "blend_curve", "id": "right-angle-g2", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "curvature"},
     {"op": "blend_curve", "id": "spatial-g1", "first": [[0,0,0],[1,0,0]], "second": [[4,1,2],[4,2,3]], "continuity": "tangency"},
-    {"op": "blend_curve", "id": "spatial-g2", "first": [[0,0,0],[1,0,0]], "second": [[4,1,2],[4,2,3]], "continuity": "curvature"}
+    {"op": "blend_curve", "id": "spatial-g2", "first": [[0,0,0],[1,0,0]], "second": [[4,1,2],[4,2,3]], "continuity": "curvature"},
+    {"op": "blend_curve", "id": "right-angle-g0-g1", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "position", "continuity_second": "tangency"},
+    {"op": "blend_curve", "id": "right-angle-g1-g0", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "tangency", "continuity_second": "position"},
+    {"op": "blend_curve", "id": "right-angle-g1-g2", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "tangency", "continuity_second": "curvature"},
+    {"op": "blend_curve", "id": "right-angle-g2-g1", "first": [[0,0,0],[1,0,0]], "second": [[4,1,0],[4,2,0]], "continuity": "curvature", "continuity_second": "tangency"}
   ]
 }

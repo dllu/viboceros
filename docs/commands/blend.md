@@ -8,16 +8,15 @@ blend is selected, and `Undo` removes it. `Pick1=x,y,z` and `Pick2=x,y,z`
 choose other source ends.
 
 `Continuity1` and `Continuity2` independently accept `Position`, `Tangency`, or
-`Curvature`; both default to `Tangency`. Two position ends produce a line;
-tangency blends are cubic;
-curvature at either end produces a quintic that matches the source curvature
-at that end. `Handle1` and `Handle2` set the respective handle lengths in model
-units. The default length is the endpoint distance for tangency and 40% of it
-for curvature. Position handles default to one third of that distance when
-combined with another continuity mode.
+`Curvature`; both default to `Tangency`. The blend uses the minimum degree for
+the requested endpoint constraints: degree 1 for position/position, degree 3
+for tangency/tangency, degree 5 for curvature/curvature, and the intervening
+degrees for mixed choices. Curvature ends match the source curvature vector.
+`Handle1` and `Handle2` set handle lengths in model units. Their defaults are
+the endpoint distance for tangency and 40% of it for curvature.
 
-The [Rhino API comparison](../blend-oracle.md) covers the default G0, G1, and
-G2 shapes for five line input cases.
+The [Rhino API comparison](../blend-oracle.md) covers nine line input cases;
+mixed-continuity handle shapes still differ from Rhino.
 
 ```text
 Blend Continuity1=Tangency Continuity2=Position Handle1=2.5

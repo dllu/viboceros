@@ -29,7 +29,8 @@ impl Default for CurveBlendOptions {
     }
 }
 
-/// Creates a single-span nonrational cubic or quintic connecting selected open-curve ends.
+/// Creates the minimum-degree, single-span nonrational blend connecting
+/// selected open-curve ends, from a line for G0/G0 to a quintic for G2/G2.
 /// The handle lengths are model-space distances and can be adjusted independently.
 pub fn try_blend_curve(
     first: &Curve3,
@@ -73,79 +74,67 @@ pub fn try_blend_curve(
             vec![0.0, 0.0, chord_length, chord_length],
         );
     }
-    let chord_direction = chord.normalized_nonzero()?;
-    let first_direction = match options.continuity[0] {
-        CurveBlendContinuity::Position => chord_direction,
-        CurveBlendContinuity::Tangency | CurveBlendContinuity::Curvature => {
-            if first_end {
-                first_tangent
-            } else {
-                first_tangent.opposite()
-            }
-        }
+    let degree = continuity_control_count(options.continuity[0])
+        + continuity_control_count(options.continuity[1])
+        - 1;
+    let mut controls = vec![start; degree + 1];
+    controls[degree] = end;
+    let first_direction = if first_end {
+        first_tangent
+    } else {
+        first_tangent.opposite()
     };
-    let second_direction = match options.continuity[1] {
-        CurveBlendContinuity::Position => chord_direction,
-        CurveBlendContinuity::Tangency | CurveBlendContinuity::Curvature => {
-            if second_end {
-                second_tangent.opposite()
-            } else {
-                second_tangent
-            }
-        }
+    let second_direction = if second_end {
+        second_tangent.opposite()
+    } else {
+        second_tangent
     };
-    let first_control = start.translated(first_direction.as_vector().scaled(first_handle)?)?;
-    let second_control = end.translated(second_direction.as_vector().scaled(-second_handle)?)?;
-    if options
-        .continuity
-        .contains(&CurveBlendContinuity::Curvature)
-    {
-        let first_curvature = endpoint_curvature(first, first_end, options.continuity[0])?;
-        let second_curvature = endpoint_curvature(second, second_end, options.continuity[1])?;
-        let first_second = second_control_from_endpoint(
+    if options.continuity[0] != CurveBlendContinuity::Position {
+        controls[1] = start.translated(first_direction.as_vector().scaled(first_handle)?)?;
+    }
+    if options.continuity[0] == CurveBlendContinuity::Curvature {
+        controls[2] = second_control_from_endpoint(
             start,
             first_direction,
             first_handle,
-            first_curvature,
+            endpoint_curvature(first, first_end)?,
+            degree,
             true,
         )?;
-        let second_second = second_control_from_endpoint(
+    }
+    if options.continuity[1] != CurveBlendContinuity::Position {
+        controls[degree - 1] =
+            end.translated(second_direction.as_vector().scaled(-second_handle)?)?;
+    }
+    if options.continuity[1] == CurveBlendContinuity::Curvature {
+        controls[degree - 2] = second_control_from_endpoint(
             end,
             second_direction,
             second_handle,
-            second_curvature,
+            endpoint_curvature(second, second_end)?,
+            degree,
             false,
         )?;
-        let blend = NurbsCurve::try_new(
-            5,
-            vec![
-                start,
-                first_control,
-                first_second,
-                second_second,
-                second_control,
-                end,
-            ],
-            vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-        )?;
-        return blend.try_reparameterized(0.0..=blend.length(tolerance)?);
     }
-    let blend = NurbsCurve::try_new(
-        3,
-        vec![start, first_control, second_control, end],
-        vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
-    )?;
-    blend.try_reparameterized(0.0..=blend.length(tolerance)?)
+    let mut knots = vec![0.0; degree + 1];
+    knots.extend(vec![1.0; degree + 1]);
+    let blend = NurbsCurve::try_new(degree, controls, knots)?;
+    if options.continuity[0] == options.continuity[1] {
+        blend.try_reparameterized(0.0..=blend.length(tolerance)?)
+    } else {
+        Ok(blend)
+    }
 }
 
-fn endpoint_curvature(
-    curve: &Curve3,
-    at_end: bool,
-    continuity: CurveBlendContinuity,
-) -> Result<Vector3, GeometryError> {
-    if continuity != CurveBlendContinuity::Curvature {
-        return Vector3::try_new(0.0, 0.0, 0.0);
+fn continuity_control_count(continuity: CurveBlendContinuity) -> usize {
+    match continuity {
+        CurveBlendContinuity::Position => 1,
+        CurveBlendContinuity::Tangency => 2,
+        CurveBlendContinuity::Curvature => 3,
     }
+}
+
+fn endpoint_curvature(curve: &Curve3, at_end: bool) -> Result<Vector3, GeometryError> {
     let reference = curve.as_ref();
     let parameter = if at_end {
         *reference.domain().end()
@@ -155,14 +144,15 @@ fn endpoint_curvature(
     reference.curvature_vector(parameter)
 }
 
-/// For a quintic B-spline, endpoint speed is `5h` and second derivative is
-/// `20(P0 - 2P1 + P2)`. The normal acceleration required by the source is
-/// speed squared times its curvature vector. Tangential acceleration is zero.
+/// A degree-n Bézier endpoint has speed `n*h` and second derivative
+/// `n*(n-1)*(P0 - 2P1 + P2)`. The normal acceleration required by the source
+/// is speed squared times its curvature vector. Tangential acceleration is zero.
 fn second_control_from_endpoint(
     endpoint: Point3,
     direction: UnitVector3,
     handle: Real,
     curvature: Vector3,
+    degree: usize,
     at_start: bool,
 ) -> Result<Point3, GeometryError> {
     let tangent_offset = direction.as_vector().scaled(if at_start {
@@ -170,7 +160,8 @@ fn second_control_from_endpoint(
     } else {
         -2.0 * handle
     })?;
-    let curvature_offset = curvature.scaled(1.25 * handle * handle)?;
+    let curvature_offset =
+        curvature.scaled((degree as Real / (degree - 1) as Real) * handle * handle)?;
     let tangent = endpoint.translated(tangent_offset)?;
     tangent.translated(curvature_offset)
 }
@@ -265,7 +256,7 @@ mod tests {
     }
 
     #[test]
-    fn position_continuity_follows_the_chord_independently_of_tangency() {
+    fn mixed_position_and_tangency_use_a_quadratic() {
         let first = line(p(0., -1.), p(0., 0.));
         let second = line(p(3., 1.), p(3., 2.));
         let blend = try_blend_curve(
@@ -284,14 +275,11 @@ mod tests {
         )
         .unwrap();
         let controls = blend.control_points();
-        let chord_direction = p(0., 0.)
-            .vector_to(p(3., 1.))
-            .unwrap()
-            .normalized_nonzero()
-            .unwrap();
-        let first_handle = controls[0].point().vector_to(controls[1].point()).unwrap();
-        assert!(first_handle.angle_to(chord_direction.as_vector()).unwrap() < 1e-12);
-        assert!(controls[2].point().distance_to(p(3., 0.)).unwrap() < 1e-12);
+        assert_eq!(blend.degree(), 2);
+        assert_eq!(controls.len(), 3);
+        assert!(controls[0].point().distance_to(p(0., 0.)).unwrap() < 1e-12);
+        assert!(controls[1].point().distance_to(p(3., 0.)).unwrap() < 1e-12);
+        assert!(controls[2].point().distance_to(p(3., 1.)).unwrap() < 1e-12);
     }
 
     #[test]
@@ -342,7 +330,7 @@ mod tests {
     }
 
     #[test]
-    fn quintic_matches_curvature_at_a_second_curves_start() {
+    fn quartic_matches_curvature_at_a_second_curves_start() {
         let diagonal = 2.0_f64.sqrt();
         let arc = CircularArc3::try_from_three_points(
             p(2., 0.),
@@ -366,6 +354,7 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        assert_eq!(blend.degree(), 4);
         let expected = CurveRef::Arc(&arc)
             .curvature_vector(*arc.domain().start())
             .unwrap();
@@ -390,6 +379,47 @@ mod tests {
                 .unwrap()
                 < 1e-12
         );
+    }
+
+    #[test]
+    fn cubic_position_to_curvature_matches_the_curved_end() {
+        let diagonal = 2.0_f64.sqrt();
+        let arc = CircularArc3::try_from_three_points(
+            p(2., 0.),
+            p(diagonal, diagonal),
+            p(0., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let blend = try_blend_curve(
+            &line(p(-4., -1.), p(-4., 0.)),
+            p(-4., 0.),
+            &Curve3::Arc(arc),
+            p(2., 0.),
+            CurveBlendOptions {
+                continuity: [
+                    CurveBlendContinuity::Position,
+                    CurveBlendContinuity::Curvature,
+                ],
+                handles: [None, Some(1.)],
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(blend.degree(), 3);
+        let expected = CurveRef::Arc(&arc)
+            .curvature_vector(*arc.domain().start())
+            .unwrap();
+        let actual = CurveRef::NurbsCurve(&blend)
+            .curvature_vector(*blend.domain().end())
+            .unwrap();
+        let difference = Vector3::try_new(
+            actual.x() - expected.x(),
+            actual.y() - expected.y(),
+            actual.z() - expected.z(),
+        )
+        .unwrap();
+        assert!(difference.length().unwrap() < 1e-12);
     }
 
     #[test]

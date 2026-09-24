@@ -5246,7 +5246,9 @@ def _conversion_session(operation, tolerance):
 def _execute(operation, iterations, tolerance):
     if operation.get("op") == "blend_curve":
         continuity = operation.get("continuity")
-        if continuity not in ("position", "tangency", "curvature"):
+        continuity_first = operation.get("continuity_first", continuity)
+        continuity_second = operation.get("continuity_second", continuity)
+        if continuity_first not in ("position", "tangency", "curvature") or continuity_second not in ("position", "tangency", "curvature"):
             raise ValueError("invalid blend continuity")
         first = operation.get("first")
         second = operation.get("second")
@@ -5258,8 +5260,14 @@ def _execute(operation, iterations, tolerance):
         try:
             first_curve = Rhino.Geometry.LineCurve(_point(first[0]), _point(first[1]))
             second_curve = Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
-            mode = getattr(Rhino.Geometry.BlendContinuity, continuity.capitalize())
-            blend = Rhino.Geometry.Curve.CreateBlendCurve(first_curve, second_curve, mode)
+            mode_first = getattr(Rhino.Geometry.BlendContinuity, continuity_first.capitalize())
+            mode_second = getattr(Rhino.Geometry.BlendContinuity, continuity_second.capitalize())
+            if "continuity_first" in operation or "continuity_second" in operation:
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(
+                    first_curve, first_curve.Domain.T1, False, mode_first,
+                    second_curve, second_curve.Domain.T0, True, mode_second)
+            else:
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(first_curve, second_curve, mode_first)
             if blend is None:
                 raise ValueError("Rhino could not create the blend")
             return _nurbs_curve_definition(blend), 0
