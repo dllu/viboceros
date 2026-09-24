@@ -150,9 +150,24 @@ pub(super) fn visit(
             && da.signum() != db.signum()
         {
             let stationary = bisect_derivative(&derivative, a, b, da, db);
-            if score(stationary).is_some_and(|v| v.abs() <= zero_tolerance) {
-                roots.push(stationary);
-                tangencies.push(stationary);
+            if let Some(value) = score(stationary) {
+                if value.abs() <= zero_tolerance {
+                    roots.push(stationary);
+                    tangencies.push(stationary);
+                } else {
+                    // Two close crossings can lie on opposite sides of an
+                    // extremum inside one station interval.
+                    if let Some(fa) = values[i]
+                        && fa.signum() != value.signum()
+                    {
+                        roots.push(bisect(&score, a, stationary, fa, value));
+                    }
+                    if let Some(fb) = values[i + 1]
+                        && value.signum() != fb.signum()
+                    {
+                        roots.push(bisect(&score, stationary, b, value, fb));
+                    }
+                }
             }
         }
     }
@@ -208,6 +223,7 @@ pub(super) fn visit(
         };
         let prefer_a =
             tangent_seam_preference(first, second, point_a, point_b, angle, &derivative, metric)
+                .or_else(|| near_tangent_circle_preference(first, second))
                 .unwrap_or_else(|| prefer_first_exact(a, b, metric));
         let (owner, point) = if prefer_a {
             (first.owner, point_a)
@@ -216,6 +232,46 @@ pub(super) fn visit(
         };
         emit(owner, point, distance);
     }
+}
+
+fn near_tangent_circle_preference(first: Conic, second: Conic) -> Option<bool> {
+    let (ConicLocus::Circle(a), ConicLocus::Circle(b)) = (first.locus, second.locus) else {
+        return None;
+    };
+    let scale = a.radius().max(b.radius());
+    if (a.radius() - b.radius()).abs() > 1e-10 * scale {
+        return None;
+    }
+    let center_distance = a.center().distance_to(b.center()).ok()?;
+    let sum = a.radius() + b.radius();
+    if center_distance <= 0.999 * sum || center_distance >= sum {
+        return None;
+    }
+    let normal_a = a.normal().ok()?;
+    let normal_b = b.normal().ok()?;
+    if normal_a.as_vector().dot(normal_b.as_vector()).ok()?.abs() < 1. - 1e-10 {
+        return None;
+    }
+    if a.center()
+        .vector_to(b.center())
+        .ok()?
+        .dot(normal_a.as_vector())
+        .ok()?
+        .abs()
+        > 1e-10 * scale
+    {
+        return None;
+    }
+    // In measured close circle pairs Rhino assigns both targets to the
+    // circle with the lexicographically smaller center, independent of
+    // cursor, source order, and parameter frame.
+    for (coordinate_a, coordinate_b) in a.center().to_array().into_iter().zip(b.center().to_array())
+    {
+        if (coordinate_a - coordinate_b).abs() > 1e-9 * scale {
+            return Some(coordinate_a < coordinate_b);
+        }
+    }
+    None
 }
 
 fn tangent_seam_preference(

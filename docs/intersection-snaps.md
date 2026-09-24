@@ -83,6 +83,19 @@ brackets and stationary points; candidates are checked against the second
 locus. All 94 retained picks replay with matching kind and source and points
 within `1e-9` model units.
 
+[Near-tangent inputs](../tools/rhino_oracle/fixtures/intersection_near_tangent_snaps.json)
+with [Rhino picks](../tools/rhino_oracle/observations/intersection_near_tangent_snaps.json),
+[cursor sweeps](../tools/rhino_oracle/fixtures/intersection_near_tangent_cursor_snaps.json),
+[rotated frames](../tools/rhino_oracle/fixtures/intersection_near_tangent_frames_snaps.json),
+and [vertical pairs](../tools/rhino_oracle/fixtures/intersection_near_tangent_vertical_snaps.json)
+add 22 retained picks. Two close circle crossings can fall within one root
+sampling interval, so a stationary point also divides that interval into two
+root brackets. Rhino assigns both close targets to the screen-left circle in
+horizontal pairs and the lower circle in vertical pairs; both have the
+lexicographically smaller center. All 22 picks match in kind and
+source; model points agree within `5e-8`. Rhino's observed points differ from
+the exact circle intersection by about `2.4e-8` in the rotated-frame case.
+
 Other curved loci, curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining

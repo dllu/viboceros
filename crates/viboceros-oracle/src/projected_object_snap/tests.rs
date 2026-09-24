@@ -142,6 +142,14 @@ fn protocol_replays_all_retained_point_inputs_without_observed_targets() {
 }
 
 fn retained_differences(input: &str, observations: &str) -> Vec<String> {
+    retained_differences_with_epsilon(input, observations, 1e-9)
+}
+
+fn retained_differences_with_epsilon(
+    input: &str,
+    observations: &str,
+    point_epsilon: f64,
+) -> Vec<String> {
     let input: Value = serde_json::from_str(input).unwrap();
     let observed: Value = serde_json::from_str(observations).unwrap();
     let operations = input["operations"].as_array().unwrap();
@@ -166,7 +174,7 @@ fn retained_differences(input: &str, observations: &str) -> Vec<String> {
             assert!(actual["point"].is_null());
         } else if (0..3).any(|i| {
             (actual["point"][i].as_f64().unwrap() - value["point"][i].as_f64().unwrap()).abs()
-                > 1e-9
+                > point_epsilon
         }) {
             differences.push(op["id"].as_str().unwrap().to_owned());
         }
@@ -370,6 +378,47 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
         ),
     ] {
         let differences = retained_differences(fixture, observed);
+        assert!(differences.is_empty(), "{differences:?}");
+    }
+}
+
+#[test]
+fn near_tangent_intersections_replay_owned_rhino_picks() {
+    for (fixture, observed) in [
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_tangent_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_tangent_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_tangent_cursor_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_tangent_cursor_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_tangent_frames_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_tangent_frames_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_near_tangent_vertical_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_near_tangent_vertical_snaps.json"
+            ),
+        ),
+    ] {
+        let differences = retained_differences_with_epsilon(fixture, observed, 5e-8);
         assert!(differences.is_empty(), "{differences:?}");
     }
 }
