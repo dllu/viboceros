@@ -146,6 +146,16 @@ fn selection_capture_frame(
                             }
                             None => None,
                         },
+                        fence_selection: match app.fence_selection.as_ref() {
+                            Some(state) if state.viewport.is_none() => {
+                                Some(FenceSelectionInput::PickFirst)
+                            }
+                            Some(state) if state.viewport == Some(0) => {
+                                Some(FenceSelectionInput::Continue(&state.points))
+                            }
+                            Some(_) => Some(FenceSelectionInput::Waiting),
+                            None => None,
+                        },
                         ..Default::default()
                     },
                     &[],
@@ -156,6 +166,99 @@ fn selection_capture_frame(
         )
         .drop_without_applying_deltas();
     output
+}
+
+#[test]
+fn fence_command_collects_one_viewport_polyline_and_selects_only_crossed_objects() {
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Point 0,1,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    assert_eq!(
+        interface::parse("_SelFence"),
+        Some(Ok(InterfaceCommand::SelFence))
+    );
+    assert!(interface::parse("SelFence Curve").unwrap().is_err());
+    enter(&mut app, "SelFence");
+    let context = egui::Context::default();
+    let click = |point, pressed| egui::Event::PointerButton {
+        pos: point,
+        button: egui::PointerButton::Primary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    let first = egui::Pos2::new(380.0, 300.0);
+    let second = egui::Pos2::new(420.0, 300.0);
+    selection_capture_frame(&context, &mut app, Vec::new());
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(first), click(first, true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![click(first, false)]);
+    assert_eq!(output.fence_point, Some((first, 0, SelectionMode::Replace)));
+    assert!(app.handle_viewport_action(output));
+    app.add_fence_point(second, 1, SelectionMode::Replace);
+    assert_eq!(app.fence_selection.as_ref().unwrap().points, vec![first]);
+    let right = |pressed| egui::Event::PointerButton {
+        pos: second,
+        button: egui::PointerButton::Secondary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(&context, &mut app, vec![right(true)]);
+    let output = selection_capture_frame(&context, &mut app, vec![right(false)]);
+    assert!(output.enter_pressed);
+    assert!(app.handle_viewport_action(output));
+    assert!(app.fence_selection.is_some());
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(second), click(second, true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![click(second, false)]);
+    assert_eq!(
+        output.fence_point,
+        Some((second, 0, SelectionMode::Replace))
+    );
+    assert!(app.handle_viewport_action(output));
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, "");
+    assert!(app.fence_selection.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[0]]
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
+fn fence_selection_feeds_an_existing_object_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line -1,0,0 1,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Flip");
+    let prompt = app.object_prompt.clone();
+    enter(&mut app, "SelFence");
+    assert_eq!(app.object_prompt, prompt);
+    layout_viewports(&egui::Context::default(), &mut app);
+    app.add_fence_point(egui::Pos2::new(400.0, 290.0), 0, SelectionMode::Replace);
+    app.add_fence_point(egui::Pos2::new(400.0, 310.0), 0, SelectionMode::Replace);
+    enter(&mut app, "");
+    assert!(app.document.is_selected(id));
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "");
+    let Geometry::Line(line) = app.document.object(id).unwrap().geometry() else {
+        panic!("expected line");
+    };
+    assert_eq!(line.start(), point(1.0, 0.0, 0.0));
 }
 
 #[test]

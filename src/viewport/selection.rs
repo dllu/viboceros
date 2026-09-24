@@ -3,8 +3,11 @@
 use super::picking::PickHit;
 use super::screen::{
     point_in_triangle, point_segment_distance, rect_corners, segment_intersects_rect,
+    segments_intersect,
 };
 use super::*;
+
+const FENCE_POINT_CAPTURE_PIXELS: f32 = 2.0;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct ScreenCircle {
@@ -79,6 +82,21 @@ impl ProjectedPrimitives {
                 .triangles
                 .iter()
                 .any(|&[a, b, c]| point_in_triangle(circle.center, a, b, c))
+    }
+
+    fn is_crossed_by_fence(&self, fence: &[Pos2]) -> bool {
+        fence.windows(2).any(|edge| {
+            let [start, end] = [edge[0], edge[1]];
+            self.points.iter().any(|&point| {
+                point_segment_distance(point, start, end) <= FENCE_POINT_CAPTURE_PIXELS
+            }) || self
+                .segments
+                .iter()
+                .any(|&[a, b]| segments_intersect(start, end, a, b))
+                || self.triangles.iter().any(|&[a, b, c]| {
+                    point_in_triangle(start, a, b, c) || point_in_triangle(end, a, b, c)
+                })
+        })
     }
 }
 
@@ -390,6 +408,36 @@ impl Viewport {
             .collect()
     }
 
+    pub(crate) fn objects_crossed_by_fence_preview(
+        &self,
+        fence: &[Pos2],
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Vec<ObjectId> {
+        let Some(viewport_rect) = self.last_rect else {
+            return Vec::new();
+        };
+        if fence.len() < 2 || fence.iter().any(|point| !viewport_rect.contains(*point)) {
+            return Vec::new();
+        }
+        document
+            .objects()
+            .filter(|object| {
+                filter.accepts_object(object) && selection_candidate(document, object, preview)
+            })
+            .filter_map(|object| {
+                let display = self
+                    .display_cache
+                    .borrow_mut()
+                    .get(object, document.tolerance());
+                self.projected_display(&display, viewport_rect, document.tolerance())
+                    .is_crossed_by_fence(fence)
+                    .then_some(object.id())
+            })
+            .collect()
+    }
+
     pub(super) fn projected_display(
         &self,
         display: &display_cache::DisplayGeometry,
@@ -666,6 +714,105 @@ pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
 mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
+
+    #[test]
+    fn fence_crosses_points_segments_and_shaded_faces_without_enclosure() {
+        let fence = [Pos2::new(390.0, 300.0), Pos2::new(410.0, 300.0)];
+        let mut point = ProjectedPrimitives::default();
+        point.add_point(Some(Pos2::new(400.0, 301.0)));
+        assert!(point.is_crossed_by_fence(&fence));
+        point.add_point(Some(Pos2::new(430.0, 300.0)));
+        assert!(!point.is_crossed_by_fence(&[Pos2::new(440.0, 310.0), Pos2::new(460.0, 310.0)]));
+
+        let mut line = ProjectedPrimitives::default();
+        line.add_segment(Some(Pos2::new(400.0, 280.0)), Some(Pos2::new(400.0, 320.0)));
+        assert!(line.is_crossed_by_fence(&fence));
+        let mut face = ProjectedPrimitives::default();
+        face.add_triangle([
+            Some(Pos2::new(350.0, 350.0)),
+            Some(Pos2::new(450.0, 350.0)),
+            Some(Pos2::new(400.0, 250.0)),
+        ]);
+        assert!(face.is_crossed_by_fence(&fence));
+        assert!(!face.is_crossed_by_fence(&[Pos2::new(460.0, 250.0), Pos2::new(470.0, 250.0)]));
+    }
+
+    #[test]
+    fn fence_selection_obeys_visibility_and_does_not_capture_nearby_objects() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let crossing = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let hidden = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let nearby = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.1, 0.0).unwrap()))
+            .unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        let fence = [Pos2::new(390.0, 300.0), Pos2::new(410.0, 300.0)];
+        assert_eq!(
+            view.objects_crossed_by_fence_preview(
+                &fence,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            [crossing]
+        );
+        assert_ne!(crossing, nearby);
+        assert_eq!(
+            view.objects_crossed_by_fence_preview(
+                &fence,
+                &document,
+                ObjectSelectionFilter::HiddenObjects,
+                Some(ObjectSelectionFilter::HiddenObjects),
+            ),
+            [hidden]
+        );
+    }
+
+    #[test]
+    fn fence_inside_a_mesh_face_selects_shaded_surface_but_not_wireframe() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(-3.0, -3.0, 0.0).unwrap(),
+                Point3::try_new(3.0, -3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let fence = [Pos2::new(390.0, 300.0), Pos2::new(410.0, 300.0)];
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        assert!(
+            view.objects_crossed_by_fence_preview(
+                &fence,
+                &document,
+                ObjectSelectionFilter::Any,
+                None
+            )
+            .is_empty()
+        );
+        view.display_mode = DisplayMode::Shaded;
+        assert_eq!(
+            view.objects_crossed_by_fence_preview(
+                &fence,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            [id]
+        );
+    }
 
     #[test]
     fn circle_window_and_crossing_include_segments_and_filled_faces() {

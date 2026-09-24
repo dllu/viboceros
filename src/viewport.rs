@@ -149,11 +149,19 @@ pub enum CircularSelectionInput {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub enum FenceSelectionInput<'a> {
+    PickFirst,
+    Continue(&'a [Pos2]),
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
+    pub fence_selection: Option<FenceSelectionInput<'a>>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_preview: Option<ObjectSelectionFilter>,
@@ -194,6 +202,7 @@ impl Default for ViewportInput<'_> {
             zoom_window: false,
             rect_selection_mode: None,
             circular_selection: None,
+            fence_selection: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_preview: None,
@@ -225,6 +234,7 @@ pub struct ViewportOutput {
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
     pub circular_center_pick: Option<(Pos2, usize)>,
+    pub fence_point: Option<(Pos2, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
     pub activated: bool,
@@ -555,6 +565,7 @@ impl Viewport {
         let selecting = !input.zoom_window
             && input.zoom_target.is_none()
             && input.circular_selection.is_none()
+            && input.fence_selection.is_none()
             && !drafting.active
             && !component_input
             && input.object_filter.is_some();
@@ -658,6 +669,14 @@ impl Viewport {
         } else {
             None
         };
+        let fence_point =
+            if input.fence_selection.is_some() && response.clicked_by(PointerButton::Primary) {
+                response
+                    .interact_pointer_pos()
+                    .map(|point| (point, viewport_index, selection_mode(modifiers)))
+            } else {
+                None
+            };
         let circular_result = if let Some(CircularSelectionInput::PickRadius { mode, center }) =
             input.circular_selection
             && response.clicked_by(PointerButton::Primary)
@@ -721,7 +740,8 @@ impl Viewport {
         if (drafting.active
             || input.zoom_window
             || input.zoom_target.is_some()
-            || input.circular_selection.is_some())
+            || input.circular_selection.is_some()
+            || input.fence_selection.is_some())
             && response.hovered()
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
@@ -883,6 +903,18 @@ impl Viewport {
                 painter.circle_stroke(center, radius, Stroke::new(1.25, color));
             }
         }
+        if let Some(FenceSelectionInput::Continue(points)) = input.fence_selection {
+            let color = Color32::from_rgb(45, 145, 75);
+            for pair in points.windows(2) {
+                painter.line_segment([pair[0], pair[1]], Stroke::new(1.5, color));
+            }
+            for &point in points {
+                painter.circle_filled(point, 2.5, color);
+            }
+            if let (Some(&start), Some(end)) = (points.last(), response.hover_pos()) {
+                painter.line_segment([start, end], Stroke::new(1.25, color));
+            }
+        }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(
                 Rect::from_two_pos(start, end).intersect(rect),
@@ -959,6 +991,7 @@ impl Viewport {
             selection_choice,
             selection_window,
             circular_center_pick,
+            fence_point,
             point_cloud_selection,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()

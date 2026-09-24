@@ -11,7 +11,7 @@ use viboceros_command::{
     format_interp_curve_options, parse_curve_closure, parse_curve_degree,
     parse_interp_curve_options, update_interp_curve_options,
 };
-use viboceros_document::{Document, DocumentError, ObjectId, suggested_layer_color};
+use viboceros_document::{Document, DocumentError, ObjectId, SelectionMode, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
     MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
@@ -21,9 +21,9 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    CircularSelectionInput, DisplayMode, DraftingInput, SelectionChoice, SelectionClick,
-    SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders,
-    ZoomTargetInput,
+    CircularSelectionInput, DisplayMode, DraftingInput, FenceSelectionInput, SelectionChoice,
+    SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput,
+    ZoomExtentsBorders, ZoomTargetInput,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -43,6 +43,13 @@ enum CircularSelectionState {
         center: egui::Pos2,
         viewport: usize,
     },
+}
+
+#[derive(Clone, Debug)]
+struct FenceSelectionState {
+    viewport: Option<usize>,
+    points: Vec<egui::Pos2>,
+    mode: SelectionMode,
 }
 
 #[derive(Clone, Debug)]
@@ -1304,6 +1311,7 @@ pub struct VibocerosApp {
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
+    fence_selection: Option<FenceSelectionState>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
@@ -1355,6 +1363,7 @@ impl VibocerosApp {
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
+            fence_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
@@ -1392,6 +1401,11 @@ impl VibocerosApp {
             self.command_input.clear();
             return;
         }
+        if input.is_empty() && self.fence_selection.is_some() {
+            self.finish_fence_selection();
+            self.command_input.clear();
+            return;
+        }
         if self.try_continue_region_selection_option(&input) {
             return;
         }
@@ -1406,6 +1420,9 @@ impl VibocerosApp {
             && viboceros_command::interface::parse(&input).is_none()
         {
             self.circular_selection = None;
+        }
+        if self.fence_selection.is_some() && !input.is_empty() {
+            self.fence_selection = None;
         }
         if self.try_one_shot_snap(&input) {
             return;
@@ -5266,6 +5283,67 @@ impl VibocerosApp {
         self.apply_selection_region(selection, false);
     }
 
+    fn add_fence_point(&mut self, point: egui::Pos2, viewport: usize, mode: SelectionMode) {
+        let Some(state) = self.fence_selection.as_mut() else {
+            return;
+        };
+        if let Some(first_viewport) = state.viewport {
+            if first_viewport != viewport {
+                self.push_log("Continue the fence in its starting viewport".into());
+                return;
+            }
+        } else {
+            state.viewport = Some(viewport);
+        }
+        if state
+            .points
+            .last()
+            .is_some_and(|last| last.distance(point) < 1.0)
+        {
+            return;
+        }
+        state.points.push(point);
+        state.mode = mode;
+    }
+
+    fn finish_fence_selection(&mut self) {
+        let Some(state) = self.fence_selection.take() else {
+            return;
+        };
+        if state.points.len() < 2 {
+            self.fence_selection = Some(state);
+            self.push_log("Fence needs at least two distinct points; Esc to cancel".into());
+            return;
+        }
+        let Some(viewport) = state.viewport else {
+            return;
+        };
+        let filter = self.viewport_object_filter().unwrap_or_default();
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
+        let ids = self.viewports[viewport].objects_crossed_by_fence_preview(
+            &state.points,
+            &self.document,
+            filter,
+            preview,
+        );
+        if self.group_prompt.is_some() {
+            self.select_group_prompt_objects(ids, state.mode);
+        } else if self.intersection_prompt.is_some() {
+            self.select_intersection_prompt_objects(ids, state.mode);
+        } else if self.object_prompt.is_some() {
+            self.select_prompt_objects(ids, state.mode);
+        } else {
+            match self.document.select_objects(ids, state.mode) {
+                Ok(count) => self.push_log(format!("Fence selection: {count} object(s) selected")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+        }
+    }
+
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
         self.selection_window_override = None;
         if self.picking_alignment_curve() {
@@ -5330,7 +5408,11 @@ impl VibocerosApp {
                 self.push_log("Select a radius point in the same viewport; Esc to cancel".into());
             }
         } else if output.enter_pressed {
-            self.run_command();
+            if self.fence_selection.is_some() {
+                self.finish_fence_selection();
+            } else {
+                self.run_command();
+            }
         } else if let Some(picks) = output.edge_click {
             self.accept_edge_click(picks);
         } else if let Some(parameter) = output.edge_parameter {
@@ -5348,6 +5430,8 @@ impl VibocerosApp {
                 choice,
                 highlighted: 0,
             });
+        } else if let Some((point, viewport, mode)) = output.fence_point {
+            self.add_fence_point(point, viewport, mode);
         } else if let Some(click) = output.selection_click {
             self.apply_selection_click(click);
         } else if let Some(selection) = output.selection_window {
@@ -5479,6 +5563,8 @@ impl eframe::App for VibocerosApp {
                 self.push_log("Selection window canceled".into());
             } else if self.circular_selection.take().is_some() {
                 self.push_log("Circular selection canceled".into());
+            } else if self.fence_selection.take().is_some() {
+                self.push_log("Fence selection canceled".into());
             } else if self.answer_object_prompt_escape() {
                 // A command-owned warning consumed this Escape key.
             } else if self.plane_prompt.is_some() {
@@ -5603,6 +5689,7 @@ impl eframe::App for VibocerosApp {
             .edge_prompt
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
+        let fence_selection = self.fence_selection.as_ref();
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5650,6 +5737,16 @@ impl eframe::App for VibocerosApp {
                                             Some(CircularSelectionState::PickRadius { .. }) => {
                                                 Some(CircularSelectionInput::Waiting)
                                             }
+                                            None => None,
+                                        },
+                                        fence_selection: match fence_selection {
+                                            Some(state) if state.viewport.is_none() => {
+                                                Some(FenceSelectionInput::PickFirst)
+                                            }
+                                            Some(state) if state.viewport == Some(index) => {
+                                                Some(FenceSelectionInput::Continue(&state.points))
+                                            }
+                                            Some(_) => Some(FenceSelectionInput::Waiting),
                                             None => None,
                                         },
                                         zoom_target: match zoom_target {
@@ -5852,6 +5949,7 @@ mod tests {
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
+            fence_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,

@@ -135,6 +135,13 @@ objects by their projected position in that circle. It accepts the same four
 default. Esc cancels either point prompt. This follows Rhino's
 [SelCircular](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCircular)
 view-plane selection.
+`SelFence` collects two or more clicks in one viewport and selects only objects
+crossed by the resulting screen-space polyline. Enter or right-click finishes;
+Esc cancels. The fence can cross points, visible wires, and shaded faces, and
+respects current object filters. Rhino also accepts an existing curve as a fence;
+that option remains open. Fence vertices currently stay at their screen positions
+if the view changes mid-sketch. See
+[SelFence](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelFence).
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates

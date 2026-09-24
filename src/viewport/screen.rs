@@ -36,6 +36,28 @@ pub(super) fn segment_intersects_rect(start: Pos2, end: Pos2, rect: Rect) -> boo
     clip_line_to_rect(start, end, rect, false).is_some()
 }
 
+pub(super) fn segments_intersect(a: Pos2, b: Pos2, c: Pos2, d: Pos2) -> bool {
+    let ab_c = signed_area(a, b, c);
+    let ab_d = signed_area(a, b, d);
+    let cd_a = signed_area(c, d, a);
+    let cd_b = signed_area(c, d, b);
+    if [ab_c, ab_d, cd_a, cd_b]
+        .iter()
+        .any(|value| !value.is_finite())
+    {
+        return false;
+    }
+    let between = |point: Pos2, start: Pos2, end: Pos2| {
+        (start.x.min(end.x)..=start.x.max(end.x)).contains(&point.x)
+            && (start.y.min(end.y)..=start.y.max(end.y)).contains(&point.y)
+    };
+    (ab_c == 0.0 && between(c, a, b))
+        || (ab_d == 0.0 && between(d, a, b))
+        || (cd_a == 0.0 && between(a, c, d))
+        || (cd_b == 0.0 && between(b, c, d))
+        || ((ab_c > 0.0) != (ab_d > 0.0) && (cd_a > 0.0) != (cd_b > 0.0))
+}
+
 /// Clip a finite segment or its infinite supporting line to a finite rectangle.
 /// Degenerate rectangles are supported; a zero-length segment is a point hit.
 pub(super) fn clip_line_to_rect(
@@ -156,6 +178,19 @@ pub(super) fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: P
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn finite_segments_cross_at_endpoints_and_collinear_overlap_only() {
+        let p = |x, y| Pos2::new(x, y);
+        let a = p(0.0, 0.0);
+        let b = p(10.0, 0.0);
+        assert!(segments_intersect(a, b, p(5.0, -5.0), p(5.0, 5.0)));
+        assert!(segments_intersect(a, b, p(10.0, 0.0), p(10.0, 5.0)));
+        assert!(segments_intersect(a, b, p(5.0, 0.0), p(15.0, 0.0)));
+        assert!(!segments_intersect(a, b, p(11.0, 0.0), p(15.0, 0.0)));
+        assert!(!segments_intersect(a, b, p(5.0, 1.0), p(15.0, 1.0)));
+        assert!(!segments_intersect(a, b, p(f32::NAN, 0.0), p(5.0, 1.0)));
+    }
 
     #[test]
     fn screen_determinants_agree_with_exact_accumulation() {

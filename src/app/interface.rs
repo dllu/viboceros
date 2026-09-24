@@ -72,12 +72,33 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::SelFence {
+                    if !self.can_capture_selection() {
+                        self.push_log("Fence selection unavailable during this prompt".into());
+                        return;
+                    }
+                    self.fence_selection = Some(FenceSelectionState {
+                        viewport: None,
+                        points: Vec::new(),
+                        mode: viboceros_document::SelectionMode::Replace,
+                    });
+                    self.selection_window_override = None;
+                    self.circular_selection = None;
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.push_log(
+                        "Click fence points in one viewport; Enter/right-click to select, Esc to cancel"
+                            .into(),
+                    );
+                    return;
+                }
                 if let InterfaceCommand::SelCircular(mode) = command {
                     if !self.can_capture_selection() {
                         self.push_log("Circular selection unavailable during this prompt".into());
                         return;
                     }
                     self.circular_selection = Some(CircularSelectionState::PickCenter(mode));
+                    self.fence_selection = None;
                     self.selection_window_override = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
@@ -102,6 +123,7 @@ impl VibocerosApp {
                     };
                     self.selection_window_override = Some(mode);
                     self.circular_selection = None;
+                    self.fence_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(format!(
@@ -118,6 +140,7 @@ impl VibocerosApp {
                 }
                 self.selection_window_override = None;
                 self.circular_selection = None;
+                self.fence_selection = None;
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
                     self.zoom_target = None;
