@@ -56,7 +56,7 @@ point, which could cluster knots and leave large gaps unresolved. Cubic fits use
 a banded solve with exact endpoint/kink handle constraints; other degrees use
 dense full-pivot solves. Repeated error checks cache exact floating-point source
 distances locally (at most 32,768 points), without quantization. Accuracy remains
-sampled, with a 1,024-control cubic budget and 512-control budget for other
+sampled, with a 4,096-control cubic budget and 512-control budget for other
 degrees; exhaustion is an error, not a relaxed tolerance.
 `DeleteInput=Yes` and `OutputLayer=InputObject` are the Rhino-compatible
 defaults and replace each result in place; `DeleteInput=No` retains the source,

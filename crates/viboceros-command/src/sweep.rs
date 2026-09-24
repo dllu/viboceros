@@ -169,6 +169,39 @@ mod tests {
     }
 
     #[test]
+    fn large_circular_rail_can_be_refitted_into_a_closed_brep() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Circle 0,0,0 100",
+            "SelLast",
+            "SetObjectName Rail",
+            "Line 100,0,-1 100,0,1",
+            "SelLast",
+        ] {
+            registry.execute(&mut document, command).unwrap();
+        }
+        registry
+            .execute(
+                &mut document,
+                "Sweep1 RailName=Rail Parameters=0 RefitRail=Yes",
+            )
+            .unwrap();
+        let output = document
+            .objects()
+            .find(|o| matches!(o.geometry(), Geometry::Brep(_)))
+            .unwrap();
+        let Geometry::Brep(brep) = output.geometry() else {
+            unreachable!()
+        };
+        assert_eq!(brep.faces().len(), 1);
+        assert_eq!(
+            brep.edge_use_counts().iter().filter(|&&n| n == 2).count(),
+            1
+        );
+    }
+
+    #[test]
     fn closed_and_kinked_profiles_produce_valid_shared_brep_topology() {
         let registry = CommandRegistry::with_builtins();
         for (profile, expected_faces) in [("Circle 0,0,0 1", 1), ("Polyline 0,0,0 1,0,0 1,1,0", 2)]

@@ -12,12 +12,13 @@ pub const MAX_CURVE_FIT_DEGREE: usize = 11;
 
 /// Resource ceiling for adaptive cubic curve fitting with banded solves.
 /// A full radius-three circle at the default Sweep1 fit tolerance needs 515
-/// controls; other degrees keep the smaller dense-solve ceiling below.
-pub const MAX_CURVE_FIT_CONTROL_POINTS: usize = 1024;
+/// controls; larger circles need more at the same absolute tolerance. Other
+/// degrees keep the smaller dense-solve ceiling below.
+pub const MAX_CURVE_FIT_CONTROL_POINTS: usize = 4096;
 const MAX_DENSE_CURVE_FIT_CONTROL_POINTS: usize = 512;
 
 const CURVE_FIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
-const MAX_CACHED_FIT_POINTS: usize = MAX_CURVE_FIT_CONTROL_POINTS * 32;
+const MAX_CACHED_FIT_POINTS: usize = 32_768;
 
 #[derive(Clone, Copy, Debug)]
 struct FitBreak {
@@ -444,28 +445,33 @@ mod tests {
 
     #[test]
     fn cubic_full_circle_refit_reaches_default_sweep_tolerance() {
-        let circle = crate::Circle3::try_new(
-            Point3::try_new(0., 0., 0.).unwrap(),
-            3.,
-            crate::UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let fit = try_fit_curve(
-            CurveRef::Circle(&circle),
-            3,
-            2.5e-10,
-            1e-10,
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        assert!(fit.control_points().len() <= MAX_CURVE_FIT_CONTROL_POINTS);
-        assert!(fit.is_closed().unwrap());
-        for i in 0..=257 {
-            let t = *fit.domain().end() * i as Real / 257.;
-            let source = circle.evaluate(t).unwrap();
-            let actual = fit.evaluate(t).unwrap();
-            assert!(source.distance_to(actual).unwrap() < 2.5e-10, "station {i}");
+        for radius in [3., 10., 100.] {
+            let circle = crate::Circle3::try_new(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                radius,
+                crate::UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let fit = try_fit_curve(
+                CurveRef::Circle(&circle),
+                3,
+                2.5e-10,
+                1e-10,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert!(fit.control_points().len() <= MAX_CURVE_FIT_CONTROL_POINTS);
+            assert!(fit.is_closed().unwrap(), "radius {radius}");
+            for i in 0..=257 {
+                let t = *fit.domain().end() * i as Real / 257.;
+                let source = circle.evaluate(t).unwrap();
+                let actual = fit.evaluate(t).unwrap();
+                assert!(
+                    source.distance_to(actual).unwrap() < 2.5e-10,
+                    "radius {radius}, station {i}"
+                );
+            }
         }
     }
 

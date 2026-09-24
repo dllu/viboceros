@@ -229,7 +229,9 @@ and [Rhino observation](../tools/rhino_oracle/observations/sweep1_closed_circle_
 retain 81 matching world queries. Separately, at the default document
 tolerance the native nonrational cubic fit uses 515 controls and preserves the
 surface seam. The previous 512-control ceiling stopped three controls short.
-The bounded fitter can still reject larger circles at the same absolute tolerance.
+The cubic fit now accepts radius-10 and radius-100 circles at the same absolute
+tolerance under a 4,096-control budget. More demanding curves can still exhaust
+this limit; the surface also has a separate 262,144-control budget.
 
 Construction tolerance in these fixtures is `1e-7`; passing the looser `1e-6`
 comparison is not evidence of agreement at construction tolerance. Independent

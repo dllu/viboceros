@@ -14,7 +14,7 @@ mod weights;
 
 const MAX_SECTIONS: usize = 256;
 const MAX_SECTION_CONTROLS: usize = 512;
-const MAX_AXIS_CONTROLS: usize = 1024;
+const MAX_AXIS_CONTROLS: usize = 4096;
 const MAX_SURFACE_CONTROLS: usize = 262_144;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
