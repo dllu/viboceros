@@ -5487,6 +5487,44 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, fillet_corners)
         finally:
             source.Dispose()
+    if kind == "curve_fillet_pair_geometry":
+        first = _join_close_input(operation["curve0"])
+        second = _join_close_input(operation["curve1"])
+        pick0 = _point(operation["pick0"])
+        pick1 = _point(operation["pick1"])
+        radius = _finite(operation["radius"], "fillet radius")
+
+        def fillet_pair():
+            curves = Rhino.Geometry.Curve.CreateFilletCurves(
+                first, pick0, second, pick1, radius, True, True, True,
+                tolerance["absolute"], tolerance["angular"]
+            )
+            if curves is None or len(curves) != 1:
+                raise ValueError("Rhino joined fillet failed")
+            curve = curves[0]
+            try:
+                samples = []
+                for index in range(65):
+                    success, parameter = curve.NormalizedLengthParameter(
+                        index / 64.0, 1e-12
+                    )
+                    if not success:
+                        raise ValueError("Rhino fillet arc-length sampling failed")
+                    samples.append(_xyz(curve.PointAt(parameter)))
+                return {
+                    "closed": bool(curve.IsClosed),
+                    "length": float(curve.GetLength(1e-12)),
+                    "samples": samples,
+                }
+            finally:
+                for part in curves:
+                    part.Dispose()
+
+        try:
+            return _measure(iterations, fillet_pair)
+        finally:
+            first.Dispose()
+            second.Dispose()
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

@@ -6,6 +6,7 @@ Rhino's complete command set is still a work in progress.
 
 - [Curve creation and editing](curves.md)
 - [Analytic curve offsets](offset.md)
+- [Two-curve fillets](fillet.md)
 - [Polyline corner fillets](fillet-corners.md)
 - [Single and repeated point placement](points.md)
 - [Rectangular point grids](point-grid.md)

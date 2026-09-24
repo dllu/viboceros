@@ -3,6 +3,8 @@
 #[cfg(test)]
 mod fillet_corners_tests;
 #[cfg(test)]
+mod fillet_pair_tests;
+#[cfg(test)]
 mod mesh_edit_replay_tests;
 #[cfg(test)]
 mod numeric_json_tests;
@@ -502,6 +504,14 @@ pub enum Operation {
         radius: f64,
         #[serde(default)]
         queries: Option<Vec<[f64; 3]>>,
+    },
+    CurveFilletPairGeometry {
+        id: String,
+        curve0: curve_join_close::CurveInput,
+        curve1: curve_join_close::CurveInput,
+        pick0: [f64; 3],
+        pick1: [f64; 3],
+        radius: f64,
     },
     NonManifoldSelection {
         id: String,
@@ -1813,6 +1823,7 @@ impl Operation {
             | Self::EllipseOffsetGeometry { id, .. }
             | Self::CurveOffsetGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
+            | Self::CurveFilletPairGeometry { id, .. }
             | Self::NonManifoldSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
@@ -2378,6 +2389,38 @@ fn execute(
                     .map(Point3::to_array)
                     .collect::<Vec<_>>()
             };
+            (
+                json!({"closed": curve.is_closed()?, "length": curve.length(tolerance)?, "samples": samples}),
+                elapsed,
+            )
+        }
+        Operation::CurveFilletPairGeometry {
+            curve0,
+            curve1,
+            pick0,
+            pick1,
+            radius,
+            ..
+        } => {
+            let first = curve0.geometry()?;
+            let second = curve1.geometry()?;
+            let first_pick = point(*pick0)?;
+            let second_pick = point(*pick1)?;
+            let (curve, elapsed) = measure(iterations, || {
+                viboceros_geometry::try_fillet_curves_joined(
+                    &first,
+                    first_pick,
+                    &second,
+                    second_pick,
+                    *radius,
+                    tolerance,
+                )
+            })?;
+            let samples = CurveRef::PolyCurve(&curve)
+                .sample_equal_length_points(64, true, tolerance)?
+                .into_iter()
+                .map(Point3::to_array)
+                .collect::<Vec<_>>();
             (
                 json!({"closed": curve.is_closed()?, "length": curve.length(tolerance)?, "samples": samples}),
                 elapsed,
