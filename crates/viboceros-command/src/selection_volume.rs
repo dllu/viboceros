@@ -1,7 +1,7 @@
 //! Model-space volume selection, independent of the active viewport.
 
 use super::*;
-use viboceros_geometry::{BoundingBox3, Circle3, CircularArc3};
+use viboceros_geometry::{BoundingBox3, Circle3, CircularArc3, Ellipse3};
 
 const SEL_VOLUME_SPHERE_USAGE: &str =
     "SelVolumeSphere center radius [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
@@ -208,6 +208,7 @@ impl SelectionSphere {
             Geometry::Polyline(polyline) => self.classify_polyline(polyline.vertices()),
             Geometry::Circle(circle) => self.classify_circle(*circle),
             Geometry::Arc(arc) => self.classify_arc(*arc),
+            Geometry::Ellipse(ellipse) => self.classify_ellipse(*ellipse),
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
@@ -215,7 +216,7 @@ impl SelectionSphere {
             Geometry::Brep(brep) => {
                 self.classify_mesh(&brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
             }
-            Geometry::Ellipse(_) | Geometry::NurbsCurve(_) | Geometry::PolyCurve(_) => {
+            Geometry::NurbsCurve(_) | Geometry::PolyCurve(_) => {
                 let curve = geometry.curve_ref().expect("curve geometry");
                 let points = curve.sample_equal_length_points(CURVE_SAMPLES, true, tolerance)?;
                 self.classify_polyline(&points)
@@ -403,6 +404,16 @@ impl SelectionSphere {
             crossing |= inside;
         }
         Ok(VolumeRelation { window, crossing })
+    }
+
+    fn classify_ellipse(self, ellipse: Ellipse3) -> Result<VolumeRelation, CommandError> {
+        let nearest = ellipse.evaluate(ellipse.closest_parameter(self.center)?)?;
+        let farthest = ellipse.evaluate(ellipse.farthest_parameter(self.center)?)?;
+        let window = self.contains(farthest);
+        Ok(VolumeRelation {
+            window,
+            crossing: window || self.contains(nearest),
+        })
     }
 
     fn classify_mesh(
@@ -845,6 +856,58 @@ mod tests {
             .unwrap()
             .crossing
         );
+    }
+
+    #[test]
+    fn sphere_finds_ellipse_extrema_between_display_samples() {
+        let ellipse = Ellipse3::try_new(
+            p(0.0, 0.0, 0.0),
+            2.0,
+            1.0,
+            UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let geometry = Geometry::Ellipse(ellipse);
+        let samples = geometry
+            .curve_ref()
+            .unwrap()
+            .sample_equal_length_points(CURVE_SAMPLES, true, Tolerance::DEFAULT)
+            .unwrap();
+        let angle: Real = 0.017;
+        let narrow = SelectionSphere {
+            center: ellipse.point_at_angle(angle).unwrap(),
+            radius: 1e-4,
+        };
+        assert!(
+            narrow
+                .classify(&geometry, Tolerance::DEFAULT)
+                .unwrap()
+                .crossing
+        );
+        assert!(!narrow.classify_polyline(&samples).unwrap().crossing);
+
+        // The chosen sphere center makes angle 0.017 a stationary maximum
+        // of distance to the ellipse. It lies between equal-length samples.
+        let (sine, cosine) = angle.sin_cos();
+        let center = p(-2.0, -(3.0 * sine + 4.0 * sine / cosine), 0.0);
+        let farthest = center
+            .distance_to(ellipse.point_at_angle(angle).unwrap())
+            .unwrap();
+        let sampled_max = samples
+            .iter()
+            .map(|point| center.distance_to(*point).unwrap())
+            .fold(0.0, Real::max);
+        assert!(farthest > sampled_max + 1e-7);
+        let enclosing = SelectionSphere {
+            center,
+            radius: farthest.midpoint(sampled_max),
+        };
+        assert!(enclosing.classify_polyline(&samples).unwrap().window);
+        let relation = enclosing.classify(&geometry, Tolerance::DEFAULT).unwrap();
+        assert!(!relation.window);
+        assert!(relation.crossing);
     }
 
     #[test]

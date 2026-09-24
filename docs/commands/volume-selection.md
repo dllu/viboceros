@@ -32,21 +32,22 @@ intersections. InvertWindow selects objects wholly outside; InvertCrossing
 also includes partial intersections. Hidden and locked objects are skipped,
 and the command does not create geometry or change undo history.
 
-The sphere checks points, line segments, circles, circular arcs, polylines,
-and mesh faces directly. For arcs, it checks the exact nearest and farthest
-points within the sweep and both endpoints. The box samples NURBS curves and
-polycurves; the sphere also samples ellipses. These curves use 128 equal-length
-segments, while surfaces and B-reps use 16 tessellation samples per span.
-Near tangencies on sampled objects may differ from exact Rhino selection.
-While picking points, enter a `SelectionMode` option to change the mode.
+The sphere checks points, line segments, circles, circular arcs, ellipses,
+polylines, and mesh faces directly. For arcs, it checks the nearest and farthest
+points within the sweep and both endpoints. Ellipses use nearest and farthest
+point queries. The box samples NURBS curves and polycurves; the sphere also
+samples those curves. These curves use 128 equal-length segments, while
+surfaces and B-reps use 16 tessellation samples per span. Near tangencies on
+sampled objects may differ from exact Rhino selection. While picking points,
+enter a `SelectionMode` option to change the mode.
 
 This follows Rhino's
 [SelVolumeSphere](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeSphere)
 selection modes.
 
 The [sphere selection oracle fixture](../../tools/rhino_oracle/fixtures/volume_selection.json)
-contains seven shared curve cases, including all four modes and narrow arc
-intersections. The native probe runs these through the actual command. A live
+contains nine shared curve cases, including all four modes and narrow arc and
+ellipse intersections. The native probe runs these through the actual command. A live
 Rhino observation has not been saved: the current direct ARM64 Wine launch
 exits in `.NET` initialization before the Python worker starts.
 When Rhino starts, run `python3 -m tools.rhino_oracle compare

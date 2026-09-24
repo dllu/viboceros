@@ -51,7 +51,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fixture_records_all_modes_and_arc_edge_cases() {
+    fn fixture_records_all_modes_and_oval_edge_cases() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/volume_selection.json"
         ))
@@ -71,6 +71,8 @@ mod tests {
                 ("line-invert-crossing", json!([0])),
                 ("circle-window", json!([0])),
                 ("arc-tiny-crossing", json!([0])),
+                ("ellipse-tiny-crossing", json!([0])),
+                ("ellipse-farthest-window", json!([])),
                 ("arc-farthest-window", json!([])),
             ]
         );

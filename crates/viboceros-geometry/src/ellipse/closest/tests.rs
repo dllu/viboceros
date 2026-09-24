@@ -34,6 +34,98 @@ fn exterior_root_matches_independent_high_precision_stationarity_solution() {
 }
 
 #[test]
+fn farthest_root_matches_high_precision_solution_and_all_quadrants() {
+    // 80-decimal solution of -21 - 55/cos(u) + 6/sin(u) = 0.
+    let expected = p(-4.984464201913815, -0.1575393892788352, 0.);
+    let e = ellipse(5., 2.);
+    for height in [0., 1e100] {
+        let q = e
+            .evaluate(e.farthest_parameter(p(11., 3., height)).unwrap())
+            .unwrap();
+        assert!(q.distance_to(expected).unwrap() < 3e-15, "{q:?}");
+    }
+    for scale in [1e-150, 1., 1e150] {
+        for e in [
+            ellipse(5. * scale, 2. * scale),
+            ellipse(2. * scale, 5. * scale),
+        ] {
+            for (x, y) in [(-11., 3.), (11., 3.), (11., -3.), (-11., -3.), (0.2, 0.3)] {
+                let target = p(x * scale, y * scale, 0.);
+                let q = e.evaluate(e.farthest_parameter(target).unwrap()).unwrap();
+                let distance = (q.x() / scale - x).hypot(q.y() / scale - y);
+                for i in 0..720 {
+                    let angle = std::f64::consts::TAU * i as Real / 720.;
+                    let other = (e.radius_x() / scale * angle.cos() - x)
+                        .hypot(e.radius_y() / scale * angle.sin() - y);
+                    assert!(distance + 1e-13 >= other);
+                }
+                for variant in [e.try_reparameterized(-7.0..=13.0).unwrap(), e.reversed()] {
+                    let t = variant.farthest_parameter(target).unwrap();
+                    assert!(variant.domain().contains(&t));
+                    assert!(variant.evaluate(t).unwrap().distance_to(q).unwrap() / scale < 3e-14);
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn farthest_axis_queries_choose_global_maxima_and_stable_ties() {
+    let e = ellipse(5., 2.);
+    for (target, expected) in [
+        (p(0., 0., 0.), p(5., 0., 0.)),
+        (p(10., 0., 7.), p(-5., 0., 0.)),
+        (p(-10., 0., 7.), p(5., 0., 0.)),
+        (p(0., 20., 7.), p(0., -2., 0.)),
+    ] {
+        let q = e.evaluate(e.farthest_parameter(target).unwrap()).unwrap();
+        assert!(
+            q.distance_to(expected).unwrap() < 3e-15,
+            "{target:?} -> {q:?}"
+        );
+    }
+    let q = e
+        .evaluate(e.farthest_parameter(p(0., 1., 0.)).unwrap())
+        .unwrap();
+    assert!(q.x() < 0. && q.y() < 0.);
+    assert_eq!(
+        ellipse(2., 2.).farthest_parameter(p(0., 0., 9.)).unwrap(),
+        0.
+    );
+}
+
+#[test]
+fn farthest_query_uses_ellipse_frame_and_ignores_normal_offset() {
+    let tolerance = Tolerance::DEFAULT;
+    let x = Vector3::try_new(1., 1., 0.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    let y = Vector3::try_new(0., 0., 1.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    let e = Ellipse3::try_new(p(3., 4., 5.), 5., 2., x, y, tolerance).unwrap();
+    let normal = x.as_vector().cross(y.as_vector()).unwrap();
+    let target = e
+        .center()
+        .translated(x.as_vector().scaled(11.).unwrap())
+        .unwrap()
+        .translated(y.as_vector().scaled(3.).unwrap())
+        .unwrap()
+        .translated(normal.scaled(7.).unwrap())
+        .unwrap();
+    let expected = e
+        .center()
+        .translated(x.as_vector().scaled(-4.984464201913815).unwrap())
+        .unwrap()
+        .translated(y.as_vector().scaled(-0.1575393892788352).unwrap())
+        .unwrap();
+    let q = e.evaluate(e.farthest_parameter(target).unwrap()).unwrap();
+    assert!(q.distance_to(expected).unwrap() < 5e-15);
+}
+
+#[test]
 fn axis_queries_medial_ties_center_and_seam_have_analytic_answers() {
     let e = ellipse(5., 2.);
     for (target, expected) in [
@@ -101,11 +193,10 @@ fn reflections_domains_reversal_and_wide_uniform_scales_preserve_the_locus() {
 
 #[test]
 fn coefficient_underflow_is_an_explicit_failure() {
-    assert!(
-        ellipse(1e-200, 1.)
-            .closest_parameter(p(1e-200, 1., 0.))
-            .is_err()
-    );
+    let ellipse = ellipse(1e-200, 1.);
+    let target = p(1e-200, 1., 0.);
+    assert!(ellipse.closest_parameter(target).is_err());
+    assert!(ellipse.farthest_parameter(target).is_err());
 }
 
 #[test]
@@ -126,6 +217,30 @@ fn near_evolute_axis_queries_do_not_lose_the_small_stationary_offset() {
     assert!(q.y() > 0.);
     assert!(
         q.distance_to(expected).unwrap() < 1e-15,
+        "{q:?} != {expected:?}"
+    );
+}
+
+#[test]
+fn farthest_axis_transition_retains_sub_ulp_interior_station() {
+    let e = ellipse(5., 2.);
+    assert_eq!(
+        e.farthest_parameter(p(0., 10.5, 0.)).unwrap(),
+        1.5 * std::f64::consts::PI
+    );
+    let y = 10.5_f64.next_down();
+    // With x=0, the farthest stationary sine is exactly 2*y/21.
+    let s = rational(2.) * rational(y) / rational(21.);
+    let c = scalar(&((rational(1.) - &s) * (rational(1.) + &s)))
+        .unwrap()
+        .sqrt();
+    let expected = p(-5. * c, -2. * scalar(&s).unwrap(), 0.);
+    let q = e
+        .evaluate(e.farthest_parameter(p(0., y, 0.)).unwrap())
+        .unwrap();
+    assert!(q.x() < 0.);
+    assert!(
+        q.distance_to(expected).unwrap() < 1e-14,
         "{q:?} != {expected:?}"
     );
 }
