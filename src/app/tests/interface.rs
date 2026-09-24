@@ -536,6 +536,60 @@ fn volume_sphere_picks_model_points_and_accepts_mode_changes() {
 }
 
 #[test]
+fn volume_pipe_picks_curve_then_radius_and_accepts_mode_changes() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 10,0,0");
+    enter(&mut app, "Point 5,0.5,0");
+    enter(&mut app, "Point 5,2,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelVolumePipe SelectionMode=Window");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumePipe {
+            source: None,
+            mode: RectSelectionMode::Window
+        })
+    ));
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumePipe {
+            source: Some(_),
+            mode: RectSelectionMode::Window
+        })
+    ));
+    app.command_input = "SelectionMode=Crossing".into();
+    app.run_command_input();
+    assert!(app.accept_drafting_point(Point3::try_new(5.0, 1.0, 0.0).unwrap()));
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1]]
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+
+    app.document
+        .select_object(ids[0], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "SelVolumePipe");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumePipe {
+            source: Some(source),
+            ..
+        }) if source == ids[0]
+    ));
+}
+
+#[test]
 fn sel_box_picks_base_and_height_without_creating_geometry() {
     let mut app = test_app();
     enter(&mut app, "Point 1,1,1");

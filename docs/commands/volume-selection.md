@@ -1,4 +1,4 @@
-# Box and sphere volume selection
+# Box, sphere, and pipe volume selection
 
 `SelBox [base-corner opposite-base-corner height] [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
 selects against a three dimensional box aligned to the active construction
@@ -14,6 +14,27 @@ the six box planes, and checks circles, circular arcs, and ellipses against
 those planes using their analytic parameterization. Rhino's
 [SelBox](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelBox)
 also uses point samples and warns that it may miss some crossing objects.
+
+## Pipe
+
+`SelVolumePipe [curve-id] radius [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
+selects against a constant-radius tube around a curve. Select one curve first
+and enter a positive radius, or pass its object ID explicitly. Enter the
+command without a radius to pick a centerline curve and then a radius point
+in the viewport. For example:
+
+```text
+SelVolumePipe 0.5 SelectionMode=Crossing
+```
+
+The tube includes points within the radius of its centerline, including round
+ends on an open curve. The source curve is excluded from the result. Point
+objects use the core curve closest-point query. Line and polyline centerlines
+are checked segment by segment; other centerlines use 128 equal-length samples
+for crossing tests. Mesh faces are checked for segment passage through their
+interiors as well as near edges and vertices. Curved target objects and
+nonstraight tube Window tests use samples, so thin boundary cases may differ
+from Rhino. The command supports the four [Rhino selection modes](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumePipe).
 
 ## Sphere
 

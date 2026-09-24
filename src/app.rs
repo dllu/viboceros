@@ -248,6 +248,10 @@ enum InteractiveCommand {
         center: Option<Point3>,
         mode: RectSelectionMode,
     },
+    SelVolumePipe {
+        source: Option<ObjectId>,
+        mode: RectSelectionMode,
+    },
     Ellipsoid {
         points: [Option<Point3>; 3],
     },
@@ -498,6 +502,7 @@ impl InteractiveCommand {
             Self::Circle { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
+            Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
@@ -654,6 +659,12 @@ impl InteractiveCommand {
             Self::SelVolumeSphere {
                 center: Some(_), ..
             } => "SelVolumeSphere: pick a radius point in the viewport (Esc to cancel)",
+            Self::SelVolumePipe { source: None, .. } => {
+                "SelVolumePipe: select a centerline curve (Esc to cancel)"
+            }
+            Self::SelVolumePipe {
+                source: Some(_), ..
+            } => "SelVolumePipe: pick a radius point near the curve (Esc to cancel)",
             Self::Ellipsoid { points } => match points {
                 [None, _, _] => "Ellipsoid: pick the center in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -1133,6 +1144,7 @@ impl InteractiveCommand {
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
             | Self::SelVolumeSphere { center: None, .. }
+            | Self::SelVolumePipe { .. }
             | Self::Ellipsoid {
                 points: [None, _, _],
             }
@@ -3186,7 +3198,10 @@ impl VibocerosApp {
                 rotate,
                 z_offset,
             }
-        } else if matches!(normalized.as_str(), "selvolumesphere" | "selbox") {
+        } else if matches!(
+            normalized.as_str(),
+            "selvolumesphere" | "selvolumepipe" | "selbox"
+        ) {
             let mode = match arguments.as_slice() {
                 [] => RectSelectionMode::Crossing,
                 [option] => {
@@ -3212,6 +3227,20 @@ impl VibocerosApp {
                     opposite: None,
                     mode,
                 }
+            } else if normalized == "selvolumepipe" {
+                let selected = self.document.selected_object_ids().collect::<Vec<_>>();
+                let source = match selected.as_slice() {
+                    [id] if self
+                        .document
+                        .object(*id)
+                        .and_then(|object| object.geometry().curve_ref())
+                        .is_some() =>
+                    {
+                        Some(*id)
+                    }
+                    _ => None,
+                };
+                InteractiveCommand::SelVolumePipe { source, mode }
             } else {
                 InteractiveCommand::SelVolumeSphere { center: None, mode }
             }
@@ -3564,6 +3593,44 @@ impl VibocerosApp {
                 self.execute_command(&format!(
                     "SelVolumeSphere {} {radius} SelectionMode={mode_name}",
                     format_model_point(center),
+                ));
+            }
+            InteractiveCommand::SelVolumePipe { source: None, .. } => {
+                self.push_log("Select a centerline curve first".to_owned());
+                return false;
+            }
+            InteractiveCommand::SelVolumePipe {
+                source: Some(source),
+                mode,
+            } => {
+                let radius = self
+                    .document
+                    .object(source)
+                    .and_then(|object| object.geometry().curve_ref())
+                    .and_then(|curve| {
+                        let parameter = curve
+                            .closest_parameter(point, self.document.tolerance())
+                            .ok()?;
+                        let nearest = curve.evaluate(parameter).ok()?;
+                        point.distance_to(nearest).ok()
+                    });
+                let Some(radius) = radius else {
+                    self.push_log("Error: could not measure pipe radius".to_owned());
+                    return false;
+                };
+                if radius <= 0.0 {
+                    self.push_log("Error: pipe radius must be positive".to_owned());
+                    return false;
+                }
+                let mode_name = match mode {
+                    RectSelectionMode::Automatic | RectSelectionMode::Crossing => "Crossing",
+                    RectSelectionMode::Window => "Window",
+                    RectSelectionMode::InvertWindow => "InvertWindow",
+                    RectSelectionMode::InvertCrossing => "InvertCrossing",
+                };
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "SelVolumePipe {source} {radius} SelectionMode={mode_name}"
                 ));
             }
             InteractiveCommand::Ellipsoid { mut points } => {
@@ -5311,6 +5378,24 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if let Some(InteractiveCommand::SelVolumePipe { source: None, mode }) = self.active_command
+        {
+            if let Some(source) = click.object_id
+                && self
+                    .document
+                    .object(source)
+                    .and_then(|object| object.geometry().curve_ref())
+                    .is_some()
+            {
+                let command = InteractiveCommand::SelVolumePipe {
+                    source: Some(source),
+                    mode,
+                };
+                self.active_command = Some(command);
+                self.push_log(command.prompt().to_owned());
+            }
+            return;
+        }
         if let Some(mode) = self.boundary_selection {
             if let Some(id) = click.object_id {
                 self.finish_boundary_selection(id, mode, click.mode);
@@ -5847,7 +5932,12 @@ impl eframe::App for VibocerosApp {
         self.show_layers(ui);
         self.show_command_line(ui);
         let drafting = DraftingInput {
-            active: (self.active_command.is_some() && !self.picking_alignment_curve())
+            active: (self.active_command.is_some()
+                && !self.picking_alignment_curve()
+                && !matches!(
+                    self.active_command,
+                    Some(InteractiveCommand::SelVolumePipe { source: None, .. })
+                ))
                 || self.plane_prompt.is_some(),
             osnap: self.effective_snap_modes(),
             mesh_edges: self.snaps.mesh_edges,
@@ -5931,7 +6021,12 @@ impl eframe::App for VibocerosApp {
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         let fence_selection = self.fence_selection.as_ref();
         let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
-        let curve_region_pick = fence_curve_pick || self.boundary_selection.is_some();
+        let curve_region_pick = fence_curve_pick
+            || self.boundary_selection.is_some()
+            || matches!(
+                self.active_command,
+                Some(InteractiveCommand::SelVolumePipe { source: None, .. })
+            );
         let document = &self.document;
         let curve_points = self
             .plane_prompt

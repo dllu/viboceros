@@ -79,7 +79,7 @@ impl Command for SelBoxCommand {
     }
 }
 
-fn parse_volume_mode(
+pub(super) fn parse_volume_mode(
     option: &str,
     usage: &'static str,
 ) -> Result<interface::RectSelectionMode, CommandError> {
@@ -138,22 +138,22 @@ impl Command for SelVolumeSphereCommand {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-struct VolumeRelation {
-    window: bool,
-    crossing: bool,
+pub(super) struct VolumeRelation {
+    pub(super) window: bool,
+    pub(super) crossing: bool,
 }
 
 impl VolumeRelation {
-    const INSIDE: Self = Self {
+    pub(super) const INSIDE: Self = Self {
         window: true,
         crossing: true,
     };
-    const OUTSIDE: Self = Self {
+    pub(super) const OUTSIDE: Self = Self {
         window: false,
         crossing: false,
     };
 
-    fn selected(self, mode: interface::RectSelectionMode) -> bool {
+    pub(super) fn selected(self, mode: interface::RectSelectionMode) -> bool {
         match (mode.crossing(true), mode.inverted()) {
             (false, false) => self.window,
             (true, false) => self.crossing,
