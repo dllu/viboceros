@@ -1000,6 +1000,10 @@ class RhinoWorkerTests(unittest.TestCase):
     def test_interface_scripts_whitelist_settings_and_target_viewport_before_mode(self):
         for command, expected in [
             ("Snap", "_Snap"), ("'_-sEtSnAp _oFf", "_SetSnap _Off"),
+            ("Ortho", "_Ortho"), ("SetOrtho Toggle", "_SetOrtho _Toggle"),
+            ("Planar", "_Planar"), ("SetPlanar On", "_SetPlanar _On"),
+            ("OrthoAngle 45", "_OrthoAngle 45"),
+            ("OrthoSnapToCPlaneZ Enable", "_OrthoSnapToCPlaneZ _Enable"),
             ("DisableOsnap Toggle", "_DisableOsnap _Toggle"), ("SmartTrack On", "_SmartTrack _On"),
             ("DisableOsnap Enable", "_DisableOsnap _Enable"), ("DisableOsnap Disable", "_DisableOsnap _Disable"),
             ("SnapToMeshes Enable", "_SnapToMeshes _Enable"),
@@ -1014,7 +1018,10 @@ class RhinoWorkerTests(unittest.TestCase):
                         "SetDisplayMode", "SetDisplayMode Mode", "SetDisplayMode Viewport=All",
                         "SetDisplayMode Rendered", "SetDisplayMode Shaded Wireframe", "SetDisplayMode Mode=Shaded Extra=All",
                         "SetDisplayMode Viewport=Top Wireframe", "SetSnap On\n_Delete", "DisableOsnap On", "DisableOsnap Off",
-                        "SnapToMeshes", "SnapToMeshes On", "SnapToMeshes Enable _Delete"]:
+                        "SnapToMeshes", "SnapToMeshes On", "SnapToMeshes Enable _Delete",
+                        "Ortho On", "SetOrtho", "SetPlanar", "Planar Toggle",
+                        "OrthoAngle", "OrthoAngle 0", "OrthoAngle nan", "OrthoAngle 45 _Delete",
+                        "OrthoSnapToCPlaneZ", "OrthoSnapToCPlaneZ On"]:
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 self.worker._interface_script(invalid)
 
@@ -1038,7 +1045,8 @@ class RhinoWorkerTests(unittest.TestCase):
                             self.values[key] = value
                             if failure == "initialization" and key == "Osnap":
                                 raise ValueError("initialization failure")
-                aid = Settings(GridSnap=False, Osnap=True, OtherSetting="preserved")
+                aid = Settings(GridSnap=False, Osnap=True, Ortho=False, Planar=True,
+                               OrthoAngle=math.pi / 2, OrthoUseZ=False, OtherSetting="preserved")
                 track = Settings(UseSmartTrack=True, OtherSetting=42)
                 original_aid, original_track = aid.GetCurrentState(), track.GetCurrentState()
                 original_modes = [object() for _ in range(4)]
@@ -1047,7 +1055,9 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.worker.Rhino.ApplicationSettings = SimpleNamespace(ModelAidSettings=aid, SmartTrackSettings=track)
                 self.worker.Rhino.Display = SimpleNamespace(DisplayModeDescription=SimpleNamespace(FindByName=lambda name: SimpleNamespace(EnglishName=name)))
                 self.worker.Rhino.RhinoApp.RunScript = Mock()
-                operation = {"grid_snap":True, "osnap":False, "smart_track":False, "active_viewport":2,
+                operation = {"grid_snap":True, "osnap":False, "smart_track":False,
+                             "ortho":True, "planar":False, "ortho_angle_degrees":45.0,
+                             "ortho_snap_to_cplane_z":True, "active_viewport":2,
                              "display_modes":["Wireframe", "Shaded", "Ghosted", "Wireframe"], "commands":["Snap"]}
                 mesh = SimpleNamespace(enabled=True)
                 mesh_api = SimpleNamespace(current=lambda host: mesh.enabled,
@@ -1080,6 +1090,10 @@ class RhinoWorkerTests(unittest.TestCase):
                         value, elapsed = self.worker._interface_commands(operation)
                         self.assertEqual(elapsed, 0)
                         self.assertEqual([state["grid_snap"] for state in value["states"]], [True, False])
+                        self.assertEqual([state["ortho"] for state in value["states"]], [True, True])
+                        self.assertEqual([state["planar"] for state in value["states"]], [False, False])
+                        self.assertEqual([state["ortho_angle_degrees"] for state in value["states"]], [45.0, 45.0])
+                        self.assertEqual([state["ortho_snap_to_cplane_z"] for state in value["states"]], [True, True])
                         self.assertEqual([state["active_viewport"] for state in value["states"]], [2, 2])
                         self.assertEqual(value["states"][0]["display_modes"], operation["display_modes"])
                         if mesh_enabled is not None:
@@ -1103,7 +1117,13 @@ class RhinoWorkerTests(unittest.TestCase):
                         dict(grid_snap="On"), dict(osnap=1), dict(active_viewport=True), dict(active_viewport=4),
                         dict(display_modes=["Wireframe"]), dict(display_modes=["Rendered"] * 4),
                         dict(snap_to_meshes=None), dict(snap_to_meshes=1),
-                        dict(commands=["SnapToMeshes Toggle"])]:
+                        dict(commands=["SnapToMeshes Toggle"]),
+                        dict(commands=["Ortho"]), dict(commands=["SetOrtho Toggle"]),
+                        dict(commands=["Planar"]), dict(commands=["SetPlanar On"]),
+                        dict(commands=["OrthoAngle 45"]),
+                        dict(commands=["OrthoSnapToCPlaneZ Enable"]),
+                        dict(ortho=1), dict(planar="On"), dict(ortho_angle_degrees=float("nan")),
+                        dict(ortho_snap_to_cplane_z=None)]:
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 self.worker._interface_commands(dict(operation, **changes))
 

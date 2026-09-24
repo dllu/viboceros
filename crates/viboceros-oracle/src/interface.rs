@@ -147,6 +147,41 @@ mod tests {
     use super::*;
 
     #[test]
+    fn drafting_aid_transitions_match_recorded_rhino_states() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/drafting_aids.json"
+        ))
+        .unwrap();
+        let observations: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/drafting_aids.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 2);
+        for (result, observed) in response
+            .results
+            .iter()
+            .zip(observations["results"].as_array().unwrap())
+        {
+            assert_eq!(result.id, observed["id"]);
+            let mut actual = result.value.clone();
+            let expected = &observed["value"];
+            for (actual_state, observed_state) in actual["states"]
+                .as_array_mut()
+                .unwrap()
+                .iter_mut()
+                .zip(expected["states"].as_array().unwrap())
+            {
+                let angle = actual_state["ortho_angle_degrees"].as_f64().unwrap();
+                let reference = observed_state["ortho_angle_degrees"].as_f64().unwrap();
+                assert!((angle - reference).abs() <= 1e-12);
+                actual_state["ortho_angle_degrees"] = observed_state["ortho_angle_degrees"].clone();
+            }
+            assert_eq!(actual, *expected);
+        }
+    }
+
+    #[test]
     fn ortho_fixture_records_switch_and_angle_transitions() {
         let fixture: InterfaceFixture = serde_json::from_value(json!({
             "grid_snap": false,

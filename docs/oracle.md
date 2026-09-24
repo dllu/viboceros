@@ -504,6 +504,11 @@ in `plane_transform_diagnostics.json`; see [plane transforms](plane-transforms.m
 eight initial states against Rhino's actual commands. The native probe shares
 the GUI's parser and state reducer. The worker restores application settings
 and all viewport modes; see [interface controls](commands/interface.md).
+`drafting_aids.json` adds 22 live Ortho, Planar, CPlane Z, and Ortho angle
+transitions. Its [retained Rhino response](../tools/rhino_oracle/observations/drafting_aids.json)
+replays against the native reducer with a maximum angular difference of
+`7.1e-15` degrees. RhinoCommon reports the angle in radians; the probe records
+degrees. Cursor positions still need a separate live comparison.
 
 `construction_planes.json` checks 129 actual plane edits/history transitions.
 `construction_plane_input.json` checks 24 transparent CPlane commands inside

@@ -98,6 +98,14 @@ application settings and viewport modes in `finally`; failure-path unit tests
 exercise initialization, command, and recording errors. A forcibly terminated
 Rhino process cannot execute that cleanup.
 
+The [drafting aid fixture](../../tools/rhino_oracle/fixtures/drafting_aids.json)
+and [Rhino 8.32 observation](../../tools/rhino_oracle/observations/drafting_aids.json)
+cover 22 additional Ortho, Planar, CPlane Z, and angle command transitions from
+two initial states. All recorded settings match; the largest angle conversion
+difference is `7.1e-15` degrees. RhinoCommon stores its Ortho angle in radians,
+so the worker converts at the fixture boundary. These probes check application
+settings, not cursor positions.
+
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
 implemented Point/End/Mid/Center/Quad and opt-in [Near](../near-snaps.md), including
 [Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)

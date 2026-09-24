@@ -1,0 +1,58 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "interface_commands",
+      "id": "drafting-aids-off",
+      "grid_snap": false,
+      "osnap": false,
+      "smart_track": false,
+      "ortho": false,
+      "planar": false,
+      "ortho_angle_degrees": 90.0,
+      "ortho_snap_to_cplane_z": false,
+      "active_viewport": 0,
+      "display_modes": ["Wireframe", "Shaded", "Ghosted", "Wireframe"],
+      "commands": [
+        "Ortho",
+        "Ortho",
+        "SetOrtho On",
+        "SetOrtho Off",
+        "Planar",
+        "Planar",
+        "SetPlanar On",
+        "SetPlanar Off",
+        "OrthoSnapToCPlaneZ Enable",
+        "OrthoSnapToCPlaneZ Toggle",
+        "OrthoAngle 45",
+        "OrthoAngle 90"
+      ]
+    },
+    {
+      "op": "interface_commands",
+      "id": "drafting-aids-on",
+      "grid_snap": true,
+      "osnap": true,
+      "smart_track": true,
+      "ortho": true,
+      "planar": true,
+      "ortho_angle_degrees": 30.0,
+      "ortho_snap_to_cplane_z": true,
+      "active_viewport": 3,
+      "display_modes": ["Ghosted", "Wireframe", "Shaded", "Ghosted"],
+      "commands": [
+        "SetOrtho On",
+        "SetPlanar On",
+        "OrthoSnapToCPlaneZ Enable",
+        "OrthoAngle 60",
+        "Ortho",
+        "Planar",
+        "OrthoSnapToCPlaneZ Disable",
+        "SetOrtho Toggle",
+        "SetPlanar Toggle",
+        "OrthoAngle 30"
+      ]
+    }
+  ]
+}

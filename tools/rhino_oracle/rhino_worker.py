@@ -3743,11 +3743,22 @@ def _interface_script(command):
     if not tokens:
         raise ValueError("empty interface command")
     name = tokens.pop(0).lstrip("'_- ").lower()
-    switches = {"setsnap": "SetSnap", "smarttrack": "SmartTrack"}
-    if name == "snap" and not tokens:
-        return "_Snap"
+    switches = {"setsnap": "SetSnap", "smarttrack": "SmartTrack",
+                "setortho": "SetOrtho", "setplanar": "SetPlanar"}
+    if name in ("snap", "ortho", "planar") and not tokens:
+        return "_" + name.title()
     if name in switches and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("on", "off", "toggle"):
         return "_%s _%s" % (switches[name], tokens[0].lstrip("_").title())
+    if name == "orthoangle" and len(tokens) == 1:
+        try:
+            angle = float(tokens[0])
+        except ValueError:
+            raise ValueError("invalid ortho angle")
+        if math.isnan(angle) or math.isinf(angle) or not 0 < angle <= 180:
+            raise ValueError("invalid ortho angle")
+        return "_OrthoAngle %.17g" % angle
+    if name == "orthosnaptocplanez" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_OrthoSnapToCPlaneZ _%s" % tokens[0].lstrip("_").title()
     if name == "disableosnap" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
         return "_DisableOsnap _%s" % tokens[0].lstrip("_").title()
     if name == "snaptomeshes" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
@@ -3776,12 +3787,21 @@ def _interface_script(command):
     return "_-SetDisplayMode _Viewport=_%s _Mode=_%s" % (viewport.title(), mode.title())
 
 
-def _interface_state(views, aid, track):
+def _interface_state(views, aid, track, extras=()):
     active = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
-    return {"grid_snap": bool(aid.GridSnap), "osnap": bool(aid.Osnap),
+    value = {"grid_snap": bool(aid.GridSnap), "osnap": bool(aid.Osnap),
             "smart_track": bool(track.UseSmartTrack),
             "active_viewport": next(i for i, view in enumerate(views) if view.ActiveViewportID == active.ActiveViewportID),
             "display_modes": [view.ActiveViewport.DisplayMode.EnglishName for view in views]}
+    if "ortho" in extras:
+        value["ortho"] = bool(aid.Ortho)
+    if "planar" in extras:
+        value["planar"] = bool(aid.Planar)
+    if "ortho_angle_degrees" in extras:
+        value["ortho_angle_degrees"] = math.degrees(float(aid.OrthoAngle))
+    if "ortho_snap_to_cplane_z" in extras:
+        value["ortho_snap_to_cplane_z"] = bool(aid.OrthoUseZ)
+    return value
 
 
 def _interface_commands(operation):
@@ -3794,6 +3814,22 @@ def _interface_commands(operation):
         raise ValueError("snap_to_meshes must be boolean")
     if not mesh_requested and any(script.startswith("_SnapToMeshes ") for script in scripts):
         raise ValueError("mesh snap commands require an explicit initial setting")
+    aid_keys = ("ortho", "planar", "ortho_angle_degrees", "ortho_snap_to_cplane_z")
+    aid_commands = {"ortho": ("_Ortho", "_SetOrtho "),
+                    "planar": ("_Planar", "_SetPlanar "),
+                    "ortho_angle_degrees": ("_OrthoAngle ",),
+                    "ortho_snap_to_cplane_z": ("_OrthoSnapToCPlaneZ ",)}
+    for key in aid_keys:
+        if key in operation:
+            value = operation[key]
+            if key == "ortho_angle_degrees":
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or math.isnan(value) or math.isinf(value) or not 0 < value <= 180:
+                    raise ValueError("invalid initial ortho angle")
+            elif type(value) is not bool:
+                raise ValueError("interface aid flags must be booleans")
+        elif any(script == prefix or (prefix.endswith(" ") and script.startswith(prefix))
+                 for script in scripts for prefix in aid_commands[key]):
+            raise ValueError("interface aid commands require an explicit initial setting")
     if any(not isinstance(operation[key], bool) for key in ("grid_snap", "osnap", "smart_track")):
         raise ValueError("interface flags must be booleans")
     index = operation["active_viewport"]
@@ -3817,7 +3853,7 @@ def _interface_commands(operation):
     original_view = document.Views.ActiveView
     original_mesh = None
     def record():
-        value = _interface_state(views, aid, track)
+        value = _interface_state(views, aid, track, tuple(key for key in aid_keys if key in operation))
         if mesh_requested:
             value["snap_to_meshes"] = mesh_snap_settings_probe.current(globals())
         return value
@@ -3828,6 +3864,14 @@ def _interface_commands(operation):
             mesh_snap_settings_probe.set_enabled(operation["snap_to_meshes"], globals())
         aid.GridSnap = operation["grid_snap"]
         aid.Osnap = operation["osnap"]
+        if "ortho" in operation:
+            aid.Ortho = operation["ortho"]
+        if "planar" in operation:
+            aid.Planar = operation["planar"]
+        if "ortho_angle_degrees" in operation:
+            aid.OrthoAngle = math.radians(operation["ortho_angle_degrees"])
+        if "ortho_snap_to_cplane_z" in operation:
+            aid.OrthoUseZ = operation["ortho_snap_to_cplane_z"]
         track.UseSmartTrack = operation["smart_track"]
         for view, mode in zip(views, modes):
             view.ActiveViewport.DisplayMode = mode

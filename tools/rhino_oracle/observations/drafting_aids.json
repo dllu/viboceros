@@ -1,0 +1,408 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "drafting-aids-off",
+      "value": {
+        "states": [
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": true,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": true,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": true,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": true,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 45.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          },
+          {
+            "active_viewport": 0,
+            "display_modes": [
+              "Wireframe",
+              "Shaded",
+              "Ghosted",
+              "Wireframe"
+            ],
+            "grid_snap": false,
+            "ortho": false,
+            "ortho_angle_degrees": 90.0,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": false,
+            "planar": false,
+            "smart_track": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "drafting-aids-on",
+      "value": {
+        "states": [
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 29.999999999999996,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 29.999999999999996,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 29.999999999999996,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 29.999999999999996,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": false,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": false,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": true,
+            "osnap": true,
+            "planar": false,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": false,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": true,
+            "planar": false,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": true,
+            "planar": false,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 59.99999999999999,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          },
+          {
+            "active_viewport": 3,
+            "display_modes": [
+              "Ghosted",
+              "Wireframe",
+              "Shaded",
+              "Ghosted"
+            ],
+            "grid_snap": true,
+            "ortho": true,
+            "ortho_angle_degrees": 29.999999999999996,
+            "ortho_snap_to_cplane_z": false,
+            "osnap": true,
+            "planar": true,
+            "smart_track": true
+          }
+        ]
+      }
+    }
+  ]
+}
