@@ -206,6 +206,19 @@ class IntersectionSnapTests(unittest.TestCase):
             "intersection_nurbs_conic_rational_snaps": {
                 "rational-nurbs-circle-left": "Intersection",
             },
+            "intersection_nurbs_pair_snaps": {
+                "nurbs-pair-left": "Intersection",
+                "nurbs-pair-right": "Intersection",
+                "nurbs-pair-left-reverse": "Intersection",
+                "nurbs-pair-apparent": "Intersection",
+                "nurbs-pair-perspective": "Intersection",
+                "nurbs-pair-tangent": "Intersection",
+                "nurbs-pair-disjoint": "None",
+            },
+            "intersection_nurbs_pair_detail_snaps": {
+                "rational-nurbs-pair-left": "Intersection",
+                "multispan-nurbs-pair-right": "Intersection",
+            },
         }
         for stem, expected in cases.items():
             with self.subTest(stem=stem):

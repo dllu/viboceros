@@ -416,6 +416,22 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
                 "../../../../tools/rhino_oracle/observations/intersection_nurbs_conic_rational_snaps.json"
             ),
         ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_nurbs_pair_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_nurbs_pair_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_nurbs_pair_detail_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_nurbs_pair_detail_snaps.json"
+            ),
+        ),
     ] {
         let differences = retained_differences(fixture, observed);
         assert!(differences.is_empty(), "{differences:?}");

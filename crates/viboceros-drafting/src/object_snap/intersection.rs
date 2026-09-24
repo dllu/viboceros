@@ -12,6 +12,7 @@ use viboceros_geometry::{
 mod conic_pair;
 mod nurbs_conic;
 mod nurbs_line;
+mod nurbs_pair;
 mod nurbs_roots;
 
 #[derive(Clone, Copy)]
@@ -314,7 +315,12 @@ pub(super) fn visit(
             }
         }
     }
-    for curve in curved_nurbs {
+    for first in 0..curved_nurbs.len() {
+        for second in first + 1..curved_nurbs.len() {
+            nurbs_pair::visit(curved_nurbs[first], curved_nurbs[second], metric, emit);
+        }
+    }
+    for &curve in &curved_nurbs {
         for &segment in &segments {
             nurbs_line::visit(curve, segment, metric, emit);
         }
@@ -333,18 +339,34 @@ pub(super) fn visit(
             if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
                 continue;
             }
-            for boundary in cache.geometry_curves(object, document.tolerance()) {
-                if let Some(curve) =
+            let near_boundaries: Vec<_> = cache
+                .geometry_curves(object, document.tolerance())
+                .iter()
+                .filter_map(|boundary| {
                     captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
-                {
-                    for &segment in &segments {
-                        nurbs_line::visit(curve, segment, metric, emit);
+                })
+                .collect();
+            for first in 0..near_boundaries.len() {
+                for second in first + 1..near_boundaries.len() {
+                    nurbs_pair::visit(
+                        near_boundaries[first],
+                        near_boundaries[second],
+                        metric,
+                        emit,
+                    );
+                }
+            }
+            for curve in near_boundaries {
+                for &segment in &segments {
+                    nurbs_line::visit(curve, segment, metric, emit);
+                }
+                for (&conic, &implicit) in conics.iter().zip(&conic_images) {
+                    if let Some(implicit) = implicit {
+                        nurbs_conic::visit(curve, conic, implicit, metric, emit);
                     }
-                    for (&conic, &implicit) in conics.iter().zip(&conic_images) {
-                        if let Some(implicit) = implicit {
-                            nurbs_conic::visit(curve, conic, implicit, metric, emit);
-                        }
-                    }
+                }
+                for &other in &curved_nurbs {
+                    nurbs_pair::visit(curve, other, metric, emit);
                 }
             }
         }

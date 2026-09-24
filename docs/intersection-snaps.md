@@ -6,7 +6,7 @@ The mode finds crossings among straight line and polyline segments, degree-one
 NURBS spans, straight surface and B-rep boundaries, and mesh face-boundary
 wires. Circles, circular arcs, and ellipses intersect straight wires and each
 other. Curved NURBS spans, including surface and B-rep boundaries, intersect
-straight wires, circles, arcs, and ellipses. Mesh wires
+straight wires, circles, arcs, ellipses, and other curved NURBS spans. Mesh wires
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 
@@ -99,7 +99,15 @@ verify the sweep limit. A [rational NURBS input](../tools/rhino_oracle/fixtures/
 with [Rhino observation](../tools/rhino_oracle/observations/intersection_nurbs_conic_rational_snaps.json)
 checks weighted controls. Their roots are found on exact NURBS spans against a
 validated projected conic; the other point is recovered on the finite conic.
-All 115 retained ordinary picks replay with matching kind and source and points
+The [curved NURBS pair inputs](../tools/rhino_oracle/fixtures/intersection_nurbs_pair_snaps.json)
+and [Rhino observations](../tools/rhino_oracle/observations/intersection_nurbs_pair_snaps.json)
+cover two transverse roots, tangency, a miss, depth separation, perspective,
+and reversed source order. [Rational and multi-span inputs](../tools/rhino_oracle/fixtures/intersection_nurbs_pair_detail_snaps.json)
+with [observations](../tools/rhino_oracle/observations/intersection_nurbs_pair_detail_snaps.json)
+add two more roots. A validated local camera fit maps both control nets to
+rational screen-space NURBS; the geometry kernel solves their intersections,
+and the original curves supply the 3D points. Shared intervals have no isolated
+interior target. All 124 retained ordinary picks replay with matching kind and source and points
 within `1e-9` model units.
 
 [Near-tangent inputs](../tools/rhino_oracle/fixtures/intersection_near_tangent_snaps.json)
@@ -115,7 +123,7 @@ lexicographically smaller center. All 22 picks match in kind and
 source; model points agree within `5e-8`. Rhino's observed points differ from
 the exact circle intersection by about `2.4e-8` in the rotated-frame case.
 
-Curved NURBS pairs, curved self-intersections, surface isocurves,
+Curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
@@ -123,3 +131,6 @@ can still grow quadratically where many projected wires or conics overlap.
 Curved NURBS root search uses 64 stations per knot span against wires and 128
 against conics. It can miss multiple extrema packed into one interval; certified
 high-degree isolation remains open.
+NURBS pair projection currently requires a validated projective camera fit;
+arbitrary nonlinear projection callbacks and partly clipped pairs need a
+separate fallback.
