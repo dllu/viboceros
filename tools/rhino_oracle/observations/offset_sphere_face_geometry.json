@@ -1,0 +1,242 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 14244080,
+      "id": "sphere-positive-open",
+      "value": {
+        "admitted_volume": 65.44984759926015,
+        "bbox_max": [
+          3.5,
+          4.5,
+          5.5
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          0.5
+        ],
+        "created": true,
+        "edges": 1,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              1.9730363734630742e-16,
+              1.9730363734630737e-16
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": true,
+        "valid": true,
+        "vertices": 2,
+        "volume": 65.44984759926015
+      }
+    },
+    {
+      "elapsed_ns": 2265930,
+      "id": "sphere-negative-open",
+      "value": {
+        "admitted_volume": 14.137167081440186,
+        "bbox_max": [
+          2.5,
+          3.5,
+          4.5
+        ],
+        "bbox_min": [
+          -0.5,
+          0.5,
+          1.4999999999999998
+        ],
+        "created": true,
+        "edges": 1,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              -1.233147733414419e-16,
+              2.466295466828843e-16
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 1,
+        "solid": true,
+        "valid": true,
+        "vertices": 2,
+        "volume": 14.137167081440186
+      }
+    },
+    {
+      "elapsed_ns": 2609253,
+      "id": "sphere-both-open",
+      "value": {
+        "admitted_volume": 79.58701468070032,
+        "bbox_max": [
+          3.5,
+          4.5,
+          5.5
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          0.5
+        ],
+        "created": true,
+        "edges": 2,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              1.9730363734630742e-16,
+              1.9730363734630737e-16
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              -1.0,
+              -1.233147733414419e-16,
+              2.466295466828843e-16
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          }
+        ],
+        "faces": 2,
+        "solid": true,
+        "valid": true,
+        "vertices": 4,
+        "volume": 79.58701468070032
+      }
+    },
+    {
+      "elapsed_ns": 1358032,
+      "id": "sphere-positive-solid",
+      "value": {
+        "admitted_volume": 31.939525628438986,
+        "bbox_max": [
+          3.5,
+          4.5,
+          5.5
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          0.5
+        ],
+        "created": true,
+        "edges": 2,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              1.9730363734630742e-16,
+              1.9730363734630737e-16
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              1.0,
+              -6.082613329700495e-32,
+              -2.466295466828842e-16
+            ],
+            "point": [
+              -1.0,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 2,
+        "solid": true,
+        "valid": true,
+        "vertices": 4,
+        "volume": 31.939525628438986
+      }
+    },
+    {
+      "elapsed_ns": 2250671,
+      "id": "sphere-both-solid",
+      "value": {
+        "admitted_volume": 51.312680517819956,
+        "bbox_max": [
+          3.5,
+          4.5,
+          5.5
+        ],
+        "bbox_min": [
+          -1.5,
+          -0.5,
+          0.5
+        ],
+        "created": true,
+        "edges": 2,
+        "face_samples": [
+          {
+            "normal": [
+              -1.0,
+              1.9730363734630742e-16,
+              1.9730363734630737e-16
+            ],
+            "point": [
+              -1.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": false
+          },
+          {
+            "normal": [
+              1.0,
+              1.233147733414419e-16,
+              -2.466295466828843e-16
+            ],
+            "point": [
+              -0.5,
+              2.0000000000000004,
+              3.0
+            ],
+            "reversed": true
+          }
+        ],
+        "faces": 2,
+        "solid": true,
+        "valid": true,
+        "vertices": 4,
+        "volume": 51.312680517819956
+      }
+    }
+  ]
+}

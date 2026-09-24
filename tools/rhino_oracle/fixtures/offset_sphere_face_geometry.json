@@ -1,0 +1,39 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "sphere-positive-open",
+      "op": "offset_surface_face_geometry",
+      "sphere": {"center": [1, 2, 3], "radius": 2},
+      "distance": 0.5
+    },
+    {
+      "id": "sphere-negative-open",
+      "op": "offset_surface_face_geometry",
+      "sphere": {"center": [1, 2, 3], "radius": 2},
+      "distance": -0.5
+    },
+    {
+      "id": "sphere-both-open",
+      "op": "offset_surface_face_geometry",
+      "sphere": {"center": [1, 2, 3], "radius": 2},
+      "distance": 0.5,
+      "both_sides": true
+    },
+    {
+      "id": "sphere-positive-solid",
+      "op": "offset_surface_face_geometry",
+      "sphere": {"center": [1, 2, 3], "radius": 2},
+      "distance": 0.5,
+      "solid": true
+    },
+    {
+      "id": "sphere-both-solid",
+      "op": "offset_surface_face_geometry",
+      "sphere": {"center": [1, 2, 3], "radius": 2},
+      "distance": 0.5,
+      "both_sides": true,
+      "solid": true
+    }
+  ]
+}

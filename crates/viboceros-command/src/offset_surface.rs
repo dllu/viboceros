@@ -30,6 +30,10 @@ impl Command for OffsetSurfaceCommand {
         }
         let mut staged = Vec::with_capacity(selected.len());
         for (id, geometry) in &selected {
+            if let Some(offset) = spherical_offset(geometry, options, document.tolerance())? {
+                staged.push((*id, offset));
+                continue;
+            }
             let normal = planar_normal(geometry, document.tolerance())?;
             if options.solid {
                 let solid = if let Some(box_solid) = rectangular_solid(
@@ -167,6 +171,93 @@ fn planar_normal(geometry: &Geometry, tolerance: Tolerance) -> Result<Vector3, C
         .normal()
         .as_vector()
         .scaled(if reversed { -1.0 } else { 1.0 })?)
+}
+
+fn spherical_offset(
+    geometry: &Geometry,
+    options: Options,
+    tolerance: Tolerance,
+) -> Result<Option<Geometry>, CommandError> {
+    let (surface, reversed, brep_source) = match geometry {
+        Geometry::NurbsSurface(surface) => (surface, false, false),
+        Geometry::Brep(brep) if brep.faces().len() == 1 => {
+            let face = &brep.faces()[0];
+            (face.surface(), face.is_reversed(), true)
+        }
+        _ => return Ok(None),
+    };
+    let Some((center, radius)) = surface.canonical_sphere(tolerance)? else {
+        return Ok(None);
+    };
+    if let Geometry::Brep(brep) = geometry
+        && !brep.faces()[0].is_untrimmed(tolerance)?
+    {
+        return Ok(None);
+    }
+    let u = surface.parameter_at_u(0.125)?;
+    let v = surface.parameter_at_v(0.5)?;
+    let radial = center.vector_to(surface.evaluate(u, v)?)?;
+    let natural_outward = radial.dot(surface.normal_at(u, v)?.as_vector())? > 0.0;
+    let direction = if natural_outward ^ reversed {
+        1.0
+    } else {
+        -1.0
+    };
+    let new_radius = radius + direction * options.distance;
+    let opposite_radius = radius - direction * options.distance;
+    if new_radius <= tolerance.absolute()
+        || (options.both_sides && opposite_radius <= tolerance.absolute())
+    {
+        return Err(CommandError::OffsetSurfaceCollapsedSphere);
+    }
+    let scaled = |target_radius: Real| -> Result<NurbsSurface, CommandError> {
+        Ok(surface.transformed(AffineTransform3::try_uniform_scale(
+            center,
+            target_radius / radius,
+        )?)?)
+    };
+    let face = |target_radius: Real, outward: bool| -> Result<Brep, CommandError> {
+        let mut result = Brep::try_surface_face(scaled(target_radius)?, tolerance)?;
+        if natural_outward != outward {
+            result.reverse_orientation();
+        }
+        Ok(result)
+    };
+    if options.solid {
+        let (inner, outer) = if options.both_sides {
+            (
+                new_radius.min(opposite_radius),
+                new_radius.max(opposite_radius),
+            )
+        } else {
+            (new_radius.min(radius), new_radius.max(radius))
+        };
+        let result =
+            Brep::try_disjoint_union(vec![face(outer, true)?, face(inner, false)?], tolerance)?;
+        return Ok(Some(Geometry::Brep(result)));
+    }
+    if options.both_sides {
+        let mut positive = face(new_radius, natural_outward)?;
+        let mut negative = face(opposite_radius, natural_outward)?;
+        if reversed {
+            positive.reverse_orientation();
+            negative.reverse_orientation();
+        }
+        return Ok(Some(Geometry::Brep(Brep::try_disjoint_union(
+            vec![positive, negative],
+            tolerance,
+        )?)));
+    }
+    let result = scaled(new_radius)?;
+    if brep_source {
+        let mut result = Brep::try_surface_face(result, tolerance)?;
+        if reversed {
+            result.reverse_orientation();
+        }
+        Ok(Some(Geometry::Brep(result)))
+    } else {
+        Ok(Some(Geometry::NurbsSurface(result)))
+    }
 }
 
 fn solid_profile(geometry: &Geometry, tolerance: Tolerance) -> Result<NurbsCurve, CommandError> {
@@ -454,6 +545,152 @@ mod tests {
             (6, 12, 8)
         );
         assert!((solid.signed_volume(document.tolerance()).unwrap() - 48.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn exact_sphere_offsets_match_rhino_shell_volumes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Sphere 1,2,3 2").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let source = document.objects().cloned().collect::<Vec<_>>();
+
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 DeleteInput=Yes")
+            .unwrap();
+        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
+            panic!("open spherical offset is a NURBS surface")
+        };
+        let (_, radius) = offset
+            .canonical_sphere(document.tolerance())
+            .unwrap()
+            .unwrap();
+        assert!((radius - 2.5).abs() < 1e-10);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), source);
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf -0.5 DeleteInput=Yes")
+            .unwrap();
+        let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry() else {
+            panic!("inward spherical offset is a NURBS surface")
+        };
+        let (_, radius) = offset
+            .canonical_sphere(document.tolerance())
+            .unwrap()
+            .unwrap();
+        assert!((radius - 1.5).abs() < 1e-10);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 Solid=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(shell) = document.objects().next().unwrap().geometry() else {
+            panic!("one-sided sphere solid offset is a B-rep")
+        };
+        assert_eq!((shell.faces().len(), shell.edges().len()), (2, 2));
+        let one_side_volume =
+            4.0 * std::f64::consts::PI / 3.0 * (2.5_f64.powi(3) - 2.0_f64.powi(3));
+        assert!(
+            (shell.signed_volume(document.tolerance()).unwrap() - one_side_volume).abs() < 1e-7
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 BothSides=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(open_pair) = document.objects().next().unwrap().geometry() else {
+            panic!("two-sided sphere offset is a B-rep")
+        };
+        assert_eq!((open_pair.faces().len(), open_pair.edges().len()), (2, 2));
+        let summed_volume = 4.0 * std::f64::consts::PI / 3.0 * (2.5_f64.powi(3) + 1.5_f64.powi(3));
+        assert!(
+            (open_pair.signed_volume(document.tolerance()).unwrap() - summed_volume).abs() < 1e-7
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "OffsetSrf 0.5 Solid=Yes BothSides=Yes DeleteInput=Yes",
+            )
+            .unwrap();
+        let Geometry::Brep(shell) = document.objects().next().unwrap().geometry() else {
+            panic!("spherical solid offset is a B-rep")
+        };
+        assert_eq!((shell.faces().len(), shell.edges().len()), (2, 2));
+        let shell_volume = 4.0 * std::f64::consts::PI / 3.0 * (2.5_f64.powi(3) - 1.5_f64.powi(3));
+        assert!((shell.signed_volume(document.tolerance()).unwrap() - shell_volume).abs() < 1e-7);
+    }
+
+    #[test]
+    fn collapsing_sphere_offset_is_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Sphere 1,2,3 2").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "OffsetSrf -2.5 DeleteInput=Yes"),
+            Err(CommandError::OffsetSurfaceCollapsedSphere)
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn untrimmed_spherical_brep_offsets_as_exact_shell() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let source = Brep::try_surface_face(surface, document.tolerance()).unwrap();
+        document.add_geometry(Geometry::Brep(source)).unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "OffsetSrf 0.5 Solid=Yes DeleteInput=Yes")
+            .unwrap();
+        let Geometry::Brep(shell) = document.objects().next().unwrap().geometry() else {
+            panic!("spherical B-rep offset is an exact shell")
+        };
+        assert_eq!(shell.faces().len(), 2);
+        let expected = 4.0 * std::f64::consts::PI / 3.0 * (2.5_f64.powi(3) - 2.0_f64.powi(3));
+        assert!((shell.signed_volume(document.tolerance()).unwrap() - expected).abs() < 1e-7);
+    }
+
+    #[test]
+    fn reversed_spherical_face_offsets_inward_along_its_normal() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let mut source = Brep::try_surface_face(surface, tolerance).unwrap();
+        source.reverse_orientation();
+        let options = parse(&["0.5"], tolerance).unwrap();
+        let Some(Geometry::Brep(offset)) =
+            spherical_offset(&Geometry::Brep(source), options, tolerance).unwrap()
+        else {
+            panic!("reversed spherical face offsets as a B-rep")
+        };
+        let (_, radius) = offset.faces()[0]
+            .surface()
+            .canonical_sphere(tolerance)
+            .unwrap()
+            .unwrap();
+        assert!((radius - 1.5).abs() < 1e-10);
+        assert!(offset.faces()[0].is_reversed());
     }
 
     #[test]

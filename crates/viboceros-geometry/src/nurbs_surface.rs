@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 
+mod analytic_sphere;
 mod closest_point;
 mod evaluate;
 mod parameter_frame;

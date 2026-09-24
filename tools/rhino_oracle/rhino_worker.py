@@ -1011,15 +1011,24 @@ def _nurbs_surface_from_definition(definition):
 
 
 def _offset_surface_face_geometry(operation, iterations, tolerance):
-    corners = operation["corners"]
-    if len(corners) != 4:
-        raise ValueError("offset face requires four corners")
-    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
-        *[_point(corner) for corner in corners]
-    )
-    if surface is None or not surface.IsValid:
-        raise ValueError("invalid source surface")
-    source = Rhino.Geometry.Brep.CreateFromSurface(surface)
+    if "sphere" in operation:
+        definition = operation["sphere"]
+        radius = _finite(definition["radius"], "sphere radius")
+        if radius <= 0.0:
+            raise ValueError("sphere radius must be positive")
+        sphere = Rhino.Geometry.Sphere(_point(definition["center"]), radius)
+        surface = None
+        source = sphere.ToBrep()
+    else:
+        corners = operation["corners"]
+        if len(corners) != 4:
+            raise ValueError("offset face requires four corners")
+        surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+            *[_point(corner) for corner in corners]
+        )
+        if surface is None or not surface.IsValid:
+            raise ValueError("invalid source surface")
+        source = Rhino.Geometry.Brep.CreateFromSurface(surface)
     if source is None or not source.IsValid or source.Faces.Count != 1:
         raise ValueError("invalid source face")
     distance = _finite(operation["distance"], "offset distance")
@@ -1081,7 +1090,8 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
         return _measure_disposable(iterations, create, record)
     finally:
         source.Dispose()
-        surface.Dispose()
+        if surface is not None:
+            surface.Dispose()
 
 
 def _nurbs_surface_evaluate(operation, iterations):
