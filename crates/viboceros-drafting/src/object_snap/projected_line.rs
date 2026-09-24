@@ -1,7 +1,7 @@
 //! Straight-locus projection, clipping, and inverse perspective interpolation.
 //! Curved searches must not approximate straight lines by uniform stations.
 use super::SnapMetric;
-use viboceros_geometry::{Point3, Real};
+use viboceros_geometry::{GeometryError, Point3, PointCloud3, Real};
 
 #[cfg(test)]
 mod observed_tests;
@@ -14,18 +14,18 @@ pub(super) enum Capture {
     Unresolved,
 }
 
-struct Segment {
-    a: Point3,
-    b: Point3,
-    pa: [Real; 2],
-    pb: [Real; 2],
+pub(super) struct Segment {
+    pub(super) a: Point3,
+    pub(super) b: Point3,
+    pub(super) pa: [Real; 2],
+    pub(super) pb: [Real; 2],
 }
 
 /// Project the visible interval. With one visible endpoint, bisection in model
 /// coordinates resolves even a tiny visible fraction without storing 1 - tiny.
 /// Both unprojectable endpoints remain unresolved: numerical projection limits
 /// can hide finite interior points, unlike rejection by a single clipping plane.
-fn visible_segment(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Segment> {
+pub(super) fn visible_segment(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Segment> {
     let pa = metric.offset(a);
     let pb = metric.offset(b);
     let (inside, outside, image) = match (pa, pb) {
@@ -56,6 +56,45 @@ fn visible_segment(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Seg
         pa: image,
         pb: projected,
     })
+}
+
+/// Recover the model point at a known screen-space intersection of a straight
+/// projected segment. Perspective inverse interpolation uses the same depth
+/// calibration as curve Near; affine views keep linear model interpolation.
+pub(super) fn point_at_image(
+    a: Point3,
+    b: Point3,
+    image: [Real; 2],
+    metric: &impl SnapMetric,
+) -> Option<Point3> {
+    let shifted = ShiftedMetric { metric, image };
+    let segment = visible_segment(a, b, &shifted)?;
+    visible_line(segment.a, segment.b, segment.pa, segment.pb, &shifted)
+}
+
+struct ShiftedMetric<'a, M> {
+    metric: &'a M,
+    image: [Real; 2],
+}
+
+impl<M: SnapMetric> SnapMetric for ShiftedMetric<'_, M> {
+    fn is_affine(&self) -> bool {
+        self.metric.is_affine()
+    }
+
+    fn capture_radius(&self) -> Real {
+        self.metric.capture_radius()
+    }
+
+    fn offset(&self, point: Point3) -> Option<[Real; 2]> {
+        let offset = self.metric.offset(point)?;
+        let shifted = [offset[0] - self.image[0], offset[1] - self.image[1]];
+        shifted.iter().all(|v| v.is_finite()).then_some(shifted)
+    }
+
+    fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
+        self.metric.nearest_point_cloud(cloud)
+    }
 }
 
 #[cfg(test)]

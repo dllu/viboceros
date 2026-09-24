@@ -1,0 +1,179 @@
+use super::*;
+use crate::object_snap::{ObjectSnapKind, ObjectSnapModes, ObjectSnapOptions};
+use viboceros_document::Geometry;
+use viboceros_geometry::{
+    LineSegment, MeshFace, NurbsCurve, NurbsSurface, PointCloudProjection, Polyline3, Tolerance,
+    TriangleMesh,
+};
+
+fn p(x: Real, y: Real, z: Real) -> Point3 {
+    Point3::try_new(x, y, z).unwrap()
+}
+
+fn line(a: Point3, b: Point3) -> Geometry {
+    Geometry::Line(LineSegment::try_new(a, b, Tolerance::DEFAULT).unwrap())
+}
+
+fn snap(doc: &Document, mesh_edges: bool) -> Option<super::super::ObjectSnap> {
+    ObjectSnapCache::default()
+        .nearest_axis_aligned_with_options(
+            doc,
+            PointCloudProjection::Xy,
+            p(0., 0., 0.),
+            [0.05, -0.05],
+            0.2,
+            ObjectSnapOptions {
+                modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                mesh_edges,
+            },
+        )
+        .unwrap()
+}
+
+#[test]
+fn crossings_include_apparent_depth_and_endpoint_contact_but_not_overlap() {
+    let mut doc = Document::default();
+    doc.add_geometry(line(p(-2., 0., 0.), p(2., 0., 0.)))
+        .unwrap();
+    assert!(snap(&doc, false).is_none());
+    let second = doc
+        .add_geometry(line(p(0., -2., 1.), p(0., 2., 1.)))
+        .unwrap();
+    let hit = snap(&doc, false).unwrap();
+    assert_eq!(hit.kind(), ObjectSnapKind::Intersection);
+    assert!(hit.point().distance_to(p(0., 0., 1.)).unwrap() < 1e-12);
+    assert_eq!(hit.object_id(), second);
+    doc.delete_object(second).unwrap();
+    doc.add_geometry(line(p(0., 0., 0.), p(0., 2., 0.)))
+        .unwrap();
+    assert!(
+        snap(&doc, false)
+            .unwrap()
+            .point()
+            .distance_to(p(0., 0., 0.))
+            .unwrap()
+            < 1e-12
+    );
+    let mut overlap = Document::default();
+    overlap
+        .add_geometry(line(p(-2., 0., 0.), p(2., 0., 0.)))
+        .unwrap();
+    overlap
+        .add_geometry(line(p(-1., 0., 0.), p(1., 0., 0.)))
+        .unwrap();
+    assert!(snap(&overlap, false).is_none());
+}
+
+#[test]
+fn mesh_wire_intersection_obeys_source_switch() {
+    let mesh = TriangleMesh::try_new_faces(
+        vec![p(-2., 0., 0.), p(2., 0., 0.), p(2., 2., 0.), p(-2., 2., 0.)],
+        vec![MeshFace::Quad([0, 1, 2, 3])],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    let line_id = doc
+        .add_geometry(line(p(0., -2., 0.), p(0., 2., 0.)))
+        .unwrap();
+    assert!(snap(&doc, false).is_none());
+    let hit = snap(&doc, true).unwrap();
+    assert!(hit.point().distance_to(p(0., 0., 0.)).unwrap() < 1e-12);
+    assert_eq!(hit.object_id(), line_id);
+}
+
+#[test]
+fn repeated_intersections_reuse_mesh_wire_hierarchy() {
+    let mut vertices = Vec::new();
+    let mut faces = Vec::new();
+    for y in 0..32 {
+        for x in 0..32 {
+            let base = vertices.len() as u32;
+            vertices.extend(
+                [[2., -2.], [8., -2.], [8., -8.], [2., -8.]]
+                    .map(|[a, b]| p(a + 10. * x as Real, b - 10. * y as Real, 0.)),
+            );
+            faces.push(MeshFace::Quad([base, base + 1, base + 2, base + 3]));
+        }
+    }
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Mesh(
+        TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap(),
+    ))
+    .unwrap();
+    doc.add_geometry(line(p(5., -3., 0.), p(5., 0., 0.)))
+        .unwrap();
+    let mut cache = ObjectSnapCache::default();
+    for _ in 0..50 {
+        cache.meshes.intersection_visited = 0;
+        let hit = cache
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                [5.02, -1.98],
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: true,
+                },
+            )
+            .unwrap()
+            .unwrap();
+        assert!(hit.point().distance_to(p(5., -2., 0.)).unwrap() < 1e-10);
+        assert!(cache.meshes.intersection_visited < 64);
+    }
+    assert_eq!(cache.meshes.builds, 1);
+}
+
+#[test]
+fn polyline_and_degree_one_nurbs_segments_share_intersection_capture() {
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Polyline(
+        Polyline3::try_new(
+            vec![p(-2., 0., 0.), p(2., 0., 0.), p(2., 2., 0.)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    ))
+    .unwrap();
+    doc.add_geometry(Geometry::NurbsCurve(
+        NurbsCurve::try_new(1, vec![p(0., -2., 0.), p(0., 2., 0.)], vec![0., 0., 1., 1.]).unwrap(),
+    ))
+    .unwrap();
+    assert!(
+        snap(&doc, false)
+            .unwrap()
+            .point()
+            .distance_to(p(0., 0., 0.))
+            .unwrap()
+            < 1e-12
+    );
+}
+
+#[test]
+fn straight_surface_boundary_intersects_a_line() {
+    let surface = NurbsSurface::try_new(
+        1,
+        1,
+        2,
+        2,
+        vec![p(-2., 0., 0.), p(2., 0., 0.), p(-2., 2., 0.), p(2., 2., 0.)],
+        vec![0., 0., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    doc.add_geometry(line(p(0., -2., 0.), p(0., 1., 0.)))
+        .unwrap();
+    assert!(
+        snap(&doc, false)
+            .unwrap()
+            .point()
+            .distance_to(p(0., 0., 0.))
+            .unwrap()
+            < 1e-12
+    );
+}

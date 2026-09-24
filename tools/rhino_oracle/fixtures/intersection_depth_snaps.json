@@ -1,0 +1,183 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "skew-top-reverse",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "skew-perspective",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "skew-perspective-reverse",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    }
+  ]
+}

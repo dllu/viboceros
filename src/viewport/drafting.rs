@@ -65,9 +65,19 @@ impl Viewport {
             let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok()?;
             self.object_snap_cache
                 .borrow_mut()
-                .nearest_axis_aligned_with_options(
+                .nearest_axis_aligned_with_options_and_view(
                     document,
-                    projection,
+                    (
+                        projection,
+                        if matches!(
+                            self.kind,
+                            ViewKind::Bottom | ViewKind::Back | ViewKind::Left
+                        ) {
+                            -1.0
+                        } else {
+                            1.0
+                        },
+                    ),
                     target,
                     self.parallel_query_offset(pointer, rect)?,
                     Real::from(OSNAP_CAPTURE_PIXELS) / scale,
@@ -88,13 +98,23 @@ impl Viewport {
                 .ok()
                 .flatten()
         } else {
+            let view_normal = self.apparent_intersection_normal().to_array();
             self.object_snap_cache
                 .borrow_mut()
-                .nearest_projected_with_options(
+                .nearest_projected_with_options_and_frontness(
                     document,
                     [Real::from(pointer.x), Real::from(pointer.y)],
                     Real::from(OSNAP_CAPTURE_PIXELS),
                     |point| self.project_precise(point, rect),
+                    |point| {
+                        let xyz = point.to_array();
+                        Some(
+                            -xyz.iter()
+                                .zip(view_normal)
+                                .map(|(a, b)| a * b)
+                                .sum::<Real>(),
+                        )
+                    },
                     options,
                 )
                 .ok()
@@ -534,6 +554,8 @@ pub(super) fn clip_drafting_line(
 
 #[cfg(test)]
 mod center_tests;
+#[cfg(test)]
+mod intersection_tests;
 #[cfg(test)]
 mod mesh_tests;
 #[cfg(test)]

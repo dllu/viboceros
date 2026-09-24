@@ -146,8 +146,33 @@ impl ObjectSnapCache {
         capture_radius: Real,
         options: ObjectSnapOptions,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_axis_aligned_with_options_and_view(
+            document,
+            (projection, 1.0),
+            origin,
+            cursor_offset,
+            capture_radius,
+            options,
+        )
+    }
+
+    /// Axis-aligned capture with the signed view direction used to choose an
+    /// apparent intersection's source when projected lines cross in depth.
+    pub fn nearest_axis_aligned_with_options_and_view(
+        &mut self,
+        document: &Document,
+        view: (PointCloudProjection, Real),
+        origin: Point3,
+        cursor_offset: [Real; 2],
+        capture_radius: Real,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
+        let (projection, front_sign) = view;
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor_offset)?;
+        if !matches!(front_sign, -1.0 | 1.0) {
+            return Err(DraftingError::InvalidCursorCoordinates);
+        }
         nearest_object_snap_with_metric(
             document,
             &AxisAlignedSnapMetric {
@@ -155,6 +180,7 @@ impl ObjectSnapCache {
                 origin,
                 cursor_offset,
                 capture_radius,
+                front_sign,
             },
             self,
             options,
@@ -227,6 +253,27 @@ impl ObjectSnapCache {
         project: impl Fn(Point3) -> Option<[Real; 2]>,
         options: ObjectSnapOptions,
     ) -> Result<Option<ObjectSnap>, DraftingError> {
+        self.nearest_projected_with_options_and_frontness(
+            document,
+            cursor,
+            capture_radius,
+            project,
+            |_| None,
+            options,
+        )
+    }
+
+    /// Projected capture with a frontness score for apparent intersection
+    /// source ties. Higher values are closer to the viewer.
+    pub fn nearest_projected_with_options_and_frontness(
+        &mut self,
+        document: &Document,
+        cursor: [Real; 2],
+        capture_radius: Real,
+        project: impl Fn(Point3) -> Option<[Real; 2]>,
+        frontness: impl Fn(Point3) -> Option<Real>,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
         validate_capture_radius(capture_radius)?;
         validate_cursor_coordinates(cursor)?;
         nearest_object_snap_with_metric(
@@ -235,6 +282,7 @@ impl ObjectSnapCache {
                 cursor,
                 capture_radius,
                 project,
+                frontness,
             },
             self,
             options,

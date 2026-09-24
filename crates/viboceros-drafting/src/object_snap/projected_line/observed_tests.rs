@@ -36,6 +36,7 @@ fn per_wire_targets_and_misses_match_520_public_line_picks() {
             let matrix: [[Real; 4]; 4] =
                 serde_json::from_value(frame["world_to_screen"].clone()).unwrap();
             let metric = ProjectedSnapMetric {
+                frontness: |_| None,
                 cursor: serde_json::from_value(frame["click_client"].clone()).unwrap(),
                 capture_radius: op
                     .get("capture_radius")

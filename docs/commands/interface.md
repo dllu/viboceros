@@ -36,7 +36,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
 | `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
-| `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid wires independently of feature modes; initially disabled. |
+| `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid/Int wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |
 | `SetDisplayMode [Viewport=Active\|All] Mode=Wireframe\|Shaded\|Ghosted` | Change the active viewport (default) or all four viewports. |
 
@@ -108,7 +108,7 @@ settings, not cursor positions.
 
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
 implemented Point/End/Mid/Center/Quad, opt-in [Near](../near-snaps.md), and
-[mesh Vertex](../mesh-snaps.md). They include
+[mesh Vertex](../mesh-snaps.md) and [straight Int](../intersection-snaps.md). They include
 [Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)
 have a separate source switch, direct-only Mid, and calibrated depth-weighted Near;
 mesh wire selection, including corners and competing parallel wires, still differs

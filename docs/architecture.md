@@ -57,6 +57,9 @@ passing the original pick to the app for one-time resolution.
 `viboceros-drafting/point_constraint` applies one-pick 3D distance locks and
 CPlane angle tracking after the filter resolves. Owned Rhino mouse probes pair
 free and constrained clicks at the same screen pixels for numerical replay.
+`viboceros-drafting/object_snap/intersection` resolves visible straight
+crossings in camera space and back-projects each candidate onto its 3D source.
+Mesh candidates share the snapshot-cached wire hierarchy.
 The command crate's `interchange` module owns the six STL/STEP/3DM import/export
 commands, document-to-file attribute/group adapters, and export mesh aggregation.
 Parsing and file replacement remain in `viboceros-io`; registry transactions

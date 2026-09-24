@@ -46,8 +46,8 @@ def validate(operation):
             any(type(v) is not int or not -32 <= v <= 32 for v in offset)):
         raise ValueError("invalid point snap aim or pixel offset")
     modes = operation["persistent_snaps"]
-    if (not isinstance(modes, list) or len(modes) > 7 or
-            any(m not in ("Point", "End", "Mid", "Cen", "Quad", "Near", "Vertex") for m in modes) or
+    if (not isinstance(modes, list) or len(modes) > 8 or
+            any(m not in ("Point", "End", "Mid", "Cen", "Quad", "Near", "Vertex", "Int") for m in modes) or
             len(set(modes)) != len(modes) or type(operation["snap_to_meshes"]) is not bool):
         raise ValueError("invalid point snap policy")
     sources = operation["sources"]

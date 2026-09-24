@@ -1,0 +1,152 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "int-vs-unrelated-mid",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            0
+          ],
+          "end": [
+            0,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0.03,
+            -0.07,
+            0
+          ],
+          "end": [
+            0.07,
+            -0.03,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int",
+        "Mid"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "int-vs-unrelated-end-close",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            0
+          ],
+          "end": [
+            0,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0.03,
+            -0.07,
+            0
+          ],
+          "end": [
+            0.07,
+            -0.03,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int",
+        "End"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    }
+  ]
+}

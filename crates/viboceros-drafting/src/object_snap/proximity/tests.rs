@@ -7,6 +7,7 @@ fn analytic_and_common_sign_nurbs_hover_use_the_clipped_line_locus() {
     let a = Point3::try_new(0., 0., 1.).unwrap();
     let b = Point3::try_new(1., 0., -1e12).unwrap();
     let metric = ProjectedSnapMetric {
+        frontness: |_| None,
         cursor: [0.5, 0.1],
         capture_radius: 0.2,
         project: |p: Point3| (p.z() >= 0.1).then_some([p.x() * 1e12 / p.z(), p.y() / p.z()]),

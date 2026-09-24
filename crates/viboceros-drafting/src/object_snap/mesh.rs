@@ -203,13 +203,15 @@ pub(super) struct Cache {
     entries: BTreeMap<ObjectId, Index>,
     vertex_entries: BTreeMap<ObjectId, VertexIndex>,
     #[cfg(test)]
-    builds: usize,
+    pub(super) builds: usize,
     #[cfg(test)]
     visited: usize,
     #[cfg(test)]
     vertex_builds: usize,
     #[cfg(test)]
     visited_vertices: usize,
+    #[cfg(test)]
+    pub(super) intersection_visited: usize,
 }
 
 impl Cache {
@@ -222,6 +224,48 @@ impl Cache {
             .retain(|id, _| live.get(id).is_some_and(|g| matches!(g, Geometry::Mesh(_))));
         self.vertex_entries
             .retain(|id, _| live.get(id).is_some_and(|g| matches!(g, Geometry::Mesh(_))));
+    }
+
+    fn wire_index(&mut self, object: &Object) -> &Index {
+        let index = self.entries.entry(object.id()).or_insert_with(|| {
+            #[cfg(test)]
+            {
+                self.builds += 1;
+            }
+            Index::new(object)
+        });
+        if !index.source.shares_storage_with(object.geometry_snapshot()) {
+            *index = Index::new(object);
+            #[cfg(test)]
+            {
+                self.builds += 1;
+            }
+        }
+        index
+    }
+
+    pub(super) fn visit_intersection_wires(
+        &mut self,
+        object: &Object,
+        metric: &impl SnapMetric,
+        emit: &mut impl FnMut([Point3; 2]),
+    ) {
+        let index = self.wire_index(object);
+        if !index.nodes.is_empty() {
+            #[cfg(test)]
+            let mut visited = 0;
+            index.visit(0, metric, &mut |wire| {
+                #[cfg(test)]
+                {
+                    visited += 1;
+                }
+                emit(wire.ends);
+            });
+            #[cfg(test)]
+            {
+                self.intersection_visited += visited;
+            }
+        }
     }
 
     pub(super) fn visit(
@@ -241,29 +285,18 @@ impl Cache {
         if !mid && !near {
             return;
         }
-        let index = self.entries.entry(object.id()).or_insert_with(|| {
-            #[cfg(test)]
-            {
-                self.builds += 1;
-            }
-            Index::new(object)
-        });
-        if !index.source.shares_storage_with(object.geometry_snapshot()) {
-            *index = Index::new(object);
-            #[cfg(test)]
-            {
-                self.builds += 1;
-            }
-        }
+        let index = self.wire_index(object);
         if index.nodes.is_empty() {
             return;
         }
         let mut best_mid = None;
         let mut best_near = None;
+        #[cfg(test)]
+        let mut visited = 0;
         let mut consider = |wire: &Wire| {
             #[cfg(test)]
             {
-                self.visited += 1;
+                visited += 1;
             }
             if mid && let Some(direct) = metric.captured_distance(wire.midpoint) {
                 // Retained Rhino mesh picks require proximity to the midpoint
@@ -279,6 +312,10 @@ impl Cache {
             }
         };
         index.visit(0, metric, &mut consider);
+        #[cfg(test)]
+        {
+            self.visited += visited;
+        }
         if let Some((_, point, distance)) = best_mid {
             emit(ObjectSnapKind::Mid, point, distance);
         } else if let Some((_, point, distance)) = best_near {

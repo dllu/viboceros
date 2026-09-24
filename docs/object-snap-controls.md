@@ -3,7 +3,7 @@
 [Viewport controls](interface.md) · [Center capture](center-hover-snaps.md) · [Oracle provenance](oneshot-snap-provenance.json)
 
 The **Snap modes** toolbar menu independently enables Point, End, Mid, Cen, Quad,
-Near and Vertex. Near and Vertex are opt-in; the other five are initially enabled.
+Near, Vertex and Int. Near, Vertex and Int are opt-in; the other five are initially enabled.
 The Osnap button/F4 suspends persistent snaps without losing that selection.
 Persistent checkbox edits keep the menu open; right-click a mode to isolate it,
 then right-click it again to restore the previous set. An ordinary checkbox edit
@@ -11,15 +11,15 @@ starts a new set and discards the old isolation snapshot. These are session UI
 settings, not document edits or model undo steps.
 
 The separate **Snap to mesh wires** checkbox (initially off), also controlled by
-`SnapToMeshes Enable|Disable|Toggle`, admits supported mesh Near/Mid sources
+`SnapToMeshes Enable|Disable|Toggle`, admits supported mesh Near/Mid/Int sources
 without changing feature selection or pending overrides. [Mesh snapping](mesh-snaps.md)
 documents its direct-only Mid behavior, depth-weighted Near and remaining wire-selection
 priority differences. Vertex targets mesh vertices even when this switch is off.
 
 While a command requests a point, Shift-click a mode for the next point only.
-Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near`, `Vertex` or `NoSnap` at the command
+Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near`, `Vertex`, `Int` or `NoSnap` at the command
 line, then pick or type the point. `Endpoint`, `Midpoint`, `Center`, `Quadrant`
-and `Nearest`, plus optional `_`/apostrophe prefixes, are accepted. Submit the modifier separately
+`Nearest` and `Intersection`, plus optional `_`/apostrophe prefixes, are accepted. Submit the modifier separately
 from coordinates; arbitrary multi-command macros are not parsed. Outside a point
 prompt, `Point` still starts the modeling command.
 
@@ -77,7 +77,8 @@ capture when Mid alone is enabled, including one-shot Mid.
 boundaries and polygonal planar surfaces/faces without holes.
 [Circular NURBS Center](circular-center-snaps.md) adds circles/arcs and boundary
 edges, including circular holes. [Elliptical NURBS Center](elliptic-center-snaps.md)
-adds conservative whole-span ellipse recognition. General End/Int/Tan/Perp behavior,
+adds conservative whole-span ellipse recognition. [Straight Int](intersection-snaps.md)
+adds apparent crossing capture. General curved Int, End, Tan and Perp behavior,
 unrestricted conic/approximate-conic recognition,
 CPlane-relative Quad, occlusion,
 Alt suspension, full `Osnap` command grammar, persistence across app restarts and
@@ -86,5 +87,5 @@ parity or change the limits of the underlying geometry queries.
 
 [Near](near-snaps.md) includes calibrated perspective captures and complete
 command/history replay. [Mesh snapping](mesh-snaps.md) supports opt-in Near/Mid
-on wires and Vertex on mesh points;
+on wires, Int at straight-wire crossings, and Vertex on mesh points;
 Rhino mesh wire-selection parity and certified global curved proximity remain pending.

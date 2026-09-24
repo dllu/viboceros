@@ -1,0 +1,360 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "int-vs-unrelated-mid",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.03,
+                -0.07,
+                0.0
+              ],
+              [
+                0.07,
+                -0.03,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.03,
+                -0.07,
+                0.0
+              ],
+              [
+                0.07,
+                -0.03,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            352.5,
+            182.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            354,
+            184
+          ],
+          "perspective": false,
+          "size": [
+            705,
+            365
+          ],
+          "world_to_screen": [
+            [
+              33.18181818181818,
+              0.0,
+              0.0,
+              352.5
+            ],
+            [
+              0.0,
+              -33.18181818181818,
+              0.0,
+              182.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.9999923995657473,
+              0.500003800217125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 312.0495550101623,
+          "requested_settle_ms": 300
+        },
+        "kind": "Midpoint",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.05,
+          -0.05,
+          0.0
+        ],
+        "source": 2,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "int-vs-unrelated-end-close",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.03,
+                -0.07,
+                0.0
+              ],
+              [
+                0.07,
+                -0.03,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.03,
+                -0.07,
+                0.0
+              ],
+              [
+                0.07,
+                -0.03,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            352.5,
+            182.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            354,
+            184
+          ],
+          "perspective": false,
+          "size": [
+            705,
+            365
+          ],
+          "world_to_screen": [
+            [
+              33.18181818181818,
+              0.0,
+              0.0,
+              352.5
+            ],
+            [
+              0.0,
+              -33.18181818181818,
+              0.0,
+              182.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.9999923995657473,
+              0.500003800217125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 358.0566260498017,
+          "requested_settle_ms": 300
+        },
+        "kind": "End",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.03,
+          -0.07,
+          0.0
+        ],
+        "source": 2,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    }
+  ]
+}

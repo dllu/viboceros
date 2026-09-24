@@ -365,6 +365,7 @@ fn hierarchy_matches_individual_wires_across_perspective_clipping_and_ties() {
                         .unwrap();
                     let expected = if kind == ObjectSnapKind::Near {
                         let metric = super::super::ProjectedSnapMetric {
+                            frontness: |_| None,
                             cursor,
                             capture_radius: 0.75,
                             project,

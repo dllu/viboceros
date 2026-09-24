@@ -73,7 +73,8 @@ Open layer editors adopt external changes to untouched fields while preserving
 local drafts. Conflicting name/color edits block Apply with a warning; reopen
 Edit to review current values. Deleting a layer closes its editor.
 
-Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near and Vertex features, including
+Osnap captures visible Point, End, Mid, Center, Quad, and opt-in Near, Vertex and
+[straight Intersection](intersection-snaps.md) features, including
 indexed members of point clouds and features on locked objects and layers.
 Runtime-hidden point-cloud members are excluded from Osnap.
 The [capture aperture is square](snap-capture-box.md); admitted candidates retain
@@ -92,14 +93,14 @@ boundaries and B-rep edges also supply Center, including eligible hole edges.
 Recognition is conservative; unrestricted conic/approximate-conic parity remains incomplete.
 The Snap modes menu selects individual persistent modes; right-click isolates a
 mode and Shift-click selects it for one point. At point prompts, `Point`, `End`,
-`Mid`, `Cen`, `Quad`, `Near`, `Vertex` and `NoSnap` also supply one-shot overrides. See
+`Mid`, `Cen`, `Quad`, `Near`, `Vertex`, `Int` and `NoSnap` also supply one-shot overrides. See
 [controls and lifecycle](object-snap-controls.md), [Mid/End behavior](composite-feature-snaps.md),
 [Mid hover](mid-hover-snaps.md), [analytic Center](center-hover-snaps.md) and
 [polygon Center](polygon-center-snaps.md) and [circular NURBS Center](circular-center-snaps.md)
 for coverage limits, [Near](near-snaps.md) for screen-space curve targets, and
 [snap caching](snap-caching.md) for invalidation and performance.
 The separate **Snap to mesh wires** checkbox or `SnapToMeshes Enable` admits
-[mesh Near/Mid](mesh-snaps.md). Vertex captures mesh vertices with this switch
+[mesh Near/Mid/Int](mesh-snaps.md). Vertex captures mesh vertices with this switch
 either on or off. The switch defaults off, does not change enabled modes,
 and preserves point prompts and one-shot overrides. Mesh Mid is direct-only;
 Mesh Near uses calibrated endpoint-depth weighting and a

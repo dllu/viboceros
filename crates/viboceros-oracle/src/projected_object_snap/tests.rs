@@ -224,6 +224,63 @@ fn mesh_vertex_snap_replays_owned_rhino_picks() {
 }
 
 #[test]
+fn straight_intersection_snaps_replay_owned_rhino_picks() {
+    for (fixture, observed) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/intersection_snaps.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/intersection_snaps.json"),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/intersection_depth_snaps.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_depth_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_perspective_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_perspective_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_perspective_reverse_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_perspective_reverse_snaps.json"
+            ),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/intersection_mixed_snaps.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_mixed_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_competing_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_competing_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_competing_mid_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_competing_mid_snaps.json"
+            ),
+        ),
+    ] {
+        let differences = retained_differences(fixture, observed);
+        assert!(differences.is_empty(), "{differences:?}");
+    }
+}
+
+#[test]
 fn square_aperture_replays_all_128_admissions_but_preserves_five_mesh_selection_differences() {
     let differences = retained_differences(
         include_str!("../../../../tools/rhino_oracle/fixtures/snap_capture_box.json"),

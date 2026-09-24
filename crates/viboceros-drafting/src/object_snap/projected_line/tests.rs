@@ -8,6 +8,7 @@ fn both_mesh_endpoints_inside_select_the_nearer_endpoint_not_curve_near() {
         let a = p(-0.75, 0.5);
         let b = p(0.5, 0.5);
         let metric = ProjectedSnapMetric {
+            frontness: |_| None,
             cursor: [0.; 2],
             capture_radius: scale,
             project: |p: Point3| Some([p.x(), p.y()]),
@@ -31,6 +32,7 @@ fn inside_mesh_endpoint_ties_retain_wire_orientation_even_at_different_depths() 
     use super::super::ProjectedSnapMetric;
     let p = |x, z| Point3::try_new(x, 0.5, z).unwrap();
     let metric = ProjectedSnapMetric {
+        frontness: |_| None,
         cursor: [0.; 2],
         capture_radius: 1.,
         project: |p: Point3| Some([p.x(), p.y()]),
@@ -54,6 +56,7 @@ fn clipping_does_not_turn_an_interior_point_into_a_mesh_endpoint() {
     let a = Point3::try_new(-2., 0.5, 0.).unwrap();
     let b = Point3::try_new(0.5, 0.5, 1.).unwrap();
     let metric = ProjectedSnapMetric {
+        frontness: |_| None,
         cursor: [0.; 2],
         capture_radius: 1.,
         project: |p: Point3| (p.z() >= 0.5).then_some([p.x(), p.y()]),
@@ -76,6 +79,7 @@ fn one_or_no_inside_endpoint_still_uses_the_interior_wire_target() {
     use super::super::ProjectedSnapMetric;
     let p = |x| Point3::try_new(x, 0.5, 1.).unwrap();
     let metric = ProjectedSnapMetric {
+        frontness: |_| None,
         cursor: [0.; 2],
         capture_radius: 1.,
         project: |p: Point3| Some([p.x(), p.y()]),
@@ -106,6 +110,7 @@ fn mesh_depth_weighting_matches_independent_fraction_reference() {
         assert_eq!(v.len(), 25);
         let p = |i| Point3::try_new(v[i], v[i + 1], v[i + 2]).unwrap();
         let metric = ProjectedSnapMetric {
+            frontness: |_| None,
             cursor: [v[18], v[19]],
             capture_radius: v[20],
             project: |point: Point3| {
@@ -146,6 +151,7 @@ fn clipped_projective_lines_match_an_independent_exact_rational_corpus() {
         let expected = point(21);
         let expected_distance = values[24].sqrt();
         let metric = ProjectedSnapMetric {
+            frontness: |_| None,
             cursor: [values[18], values[19]],
             capture_radius: expected_distance + 1.,
             project: |p: Point3| {
@@ -189,6 +195,7 @@ fn clipped_boundary_is_a_candidate_but_an_invisible_segment_is_not() {
     use super::super::ProjectedSnapMetric;
     let p = |x, z| Point3::try_new(x, 0., z).unwrap();
     let metric = ProjectedSnapMetric {
+        frontness: |_| None,
         cursor: [8., 0.],
         capture_radius: 10.,
         project: |p: Point3| (p.z() >= 0.5).then_some([p.x() / p.z(), p.y() / p.z()]),

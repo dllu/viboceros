@@ -52,6 +52,26 @@ fn vertex_one_shot_is_available_without_mesh_wire_switch() {
 }
 
 #[test]
+fn intersection_one_shot_is_opt_in_and_restores_persistent_modes() {
+    let mut app = test_app();
+    assert!(!app.snaps.persistent.contains(ObjectSnapKind::Intersection));
+    enter(&mut app, "Points");
+    enter(&mut app, "_Int");
+    assert_eq!(app.one_shot_snap_label(), Some("Int"));
+    assert_eq!(
+        app.effective_snap_modes(),
+        ObjectSnapModes::only(ObjectSnapKind::Intersection)
+    );
+    assert!(app.accept_drafting_point(point(1., 2., 3.)));
+    assert_eq!(app.effective_snap_modes(), ObjectSnapModes::LANDMARKS);
+    app.snaps.set(ObjectSnapKind::Intersection, true);
+    assert!(
+        app.effective_snap_modes()
+            .contains(ObjectSnapKind::Intersection)
+    );
+}
+
+#[test]
 fn near_is_opt_in_and_one_shot_restores_persistent_modes_after_accept_or_cancel() {
     let mut app = test_app();
     assert!(!app.snaps.persistent.contains(ObjectSnapKind::Near));

@@ -9,7 +9,7 @@ independent of the enabled feature modes, Osnap suspension, and one-shot overrid
 It neither enables Near nor consumes a pending one-shot or modeling prompt.
 Like other drafting settings, it is session-local and outside document history.
 
-Supported features are Near and Mid on actual triangle/quad face-boundary wires.
+Supported features are Near, Mid and straight-wire Int on actual triangle/quad face-boundary wires.
 Coincident vertices are welded by exact location; shared edges appear once.
 Quad display-tessellation diagonals are not snap wires, but actual shared edges
 between triangle faces are. Document tolerance changes do not erase existing
@@ -25,7 +25,8 @@ Rhino's [object snap reference](https://docs.mcneel.com/rhino/8/help/en-us/user_
 lists Vertex separately from the SnapToMeshes wire modes. Vertex captures mesh
 vertices with the mesh-wire switch either on or off; Point and End do not
 capture them. The vertex index is built only when Vertex is requested and
-shares the mesh snapshot's invalidation lifetime. Int and Perp remain
+shares the mesh snapshot's invalidation lifetime. Straight mesh wire Int is
+described in [intersection snaps](intersection-snaps.md). Perp remains
 unimplemented.
 
 The [six-case Vertex fixture](../tools/rhino_oracle/fixtures/mesh_vertex_snaps.json)

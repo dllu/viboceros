@@ -14,7 +14,7 @@ def environment(operation, host, capture_radius=12):
         aid.GridSnap = aid.Ortho = aid.Planar = False
         aid.Osnap = True
         modes = getattr(settings.OsnapModes, "None")
-        names = dict(Point="Point", End="End", Mid="Midpoint", Cen="Center", Quad="Quadrant", Near="Near", Vertex="Vertex")
+        names = dict(Point="Point", End="End", Mid="Midpoint", Cen="Center", Quad="Quadrant", Near="Near", Vertex="Vertex", Int="Intersection")
         for name in operation.get("persistent_snaps", []): modes |= getattr(settings.OsnapModes, names[name])
         aid.OsnapModes = modes
         aid.OnlySnapToSelected = False

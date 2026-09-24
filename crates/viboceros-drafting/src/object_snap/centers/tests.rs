@@ -208,10 +208,12 @@ fn center_modes_are_valid_bit_sets_and_disabled_queries_do_not_project() {
     assert_eq!(modes, ObjectSnapModes::LANDMARKS);
     assert!(!modes.contains(ObjectSnapKind::Near));
     assert!(!modes.contains(ObjectSnapKind::Vertex));
+    assert!(!modes.contains(ObjectSnapKind::Intersection));
     assert_eq!(
         modes
             .with(ObjectSnapKind::Near, true)
-            .with(ObjectSnapKind::Vertex, true),
+            .with(ObjectSnapKind::Vertex, true)
+            .with(ObjectSnapKind::Intersection, true),
         ObjectSnapModes::ALL
     );
     let mut doc = Document::default();

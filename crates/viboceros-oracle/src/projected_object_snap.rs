@@ -101,6 +101,7 @@ pub enum SnapMode {
     Quad,
     Near,
     Vertex,
+    Int,
 }
 
 impl SnapMode {
@@ -113,6 +114,7 @@ impl SnapMode {
             Self::Quad => ObjectSnapKind::Quad,
             Self::Near => ObjectSnapKind::Near,
             Self::Vertex => ObjectSnapKind::Vertex,
+            Self::Int => ObjectSnapKind::Intersection,
         }
     }
 }
@@ -126,7 +128,7 @@ pub(super) fn run(
         || fixture.cursor.iter().any(|v| !v.is_finite())
         || !fixture.capture_radius.is_finite()
         || !(1.0..=64.0).contains(&fixture.capture_radius)
-        || fixture.modes.len() > 7
+        || fixture.modes.len() > 8
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid calibrated snap inputs",
@@ -146,11 +148,20 @@ pub(super) fn run(
         ids.push(document.add_geometry(source.geometry(tolerance)?)?);
     }
     let snap = ObjectSnapCache::default()
-        .nearest_projected_with_options(
+        .nearest_projected_with_options_and_frontness(
             &document,
             fixture.cursor,
             fixture.capture_radius,
             |p| fixture.camera.project(p),
+            |point| {
+                let xyz = point.to_array();
+                Some(
+                    -xyz.iter()
+                        .zip(fixture.camera.direction)
+                        .map(|(a, b)| a * b)
+                        .sum::<f64>(),
+                )
+            },
             ObjectSnapOptions {
                 modes,
                 mesh_edges: fixture.snap_to_meshes,

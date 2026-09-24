@@ -4,6 +4,7 @@ mod cache;
 mod capture_tests;
 mod centers;
 mod features;
+mod intersection;
 mod mesh;
 mod mid_hover;
 mod near;
@@ -27,6 +28,7 @@ pub enum ObjectSnapKind {
     Quad,
     Near,
     Vertex,
+    Intersection,
 }
 
 /// Enabled feature kinds, independent of the UI's persistent/one-shot lifetime.
@@ -54,10 +56,10 @@ impl From<ObjectSnapModes> for ObjectSnapOptions {
 
 impl ObjectSnapModes {
     pub const NONE: Self = Self(0);
-    /// Discrete landmarks enabled by the standard query/UI defaults. Near and
-    /// Vertex are opt-in.
+    /// Discrete landmarks enabled by the standard query/UI defaults. Near,
+    /// Vertex and Intersection are opt-in.
     pub const LANDMARKS: Self = Self(0b1_1111);
-    pub const ALL: Self = Self(0b111_1111);
+    pub const ALL: Self = Self(0b1111_1111);
 
     pub const fn only(kind: ObjectSnapKind) -> Self {
         Self(1 << kind.priority())
@@ -84,6 +86,7 @@ impl ObjectSnapKind {
             Self::Quad => "Quad",
             Self::Near => "Near",
             Self::Vertex => "Vertex",
+            Self::Intersection => "Intersection",
         }
     }
 
@@ -96,6 +99,7 @@ impl ObjectSnapKind {
             Self::Quad => 4,
             Self::Near => 5,
             Self::Vertex => 6,
+            Self::Intersection => 7,
         }
     }
 }
@@ -199,6 +203,10 @@ trait SnapMetric {
     }
     fn capture_radius(&self) -> Real;
     fn offset(&self, point: Point3) -> Option<[Real; 2]>;
+    /// Larger values are closer to the viewer when projected source distances tie.
+    fn frontness(&self, _point: Point3) -> Option<Real> {
+        None
+    }
     #[cfg(test)]
     fn distance(&self, point: Point3) -> Option<Real> {
         let [x, y] = self.offset(point)?;
@@ -245,6 +253,7 @@ struct AxisAlignedSnapMetric {
     origin: Point3,
     cursor_offset: [Real; 2],
     capture_radius: Real,
+    front_sign: Real,
 }
 
 impl SnapMetric for AxisAlignedSnapMetric {
@@ -260,6 +269,17 @@ impl SnapMetric for AxisAlignedSnapMetric {
     }
     fn capture_radius(&self) -> Real {
         self.capture_radius
+    }
+
+    fn frontness(&self, point: Point3) -> Option<Real> {
+        Some(
+            self.front_sign
+                * match self.projection {
+                    PointCloudProjection::Xy => point.z(),
+                    PointCloudProjection::Xz => point.y(),
+                    PointCloudProjection::Yz => point.x(),
+                },
+        )
     }
 
     fn offset(&self, point: Point3) -> Option<[Real; 2]> {
@@ -304,6 +324,10 @@ impl SnapMetric for FrameSnapMetric {
         self.capture_radius
     }
 
+    fn frontness(&self, point: Point3) -> Option<Real> {
+        self.frame.coordinates_of(point).ok().map(|xyz| xyz[2])
+    }
+
     fn offset(&self, point: Point3) -> Option<[Real; 2]> {
         let projected = self.frame.projected_coordinates_of(point).ok()?;
         let delta = [
@@ -332,15 +356,17 @@ impl SnapMetric for FrameSnapMetric {
     }
 }
 
-struct ProjectedSnapMetric<F> {
+struct ProjectedSnapMetric<F, D> {
     cursor: [Real; 2],
     capture_radius: Real,
     project: F,
+    frontness: D,
 }
 
-impl<F> SnapMetric for ProjectedSnapMetric<F>
+impl<F, D> SnapMetric for ProjectedSnapMetric<F, D>
 where
     F: Fn(Point3) -> Option<[Real; 2]>,
+    D: Fn(Point3) -> Option<Real>,
 {
     fn capture_radius(&self) -> Real {
         self.capture_radius
@@ -350,6 +376,10 @@ where
         let projected = (self.project)(point)?;
         let delta = [projected[0] - self.cursor[0], projected[1] - self.cursor[1]];
         delta.iter().all(|v| v.is_finite()).then_some(delta)
+    }
+
+    fn frontness(&self, point: Point3) -> Option<Real> {
+        (self.frontness)(point)
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
@@ -534,7 +564,46 @@ fn nearest_object_snap_with_metric(
             );
         }
     }
+    if modes.contains(ObjectSnapKind::Intersection) {
+        intersection::visit(
+            document,
+            &visible_layers,
+            options.mesh_edges,
+            metric,
+            cache,
+            &mut |id, point, distance| {
+                consider_intersection_candidate(&mut best, id, point, distance);
+            },
+        );
+    }
     Ok(best)
+}
+
+fn consider_intersection_candidate(
+    best: &mut Option<ObjectSnap>,
+    object_id: ObjectId,
+    point: Point3,
+    distance: Real,
+) {
+    let replace = best.is_none_or(|current| {
+        if current.kind == ObjectSnapKind::Near {
+            // Measured Rhino mixed modes retain Int over even a closer Near.
+            return true;
+        }
+        if current.kind == ObjectSnapKind::Intersection {
+            return distance < current.distance;
+        }
+        let tie = 64. * Real::EPSILON * distance.max(current.distance).max(1.);
+        distance <= current.distance + tie
+    });
+    if replace {
+        *best = Some(ObjectSnap {
+            point,
+            kind: ObjectSnapKind::Intersection,
+            object_id,
+            distance,
+        });
+    }
 }
 
 fn consider_candidate(
