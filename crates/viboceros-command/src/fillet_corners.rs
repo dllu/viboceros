@@ -185,4 +185,44 @@ mod tests {
             &Geometry::PolyCurve(source)
         );
     }
+
+    #[test]
+    fn arc_line_kink_is_rounded_in_place_and_undoable() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let arc = CircularArc3::try_from_three_points(
+            p(0., 0.),
+            p(2_f64.sqrt(), 2. - 2_f64.sqrt()),
+            p(2., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = PolyCurve3::try_new(vec![
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(
+                LineSegment::try_new(p(2., 2.), p(6., 2.), Tolerance::DEFAULT).unwrap(),
+            ),
+        ])
+        .unwrap();
+        let id = document
+            .add_geometry(Geometry::PolyCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "FilletCorners Radius=0.5")
+            .unwrap();
+        let Geometry::PolyCurve(result) = document.object(id).unwrap().geometry() else {
+            panic!("filleted result is a polycurve")
+        };
+        assert_eq!(result.segments().len(), 3);
+        assert!(matches!(result.segments()[1], CurveSegment3::Arc(_)));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::PolyCurve(source)
+        );
+    }
 }

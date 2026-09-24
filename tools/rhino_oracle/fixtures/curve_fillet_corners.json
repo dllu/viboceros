@@ -134,6 +134,75 @@
         [4.146446609406726, 5.853553390593274, 0],
         [4.5, 6, 0], [6, 6, 0], [8, 6, 0]
       ]
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-line-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "line", "start": [2, 2, 0], "end": [6, 2, 0]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "line-to-arc-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "line", "start": [6, 2, 0], "end": [2, 2, 0]},
+        {"type": "arc", "points": [
+          [2, 2, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [0, 0, 0]
+        ]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-line-and-line-corner",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "line", "start": [2, 2, 0], "end": [6, 2, 0]},
+        {"type": "line", "start": [6, 2, 0], "end": [6, 6, 0]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "closed-arc-line-kinks-and-seam",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "line", "start": [2, 2, 0], "end": [6, 2, 0]},
+        {"type": "line", "start": [6, 2, 0], "end": [6, -2, 0]},
+        {"type": "line", "start": [6, -2, 0], "end": [0, -2, 0]},
+        {"type": "line", "start": [0, -2, 0], "end": [0, 0, 0]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-opposite-line-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "line", "start": [2, 2, 0], "end": [-2, 2, 0]}
+      ]},
+      "radius": 0.5
     }
   ]
 }

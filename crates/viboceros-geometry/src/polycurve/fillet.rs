@@ -1,14 +1,16 @@
 use super::*;
 
+mod arc_line;
+
 enum FilletPart {
     Straight(Vec<Point3>),
     Curved(CurveSegment3),
 }
 
 impl PolyCurve3 {
-    /// Fillets straight-span corners while retaining smooth curved leaves.
-    /// Kinks touching curved leaves and internal curved-leaf kinks require a
-    /// general curve fillet and are rejected rather than changing their locus.
+    /// Fillets straight-span and coplanar arc-line corners while retaining
+    /// smooth curved leaves. Unsupported curved junctions and internal
+    /// curved-leaf kinks are rejected rather than changing their locus.
     pub fn try_fillet_corners(
         &self,
         radius: Real,
@@ -19,6 +21,9 @@ impl PolyCurve3 {
             return Err(GeometryError::Degenerate {
                 context: "fillet radius",
             });
+        }
+        if let Some(rounded) = arc_line::resolve_arc_line_kinks(self, radius, tolerance)? {
+            return rounded.try_fillet_corners(radius, tolerance);
         }
         let mut parts = Vec::with_capacity(self.segments.len());
         for segment in &self.segments {
@@ -280,7 +285,7 @@ fn unsupported_straight_polycurve() -> GeometryError {
 
 fn unsupported_curved_corner() -> GeometryError {
     GeometryError::InvalidPolyCurve {
-        context: "FilletCorners cannot round a kink involving a curved leaf",
+        context: "FilletCorners cannot round this curved-leaf kink",
     }
 }
 
@@ -364,11 +369,11 @@ mod tests {
             ),
         ])
         .unwrap();
-        assert!(
-            curved_kink
-                .try_fillet_corners(0.5, Tolerance::DEFAULT)
-                .is_err()
-        );
+        let curved_result = curved_kink
+            .try_fillet_corners(0.5, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(curved_result.segments().len(), 3);
+        assert!(matches!(curved_result.segments()[1], CurveSegment3::Arc(_)));
     }
 
     #[test]
