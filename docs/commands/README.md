@@ -144,6 +144,7 @@ ZoomEnds Next
 ZoomEnds Previous
 ZoomEnds Mark
 ShowEndsOff
+SnapSize 0.25 ApplyTo=AllViewports
 SelWindow
 SelCrossing
 SelRectangular SelectionMode=InvertCrossing

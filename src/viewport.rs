@@ -290,6 +290,7 @@ pub struct Viewport {
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
+    snap_spacing: Real,
     pan: Vec2,
     orbit_yaw: Real,
     orbit_pitch: Real,
@@ -325,6 +326,7 @@ impl Viewport {
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
+            snap_spacing: 1.0,
             pan: Vec2::ZERO,
             orbit_yaw: -std::f64::consts::FRAC_PI_4,
             orbit_pitch: std::f64::consts::FRAC_PI_6,
@@ -352,6 +354,15 @@ impl Viewport {
             perspective_camera_distance: self.perspective_camera_distance,
             target: self.target,
         }
+    }
+
+    pub(crate) fn snap_spacing(&self) -> Real {
+        self.snap_spacing
+    }
+
+    pub(crate) fn set_snap_spacing(&mut self, spacing: Real) {
+        debug_assert!(spacing.is_finite() && spacing > 0.0);
+        self.snap_spacing = spacing;
     }
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {
@@ -1923,6 +1934,23 @@ mod tests {
                 .unwrap(),
             point(7.25, 1.0, -2.0)
         );
+    }
+
+    #[test]
+    fn snap_spacing_changes_local_grid_capture_without_changing_other_views() {
+        let mut top = Viewport::new(ViewKind::Top);
+        let front = Viewport::new(ViewKind::Front);
+        top.set_snap_spacing(0.25);
+        assert_eq!(
+            top.snap_to_grid(point(1.36, -1.61, 7.25)),
+            Some(point(1.25, -1.5, 7.25))
+        );
+        assert_eq!(
+            front.snap_to_grid(point(1.36, 7.25, -1.61)),
+            Some(point(1.0, 7.25, -2.0))
+        );
+        assert_eq!(top.snap_spacing(), 0.25);
+        assert_eq!(front.snap_spacing(), 1.0);
     }
 
     #[test]

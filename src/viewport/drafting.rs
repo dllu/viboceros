@@ -117,7 +117,8 @@ impl Viewport {
     }
 
     pub(super) fn snap_to_grid(&self, point: Point3) -> Option<Point3> {
-        viboceros_drafting::plane::snap_to_grid(point, self.construction_plane(), GRID_SPACING).ok()
+        viboceros_drafting::plane::snap_to_grid(point, self.construction_plane(), self.snap_spacing)
+            .ok()
     }
 
     pub(super) fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {

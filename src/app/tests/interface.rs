@@ -1722,6 +1722,53 @@ fn show_ends_postselection_picks_curves_without_interrupting_modeling() {
 }
 
 #[test]
+fn snap_size_updates_scoped_viewports_and_prompts_without_model_edits() {
+    let mut app = test_app();
+    enter(&mut app, "Point 1,2,3");
+    enter(&mut app, "Undo");
+    enter(&mut app, "Line");
+    enter(&mut app, "0");
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    enter(&mut app, "SnapSize 0.25");
+    assert_eq!(app.viewports[0].snap_spacing(), 0.25);
+    assert!(
+        app.viewports[1..]
+            .iter()
+            .all(|view| view.snap_spacing() == 1.0)
+    );
+    app.active_viewport = 2;
+    enter(&mut app, "SnapSize ApplyTo=AllViewports");
+    assert_eq!(
+        app.snap_size_pending,
+        Some((viboceros_command::interface::ViewportTarget::All, 2))
+    );
+    enter(&mut app, "0");
+    assert!(app.snap_size_pending.is_some());
+    assert_eq!(app.viewports[0].snap_spacing(), 0.25);
+    enter(&mut app, "0.125");
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.snap_spacing() == 0.125)
+    );
+    assert!(app.snap_size_pending.is_none());
+    app.active_viewport = 1;
+    enter(&mut app, "SnapSize");
+    app.active_viewport = 3;
+    enter(&mut app, "0.5");
+    assert_eq!(app.viewports[1].snap_spacing(), 0.5);
+    assert_eq!(app.viewports[3].snap_spacing(), 0.125);
+    enter(&mut app, "SnapSize");
+    enter(&mut app, "");
+    assert!(app.snap_size_pending.is_none());
+    assert_eq!(app.viewports[3].snap_spacing(), 0.125);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

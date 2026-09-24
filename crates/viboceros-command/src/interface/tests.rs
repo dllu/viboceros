@@ -28,6 +28,52 @@ fn mesh_snap_switch_uses_enable_disable_toggle_and_preserves_other_state() {
 }
 
 #[test]
+fn snap_size_parses_viewport_scope_and_rejects_invalid_spacing() {
+    for (input, spacing, apply_to) in [
+        ("SnapSize", None, ViewportTarget::Active),
+        ("SnapSize 0.25", Some(0.25), ViewportTarget::Active),
+        (
+            "'_SnapSize _ApplyTo=_AllViewports 2",
+            Some(2.0),
+            ViewportTarget::All,
+        ),
+        (
+            "SnapSize 0.5 ApplyTo=ActiveViewport",
+            Some(0.5),
+            ViewportTarget::Active,
+        ),
+        ("SnapSize ApplyTo=AllViewports", None, ViewportTarget::All),
+    ] {
+        let command = InterfaceCommand::SnapSize {
+            spacing: spacing.map(|value| SnapSpacing::try_new(value).unwrap()),
+            apply_to,
+        };
+        assert_eq!(parse(input), Some(Ok(command)));
+        let mut current = state();
+        let before = current.clone();
+        current.apply(command).unwrap();
+        assert_eq!(current, before);
+    }
+    for input in [
+        "SnapSize 0",
+        "SnapSize -1",
+        "SnapSize NaN",
+        "SnapSize Infinity",
+        "SnapSize 1e999",
+        "SnapSize bad",
+        "SnapSize 1 2",
+        "SnapSize 1 ApplyTo=Other",
+        "SnapSize 1 ApplyTo=AllViewports ApplyTo=ActiveViewport",
+    ] {
+        assert!(
+            matches!(parse(input), Some(Err(InterfaceError::Usage(_)))),
+            "{input}"
+        );
+    }
+    assert!(SnapSpacing::try_new(f64::from_bits(1)).is_some());
+}
+
+#[test]
 fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
     for (input, value) in [
         ("Zoom Factor 2", 2.0),

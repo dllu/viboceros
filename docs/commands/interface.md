@@ -27,8 +27,9 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `SetView World Top\|Bottom\|Front\|Back\|Right\|Left\|Perspective` | Reset the active viewport to a [standard world view](set-view.md). |
 | `SetView CPlane Top\|Bottom\|Front\|Back\|Right\|Left` | Align the camera to a standard direction of the active CPlane while keeping projection and CPlane; [details](set-view.md). |
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
-| `Snap` | Toggle the one-unit grid snap. |
+| `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
+| `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
 | `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |
@@ -39,7 +40,8 @@ Commands accept a leading hyphen and optional transparent-command apostrophe.
 `SetDisplayMode Shaded` and `SetDisplayMode Viewport All Mode Ghosted` also work.
 The inline `Options View Zoom ScaleFactor=…` path is a Viboceros scripting
 shortcut for Rhino's View options panel; the full Options dialog is pending.
-Supply the complete options on one line; bare option-taking commands show usage
+Supply the complete options on one line, except bare `SnapSize` and `Zoom Factor`
+which prompt for a value; other bare option-taking commands show usage
 instead of starting another prompt. Unknown/duplicate options are rejected
 before mutation, and invalid input remains editable.
 
@@ -96,9 +98,9 @@ have a separate source switch, direct-only Mid, and calibrated depth-weighted Ne
 mesh wire selection, including corners and competing parallel wires, still differs
 from Rhino; see the [competition diagnostics](../mesh-snap-order.md).
 14 retained mesh-switch states match Rhino exactly. Other feature kinds remain
-incomplete. Grid spacing is one unit; SmartTrack is
-reference-axis tracking, not Rhino's complete inference system. SnapSize, custom
-display modes, persistence for snap and display controls, and full command macro
+incomplete. Grid lines retain unit spacing while `SnapSize` changes the independent
+per-viewport snap spacing; SmartTrack is reference-axis tracking, not Rhino's
+complete inference system. Custom display modes, persistence for snap and display controls, and full command macro
 interpretation
 remain unimplemented. The supported controls follow McNeel's documentation for
 [Snap/SetSnap](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/snap.htm),

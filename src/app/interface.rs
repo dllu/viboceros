@@ -3,11 +3,32 @@
 use super::*;
 use std::collections::HashSet;
 use viboceros_command::interface::{
-    self, InterfaceCommand, InterfaceState, RectSelectionMode, SwitchAction, ViewportTarget,
-    WorldView, ZoomFactor,
+    self, InterfaceCommand, InterfaceState, RectSelectionMode, SnapSpacing, SwitchAction,
+    ViewportTarget, WorldView, ZoomFactor,
 };
 
 impl VibocerosApp {
+    fn set_snap_size(&mut self, spacing: SnapSpacing, apply_to: ViewportTarget, active: usize) {
+        match apply_to {
+            ViewportTarget::Active => self.viewports[active].set_snap_spacing(spacing.value()),
+            ViewportTarget::All => {
+                for viewport in &mut self.viewports {
+                    viewport.set_snap_spacing(spacing.value());
+                }
+            }
+        }
+        self.snap_size_pending = None;
+        self.push_log(format!(
+            "Grid snap spacing: {} ({})",
+            spacing.value(),
+            if apply_to == ViewportTarget::All {
+                "all viewports"
+            } else {
+                "active viewport"
+            }
+        ));
+    }
+
     pub(super) fn start_end_analysis_pick(&mut self, mode: EndAnalysisPickMode) {
         if mode != EndAnalysisPickMode::Show && self.end_analysis.is_none() {
             self.push_log("Run ShowEnds first".into());
@@ -321,7 +342,20 @@ impl VibocerosApp {
                     self.mark_end_analysis();
                     return;
                 }
+                if let InterfaceCommand::SnapSize { spacing, apply_to } = command {
+                    self.zoom_factor_pending = None;
+                    if let Some(spacing) = spacing {
+                        self.set_snap_size(spacing, apply_to, self.active_viewport);
+                    } else {
+                        self.snap_size_pending = Some((apply_to, self.active_viewport));
+                        self.push_log(
+                            "SnapSize: enter a positive spacing; Enter or Esc to cancel".into(),
+                        );
+                    }
+                    return;
+                }
                 if command == InterfaceCommand::ZoomFactorPrompt {
+                    self.snap_size_pending = None;
                     self.zoom_factor_pending = Some(self.active_viewport);
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
@@ -754,6 +788,25 @@ impl VibocerosApp {
             }
             Err(error) => format!("Error: {error}"),
         });
+        true
+    }
+
+    pub(super) fn try_continue_snap_size(&mut self, input: &str) -> bool {
+        let Some((apply_to, active)) = self.snap_size_pending else {
+            return false;
+        };
+        self.command_input.clear();
+        if input.is_empty() {
+            self.snap_size_pending = None;
+            self.push_log("SnapSize canceled".into());
+            return true;
+        }
+        self.push_log(format!("> {input}"));
+        let Some(spacing) = input.parse::<f64>().ok().and_then(SnapSpacing::try_new) else {
+            self.push_log("Error: SnapSize requires a finite positive number".into());
+            return true;
+        };
+        self.set_snap_size(spacing, apply_to, active);
         true
     }
 

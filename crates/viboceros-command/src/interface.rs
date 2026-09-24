@@ -136,6 +136,19 @@ impl ZoomScale {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SnapSpacing(u64);
+
+impl SnapSpacing {
+    pub fn try_new(value: f64) -> Option<Self> {
+        (value.is_finite() && value > 0.0).then_some(Self(value.to_bits()))
+    }
+
+    pub fn value(self) -> f64 {
+        f64::from_bits(self.0)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RectSelectionMode {
     Automatic,
     Window,
@@ -213,6 +226,10 @@ pub enum InterfaceCommand {
     SetViewWorld(WorldView),
     SetViewCPlane(WorldPlane),
     SetSnap(SwitchAction),
+    SnapSize {
+        spacing: Option<SnapSpacing>,
+        apply_to: ViewportTarget,
+    },
     SetOsnap(SwitchAction),
     SnapToMeshes(SwitchAction),
     SmartTrack(SwitchAction),
@@ -222,7 +239,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 33] = [
+pub const COMMAND_NAMES: [&str; 34] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -238,6 +255,7 @@ pub const COMMAND_NAMES: [&str; 33] = [
     "DisableOsnap",
     "SetDisplayMode",
     "SetSnap",
+    "SnapSize",
     "SmartTrack",
     "Snap",
     "UndoView",
@@ -258,7 +276,7 @@ pub const COMMAND_NAMES: [&str; 33] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -506,6 +524,8 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             }
         } else if name.eq_ignore_ascii_case("SetSnap") {
             switch("SetSnap On|Off|Toggle").map(InterfaceCommand::SetSnap)
+        } else if name.eq_ignore_ascii_case("SnapSize") {
+            parse_snap_size(&args)
         } else if name.eq_ignore_ascii_case("DisableOsnap") {
             match args.as_slice() {
                 [value] if keyword(value, "Enable") => {
@@ -566,6 +586,41 @@ fn parse_zoom_extents_border(args: &[&str]) -> Result<InterfaceCommand, Interfac
     Ok(InterfaceCommand::SetZoomExtentsBorder {
         parallel,
         perspective,
+    })
+}
+
+fn parse_snap_size(args: &[&str]) -> Result<InterfaceCommand, InterfaceError> {
+    let usage =
+        InterfaceError::Usage("SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]");
+    let mut spacing = None;
+    let mut apply_to = None;
+    for token in args {
+        if let Some((name, value)) = token.split_once('=') {
+            if !keyword(name, "ApplyTo") || apply_to.is_some() {
+                return Err(usage);
+            }
+            apply_to = Some(if keyword(value, "ActiveViewport") {
+                ViewportTarget::Active
+            } else if keyword(value, "AllViewports") {
+                ViewportTarget::All
+            } else {
+                return Err(usage);
+            });
+        } else if spacing.is_none() {
+            spacing = Some(
+                token
+                    .parse::<f64>()
+                    .ok()
+                    .and_then(SnapSpacing::try_new)
+                    .ok_or_else(|| usage.clone())?,
+            );
+        } else {
+            return Err(usage);
+        }
+    }
+    Ok(InterfaceCommand::SnapSize {
+        spacing,
+        apply_to: apply_to.unwrap_or(ViewportTarget::Active),
     })
 }
 
@@ -681,6 +736,12 @@ impl InterfaceState {
                 self.grid_snap = action.apply(self.grid_snap);
                 format!("Grid snap: {}", on_off(self.grid_snap))
             }
+            InterfaceCommand::SnapSize { spacing, apply_to } => match spacing {
+                Some(spacing) => {
+                    format!("Snap spacing {} requested ({apply_to:?})", spacing.value())
+                }
+                None => format!("Snap spacing input requested ({apply_to:?})"),
+            },
             InterfaceCommand::SetOsnap(action) => {
                 self.osnap = action.apply(self.osnap);
                 format!("Object snaps: {}", on_off(self.osnap))

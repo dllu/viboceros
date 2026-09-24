@@ -106,7 +106,9 @@ Mesh Near uses calibrated endpoint-depth weighting and a
 corner/parallel/short-wire selection; see the
 [full 3D point probes](point-snaps.md) and [competition follow-up](mesh-snap-order.md).
 SmartTrack captures local plane-axis alignment from the first picked
-point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
+point in every viewport. Grid Snap rounds construction-plane picks at each
+viewport's `SnapSize` spacing, initially one model unit. Grid lines remain one
+unit apart. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the
 Perspective view, middle-drag pans any view, and the mouse wheel zooms.
 Perspective pan translates the camera and its orbit target in world space.

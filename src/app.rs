@@ -1427,6 +1427,7 @@ pub struct VibocerosApp {
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
     zoom_factor_pending: Option<usize>,
+    snap_size_pending: Option<(viboceros_command::interface::ViewportTarget, usize)>,
     end_analysis: Option<EndAnalysisState>,
     end_analysis_pick: Option<EndAnalysisPick>,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
@@ -1483,6 +1484,7 @@ impl VibocerosApp {
             zoom_extents_borders,
             zoom_window_pending: false,
             zoom_factor_pending: None,
+            snap_size_pending: None,
             end_analysis: None,
             end_analysis_pick: None,
             selection_window_override: None,
@@ -1524,6 +1526,10 @@ impl VibocerosApp {
         }
         if input.is_empty() && self.zoom_factor_pending.is_some() {
             self.try_continue_zoom_factor(&input);
+            return;
+        }
+        if input.is_empty() && self.snap_size_pending.is_some() {
+            self.try_continue_snap_size(&input);
             return;
         }
         if input.is_empty() && self.selection_window_override.take().is_some() {
@@ -1589,6 +1595,9 @@ impl VibocerosApp {
             self.cancel_end_analysis_pick(false);
         }
         if self.try_continue_zoom_target(&input) {
+            return;
+        }
+        if self.try_continue_snap_size(&input) {
             return;
         }
         if self.try_continue_zoom_factor(&input) {
@@ -6235,6 +6244,8 @@ impl eframe::App for VibocerosApp {
                 self.push_log("Zoom Target canceled".into());
             } else if self.zoom_factor_pending.take().is_some() {
                 self.push_log("Zoom Factor canceled".into());
+            } else if self.snap_size_pending.take().is_some() {
+                self.push_log("SnapSize canceled".into());
             } else if self.zoom_window_pending {
                 self.zoom_window_pending = false;
                 self.push_log("Zoom window canceled".into());
@@ -6714,6 +6725,7 @@ mod tests {
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
             zoom_factor_pending: None,
+            snap_size_pending: None,
             end_analysis: None,
             end_analysis_pick: None,
             selection_window_override: None,
