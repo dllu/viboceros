@@ -25,20 +25,23 @@ are split into their exact line spans when needed; trimmed arcs remain native.
 Coplanar kinks between two circular arcs also receive a native tangent arc.
 Coplanar kinks between a curved NURBS leaf and a line or circular arc receive
 a native tangent arc while the NURBS remains a trimmed NURBS leaf.
+Coplanar kinks between two curved NURBS leaves also receive a native tangent
+arc, with both source leaves trimmed at their tangent points.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
-Kinks between two curved NURBS leaves remain to be implemented, as do viewport
-radius picking and interactive preview.
+The same seam convention applies to a sharp curved NURBS junction.
+Kinks inside a curved NURBS leaf, viewport radius picking, and interactive
+preview remain to be implemented.
 
 The [geometry fixture](../../tools/rhino_oracle/fixtures/curve_fillet_corners.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_corners.json)
 compare open, closed, tangent-meeting, and spatial polylines, three straight
-polycurves, and nineteen polycurves with smooth or filleted curved leaves against
-RhinoCommon's public `CreateFilletCornersCurve` method. Twenty-five cases use 65
+polycurves, and twenty-two polycurves with smooth or filleted curved leaves against
+RhinoCommon's public `CreateFilletCornersCurve` method. Twenty-eight cases use 65
 equal arc-length stations; the smooth quadratic NURBS case uses 17 fixed
 closest-point probes to avoid differences in the two engines' arc-length
 inversion. Closure and total length also agree. The largest sampled coordinate
-difference is `5.1e-8`, in a curved NURBS fillet. The four curved NURBS kink
+difference is `5.1e-8`, in a curved NURBS fillet. The seven curved NURBS kink
 cases have a `1e-7` comparison tolerance; earlier cases retain their tighter
 saved oracle tolerances.
 Rhino places a closed fillet result's seam at the incoming tangent

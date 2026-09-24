@@ -369,6 +369,71 @@
           "knots": [0, 0, 0, 1, 1, 1]}
       ]},
       "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "quadratic-nurbs-to-quadratic-nurbs-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [0, 0, 0], "weight": 1},
+            {"point": [2, 0, 0], "weight": 1},
+            {"point": [2, 2, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]},
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [2, 2, 0], "weight": 1},
+            {"point": [4, 2, 0], "weight": 1},
+            {"point": [4, 4, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "reversed-quadratic-nurbs-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [4, 4, 0], "weight": 1},
+            {"point": [4, 2, 0], "weight": 1},
+            {"point": [2, 2, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]},
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [2, 2, 0], "weight": 1},
+            {"point": [2, 0, 0], "weight": 1},
+            {"point": [0, 0, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "closed-quadratic-nurbs-seam",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [2, 2, 0], "weight": 1},
+            {"point": [4, 2, 0], "weight": 1},
+            {"point": [4, 4, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]},
+        {"type": "line", "start": [4, 4, 0], "end": [0, 4, 0]},
+        {"type": "line", "start": [0, 4, 0], "end": [0, 0, 0]},
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [0, 0, 0], "weight": 1},
+            {"point": [2, 0, 0], "weight": 1},
+            {"point": [2, 2, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]}
+      ]},
+      "radius": 0.5
     }
   ]
 }

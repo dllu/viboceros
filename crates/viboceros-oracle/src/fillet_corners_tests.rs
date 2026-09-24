@@ -30,6 +30,9 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
                 | "line-to-quadratic-nurbs-kink"
                 | "quadratic-nurbs-to-arc-kink"
                 | "arc-to-quadratic-nurbs-kink"
+                | "quadratic-nurbs-to-quadratic-nurbs-kink"
+                | "reversed-quadratic-nurbs-kink"
+                | "closed-quadratic-nurbs-seam"
         ) {
             1e-7
         } else if matches!(

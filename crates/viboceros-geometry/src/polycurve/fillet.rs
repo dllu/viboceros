@@ -4,6 +4,7 @@ mod arc_arc;
 mod arc_line;
 mod nurbs_arc;
 mod nurbs_line;
+mod nurbs_nurbs;
 
 enum FilletPart {
     Straight(Vec<Point3>),
@@ -11,9 +12,9 @@ enum FilletPart {
 }
 
 impl PolyCurve3 {
-    /// Fillets straight corners and coplanar corners involving circular arcs
-    /// while retaining smooth curved leaves. Unsupported curved junctions and
-    /// internal curved-leaf kinks are rejected rather than changing their locus.
+    /// Fillets straight corners and supported coplanar curved-leaf junctions.
+    /// Unsupported curved junctions and internal curved-leaf kinks are rejected
+    /// rather than changing their locus.
     pub fn try_fillet_corners(
         &self,
         radius: Real,
@@ -35,6 +36,9 @@ impl PolyCurve3 {
             return rounded.try_fillet_corners(radius, tolerance);
         }
         if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(self, radius, tolerance)? {
+            return rounded.try_fillet_corners(radius, tolerance);
+        }
+        if let Some(rounded) = nurbs_nurbs::resolve_nurbs_nurbs_kinks(self, radius, tolerance)? {
             return rounded.try_fillet_corners(radius, tolerance);
         }
         let mut parts = Vec::with_capacity(self.segments.len());
