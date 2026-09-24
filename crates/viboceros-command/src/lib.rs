@@ -17000,7 +17000,7 @@ pub enum CommandError {
     BlendRequiresTwoCurves,
 
     #[error(
-        "OffsetSrf requires planar surfaces or exact canonical spheres and cylinders, standalone or as supported single-face B-reps"
+        "OffsetSrf requires planar surfaces or exact canonical spheres, cylinders, and tori, standalone or as supported single-face B-reps"
     )]
     OffsetSurfaceRequiresPlanarFaces,
     #[error("OffsetSrf Solid=Yes requires a single closed boundary loop per surface")]
@@ -17009,6 +17009,8 @@ pub enum CommandError {
     OffsetSurfaceCollapsedSphere,
     #[error("OffsetSrf cylinder offset collapses or inverts the cylinder")]
     OffsetSurfaceCollapsedCylinder,
+    #[error("OffsetSrf torus offset collapses or self-intersects the torus")]
+    OffsetSurfaceCollapsedTorus,
 
     #[error("Extend requires exactly one selected curve, got {actual}")]
     ExtendRequiresOneCurve { actual: usize },

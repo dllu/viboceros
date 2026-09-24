@@ -1,0 +1,39 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "torus-positive-open",
+      "op": "offset_surface_face_geometry",
+      "torus": {"center": [1, 2, 3], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "distance": 0.25
+    },
+    {
+      "id": "torus-negative-open",
+      "op": "offset_surface_face_geometry",
+      "torus": {"center": [1, 2, 3], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "distance": -0.25
+    },
+    {
+      "id": "torus-both-open",
+      "op": "offset_surface_face_geometry",
+      "torus": {"center": [1, 2, 3], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "distance": 0.25,
+      "both_sides": true
+    },
+    {
+      "id": "torus-positive-solid",
+      "op": "offset_surface_face_geometry",
+      "torus": {"center": [1, 2, 3], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "distance": 0.25,
+      "solid": true
+    },
+    {
+      "id": "torus-both-solid",
+      "op": "offset_surface_face_geometry",
+      "torus": {"center": [1, 2, 3], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "distance": 0.25,
+      "both_sides": true,
+      "solid": true
+    }
+  ]
+}

@@ -1032,6 +1032,18 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
         cylinder = Rhino.Geometry.Cylinder(circle, height)
         surface = None
         source = cylinder.ToBrep(False, False)
+    elif "torus" in operation:
+        definition = operation["torus"]
+        major = _finite(definition["major_radius"], "torus major radius")
+        minor = _finite(definition["minor_radius"], "torus minor radius")
+        if minor <= 0.0 or major <= minor:
+            raise ValueError("torus requires major radius greater than minor radius")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        torus = Rhino.Geometry.Torus(plane, major, minor)
+        surface = None
+        source = torus.ToBrep()
     else:
         corners = operation["corners"]
         if len(corners) != 4:
@@ -1067,6 +1079,8 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
                     "point": [float(point.X), float(point.Y), float(point.Z)],
                     "normal": [float(face_normal.X), float(face_normal.Y), float(face_normal.Z)],
                     "reversed": bool(face.OrientationIsReversed),
+                    "domain_u": [float(face.Domain(0).T0), float(face.Domain(0).T1)],
+                    "domain_v": [float(face.Domain(1).T0), float(face.Domain(1).T1)],
                 })
             volume = None
             admitted_volume = None

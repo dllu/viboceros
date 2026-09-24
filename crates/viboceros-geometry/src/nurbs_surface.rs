@@ -2,6 +2,7 @@ use std::ops::RangeInclusive;
 
 mod analytic_cylinder;
 mod analytic_sphere;
+mod analytic_torus;
 mod closest_point;
 mod evaluate;
 mod parameter_frame;
