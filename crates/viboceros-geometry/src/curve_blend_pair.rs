@@ -42,8 +42,8 @@ pub fn try_blend_curve(
 ) -> Result<NurbsCurve, GeometryError> {
     let first_end = selected_end(first, first_pick, tolerance)?;
     let second_end = selected_end(second, second_pick, tolerance)?;
-    let (start, first_tangent) = endpoint(first, first_end)?;
-    let (end, second_tangent) = endpoint(second, second_end)?;
+    let start = endpoint_point(first, first_end)?;
+    let end = endpoint_point(second, second_end)?;
     let chord = start.vector_to(end)?;
     let chord_length = chord.length()?;
     if chord_length <= tolerance.absolute() {
@@ -79,42 +79,44 @@ pub fn try_blend_curve(
         - 1;
     let mut controls = vec![start; degree + 1];
     controls[degree] = end;
-    let first_direction = if first_end {
-        first_tangent
-    } else {
-        first_tangent.opposite()
-    };
-    let second_direction = if second_end {
-        second_tangent.opposite()
-    } else {
-        second_tangent
-    };
     if options.continuity[0] != CurveBlendContinuity::Position {
+        let first_tangent = endpoint_tangent(first, first_end)?;
+        let first_direction = if first_end {
+            first_tangent
+        } else {
+            first_tangent.opposite()
+        };
         controls[1] = start.translated(first_direction.as_vector().scaled(first_handle)?)?;
-    }
-    if options.continuity[0] == CurveBlendContinuity::Curvature {
-        controls[2] = second_control_from_endpoint(
-            start,
-            first_direction,
-            first_handle,
-            endpoint_curvature(first, first_end)?,
-            degree,
-            true,
-        )?;
+        if options.continuity[0] == CurveBlendContinuity::Curvature {
+            controls[2] = second_control_from_endpoint(
+                start,
+                first_direction,
+                first_handle,
+                endpoint_curvature(first, first_end)?,
+                degree,
+                true,
+            )?;
+        }
     }
     if options.continuity[1] != CurveBlendContinuity::Position {
+        let second_tangent = endpoint_tangent(second, second_end)?;
+        let second_direction = if second_end {
+            second_tangent.opposite()
+        } else {
+            second_tangent
+        };
         controls[degree - 1] =
             end.translated(second_direction.as_vector().scaled(-second_handle)?)?;
-    }
-    if options.continuity[1] == CurveBlendContinuity::Curvature {
-        controls[degree - 2] = second_control_from_endpoint(
-            end,
-            second_direction,
-            second_handle,
-            endpoint_curvature(second, second_end)?,
-            degree,
-            false,
-        )?;
+        if options.continuity[1] == CurveBlendContinuity::Curvature {
+            controls[degree - 2] = second_control_from_endpoint(
+                end,
+                second_direction,
+                second_handle,
+                endpoint_curvature(second, second_end)?,
+                degree,
+                false,
+            )?;
+        }
     }
     let mut knots = vec![0.0; degree + 1];
     knots.extend(vec![1.0; degree + 1]);
@@ -166,7 +168,17 @@ fn second_control_from_endpoint(
     tangent.translated(curvature_offset)
 }
 
-fn endpoint(curve: &Curve3, at_end: bool) -> Result<(Point3, UnitVector3), GeometryError> {
+fn endpoint_point(curve: &Curve3, at_end: bool) -> Result<Point3, GeometryError> {
+    let reference = curve.as_ref();
+    let parameter = if at_end {
+        *reference.domain().end()
+    } else {
+        *reference.domain().start()
+    };
+    reference.evaluate(parameter)
+}
+
+fn endpoint_tangent(curve: &Curve3, at_end: bool) -> Result<UnitVector3, GeometryError> {
     let reference = curve.as_ref();
     let parameter = if at_end {
         *reference.domain().end()
@@ -178,8 +190,9 @@ fn endpoint(curve: &Curve3, at_end: bool) -> Result<(Point3, UnitVector3), Geome
     } else {
         ParameterSide::Right
     };
-    let sample = reference.evaluate_with_tangent_on_side(parameter, side)?;
-    Ok((sample.point(), sample.tangent()))
+    Ok(reference
+        .evaluate_with_tangent_on_side(parameter, side)?
+        .tangent())
 }
 
 #[cfg(test)]
@@ -280,6 +293,55 @@ mod tests {
         assert!(controls[0].point().distance_to(p(0., 0.)).unwrap() < 1e-12);
         assert!(controls[1].point().distance_to(p(3., 0.)).unwrap() < 1e-12);
         assert!(controls[2].point().distance_to(p(3., 1.)).unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn position_only_end_does_not_require_a_source_tangent() {
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                vec![p(0., 0.), p(0., 0.), p(1., 0.)],
+                vec![0., 0., 1., 2., 2.],
+            )
+            .unwrap(),
+        );
+        assert!(
+            source
+                .as_ref()
+                .evaluate_with_tangent_on_side(0., ParameterSide::Right)
+                .is_err()
+        );
+        let second = line(p(3., 1.), p(3., 2.));
+        let blend = try_blend_curve(
+            &source,
+            p(0., 0.),
+            &second,
+            p(3., 1.),
+            CurveBlendOptions {
+                continuity: [
+                    CurveBlendContinuity::Position,
+                    CurveBlendContinuity::Tangency,
+                ],
+                handles: [None, Some(1.)],
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(blend.degree(), 2);
+        assert!(
+            blend.control_points()[0]
+                .point()
+                .distance_to(p(0., 0.))
+                .unwrap()
+                < 1e-12
+        );
+        assert!(
+            blend.control_points()[2]
+                .point()
+                .distance_to(p(3., 1.))
+                .unwrap()
+                < 1e-12
+        );
     }
 
     #[test]
