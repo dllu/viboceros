@@ -346,6 +346,24 @@ mod tests {
         ));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+
+        registry
+            .execute(&mut document, "Fillet 0.7 ExtendArcsBy=Line")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined fillet after consuming tangent extension")
+        };
+        let [
+            CurveSegment3::Arc(retained),
+            CurveSegment3::Arc(_),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("original arc, fillet, retained line")
+        };
+        assert!(retained.length().unwrap() < std::f64::consts::FRAC_PI_2);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 
     #[test]

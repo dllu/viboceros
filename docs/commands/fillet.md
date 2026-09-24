@@ -24,9 +24,11 @@ nonmeeting NURBS. The defaults are `Arc` and `Line`. Already meeting line,
 arc, and NURBS terminal leaves are supported, including terminal leaves of
 polycurves. Earlier leaves remain native and unchanged.
 
-Dynamic preview is still to be implemented. Fillets that would consume an
-entire newly added tangent segment can be rejected. Smooth rational NURBS
-extension can differ from Rhino. A pick exactly at an arc endpoint can be
+When a larger fillet consumes an arc's tangent extension and touches the
+original arc, the extension is removed and the native arc is retained. Other
+fillets that consume an entire added segment can still be rejected. Dynamic
+preview is still to be implemented. Smooth rational NURBS extension can differ
+from Rhino. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.
 
@@ -49,6 +51,7 @@ cover `Join` and `Trim` combinations, including zero radius and reversed picks.
 
 The [nonmeeting curve fixture](../../tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_nonmeeting.json)
-compare arc/line and NURBS/line selections in both orders. Across 65
+compare arc/line and NURBS/line selections in both orders, plus a larger
+arc/line fillet that trims into the original arc. Across 65
 equal-length stations per case, the largest coordinate difference in a live
 comparison was below `2.3e-8`. The arc cases alone were below `3.3e-15`.

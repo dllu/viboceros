@@ -35,23 +35,16 @@ pub fn try_fillet_curves_joined_with_styles(
     styles: CurveFilletExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
-    let (connected, picks) = connected_ends_with_styles(
+    Ok(fillet_with_styles(
         first,
         first_pick,
         second,
         second_pick,
-        styles.arc,
-        styles.other,
-        tolerance,
-    )?;
-    try_fillet_curves_joined(
-        &connected[0],
-        picks[0],
-        &connected[1],
-        picks[1],
         radius,
+        styles,
         tolerance,
-    )
+    )?
+    .0)
 }
 
 /// Creates separate retained curves and a fillet with extension options.
@@ -63,24 +56,108 @@ pub fn try_fillet_curves_parts_with_styles(
     styles: CurveFilletExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, GeometryError> {
-    let (connected, picks) = connected_ends_with_styles(
-        first.0,
-        first.1,
-        second.0,
-        second.1,
-        styles.arc,
-        styles.other,
-        tolerance,
+    let reverse_first = !selected_end(first.0, first.1, tolerance)?;
+    let reverse_second = selected_end(second.0, second.1, tolerance)?;
+    let (joined, first_count) = fillet_with_styles(
+        first.0, first.1, second.0, second.1, radius, styles, tolerance,
     )?;
-    try_fillet_curves_parts(
-        &connected[0],
-        picks[0],
-        &connected[1],
-        picks[1],
+    fillet_parts_from_joined(
+        &joined,
+        first_count,
         radius,
         trim,
+        reverse_first,
+        reverse_second,
         tolerance,
     )
+}
+
+fn fillet_with_styles(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    radius: Real,
+    styles: CurveFilletExtensionStyles,
+    tolerance: Tolerance,
+) -> Result<(PolyCurve3, usize), GeometryError> {
+    let make = |arc_style| {
+        let (connected, picks) = connected_ends_with_styles(
+            first,
+            first_pick,
+            second,
+            second_pick,
+            arc_style,
+            styles.other,
+            tolerance,
+        )?;
+        let joined = try_fillet_curves_joined(
+            &connected[0],
+            picks[0],
+            &connected[1],
+            picks[1],
+            radius,
+            tolerance,
+        )?;
+        Ok::<_, GeometryError>((joined, connected[0].to_polycurve()?.segments().len()))
+    };
+    let failure = match make(styles.arc) {
+        Ok(result) => return Ok(result),
+        Err(error) => error,
+    };
+    if styles.arc != CurveArcExtensionStyle::Line || radius <= 0.0 {
+        return Err(failure);
+    }
+    let Ok((joined, first_count)) = make(CurveArcExtensionStyle::Arc) else {
+        return Err(failure);
+    };
+    if fillet_contacts_original_arcs(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        &joined,
+        first_count,
+        tolerance,
+    )? {
+        Ok((joined, first_count))
+    } else {
+        Err(failure)
+    }
+}
+
+fn fillet_contacts_original_arcs(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    joined: &PolyCurve3,
+    first_count: usize,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let first = oriented(first, first_pick, true, tolerance)?;
+    let second = oriented(second, second_pick, false, tolerance)?;
+    let first_arc = first.segments().last().and_then(|segment| match segment {
+        CurveSegment3::Arc(arc) => Some(arc),
+        _ => None,
+    });
+    let second_arc = second.segments().first().and_then(|segment| match segment {
+        CurveSegment3::Arc(arc) => Some(arc),
+        _ => None,
+    });
+    if first_arc.is_none() && second_arc.is_none() {
+        return Ok(false);
+    }
+    for (original, index) in [(first_arc, first_count - 1), (second_arc, first_count + 1)] {
+        let Some(original) = original else { continue };
+        let Some(CurveSegment3::Arc(retained)) = joined.segments().get(index) else {
+            return Ok(false);
+        };
+        if retained.length()? > original.length()? + tolerance.absolute() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 /// Trims or extends selected curve ends to a tangent circular fillet and joins
@@ -167,6 +244,29 @@ pub fn try_fillet_curves_parts(
     let first_count = first.to_polycurve()?.segments().len();
     let joined =
         try_fillet_curves_joined(first, first_pick, second, second_pick, radius, tolerance)?;
+    fillet_parts_from_joined(
+        &joined,
+        first_count,
+        radius,
+        trim,
+        reverse_first,
+        reverse_second,
+        tolerance,
+    )
+}
+
+fn fillet_parts_from_joined(
+    joined: &PolyCurve3,
+    first_count: usize,
+    radius: Real,
+    trim: bool,
+    reverse_first: bool,
+    reverse_second: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
+    if !trim && radius == 0.0 {
+        return Err(unsupported());
+    }
     let segments = joined.segments();
     if radius == 0.0 {
         return Ok(vec![
@@ -382,6 +482,105 @@ mod tests {
         .unwrap();
         assert_eq!(parts.len(), 3);
         assert_eq!(parts[2], Curve3::Arc(*fillet));
+    }
+
+    #[test]
+    fn large_fillet_can_trim_past_the_tangent_extension() {
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let line = line(p(-0.5, 2.), p(-0.5, 3.));
+        let circle_extension = try_fillet_curves_joined_with_styles(
+            &arc,
+            p(0., 1.),
+            &line,
+            p(-0.5, 2.),
+            0.7,
+            CurveFilletExtensionStyles::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let CurveSegment3::Arc(retained) = &circle_extension.segments()[0] else {
+            panic!("native arc")
+        };
+        assert!(retained.length().unwrap() < std::f64::consts::FRAC_PI_2);
+        let styles = CurveFilletExtensionStyles {
+            arc: CurveArcExtensionStyle::Line,
+            ..CurveFilletExtensionStyles::default()
+        };
+        let tangent_extension = try_fillet_curves_joined_with_styles(
+            &arc,
+            p(0., 1.),
+            &line,
+            p(-0.5, 2.),
+            0.7,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(tangent_extension, circle_extension);
+        let parts = try_fillet_curves_parts_with_styles(
+            (&arc, p(0., 1.)),
+            (&line, p(-0.5, 2.)),
+            0.7,
+            true,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(parts.len(), 3);
+        assert_eq!(parts[0], Curve3::Arc(*retained));
+        let arc_only = try_fillet_curves_parts_with_styles(
+            (&arc, p(0., 1.)),
+            (&line, p(-0.5, 2.)),
+            0.7,
+            false,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arc_only, vec![parts[2].clone()]);
+
+        let reversed = try_fillet_curves_joined_with_styles(
+            &line,
+            p(-0.5, 2.),
+            &arc,
+            p(0., 1.),
+            0.7,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let expected_reversed = try_fillet_curves_joined_with_styles(
+            &line,
+            p(-0.5, 2.),
+            &arc,
+            p(0., 1.),
+            0.7,
+            CurveFilletExtensionStyles::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(reversed, expected_reversed);
+        let reversed_parts = try_fillet_curves_parts_with_styles(
+            (&line, p(-0.5, 2.)),
+            (&arc, p(0., 1.)),
+            0.7,
+            true,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            reversed_parts.as_slice(),
+            [Curve3::Line(_), Curve3::Arc(_), Curve3::Arc(_)]
+        ));
     }
 
     #[test]
