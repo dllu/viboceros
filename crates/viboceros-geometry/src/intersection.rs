@@ -1,8 +1,9 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::{
-    AffineTransform3, BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane,
-    Point3, Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes, join_polylines,
+    AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
+    NurbsSurface, Plane, Point3, Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes,
+    join_polylines,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -516,14 +517,25 @@ fn curve_brep_intersection_events_with_transform(
 /// coincident nonsingular convex four-sided bilinear patches with weights of
 /// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
-/// corner produces no event, matching Rhino. Parallel disjoint planes return
-/// no events. Non-planar and more general coincident inputs are reported
+/// corner produces no event, matching Rhino. Canonical spheres intersect
+/// planar finite patches in exact rational circular curves or tangent points.
+/// Parallel disjoint planes return no events. Other non-planar and more general coincident inputs are reported
 /// explicitly until their intersection-curve paths are implemented.
 pub fn surface_surface_intersection_events(
     first: &NurbsSurface,
     second: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    if let Some((center, radius)) = first.canonical_sphere(tolerance)?
+        && let Some(plane) = second.plane(tolerance)?
+    {
+        return sphere_planar_surface_intersection_events(center, radius, second, plane, tolerance);
+    }
+    if let Some((center, radius)) = second.canonical_sphere(tolerance)?
+        && let Some(plane) = first.plane(tolerance)?
+    {
+        return sphere_planar_surface_intersection_events(center, radius, first, plane, tolerance);
+    }
     let first_plane =
         first
             .plane(tolerance)?
@@ -617,6 +629,54 @@ pub fn surface_surface_intersection_events(
                     vec![start, end],
                     vec![0.0, 0.0, length, length],
                 )?))
+            }
+        })
+        .collect()
+}
+
+fn sphere_planar_surface_intersection_events(
+    center: Point3,
+    radius: Real,
+    planar_surface: &NurbsSurface,
+    plane: Plane,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let signed_distance = plane.signed_distance_to(center)?;
+    let distance_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * radius.max(signed_distance.abs()));
+    if signed_distance.abs() > radius + distance_tolerance {
+        return Ok(Vec::new());
+    }
+    let circle_center = center.translated(plane.normal().as_vector().scaled(-signed_distance)?)?;
+    let squared_radius = (radius - signed_distance.abs()) * (radius + signed_distance.abs());
+    if squared_radius <= distance_tolerance * distance_tolerance {
+        let (u, v) = planar_surface.closest_parameters(circle_center, tolerance)?;
+        return Ok(
+            if planar_surface.evaluate(u, v)?.distance_to(circle_center)? <= distance_tolerance {
+                vec![SurfaceSurfaceIntersectionEvent::Point(circle_center)]
+            } else {
+                Vec::new()
+            },
+        );
+    }
+    let circle = Circle3::try_new(
+        circle_center,
+        squared_radius.sqrt(),
+        plane.normal(),
+        tolerance,
+    )?
+    .to_nurbs()?;
+    curve_surface_intersection_events(&circle, planar_surface, tolerance)?
+        .into_iter()
+        .map(|event| match event {
+            CurveSurfaceIntersectionEvent::Point(point) => {
+                Ok(SurfaceSurfaceIntersectionEvent::Point(point.point()))
+            }
+            CurveSurfaceIntersectionEvent::Overlap(overlap) => {
+                Ok(SurfaceSurfaceIntersectionEvent::Curve(
+                    circle.try_trimmed(overlap.curve_interval())?,
+                ))
             }
         })
         .collect()
@@ -3200,6 +3260,143 @@ mod tests {
         ])
         .and_then(|surface| surface.try_reparameterized(x_start..=x_end, -5.0..=5.0))
         .unwrap()
+    }
+
+    #[test]
+    fn sphere_plane_intersection_returns_exact_circle_and_respects_argument_order() {
+        let frame = crate::Frame3::try_from_normal(
+            point(5.0, 5.0, 1.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let patch = horizontal_surface(0.0);
+        for (first, second) in [(&sphere, &patch), (&patch, &sphere)] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(curve)] = events.as_slice() else {
+                panic!("expected a section circle, got {events:#?}")
+            };
+            assert_eq!(curve.degree(), 2);
+            assert!(curve.is_closed().unwrap());
+            for fraction in [0.0, 0.125, 0.33, 0.75] {
+                let domain = curve.domain();
+                let point = curve
+                    .evaluate(*domain.start() + fraction * (*domain.end() - *domain.start()))
+                    .unwrap();
+                assert!(point.z().abs() < 1e-10);
+                assert!((point.distance_to(frame.origin()).unwrap() - 2.0).abs() < 1e-10);
+            }
+        }
+    }
+
+    #[test]
+    fn sphere_plane_intersection_clips_to_finite_patch_and_reports_tangency() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 1.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let half_patch = horizontal_rectangle(0.0, 3.0, -3.0, 3.0, 0.0);
+        let events =
+            surface_surface_intersection_events(&sphere, &half_patch, Tolerance::DEFAULT).unwrap();
+        let curves = events
+            .iter()
+            .filter_map(|event| match event {
+                SurfaceSurfaceIntersectionEvent::Curve(curve) => Some(curve),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(curves.len(), 2);
+        for curve in curves {
+            assert!(
+                (curve.length(Tolerance::DEFAULT).unwrap()
+                    - 0.5 * std::f64::consts::PI * 3.0_f64.sqrt())
+                .abs()
+                    < 1e-7
+            );
+            for parameter in [*curve.domain().start(), *curve.domain().end()] {
+                let point = curve.evaluate(parameter).unwrap();
+                assert!(point.x() >= -1e-8);
+                assert!(point.z().abs() < 1e-8);
+            }
+        }
+
+        let tangent_patch = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 3.0);
+        let tangent =
+            surface_surface_intersection_events(&sphere, &tangent_patch, Tolerance::DEFAULT)
+                .unwrap();
+        assert!(
+            matches!(tangent.as_slice(), [SurfaceSurfaceIntersectionEvent::Point(p)] if p.distance_to(point(0.0, 0.0, 3.0)).unwrap() < 1e-10)
+        );
+        let disjoint = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 4.0);
+        assert!(
+            surface_surface_intersection_events(&sphere, &disjoint, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn sphere_plane_intersection_handles_rotated_finite_patch() {
+        let frame = crate::Frame3::try_from_normal(
+            point(1.0, 2.0, 3.0),
+            crate::Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let patch = NurbsSurface::try_bilinear([
+            frame.point_at([-3.0, -3.0, 0.0]).unwrap(),
+            frame.point_at([3.0, -3.0, 0.0]).unwrap(),
+            frame.point_at([3.0, 3.0, 0.0]).unwrap(),
+            frame.point_at([-3.0, 3.0, 0.0]).unwrap(),
+        ])
+        .unwrap();
+        let events =
+            surface_surface_intersection_events(&sphere, &patch, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(circle)] = events.as_slice() else {
+            panic!("expected a rotated great circle, got {events:#?}")
+        };
+        assert!(circle.is_closed().unwrap());
+        assert!(
+            (circle.length(Tolerance::DEFAULT).unwrap() - 4.0 * std::f64::consts::PI).abs() < 1e-7
+        );
+        for control in circle.control_points() {
+            assert!(
+                patch
+                    .plane(Tolerance::DEFAULT)
+                    .unwrap()
+                    .unwrap()
+                    .signed_distance_to(control.point())
+                    .unwrap()
+                    .abs()
+                    < 1e-9
+            );
+        }
+    }
+
+    #[test]
+    fn sphere_plane_intersection_is_not_mistaken_for_tangency_far_from_origin() {
+        let center = point(1.0e8, -1.0e8, 1.0e8 + 1.0);
+        let frame = crate::Frame3::try_from_normal(
+            center,
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let patch =
+            horizontal_rectangle(1.0e8 - 3.0, 1.0e8 + 3.0, -1.0e8 - 3.0, -1.0e8 + 3.0, 1.0e8);
+        let events =
+            surface_surface_intersection_events(&sphere, &patch, Tolerance::DEFAULT).unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
     }
 
     #[test]

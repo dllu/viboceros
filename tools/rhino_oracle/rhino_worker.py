@@ -11824,6 +11824,68 @@ def _execute(operation, iterations, tolerance):
             curve.Dispose()
             brep.Dispose()
 
+    if kind == "sphere_plane_surface_intersection":
+        sphere_def = operation["sphere"]
+        sphere = Rhino.Geometry.Sphere(
+            _point(sphere_def["center"]),
+            _finite(sphere_def["radius"], "sphere radius"),
+        ).ToNurbsSurface()
+        plane_def = operation["plane"]
+        plane = Rhino.Geometry.Plane(
+            _point(plane_def["origin"]), _vector(plane_def["normal"])
+        )
+        x_domain = plane_def["x_domain"]
+        y_domain = plane_def["y_domain"]
+        patch = Rhino.Geometry.PlaneSurface(
+            plane,
+            Rhino.Geometry.Interval(float(x_domain[0]), float(x_domain[1])),
+            Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
+        )
+
+        def intersect_sphere_plane_surfaces():
+            success, curves, points = (
+                Rhino.Geometry.Intersect.Intersection.SurfaceSurface(
+                    sphere,
+                    patch,
+                    float(tolerance["absolute"]),
+                )
+            )
+            curve_records = []
+            for curve in curves or []:
+                domain = curve.Domain
+                values = [
+                    curve.PointAt(domain.T0),
+                    curve.PointAt(0.5 * (domain.T0 + domain.T1)),
+                    curve.PointAt(domain.T1),
+                ]
+                nurbs = curve.ToNurbsCurve()
+                curve_records.append({
+                    "degree": int(nurbs.Degree),
+                    "closed": bool(curve.IsClosed),
+                    "samples": [
+                        [float(value.X), float(value.Y), float(value.Z)]
+                        for value in values
+                    ],
+                    "length": float(curve.GetLength()),
+                })
+                nurbs.Dispose()
+                curve.Dispose()
+            point_records = [
+                [float(point.X), float(point.Y), float(point.Z)]
+                for point in (points or [])
+            ]
+            return {
+                "success": bool(success),
+                "curves": curve_records,
+                "points": point_records,
+            }
+
+        try:
+            return _measure(iterations, intersect_sphere_plane_surfaces)
+        finally:
+            sphere.Dispose()
+            patch.Dispose()
+
     if kind == "surface_surface_intersect_command":
         document = Rhino.RhinoDoc.ActiveDoc
         surfaces = [

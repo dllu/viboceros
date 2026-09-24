@@ -1,0 +1,29 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "full_secant",
+      "op": "sphere_plane_surface_intersection",
+      "sphere": {"center": [0, 0, 1], "radius": 2},
+      "plane": {"origin": [0, 0, 0], "normal": [0, 0, 1], "x_domain": [-4, 4], "y_domain": [-4, 4]}
+    },
+    {
+      "id": "half_secant",
+      "op": "sphere_plane_surface_intersection",
+      "sphere": {"center": [0, 0, 1], "radius": 2},
+      "plane": {"origin": [0, 0, 0], "normal": [0, 0, 1], "x_domain": [0, 4], "y_domain": [-4, 4]}
+    },
+    {
+      "id": "tangent",
+      "op": "sphere_plane_surface_intersection",
+      "sphere": {"center": [0, 0, 1], "radius": 2},
+      "plane": {"origin": [0, 0, 3], "normal": [0, 0, 1], "x_domain": [-4, 4], "y_domain": [-4, 4]}
+    },
+    {
+      "id": "disjoint",
+      "op": "sphere_plane_surface_intersection",
+      "sphere": {"center": [0, 0, 1], "radius": 2},
+      "plane": {"origin": [0, 0, 4], "normal": [0, 0, 1], "x_domain": [-4, 4], "y_domain": [-4, 4]}
+    }
+  ]
+}

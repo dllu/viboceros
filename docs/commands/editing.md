@@ -141,12 +141,19 @@ loop-domain rules. Planar surface/B-rep and B-rep/B-rep intersections are
 clipped to exact face trim regions when needed, deduplicated at shared edges and
 vertices, and joined into maximal linear components; coincident faces are
 currently limited to untrimmed natural domains and one area-overlap face pair.
+Canonical spherical surfaces and planar surface patches intersect in exact
+rational circles or circular arcs clipped to the finite patch. Exact tangency
+creates a point. Rhino's surface intersection API can instead return tiny
+numerical curves for this tangent case. The
+[sphere/plane oracle fixture](../../tools/rhino_oracle/fixtures/sphere_plane_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/sphere_plane_surface_intersection.json)
+record full, clipped, tangent, and disjoint cases.
 Curve/curve overlaps use the later curve's orientation and parameterization,
 matching Rhino. Pairwise duplicates are intentionally retained when three or
 more source objects meet at one location. Inputs remain in the document and are
 deselected, outputs are selected, and all output creation is one undo step. A
 no-hit run still clears the input selection but creates no undo record.
-Non-planar and more general coincident surface/surface intersections, curved
+Other non-planar and more general coincident surface/surface intersections, curved
 B-rep face pairs, and coincident trimmed regions remain future extensions.
 
 `IntersectTwoSets first-id[,id...] second-id[,id...]` evaluates only pairs

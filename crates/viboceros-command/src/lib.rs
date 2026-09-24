@@ -26558,6 +26558,47 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_sphere_planar_section() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(5.0, 5.0, 1.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let input_ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_sphere(frame, 2.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(circle) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("sphere and plane should create a section circle")
+        };
+        assert!(circle.is_closed().unwrap());
+        assert!(
+            (circle.length(document.tolerance()).unwrap()
+                - 2.0 * std::f64::consts::PI * 3.0_f64.sqrt())
+            .abs()
+                < 1e-7
+        );
+        assert!(input_ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_coincident_bilinear_patch_boundaries() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
