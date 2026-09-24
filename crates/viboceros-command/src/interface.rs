@@ -192,6 +192,7 @@ pub enum InterfaceCommand {
     SelCrossing,
     SelRectangular(RectSelectionMode),
     SelCircular(RectSelectionMode),
+    SelBoundary(RectSelectionMode),
     SelFence,
     SelFenceCurve,
     UndoView,
@@ -209,7 +210,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 25] = [
+pub const COMMAND_NAMES: [&str; 26] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -232,12 +233,13 @@ pub const COMMAND_NAMES: [&str; 25] = [
     "SelCrossing",
     "SelRectangular",
     "SelCircular",
+    "SelBoundary",
     "SelFence",
     "W",
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -364,6 +366,11 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 "SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
             parse_region_mode(&args, RectSelectionMode::Crossing, USAGE)
                 .map(InterfaceCommand::SelCircular)
+        } else if name.eq_ignore_ascii_case("SelBoundary") {
+            const USAGE: &str =
+                "SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
+            parse_region_mode(&args, RectSelectionMode::Crossing, USAGE)
+                .map(InterfaceCommand::SelBoundary)
         } else if name.eq_ignore_ascii_case("SelFence") {
             match args.as_slice() {
                 [] => Ok(InterfaceCommand::SelFence),
@@ -574,6 +581,7 @@ impl InterfaceState {
                 format!("Rectangular {mode:?} selection requested")
             }
             InterfaceCommand::SelCircular(mode) => format!("Circular {mode:?} selection requested"),
+            InterfaceCommand::SelBoundary(mode) => format!("Boundary {mode:?} selection requested"),
             InterfaceCommand::SelFence => "Fence selection requested".into(),
             InterfaceCommand::SelFenceCurve => "Curve fence selection requested".into(),
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),

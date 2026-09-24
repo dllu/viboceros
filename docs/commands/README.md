@@ -137,6 +137,7 @@ SelWindow
 SelCrossing
 SelRectangular SelectionMode=InvertCrossing
 SelCircular SelectionMode=Crossing
+SelBoundary SelectionMode=Crossing
 SelFence
 SelFence Curve
 SelLast

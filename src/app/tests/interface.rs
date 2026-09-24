@@ -134,6 +134,7 @@ fn selection_capture_frame(
                             .fence_selection
                             .as_ref()
                             .is_some_and(|state| state.curve_pick)
+                            || app.boundary_selection.is_some()
                         {
                             Some(viboceros_command::ObjectSelectionFilter::Curves)
                         } else {
@@ -401,6 +402,93 @@ fn fence_curve_choice_menu_routes_the_chosen_curve_to_the_fence() {
         vec![ids[0], ids[2]]
     );
     assert!(app.fence_selection.is_none());
+}
+
+#[test]
+fn boundary_command_selects_from_closed_curve_and_keeps_prompt_on_open_curve() {
+    let mut app = test_app();
+    enter(&mut app, "Circle 0,0,0 2");
+    enter(&mut app, "Line 4,0,0 5,0,0");
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Point 5,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    assert_eq!(
+        interface::parse("SelBoundary SelectionMode=InvertCrossing"),
+        Some(Ok(InterfaceCommand::SelBoundary(
+            RectSelectionMode::InvertCrossing
+        )))
+    );
+    enter(&mut app, "SelBoundary");
+    assert_eq!(app.boundary_selection, Some(RectSelectionMode::Crossing));
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[1]),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.boundary_selection.is_some());
+    app.command_input = "SelectionMode=InvertWindow".into();
+    app.run_command_input();
+    assert_eq!(
+        app.boundary_selection,
+        Some(RectSelectionMode::InvertWindow)
+    );
+    let context = egui::Context::default();
+    selection_capture_frame(&context, &mut app, vec![]);
+    let pointer = egui::Pos2::new(480.0, 300.0);
+    let click = |pressed| egui::Event::PointerButton {
+        pos: pointer,
+        button: egui::PointerButton::Primary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(pointer), click(true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![click(false)]);
+    assert_eq!(
+        output
+            .selection_click
+            .as_ref()
+            .and_then(|click| click.object_id),
+        Some(ids[0])
+    );
+    assert!(app.handle_viewport_action(output));
+    assert!(app.boundary_selection.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1], ids[3]]
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
+fn boundary_command_accepts_preselected_closed_curve() {
+    let mut app = test_app();
+    enter(&mut app, "Circle 0,0,0 2");
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Point 5,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let context = egui::Context::default();
+    selection_capture_frame(&context, &mut app, vec![]);
+    app.document
+        .select_object(ids[0], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "SelBoundary SelectionMode=Window");
+    assert!(app.boundary_selection.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1]]
+    );
 }
 
 #[test]

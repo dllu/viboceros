@@ -8,6 +8,65 @@ use super::screen::{
 use super::*;
 
 const FENCE_POINT_CAPTURE_PIXELS: f32 = 2.0;
+const BOUNDARY_JOIN_PIXELS: f32 = 0.5;
+
+struct ScreenBoundary {
+    vertices: Vec<Pos2>,
+}
+
+impl ScreenBoundary {
+    fn from_segments(segments: &[[Pos2; 2]]) -> Option<Self> {
+        let first = segments.first()?[0];
+        let mut vertices = Vec::with_capacity(segments.len());
+        let mut previous = first;
+        for &[start, end] in segments {
+            if !start.is_finite()
+                || !end.is_finite()
+                || previous.distance(start) > BOUNDARY_JOIN_PIXELS
+            {
+                return None;
+            }
+            vertices.push(start);
+            previous = end;
+        }
+        if vertices.len() < 3 || previous.distance(first) > BOUNDARY_JOIN_PIXELS {
+            return None;
+        }
+        let bounds = Rect::from_points(&vertices);
+        (bounds.width() > 1.0 && bounds.height() > 1.0).then_some(Self { vertices })
+    }
+
+    fn edges(&self) -> impl Iterator<Item = [Pos2; 2]> + '_ {
+        self.vertices
+            .iter()
+            .copied()
+            .zip(self.vertices.iter().copied().cycle().skip(1))
+            .take(self.vertices.len())
+            .map(|(a, b)| [a, b])
+    }
+
+    fn contains(&self, point: Pos2) -> bool {
+        if !point.is_finite() {
+            return false;
+        }
+        let mut inside = false;
+        for [a, b] in self.edges() {
+            if point_segment_distance(point, a, b) <= 1e-4 {
+                return true;
+            }
+            if (a.y > point.y) != (b.y > point.y)
+                && point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x
+            {
+                inside = !inside;
+            }
+        }
+        inside
+    }
+
+    fn crosses(&self, a: Pos2, b: Pos2) -> bool {
+        self.edges().any(|[c, d]| segments_intersect(a, b, c, d))
+    }
+}
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct ScreenCircle {
@@ -88,6 +147,22 @@ impl ProjectedPrimitives {
         fence
             .windows(2)
             .any(|edge| self.is_crossed_by_segment(edge[0], edge[1]))
+    }
+
+    fn is_windowed_by_boundary(&self, boundary: &ScreenBoundary) -> bool {
+        !self.points.is_empty()
+            && self.points.iter().all(|&point| boundary.contains(point))
+            && self.segments.iter().all(|&[a, b]| !boundary.crosses(a, b))
+    }
+
+    fn is_crossed_by_boundary(&self, boundary: &ScreenBoundary) -> bool {
+        self.points.iter().any(|&point| boundary.contains(point))
+            || self.segments.iter().any(|&[a, b]| boundary.crosses(a, b))
+            || boundary.vertices.iter().any(|&point| {
+                self.triangles
+                    .iter()
+                    .any(|&[a, b, c]| point_in_triangle(point, a, b, c))
+            })
     }
 
     fn is_crossed_by_segment(&self, start: Pos2, end: Pos2) -> bool {
@@ -489,6 +564,57 @@ impl Viewport {
         )
     }
 
+    pub(crate) fn objects_in_boundary_curve_preview(
+        &self,
+        source_id: ObjectId,
+        mode: RectSelectionMode,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Option<Vec<ObjectId>> {
+        let rect = self.last_rect?;
+        let source = document.object(source_id)?;
+        if !source.geometry().curve_ref()?.is_closed().ok()?
+            || !selection_candidate(document, source, None)
+        {
+            return None;
+        }
+        let display = self
+            .display_cache
+            .borrow_mut()
+            .get(source, document.tolerance());
+        let projected = self.projected_display(&display, rect, document.tolerance());
+        let boundary = ScreenBoundary::from_segments(&projected.segments)?;
+        let crossing = mode.crossing(true);
+        Some(
+            document
+                .objects()
+                .filter(|object| {
+                    object.id() != source_id
+                        && filter.accepts_object(object)
+                        && selection_candidate(document, object, preview)
+                })
+                .filter_map(|object| {
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    let primitives = self.projected_display(&display, rect, document.tolerance());
+                    if primitives.points.is_empty() {
+                        return None;
+                    }
+                    let selected = match (crossing, mode.inverted()) {
+                        (false, false) => primitives.is_windowed_by_boundary(&boundary),
+                        (true, false) => primitives.is_crossed_by_boundary(&boundary),
+                        (false, true) => !primitives.is_crossed_by_boundary(&boundary),
+                        (true, true) => !primitives.is_windowed_by_boundary(&boundary),
+                    };
+                    selected.then_some(object.id())
+                })
+                .collect(),
+        )
+    }
+
     pub(super) fn projected_display(
         &self,
         display: &display_cache::DisplayGeometry,
@@ -766,6 +892,110 @@ mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
     use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn concave_boundary_checks_whole_segments_and_shaded_faces() {
+        let p = |x, y| Pos2::new(x, y);
+        let vertices = [
+            p(0.0, 0.0),
+            p(100.0, 0.0),
+            p(100.0, 100.0),
+            p(60.0, 100.0),
+            p(60.0, 40.0),
+            p(40.0, 40.0),
+            p(40.0, 100.0),
+            p(0.0, 100.0),
+        ];
+        let segments = vertices
+            .iter()
+            .copied()
+            .zip(vertices.iter().copied().cycle().skip(1))
+            .take(vertices.len())
+            .map(|(a, b)| [a, b])
+            .collect::<Vec<_>>();
+        let boundary = ScreenBoundary::from_segments(&segments).unwrap();
+        assert!(boundary.contains(p(20.0, 80.0)));
+        assert!(!boundary.contains(p(50.0, 80.0)));
+        let mut bridge = ProjectedPrimitives::default();
+        bridge.add_segment(Some(p(20.0, 80.0)), Some(p(80.0, 80.0)));
+        assert!(bridge.is_crossed_by_boundary(&boundary));
+        assert!(!bridge.is_windowed_by_boundary(&boundary));
+        let mut enclosing_face = ProjectedPrimitives::default();
+        enclosing_face.add_triangle([
+            Some(p(-20.0, -20.0)),
+            Some(p(150.0, -20.0)),
+            Some(p(50.0, 180.0)),
+        ]);
+        assert!(enclosing_face.is_crossed_by_boundary(&boundary));
+        assert!(!enclosing_face.is_windowed_by_boundary(&boundary));
+        assert!(ScreenBoundary::from_segments(&segments[..segments.len() - 1]).is_none());
+    }
+
+    #[test]
+    fn boundary_curve_selects_by_mode_and_rejects_open_sources() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    1.0,
+                    viboceros_geometry::UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT)
+                        .unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let inside = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let outside = document
+            .add_geometry(Geometry::Point(Point3::try_new(3.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let crossing = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let selected = |mode| {
+            view.objects_in_boundary_curve_preview(
+                source,
+                mode,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            )
+            .unwrap()
+        };
+        assert_eq!(selected(RectSelectionMode::Window), vec![inside]);
+        assert_eq!(
+            selected(RectSelectionMode::Crossing),
+            vec![inside, crossing]
+        );
+        assert_eq!(selected(RectSelectionMode::InvertWindow), vec![outside]);
+        assert_eq!(
+            selected(RectSelectionMode::InvertCrossing),
+            vec![outside, crossing]
+        );
+        assert!(
+            view.objects_in_boundary_curve_preview(
+                crossing,
+                RectSelectionMode::Window,
+                &document,
+                ObjectSelectionFilter::Any,
+                None
+            )
+            .is_none()
+        );
+    }
 
     #[test]
     fn existing_curve_fence_selects_crossed_objects_without_selecting_the_source() {

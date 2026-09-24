@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use eframe::egui::{self, RichText};
+use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
@@ -1312,6 +1313,7 @@ pub struct VibocerosApp {
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
+    boundary_selection: Option<RectSelectionMode>,
     fence_selection: Option<FenceSelectionState>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
@@ -1364,6 +1366,7 @@ impl VibocerosApp {
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
+            boundary_selection: None,
             fence_selection: None,
             zoom_target: None,
             command_focus_requested: false,
@@ -1402,6 +1405,11 @@ impl VibocerosApp {
             self.command_input.clear();
             return;
         }
+        if input.is_empty() && self.boundary_selection.take().is_some() {
+            self.push_log("Boundary selection canceled".into());
+            self.command_input.clear();
+            return;
+        }
         if input.is_empty() && self.fence_selection.is_some() {
             self.finish_fence_selection();
             self.command_input.clear();
@@ -1431,6 +1439,9 @@ impl VibocerosApp {
             && viboceros_command::interface::parse(&input).is_none()
         {
             self.circular_selection = None;
+        }
+        if self.boundary_selection.is_some() && !input.is_empty() {
+            self.boundary_selection = None;
         }
         if self.fence_selection.is_some() && !input.is_empty() {
             self.fence_selection = None;
@@ -5201,6 +5212,12 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if let Some(mode) = self.boundary_selection {
+            if let Some(id) = click.object_id {
+                self.finish_boundary_selection(id, mode, click.mode);
+            }
+            return;
+        }
         if self
             .fence_selection
             .as_ref()
@@ -5419,6 +5436,48 @@ impl VibocerosApp {
         } else {
             match self.document.select_objects(ids, mode) {
                 Ok(count) => self.push_log(format!("Fence selection: {count} object(s) selected")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+        }
+    }
+
+    fn finish_boundary_selection(
+        &mut self,
+        source: ObjectId,
+        region_mode: RectSelectionMode,
+        selection_mode: SelectionMode,
+    ) {
+        let Some(filter) = self.viewport_object_filter() else {
+            self.push_log("Boundary selection is unavailable during this prompt".into());
+            return;
+        };
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
+        let Some(ids) = self.viewports[self.active_viewport].objects_in_boundary_curve_preview(
+            source,
+            region_mode,
+            &self.document,
+            filter,
+            preview,
+        ) else {
+            self.push_log("Select a closed curve visible in the active viewport".into());
+            return;
+        };
+        self.boundary_selection = None;
+        if self.group_prompt.is_some() {
+            self.select_group_prompt_objects(ids, selection_mode);
+        } else if self.intersection_prompt.is_some() {
+            self.select_intersection_prompt_objects(ids, selection_mode);
+        } else if self.object_prompt.is_some() {
+            self.select_prompt_objects(ids, selection_mode);
+        } else {
+            match self.document.select_objects(ids, selection_mode) {
+                Ok(count) => {
+                    self.push_log(format!("Boundary selection: {count} object(s) selected"))
+                }
                 Err(error) => self.push_log(format!("Error: {error}")),
             }
         }
@@ -5643,6 +5702,8 @@ impl eframe::App for VibocerosApp {
                 self.push_log("Selection window canceled".into());
             } else if self.circular_selection.take().is_some() {
                 self.push_log("Circular selection canceled".into());
+            } else if self.boundary_selection.take().is_some() {
+                self.push_log("Boundary selection canceled".into());
             } else if self.fence_selection.take().is_some() {
                 self.push_log("Fence selection canceled".into());
             } else if self.answer_object_prompt_escape() {
@@ -5771,6 +5832,7 @@ impl eframe::App for VibocerosApp {
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         let fence_selection = self.fence_selection.as_ref();
         let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
+        let curve_region_pick = fence_curve_pick || self.boundary_selection.is_some();
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5846,12 +5908,12 @@ impl eframe::App for VibocerosApp {
                                             }
                                             None => None,
                                         },
-                                        object_filter: if fence_curve_pick {
+                                        object_filter: if curve_region_pick {
                                             Some(viboceros_command::ObjectSelectionFilter::Curves)
                                         } else {
                                             object_filter
                                         },
-                                        selection_preview: if fence_curve_pick {
+                                        selection_preview: if curve_region_pick {
                                             None
                                         } else {
                                             selection_preview
@@ -6039,6 +6101,7 @@ mod tests {
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
+            boundary_selection: None,
             fence_selection: None,
             zoom_target: None,
             command_focus_requested: false,

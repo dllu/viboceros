@@ -15,7 +15,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_region_selection_option(&mut self, input: &str) -> bool {
-        if self.selection_window_override.is_none() && self.circular_selection.is_none() {
+        if self.selection_window_override.is_none()
+            && self.circular_selection.is_none()
+            && self.boundary_selection.is_none()
+        {
             return false;
         }
         let name = input
@@ -28,14 +31,18 @@ impl VibocerosApp {
         ) {
             return false;
         }
-        let command_name = if self.circular_selection.is_some() {
+        let command_name = if self.boundary_selection.is_some() {
+            "SelBoundary"
+        } else if self.circular_selection.is_some() {
             "SelCircular"
         } else {
             "SelRectangular"
         };
         match interface::parse(&format!("{command_name} {input}")) {
             Some(Ok(
-                InterfaceCommand::SelRectangular(mode) | InterfaceCommand::SelCircular(mode),
+                InterfaceCommand::SelRectangular(mode)
+                | InterfaceCommand::SelCircular(mode)
+                | InterfaceCommand::SelBoundary(mode),
             )) => {
                 if let Some(state) = self.circular_selection.as_mut() {
                     match state {
@@ -44,6 +51,8 @@ impl VibocerosApp {
                             *current = mode
                         }
                     }
+                } else if self.boundary_selection.is_some() {
+                    self.boundary_selection = Some(mode);
                 } else {
                     self.selection_window_override = Some(mode);
                 }
@@ -72,6 +81,40 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if let InterfaceCommand::SelBoundary(mode) = command {
+                    if !self.can_capture_selection() {
+                        self.push_log("Boundary selection unavailable during this prompt".into());
+                        return;
+                    }
+                    self.boundary_selection = Some(mode);
+                    self.selection_window_override = None;
+                    self.circular_selection = None;
+                    self.fence_selection = None;
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    if self.object_prompt.is_none() {
+                        let source = {
+                            let mut selected = self.document.selected_object_ids();
+                            selected.next().filter(|_| selected.next().is_none())
+                        };
+                        if let Some(source) = source
+                            && self
+                                .document
+                                .object(source)
+                                .and_then(|object| object.geometry().curve_ref())
+                                .is_some_and(|curve| curve.is_closed().unwrap_or(false))
+                        {
+                            self.finish_boundary_selection(
+                                source,
+                                mode,
+                                viboceros_document::SelectionMode::Replace,
+                            );
+                            return;
+                        }
+                    }
+                    self.push_log("Select a closed boundary curve; Esc to cancel".into());
+                    return;
+                }
                 if matches!(
                     command,
                     InterfaceCommand::SelFence | InterfaceCommand::SelFenceCurve
@@ -88,6 +131,7 @@ impl VibocerosApp {
                     });
                     self.selection_window_override = None;
                     self.circular_selection = None;
+                    self.boundary_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(if command == InterfaceCommand::SelFenceCurve {
@@ -105,6 +149,7 @@ impl VibocerosApp {
                     }
                     self.circular_selection = Some(CircularSelectionState::PickCenter(mode));
                     self.fence_selection = None;
+                    self.boundary_selection = None;
                     self.selection_window_override = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
@@ -130,6 +175,7 @@ impl VibocerosApp {
                     self.selection_window_override = Some(mode);
                     self.circular_selection = None;
                     self.fence_selection = None;
+                    self.boundary_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(format!(
@@ -147,6 +193,7 @@ impl VibocerosApp {
                 self.selection_window_override = None;
                 self.circular_selection = None;
                 self.fence_selection = None;
+                self.boundary_selection = None;
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
                     self.zoom_target = None;

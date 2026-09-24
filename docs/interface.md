@@ -135,6 +135,15 @@ objects by their projected position in that circle. It accepts the same four
 default. Esc cancels either point prompt. This follows Rhino's
 [SelCircular](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCircular)
 view-plane selection.
+`SelBoundary` asks for a visible closed curve and uses its projection in the
+active viewport as a selection region. `SelectionMode=Window|Crossing|
+InvertWindow|InvertCrossing` can be entered with the command or while picking
+the curve; Crossing is the default. A single selected closed curve is accepted
+when the command starts. The source curve is excluded from the
+result. Open curves and boundaries clipped open by the view are rejected.
+Selection uses the displayed curve segments, so boundaries between tessellation
+samples may differ from Rhino's exact curves. See
+[SelBoundary](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelBoundary).
 `SelFence` collects two or more clicks in one viewport and selects only objects
 crossed by the resulting screen-space polyline. Enter or right-click finishes;
 Esc cancels. The fence can cross points, visible wires, and shaded faces, and
