@@ -14,13 +14,20 @@ curves and a bevel. `Trim=No` retains the originals and adds only the bevel.
 The bevel inherits the first source's attributes and groups. Separate
 retained curves inherit their respective sources' attributes and groups.
 
-Straight terminal segments may extend to their supporting-line intersection.
-Already meeting arcs and NURBS terminal segments are trimmed by arc length
-and retain their native geometry. Earlier polycurve leaves are preserved.
-The solver rejects chamfers that consume an entire terminal segment and
-nonmeeting curved terminal segments. Zero distances on both sides produce a
-sharp join when trimming is enabled.
+`ExtendArcsBy=Arc|Line` chooses a circular continuation or a tangent line
+for nonmeeting arcs. `ExtendOtherCurvesBy=Line|Smooth` chooses a tangent line
+or a smooth continuation for nonmeeting NURBS. The defaults are `Arc` and
+`Line`. The selected ends are connected first; each chamfer distance is then
+measured along the connected curve from the meeting point. Native arc and
+NURBS pieces are retained when the chosen continuation supports them.
+Earlier polycurve leaves are preserved. Zero distances on both sides produce
+a sharp join when trimming is enabled.
 
-The current tests cover analytic line and arc geometry, NURBS preservation,
-and command Undo. A live Rhino output comparison for this command is still
-pending.
+The solver rejects chamfers that consume an entire terminal segment. When a
+tangent line is added to a curved terminal, its setback must fit within that
+new segment. Smooth NURBS extension currently supports the curve pairs handled
+by Connect; rational smooth extension can differ from Rhino.
+
+The current tests cover analytic line and arc geometry, smooth NURBS length
+setbacks, and command Undo. A live Rhino output comparison for this command
+is still pending.

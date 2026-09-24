@@ -1,9 +1,12 @@
 //! Bevels selected straight curve ends by two distances.
 
 use super::*;
-use viboceros_geometry::{try_chamfer_curves_joined, try_chamfer_curves_parts};
+use viboceros_geometry::{
+    CurveArcExtensionStyle, CurveChamferExtensionStyles, CurveOtherExtensionStyle,
+    try_chamfer_curves_joined_with_styles, try_chamfer_curves_parts_with_styles,
+};
 
-const USAGE: &str = "Chamfer distance1 distance2 | Chamfer Distances=distance1,distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No]";
+const USAGE: &str = "Chamfer distance1 distance2 | Chamfer Distances=distance1,distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
 
 pub(super) struct ChamferCommand;
 
@@ -12,6 +15,8 @@ struct ChamferOptions {
     picks: [Option<Point3>; 2],
     join: bool,
     trim: bool,
+    arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
 }
 
 impl Command for ChamferCommand {
@@ -25,6 +30,8 @@ impl Command for ChamferCommand {
             picks,
             join,
             trim,
+            arc_extension,
+            other_extension,
         } = parse(arguments)?;
         let selected = document
             .selected_objects()
@@ -48,13 +55,16 @@ impl Command for ChamferCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join && trim {
-            let joined = try_chamfer_curves_joined(
+            let joined = try_chamfer_curves_joined_with_styles(
                 first,
                 picks[0],
                 second,
                 picks[1],
-                distances[0],
-                distances[1],
+                distances,
+                CurveChamferExtensionStyles {
+                    arc: arc_extension,
+                    other: other_extension,
+                },
                 document.tolerance(),
             )?;
             let outputs = document.copy_object_pieces_into_source_groups([(
@@ -64,13 +74,15 @@ impl Command for ChamferCommand {
             document.delete_objects([*first_id, *second_id])?;
             outputs
         } else {
-            let parts = try_chamfer_curves_parts(
-                first,
-                picks[0],
-                second,
-                picks[1],
+            let parts = try_chamfer_curves_parts_with_styles(
+                (first, picks[0]),
+                (second, picks[1]),
                 distances,
                 trim,
+                CurveChamferExtensionStyles {
+                    arc: arc_extension,
+                    other: other_extension,
+                },
                 document.tolerance(),
             )?;
             let pieces = parts.into_iter().enumerate().map(|(index, curve)| {
@@ -128,8 +140,36 @@ fn parse(arguments: &[&str]) -> Result<ChamferOptions, CommandError> {
     let mut picks = [None, None];
     let mut join = None;
     let mut trim = None;
+    let mut arc_extension = None;
+    let mut other_extension = None;
     for argument in &arguments[consumed..] {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        if option_name_eq(name, "ExtendArcsBy") {
+            let style = if value.eq_ignore_ascii_case("Arc") {
+                CurveArcExtensionStyle::Arc
+            } else if value.eq_ignore_ascii_case("Line") {
+                CurveArcExtensionStyle::Line
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            if arc_extension.replace(style).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            continue;
+        }
+        if option_name_eq(name, "ExtendOtherCurvesBy") {
+            let style = if value.eq_ignore_ascii_case("Line") {
+                CurveOtherExtensionStyle::Line
+            } else if value.eq_ignore_ascii_case("Smooth") {
+                CurveOtherExtensionStyle::Smooth
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            if other_extension.replace(style).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            continue;
+        }
         if option_name_eq(name, "Join") {
             if join
                 .replace(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?)
@@ -169,13 +209,15 @@ fn parse(arguments: &[&str]) -> Result<ChamferOptions, CommandError> {
         picks,
         join: join.unwrap_or(true),
         trim: trim.unwrap_or(true),
+        arc_extension: arc_extension.unwrap_or(CurveArcExtensionStyle::Arc),
+        other_extension: other_extension.unwrap_or(CurveOtherExtensionStyle::Line),
     })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{CircularArc3, CurveSegment3, LineSegment};
+    use viboceros_geometry::{CircularArc3, CurveSegment3, LineSegment, NurbsCurve};
 
     #[test]
     fn chamfer_options_and_undo() {
@@ -241,5 +283,77 @@ mod tests {
         ));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn extends_nonmeeting_arc_before_chamfer_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(diagonal, diagonal),
+            p(0., 1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(-1., 2.), p(-1., 3.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(&mut document, "Chamfer 0.2 0.3 ExtendArcsBy=Arc")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined chamfer")
+        };
+        let [
+            CurveSegment3::Arc(retained),
+            CurveSegment3::Line(_),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("arc extension, bevel, line")
+        };
+        assert!((retained.length().unwrap() - (std::f64::consts::PI - 0.2)).abs() < 1e-9);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn smooth_option_extends_nonmeeting_nurbs_before_chamfer() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let nurbs = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(3., 3.), p(3., 4.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::NurbsCurve(nurbs)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "Chamfer 0.2 0.3 ExtendOtherCurvesBy=Smooth")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined smooth NURBS chamfer")
+        };
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::NurbsCurve(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
     }
 }

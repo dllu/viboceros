@@ -1,12 +1,125 @@
 //! Straight chamfers between selected ends of open curves.
 
 use crate::{
-    Curve3, CurveSegment3, GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
+    Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, CurveSegment3, GeometryError,
+    LineSegment, Point3, PolyCurve3, Real, Tolerance,
     curve::ArcLengthSampler,
     curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end,
     },
+    try_connect_curves_parts_with_styles,
 };
+
+/// Styles used to extend nonmeeting curve ends before chamfering.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CurveChamferExtensionStyles {
+    pub arc: CurveArcExtensionStyle,
+    pub other: CurveOtherExtensionStyle,
+}
+
+impl Default for CurveChamferExtensionStyles {
+    fn default() -> Self {
+        Self {
+            arc: CurveArcExtensionStyle::Arc,
+            other: CurveOtherExtensionStyle::Line,
+        }
+    }
+}
+
+/// Connects the selected curve ends using the requested extension styles,
+/// then measures each chamfer setback along the connected curves.
+pub fn try_chamfer_curves_joined_with_styles(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    distances: [Real; 2],
+    styles: CurveChamferExtensionStyles,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let (connected, picks) = connected_for_chamfer(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        styles.arc,
+        styles.other,
+        tolerance,
+    )?;
+    try_chamfer_curves_joined(
+        &connected[0],
+        picks[0],
+        &connected[1],
+        picks[1],
+        distances[0],
+        distances[1],
+        tolerance,
+    )
+}
+
+/// Creates independent retained curves and a chamfer with extension options.
+pub fn try_chamfer_curves_parts_with_styles(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    distances: [Real; 2],
+    trim: bool,
+    styles: CurveChamferExtensionStyles,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
+    let (connected, picks) = connected_for_chamfer(
+        first.0,
+        first.1,
+        second.0,
+        second.1,
+        styles.arc,
+        styles.other,
+        tolerance,
+    )?;
+    try_chamfer_curves_parts(
+        &connected[0],
+        picks[0],
+        &connected[1],
+        picks[1],
+        distances,
+        trim,
+        tolerance,
+    )
+}
+
+fn connected_for_chamfer(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
+    tolerance: Tolerance,
+) -> Result<([Curve3; 2], [Point3; 2]), GeometryError> {
+    let first_at_end = selected_end(first, first_pick, tolerance)?;
+    let second_at_end = selected_end(second, second_pick, tolerance)?;
+    let mut connected = try_connect_curves_parts_with_styles(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        arc_extension,
+        other_extension,
+        tolerance,
+    )?;
+    let second = connected.pop().expect("Connect returns two curves");
+    let first = connected.pop().expect("Connect returns two curves");
+    let first_pick = if first_at_end {
+        first.as_ref().end_point()?
+    } else {
+        first.as_ref().start_point()?
+    };
+    let second_pick = if second_at_end {
+        second.as_ref().end_point()?
+    } else {
+        second.as_ref().start_point()?
+    };
+    Ok(([first, second], [first_pick, second_pick]))
+}
 
 /// Trims or extends terminal straight segments to a bevel whose setbacks are
 /// measured along the two supporting lines from their intersection.
@@ -358,5 +471,160 @@ mod tests {
                 < 1e-9
         );
         assert!(bevel.end().distance_to(p(2.4, 2.)).unwrap() < 1e-9);
+    }
+
+    #[test]
+    fn nonmeeting_arc_extends_on_its_circle_before_chamfer() {
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+            p(0., 1.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let joined = try_chamfer_curves_joined_with_styles(
+            &Curve3::Arc(arc),
+            p(0., 1.),
+            &line(p(-1., 2.), p(-1., 3.)),
+            p(-1., 2.),
+            [0.2, 0.3],
+            CurveChamferExtensionStyles::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::Arc(retained),
+            CurveSegment3::Line(bevel),
+            CurveSegment3::Line(line),
+        ] = joined.segments()
+        else {
+            panic!("arc, bevel, retained line")
+        };
+        assert!((retained.radius() - 1.0).abs() < 1e-12);
+        assert!((retained.length().unwrap() - (std::f64::consts::PI - 0.2)).abs() < 1e-9);
+        assert!(
+            bevel
+                .start()
+                .distance_to(p(-0.2_f64.cos(), 0.2_f64.sin()))
+                .unwrap()
+                < 1e-9
+        );
+        assert!(bevel.end().distance_to(p(-1., 0.3)).unwrap() < 1e-9);
+        assert!(line.start().distance_to(bevel.end()).unwrap() < 1e-9);
+    }
+
+    #[test]
+    fn tangent_arc_extension_keeps_its_leaf_and_separate_bevel() {
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let line = line(p(-1., 2.), p(-1., 3.));
+        let styles = CurveChamferExtensionStyles {
+            arc: CurveArcExtensionStyle::Line,
+            ..CurveChamferExtensionStyles::default()
+        };
+        let joined = try_chamfer_curves_joined_with_styles(
+            &arc,
+            p(0., 1.),
+            &line,
+            p(-1., 2.),
+            [0.2, 0.3],
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::Arc(retained_arc),
+            CurveSegment3::Line(extension),
+            CurveSegment3::Line(bevel),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("arc, tangent extension, bevel, retained line")
+        };
+        let Curve3::Arc(source_arc) = &arc else {
+            unreachable!()
+        };
+        assert_eq!(retained_arc, source_arc);
+        assert!(extension.start().distance_to(p(0., 1.)).unwrap() < 1e-9);
+        assert!(extension.end().distance_to(p(-0.8, 1.)).unwrap() < 1e-9);
+        assert!(bevel.end().distance_to(p(-1., 1.3)).unwrap() < 1e-9);
+
+        let separate = try_chamfer_curves_parts_with_styles(
+            (&arc, p(0., 1.)),
+            (&line, p(-1., 2.)),
+            [0.2, 0.3],
+            true,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(separate.len(), 3);
+        let bevel_only = try_chamfer_curves_parts_with_styles(
+            (&arc, p(0., 1.)),
+            (&line, p(-1., 2.)),
+            [0.2, 0.3],
+            false,
+            styles,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(bevel_only, vec![Curve3::Line(*bevel)]);
+    }
+
+    #[test]
+    fn smooth_nurbs_extension_is_set_back_by_curve_length() {
+        let nurbs = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let source = Curve3::NurbsCurve(nurbs);
+        let target = line(p(3., 3.), p(3., 4.));
+        let connected = try_connect_curves_parts_with_styles(
+            &source,
+            p(2., 1.),
+            &target,
+            p(3., 3.),
+            CurveArcExtensionStyle::Arc,
+            CurveOtherExtensionStyle::Smooth,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let connected_length = connected[0].as_ref().length(Tolerance::DEFAULT).unwrap();
+        let joined = try_chamfer_curves_joined_with_styles(
+            &source,
+            p(2., 1.),
+            &target,
+            p(3., 3.),
+            [0.2, 0.3],
+            CurveChamferExtensionStyles {
+                other: CurveOtherExtensionStyle::Smooth,
+                ..CurveChamferExtensionStyles::default()
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::NurbsCurve(retained),
+            CurveSegment3::Line(bevel),
+            CurveSegment3::Line(line),
+        ] = joined.segments()
+        else {
+            panic!("NURBS, bevel, retained line")
+        };
+        let retained_length = crate::CurveRef::NurbsCurve(retained)
+            .length(Tolerance::DEFAULT)
+            .unwrap();
+        assert!((connected_length - retained_length - 0.2).abs() < 1e-8);
+        assert!(bevel.end().distance_to(p(3., 2.55)).unwrap() < 1e-9);
+        assert!(line.start().distance_to(bevel.end()).unwrap() < 1e-9);
     }
 }
