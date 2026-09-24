@@ -57,6 +57,23 @@ class IntersectionSnapTests(unittest.TestCase):
                 "mesh-corner-off": "None",
                 "mesh-corner-on": "None",
             },
+            "intersection_circle_line_snaps": {
+                "circle-alone": "None",
+                "circle-line-right": "Intersection",
+                "circle-line-left": "Intersection",
+                "circle-line-perspective": "Intersection",
+                "circle-line-tangent": "Intersection",
+                "circle-line-apparent": "Intersection",
+            },
+            "intersection_circle_line_detail_snaps": {
+                "perspective-circle-at-zero": "Intersection",
+                "perspective-circle-at-two": "Intersection",
+                "perspective-circle-at-four": "Intersection",
+                "perspective-circle-at-left": "Intersection",
+                "perspective-circle-at-below": "Intersection",
+                "perspective-line-first": "Intersection",
+                "perspective-tangent": "Intersection",
+            },
         }
         for stem, expected in cases.items():
             with self.subTest(stem=stem):

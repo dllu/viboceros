@@ -2,8 +2,8 @@ use super::*;
 use crate::object_snap::{ObjectSnapKind, ObjectSnapModes, ObjectSnapOptions};
 use viboceros_document::Geometry;
 use viboceros_geometry::{
-    LineSegment, MeshFace, NurbsCurve, NurbsSurface, PointCloudProjection, Polyline3, Tolerance,
-    TriangleMesh,
+    Circle3, LineSegment, MeshFace, NurbsCurve, NurbsSurface, PointCloudProjection, Polyline3,
+    Tolerance, TriangleMesh, UnitVector3,
 };
 
 fn p(x: Real, y: Real, z: Real) -> Point3 {
@@ -231,4 +231,43 @@ fn straight_surface_boundary_intersects_a_line() {
             .unwrap()
             < 1e-12
     );
+}
+
+#[test]
+fn circle_line_crossings_include_tangencies_and_reject_infinite_line_extension() {
+    let circle = Geometry::Circle(
+        Circle3::try_from_frame(
+            p(0., 0., 0.),
+            2.,
+            UnitVector3::try_new(1., 0., 0., Tolerance::DEFAULT).unwrap(),
+            UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    );
+    let pick = |wire: Geometry, cursor: [Real; 2]| {
+        let mut doc = Document::default();
+        doc.add_geometry(circle.clone()).unwrap();
+        doc.add_geometry(wire).unwrap();
+        ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                cursor,
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+    };
+    let root = 3.0_f64.sqrt();
+    let transverse = pick(line(p(-3., 1., 0.), p(3., 1., 0.)), [root + 0.05, 1.05]).unwrap();
+    assert!(transverse.point().distance_to(p(root, 1., 0.)).unwrap() < 1e-12);
+    let tangent = pick(line(p(-3., 2., 0.), p(3., 2., 0.)), [0.05, 2.05]).unwrap();
+    assert!(tangent.point().distance_to(p(0., 2., 0.)).unwrap() < 1e-12);
+    assert!(pick(line(p(-3., 2.000_001, 0.), p(3., 2.000_001, 0.)), [0., 2.]).is_none());
+    assert!(pick(line(p(-3., 1., 0.), p(-2.5, 1., 0.)), [-root, 1.]).is_none());
 }

@@ -23,6 +23,12 @@ pub enum SnapSource {
     Polyline {
         vertices: Vec<[f64; 3]>,
     },
+    Circle {
+        center: [f64; 3],
+        radius: f64,
+        x_axis: [f64; 3],
+        normal: [f64; 3],
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -52,6 +58,18 @@ impl SnapSource {
                     tolerance,
                 )?)
             }
+            Self::Circle {
+                center,
+                radius,
+                x_axis,
+                normal,
+            } => Geometry::Circle(Circle3::try_from_frame(
+                Point3::try_from(*center)?,
+                *radius,
+                UnitVector3::try_new(x_axis[0], x_axis[1], x_axis[2], tolerance)?,
+                UnitVector3::try_new(normal[0], normal[1], normal[2], tolerance)?,
+                tolerance,
+            )?),
             Self::Mesh { vertices, faces } => {
                 if !(3..=4096).contains(&vertices.len()) || !(1..=8192).contains(&faces.len()) {
                     return Err(ProbeError::FixtureInvariant(

@@ -198,6 +198,10 @@ pub fn nearest_object_snap_projected(
 }
 
 trait SnapMetric {
+    /// Rhino's projected wire ownership is ranked at pixel precision.
+    fn ownership_distance(&self, distance: Real) -> Real {
+        distance
+    }
     fn is_affine(&self) -> bool {
         false
     }
@@ -368,6 +372,9 @@ where
     F: Fn(Point3) -> Option<[Real; 2]>,
     D: Fn(Point3) -> Option<Real>,
 {
+    fn ownership_distance(&self, distance: Real) -> Real {
+        distance.round()
+    }
     fn capture_radius(&self) -> Real {
         self.capture_radius
     }

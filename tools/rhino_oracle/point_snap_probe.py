@@ -62,6 +62,11 @@ def validate(operation):
             if (set(source) != set(("type", "vertices")) or not isinstance(source["vertices"], list)
                     or not 2 <= len(source["vertices"]) <= 256 or not all(point(v) for v in source["vertices"])):
                 raise ValueError("invalid point snap polyline")
+        elif source.get("type") == "circle":
+            if (set(source) != set(("type", "center", "radius", "x_axis", "normal"))
+                    or not all(point(source[key]) for key in ("center", "x_axis", "normal"))
+                    or not finite(source["radius"]) or source["radius"] <= 0):
+                raise ValueError("invalid point snap circle")
         elif source.get("type") == "mesh":
             if set(source) != set(("type", "vertices", "faces")): raise ValueError("invalid point snap mesh fields")
             vertices, faces = source["vertices"], source["faces"]
@@ -73,7 +78,7 @@ def validate(operation):
                         any(type(i) is not int or not 0 <= i < len(vertices) for i in face) or len(set(face)) != len(face)):
                     raise ValueError("invalid point snap mesh face")
         else:
-            raise ValueError("point snap diagnostic supports only line and mesh sources")
+            raise ValueError("unsupported point snap diagnostic source")
 
 
 def validate_request(request):
@@ -222,6 +227,11 @@ def run(operation, tolerance, host):
     ids, owned = [], []
     def record(geometry):
         if isinstance(geometry, Rhino.Geometry.Mesh): return dict(mesh=host["_polygon_mesh_value"](geometry))
+        if isinstance(geometry, getattr(Rhino.Geometry, "ArcCurve", ())):
+            success, circle = geometry.TryGetCircle()
+            if not success: raise ValueError("point snap circle changed representation")
+            return dict(circle=[host["_xyz"](circle.Center),float(circle.Radius),
+                                host["_xyz"](circle.Plane.XAxis),host["_xyz"](circle.Plane.Normal)])
         if isinstance(geometry, getattr(Rhino.Geometry, "PolylineCurve", ())):
             success, polyline = geometry.TryGetPolyline()
             if not success: raise ValueError("point snap polyline changed representation")
