@@ -51,17 +51,48 @@ pub(super) fn run(
 
 #[cfg(test)]
 mod tests {
+    use crate::{ProbeRequest, ProbeResponse, run_request};
+
     #[test]
     fn ellipse_offset_fixture_samples_both_sides_without_parameter_assumptions() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+        let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/ellipse_offset.json"
         ))
         .unwrap();
-        let response = crate::run_request(&request).unwrap();
+        let response = run_request(&request).unwrap();
         assert_eq!(response.results.len(), 4);
         for row in &response.results {
             assert_eq!(row.value["closed"], true);
             assert_eq!(row.value["samples"].as_array().unwrap().len(), 65);
+        }
+    }
+
+    #[test]
+    fn ellipse_offset_stations_match_saved_rhino() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/ellipse_offset.json"
+        ))
+        .unwrap();
+        let rhino: ProbeResponse = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/ellipse_offset.json"
+        ))
+        .unwrap();
+        let native = run_request(&request).unwrap();
+        assert_eq!(native.results.len(), 4);
+        for (actual, expected) in native.results.iter().zip(&rhino.results) {
+            assert_eq!(actual.id, expected.id);
+            assert_eq!(actual.value["closed"], expected.value["closed"]);
+            let actual_points = actual.value["samples"].as_array().unwrap();
+            let expected_points = expected.value["samples"].as_array().unwrap();
+            assert_eq!(actual_points.len(), expected_points.len());
+            for (actual_point, expected_point) in actual_points.iter().zip(expected_points) {
+                for coordinate in 0..3 {
+                    let error = (actual_point[coordinate].as_f64().unwrap()
+                        - expected_point[coordinate].as_f64().unwrap())
+                    .abs();
+                    assert!(error < 1e-7, "{} offset error {error}", actual.id);
+                }
+            }
         }
     }
 }

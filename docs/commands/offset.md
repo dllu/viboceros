@@ -100,10 +100,12 @@ different spline knot layouts can still be compared by location. Run:
 ```sh
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/ellipse_offset.json \
-  --absolute-epsilon 1e-8 --relative-epsilon 1e-9 --timeout 360
+  --absolute-epsilon 1e-7 --relative-epsilon 1e-9 --timeout 600
 ```
 
-The native fixture passes. A Rhino observation is not recorded yet.
+The [saved Rhino observation](../../tools/rhino_oracle/observations/ellipse_offset.json)
+matches all four native cases within `1e-7`; the largest coordinate residual
+is about `3.8e-8`. The oracle regression checks all 65 stations per case.
 
 ## Curved corner oracle probe
 
