@@ -2,6 +2,7 @@
 
 use crate::{
     Curve3, CurveSegment3, GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
+    curve::ArcLengthSampler,
     curve_fillet_pair::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end,
     },
@@ -22,30 +23,63 @@ pub fn try_chamfer_curves_joined(
     let first = oriented(first, first_pick, true, tolerance)?;
     let second = oriented(second, second_pick, false, tolerance)?;
     let last = first.segments().len() - 1;
-    let (CurveSegment3::Line(first_terminal), CurveSegment3::Line(second_terminal)) =
-        (&first.segments()[last], &second.segments()[0])
-    else {
-        return Err(unsupported());
-    };
-    let (first_line, second_line) = meeting_lines(*first_terminal, *second_terminal, tolerance)?;
-    let corner = first_line.end();
-    let first_direction = first_line.direction(tolerance)?.as_vector();
-    let second_direction = second_line.direction(tolerance)?.as_vector();
-    let first_cut = corner.translated(first_direction.scaled(-first_distance)?)?;
-    let second_cut = corner.translated(second_direction.scaled(second_distance)?)?;
-    if first_cut.distance_to(first_line.start())? <= tolerance.absolute()
-        || second_cut.distance_to(second_line.end())? <= tolerance.absolute()
-        || first_distance > first_line.length()? - tolerance.absolute()
-        || second_distance > second_line.length()? - tolerance.absolute()
-    {
-        return Err(unsupported());
-    }
+    let first_terminal = &first.segments()[last];
+    let second_terminal = &second.segments()[0];
+    let (first_retained, second_retained, first_cut, second_cut) =
+        if let (CurveSegment3::Line(first_line), CurveSegment3::Line(second_line)) =
+            (first_terminal, second_terminal)
+        {
+            let (first_line, second_line) = meeting_lines(*first_line, *second_line, tolerance)?;
+            let corner = first_line.end();
+            let first_direction = first_line.direction(tolerance)?.as_vector();
+            let second_direction = second_line.direction(tolerance)?.as_vector();
+            let first_cut = corner.translated(first_direction.scaled(-first_distance)?)?;
+            let second_cut = corner.translated(second_direction.scaled(second_distance)?)?;
+            if first_distance >= first_line.length()? - tolerance.absolute()
+                || second_distance >= second_line.length()? - tolerance.absolute()
+            {
+                return Err(unsupported());
+            }
+            (
+                CurveSegment3::Line(LineSegment::try_new(
+                    first_line.start(),
+                    first_cut,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?),
+                CurveSegment3::Line(LineSegment::try_new(
+                    second_cut,
+                    second_line.end(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?),
+                first_cut,
+                second_cut,
+            )
+        } else {
+            let end = first_terminal.evaluate(*first_terminal.domain().end())?;
+            let start = second_terminal.evaluate(*second_terminal.domain().start())?;
+            if end.distance_to(start)? > tolerance.absolute() {
+                return Err(unsupported());
+            }
+            let first_sampler = ArcLengthSampler::try_new(first_terminal.as_ref(), tolerance)?;
+            let second_sampler = ArcLengthSampler::try_new(second_terminal.as_ref(), tolerance)?;
+            if first_distance >= first_sampler.total_length() - tolerance.absolute()
+                || second_distance >= second_sampler.total_length() - tolerance.absolute()
+            {
+                return Err(unsupported());
+            }
+            let first_parameter = first_sampler
+                .parameter_at_distance(first_sampler.total_length() - first_distance)?;
+            let second_parameter = second_sampler.parameter_at_distance(second_distance)?;
+            let first_retained =
+                first_terminal.try_trimmed(*first_terminal.domain().start()..=first_parameter)?;
+            let second_retained =
+                second_terminal.try_trimmed(second_parameter..=*second_terminal.domain().end())?;
+            let first_cut = first_retained.evaluate(*first_retained.domain().end())?;
+            let second_cut = second_retained.evaluate(*second_retained.domain().start())?;
+            (first_retained, second_retained, first_cut, second_cut)
+        };
     let mut segments = first.segments()[..last].to_vec();
-    segments.push(CurveSegment3::Line(LineSegment::try_new(
-        first_line.start(),
-        first_cut,
-        Tolerance::NUMERICAL_VALIDATION,
-    )?));
+    segments.push(first_retained);
     if first_cut.distance_to(second_cut)? > tolerance.absolute() {
         segments.push(CurveSegment3::Line(LineSegment::try_new(
             first_cut,
@@ -53,11 +87,7 @@ pub fn try_chamfer_curves_joined(
             Tolerance::NUMERICAL_VALIDATION,
         )?));
     }
-    segments.push(CurveSegment3::Line(LineSegment::try_new(
-        second_cut,
-        second_line.end(),
-        Tolerance::NUMERICAL_VALIDATION,
-    )?));
+    segments.push(second_retained);
     segments.extend_from_slice(&second.segments()[1..]);
     PolyCurve3::try_new(segments)
 }
@@ -138,6 +168,7 @@ fn unsupported() -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{CircularArc3, NurbsCurve};
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.0).unwrap()
@@ -240,5 +271,92 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn meeting_arc_and_line_trim_at_arc_length_setbacks() {
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(2.0_f64.sqrt() / 2., 2.0_f64.sqrt() / 2.),
+            p(0., 1.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let joined = try_chamfer_curves_joined(
+            &Curve3::Arc(arc),
+            p(0.1, 0.99),
+            &line(p(0., 1.), p(-2., 1.)),
+            p(-0.1, 1.),
+            std::f64::consts::PI / 6.,
+            0.5,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::Arc(retained),
+            CurveSegment3::Line(bevel),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("arc, bevel, line");
+        };
+        assert!((retained.length().unwrap() - std::f64::consts::PI / 3.).abs() < 1e-10);
+        assert!(
+            bevel
+                .start()
+                .distance_to(p(0.5, 3.0_f64.sqrt() / 2.))
+                .unwrap()
+                < 1e-10
+        );
+        assert!(bevel.end().distance_to(p(-0.5, 1.)).unwrap() < 1e-10);
+    }
+
+    #[test]
+    fn meeting_nurbs_and_line_retain_native_nurbs_leaf() {
+        let tolerance = Tolerance::DEFAULT;
+        let nurbs = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(2., 0.), p(2., 2.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let source_length = crate::CurveRef::NurbsCurve(&nurbs)
+            .length(tolerance)
+            .unwrap();
+        let joined = try_chamfer_curves_joined(
+            &Curve3::NurbsCurve(nurbs),
+            p(2., 1.9),
+            &line(p(2., 2.), p(6., 2.)),
+            p(2.1, 2.),
+            0.3,
+            0.4,
+            tolerance,
+        )
+        .unwrap();
+        let [
+            CurveSegment3::NurbsCurve(retained),
+            CurveSegment3::Line(bevel),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("NURBS, bevel, line");
+        };
+        assert!(
+            (crate::CurveRef::NurbsCurve(retained)
+                .length(tolerance)
+                .unwrap()
+                - (source_length - 0.3))
+                .abs()
+                < 1e-8
+        );
+        assert!(
+            retained
+                .evaluate(*retained.domain().end())
+                .unwrap()
+                .distance_to(bevel.start())
+                .unwrap()
+                < 1e-9
+        );
+        assert!(bevel.end().distance_to(p(2.4, 2.)).unwrap() < 1e-9);
     }
 }

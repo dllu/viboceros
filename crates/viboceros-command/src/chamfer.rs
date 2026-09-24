@@ -3,8 +3,7 @@
 use super::*;
 use viboceros_geometry::{try_chamfer_curves_joined, try_chamfer_curves_parts};
 
-const USAGE: &str =
-    "Chamfer distance1 distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No]";
+const USAGE: &str = "Chamfer distance1 distance2 | Chamfer Distances=distance1,distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No]";
 
 pub(super) struct ChamferCommand;
 
@@ -111,17 +110,25 @@ impl Command for ChamferCommand {
 }
 
 fn parse(arguments: &[&str]) -> Result<ChamferOptions, CommandError> {
-    if arguments.len() < 2 {
+    let Some(first) = arguments.first() else {
         return Err(CommandError::Usage(USAGE));
-    }
-    let distances = [
-        parse_finite_real(arguments[0])?,
-        parse_finite_real(arguments[1])?,
-    ];
+    };
+    let (distances, consumed) = if let Some((name, values)) = first.split_once('=') {
+        if !option_name_eq(name, "Distances") {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let (first, second) = values.split_once(',').ok_or(CommandError::Usage(USAGE))?;
+        ([parse_finite_real(first)?, parse_finite_real(second)?], 1)
+    } else {
+        let Some(second) = arguments.get(1) else {
+            return Err(CommandError::Usage(USAGE));
+        };
+        ([parse_finite_real(first)?, parse_finite_real(second)?], 2)
+    };
     let mut picks = [None, None];
     let mut join = None;
     let mut trim = None;
-    for argument in &arguments[2..] {
+    for argument in &arguments[consumed..] {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
         if option_name_eq(name, "Join") {
             if join
@@ -168,12 +175,14 @@ fn parse(arguments: &[&str]) -> Result<ChamferOptions, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_geometry::{CircularArc3, CurveSegment3, LineSegment};
 
     #[test]
     fn chamfer_options_and_undo() {
         let registry = CommandRegistry::with_builtins();
         for (command, count, sources_retained) in [
             ("Chamfer 0.5 1", 1, false),
+            ("Chamfer Distances=0.5,1", 1, false),
             ("Chamfer 0 0", 1, false),
             ("Chamfer 0.5 1 Join=No", 3, false),
             ("Chamfer 0.5 1 Trim=No", 3, true),
@@ -196,5 +205,41 @@ mod tests {
             registry.execute(&mut document, "Undo").unwrap();
             assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
         }
+    }
+
+    #[test]
+    fn chamfers_meeting_arc_and_line_without_rationalizing_the_arc() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(diagonal, diagonal),
+            p(0., 1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(0., 1.), p(-2., 1.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Chamfer 0.3 0.5").unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined chamfer");
+        };
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 }
