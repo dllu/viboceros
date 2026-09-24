@@ -148,6 +148,14 @@ numerical curves for this tangent case. The
 [sphere/plane oracle fixture](../../tools/rhino_oracle/fixtures/sphere_plane_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/sphere_plane_surface_intersection.json)
 record full, clipped, tangent, and disjoint cases.
+Two canonical spherical surfaces intersect in two exact rational semicircles,
+matching Rhino's two-curve result for a secant pair. External and internal
+tangencies produce exact points; disjoint and contained pairs produce no result.
+The [sphere/sphere oracle fixture](../../tools/rhino_oracle/fixtures/sphere_sphere_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/sphere_sphere_surface_intersection.json)
+record secant, tangent, disjoint, and concentric cases. Rhino's numerical API
+missed the internal tangent point in that fixture. Coincident spheres still
+report an unsupported two-dimensional overlap.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
 rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted

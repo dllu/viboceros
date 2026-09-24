@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "equal_secant",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 2},
+      "other_sphere": {"center": [2, 0, 0], "radius": 2}
+    },
+    {
+      "id": "unequal_secant",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 3},
+      "other_sphere": {"center": [3, 0, 0], "radius": 2}
+    },
+    {
+      "id": "external_tangent",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 2},
+      "other_sphere": {"center": [5, 0, 0], "radius": 3}
+    },
+    {
+      "id": "internal_tangent",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 3},
+      "other_sphere": {"center": [1, 0, 0], "radius": 2}
+    },
+    {
+      "id": "disjoint",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 2},
+      "other_sphere": {"center": [6, 0, 0], "radius": 3}
+    },
+    {
+      "id": "contained",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 3},
+      "other_sphere": {"center": [0.5, 0, 0], "radius": 1}
+    },
+    {
+      "id": "concentric",
+      "op": "sphere_sphere_surface_intersection",
+      "sphere": {"center": [0, 0, 0], "radius": 3},
+      "other_sphere": {"center": [0, 0, 0], "radius": 1}
+    }
+  ]
+}

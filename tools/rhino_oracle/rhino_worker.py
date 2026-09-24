@@ -11826,11 +11826,15 @@ def _execute(operation, iterations, tolerance):
 
     if kind in (
         "sphere_plane_surface_intersection",
+        "sphere_sphere_surface_intersection",
         "cylinder_plane_surface_intersection",
         "cone_plane_surface_intersection",
     ):
         source_brep = None
-        if kind == "sphere_plane_surface_intersection":
+        if kind in (
+            "sphere_plane_surface_intersection",
+            "sphere_sphere_surface_intersection",
+        ):
             sphere_def = operation["sphere"]
             source = Rhino.Geometry.Sphere(
                 _point(sphere_def["center"]),
@@ -11865,17 +11869,24 @@ def _execute(operation, iterations, tolerance):
             )
             source_brep = cone.ToBrep(False)
             source = source_brep.Faces[0].ToNurbsSurface()
-        plane_def = operation["plane"]
-        plane = Rhino.Geometry.Plane(
-            _point(plane_def["origin"]), _vector(plane_def["normal"])
-        )
-        x_domain = plane_def["x_domain"]
-        y_domain = plane_def["y_domain"]
-        patch = Rhino.Geometry.PlaneSurface(
-            plane,
-            Rhino.Geometry.Interval(float(x_domain[0]), float(x_domain[1])),
-            Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
-        )
+        if kind == "sphere_sphere_surface_intersection":
+            other_def = operation["other_sphere"]
+            patch = Rhino.Geometry.Sphere(
+                _point(other_def["center"]),
+                _finite(other_def["radius"], "other sphere radius"),
+            ).ToNurbsSurface()
+        else:
+            plane_def = operation["plane"]
+            plane = Rhino.Geometry.Plane(
+                _point(plane_def["origin"]), _vector(plane_def["normal"])
+            )
+            x_domain = plane_def["x_domain"]
+            y_domain = plane_def["y_domain"]
+            patch = Rhino.Geometry.PlaneSurface(
+                plane,
+                Rhino.Geometry.Interval(float(x_domain[0]), float(x_domain[1])),
+                Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
+            )
 
         def intersect_analytic_plane_surfaces():
             success, curves, points = (

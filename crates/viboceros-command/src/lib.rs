@@ -26558,6 +26558,55 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_sphere_sphere_section() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let sphere = |center, radius| {
+            let frame = Frame3::try_from_normal(
+                center,
+                Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            NurbsSurface::try_sphere(frame, radius).unwrap()
+        };
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(sphere(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    2.0,
+                )))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(sphere(
+                    Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                    2.0,
+                )))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(arc) = object.geometry() else {
+                panic!("two spheres should create semicircular arcs")
+            };
+            assert_eq!(arc.degree(), 2);
+            assert!(!arc.is_closed().unwrap());
+            assert!(
+                (arc.length(document.tolerance()).unwrap() - std::f64::consts::PI * 3.0_f64.sqrt())
+                    .abs()
+                    < 1e-7
+            );
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_sphere_planar_section() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

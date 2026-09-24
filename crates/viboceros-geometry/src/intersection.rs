@@ -520,7 +520,7 @@ fn curve_brep_intersection_events_with_transform(
 /// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Canonical spheres intersect
-/// planar finite patches in exact rational circular curves or tangent points.
+/// each other and planar finite patches in exact rational circles or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
@@ -562,12 +562,25 @@ pub fn surface_surface_intersection_events(
             second, frame, radius, height, first, plane, tolerance,
         );
     }
-    if let Some((center, radius)) = first.canonical_sphere(tolerance)?
+    let first_sphere = first.canonical_sphere(tolerance)?;
+    let second_sphere = second.canonical_sphere(tolerance)?;
+    if let (Some((first_center, first_radius)), Some((second_center, second_radius))) =
+        (first_sphere, second_sphere)
+    {
+        return sphere_sphere_surface_intersection_events(
+            first_center,
+            first_radius,
+            second_center,
+            second_radius,
+            tolerance,
+        );
+    }
+    if let Some((center, radius)) = first_sphere
         && let Some(plane) = second.plane(tolerance)?
     {
         return sphere_planar_surface_intersection_events(center, radius, second, plane, tolerance);
     }
-    if let Some((center, radius)) = second.canonical_sphere(tolerance)?
+    if let Some((center, radius)) = second_sphere
         && let Some(plane) = first.plane(tolerance)?
     {
         return sphere_planar_surface_intersection_events(center, radius, first, plane, tolerance);
@@ -668,6 +681,60 @@ pub fn surface_surface_intersection_events(
             }
         })
         .collect()
+}
+
+fn sphere_sphere_surface_intersection_events(
+    first_center: Point3,
+    first_radius: Real,
+    second_center: Point3,
+    second_radius: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let displacement = first_center.vector_to(second_center)?;
+    let separation = displacement.length()?;
+    let distance_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * first_radius.max(second_radius).max(separation));
+    if separation == 0.0 {
+        if (first_radius - second_radius).abs() <= distance_tolerance {
+            return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "coincident spheres have a two-dimensional intersection",
+            });
+        }
+        return Ok(Vec::new());
+    }
+    let radius_sum = first_radius + second_radius;
+    let radius_difference = (first_radius - second_radius).abs();
+    if separation > radius_sum + distance_tolerance
+        || separation < radius_difference - distance_tolerance
+    {
+        return Ok(Vec::new());
+    }
+    let axis = displacement.normalized_nonzero()?;
+    let axial_distance =
+        0.5 * (separation + (first_radius - second_radius) * radius_sum / separation);
+    let circle_center = first_center.translated(axis.as_vector().scaled(axial_distance)?)?;
+    if (separation - radius_sum).abs() <= distance_tolerance
+        || (separation - radius_difference).abs() <= distance_tolerance
+    {
+        return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(circle_center)]);
+    }
+    let squared_radius = (first_radius - axial_distance) * (first_radius + axial_distance);
+    let circle_frame = crate::Frame3::try_from_normal(circle_center, axis.as_vector(), tolerance)?;
+    let circle = Circle3::try_from_frame(
+        circle_center,
+        squared_radius.max(0.0).sqrt(),
+        circle_frame.y_axis(),
+        axis.opposite(),
+        tolerance,
+    )?
+    .to_nurbs()?;
+    let domain = circle.domain();
+    let midpoint = 0.5 * (*domain.start() + *domain.end());
+    Ok(vec![
+        SurfaceSurfaceIntersectionEvent::Curve(circle.try_subcurve(*domain.start(), midpoint)?),
+        SurfaceSurfaceIntersectionEvent::Curve(circle.try_subcurve(midpoint, *domain.end())?),
+    ])
 }
 
 fn sphere_planar_surface_intersection_events(
@@ -3400,6 +3467,142 @@ mod tests {
         ])
         .and_then(|surface| surface.try_reparameterized(x_start..=x_end, -5.0..=5.0))
         .unwrap()
+    }
+
+    #[test]
+    fn sphere_sphere_intersection_returns_exact_circle_in_both_orders() {
+        let sphere = |center, radius| {
+            NurbsSurface::try_sphere(
+                crate::Frame3::try_from_normal(
+                    center,
+                    crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+                radius,
+            )
+            .unwrap()
+        };
+        let first = sphere(point(0.0, 0.0, 0.0), 3.0);
+        let second = sphere(point(3.0, 0.0, 0.0), 2.0);
+        let circle_x: Real = 7.0 / 3.0;
+        let circle_radius = (9.0 - circle_x * circle_x).sqrt();
+        for (order, (left, right)) in [(&first, &second), (&second, &first)]
+            .into_iter()
+            .enumerate()
+        {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in &events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("expected exact semicircular arcs, got {events:#?}")
+                };
+                assert_eq!(curve.degree(), 2);
+                assert!(!curve.is_closed().unwrap());
+                assert!(
+                    (curve.length(Tolerance::DEFAULT).unwrap()
+                        - std::f64::consts::PI * circle_radius)
+                        .abs()
+                        < 1e-8
+                );
+                let domain = curve.domain();
+                for fraction in [0.0, 0.125, 0.33, 0.75, 1.0] {
+                    let sample = curve
+                        .evaluate(*domain.start() + fraction * (*domain.end() - *domain.start()))
+                        .unwrap();
+                    assert!((sample.x() - circle_x).abs() < 1e-9);
+                    assert!((sample.distance_to(point(0.0, 0.0, 0.0)).unwrap() - 3.0).abs() < 1e-9);
+                    assert!((sample.distance_to(point(3.0, 0.0, 0.0)).unwrap() - 2.0).abs() < 1e-9);
+                }
+            }
+            if order == 0 {
+                for (event, sign) in events.iter().zip([1.0, -1.0]) {
+                    let SurfaceSurfaceIntersectionEvent::Curve(arc) = event else {
+                        unreachable!()
+                    };
+                    let domain = arc.domain();
+                    let middle = arc
+                        .evaluate(0.5 * (*domain.start() + *domain.end()))
+                        .unwrap();
+                    assert!((middle.y() - sign * circle_radius).abs() < 1e-9);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn sphere_sphere_intersection_handles_tangent_disjoint_and_coincident_cases() {
+        let sphere = |center, radius| {
+            NurbsSurface::try_sphere(
+                crate::Frame3::try_from_normal(
+                    center,
+                    crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+                radius,
+            )
+            .unwrap()
+        };
+        let first = sphere(point(0.0, 0.0, 0.0), 3.0);
+        for (other, expected) in [
+            (sphere(point(5.0, 0.0, 0.0), 2.0), point(3.0, 0.0, 0.0)),
+            (sphere(point(1.0, 0.0, 0.0), 2.0), point(3.0, 0.0, 0.0)),
+            (sphere(point(1.0, 0.0, 0.0), 4.0), point(-3.0, 0.0, 0.0)),
+        ] {
+            for (left, right) in [(&first, &other), (&other, &first)] {
+                let events =
+                    surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+                assert!(
+                    matches!(events.as_slice(), [SurfaceSurfaceIntersectionEvent::Point(p)] if p.distance_to(expected).unwrap() < 1e-9)
+                );
+            }
+        }
+        for other in [
+            sphere(point(6.0, 0.0, 0.0), 2.0),
+            sphere(point(0.5, 0.0, 0.0), 1.0),
+            sphere(point(0.0, 0.0, 0.0), 1.0),
+        ] {
+            assert!(
+                surface_surface_intersection_events(&first, &other, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
+        let coincident = sphere(point(0.0, 0.0, 0.0), 3.0);
+        assert!(matches!(
+            surface_surface_intersection_events(&first, &coincident, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
+        ));
+    }
+
+    #[test]
+    fn sphere_sphere_intersection_is_stable_far_from_origin() {
+        let center = point(1.0e8, -1.0e8, 1.0e8);
+        let frame = crate::Frame3::try_from_normal(
+            center,
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let other_frame = crate::Frame3::try_from_normal(
+            point(1.0e8 + 2.0, -1.0e8, 1.0e8),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let first = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        let second = NurbsSurface::try_sphere(other_frame, 2.0).unwrap();
+        let events =
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [
+                SurfaceSurfaceIntersectionEvent::Curve(_),
+                SurfaceSurfaceIntersectionEvent::Curve(_)
+            ]
+        ));
     }
 
     #[test]
