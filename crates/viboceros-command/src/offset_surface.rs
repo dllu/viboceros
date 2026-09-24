@@ -42,6 +42,10 @@ impl Command for OffsetSurfaceCommand {
                 staged.push((*id, offset));
                 continue;
             }
+            if let Some(offset) = conical_offset(geometry, options, document.tolerance())? {
+                staged.push((*id, offset));
+                continue;
+            }
             let normal = planar_normal(geometry, document.tolerance())?;
             if options.solid {
                 let solid = if let Some(box_solid) = rectangular_solid(
@@ -431,6 +435,59 @@ fn toroidal_offset(
         )?)));
     }
     let result = torus(new_minor)?;
+    if brep_source {
+        let mut result = Brep::try_surface_face(result, tolerance)?;
+        if reversed {
+            result.reverse_orientation();
+        }
+        Ok(Some(Geometry::Brep(result)))
+    } else {
+        Ok(Some(Geometry::NurbsSurface(result)))
+    }
+}
+
+fn conical_offset(
+    geometry: &Geometry,
+    options: Options,
+    tolerance: Tolerance,
+) -> Result<Option<Geometry>, CommandError> {
+    let (surface, reversed, brep_source) = match geometry {
+        Geometry::NurbsSurface(surface) => (surface, false, false),
+        Geometry::Brep(brep) if brep.faces().len() == 1 => {
+            let face = &brep.faces()[0];
+            (face.surface(), face.is_reversed(), true)
+        }
+        _ => return Ok(None),
+    };
+    if surface.canonical_cone(tolerance)?.is_none() {
+        return Ok(None);
+    }
+    if let Geometry::Brep(brep) = geometry
+        && !brep.faces()[0].is_untrimmed(tolerance)?
+    {
+        return Ok(None);
+    }
+    if options.solid {
+        return Ok(None);
+    }
+    let shifted = |distance: Real| -> Result<NurbsSurface, CommandError> {
+        Ok(surface
+            .try_offset_canonical_cone(if reversed { -distance } else { distance }, tolerance)?
+            .expect("canonical cone was checked above"))
+    };
+    if options.both_sides {
+        let mut positive = Brep::try_surface_face(shifted(options.distance)?, tolerance)?;
+        let mut negative = Brep::try_surface_face(shifted(-options.distance)?, tolerance)?;
+        if reversed {
+            positive.reverse_orientation();
+            negative.reverse_orientation();
+        }
+        return Ok(Some(Geometry::Brep(Brep::try_disjoint_union(
+            vec![positive, negative],
+            tolerance,
+        )?)));
+    }
+    let result = shifted(options.distance)?;
     if brep_source {
         let mut result = Brep::try_surface_face(result, tolerance)?;
         if reversed {
@@ -1184,6 +1241,86 @@ mod tests {
         assert!((major - 4.0).abs() < 1e-10);
         assert!((minor - 0.75).abs() < 1e-10);
         assert!(offset.faces()[0].is_reversed());
+    }
+
+    #[test]
+    fn exact_cone_offsets_match_rhino_open_face_geometry() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_cone(frame, 2.0, 3.0).unwrap(),
+            ))
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        for (distance, apex_x, apex_z) in [
+            (0.25, 1.208012573584461, 2.861324950943693),
+            (-0.25, 0.791987426415539, 3.138675049056307),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("OffsetSrf {distance} DeleteInput=Yes"),
+                )
+                .unwrap();
+            let Geometry::NurbsSurface(offset) = document.objects().next().unwrap().geometry()
+            else {
+                panic!("open cone offset is a NURBS surface")
+            };
+            let apex = offset.control_points()[0].point().to_array();
+            assert!((apex[0] - apex_x).abs() < 1e-12);
+            assert!((apex[2] - apex_z).abs() < 1e-12);
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        }
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "OffsetSrf 0.25 BothSides=Yes DeleteInput=Yes",
+            )
+            .unwrap();
+        let Geometry::Brep(pair) = document.objects().next().unwrap().geometry() else {
+            panic!("two-sided cone offset is a B-rep")
+        };
+        assert_eq!(
+            (
+                pair.faces().len(),
+                pair.edges().len(),
+                pair.vertices().len()
+            ),
+            (2, 6, 4)
+        );
+    }
+
+    #[test]
+    fn reversed_cone_face_offsets_along_its_reversed_normal() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_cone(frame, 2.0, 3.0).unwrap();
+        let mut source = Brep::try_surface_face(surface, tolerance).unwrap();
+        source.reverse_orientation();
+        let options = parse(&["0.25"], tolerance).unwrap();
+        let Some(Geometry::Brep(offset)) =
+            conical_offset(&Geometry::Brep(source), options, tolerance).unwrap()
+        else {
+            panic!("reversed cone face offsets as a B-rep")
+        };
+        assert!(offset.faces()[0].is_reversed());
+        let apex = offset.faces()[0].surface().control_points()[0].point();
+        assert!((apex.x() - 0.791987426415539).abs() < 1e-12);
     }
 
     #[test]

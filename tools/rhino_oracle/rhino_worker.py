@@ -1032,6 +1032,18 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
         cylinder = Rhino.Geometry.Cylinder(circle, height)
         surface = None
         source = cylinder.ToBrep(False, False)
+    elif "cone" in operation:
+        definition = operation["cone"]
+        radius = _finite(definition["radius"], "cone radius")
+        height = _finite(definition["height"], "cone height")
+        if radius <= 0.0 or height <= 0.0:
+            raise ValueError("cone radius and height must be positive")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        cone = Rhino.Geometry.Cone(plane, height, radius)
+        surface = None
+        source = cone.ToBrep(False)
     elif "torus" in operation:
         definition = operation["torus"]
         major = _finite(definition["major_radius"], "torus major radius")

@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 
+mod analytic_cone;
 mod analytic_cylinder;
 mod analytic_sphere;
 mod analytic_torus;

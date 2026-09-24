@@ -2,10 +2,11 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/offsetsrf.htm)
 
-Select one or more planar surfaces, exact canonical spheres, cylinders, or
-tori, or supported single-face B-reps. Run `OffsetSrf 2` or
+Select one or more planar surfaces, exact canonical spheres, cylinders, cones,
+or tori, or supported single-face B-reps. Run `OffsetSrf 2` or
 `OffsetSrf Distance=2`. Planar outputs are translated along the face normal.
-Spheres and cylinders change radius; tori change minor radius. A negative
+Spheres and cylinders change radius; cones open their apex into a circular
+rim; tori change minor radius. A negative
 distance offsets in the opposite direction. Trimmed planar B-reps
 retain their exact curves and topology. Outputs inherit their source
 attributes and groups and are selected.
@@ -22,7 +23,7 @@ editing the document, so unsupported selections
 leave it unchanged.
 
 Planar offsets are exact translations. The current solver rejects nonplanar
-surfaces other than canonical spheres, cylinders, and tori, multi-face B-reps,
+surfaces other than canonical spheres, cylinders, cones, and tori, multi-face B-reps,
 and solid planar offsets with multiple boundary loops. Canonical spheres use their exact
 rational control net: single-sided offsets change the radius, two-sided open
 offsets create one two-face B-rep, and solid offsets make a concentric
@@ -32,6 +33,10 @@ height. Two-sided open offsets create one two-face B-rep. Solid offsets
 create a four-face tube whose annular caps each have a radial seam, matching
 Rhino's offset-face topology. Offsets that collapse or invert the cylinder
 are rejected.
+Canonical cones preserve their rational weights and parameter domains. Their
+open offsets are exact ruled surfaces at the requested normal distance, and
+two-sided open offsets create one two-face B-rep. Solid cone offsets remain
+unsupported.
 Canonical ring tori retain their major radius and source parameter domains
 while changing the minor radius. Open two-sided offsets create one B-rep
 containing two closed faces; solid offsets reverse the inner torus to make a
@@ -63,3 +68,9 @@ The [torus offset probe](../../tools/rhino_oracle/fixtures/offset_torus_face_geo
 and [Rhino observations](../../tools/rhino_oracle/observations/offset_torus_face_geometry.json)
 cover five open and solid cases. Its recorded U and V domains remain those of
 the source torus for every offset.
+
+The [cone offset probe](../../tools/rhino_oracle/fixtures/offset_cone_face_geometry.json)
+and [Rhino observations](../../tools/rhino_oracle/observations/offset_cone_face_geometry.json)
+cover both signed directions and a two-sided open result. A separate
+[solid probe](../../tools/rhino_oracle/fixtures/offset_cone_face_solid_geometry.json)
+records the four-face shell topology for future implementation.

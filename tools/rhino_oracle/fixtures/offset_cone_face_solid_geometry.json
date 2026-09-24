@@ -1,0 +1,22 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "cone-positive-solid",
+      "op": "offset_surface_face_geometry",
+      "cone": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.25,
+      "solid": true,
+      "topology": true
+    },
+    {
+      "id": "cone-both-solid",
+      "op": "offset_surface_face_geometry",
+      "cone": {"center": [1, 2, 3], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "distance": 0.25,
+      "both_sides": true,
+      "solid": true,
+      "topology": true
+    }
+  ]
+}
