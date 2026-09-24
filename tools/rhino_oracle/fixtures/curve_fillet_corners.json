@@ -331,6 +331,44 @@
           "knots": [0, 0, 0, 1, 1, 1]}
       ]},
       "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "quadratic-nurbs-to-arc-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [0, 0, 0], "weight": 1},
+            {"point": [2, 0, 0], "weight": 1},
+            {"point": [2, 2, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]},
+        {"type": "arc", "points": [
+          [2, 2, 0],
+          [3.414213562373095, 2.585786437626905, 0],
+          [4, 4, 0]
+        ]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-quadratic-nurbs-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [4, 4, 0],
+          [3.414213562373095, 2.585786437626905, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "nurbs", "degree": 2,
+          "control_points": [
+            {"point": [2, 2, 0], "weight": 1},
+            {"point": [2, 0, 0], "weight": 1},
+            {"point": [0, 0, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 0, 1, 1, 1]}
+      ]},
+      "radius": 0.5
     }
   ]
 }

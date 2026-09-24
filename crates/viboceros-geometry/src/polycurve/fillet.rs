@@ -2,6 +2,7 @@ use super::*;
 
 mod arc_arc;
 mod arc_line;
+mod nurbs_arc;
 mod nurbs_line;
 
 enum FilletPart {
@@ -31,6 +32,9 @@ impl PolyCurve3 {
             return rounded.try_fillet_corners(radius, tolerance);
         }
         if let Some(rounded) = nurbs_line::resolve_nurbs_line_kinks(self, radius, tolerance)? {
+            return rounded.try_fillet_corners(radius, tolerance);
+        }
+        if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(self, radius, tolerance)? {
             return rounded.try_fillet_corners(radius, tolerance);
         }
         let mut parts = Vec::with_capacity(self.segments.len());

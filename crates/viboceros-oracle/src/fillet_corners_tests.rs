@@ -26,7 +26,10 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
         assert_eq!(row.value["closed"], reference["value"]["closed"]);
         let epsilon = if matches!(
             row.id.as_str(),
-            "quadratic-nurbs-to-line-kink" | "line-to-quadratic-nurbs-kink"
+            "quadratic-nurbs-to-line-kink"
+                | "line-to-quadratic-nurbs-kink"
+                | "quadratic-nurbs-to-arc-kink"
+                | "arc-to-quadratic-nurbs-kink"
         ) {
             1e-7
         } else if matches!(
