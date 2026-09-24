@@ -188,6 +188,15 @@ mod tests {
         );
     }
 
+    #[test]
+    fn segmented_source_blends_match_saved_rhino_control_shapes() {
+        assert_curved_source_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_polycurve_sources.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_polycurve_sources.json"),
+            21,
+        );
+    }
+
     fn assert_curved_source_blend_parity(
         request_json: &str,
         rhino_json: &str,

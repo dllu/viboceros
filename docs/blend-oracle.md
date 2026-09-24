@@ -57,7 +57,14 @@ adds polynomial and rational cubic inputs with varying curvature. Its
 [raw Rhino definitions](../tools/rhino_oracle/observations/blend_nurbs_sources.json)
 match every control point and weight within `1e-12`, all mixed domains and
 knots, and all degrees. The four G2/G2 domain and knot residuals are below
-`3e-8`. Other curve classes and the interactive command remain unmeasured.
+`3e-8`.
+
+The [21-case segmented-source fixture](../tools/rhino_oracle/fixtures/blend_polycurve_sources.json)
+adds polylines and line/arc polycurves. Its
+[raw Rhino definitions](../tools/rhino_oracle/observations/blend_polycurve_sources.json)
+match every control point and weight within `1e-12`, all mixed domains and
+knots, and all degrees; G2/G2 domain and knot residuals remain below `3e-8`.
+Interactive `Blend`, surface edges, and other source types remain unmeasured.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
