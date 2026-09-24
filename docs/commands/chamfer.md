@@ -23,10 +23,10 @@ NURBS pieces are retained when the chosen continuation supports them.
 Earlier polycurve leaves are preserved. Zero distances on both sides produce
 a sharp join when trimming is enabled.
 
-The solver rejects chamfers that consume an entire terminal segment. When a
-tangent line is added to a curved terminal, its setback must fit within that
-new segment. Smooth NURBS extension currently supports the curve pairs handled
-by Connect; rational smooth extension can differ from Rhino.
+The solver rejects chamfers that consume an entire connected source curve.
+A setback may cross a tangent extension and continue into the original arc or
+NURBS. Smooth NURBS extension currently supports the curve pairs handled by
+Connect; rational smooth extension can differ from Rhino.
 
 The current tests cover analytic line and arc geometry, smooth NURBS length
 setbacks, and command Undo. A live Rhino output comparison for this command

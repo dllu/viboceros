@@ -322,6 +322,24 @@ mod tests {
         assert!((retained.length().unwrap() - (std::f64::consts::PI - 0.2)).abs() < 1e-9);
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+
+        registry
+            .execute(&mut document, "Chamfer 1.2 0.3 ExtendArcsBy=Line")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined tangent-extension chamfer")
+        };
+        let [
+            CurveSegment3::Arc(retained),
+            CurveSegment3::Line(_),
+            CurveSegment3::Line(_),
+        ] = joined.segments()
+        else {
+            panic!("original arc, bevel, retained line")
+        };
+        assert!((retained.length().unwrap() - (std::f64::consts::FRAC_PI_2 - 0.2)).abs() < 1e-9);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 
     #[test]
