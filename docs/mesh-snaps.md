@@ -1,4 +1,4 @@
-# Mesh wire snapping
+# Mesh snapping
 
 [Snap controls](object-snap-controls.md) · [Near](near-snaps.md) · [Provenance and hashes](mesh-snaps-provenance.json)
 
@@ -21,7 +21,25 @@ one-shot Mid. The retained mesh cases did **not** exhibit the
 [whole-segment hover](mid-hover-snaps.md) measured on curves. On one mesh, a
 captured Mid takes precedence over Near; separate objects compete by capture
 distance. Mesh vertices do not become End or Point targets through this switch.
-Vertex, Int and Perp remain unimplemented.
+Rhino's [object snap reference](https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm)
+lists Vertex separately from the SnapToMeshes wire modes. Vertex captures mesh
+vertices with the mesh-wire switch either on or off; Point and End do not
+capture them. The vertex index is built only when Vertex is requested and
+shares the mesh snapshot's invalidation lifetime. Int and Perp remain
+unimplemented.
+
+The [six-case Vertex fixture](../tools/rhino_oracle/fixtures/mesh_vertex_snaps.json)
+and [owned Rhino observations](../tools/rhino_oracle/observations/mesh_vertex_snaps.json)
+pair Vertex, Point and End at one mesh corner with the wire switch off and on.
+Only Vertex captures, with the exact 3D vertex and a `MeshVertex` component.
+Native replay agrees on snap kind, source and point in all six cases. Vertex
+also wins the [three mixed-mode picks](../tools/rhino_oracle/fixtures/mesh_vertex_mixed_snaps.json)
+against Near, Mid and Point; the [Rhino results](../tools/rhino_oracle/observations/mesh_vertex_mixed_snaps.json)
+match native replay. [Three aperture picks](../tools/rhino_oracle/fixtures/mesh_vertex_aperture_snaps.json)
+with [Rhino results](../tools/rhino_oracle/observations/mesh_vertex_aperture_snaps.json)
+keep Vertex inside the capture box even when Near is closer to a wire, then
+switch to Near once Vertex leaves the box. Back-face culling, competing mesh
+objects and SubD vertices are still outside this measured scope.
 
 ## Evidence and known differences
 

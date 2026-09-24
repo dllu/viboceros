@@ -17,6 +17,43 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class PointSnapTests(unittest.TestCase):
+    def test_vertex_snap_is_separate_from_mesh_wire_switch(self):
+        request = json.loads((ROOT/"tools/rhino_oracle/fixtures/mesh_vertex_snaps.json").read_text())
+        observed = json.loads((ROOT/"tools/rhino_oracle/observations/mesh_vertex_snaps.json").read_text())
+        probe.validate_request(request)
+        self.assertEqual(len(request["operations"]), 6)
+        self.assertEqual([op["id"] for op in request["operations"]],
+                         [row["id"] for row in observed["results"]])
+        for op, row in zip(request["operations"], observed["results"]):
+            value = row["value"]
+            self.assertEqual(value["before"], value["after"])
+            self.assertEqual(value["mesh_snap_setting"]["before"],
+                             value["mesh_snap_setting"]["restored"])
+            if op["persistent_snaps"] == ["Vertex"]:
+                self.assertEqual(value["kind"], "Vertex")
+                self.assertEqual(value["point"], [0, 0, 0])
+                self.assertEqual(value["source"], 0)
+                self.assertEqual(value["component"], {"type": "MeshVertex", "index": 0})
+            else:
+                self.assertEqual(value["kind"], "None")
+                self.assertIsNone(value["source"])
+        mixed = json.loads((ROOT/"tools/rhino_oracle/fixtures/mesh_vertex_mixed_snaps.json").read_text())
+        observations = json.loads((ROOT/"tools/rhino_oracle/observations/mesh_vertex_mixed_snaps.json").read_text())
+        probe.validate_request(mixed)
+        self.assertEqual([op["id"] for op in mixed["operations"]],
+                         [row["id"] for row in observations["results"]])
+        self.assertEqual(len(observations["results"]), 3)
+        for row in observations["results"]:
+            self.assertEqual(row["value"]["kind"], "Vertex")
+            self.assertEqual(row["value"]["point"], [0, 0, 0])
+        aperture = json.loads((ROOT/"tools/rhino_oracle/fixtures/mesh_vertex_aperture_snaps.json").read_text())
+        edges = json.loads((ROOT/"tools/rhino_oracle/observations/mesh_vertex_aperture_snaps.json").read_text())
+        probe.validate_request(aperture)
+        self.assertEqual([op["id"] for op in aperture["operations"]],
+                         [row["id"] for row in edges["results"]])
+        self.assertEqual([row["value"]["kind"] for row in edges["results"]],
+                         ["Vertex", "Vertex", "Near"])
+
     def test_full_3d_targets_and_three_corner_priority_differences_are_retained(self):
         operations = json.loads((ROOT/"tools/rhino_oracle/fixtures/point_snaps.json").read_text())
         self.assertEqual(operations,all_request())

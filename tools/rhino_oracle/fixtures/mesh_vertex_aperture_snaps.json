@@ -1,0 +1,207 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "vertex-near-offset-10",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        10,
+        1
+      ],
+      "persistent_snaps": [
+        "Vertex",
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "vertex-near-offset-11",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        11,
+        1
+      ],
+      "persistent_snaps": [
+        "Vertex",
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "vertex-near-offset-13",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        13,
+        1
+      ],
+      "persistent_snaps": [
+        "Vertex",
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    }
+  ]
+}

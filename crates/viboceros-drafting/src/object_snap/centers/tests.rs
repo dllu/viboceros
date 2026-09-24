@@ -207,7 +207,13 @@ fn center_modes_are_valid_bit_sets_and_disabled_queries_do_not_project() {
     }
     assert_eq!(modes, ObjectSnapModes::LANDMARKS);
     assert!(!modes.contains(ObjectSnapKind::Near));
-    assert_eq!(modes.with(ObjectSnapKind::Near, true), ObjectSnapModes::ALL);
+    assert!(!modes.contains(ObjectSnapKind::Vertex));
+    assert_eq!(
+        modes
+            .with(ObjectSnapKind::Near, true)
+            .with(ObjectSnapKind::Vertex, true),
+        ObjectSnapModes::ALL
+    );
     let mut doc = Document::default();
     doc.add_geometry(Geometry::Circle(circle())).unwrap();
     assert!(

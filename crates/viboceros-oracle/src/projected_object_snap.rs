@@ -100,6 +100,7 @@ pub enum SnapMode {
     Cen,
     Quad,
     Near,
+    Vertex,
 }
 
 impl SnapMode {
@@ -111,6 +112,7 @@ impl SnapMode {
             Self::Cen => ObjectSnapKind::Center,
             Self::Quad => ObjectSnapKind::Quad,
             Self::Near => ObjectSnapKind::Near,
+            Self::Vertex => ObjectSnapKind::Vertex,
         }
     }
 }
@@ -124,7 +126,7 @@ pub(super) fn run(
         || fixture.cursor.iter().any(|v| !v.is_finite())
         || !fixture.capture_radius.is_finite()
         || !(1.0..=64.0).contains(&fixture.capture_radius)
-        || fixture.modes.len() > 6
+        || fixture.modes.len() > 7
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid calibrated snap inputs",

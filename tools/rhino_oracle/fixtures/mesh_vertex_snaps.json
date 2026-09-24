@@ -1,0 +1,402 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "vertex-mesh-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Vertex"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "vertex-mesh-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Vertex"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "point-mesh-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Point"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "point-mesh-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Point"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "end-mesh-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "end-mesh-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -2,
+          -2,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "snap_to_meshes": true,
+      "input_settle_ms": 300
+    }
+  ]
+}

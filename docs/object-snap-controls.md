@@ -2,9 +2,9 @@
 
 [Viewport controls](interface.md) · [Center capture](center-hover-snaps.md) · [Oracle provenance](oneshot-snap-provenance.json)
 
-The **Snap modes** toolbar menu independently enables Point, End, Mid, Cen, Quad
-and Near. Near is opt-in; the other five are initially enabled. The Osnap button/F4
-suspends persistent snaps without losing that selection.
+The **Snap modes** toolbar menu independently enables Point, End, Mid, Cen, Quad,
+Near and Vertex. Near and Vertex are opt-in; the other five are initially enabled.
+The Osnap button/F4 suspends persistent snaps without losing that selection.
 Persistent checkbox edits keep the menu open; right-click a mode to isolate it,
 then right-click it again to restore the previous set. An ordinary checkbox edit
 starts a new set and discards the old isolation snapshot. These are session UI
@@ -14,10 +14,10 @@ The separate **Snap to mesh wires** checkbox (initially off), also controlled by
 `SnapToMeshes Enable|Disable|Toggle`, admits supported mesh Near/Mid sources
 without changing feature selection or pending overrides. [Mesh snapping](mesh-snaps.md)
 documents its direct-only Mid behavior, depth-weighted Near and remaining wire-selection
-priority differences.
+priority differences. Vertex targets mesh vertices even when this switch is off.
 
 While a command requests a point, Shift-click a mode for the next point only.
-Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near` or `NoSnap` at the command
+Alternatively submit `Point`, `End`, `Mid`, `Cen`, `Quad`, `Near`, `Vertex` or `NoSnap` at the command
 line, then pick or type the point. `Endpoint`, `Midpoint`, `Center`, `Quadrant`
 and `Nearest`, plus optional `_`/apostrophe prefixes, are accepted. Submit the modifier separately
 from coordinates; arbitrary multi-command macros are not parsed. Outside a point
@@ -85,5 +85,6 @@ arbitrary macros remain incomplete. New controls do not establish broad snap
 parity or change the limits of the underlying geometry queries.
 
 [Near](near-snaps.md) includes calibrated perspective captures and complete
-command/history replay. [Mesh wires](mesh-snaps.md) now support opt-in Near/Mid;
+command/history replay. [Mesh snapping](mesh-snaps.md) supports opt-in Near/Mid
+on wires and Vertex on mesh points;
 Rhino mesh wire-selection parity and certified global curved proximity remain pending.

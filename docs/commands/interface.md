@@ -107,7 +107,8 @@ so the worker converts at the fixture boundary. These probes check application
 settings, not cursor positions.
 
 [Per-mode and one-shot snap controls](../object-snap-controls.md) expose the
-implemented Point/End/Mid/Center/Quad and opt-in [Near](../near-snaps.md), including
+implemented Point/End/Mid/Center/Quad, opt-in [Near](../near-snaps.md), and
+[mesh Vertex](../mesh-snaps.md). They include
 [Mid-only curve hover](../mid-hover-snaps.md). [Mesh wire snaps](../mesh-snaps.md)
 have a separate source switch, direct-only Mid, and calibrated depth-weighted Near;
 mesh wire selection, including corners and competing parallel wires, still differs

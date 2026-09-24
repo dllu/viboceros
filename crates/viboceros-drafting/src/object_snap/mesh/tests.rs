@@ -111,6 +111,170 @@ fn mesh_policy_modes_priority_and_real_face_boundaries_are_independent() {
 }
 
 #[test]
+fn vertex_snap_is_independent_of_mesh_wire_switch_and_other_landmarks() {
+    let mut doc = Document::default();
+    let id = doc.add_geometry(quad(false)).unwrap();
+    let mut cache = ObjectSnapCache::default();
+    let vertex = ObjectSnapModes::only(ObjectSnapKind::Vertex);
+    let hit = query(&mut cache, &doc, [2.05, -2.04], vertex, false).unwrap();
+    assert_eq!(hit.object_id(), id);
+    assert_eq!(hit.kind(), ObjectSnapKind::Vertex);
+    assert_eq!(hit.point(), p(2., -2.));
+    assert_eq!(cache.meshes.builds, 0);
+    assert_eq!(cache.meshes.vertex_builds, 1);
+    let near = query(
+        &mut cache,
+        &doc,
+        [2.05, -2.04],
+        ObjectSnapModes::only(ObjectSnapKind::Near),
+        true,
+    )
+    .unwrap();
+    assert!(near.distance() < hit.distance());
+    let mixed = query(
+        &mut cache,
+        &doc,
+        [2.05, -2.04],
+        vertex.with(ObjectSnapKind::Near, true),
+        true,
+    )
+    .unwrap();
+    assert_eq!(mixed.kind(), ObjectSnapKind::Vertex);
+    assert_eq!(mixed.point(), p(2., -2.));
+    assert_eq!(
+        query(&mut cache, &doc, [2.05, -2.04], vertex, true)
+            .unwrap()
+            .point(),
+        p(2., -2.)
+    );
+    assert_eq!(cache.meshes.vertex_builds, 1);
+    for kind in [ObjectSnapKind::Point, ObjectSnapKind::End] {
+        assert!(
+            query(
+                &mut cache,
+                &doc,
+                [2.05, -2.04],
+                ObjectSnapModes::only(kind),
+                true
+            )
+            .is_none()
+        );
+    }
+    doc.set_objects_visibility([id], false).unwrap();
+    assert!(query(&mut cache, &doc, [2.05, -2.04], vertex, false).is_none());
+    doc.set_objects_visibility([id], true).unwrap();
+    doc.replace_object_geometries([(id, quad(true))]).unwrap();
+    assert!(query(&mut cache, &doc, [2.05, -2.04], vertex, false).is_some());
+    assert_eq!(cache.meshes.vertex_builds, 2);
+    doc.undo().unwrap();
+    assert!(query(&mut cache, &doc, [2.05, -2.04], vertex, false).is_some());
+    assert_eq!(cache.meshes.vertex_builds, 3);
+    doc.delete_objects([id]).unwrap();
+    assert!(query(&mut cache, &doc, [2.05, -2.04], vertex, false).is_none());
+    assert!(cache.meshes.is_empty());
+}
+
+#[test]
+fn vertex_index_prunes_large_meshes_without_building_wire_index() {
+    let mut vertices = Vec::new();
+    let mut faces = Vec::new();
+    for y in 0..64 {
+        for x in 0..64 {
+            let base = vertices.len() as u32;
+            vertices.extend(
+                [[2., -2.], [8., -2.], [8., -8.], [2., -8.]]
+                    .map(|[a, b]| p(a + 10. * x as Real, b + 10. * y as Real)),
+            );
+            faces.push(MeshFace::Quad([base, base + 1, base + 2, base + 3]));
+        }
+    }
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Mesh(
+        TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap(),
+    ))
+    .unwrap();
+    let mut cache = ObjectSnapCache::default();
+    for i in 0..100 {
+        let x = ((i * 17) % 64) as Real * 10.;
+        let y = ((i * 31) % 64) as Real * 10.;
+        cache.meshes.visited_vertices = 0;
+        let hit = query(
+            &mut cache,
+            &doc,
+            [x + 2.05, y - 2.04],
+            ObjectSnapModes::only(ObjectSnapKind::Vertex),
+            false,
+        )
+        .unwrap();
+        assert_eq!(hit.point(), p(x + 2., y - 2.));
+        assert!(cache.meshes.visited_vertices < 64);
+    }
+    assert_eq!(cache.meshes.vertex_builds, 1);
+    assert_eq!(cache.meshes.builds, 0);
+}
+
+#[test]
+fn vertex_index_matches_exhaustive_perspective_capture() {
+    let mut vertices = Vec::new();
+    let mut faces = Vec::new();
+    for y in 0..16 {
+        for x in 0..16 {
+            let base = vertices.len() as u32;
+            let depth = if (x + y) % 7 == 0 {
+                -1.
+            } else {
+                1. + (x % 5) as Real
+            };
+            for [dx, dy] in [[0., 0.], [0.3, 0.], [0., 0.3]] {
+                vertices.push(Point3::try_new(x as Real + dx, y as Real + dy, depth).unwrap());
+            }
+            faces.push(MeshFace::Triangle([base, base + 1, base + 2]));
+        }
+    }
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Mesh(
+        TriangleMesh::try_new_faces(vertices.clone(), faces, Tolerance::DEFAULT).unwrap(),
+    ))
+    .unwrap();
+    let project = |p: Point3| (p.z() > 0.).then(|| [p.x() / p.z(), p.y() / p.z()]);
+    let mut cache = ObjectSnapCache::default();
+    for i in 0..100 {
+        let cursor = [(i * 17 % 33) as Real * 0.4, (i * 29 % 31) as Real * 0.4];
+        let expected = vertices
+            .iter()
+            .copied()
+            .enumerate()
+            .filter_map(|(order, point)| {
+                let image = project(point)?;
+                let offset = [image[0] - cursor[0], image[1] - cursor[1]];
+                (offset[0].abs().max(offset[1].abs()) <= 0.2).then_some((
+                    offset[0].hypot(offset[1]),
+                    order,
+                    point,
+                ))
+            })
+            .min_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)))
+            .map(|(_, _, point)| point);
+        let actual = cache
+            .nearest_projected_with_options(
+                &doc,
+                cursor,
+                0.2,
+                project,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Vertex),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+            .map(|snap| snap.point());
+        assert_eq!(actual, expected, "cursor {cursor:?}");
+    }
+    assert_eq!(cache.meshes.vertex_builds, 1);
+    assert_eq!(cache.meshes.builds, 0);
+}
+
+#[test]
 fn mesh_wire_cache_tracks_snapshots_visibility_undo_conversion_and_deletion() {
     let mut doc = Document::default();
     let id = doc.add_geometry(quad(false)).unwrap();

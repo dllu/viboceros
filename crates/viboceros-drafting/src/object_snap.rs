@@ -26,6 +26,7 @@ pub enum ObjectSnapKind {
     Center,
     Quad,
     Near,
+    Vertex,
 }
 
 /// Enabled feature kinds, independent of the UI's persistent/one-shot lifetime.
@@ -53,9 +54,10 @@ impl From<ObjectSnapModes> for ObjectSnapOptions {
 
 impl ObjectSnapModes {
     pub const NONE: Self = Self(0);
-    /// Discrete landmarks enabled by the standard query/UI defaults. Near is opt-in.
+    /// Discrete landmarks enabled by the standard query/UI defaults. Near and
+    /// Vertex are opt-in.
     pub const LANDMARKS: Self = Self(0b1_1111);
-    pub const ALL: Self = Self(0b11_1111);
+    pub const ALL: Self = Self(0b111_1111);
 
     pub const fn only(kind: ObjectSnapKind) -> Self {
         Self(1 << kind.priority())
@@ -81,6 +83,7 @@ impl ObjectSnapKind {
             Self::Center => "Center",
             Self::Quad => "Quad",
             Self::Near => "Near",
+            Self::Vertex => "Vertex",
         }
     }
 
@@ -92,6 +95,7 @@ impl ObjectSnapKind {
             Self::Center => 3,
             Self::Quad => 4,
             Self::Near => 5,
+            Self::Vertex => 6,
         }
     }
 }
@@ -390,12 +394,16 @@ fn nearest_object_snap_with_metric(
             continue;
         }
         if matches!(object.geometry(), Geometry::Mesh(_)) {
-            if options.mesh_edges {
-                cache
-                    .meshes
-                    .visit(object, modes, metric, &mut |kind, point, distance| {
+            if options.mesh_edges || modes.contains(ObjectSnapKind::Vertex) {
+                cache.meshes.visit(
+                    object,
+                    modes,
+                    options.mesh_edges,
+                    metric,
+                    &mut |kind, point, distance| {
                         consider_scored_candidate(&mut best, object.id(), kind, point, distance);
-                    });
+                    },
+                );
             }
             continue;
         }

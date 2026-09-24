@@ -26,6 +26,98 @@ struct Index {
     nodes: Vec<Node>,
 }
 
+#[derive(Debug)]
+struct Vertex {
+    order: usize,
+    point: Point3,
+    bounds: BoundingBox3,
+}
+
+#[derive(Debug)]
+struct VertexIndex {
+    source: GeometrySnapshot,
+    vertices: Vec<Vertex>,
+    nodes: Vec<Node>,
+}
+
+impl VertexIndex {
+    fn new(object: &Object) -> Self {
+        let Geometry::Mesh(mesh) = object.geometry() else {
+            unreachable!()
+        };
+        let mut index = Self {
+            source: object.geometry_snapshot().clone(),
+            vertices: mesh
+                .vertices()
+                .iter()
+                .copied()
+                .enumerate()
+                .map(|(order, point)| Vertex {
+                    order,
+                    point,
+                    bounds: BoundingBox3::from_points([point]).expect("finite vertex"),
+                })
+                .collect(),
+            nodes: Vec::new(),
+        };
+        if !index.vertices.is_empty() {
+            index.build(0..index.vertices.len());
+        }
+        index
+    }
+
+    fn build(&mut self, range: std::ops::Range<usize>) -> usize {
+        let bounds = self.vertices[range.clone()]
+            .iter()
+            .skip(1)
+            .fold(self.vertices[range.start].bounds, |a, b| {
+                a.union(b.bounds).expect("finite bounds")
+            });
+        let node = self.nodes.len();
+        self.nodes.push(Node {
+            bounds,
+            range: range.clone(),
+            children: None,
+        });
+        if range.len() > 8 {
+            let lo = bounds.min().to_array();
+            let hi = bounds.max().to_array();
+            let axis = (0..3)
+                .max_by(|&a, &b| (hi[a] - lo[a]).total_cmp(&(hi[b] - lo[b])))
+                .unwrap();
+            let middle = range.start + range.len() / 2;
+            self.vertices[range.clone()].select_nth_unstable_by(range.len() / 2, |a, b| {
+                a.point.to_array()[axis].total_cmp(&b.point.to_array()[axis])
+            });
+            self.nodes[node].children = Some([
+                self.build(range.start..middle),
+                self.build(middle..range.end),
+            ]);
+        }
+        node
+    }
+
+    fn visit(&self, node: usize, metric: &impl SnapMetric, visitor: &mut impl FnMut(&Vertex)) {
+        let node = &self.nodes[node];
+        if proximity::outside_bounds(
+            node.bounds.min().to_array(),
+            node.bounds.max().to_array(),
+            metric,
+        ) {
+            return;
+        }
+        if let Some(children) = node.children {
+            for child in children {
+                self.visit(child, metric, visitor);
+            }
+        } else {
+            for vertex in &self.vertices[node.range.clone()] {
+                visitor(vertex);
+            }
+        }
+    }
+}
+
 impl Index {
     fn new(object: &Object) -> Self {
         let Geometry::Mesh(mesh) = object.geometry() else {
@@ -109,19 +201,26 @@ impl Index {
 #[derive(Debug, Default)]
 pub(super) struct Cache {
     entries: BTreeMap<ObjectId, Index>,
+    vertex_entries: BTreeMap<ObjectId, VertexIndex>,
     #[cfg(test)]
     builds: usize,
     #[cfg(test)]
     visited: usize,
+    #[cfg(test)]
+    vertex_builds: usize,
+    #[cfg(test)]
+    visited_vertices: usize,
 }
 
 impl Cache {
     pub(super) fn is_empty(&self) -> bool {
-        self.entries.is_empty()
+        self.entries.is_empty() && self.vertex_entries.is_empty()
     }
 
     pub(super) fn retain_objects(&mut self, live: &HashMap<ObjectId, &Geometry>) {
         self.entries
+            .retain(|id, _| live.get(id).is_some_and(|g| matches!(g, Geometry::Mesh(_))));
+        self.vertex_entries
             .retain(|id, _| live.get(id).is_some_and(|g| matches!(g, Geometry::Mesh(_))));
     }
 
@@ -129,11 +228,16 @@ impl Cache {
         &mut self,
         object: &Object,
         modes: ObjectSnapModes,
+        mesh_edges: bool,
         metric: &impl SnapMetric,
         emit: &mut impl FnMut(ObjectSnapKind, Point3, Real),
     ) {
-        let mid = modes.contains(ObjectSnapKind::Mid);
-        let near = modes.contains(ObjectSnapKind::Near);
+        let vertex_hit =
+            modes.contains(ObjectSnapKind::Vertex) && self.visit_vertices(object, metric, emit);
+        let mid = mesh_edges && modes.contains(ObjectSnapKind::Mid);
+        // A direct Vertex target suppresses Near on the same mesh, even when
+        // the wire's screen distance is smaller. Rhino retains Vertex here.
+        let near = mesh_edges && modes.contains(ObjectSnapKind::Near) && !vertex_hit;
         if !mid && !near {
             return;
         }
@@ -179,6 +283,47 @@ impl Cache {
             emit(ObjectSnapKind::Mid, point, distance);
         } else if let Some((_, point, distance)) = best_near {
             emit(ObjectSnapKind::Near, point, distance);
+        }
+    }
+
+    fn visit_vertices(
+        &mut self,
+        object: &Object,
+        metric: &impl SnapMetric,
+        emit: &mut impl FnMut(ObjectSnapKind, Point3, Real),
+    ) -> bool {
+        let index = self.vertex_entries.entry(object.id()).or_insert_with(|| {
+            #[cfg(test)]
+            {
+                self.vertex_builds += 1;
+            }
+            VertexIndex::new(object)
+        });
+        if !index.source.shares_storage_with(object.geometry_snapshot()) {
+            *index = VertexIndex::new(object);
+            #[cfg(test)]
+            {
+                self.vertex_builds += 1;
+            }
+        }
+        if index.nodes.is_empty() {
+            return false;
+        }
+        let mut best = None;
+        index.visit(0, metric, &mut |vertex| {
+            #[cfg(test)]
+            {
+                self.visited_vertices += 1;
+            }
+            if let Some(distance) = metric.captured_distance(vertex.point) {
+                keep(&mut best, vertex.order, vertex.point, distance);
+            }
+        });
+        if let Some((_, point, distance)) = best {
+            emit(ObjectSnapKind::Vertex, point, distance);
+            true
+        } else {
+            false
         }
     }
 }

@@ -175,6 +175,55 @@ fn retained_differences(input: &str, observations: &str) -> Vec<String> {
 }
 
 #[test]
+fn mesh_vertex_snap_replays_owned_rhino_picks() {
+    let fixture = include_str!("../../../../tools/rhino_oracle/fixtures/mesh_vertex_snaps.json");
+    let observation =
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_vertex_snaps.json");
+    let request: Value = serde_json::from_str(fixture).unwrap();
+    let observed: Value = serde_json::from_str(observation).unwrap();
+    assert_eq!(request["operations"].as_array().unwrap().len(), 6);
+    for (op, row) in request["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        assert_eq!(op["id"], row["id"]);
+        if op["persistent_snaps"][0] == "Vertex" {
+            assert_eq!(
+                row["value"]["component"],
+                json!({"type":"MeshVertex","index":0})
+            );
+            assert_eq!(row["value"]["point"], json!([0., 0., 0.]));
+        } else {
+            assert_eq!(row["value"]["kind"], "None");
+        }
+    }
+    assert!(retained_differences(fixture, observation).is_empty());
+    let mixed_fixture =
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_vertex_mixed_snaps.json");
+    let mixed_observation =
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_vertex_mixed_snaps.json");
+    let mixed: Value = serde_json::from_str(mixed_observation).unwrap();
+    assert_eq!(mixed["results"].as_array().unwrap().len(), 3);
+    for row in mixed["results"].as_array().unwrap() {
+        assert_eq!(row["value"]["kind"], "Vertex");
+        assert_eq!(row["value"]["point"], json!([0., 0., 0.]));
+    }
+    assert!(retained_differences(mixed_fixture, mixed_observation).is_empty());
+    let aperture_fixture =
+        include_str!("../../../../tools/rhino_oracle/fixtures/mesh_vertex_aperture_snaps.json");
+    let aperture_observation =
+        include_str!("../../../../tools/rhino_oracle/observations/mesh_vertex_aperture_snaps.json");
+    let aperture: Value = serde_json::from_str(aperture_observation).unwrap();
+    assert_eq!(aperture["results"].as_array().unwrap().len(), 3);
+    assert_eq!(aperture["results"][0]["value"]["kind"], "Vertex");
+    assert_eq!(aperture["results"][1]["value"]["kind"], "Vertex");
+    assert_eq!(aperture["results"][2]["value"]["kind"], "Near");
+    assert!(retained_differences(aperture_fixture, aperture_observation).is_empty());
+}
+
+#[test]
 fn square_aperture_replays_all_128_admissions_but_preserves_five_mesh_selection_differences() {
     let differences = retained_differences(
         include_str!("../../../../tools/rhino_oracle/fixtures/snap_capture_box.json"),

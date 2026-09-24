@@ -2,15 +2,16 @@
 use super::*;
 use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
 
-pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near or NoSnap for one pick. Near and mesh-wire snapping are off by default. Enable mesh Near/Mid with SnapToMeshes Enable or the mesh-wire checkbox. SnapSize changes the active viewport grid snap spacing; ApplyTo=AllViewports changes every view. Grid settings controls grid lines and axes; F7 toggles grid lines. Ortho/F8 constrains picks from the last point; hold Shift to reverse Ortho temporarily. OrthoAngle sets its angular increment; OrthoSnapToCPlaneZ Enable admits a visible Z tracking line. Planar keeps free picks at the previous point's CPlane elevation; SetPlanar sets its state. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
+pub(super) const HELP: &str = "Snap modes: choose Point/End/Mid/Cen/Quad/Near/Vertex in the toolbar menu. Right-click a mode to isolate/restore it; Shift-click for one pick. At a point prompt type Point, End, Mid, Cen, Quad, Near, Vertex or NoSnap for one pick. Near, Vertex and mesh-wire snapping are off by default. Enable mesh Near/Mid with SnapToMeshes Enable or the mesh-wire checkbox; Vertex is independent of that switch. SnapSize changes the active viewport grid snap spacing; ApplyTo=AllViewports changes every view. Grid settings controls grid lines and axes; F7 toggles grid lines. Ortho/F8 constrains picks from the last point; hold Shift to reverse Ortho temporarily. OrthoAngle sets its angular increment; OrthoSnapToCPlaneZ Enable admits a visible Z tracking line. Planar keeps free picks at the previous point's CPlane elevation; SetPlanar sets its state. Persistent modes are restored after an accepted point. DisableOsnap/F4 suspends persistent modes without changing the selection.";
 
-const FEATURES: [(ObjectSnapKind, &str); 6] = [
+const FEATURES: [(ObjectSnapKind, &str); 7] = [
     (ObjectSnapKind::Point, "Point"),
     (ObjectSnapKind::End, "End"),
     (ObjectSnapKind::Mid, "Mid"),
     (ObjectSnapKind::Center, "Cen"),
     (ObjectSnapKind::Quad, "Quad"),
     (ObjectSnapKind::Near, "Near"),
+    (ObjectSnapKind::Vertex, "Vertex"),
 ];
 
 pub(super) struct SnapControls {
@@ -65,6 +66,7 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
         "cen" | "center" => ObjectSnapKind::Center,
         "quad" | "quadrant" => ObjectSnapKind::Quad,
         "near" | "nearest" => ObjectSnapKind::Near,
+        "vertex" => ObjectSnapKind::Vertex,
         "nosnap" => return Some(ObjectSnapModes::NONE),
         _ => return None,
     };
