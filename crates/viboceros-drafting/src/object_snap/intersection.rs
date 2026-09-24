@@ -43,6 +43,24 @@ struct CurvedNurbs<'a> {
     hover_distance: Real,
 }
 
+struct OwnedCurvedNurbs {
+    owner: ObjectId,
+    order: usize,
+    curve: NurbsCurve,
+    hover_distance: Real,
+}
+
+impl OwnedCurvedNurbs {
+    fn borrowed(&self) -> CurvedNurbs<'_> {
+        CurvedNurbs {
+            owner: self.owner,
+            order: self.order,
+            curve: &self.curve,
+            hover_distance: self.hover_distance,
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 enum ConicLocus {
     Circle(Circle3),
@@ -331,6 +349,7 @@ pub(super) fn visit(
         }
     }
     if has_surface {
+        let mut surface_curves = Vec::new();
         for (order, object) in document.objects().enumerate() {
             let attributes = object.attributes();
             if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
@@ -339,35 +358,41 @@ pub(super) fn visit(
             if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
                 continue;
             }
-            let near_boundaries: Vec<_> = cache
-                .geometry_curves(object, document.tolerance())
-                .iter()
-                .filter_map(|boundary| {
+            for boundary in cache.geometry_curves(object, document.tolerance()) {
+                if let Some(curve) =
                     captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
-                })
-                .collect();
-            for first in 0..near_boundaries.len() {
-                for second in first + 1..near_boundaries.len() {
-                    nurbs_pair::visit(
-                        near_boundaries[first],
-                        near_boundaries[second],
-                        metric,
-                        emit,
-                    );
+                {
+                    surface_curves.push(OwnedCurvedNurbs {
+                        owner: curve.owner,
+                        order: curve.order,
+                        curve: curve.curve.clone(),
+                        hover_distance: curve.hover_distance,
+                    });
                 }
             }
-            for curve in near_boundaries {
-                for &segment in &segments {
-                    nurbs_line::visit(curve, segment, metric, emit);
+        }
+        for first in 0..surface_curves.len() {
+            for second in first + 1..surface_curves.len() {
+                nurbs_pair::visit(
+                    surface_curves[first].borrowed(),
+                    surface_curves[second].borrowed(),
+                    metric,
+                    emit,
+                );
+            }
+        }
+        for surface_curve in &surface_curves {
+            let curve = surface_curve.borrowed();
+            for &segment in &segments {
+                nurbs_line::visit(curve, segment, metric, emit);
+            }
+            for (&conic, &implicit) in conics.iter().zip(&conic_images) {
+                if let Some(implicit) = implicit {
+                    nurbs_conic::visit(curve, conic, implicit, metric, emit);
                 }
-                for (&conic, &implicit) in conics.iter().zip(&conic_images) {
-                    if let Some(implicit) = implicit {
-                        nurbs_conic::visit(curve, conic, implicit, metric, emit);
-                    }
-                }
-                for &other in &curved_nurbs {
-                    nurbs_pair::visit(curve, other, metric, emit);
-                }
+            }
+            for &other in &curved_nurbs {
+                nurbs_pair::visit(curve, other, metric, emit);
             }
         }
     }

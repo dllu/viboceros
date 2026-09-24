@@ -9,6 +9,7 @@ other. Curved NURBS spans, including surface and B-rep boundaries, intersect
 straight wires, circles, arcs, ellipses, and other curved NURBS spans. Mesh wires
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
+Curved boundaries can intersect boundaries of the same surface or another surface.
 
 This is a screen-space snap: lines at different depths can cross in the view.
 Segments of one polyline can cross each other, and its ordinary corners also

@@ -415,6 +415,48 @@ fn curved_surface_boundary_intersects_another_nurbs_curve() {
 }
 
 #[test]
+fn curved_boundaries_of_separate_surfaces_intersect() {
+    let mut doc = Document::default();
+    for lower in [[-2., 2., -2.], [1., -3., 1.]] {
+        doc.add_geometry(Geometry::NurbsSurface(
+            NurbsSurface::try_new(
+                2,
+                1,
+                3,
+                2,
+                vec![
+                    p(-2., lower[0], 0.),
+                    p(0., lower[1], 0.),
+                    p(2., lower[2], 0.),
+                    p(-2., lower[0] + 5., 0.),
+                    p(0., lower[1] + 5., 0.),
+                    p(2., lower[2] + 5., 0.),
+                ],
+                vec![0., 0., 0., 1., 1., 1.],
+                vec![0., 0., 1., 1.],
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    }
+    let hit = ObjectSnapCache::default()
+        .nearest_axis_aligned_with_options(
+            &doc,
+            PointCloudProjection::Xy,
+            p(0., 0., 0.),
+            [1., -0.5],
+            0.2,
+            ObjectSnapOptions {
+                modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                mesh_edges: false,
+            },
+        )
+        .unwrap()
+        .unwrap();
+    assert!(hit.point().distance_to(p(1., -0.5, 0.)).unwrap() < 1e-9);
+}
+
+#[test]
 fn circle_line_crossings_include_tangencies_and_reject_infinite_line_extension() {
     let circle = Geometry::Circle(
         Circle3::try_from_frame(
