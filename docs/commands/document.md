@@ -108,6 +108,13 @@ is a usage error before selection changes. Matching hidden or locked layers
 with `SelLayer` makes those layers visible and unlocked outside undo history,
 while object-level hidden and locked states remain untouched.
 
+`SelLayerNumber n` selects by the layer's session number, starting at zero for
+the default layer. Numbers remain assigned after deletion or undo; a new layer
+receives a new number. It uses the same visibility, lock, and additive selection
+policy as `SelLayer`. `Layer List` and the layers pane show these numbers. They
+are session values rather than persistent 3DM identifiers, as in
+[Rhino's SelLayerNumber](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelLayerNumber).
+
 `SelColor r,g,b` adds visible, unlocked, ungrouped objects with that resolved
 display color; as in Rhino, objects contained in groups are skipped. ByLayer
 objects use their layer color; material- and parent-sourced objects currently

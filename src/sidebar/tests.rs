@@ -192,7 +192,7 @@ fn deleting_a_pressed_row_does_not_click_its_replacement() {
             .collect::<Vec<_>>();
         let row = texts
             .iter()
-            .find(|(text, _)| *text == if layers { "Second" } else { "Second · 0" })
+            .find(|(text, _)| *text == if layers { "2 · Second" } else { "Second · 0" })
             .unwrap()
             .1;
         let position = texts

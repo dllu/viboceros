@@ -178,6 +178,7 @@ SelColor 12,34,56
 SelName "Fastener *"
 SelID 550e8400-e29b-41d4-a716-446655440000
 SelLayer "Construction *"
+SelLayerNumber 1
 SelGroup Assembly
 SelKey "Part Number"
 SelValue "A*"

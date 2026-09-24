@@ -339,6 +339,7 @@ impl Object {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Layer {
     id: LayerId,
+    number: u64,
     name: String,
     color: ColorRgb,
     visible: bool,
@@ -348,6 +349,11 @@ pub struct Layer {
 impl Layer {
     pub const fn id(&self) -> LayerId {
         self.id
+    }
+
+    /// Session number, retained when other layers are deleted or reordered.
+    pub const fn number(&self) -> u64 {
+        self.number
     }
 
     pub fn name(&self) -> &str {
@@ -393,6 +399,7 @@ pub struct Document {
     tolerance: Tolerance,
     units: LengthUnitSystem,
     layers: Vec<Layer>,
+    next_layer_number: u64,
     current_layer: LayerId,
     objects: Vec<Object>,
     groups: Vec<Group>,
@@ -408,6 +415,7 @@ impl Document {
     pub fn new(tolerance: Tolerance) -> Self {
         let default_layer = Layer {
             id: LayerId::new(),
+            number: 0,
             name: "Default".to_owned(),
             color: ColorRgb::BLACK,
             visible: true,
@@ -418,6 +426,7 @@ impl Document {
             tolerance,
             units: LengthUnitSystem::default(),
             layers: vec![default_layer],
+            next_layer_number: 1,
             current_layer,
             objects: Vec::new(),
             groups: Vec::new(),
@@ -459,6 +468,7 @@ impl Document {
             label,
             edits: Vec::new(),
             object_ids: BTreeSet::new(),
+            next_layer_number_before: self.next_layer_number,
             selection_before: self.selection.clone(),
             selection_order_before: self.selection_order.clone(),
             previous_selection_before: self.previous_selection.clone(),
@@ -517,6 +527,7 @@ impl Document {
             self.prune_selection_after_history_preserving(&BTreeSet::new());
         }
         result?;
+        self.next_layer_number = transaction.next_layer_number_before;
         Ok(changed)
     }
 
@@ -624,8 +635,14 @@ impl Document {
 
         let id = LayerId::new();
         let index = self.layers.len();
+        let number = self.next_layer_number;
+        self.next_layer_number = self
+            .next_layer_number
+            .checked_add(1)
+            .expect("session cannot create more than u64::MAX layers");
         self.layers.push(Layer {
             id,
+            number,
             name: name.to_owned(),
             color,
             visible: true,
@@ -2250,6 +2267,36 @@ mod tests {
             document.add_layer("construction", ColorRgb::BLACK),
             Err(DocumentError::DuplicateLayerName("construction".to_owned()))
         );
+    }
+
+    #[test]
+    fn layer_session_numbers_are_not_reused_after_undo_or_delete() {
+        let mut document = Document::default();
+        assert_eq!(document.layers().next().unwrap().number(), 0);
+        let undone = document.add_layer("Undone", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(undone).unwrap().number(), 1);
+        document.undo().unwrap();
+        assert!(document.layer(undone).is_none());
+        let deleted = document.add_layer("Deleted", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(deleted).unwrap().number(), 2);
+        document.delete_layer(deleted).unwrap();
+        let retained = document.add_layer("Retained", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(retained).unwrap().number(), 3);
+        document.undo().unwrap();
+        document.redo().unwrap();
+        assert_eq!(document.layer(retained).unwrap().number(), 3);
+        document.undo().unwrap();
+        let next = document.add_layer("Next", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(next).unwrap().number(), 4);
+        document.begin_transaction("Rejected layer").unwrap();
+        let rejected = document.add_layer("Rejected", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(rejected).unwrap().number(), 5);
+        document.rollback_transaction().unwrap();
+        assert!(document.layer(rejected).is_none());
+        let after_rollback = document
+            .add_layer("After rollback", ColorRgb::BLACK)
+            .unwrap();
+        assert_eq!(document.layer(after_rollback).unwrap().number(), 5);
     }
 
     #[test]

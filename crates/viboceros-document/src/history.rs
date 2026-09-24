@@ -21,6 +21,7 @@ pub(super) struct PendingTransaction {
     pub label: String,
     pub edits: Vec<Edit>,
     pub object_ids: BTreeSet<ObjectId>,
+    pub next_layer_number_before: u64,
     pub selection_before: BTreeSet<ObjectId>,
     pub selection_order_before: Vec<ObjectId>,
     pub previous_selection_before: BTreeSet<ObjectId>,

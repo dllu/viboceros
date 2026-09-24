@@ -140,7 +140,7 @@ impl DocumentSidebar {
                             ui.add_space(2.0);
                             ui.small("On");
                             ui.small("Lock");
-                            ui.small("Layer · objects");
+                            ui.small("# · Layer · objects");
                         });
                         for layer in document.layers() {
                             let id = layer.id();
@@ -148,6 +148,7 @@ impl DocumentSidebar {
                                 egui::UiBuilder::new().id(ui.make_persistent_id(("layer", id))),
                                 |ui| {
                                     let name = layer.name();
+                                    let numbered_name = format!("{} · {name}", layer.number());
                                     let color = layer.color();
                                     let visible = layer.is_visible();
                                     let locked = layer.is_locked();
@@ -233,10 +234,10 @@ impl DocumentSidebar {
                                         if ui
                                             .add_enabled(
                                                 visible && !locked,
-                                                egui::Button::selectable(id == current, name)
+                                                egui::Button::selectable(id == current, &numbered_name)
                                                     .truncate(),
                                             )
-                                            .on_hover_text(name)
+                                            .on_hover_text(format!("Layer #{}: {name}", layer.number()))
                                             .clicked()
                                         {
                                             actions.push(SidebarAction::SetCurrent {

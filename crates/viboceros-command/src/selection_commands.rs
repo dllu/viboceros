@@ -7,6 +7,81 @@ mod tests {
     use super::*;
 
     #[test]
+    fn layer_number_selection_keeps_session_gaps_and_layer_policy() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let first = document.add_layer("First", ColorRgb::BLACK).unwrap();
+        let deleted = document.add_layer("Deleted", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(default).unwrap().number(), 0);
+        assert_eq!(document.layer(first).unwrap().number(), 1);
+        assert_eq!(document.layer(deleted).unwrap().number(), 2);
+        document.delete_layer(deleted).unwrap();
+        let third = document.add_layer("Third", ColorRgb::BLACK).unwrap();
+        assert_eq!(document.layer(third).unwrap().number(), 3);
+        document.undo().unwrap();
+        assert!(document.layer(third).is_none());
+        document.redo().unwrap();
+        assert_eq!(document.layer(third).unwrap().number(), 3);
+        let layer_list = registry.execute(&mut document, "Layer List").unwrap();
+        assert!(layer_list.contains("#0 Default"));
+        assert!(layer_list.contains("#1 First"));
+        assert!(layer_list.contains("#3 Third"));
+        assert!(!layer_list.contains("#2 "));
+
+        let first_object = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(1., 0., 0.).unwrap()),
+                ObjectAttributes::on_layer(first),
+            )
+            .unwrap();
+        let third_object = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(3., 0., 0.).unwrap()),
+                ObjectAttributes::on_layer(third),
+            )
+            .unwrap();
+        document.set_layer_visibility(third, false).unwrap();
+        document.set_layer_locked(third, true).unwrap();
+        let undo = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            registry.execute(&mut document, "SelLayerNumber 1").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelLayerNumber 2").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelLayerNumber 3").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first_object, third_object])
+        );
+        assert!(document.layer(third).unwrap().is_visible());
+        assert!(!document.layer(third).unwrap().is_locked());
+        assert_eq!(document.undo_label(), undo.as_deref());
+        for invalid in [
+            "SelLayerNumber",
+            "SelLayerNumber -1",
+            "SelLayerNumber 1.0",
+            "SelLayerNumber 1 2",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, invalid),
+                Err(CommandError::Usage("SelLayerNumber number"))
+            ));
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                BTreeSet::from([first_object, third_object])
+            );
+            assert_eq!(document.undo_label(), undo.as_deref());
+        }
+    }
+
+    #[test]
     fn sel_id_adds_only_the_selectable_target_without_expanding_its_group() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -428,6 +503,33 @@ impl Command for SelLayerCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let pattern = parse_attribute_pattern(arguments, "SelLayer layer-pattern")?;
         let count = document.select_layer_objects_by_name_pattern(&pattern)?;
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+pub(super) struct SelLayerNumberCommand;
+
+impl Command for SelLayerNumberCommand {
+    fn name(&self) -> &'static str {
+        "SelLayerNumber"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let [value] = arguments else {
+            return Err(CommandError::Usage("SelLayerNumber number"));
+        };
+        let number = value
+            .parse::<u64>()
+            .map_err(|_| CommandError::Usage("SelLayerNumber number"))?;
+        let layer = document
+            .layers()
+            .find(|layer| layer.number() == number)
+            .map(|layer| layer.id());
+        let count = document.select_layer_objects(layer)?;
         Ok(format!("Selected {count} object(s)"))
     }
 }
