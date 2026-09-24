@@ -633,6 +633,46 @@ fn volume_object_picks_closed_mesh_and_accepts_mode_changes() {
 }
 
 #[test]
+fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 10,0,0");
+    let source = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Pipe Cap=None");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe { source: None, .. })
+    ));
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source),
+        mode: SelectionMode::Replace,
+    });
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            source: Some(id),
+            cap_flat: false,
+            ..
+        }) if id == source
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    assert!(app.active_command.is_none());
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::NurbsSurface(_)
+    ));
+
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Pipe 0.5 Cap=Flat");
+    assert!(app.active_command.is_none());
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Brep(brep) if brep.is_closed()
+    ));
+}
+
+#[test]
 fn sel_box_picks_base_and_height_without_creating_geometry() {
     let mut app = test_app();
     enter(&mut app, "Point 1,1,1");

@@ -15,6 +15,7 @@ Rhino's complete command set is still a work in progress.
 - [Bézier conversion](beziers.md)
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
+- [Circular pipe surfaces and solids](pipe.md)
 - [Cap planar surface, B-rep, and mesh holes](cap.md)
 - [Flip curve, surface, and mesh directions](flip.md)
 - [Merge redundant surface/B-rep edges](merge-edges.md)
@@ -38,7 +39,7 @@ Rhino's complete command set is still a work in progress.
 - [Curve and surface parameter domains](domain.md)
 - [Surface UV coordinates of a point](evaluate-uv-point.md)
 - [Selection, attributes, layers, and groups](document.md)
-- [Box and sphere volume selection](volume-selection.md)
+- [Volume selection](volume-selection.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
 - [Native planar STEP export](export-step.md)
@@ -89,6 +90,7 @@ PlanarSrf DeleteInput=No
 Cap DeleteInput=No Crease=No Triangles=No
 Loft Type=Normal Closed=No
 Sweep1 RailName=Rail Parameters=0 RefitRail=No
+Pipe 1.5 2.0 Cap=Flat ShapeBlending=Global
 EdgeSrf
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2

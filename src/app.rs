@@ -257,6 +257,11 @@ enum InteractiveCommand {
     SelVolumeObject {
         mode: RectSelectionMode,
     },
+    Pipe {
+        source: Option<ObjectId>,
+        cap_flat: bool,
+        blend_global: bool,
+    },
     Ellipsoid {
         points: [Option<Point3>; 3],
     },
@@ -509,6 +514,7 @@ impl InteractiveCommand {
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::SelVolumeObject { .. } => "SelVolumeObject",
+            Self::Pipe { .. } => "Pipe",
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
@@ -674,6 +680,10 @@ impl InteractiveCommand {
             Self::SelVolumeObject { .. } => {
                 "SelVolumeObject: select a closed mesh or polysurface (Esc to cancel)"
             }
+            Self::Pipe { source: None, .. } => "Pipe: select a rail curve (Esc to cancel)",
+            Self::Pipe {
+                source: Some(_), ..
+            } => "Pipe: pick a radius point near the rail (Esc to cancel)",
             Self::Ellipsoid { points } => match points {
                 [None, _, _] => "Ellipsoid: pick the center in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -1155,6 +1165,7 @@ impl InteractiveCommand {
             | Self::SelVolumeSphere { center: None, .. }
             | Self::SelVolumePipe { .. }
             | Self::SelVolumeObject { .. }
+            | Self::Pipe { .. }
             | Self::Ellipsoid {
                 points: [None, _, _],
             }
@@ -2675,6 +2686,62 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::WeldEdge
+        } else if normalized == "pipe" {
+            let mut cap_flat = true;
+            let mut blend_global = false;
+            let mut cap_seen = false;
+            let mut blend_seen = false;
+            for argument in &arguments {
+                let Some((name, value)) = argument.split_once('=') else {
+                    return false;
+                };
+                if name.trim_start_matches('_').eq_ignore_ascii_case("Cap") && !cap_seen {
+                    cap_flat = if value.trim_start_matches('_').eq_ignore_ascii_case("Flat") {
+                        true
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("None") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    cap_seen = true;
+                } else if name
+                    .trim_start_matches('_')
+                    .eq_ignore_ascii_case("ShapeBlending")
+                    && !blend_seen
+                {
+                    blend_global = if value.trim_start_matches('_').eq_ignore_ascii_case("Global") {
+                        true
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Local") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    blend_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            let selected = self
+                .document
+                .selected_object_ids()
+                .take(2)
+                .collect::<Vec<_>>();
+            let source = match selected.as_slice() {
+                [id] if self
+                    .document
+                    .object(*id)
+                    .and_then(|object| object.geometry().curve_ref())
+                    .is_some() =>
+                {
+                    Some(*id)
+                }
+                _ => None,
+            };
+            InteractiveCommand::Pipe {
+                source,
+                cap_flat,
+                blend_global,
+            }
         } else if matches!(
             normalized.as_str(),
             "weldvertices" | "weldvertex" | "weldmeshvertex"
@@ -3665,6 +3732,37 @@ impl VibocerosApp {
             InteractiveCommand::SelVolumeObject { .. } => {
                 self.push_log("Select a closed mesh or polysurface first".to_owned());
                 return false;
+            }
+            InteractiveCommand::Pipe { source: None, .. } => {
+                self.push_log("Select a rail curve first".to_owned());
+                return false;
+            }
+            InteractiveCommand::Pipe {
+                source: Some(source),
+                cap_flat,
+                blend_global,
+            } => {
+                let radius = self
+                    .document
+                    .object(source)
+                    .and_then(|object| object.geometry().curve_ref())
+                    .and_then(|curve| {
+                        let parameter = curve
+                            .closest_parameter(point, self.document.tolerance())
+                            .ok()?;
+                        let nearest = curve.evaluate(parameter).ok()?;
+                        point.distance_to(nearest).ok()
+                    });
+                let Some(radius) = radius.filter(|radius| *radius > 0.0) else {
+                    self.push_log("Error: pipe radius must be positive".to_owned());
+                    return false;
+                };
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Pipe {source} {radius} Cap={} ShapeBlending={}",
+                    if cap_flat { "Flat" } else { "None" },
+                    if blend_global { "Global" } else { "Local" }
+                ));
             }
             InteractiveCommand::Ellipsoid { mut points } => {
                 let point_count = points.iter().flatten().count();
@@ -5411,6 +5509,29 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if let Some(InteractiveCommand::Pipe {
+            source: None,
+            cap_flat,
+            blend_global,
+        }) = self.active_command
+        {
+            if let Some(source) = click.object_id
+                && self
+                    .document
+                    .object(source)
+                    .and_then(|object| object.geometry().curve_ref())
+                    .is_some()
+            {
+                let command = InteractiveCommand::Pipe {
+                    source: Some(source),
+                    cap_flat,
+                    blend_global,
+                };
+                self.active_command = Some(command);
+                self.push_log(command.prompt().to_owned());
+            }
+            return;
+        }
         if let Some(InteractiveCommand::SelVolumeObject { mode }) = self.active_command {
             if let Some(source) = click.object_id {
                 let eligible = self.document.object(source).is_some_and(|object| {
@@ -5996,6 +6117,7 @@ impl eframe::App for VibocerosApp {
                     self.active_command,
                     Some(
                         InteractiveCommand::SelVolumePipe { source: None, .. }
+                            | InteractiveCommand::Pipe { source: None, .. }
                             | InteractiveCommand::SelVolumeObject { .. }
                     )
                 ))
@@ -6086,7 +6208,10 @@ impl eframe::App for VibocerosApp {
             || self.boundary_selection.is_some()
             || matches!(
                 self.active_command,
-                Some(InteractiveCommand::SelVolumePipe { source: None, .. })
+                Some(
+                    InteractiveCommand::SelVolumePipe { source: None, .. }
+                        | InteractiveCommand::Pipe { source: None, .. }
+                )
             );
         let volume_object_pick = matches!(
             self.active_command,
