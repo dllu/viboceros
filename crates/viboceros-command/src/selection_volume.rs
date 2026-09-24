@@ -476,6 +476,24 @@ impl SelectionBox {
             ),
             Geometry::Line(line) => self.classify_segment(line.start(), line.end()),
             Geometry::Polyline(polyline) => self.classify_polyline(polyline.vertices()),
+            Geometry::Circle(circle) => self.classify_oval(
+                circle.center(),
+                circle.point_at_angle(0.0)?,
+                circle.point_at_angle(std::f64::consts::FRAC_PI_2)?,
+            ),
+            Geometry::Ellipse(ellipse) => self.classify_oval(
+                ellipse.center(),
+                ellipse.point_at_angle(0.0)?,
+                ellipse.point_at_angle(std::f64::consts::FRAC_PI_2)?,
+            ),
+            Geometry::Arc(arc) => {
+                let center = arc.center();
+                let cosine_point =
+                    center.translated(arc.x_axis().as_vector().scaled(arc.radius())?)?;
+                let sine_point =
+                    center.translated(arc.y_axis().as_vector().scaled(arc.radius())?)?;
+                self.classify_oval_interval(center, cosine_point, sine_point, arc.sweep_radians())
+            }
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
@@ -483,11 +501,7 @@ impl SelectionBox {
             Geometry::Brep(brep) => {
                 self.classify_mesh(&brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
             }
-            Geometry::Circle(_)
-            | Geometry::Arc(_)
-            | Geometry::Ellipse(_)
-            | Geometry::NurbsCurve(_)
-            | Geometry::PolyCurve(_) => {
+            Geometry::NurbsCurve(_) | Geometry::PolyCurve(_) => {
                 let curve = geometry.curve_ref().expect("curve geometry");
                 let points = curve.sample_equal_length_points(CURVE_SAMPLES, true, tolerance)?;
                 self.classify_polyline(&points)
@@ -578,6 +592,104 @@ impl SelectionBox {
         })
     }
 
+    /// An oval's coordinates on each box axis have the form
+    /// `center + cosine * cos(angle) + sine * sin(angle)`. Extrema prove window
+    /// containment; the six box-plane crossings partition the parameter
+    /// circle into intervals whose inside/outside status is constant.
+    fn classify_oval(
+        self,
+        center: Point3,
+        cosine_point: Point3,
+        sine_point: Point3,
+    ) -> Result<VolumeRelation, CommandError> {
+        self.classify_oval_interval(center, cosine_point, sine_point, std::f64::consts::TAU)
+    }
+
+    fn classify_oval_interval(
+        self,
+        center: Point3,
+        cosine_point: Point3,
+        sine_point: Point3,
+        end_angle: Real,
+    ) -> Result<VolumeRelation, CommandError> {
+        let center = self.frame.coordinates_of(center)?;
+        let cosine_point = self.frame.coordinates_of(cosine_point)?;
+        let sine_point = self.frame.coordinates_of(sine_point)?;
+        let cosine: [Real; 3] = std::array::from_fn(|axis| cosine_point[axis] - center[axis]);
+        let sine: [Real; 3] = std::array::from_fn(|axis| sine_point[axis] - center[axis]);
+        let radii: [Real; 3] = std::array::from_fn(|axis| cosine[axis].hypot(sine[axis]));
+        let scale = center
+            .into_iter()
+            .chain(cosine)
+            .chain(sine)
+            .chain(self.intervals.into_iter().flatten())
+            .map(Real::abs)
+            .fold(1.0, Real::max);
+        let epsilon = 32.0 * Real::EPSILON * scale;
+        if (0..3).any(|axis| {
+            center[axis] - radii[axis] > self.intervals[axis][1] + epsilon
+                || center[axis] + radii[axis] < self.intervals[axis][0] - epsilon
+        }) {
+            return Ok(VolumeRelation::OUTSIDE);
+        }
+        let inside = |angle: Real| {
+            let (sin_angle, cos_angle) = angle.sin_cos();
+            (0..3).all(|axis| {
+                let coordinate =
+                    cosine[axis].mul_add(cos_angle, sine[axis].mul_add(sin_angle, center[axis]));
+                coordinate >= self.intervals[axis][0] - epsilon
+                    && coordinate <= self.intervals[axis][1] + epsilon
+            })
+        };
+        let mut extrema = vec![0.0, end_angle];
+        for axis in 0..3 {
+            if radii[axis] == 0.0 {
+                continue;
+            }
+            let phase = sine[axis]
+                .atan2(cosine[axis])
+                .rem_euclid(std::f64::consts::PI);
+            for angle in [phase, phase + std::f64::consts::PI] {
+                if angle <= end_angle {
+                    extrema.push(angle);
+                }
+            }
+        }
+        if extrema.iter().copied().all(inside) {
+            return Ok(VolumeRelation::INSIDE);
+        }
+        let mut angles = vec![0.0, end_angle];
+        for axis in 0..3 {
+            let radius = radii[axis];
+            if radius == 0.0 {
+                continue;
+            }
+            let phase = sine[axis].atan2(cosine[axis]);
+            for &bound in &self.intervals[axis] {
+                let ratio = (bound - center[axis]) / radius;
+                if !ratio.is_finite() || ratio.abs() > 1.0 + 32.0 * Real::EPSILON {
+                    continue;
+                }
+                let spread = ratio.clamp(-1.0, 1.0).acos();
+                for angle in [phase - spread, phase + spread] {
+                    let angle = angle.rem_euclid(std::f64::consts::TAU);
+                    if angle <= end_angle {
+                        angles.push(angle);
+                    }
+                }
+            }
+        }
+        angles.sort_by(Real::total_cmp);
+        let crossing = angles.iter().copied().any(inside)
+            || angles
+                .windows(2)
+                .any(|pair| inside(pair[0].midpoint(pair[1])));
+        Ok(VolumeRelation {
+            window: false,
+            crossing,
+        })
+    }
+
     fn classify_mesh(
         self,
         mesh: &viboceros_geometry::TriangleMesh,
@@ -654,10 +766,109 @@ impl SelectionBox {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{LineSegment, PointCloud3, TriangleMesh, UnitVector3, Vector3};
+    use viboceros_geometry::{
+        CircularArc3, Ellipse3, LineSegment, PointCloud3, TriangleMesh, UnitVector3, Vector3,
+    };
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn sel_box_finds_ovals_inside_a_gap_between_display_samples() {
+        let frame = CommandContext::default().construction_plane;
+        let theta: Real = 0.017;
+        let (sin_theta, cos_theta) = theta.sin_cos();
+        let x_axis = UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let y_axis = UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let circle =
+            Circle3::try_from_frame(p(0.0, 0.0, 0.0), 1.0, x_axis, normal, Tolerance::DEFAULT)
+                .unwrap();
+        let ellipse = Ellipse3::try_new(
+            p(0.0, 0.0, 0.0),
+            2.0,
+            1.0,
+            x_axis,
+            y_axis,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (geometry, x) in [
+            (Geometry::Circle(circle), cos_theta),
+            (Geometry::Ellipse(ellipse), 2.0 * cos_theta),
+        ] {
+            let region = SelectionBox {
+                frame,
+                intervals: [
+                    [x - 2e-5, x + 2e-5],
+                    [sin_theta - 2e-5, sin_theta + 2e-5],
+                    [-0.1, 0.1],
+                ],
+            };
+            assert!(
+                region
+                    .classify(&geometry, Tolerance::DEFAULT)
+                    .unwrap()
+                    .crossing,
+                "{geometry:?}"
+            );
+            let points = geometry
+                .curve_ref()
+                .unwrap()
+                .sample_equal_length_points(CURVE_SAMPLES, true, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(
+                !region.classify_polyline(&points).unwrap().crossing,
+                "the previous chord approximation should miss this curve"
+            );
+            let outside = SelectionBox {
+                intervals: [
+                    [x + 1e-4, x + 2e-4],
+                    [sin_theta - 2e-5, sin_theta + 2e-5],
+                    [-0.1, 0.1],
+                ],
+                ..region
+            };
+            assert!(
+                !outside
+                    .classify(&geometry, Tolerance::DEFAULT)
+                    .unwrap()
+                    .crossing
+            );
+        }
+        let arc = Geometry::Arc(CircularArc3::try_from_circle_sweep(circle, 0.1).unwrap());
+        let arc_box = SelectionBox {
+            frame,
+            intervals: [[0.99, 1.01], [-0.01, 0.11], [-0.1, 0.1]],
+        };
+        assert!(arc_box.classify(&arc, Tolerance::DEFAULT).unwrap().window);
+        let opposite_box = SelectionBox {
+            intervals: [[-1.01, -0.99], [-0.01, 0.11], [-0.1, 0.1]],
+            ..arc_box
+        };
+        assert!(
+            !opposite_box
+                .classify(&arc, Tolerance::DEFAULT)
+                .unwrap()
+                .crossing
+        );
+        let rotated = SelectionBox {
+            frame: Frame3::try_from_directions(
+                p(0.0, 0.0, 0.0),
+                Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+                Vector3::try_new(-1.0, 1.0, 0.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            intervals: [[-1.1, 1.1], [-1.1, 1.1], [-0.1, 0.1]],
+        };
+        assert!(
+            rotated
+                .classify(&Geometry::Circle(circle), Tolerance::DEFAULT)
+                .unwrap()
+                .window
+        );
     }
 
     #[test]

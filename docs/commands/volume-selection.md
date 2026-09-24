@@ -10,7 +10,8 @@ SelBox 0,0,0 5,4,0 3 SelectionMode=Crossing
 ```
 
 The box checks points and line segments directly, clips mesh triangles against
-the six box planes, and samples curved geometry as described below. Rhino's
+the six box planes, and checks circles, circular arcs, and ellipses against
+those planes using their analytic parameterization. Rhino's
 [SelBox](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelBox)
 also uses point samples and warns that it may miss some crossing objects.
 
@@ -32,10 +33,11 @@ also includes partial intersections. Hidden and locked objects are skipped,
 and the command does not create geometry or change undo history.
 
 The sphere checks points, line segments, circles, polylines, and mesh faces
-directly. For both commands, other curves use 128 equal-length segments, and
-surfaces and B-reps use 16 tessellation samples per span. Near tangencies on
-those sampled objects may differ from exact Rhino selection. While picking
-points, enter a `SelectionMode` option to change the mode.
+directly. The box samples NURBS curves and polycurves; the sphere also samples
+arcs and ellipses. These curves use 128 equal-length segments, while surfaces
+and B-reps use 16 tessellation samples per span. Near tangencies on sampled
+objects may differ from exact Rhino selection. While picking points, enter a
+`SelectionMode` option to change the mode.
 
 This follows Rhino's
 [SelVolumeSphere](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeSphere)
