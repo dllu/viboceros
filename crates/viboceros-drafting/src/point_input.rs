@@ -1,5 +1,7 @@
 //! Typed point syntax, separate from document edits and viewport interaction.
 
+mod calculator;
+
 use thiserror::Error;
 use viboceros_geometry::{Frame3, GeometryError, Point3, Real};
 
@@ -112,10 +114,7 @@ impl PointInput {
 }
 
 fn number(text: &str) -> Result<Real, PointInputError> {
-    text.parse::<Real>()
-        .ok()
-        .filter(|v| v.is_finite())
-        .ok_or(PointInputError::InvalidNumber)
+    calculator::evaluate(text).ok_or(PointInputError::InvalidNumber)
 }
 
 fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {

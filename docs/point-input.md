@@ -196,6 +196,8 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `5<30` or `5<30,2` | Polar distance/angle, with optional height |
 | `5<30<45` | Spherical distance/azimuth/elevation |
 | `5,6<15` | Horizontal X/Y and spherical elevation angle; Z is `hypot(5,6) * tan(15°)` |
+| `5/16,1-3/4` | Fraction and mixed-fraction coordinates |
+| `2*(3+4),8/2` | Arithmetic expressions with parentheses |
 
 Prefixes are case-insensitive and also apply to polar/spherical inputs. Angles
 are decimal degrees. Coordinates contain no internal whitespace. For example,
@@ -224,8 +226,17 @@ One-line commands such as `Line 0,0,0 4,5,0` still use their documented world
 coordinate arguments. See [construction-plane primitives](construction-planes.md)
 for Circle/Polygon orientation, rectangle projection, and signed box heights.
 
+Numeric components accept `+`, `-`, `*`, `/`, parentheses, decimal/scientific
+numbers, and mixed fractions. As in Rhino, `1-3/4` means `1.75`; ordinary
+subtraction such as `4-1` means `3`. Division by zero and non-finite results
+leave the point prompt open for correction. The same parser serves Cartesian,
+polar, spherical, world, and relative coordinates. The
+`point_input_calculator.json` fixture records three live Rhino 8.32 sequences,
+including arithmetic in a rotated construction plane; all three replay within
+`1e-12` model units.
+
 Not yet implemented: general scalar distance/angle
-constraints, unit expressions, surveyor/DMS notation, and
+constraints, unit expressions, math functions/constants, surveyor/DMS notation, and
 editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 

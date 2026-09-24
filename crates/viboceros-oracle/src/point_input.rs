@@ -5,17 +5,10 @@ use viboceros_drafting::PointInput;
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn xy_elevation_matches_recorded_rhino_points() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/point_input_xy_elevation.json"
-        ))
-        .unwrap();
+    fn check_recorded_points(request: &str, observation: &str) {
+        let request: crate::ProbeRequest = serde_json::from_str(request).unwrap();
         let actual = crate::run_request(&request).unwrap();
-        let recorded: serde_json::Value = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/point_input_xy_elevation.json"
-        ))
-        .unwrap();
+        let recorded: serde_json::Value = serde_json::from_str(observation).unwrap();
         let expected = recorded["results"].as_array().unwrap();
         assert_eq!(actual.results.len(), expected.len());
         for (result, observation) in actual.results.iter().zip(expected) {
@@ -34,6 +27,22 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn xy_elevation_matches_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_input_xy_elevation.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_input_xy_elevation.json"),
+        );
+    }
+
+    #[test]
+    fn calculator_matches_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_input_calculator.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_input_calculator.json"),
+        );
     }
 
     #[test]

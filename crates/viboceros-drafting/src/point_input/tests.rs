@@ -135,6 +135,28 @@ fn cartesian_horizontal_components_accept_spherical_elevation() {
 }
 
 #[test]
+fn arithmetic_and_mixed_fractions_resolve_in_cartesian_and_polar_inputs() {
+    let previous = Some(Point3::try_new(5.0, 6.0, 7.0).unwrap());
+    for (input, expected) in [
+        ("w5/16,1-3/4", [0.3125, 1.75, 0.0]),
+        ("wr(10-3)/7,1+1/2", [6.0, 7.5, 7.0]),
+        ("2*(1+1)<90", [10.0, 20.0, 34.0]),
+        ("r1-1/2<180<30", [5.75, 4.700961894323342, 7.0]),
+    ] {
+        let actual = resolve(input, previous).unwrap().to_array();
+        for (component, target) in actual.into_iter().zip(expected) {
+            assert!((component - target).abs() < 2e-14, "{input}: {actual:?}");
+        }
+    }
+    for input in ["1/0,2", "2*(3+4,1", "1-2/0,3", "w1+,2"] {
+        assert_eq!(
+            resolve(input, previous),
+            Err(PointInputError::InvalidNumber)
+        );
+    }
+}
+
+#[test]
 fn invalid_point_input_is_not_confused_with_a_command() {
     for input in [
         "Line 0,0 1,2",

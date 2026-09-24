@@ -3207,7 +3207,7 @@ def _point_input_script(points):
         if not isinstance(token, string_types) or not token or len(token) > 512:
             raise ValueError("invalid point token")
         body = token.lstrip("rRwW@")
-        if not body or body[0] not in "+-.0123456789" or any(c not in "0123456789eE+-,.<>rRwW@" for c in token):
+        if not body or body[0] not in "+-.(0123456789" or any(c not in "0123456789eE+-,.<>rRwW@*/()" for c in token):
             raise ValueError("point tokens cannot contain commands or whitespace")
     return "_Polyline " + " ".join(points) + " _Enter"
 

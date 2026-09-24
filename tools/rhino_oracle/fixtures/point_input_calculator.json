@@ -1,0 +1,30 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "fractions",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "5/16,1/2", "1-3/4,2", "-1-3/4,2", "r1/4,1-1/2"]
+    },
+    {
+      "op": "point_input",
+      "id": "arithmetic",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "1+2,4-1", "2*(3+4),8/2", "r(10-3)/7,1+1/2"]
+    },
+    {
+      "op": "point_input",
+      "id": "calculator-polar-rotated",
+      "origin": [10, 20, 30],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "points": ["0", "2*(1+1)<45", "r(4+2)<30,1/2", "w(10-2)/2<90", "wr1-1/2<180<30"]
+    }
+  ]
+}

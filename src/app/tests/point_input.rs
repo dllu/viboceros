@@ -1151,6 +1151,21 @@ fn typed_xy_elevation_finishes_a_line_in_the_active_construction_plane() {
 }
 
 #[test]
+fn typed_fraction_and_arithmetic_point_finish_a_line() {
+    let mut app = test_app();
+    for input in ["Line", "0", "1-3/4,2*(3+4)"] {
+        enter(&mut app, input);
+    }
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.start(), point(0.0, 0.0, 0.0));
+    assert_eq!(line.end(), point(1.75, 14.0, 0.0));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
 fn mouse_and_typed_relative_points_share_a_polyline_without_grid_rounding() {
     let mut app = test_app();
     enter(&mut app, "Polyline");
@@ -1198,6 +1213,8 @@ fn invalid_typed_points_preserve_the_draft_last_point_and_editable_input() {
         "@",
         "rw",
         "w5<30<120",
+        "w1/0,2",
+        "2*(3+4,1",
     ] {
         enter(&mut app, input);
         assert_eq!(app.active_command, active);
