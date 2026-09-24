@@ -110,7 +110,7 @@ impl VibocerosApp {
                         }
                     }
                 });
-                let mut close_end_analysis = false;
+                let mut end_analysis_command = None;
                 if let Some(analysis) = self.end_analysis.as_mut() {
                     egui::containers::menu::MenuButton::new("End Analysis").ui(ui, |ui| {
                         ui.checkbox(&mut analysis.options.starts, "Open starts");
@@ -118,11 +118,24 @@ impl VibocerosApp {
                         ui.checkbox(&mut analysis.options.seams, "Closed seams");
                         ui.checkbox(&mut analysis.options.joints, "Polycurve joints");
                         ui.separator();
-                        close_end_analysis = ui.button("Close").clicked();
+                        for (label, command) in [
+                            ("Zoom all", InterfaceCommand::ZoomEnds),
+                            ("Zoom current", InterfaceCommand::ZoomEndsCurrent),
+                            ("Zoom next", InterfaceCommand::ZoomEndsNext),
+                            ("Zoom previous", InterfaceCommand::ZoomEndsPrevious),
+                        ] {
+                            if ui.button(label).clicked() {
+                                end_analysis_command = Some(command);
+                            }
+                        }
+                        ui.separator();
+                        if ui.button("Close").clicked() {
+                            end_analysis_command = Some(InterfaceCommand::ShowEndsOff);
+                        }
                     });
                 }
-                if close_end_analysis {
-                    self.apply_interface_command(InterfaceCommand::ShowEndsOff);
+                if let Some(command) = end_analysis_command {
+                    self.apply_interface_command(command);
                 }
                 ui.separator();
                 for (enabled, label, hint, command) in [

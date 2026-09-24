@@ -1525,6 +1525,47 @@ fn show_ends_filters_live_markers_and_zoom_uses_session_sources() {
 }
 
 #[test]
+fn zoom_ends_cycles_session_markers_and_preserves_position_on_failure() {
+    let mut app = test_app();
+    enter(&mut app, "Polyline 0,0,0 10,10,0 2,0,0");
+    enter(&mut app, "SelAll");
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "ZoomEnds Next");
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("Run ShowEnds with visible selected curves first")
+    );
+    enter(&mut app, "ShowEnds");
+    enter(&mut app, "ZoomEnds Current");
+    assert_eq!(app.end_analysis.as_ref().unwrap().current, 0);
+    assert_eq!(
+        app.viewports[0].camera_snapshot().target,
+        nalgebra::Vector3::new(0., 0., 0.)
+    );
+    enter(&mut app, "ZoomEnds Next");
+    assert_eq!(app.end_analysis.as_ref().unwrap().current, 1);
+    assert_eq!(
+        app.viewports[0].camera_snapshot().target,
+        nalgebra::Vector3::new(2., 0., 0.)
+    );
+    enter(&mut app, "ZoomEnds Next");
+    assert_eq!(app.end_analysis.as_ref().unwrap().current, 0);
+    enter(&mut app, "ZoomEnds Previous");
+    assert_eq!(app.end_analysis.as_ref().unwrap().current, 1);
+    app.end_analysis.as_mut().unwrap().options = EndMarkerOptions {
+        starts: false,
+        ends: false,
+        seams: false,
+        joints: false,
+    };
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, "ZoomEnds Next");
+    assert_eq!(app.end_analysis.as_ref().unwrap().current, 1);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

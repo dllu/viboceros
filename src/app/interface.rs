@@ -298,7 +298,13 @@ impl VibocerosApp {
                 self.circular_selection = None;
                 self.fence_selection = None;
                 self.boundary_selection = None;
-                if command == InterfaceCommand::ZoomEnds {
+                if matches!(
+                    command,
+                    InterfaceCommand::ZoomEnds
+                        | InterfaceCommand::ZoomEndsCurrent
+                        | InterfaceCommand::ZoomEndsNext
+                        | InterfaceCommand::ZoomEndsPrevious
+                ) {
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     let result = if let Some(analysis) = &self.end_analysis {
@@ -308,16 +314,48 @@ impl VibocerosApp {
                             analysis.options,
                         )
                         .and_then(|markers| {
+                            if markers.is_empty() {
+                                return Ok((false, None));
+                            }
+                            let index = match command {
+                                InterfaceCommand::ZoomEnds => None,
+                                InterfaceCommand::ZoomEndsCurrent => {
+                                    Some(analysis.current % markers.len())
+                                }
+                                InterfaceCommand::ZoomEndsNext => {
+                                    Some((analysis.current + 1) % markers.len())
+                                }
+                                InterfaceCommand::ZoomEndsPrevious => {
+                                    Some((analysis.current + markers.len() - 1) % markers.len())
+                                }
+                                _ => unreachable!(),
+                            };
+                            let focus = index.map_or(markers.as_slice(), |index| {
+                                std::slice::from_ref(&markers[index])
+                            });
                             self.viewports[self.active_viewport]
-                                .zoom_end_markers(&markers, self.zoom_extents_borders)
+                                .zoom_end_markers(focus, self.zoom_extents_borders)
+                                .map(|changed| (changed, index))
                         })
-                    } else {
+                    } else if command == InterfaceCommand::ZoomEnds {
                         self.viewports[self.active_viewport]
                             .zoom_curve_ends(&self.document, self.zoom_extents_borders)
+                            .map(|changed| (changed, None))
+                    } else {
+                        self.push_log("Run ShowEnds with visible selected curves first".into());
+                        return;
                     };
+                    if let Ok((true, Some(index))) = result
+                        && let Some(analysis) = self.end_analysis.as_mut()
+                    {
+                        analysis.current = index;
+                    }
                     self.push_log(match result {
-                        Ok(true) => "Zoomed to selected curve ends (active viewport)".into(),
-                        Ok(false) => "No visible curve end markers to zoom to".into(),
+                        Ok((true, Some(index))) => {
+                            format!("Zoomed to curve end {} (active viewport)", index + 1)
+                        }
+                        Ok((true, None)) => "Zoomed to curve ends (active viewport)".into(),
+                        Ok((false, _)) => "No visible curve end markers to zoom to".into(),
                         Err(error) => format!("Error: {error}"),
                     });
                     return;

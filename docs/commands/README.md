@@ -139,6 +139,9 @@ CopyToLayer Default
 SelAll
 ZoomEnds All
 ShowEnds
+ZoomEnds Current
+ZoomEnds Next
+ZoomEnds Previous
 ShowEndsOff
 SelWindow
 SelCrossing

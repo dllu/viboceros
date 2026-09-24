@@ -24,14 +24,16 @@ modeling input, document history, and independent viewport history.
 viewport. The End Analysis menu filters open starts, open ends, closed seams,
 and polycurve joints. Green, blue, magenta, and purple identify those categories;
 the current marker is orange. `ZoomEnds` fits the markers enabled in the active
-End Analysis session, even if selection changes afterward. Source edits and
+End Analysis session, even if selection changes afterward. `ZoomEnds Current`
+fits the current marker; `Next` and `Previous` cycle through enabled markers,
+wrapping at either end. These options require an active End Analysis session.
+Source edits and
 visibility changes update the displayed markers. `ShowEndsOff` or Close hides
 them. A fresh `ShowEnds` replaces the session from the current selection; an
 empty eligible selection leaves the existing session alone. The session does not
 create document objects or history entries. Rhino's
 [End Analysis documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/showends.htm)
-also describes `Current`, `Next`, `Previous`, and `Mark` actions, which remain
-pending here.
+also describes `Mark`, which remains pending here.
 
 `Zoom All Extents` / `ZEA` and `Zoom All Selected` / `ZSA` fit all four viewports.
 Visible bounds are computed once, then each view gets its own orientation- and
