@@ -9,6 +9,13 @@ use crate::{
     },
 };
 
+/// How a nonmeeting circular arc endpoint is extended.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CurveArcExtensionStyle {
+    Arc,
+    Line,
+}
+
 /// Connects selected ends while retaining each source's original direction.
 /// Lines may be trimmed or extended. NURBS and polyline ends may extend along
 /// their exact endpoint tangents; arc extension requires a separate style.
@@ -19,9 +26,35 @@ pub fn try_connect_curves_parts(
     second_pick: Point3,
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, GeometryError> {
+    try_connect_curves_parts_with_arc_style(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        CurveArcExtensionStyle::Arc,
+        tolerance,
+    )
+}
+
+/// Connects selected ends with a chosen arc-extension style.
+pub fn try_connect_curves_parts_with_arc_style(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    arc_extension: CurveArcExtensionStyle,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
     let reverse_first = !selected_end(first, first_pick, tolerance)?;
     let reverse_second = selected_end(second, second_pick, tolerance)?;
-    let (first, second) = connected_oriented(first, first_pick, second, second_pick, tolerance)?;
+    let (first, second) = connected_oriented(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        arc_extension,
+        tolerance,
+    )?;
     Ok(vec![
         original_direction(
             curve_from_segments(first.segments())?,
@@ -44,7 +77,33 @@ pub fn try_connect_curves_joined(
     second_pick: Point3,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
-    let (first, second) = connected_oriented(first, first_pick, second, second_pick, tolerance)?;
+    try_connect_curves_joined_with_arc_style(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        CurveArcExtensionStyle::Arc,
+        tolerance,
+    )
+}
+
+/// Connects and joins using a chosen arc-extension style.
+pub fn try_connect_curves_joined_with_arc_style(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    arc_extension: CurveArcExtensionStyle,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let (first, second) = connected_oriented(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        arc_extension,
+        tolerance,
+    )?;
     let mut segments = first.segments().to_vec();
     segments.extend_from_slice(second.segments());
     PolyCurve3::try_new(segments)
@@ -55,6 +114,7 @@ fn connected_oriented(
     first_pick: Point3,
     second: &Curve3,
     second_pick: Point3,
+    arc_extension: CurveArcExtensionStyle,
     tolerance: Tolerance,
 ) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
     let first = oriented(first, first_pick, true, tolerance)?;
@@ -67,8 +127,9 @@ fn connected_oriented(
     if tail_end.distance_to(head_start)? <= tolerance.absolute() {
         return Ok((first, second));
     }
-    let (first_origin, first_direction) = support_direction(tail, true, tolerance)?;
-    let (second_origin, second_direction) = support_direction(head, false, tolerance)?;
+    let (first_origin, first_direction) = support_direction(tail, true, arc_extension, tolerance)?;
+    let (second_origin, second_direction) =
+        support_direction(head, false, arc_extension, tolerance)?;
     let meeting = supporting_directions_intersection(
         first_origin,
         first_direction,
@@ -97,15 +158,18 @@ fn connected_oriented(
 fn support_direction(
     terminal: &CurveSegment3,
     at_end: bool,
+    arc_extension: CurveArcExtensionStyle,
     tolerance: Tolerance,
 ) -> Result<(Point3, UnitVector3), GeometryError> {
     if let CurveSegment3::Line(line) = terminal {
         return Ok((line.start(), line.direction(tolerance)?));
     }
-    if !matches!(
+    if !(matches!(
         terminal,
         CurveSegment3::NurbsCurve(_) | CurveSegment3::Polyline(_)
-    ) {
+    ) || matches!(terminal, CurveSegment3::Arc(_))
+        && arc_extension == CurveArcExtensionStyle::Line)
+    {
         return Err(unsupported());
     }
     let parameter = if at_end {
@@ -209,7 +273,7 @@ fn unsupported() -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{NurbsCurve, Real};
+    use crate::{CircularArc3, NurbsCurve, Real};
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.).unwrap()
@@ -334,5 +398,45 @@ mod tests {
         };
         assert!(first_extension.end().distance_to(p(3., 0.)).unwrap() < 1e-12);
         assert!(second_extension.start().distance_to(p(3., 0.)).unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn arc_line_style_adds_tangent_extension() {
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(diagonal, diagonal),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let second = line(p(-1., 2.), p(-1., 3.));
+        assert!(
+            try_connect_curves_joined(&arc, p(0., 1.), &second, p(-1., 2.), Tolerance::DEFAULT)
+                .is_err()
+        );
+        let joined = try_connect_curves_joined_with_arc_style(
+            &arc,
+            p(0., 1.),
+            &second,
+            p(-1., 2.),
+            CurveArcExtensionStyle::Line,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
+        let CurveSegment3::Line(extension) = &joined.segments()[1] else {
+            unreachable!()
+        };
+        assert!(extension.end().distance_to(p(-1., 1.)).unwrap() < 1e-12);
     }
 }

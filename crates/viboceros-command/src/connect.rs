@@ -1,15 +1,19 @@
 //! Extends or trims selected curve ends until they meet.
 
 use super::*;
-use viboceros_geometry::{try_connect_curves_joined, try_connect_curves_parts};
+use viboceros_geometry::{
+    CurveArcExtensionStyle, try_connect_curves_joined_with_arc_style,
+    try_connect_curves_parts_with_arc_style,
+};
 
-const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No]";
+const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line]";
 
 pub(super) struct ConnectCommand;
 
 struct ConnectOptions {
     picks: [Option<Point3>; 2],
     join: bool,
+    arc_extension: CurveArcExtensionStyle,
 }
 
 impl Command for ConnectCommand {
@@ -18,7 +22,11 @@ impl Command for ConnectCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let ConnectOptions { picks, join } = parse(arguments)?;
+        let ConnectOptions {
+            picks,
+            join,
+            arc_extension,
+        } = parse(arguments)?;
         let selected = document
             .selected_objects()
             .map(|object| {
@@ -41,13 +49,25 @@ impl Command for ConnectCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join {
-            let joined =
-                try_connect_curves_joined(first, picks[0], second, picks[1], document.tolerance())?;
+            let joined = try_connect_curves_joined_with_arc_style(
+                first,
+                picks[0],
+                second,
+                picks[1],
+                arc_extension,
+                document.tolerance(),
+            )?;
             document
                 .copy_object_pieces_into_source_groups([(*first_id, Geometry::PolyCurve(joined))])?
         } else {
-            let parts =
-                try_connect_curves_parts(first, picks[0], second, picks[1], document.tolerance())?;
+            let parts = try_connect_curves_parts_with_arc_style(
+                first,
+                picks[0],
+                second,
+                picks[1],
+                arc_extension,
+                document.tolerance(),
+            )?;
             document.copy_object_pieces_into_source_groups(
                 [*first_id, *second_id]
                     .into_iter()
@@ -78,8 +98,30 @@ impl Command for ConnectCommand {
 fn parse(arguments: &[&str]) -> Result<ConnectOptions, CommandError> {
     let mut picks = [None, None];
     let mut join = None;
+    let mut arc_extension = None;
+    let mut other_extension = false;
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        if option_name_eq(name, "ExtendOtherCurvesBy") {
+            if other_extension || !value.eq_ignore_ascii_case("Line") {
+                return Err(CommandError::Usage(USAGE));
+            }
+            other_extension = true;
+            continue;
+        }
+        if option_name_eq(name, "ExtendArcsBy") {
+            let style = if value.eq_ignore_ascii_case("Arc") {
+                CurveArcExtensionStyle::Arc
+            } else if value.eq_ignore_ascii_case("Line") {
+                CurveArcExtensionStyle::Line
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            if arc_extension.replace(style).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            continue;
+        }
         if option_name_eq(name, "Join") {
             if join
                 .replace(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?)
@@ -108,6 +150,7 @@ fn parse(arguments: &[&str]) -> Result<ConnectOptions, CommandError> {
     Ok(ConnectOptions {
         picks,
         join: join.unwrap_or(false),
+        arc_extension: arc_extension.unwrap_or(CurveArcExtensionStyle::Arc),
     })
 }
 
@@ -196,7 +239,9 @@ mod tests {
             .select_objects_direct([first, second], SelectionMode::Replace)
             .unwrap();
         let before = document.objects().cloned().collect::<Vec<_>>();
-        registry.execute(&mut document, "Connect Join=Yes").unwrap();
+        registry
+            .execute(&mut document, "Connect Join=Yes ExtendOtherCurvesBy=Line")
+            .unwrap();
         let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
             panic!("joined NURBS connection");
         };
@@ -210,5 +255,40 @@ mod tests {
         ));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn extend_arcs_by_line_uses_the_endpoint_tangent() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(diagonal, diagonal),
+            p(0., 1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(-1., 2.), p(-1., 3.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "Connect Join=Yes ExtendArcsBy=Line")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined arc connection")
+        };
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
     }
 }
