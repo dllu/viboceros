@@ -50,8 +50,14 @@ compares arc-to-line, line-to-arc, and arc-to-arc blends at all six mixed modes
 and G2/G2. Its [raw Rhino definitions](../tools/rhino_oracle/observations/blend_curved_sources.json)
 match Viboceros in degree, every control point and weight within `1e-12`, and
 all mixed domains and knots. The G2/G2 arc-length domains and knots differ by
-at most `3e-8`. Other curved source types and interactive `Blend` behavior
-still require separate comparison.
+at most `3e-8`.
+
+The [28-case NURBS-source fixture](../tools/rhino_oracle/fixtures/blend_nurbs_sources.json)
+adds polynomial and rational cubic inputs with varying curvature. Its
+[raw Rhino definitions](../tools/rhino_oracle/observations/blend_nurbs_sources.json)
+match every control point and weight within `1e-12`, all mixed domains and
+knots, and all degrees. The four G2/G2 domain and knot residuals are below
+`3e-8`. Other curve classes and the interactive command remain unmeasured.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600

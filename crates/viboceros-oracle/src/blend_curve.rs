@@ -171,17 +171,32 @@ mod tests {
     }
 
     #[test]
-    fn curved_source_blends_match_saved_rhino_control_shapes() {
-        let request: ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/blend_curved_sources.json"
-        ))
-        .unwrap();
-        let rhino: ProbeResponse = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/blend_curved_sources.json"
-        ))
-        .unwrap();
+    fn arc_source_blends_match_saved_rhino_control_shapes() {
+        assert_curved_source_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_curved_sources.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_curved_sources.json"),
+            21,
+        );
+    }
+
+    #[test]
+    fn nurbs_source_blends_match_saved_rhino_control_shapes() {
+        assert_curved_source_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_nurbs_sources.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_nurbs_sources.json"),
+            28,
+        );
+    }
+
+    fn assert_curved_source_blend_parity(
+        request_json: &str,
+        rhino_json: &str,
+        expected_count: usize,
+    ) {
+        let request: ProbeRequest = serde_json::from_str(request_json).unwrap();
+        let rhino: ProbeResponse = serde_json::from_str(rhino_json).unwrap();
         let native = run_request(&request).unwrap();
-        assert_eq!(native.results.len(), 21);
+        assert_eq!(native.results.len(), expected_count);
         assert_eq!(native.results.len(), rhino.results.len());
         for (actual, expected) in native.results.iter().zip(&rhino.results) {
             assert_eq!(actual.id, expected.id);
