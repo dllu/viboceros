@@ -27,13 +27,16 @@ the current marker is orange. `ZoomEnds` fits the markers enabled in the active
 End Analysis session, even if selection changes afterward. `ZoomEnds Current`
 fits the current marker; `Next` and `Previous` cycle through enabled markers,
 wrapping at either end. These options require an active End Analysis session.
-Source edits and
-visibility changes update the displayed markers. `ShowEndsOff` or Close hides
+`ZoomEnds Mark` creates one point object at the current marker, or one per
+enabled marker if `ZoomEnds All` was the last successful zoom. All points share
+one undo step. Source edits and visibility changes update the displayed markers.
+`ShowEndsOff` or Close hides
 them. A fresh `ShowEnds` replaces the session from the current selection; an
 empty eligible selection leaves the existing session alone. The session does not
-create document objects or history entries. Rhino's
+create document objects or history entries until `Mark` is used. Rhino's
 [End Analysis documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/showends.htm)
-also describes `Mark`, which remains pending here.
+also provides per-marker color and Add/Remove Objects controls, which remain
+pending here.
 
 `Zoom All Extents` / `ZEA` and `Zoom All Selected` / `ZSA` fit all four viewports.
 Visible bounds are computed once, then each view gets its own orientation- and

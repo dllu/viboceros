@@ -125,6 +125,7 @@ fn zoom_ends_parses_all_without_changing_interface_state() {
         ("ZoomEnds Current", InterfaceCommand::ZoomEndsCurrent),
         ("'_ZoomEnds _Next", InterfaceCommand::ZoomEndsNext),
         ("zoomends previous", InterfaceCommand::ZoomEndsPrevious),
+        ("ZoomEnds Mark", InterfaceCommand::ZoomEndsMark),
     ] {
         assert_eq!(parse(input), Some(Ok(command)));
         let mut current = state();
@@ -132,7 +133,7 @@ fn zoom_ends_parses_all_without_changing_interface_state() {
         current.apply(command).unwrap();
         assert_eq!(current, original);
     }
-    for input in ["ZoomEnds Mark", "ZoomEnds All extra"] {
+    for input in ["ZoomEnds Mark extra", "ZoomEnds All extra"] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }
 }

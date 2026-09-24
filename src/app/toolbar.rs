@@ -123,6 +123,7 @@ impl VibocerosApp {
                             ("Zoom current", InterfaceCommand::ZoomEndsCurrent),
                             ("Zoom next", InterfaceCommand::ZoomEndsNext),
                             ("Zoom previous", InterfaceCommand::ZoomEndsPrevious),
+                            ("Mark", InterfaceCommand::ZoomEndsMark),
                         ] {
                             if ui.button(label).clicked() {
                                 end_analysis_command = Some(command);

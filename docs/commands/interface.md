@@ -2,8 +2,9 @@
 
 [Command reference](README.md) · [Viewport navigation](../interface.md)
 
-These application commands change interface state, not document geometry. They
-remain available while a point command is unfinished and appear in completion
+These application commands primarily change interface state; `ZoomEnds Mark`
+creates point objects. They remain available while a point command is unfinished
+and appear in completion
 and `Help`. `Help UI` lists their syntax and shortcuts without cancelling a prompt.
 [CPlane](../cplane.md) additionally edits the active construction plane and has
 its own nested origin, three-point, elevation, through-point, and rotation prompts.
@@ -14,7 +15,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom` / `Zoom Window` | Drag a viewport rectangle to zoom; Esc or right-click cancels. |
 | `Zoom Target` / `ZT` | Pick or type a view center, then pick or type a window corner; the center becomes the camera rotation target. |
 | `Zoom Selected` / `ZS` | Fit visible selected geometry without changing selection or model history. |
-| `ZoomEnds [All\|Current\|Next\|Previous]` | Fit the active view to selected curve ends or cycle through enabled End Analysis markers. |
+| `ZoomEnds [All\|Current\|Next\|Previous\|Mark]` | Fit the active view to selected curve ends, cycle through End Analysis markers, or mark them with point objects. |
 | `ShowEnds` / `ShowEndsOff` | Display or close the End Analysis marker overlay; use its menu to filter marker categories. |
 | `Zoom Factor <number>` | Scale the active view about its center; positive factors above 1 zoom in and below 1 zoom out. |
 | `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |

@@ -142,6 +142,7 @@ ShowEnds
 ZoomEnds Current
 ZoomEnds Next
 ZoomEnds Previous
+ZoomEnds Mark
 ShowEndsOff
 SelWindow
 SelCrossing

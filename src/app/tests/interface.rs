@@ -1566,6 +1566,37 @@ fn zoom_ends_cycles_session_markers_and_preserves_position_on_failure() {
 }
 
 #[test]
+fn zoom_ends_mark_creates_one_undo_step_for_current_or_all_markers() {
+    let mut app = test_app();
+    enter(&mut app, "Polyline 0,0,0 10,10,0 2,0,0");
+    enter(&mut app, "SelAll");
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let selected = app.document.selected_object_ids().collect::<Vec<_>>();
+    let original_count = app.document.objects().count();
+    enter(&mut app, "ShowEnds");
+    enter(&mut app, "ZoomEnds Mark");
+    assert_eq!(app.document.objects().count(), original_count + 1);
+    assert_eq!(app.document.undo_label(), Some("Mark curve ends"));
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        selected
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), original_count);
+    enter(&mut app, "ZoomEnds All");
+    enter(&mut app, "ZoomEnds Mark");
+    assert_eq!(app.document.objects().count(), original_count + 2);
+    assert_eq!(app.document.undo_label(), Some("Mark curve ends"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), original_count);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        selected
+    );
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

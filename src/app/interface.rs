@@ -7,6 +7,53 @@ use viboceros_command::interface::{
 };
 
 impl VibocerosApp {
+    fn mark_end_analysis(&mut self) {
+        let Some(analysis) = &self.end_analysis else {
+            self.push_log("Run ShowEnds with visible selected curves first".into());
+            return;
+        };
+        let markers = match collect_end_markers(
+            &self.document,
+            analysis.sources.iter().copied(),
+            analysis.options,
+        ) {
+            Ok(markers) => markers,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return;
+            }
+        };
+        if markers.is_empty() {
+            self.push_log("No visible curve end markers to mark".into());
+            return;
+        }
+        let points = if analysis.all_active {
+            markers
+                .iter()
+                .map(|marker| marker.point)
+                .collect::<Vec<_>>()
+        } else {
+            vec![markers[analysis.current % markers.len()].point]
+        };
+        if let Err(error) = self.document.begin_transaction("Mark curve ends") {
+            self.push_log(format!("Error: {error}"));
+            return;
+        }
+        for point in &points {
+            if let Err(error) = self.document.add_geometry(Geometry::Point(*point)) {
+                if let Err(rollback) = self.document.rollback_transaction() {
+                    self.push_log(format!("Error rolling back Mark curve ends: {rollback}"));
+                }
+                self.push_log(format!("Error: {error}"));
+                return;
+            }
+        }
+        match self.document.commit_transaction() {
+            Ok(_) => self.push_log(format!("Marked {} curve end(s)", points.len())),
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+    }
+
     fn can_capture_selection(&self) -> bool {
         self.viewport_object_filter().is_some()
             && self.active_command.is_none()
@@ -123,6 +170,7 @@ impl VibocerosApp {
                                 sources,
                                 options,
                                 current: 0,
+                                all_active: false,
                             });
                             self.push_log(format!(
                                 "End Analysis: {} marker(s) displayed",
@@ -137,6 +185,10 @@ impl VibocerosApp {
                 if command == InterfaceCommand::ShowEndsOff {
                     self.end_analysis = None;
                     self.push_log("End Analysis closed".into());
+                    return;
+                }
+                if command == InterfaceCommand::ZoomEndsMark {
+                    self.mark_end_analysis();
                     return;
                 }
                 if command == InterfaceCommand::ZoomFactorPrompt {
@@ -345,10 +397,13 @@ impl VibocerosApp {
                         self.push_log("Run ShowEnds with visible selected curves first".into());
                         return;
                     };
-                    if let Ok((true, Some(index))) = result
+                    if let Ok((true, index)) = result
                         && let Some(analysis) = self.end_analysis.as_mut()
                     {
-                        analysis.current = index;
+                        if let Some(index) = index {
+                            analysis.current = index;
+                        }
+                        analysis.all_active = index.is_none();
                     }
                     self.push_log(match result {
                         Ok((true, Some(index))) => {

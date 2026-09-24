@@ -67,6 +67,7 @@ struct EndAnalysisState {
     sources: Vec<ObjectId>,
     options: EndMarkerOptions,
     current: usize,
+    all_active: bool,
 }
 
 impl SelectionMenu {
