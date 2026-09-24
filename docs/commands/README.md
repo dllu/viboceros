@@ -141,6 +141,7 @@ SelCircular SelectionMode=Crossing
 SelBoundary SelectionMode=Crossing
 SelBox 0,0,0 5,4,0 3 SelectionMode=Crossing
 SelVolumePipe 0.5 SelectionMode=Crossing
+SelVolumeObject SelectionMode=Crossing
 SelVolumeSphere 0,0,0 5 SelectionMode=Crossing
 SelFence
 SelFence Curve

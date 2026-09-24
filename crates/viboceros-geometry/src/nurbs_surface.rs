@@ -3827,6 +3827,15 @@ impl NurbsSurface {
             samples_per_span,
             tolerance,
         )?;
+        stitch_closed_surface_seams(
+            &mut vertices,
+            spans_u.len(),
+            spans_v.len(),
+            samples_per_span,
+            self.is_closed_u()?,
+            self.is_closed_v()?,
+            tolerance,
+        )?;
         TriangleMesh::try_new_faces(vertices, faces, tolerance)
     }
 
@@ -4735,6 +4744,50 @@ fn stitch_continuous_patch_boundaries(
                 let lower_index = lower + samples_per_span * side + u_sample;
                 let upper_index = upper + u_sample;
                 snap_first_point_to_second_if_near(vertices, lower_index, upper_index, tolerance)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn stitch_closed_surface_seams(
+    vertices: &mut [Point3],
+    span_count_u: usize,
+    span_count_v: usize,
+    samples_per_span: usize,
+    closed_u: bool,
+    closed_v: bool,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let side = samples_per_span + 1;
+    let vertices_per_patch = side * side;
+    let patch_offset =
+        |u_span: usize, v_span: usize| (v_span * span_count_u + u_span) * vertices_per_patch;
+    if closed_u {
+        for v_span in 0..span_count_v {
+            let first = patch_offset(0, v_span);
+            let last = patch_offset(span_count_u - 1, v_span);
+            for v_sample in 0..=samples_per_span {
+                snap_first_point_to_second_if_near(
+                    vertices,
+                    last + v_sample * side + samples_per_span,
+                    first + v_sample * side,
+                    tolerance,
+                )?;
+            }
+        }
+    }
+    if closed_v {
+        for u_span in 0..span_count_u {
+            let first = patch_offset(u_span, 0);
+            let last = patch_offset(u_span, span_count_v - 1);
+            for u_sample in 0..=samples_per_span {
+                snap_first_point_to_second_if_near(
+                    vertices,
+                    last + samples_per_span * side + u_sample,
+                    first + u_sample,
+                    tolerance,
+                )?;
             }
         }
     }

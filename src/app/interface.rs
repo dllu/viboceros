@@ -23,6 +23,7 @@ impl VibocerosApp {
                 Some(
                     InteractiveCommand::SelVolumeSphere { .. }
                         | InteractiveCommand::SelVolumePipe { .. }
+                        | InteractiveCommand::SelVolumeObject { .. }
                         | InteractiveCommand::SelBox { .. }
                 )
             )
@@ -64,6 +65,11 @@ impl VibocerosApp {
                     self.active_command
                 {
                     self.active_command = Some(InteractiveCommand::SelVolumePipe { source, mode });
+                } else if matches!(
+                    self.active_command,
+                    Some(InteractiveCommand::SelVolumeObject { .. })
+                ) {
+                    self.active_command = Some(InteractiveCommand::SelVolumeObject { mode });
                 } else if let Some(InteractiveCommand::SelBox { base, opposite, .. }) =
                     self.active_command
                 {

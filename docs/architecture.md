@@ -9,6 +9,9 @@ file formats, or command parsing.
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.
+The mesh containment query validates closed manifold topology once, classifies
+surface boundary points, and uses retried ray parity for interior tests. Volume
+object selection uses that query for mesh and tessellated B-rep sources.
 Its [compact exact-product fallback](compact-exact-products.md) selects bounded
 integer windows without weakening rounding or full-range recovery.
 

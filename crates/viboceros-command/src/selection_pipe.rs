@@ -321,7 +321,7 @@ impl SelectionTube<'_> {
     }
 }
 
-fn interpolate(a: Point3, b: Point3, t: Real) -> Result<Point3, CommandError> {
+pub(super) fn interpolate(a: Point3, b: Point3, t: Real) -> Result<Point3, CommandError> {
     let a = a.to_array();
     let b = b.to_array();
     Ok(Point3::try_new(
@@ -331,7 +331,12 @@ fn interpolate(a: Point3, b: Point3, t: Real) -> Result<Point3, CommandError> {
     )?)
 }
 
-fn segment_distance(a: Point3, b: Point3, c: Point3, d: Point3) -> Result<Real, CommandError> {
+pub(super) fn segment_distance(
+    a: Point3,
+    b: Point3,
+    c: Point3,
+    d: Point3,
+) -> Result<Real, CommandError> {
     let u = a.vector_to(b)?.to_array();
     let v = c.vector_to(d)?.to_array();
     let w = a.vector_to(c)?.to_array();

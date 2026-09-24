@@ -1,4 +1,4 @@
-# Box, sphere, and pipe volume selection
+# Box, sphere, pipe, and object volume selection
 
 `SelBox [base-corner opposite-base-corner height] [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
 selects against a three dimensional box aligned to the active construction
@@ -35,6 +35,24 @@ for crossing tests. Mesh faces are checked for segment passage through their
 interiors as well as near edges and vertices. Curved target objects and
 nonstraight tube Window tests use samples, so thin boundary cases may differ
 from Rhino. The command supports the four [Rhino selection modes](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumePipe).
+
+## Object
+
+`SelVolumeObject [object-id] [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
+selects against a closed mesh, B-rep, or closed NURBS surface. Select one
+source object first, pass its ID, or enter the command without a source to pick
+one in a viewport. The source object is excluded from the result. For example:
+
+```text
+SelVolumeObject SelectionMode=Crossing
+```
+
+The mesh source must have a closed, manifold, consistently oriented shell.
+B-reps and NURBS surfaces are tessellated before classification. Point queries
+distinguish the interior, boundary, and exterior. A line crossing a face is
+selected even when both endpoints are outside. Curved targets and Window tests
+on nonconvex solids use samples, so thin boundary cases may differ from
+[Rhino's SelVolumeObject](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeObject).
 
 ## Sphere
 

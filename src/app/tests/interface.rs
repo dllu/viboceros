@@ -590,6 +590,49 @@ fn volume_pipe_picks_curve_then_radius_and_accepts_mode_changes() {
 }
 
 #[test]
+fn volume_object_picks_closed_mesh_and_accepts_mode_changes() {
+    let mut app = test_app();
+    enter(&mut app, "MeshBox 0,0,0 2,2,0 2");
+    enter(&mut app, "Point 1,1,1");
+    enter(&mut app, "Line -1,1,1 3,1,1");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelVolumeObject SelectionMode=Crossing");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelVolumeObject {
+            mode: RectSelectionMode::Crossing
+        })
+    ));
+    app.command_input = "SelectionMode=Window".into();
+    app.run_command_input();
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1]]
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+
+    app.document
+        .select_object(ids[0], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "SelVolumeObject");
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1], ids[2]]
+    );
+}
+
+#[test]
 fn sel_box_picks_base_and_height_without_creating_geometry() {
     let mut app = test_app();
     enter(&mut app, "Point 1,1,1");
