@@ -1429,6 +1429,49 @@ fn viewport_navigation_cycles_by_projection_without_changing_cameras_or_model() 
 }
 
 #[test]
+fn zoom_ends_preserves_modeling_input_selection_and_document_history() {
+    let mut app = test_app();
+    for command in [
+        "Polyline 0,0,0 1000,500,0 2,0,0",
+        "SelAll",
+        "Point 5,5,5",
+        "Undo",
+        "Line",
+        "0",
+    ] {
+        enter(&mut app, command);
+    }
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    let before = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let pending = app.active_command;
+    let selected = app.document.selected_object_ids().collect::<Vec<_>>();
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let redo = app.document.redo_label().map(str::to_owned);
+    enter(&mut app, "ZoomEnds All");
+    assert_ne!(app.viewports[0].camera_snapshot(), before[0]);
+    for (index, snapshot) in before.iter().enumerate().skip(1) {
+        assert_eq!(app.viewports[index].camera_snapshot(), *snapshot);
+    }
+    assert_eq!(app.active_command, pending);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        selected
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
+    app.document.clear_selection();
+    enter(&mut app, "ZoomEnds");
+    assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
+    assert_eq!(
+        app.command_log.back().map(String::as_str),
+        Some("No selected visible curve ends to zoom to")
+    );
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

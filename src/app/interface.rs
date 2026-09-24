@@ -265,6 +265,18 @@ impl VibocerosApp {
                 self.circular_selection = None;
                 self.fence_selection = None;
                 self.boundary_selection = None;
+                if command == InterfaceCommand::ZoomEnds {
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    let result = self.viewports[self.active_viewport]
+                        .zoom_curve_ends(&self.document, self.zoom_extents_borders);
+                    self.push_log(match result {
+                        Ok(true) => "Zoomed to selected curve ends (active viewport)".into(),
+                        Ok(false) => "No selected visible curve ends to zoom to".into(),
+                        Err(error) => format!("Error: {error}"),
+                    });
+                    return;
+                }
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
                     self.zoom_target = None;

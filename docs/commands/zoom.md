@@ -13,6 +13,16 @@ their coordinates exceed the supported camera/GPU range. An empty eligible
 selection leaves the view unchanged; this action does not start a selection
 prompt or change which objects are selected.
 
+`ZoomEnds` and `ZoomEnds All` fit the active view to the natural end markers of
+visible selected curves. Open curves contribute both endpoints; closed curves
+contribute their seam, and polycurves also contribute segment joints. Interior
+control points and unselected geometry do not enlarge the fit. Empty eligible
+selection leaves the view unchanged. The command preserves selection, unfinished
+modeling input, document history, and independent viewport history. Rhino's
+[ZoomEnds documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/showends.htm)
+also describes End Analysis display and `Current`, `Next`, `Previous`, and `Mark`
+options; those marker-display and cycling actions remain pending here.
+
 `Zoom All Extents` / `ZEA` and `Zoom All Selected` / `ZSA` fit all four viewports.
 Visible bounds are computed once, then each view gets its own orientation- and
 aspect-ratio-aware fit. All fits are validated before any camera changes: a

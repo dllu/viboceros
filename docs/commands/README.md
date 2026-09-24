@@ -137,6 +137,7 @@ Layer Current Default
 ChangeLayer Construction
 CopyToLayer Default
 SelAll
+ZoomEnds All
 SelWindow
 SelCrossing
 SelRectangular SelectionMode=InvertCrossing

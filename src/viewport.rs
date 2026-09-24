@@ -2395,6 +2395,99 @@ mod tests {
     }
 
     #[test]
+    fn zoom_curve_ends_fits_markers_instead_of_the_curves_full_bounds() {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![point(0., 0., 0.), point(1000., 500., 0.), point(2., 0., 0.)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(1e300, 0., 0.)))
+            .unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(rect);
+            assert_eq!(
+                viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(viewport.target, NaVector3::new(1., 0., 0.));
+            assert!(viewport.undo_view());
+            assert_eq!(viewport.target, NaVector3::zeros());
+            let mut full_curve = Viewport::new(kind);
+            full_curve.last_rect = Some(rect);
+            assert_eq!(
+                full_curve.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(full_curve.target, NaVector3::new(500., 250., 0.));
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        document.clear_selection();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(rect);
+        let initial = viewport.camera_snapshot();
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(false)
+        );
+        assert_eq!(viewport.camera_snapshot(), initial);
+    }
+
+    #[test]
+    fn zoom_curve_ends_includes_polycurve_joints() {
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(1, vec![point(0., 0., 0.), point(100., 100., 0.)])
+                .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(100., 100., 0.), point(2., 0., 0.)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.)));
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert_eq!(viewport.target, NaVector3::new(50., 50., 0.));
+    }
+
+    #[test]
+    fn zoom_curve_ends_uses_a_closed_curves_seam() {
+        let normal = UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap();
+        let circle = Circle3::try_new(point(10., 20., 0.), 2., normal, Tolerance::DEFAULT).unwrap();
+        let seam = viboceros_geometry::CurveRef::Circle(&circle)
+            .start_point()
+            .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::Circle(circle)).unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.)));
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert_eq!(viewport.target, NaVector3::from(seam.to_array()));
+    }
+
+    #[test]
     fn zoom_extents_handles_point_scenes_and_large_parallel_extents() {
         for kind in [
             ViewKind::Top,

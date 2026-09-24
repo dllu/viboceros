@@ -189,6 +189,7 @@ pub enum InterfaceCommand {
     ZoomSelected,
     ZoomAllExtents,
     ZoomAllSelected,
+    ZoomEnds,
     SelWindow,
     SelCrossing,
     SelRectangular(RectSelectionMode),
@@ -215,7 +216,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 30] = [
+pub const COMMAND_NAMES: [&str; 31] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -225,6 +226,7 @@ pub const COMMAND_NAMES: [&str; 30] = [
     "ZEA",
     "ZSA",
     "ZT",
+    "ZoomEnds",
     "DisableOsnap",
     "SetDisplayMode",
     "SetSnap",
@@ -248,7 +250,7 @@ pub const COMMAND_NAMES: [&str; 30] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All]; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -355,6 +357,12 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 _ => Err(InterfaceError::Usage(
                     "Zoom [Window]|Target|[All] Extents|Selected | Zoom In|Out|Factor [positive number] | ZE | ZS | ZEA | ZSA | ZT",
                 )),
+            }
+        } else if name.eq_ignore_ascii_case("ZoomEnds") {
+            match args.as_slice() {
+                [] => Ok(InterfaceCommand::ZoomEnds),
+                [option] if keyword(option, "All") => Ok(InterfaceCommand::ZoomEnds),
+                _ => Err(InterfaceError::Usage("ZoomEnds [All]")),
             }
         } else if name.eq_ignore_ascii_case("SelWindow") || name.eq_ignore_ascii_case("W") {
             if args.is_empty() {
@@ -611,6 +619,7 @@ impl InterfaceState {
             InterfaceCommand::ZoomSelected => "Zoom selected requested (active viewport)".into(),
             InterfaceCommand::ZoomAllExtents => "Zoom extents requested (all viewports)".into(),
             InterfaceCommand::ZoomAllSelected => "Zoom selected requested (all viewports)".into(),
+            InterfaceCommand::ZoomEnds => "Zoom curve ends requested (active viewport)".into(),
             InterfaceCommand::SelWindow => "Window selection requested".into(),
             InterfaceCommand::SelCrossing => "Crossing selection requested".into(),
             InterfaceCommand::SelRectangular(mode) => {
