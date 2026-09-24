@@ -132,6 +132,20 @@ fn selection_capture_frame(
                     ViewportInput {
                         object_filter: app.viewport_object_filter(),
                         rect_selection_mode: app.selection_window_override,
+                        circular_selection: match app.circular_selection {
+                            Some(CircularSelectionState::PickCenter(_)) => {
+                                Some(CircularSelectionInput::PickCenter)
+                            }
+                            Some(CircularSelectionState::PickRadius {
+                                mode,
+                                center,
+                                viewport: 0,
+                            }) => Some(CircularSelectionInput::PickRadius { mode, center }),
+                            Some(CircularSelectionState::PickRadius { .. }) => {
+                                Some(CircularSelectionInput::Waiting)
+                            }
+                            None => None,
+                        },
                         ..Default::default()
                     },
                     &[],
@@ -333,6 +347,145 @@ fn rectangular_inverse_modes_distinguish_partial_overlap_from_fully_outside() {
             expected
         );
     }
+}
+
+#[test]
+fn circular_selection_modes_use_two_viewport_clicks_and_preserve_history() {
+    use viboceros_command::interface::RectSelectionMode;
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Line -5,0,0 5,0,0");
+    enter(&mut app, "Point 10,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let context = egui::Context::default();
+    let center = egui::Pos2::new(400., 300.);
+    let edge = egui::Pos2::new(420., 300.);
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for (index, (name, mode, expected)) in [
+        ("Window", RectSelectionMode::Window, vec![ids[0]]),
+        (
+            "Crossing",
+            RectSelectionMode::Crossing,
+            vec![ids[0], ids[1]],
+        ),
+        (
+            "InvertWindow",
+            RectSelectionMode::InvertWindow,
+            vec![ids[2]],
+        ),
+        (
+            "InvertCrossing",
+            RectSelectionMode::InvertCrossing,
+            vec![ids[1], ids[2]],
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        app.document.clear_selection();
+        if index == 0 {
+            enter(&mut app, "SelCircular");
+            enter(&mut app, "SelectionMode=Window");
+        } else {
+            enter(&mut app, &format!("SelCircular SelectionMode={name}"));
+        }
+        assert_eq!(
+            app.circular_selection,
+            Some(CircularSelectionState::PickCenter(mode))
+        );
+        selection_capture_frame(&context, &mut app, vec![]);
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(center), button(center, true)],
+        );
+        let output = selection_capture_frame(&context, &mut app, vec![button(center, false)]);
+        assert!(output.selection_click.is_none());
+        assert_eq!(output.circular_center_pick, Some((center, 0)));
+        assert!(app.handle_viewport_action(output));
+        assert_eq!(
+            app.circular_selection,
+            Some(CircularSelectionState::PickRadius {
+                mode,
+                center,
+                viewport: 0
+            })
+        );
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(edge), button(edge, true)],
+        );
+        let output = selection_capture_frame(&context, &mut app, vec![button(edge, false)]);
+        assert_eq!(
+            output.selection_window.as_ref().unwrap().inverted,
+            mode.inverted()
+        );
+        assert!(app.handle_viewport_action(output));
+        assert_eq!(app.circular_selection, None);
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+    }
+}
+
+#[test]
+fn circular_selection_feeds_an_object_prompt_and_can_be_canceled() {
+    let mut app = test_app();
+    enter(&mut app, "Line -1,0,0 1,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Flip");
+    let prompt = app.object_prompt.clone();
+    enter(&mut app, "SelCircular");
+    assert!(app.circular_selection.is_some());
+    enter(&mut app, "");
+    assert_eq!(app.circular_selection, None);
+    assert_eq!(app.object_prompt, prompt);
+    enter(&mut app, "SelCircular");
+    let context = egui::Context::default();
+    let center = egui::Pos2::new(400., 300.);
+    let edge = egui::Pos2::new(420., 300.);
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(&context, &mut app, vec![]);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(center), button(center, true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![button(center, false)]);
+    assert!(app.handle_viewport_action(output));
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(edge), button(edge, true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![button(edge, false)]);
+    assert!(app.handle_viewport_action(output));
+    assert!(app.document.is_selected(id));
+    enter(&mut app, "");
+    let Geometry::Line(line) = app.document.object(id).unwrap().geometry() else {
+        panic!("expected line")
+    };
+    assert_eq!(line.start(), point(1., 0., 0.));
 }
 
 #[test]

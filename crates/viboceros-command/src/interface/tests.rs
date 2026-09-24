@@ -254,6 +254,30 @@ fn zoom_extents_is_a_validated_host_action() {
     ] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }
+    for (input, mode) in [
+        ("SelCircular", RectSelectionMode::Crossing),
+        (
+            "SelCircular SelectionMode=Window",
+            RectSelectionMode::Window,
+        ),
+        (
+            "'_SelCircular _InvertWindow",
+            RectSelectionMode::InvertWindow,
+        ),
+        (
+            "SelCircular SelectionMode=InvertCrossing",
+            RectSelectionMode::InvertCrossing,
+        ),
+    ] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::SelCircular(mode))));
+    }
+    for input in [
+        "SelCircular SelectionMode=Other",
+        "SelCircular Other=Window",
+        "SelCircular Window extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
     for input in [
         "Zoom Extents extra",
         "ZE extra",

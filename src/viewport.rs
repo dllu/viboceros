@@ -39,7 +39,7 @@ use scene::GpuSceneBuilder;
 mod picking;
 mod screen;
 mod selection;
-use selection::{ProjectedPrimitives, is_crossing_selection, selection_mode};
+use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
 #[cfg(test)]
 mod imported_shading_tests;
 #[cfg(test)]
@@ -138,10 +138,21 @@ pub enum ZoomTargetInput {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub enum CircularSelectionInput {
+    PickCenter,
+    PickRadius {
+        mode: RectSelectionMode,
+        center: Pos2,
+    },
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
+    pub circular_selection: Option<CircularSelectionInput>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_preview: Option<ObjectSelectionFilter>,
@@ -181,6 +192,7 @@ impl Default for ViewportInput<'_> {
             drafting: DraftingInput::default(),
             zoom_window: false,
             rect_selection_mode: None,
+            circular_selection: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_preview: None,
@@ -210,6 +222,7 @@ pub struct ViewportOutput {
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_window: Option<SelectionWindow>,
+    pub circular_center_pick: Option<(Pos2, usize)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
     pub activated: bool,
@@ -531,6 +544,7 @@ impl Viewport {
         }
         let selecting = !input.zoom_window
             && input.zoom_target.is_none()
+            && input.circular_selection.is_none()
             && !drafting.active
             && !component_input
             && input.object_filter.is_some();
@@ -623,6 +637,41 @@ impl Viewport {
         } else {
             None
         };
+        let circular_center_pick = if matches!(
+            input.circular_selection,
+            Some(CircularSelectionInput::PickCenter)
+        ) && response.clicked_by(PointerButton::Primary)
+        {
+            response
+                .interact_pointer_pos()
+                .map(|point| (point, viewport_index))
+        } else {
+            None
+        };
+        let circular_result = if let Some(CircularSelectionInput::PickRadius { mode, center }) =
+            input.circular_selection
+            && response.clicked_by(PointerButton::Primary)
+        {
+            response.interact_pointer_pos().and_then(|edge| {
+                let radius = center.distance(edge);
+                (radius.is_finite() && radius > 0.0).then(|| SelectionWindow {
+                    object_ids: self.objects_in_circle_selection_preview(
+                        rect,
+                        ScreenCircle { center, radius },
+                        mode,
+                        document,
+                        object_filter,
+                        input.selection_preview,
+                    ),
+                    mode: selection_mode(modifiers),
+                    crossing: mode.crossing(false),
+                    inverted: mode.inverted(),
+                })
+            })
+        } else {
+            None
+        };
+        let selection_window = selection_window.or(circular_result);
         let point_cloud_selection = input.point_cloud_remove_target.and_then(|target| {
             let Geometry::PointCloud(cloud) = document.object(target)?.geometry() else {
                 return None;
@@ -659,7 +708,10 @@ impl Viewport {
         } else {
             None
         };
-        if (drafting.active || input.zoom_window || input.zoom_target.is_some())
+        if (drafting.active
+            || input.zoom_window
+            || input.zoom_target.is_some()
+            || input.circular_selection.is_some())
             && response.hovered()
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
@@ -785,6 +837,24 @@ impl Viewport {
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
             self.paint_selection_window(&painter, start, end, input.rect_selection_mode);
         }
+        if let Some(CircularSelectionInput::PickRadius { center, mode }) = input.circular_selection
+            && let Some(edge) = response.hover_pos()
+        {
+            let radius = center.distance(edge);
+            if radius.is_finite() && radius > 0.0 {
+                let color = if mode.crossing(false) {
+                    Color32::from_rgb(45, 145, 75)
+                } else {
+                    Color32::from_rgb(45, 105, 215)
+                };
+                painter.circle_filled(
+                    center,
+                    radius,
+                    Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 28),
+                );
+                painter.circle_stroke(center, radius, Stroke::new(1.25, color));
+            }
+        }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(
                 Rect::from_two_pos(start, end).intersect(rect),
@@ -859,6 +929,7 @@ impl Viewport {
                 .flatten(),
             selection_click,
             selection_window,
+            circular_center_pick,
             point_cloud_selection,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()

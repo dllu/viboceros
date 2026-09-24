@@ -7,8 +7,15 @@ use viboceros_command::interface::{
 };
 
 impl VibocerosApp {
-    pub(super) fn try_continue_rect_selection_option(&mut self, input: &str) -> bool {
-        if self.selection_window_override.is_none() {
+    fn can_capture_selection(&self) -> bool {
+        self.viewport_object_filter().is_some()
+            && self.active_command.is_none()
+            && self.plane_prompt.is_none()
+            && self.group_prompt != Some(group_prompt::GroupPrompt::Target)
+    }
+
+    pub(super) fn try_continue_region_selection_option(&mut self, input: &str) -> bool {
+        if self.selection_window_override.is_none() && self.circular_selection.is_none() {
             return false;
         }
         let name = input
@@ -21,9 +28,25 @@ impl VibocerosApp {
         ) {
             return false;
         }
-        match interface::parse(&format!("SelRectangular {input}")) {
-            Some(Ok(InterfaceCommand::SelRectangular(mode))) => {
-                self.selection_window_override = Some(mode);
+        let command_name = if self.circular_selection.is_some() {
+            "SelCircular"
+        } else {
+            "SelRectangular"
+        };
+        match interface::parse(&format!("{command_name} {input}")) {
+            Some(Ok(
+                InterfaceCommand::SelRectangular(mode) | InterfaceCommand::SelCircular(mode),
+            )) => {
+                if let Some(state) = self.circular_selection.as_mut() {
+                    match state {
+                        CircularSelectionState::PickCenter(current)
+                        | CircularSelectionState::PickRadius { mode: current, .. } => {
+                            *current = mode
+                        }
+                    }
+                } else {
+                    self.selection_window_override = Some(mode);
+                }
                 self.push_log(format!("Selection mode: {mode:?}"));
                 self.command_input.clear();
             }
@@ -49,17 +72,25 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if let InterfaceCommand::SelCircular(mode) = command {
+                    if !self.can_capture_selection() {
+                        self.push_log("Circular selection unavailable during this prompt".into());
+                        return;
+                    }
+                    self.circular_selection = Some(CircularSelectionState::PickCenter(mode));
+                    self.selection_window_override = None;
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.push_log("Select the circle center in a viewport; Esc to cancel".into());
+                    return;
+                }
                 if matches!(
                     command,
                     InterfaceCommand::SelWindow
                         | InterfaceCommand::SelCrossing
                         | InterfaceCommand::SelRectangular(_)
                 ) {
-                    if self.viewport_object_filter().is_none()
-                        || self.active_command.is_some()
-                        || self.plane_prompt.is_some()
-                        || self.group_prompt == Some(group_prompt::GroupPrompt::Target)
-                    {
+                    if !self.can_capture_selection() {
                         self.push_log("Selection window unavailable during this prompt".into());
                         return;
                     }
@@ -70,6 +101,7 @@ impl VibocerosApp {
                         _ => unreachable!(),
                     };
                     self.selection_window_override = Some(mode);
+                    self.circular_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(format!(
@@ -85,6 +117,7 @@ impl VibocerosApp {
                     return;
                 }
                 self.selection_window_override = None;
+                self.circular_selection = None;
                 if command == InterfaceCommand::ZoomWindow {
                     self.zoom_window_pending = true;
                     self.zoom_target = None;

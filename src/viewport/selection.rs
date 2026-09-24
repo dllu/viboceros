@@ -6,6 +6,18 @@ use super::screen::{
 };
 use super::*;
 
+#[derive(Clone, Copy, Debug)]
+pub(super) struct ScreenCircle {
+    pub center: Pos2,
+    pub radius: f32,
+}
+
+impl ScreenCircle {
+    fn contains(self, point: Pos2) -> bool {
+        point.distance_sq(self.center) <= self.radius * self.radius
+    }
+}
+
 #[derive(Default, Debug, PartialEq)]
 pub(super) struct ProjectedPrimitives {
     points: Vec<Pos2>,
@@ -52,6 +64,21 @@ impl ProjectedPrimitives {
                     .iter()
                     .any(|corner| point_in_triangle(*corner, triangle[0], triangle[1], triangle[2]))
             })
+    }
+
+    fn is_windowed_by_circle(&self, circle: ScreenCircle) -> bool {
+        !self.points.is_empty() && self.points.iter().all(|&point| circle.contains(point))
+    }
+
+    fn is_crossed_by_circle(&self, circle: ScreenCircle) -> bool {
+        self.points.iter().any(|&point| circle.contains(point))
+            || self.segments.iter().any(|&[start, end]| {
+                point_segment_distance(circle.center, start, end) <= circle.radius
+            })
+            || self
+                .triangles
+                .iter()
+                .any(|&[a, b, c]| point_in_triangle(circle.center, a, b, c))
     }
 }
 
@@ -305,6 +332,39 @@ impl Viewport {
                     (true, false) => primitives.is_crossed_by(selection),
                     (false, true) => !primitives.is_crossed_by(selection),
                     (true, true) => !primitives.is_windowed_by(selection),
+                };
+                selected.then_some(object.id())
+            })
+            .collect()
+    }
+
+    pub(super) fn objects_in_circle_selection_preview(
+        &self,
+        viewport_rect: Rect,
+        circle: ScreenCircle,
+        mode: RectSelectionMode,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Vec<ObjectId> {
+        let crossing = mode.crossing(false);
+        document
+            .objects()
+            .filter(|object| {
+                filter.accepts_object(object) && selection_candidate(document, object, preview)
+            })
+            .filter_map(|object| {
+                let display = self
+                    .display_cache
+                    .borrow_mut()
+                    .get(object, document.tolerance());
+                let primitives =
+                    self.projected_display(&display, viewport_rect, document.tolerance());
+                let selected = match (crossing, mode.inverted()) {
+                    (false, false) => primitives.is_windowed_by_circle(circle),
+                    (true, false) => primitives.is_crossed_by_circle(circle),
+                    (false, true) => !primitives.is_crossed_by_circle(circle),
+                    (true, true) => !primitives.is_windowed_by_circle(circle),
                 };
                 selected.then_some(object.id())
             })
@@ -587,6 +647,33 @@ pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
 mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
+
+    #[test]
+    fn circle_window_and_crossing_include_segments_and_filled_faces() {
+        let circle = ScreenCircle {
+            center: Pos2::ZERO,
+            radius: 1.0,
+        };
+        let mut inside = ProjectedPrimitives::default();
+        inside.add_point(Some(Pos2::new(0.25, 0.25)));
+        assert!(inside.is_windowed_by_circle(circle));
+        assert!(inside.is_crossed_by_circle(circle));
+        let mut segment = ProjectedPrimitives::default();
+        segment.add_segment(Some(Pos2::new(-2., 0.)), Some(Pos2::new(2., 0.)));
+        assert!(!segment.is_windowed_by_circle(circle));
+        assert!(segment.is_crossed_by_circle(circle));
+        let mut face = ProjectedPrimitives::default();
+        face.add_triangle([
+            Some(Pos2::new(-3., -3.)),
+            Some(Pos2::new(3., -3.)),
+            Some(Pos2::new(0., 3.)),
+        ]);
+        assert!(!face.is_windowed_by_circle(circle));
+        assert!(face.is_crossed_by_circle(circle));
+        let mut outside = ProjectedPrimitives::default();
+        outside.add_segment(Some(Pos2::new(2., 2.)), Some(Pos2::new(3., 3.)));
+        assert!(!outside.is_crossed_by_circle(circle));
+    }
 
     #[test]
     fn curve_projection_is_invariant_under_exact_knot_translation() {

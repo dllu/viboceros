@@ -191,6 +191,7 @@ pub enum InterfaceCommand {
     SelWindow,
     SelCrossing,
     SelRectangular(RectSelectionMode),
+    SelCircular(RectSelectionMode),
     UndoView,
     RedoView,
     Plan,
@@ -206,7 +207,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 23] = [
+pub const COMMAND_NAMES: [&str; 24] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -228,11 +229,12 @@ pub const COMMAND_NAMES: [&str; 23] = [
     "SelWindow",
     "SelCrossing",
     "SelRectangular",
+    "SelCircular",
     "W",
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -244,6 +246,24 @@ pub enum InterfaceError {
 
 fn keyword(input: &str, expected: &str) -> bool {
     input.trim_start_matches('_').eq_ignore_ascii_case(expected)
+}
+
+fn parse_region_mode(
+    args: &[&str],
+    default: RectSelectionMode,
+    usage: &'static str,
+) -> Result<RectSelectionMode, InterfaceError> {
+    match args {
+        [] => Ok(default),
+        [option] => {
+            let value = option
+                .split_once('=')
+                .filter(|(name, _)| keyword(name, "SelectionMode"))
+                .map_or(*option, |(_, value)| value);
+            RectSelectionMode::parse(value).ok_or(InterfaceError::Usage(usage))
+        }
+        _ => Err(InterfaceError::Usage(usage)),
+    }
 }
 
 /// `None` means this is not an interface command; a recognized but malformed
@@ -334,22 +354,13 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
         } else if name.eq_ignore_ascii_case("SelRectangular") {
             const USAGE: &str =
                 "SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
-            match args.as_slice() {
-                [] => Ok(InterfaceCommand::SelRectangular(
-                    RectSelectionMode::Automatic,
-                )),
-                [option] => {
-                    let value = option
-                        .split_once('=')
-                        .filter(|(name, _)| keyword(name, "SelectionMode"))
-                        .map(|(_, value)| value)
-                        .unwrap_or(option);
-                    RectSelectionMode::parse(value)
-                        .map(InterfaceCommand::SelRectangular)
-                        .ok_or(InterfaceError::Usage(USAGE))
-                }
-                _ => Err(InterfaceError::Usage(USAGE)),
-            }
+            parse_region_mode(&args, RectSelectionMode::Automatic, USAGE)
+                .map(InterfaceCommand::SelRectangular)
+        } else if name.eq_ignore_ascii_case("SelCircular") {
+            const USAGE: &str =
+                "SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
+            parse_region_mode(&args, RectSelectionMode::Crossing, USAGE)
+                .map(InterfaceCommand::SelCircular)
         } else if name.eq_ignore_ascii_case("Plan") {
             if args.is_empty() {
                 Ok(InterfaceCommand::Plan)
@@ -553,6 +564,7 @@ impl InterfaceState {
             InterfaceCommand::SelRectangular(mode) => {
                 format!("Rectangular {mode:?} selection requested")
             }
+            InterfaceCommand::SelCircular(mode) => format!("Circular {mode:?} selection requested"),
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
             InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),

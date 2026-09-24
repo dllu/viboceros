@@ -122,6 +122,12 @@ selects objects completely outside the rectangle; inverse Crossing also
 selects objects that extend outside it. The
 [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelRectangular)
 also offers an occlusion option, which is not implemented yet.
+`SelCircular` picks a center and radius point in one viewport, then selects
+objects by their projected position in that circle. It accepts the same four
+`SelectionMode` values before or after the command starts; Crossing is the
+default. Esc cancels either point prompt. This follows Rhino's
+[SelCircular](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCircular)
+view-plane selection.
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates

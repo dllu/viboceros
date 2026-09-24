@@ -21,8 +21,8 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
-    ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
+    CircularSelectionInput, DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind,
+    Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -32,6 +32,16 @@ const DEFAULT_ZOOM_SCALE: f64 = 0.9;
 enum ZoomTargetState {
     PickTarget,
     PickWindow { target: Point3, viewport: usize },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum CircularSelectionState {
+    PickCenter(viboceros_command::interface::RectSelectionMode),
+    PickRadius {
+        mode: viboceros_command::interface::RectSelectionMode,
+        center: egui::Pos2,
+        viewport: usize,
+    },
 }
 
 mod command_line;
@@ -1268,6 +1278,7 @@ pub struct VibocerosApp {
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
+    circular_selection: Option<CircularSelectionState>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
@@ -1317,6 +1328,7 @@ impl VibocerosApp {
             zoom_extents_borders,
             zoom_window_pending: false,
             selection_window_override: None,
+            circular_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
@@ -1348,7 +1360,12 @@ impl VibocerosApp {
             self.command_input.clear();
             return;
         }
-        if self.try_continue_rect_selection_option(&input) {
+        if input.is_empty() && self.circular_selection.take().is_some() {
+            self.push_log("Circular selection canceled".into());
+            self.command_input.clear();
+            return;
+        }
+        if self.try_continue_region_selection_option(&input) {
             return;
         }
         if self.selection_window_override.is_some()
@@ -1356,6 +1373,12 @@ impl VibocerosApp {
             && viboceros_command::interface::parse(&input).is_none()
         {
             self.selection_window_override = None;
+        }
+        if self.circular_selection.is_some()
+            && !input.is_empty()
+            && viboceros_command::interface::parse(&input).is_none()
+        {
+            self.circular_selection = None;
         }
         if self.try_one_shot_snap(&input) {
             return;
@@ -5158,6 +5181,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        self.apply_selection_region(selection, false);
+    }
+
+    fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
         self.selection_window_override = None;
         if self.picking_alignment_curve() {
             // This phase needs one target; a window must not change the sources.
@@ -5186,7 +5213,8 @@ impl VibocerosApp {
             .select_objects(selection.object_ids, selection.mode)
         {
             Ok(count) => self.push_log(format!(
-                "{selected_kind} selection: {count} object(s) selected"
+                "{}{selected_kind} selection: {count} object(s) selected",
+                if circular { "circular " } else { "" },
             )),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
@@ -5210,6 +5238,15 @@ impl VibocerosApp {
                 Ok(false) => "Zoom window left view unchanged".into(),
                 Err(error) => format!("Error: {error}"),
             });
+        } else if let Some((center, viewport)) = output.circular_center_pick {
+            if let Some(CircularSelectionState::PickCenter(mode)) = self.circular_selection {
+                self.circular_selection = Some(CircularSelectionState::PickRadius {
+                    mode,
+                    center,
+                    viewport,
+                });
+                self.push_log("Select a radius point in the same viewport; Esc to cancel".into());
+            }
         } else if output.enter_pressed {
             self.run_command();
         } else if let Some(picks) = output.edge_click {
@@ -5227,7 +5264,11 @@ impl VibocerosApp {
         } else if let Some(click) = output.selection_click {
             self.apply_selection_click(click);
         } else if let Some(selection) = output.selection_window {
-            self.apply_selection_window(selection);
+            if self.circular_selection.take().is_some() {
+                self.apply_selection_region(selection, true);
+            } else {
+                self.apply_selection_window(selection);
+            }
         } else {
             return false;
         }
@@ -5346,6 +5387,8 @@ impl eframe::App for VibocerosApp {
                 self.push_log("Zoom window canceled".into());
             } else if self.selection_window_override.take().is_some() {
                 self.push_log("Selection window canceled".into());
+            } else if self.circular_selection.take().is_some() {
+                self.push_log("Circular selection canceled".into());
             } else if self.answer_object_prompt_escape() {
                 // A command-owned warning consumed this Escape key.
             } else if self.plane_prompt.is_some() {
@@ -5413,6 +5456,7 @@ impl eframe::App for VibocerosApp {
         let active_viewport = self.active_viewport;
         let zoom_window_pending = self.zoom_window_pending;
         let selection_window_override = self.selection_window_override;
+        let circular_selection = self.circular_selection;
         let zoom_target = self.zoom_target;
         let object_filter = self.viewport_object_filter();
         let selection_preview = self
@@ -5490,6 +5534,25 @@ impl eframe::App for VibocerosApp {
                                         drafting,
                                         zoom_window: zoom_window_pending,
                                         rect_selection_mode: selection_window_override,
+                                        circular_selection: match circular_selection {
+                                            Some(CircularSelectionState::PickCenter(_)) => {
+                                                Some(CircularSelectionInput::PickCenter)
+                                            }
+                                            Some(CircularSelectionState::PickRadius {
+                                                mode,
+                                                center,
+                                                viewport,
+                                            }) if viewport == index => {
+                                                Some(CircularSelectionInput::PickRadius {
+                                                    mode,
+                                                    center,
+                                                })
+                                            }
+                                            Some(CircularSelectionState::PickRadius { .. }) => {
+                                                Some(CircularSelectionInput::Waiting)
+                                            }
+                                            None => None,
+                                        },
                                         zoom_target: match zoom_target {
                                             Some(ZoomTargetState::PickTarget) => {
                                                 Some(ZoomTargetInput::PickTarget)
@@ -5646,6 +5709,7 @@ mod tests {
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
             selection_window_override: None,
+            circular_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,

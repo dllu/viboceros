@@ -136,6 +136,7 @@ SelAll
 SelWindow
 SelCrossing
 SelRectangular SelectionMode=InvertCrossing
+SelCircular SelectionMode=Crossing
 SelLast
 SelPrev
 SelLast DeselectOthersBeforeSelect=No
