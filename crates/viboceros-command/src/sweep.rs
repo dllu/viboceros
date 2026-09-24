@@ -145,6 +145,27 @@ mod tests {
         );
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+
+        registry
+            .execute(
+                &mut document,
+                "Sweep1 RailName=Rail Parameters=0 RefitRail=Yes",
+            )
+            .unwrap();
+        let output = document
+            .objects()
+            .find(|o| matches!(o.geometry(), Geometry::Brep(_)))
+            .unwrap();
+        let Geometry::Brep(brep) = output.geometry() else {
+            unreachable!()
+        };
+        assert_eq!(brep.faces().len(), 1);
+        assert_eq!(
+            brep.edge_use_counts().iter().filter(|&&n| n == 2).count(),
+            1
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 
     #[test]

@@ -139,7 +139,7 @@ error plus the profile diameter times relative weight error. U auditing is
 sampled, not a certified continuous bound. Failure to reach the requested
 accuracy, nonpositive fitted weights, or exhausted parameter resolution is an
 error. Construction limits are 256 profiles, 512 compatible profile controls,
-512 rail-fit controls, 1,024 final U controls, and 262,144 total surface controls.
+1,024 cubic rail-fit controls, 1,024 final U controls, and 262,144 total surface controls.
 
 All paths share `spline_collocation` with the morph fitters: cubic systems use
 banded factorization, other degrees use dense full-pivot `faer` solves, and
@@ -208,6 +208,7 @@ to indicate untimed command execution.
 | `sweep1_basis_diagnostics.json` | 5 | Fail: Global commands, refit degree/parameter differences, and a nonminimal Rhino boundary answer. |
 | `sweep1_weights_diagnostics.json` | 4 | Fail: two-profile Local curved refits, the refit of a degree-five rail, and another nonminimal Rhino rational boundary answer. |
 | `sweep1_closed_circle_world.json` | 1 | 81 on-surface world queries agree within `4.3e-11`; nine off-surface Rhino closest-point results differ by up to `4.2e-6`. |
+| `sweep1_closed_circle_refit.json` | 1 | `RefitRail=Yes`; all 81 world queries match within `4.3e-11`. |
 
 The [closed-circle command input](../tools/rhino_oracle/fixtures/sweep1_closed_circle_world.json)
 and [Rhino observation](../tools/rhino_oracle/observations/sweep1_closed_circle_world.json)
@@ -222,6 +223,13 @@ exact rational circle basis (9 controls). Equal UV fractions therefore sample
 different points despite matching geometry. A closed circular profile also
 produces a native solid, but its 81-query Rhino probe timed out before returning
 an observation.
+
+The [refitted closed-circle input](../tools/rhino_oracle/fixtures/sweep1_closed_circle_refit.json)
+and [Rhino observation](../tools/rhino_oracle/observations/sweep1_closed_circle_refit.json)
+retain 81 matching world queries. Separately, at the default document
+tolerance the native nonrational cubic fit uses 515 controls and preserves the
+surface seam. The previous 512-control ceiling stopped three controls short.
+The bounded fitter can still reject larger circles at the same absolute tolerance.
 
 Construction tolerance in these fixtures is `1e-7`; passing the looser `1e-6`
 comparison is not evidence of agreement at construction tolerance. Independent
@@ -260,9 +268,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
 General closed-rail holonomy correction and cyclic profile blending, rail miters,
 complete unrefitted multi-profile compatibility,
 automatic section placement/seam alignment, viewport picking, and remaining
-Rhino rebuild/refit options are not implemented. The full-circle cubic refit
-currently exhausts its fit-control limit at the default construction tolerance.
-These are explicit limits,
+Rhino rebuild/refit options are not implemented. These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately
 from geometry comparisons; dense-to-banded solving alone did not remove the

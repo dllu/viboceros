@@ -45,6 +45,8 @@ fn circular_closed_rail_sweep_closes_its_surface_and_brep() {
         brep.edge_use_counts().iter().filter(|&&n| n == 2).count(),
         1
     );
+    let refitted = sweep.to_surface().unwrap();
+    assert!(refitted.is_closed_u().unwrap());
 
     let end = *rail.domain().end();
     let distinct_end = SweepSection {

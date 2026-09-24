@@ -10,8 +10,11 @@ use crate::{
 /// Largest degree accepted by Rhino's `FitCrv` command.
 pub const MAX_CURVE_FIT_DEGREE: usize = 11;
 
-/// Resource ceiling for adaptive curve fitting (cubic banded, otherwise dense).
-pub const MAX_CURVE_FIT_CONTROL_POINTS: usize = 512;
+/// Resource ceiling for adaptive cubic curve fitting with banded solves.
+/// A full radius-three circle at the default Sweep1 fit tolerance needs 515
+/// controls; other degrees keep the smaller dense-solve ceiling below.
+pub const MAX_CURVE_FIT_CONTROL_POINTS: usize = 1024;
+const MAX_DENSE_CURVE_FIT_CONTROL_POINTS: usize = 512;
 
 const CURVE_FIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
 const MAX_CACHED_FIT_POINTS: usize = MAX_CURVE_FIT_CONTROL_POINTS * 32;
@@ -51,6 +54,11 @@ pub fn try_fit_curve(
     {
         return Err(GeometryError::InvalidCurveFitAngleTolerance);
     }
+    let maximum_controls = if degree == 3 {
+        MAX_CURVE_FIT_CONTROL_POINTS
+    } else {
+        MAX_DENSE_CURVE_FIT_CONTROL_POINTS
+    };
 
     let mut sampler = ArcLengthSampler::try_new(source, numerical_tolerance)?;
     sampler.prepare_budgeted_repeated_sampling(32)?;
@@ -100,10 +108,10 @@ pub fn try_fit_curve(
     // integration tolerance. The cache is local to this fit and bounded.
     let mut points = HashMap::new();
     loop {
-        let control_count = fit_control_count(degree, &breaks)?;
-        if control_count > MAX_CURVE_FIT_CONTROL_POINTS {
+        let control_count = fit_control_count(degree, &breaks, maximum_controls)?;
+        if control_count > maximum_controls {
             return Err(GeometryError::TooManyCurveFitControlPoints {
-                maximum: MAX_CURVE_FIT_CONTROL_POINTS,
+                maximum: maximum_controls,
             });
         }
         let knots = fit_knots(degree, total_length, &breaks, control_count);
@@ -118,12 +126,12 @@ pub fn try_fit_curve(
             return Ok(approximation);
         }
 
-        let available = MAX_CURVE_FIT_CONTROL_POINTS - control_count;
+        let available = maximum_controls - control_count;
         if available == 0 {
             return Err(GeometryError::CurveFitDidNotConverge {
                 tolerance: fit_tolerance,
                 deviation: maximum_deviation,
-                maximum: MAX_CURVE_FIT_CONTROL_POINTS,
+                maximum: maximum_controls,
             });
         }
         let mut refinements = errors
@@ -142,20 +150,24 @@ pub fn try_fit_curve(
             return Err(GeometryError::CurveFitDidNotConverge {
                 tolerance: fit_tolerance,
                 deviation: maximum_deviation,
-                maximum: MAX_CURVE_FIT_CONTROL_POINTS,
+                maximum: maximum_controls,
             });
         }
     }
 }
 
-fn fit_control_count(degree: usize, breaks: &[FitBreak]) -> Result<usize, GeometryError> {
+fn fit_control_count(
+    degree: usize,
+    breaks: &[FitBreak],
+    maximum_controls: usize,
+) -> Result<usize, GeometryError> {
     breaks
         .iter()
         .try_fold(degree + 1, |count, item| {
             count.checked_add(item.multiplicity)
         })
         .ok_or(GeometryError::TooManyCurveFitControlPoints {
-            maximum: MAX_CURVE_FIT_CONTROL_POINTS,
+            maximum: maximum_controls,
         })
 }
 
@@ -431,6 +443,33 @@ mod tests {
     use crate::{LineSegment, Polyline3, WeightedPoint3};
 
     #[test]
+    fn cubic_full_circle_refit_reaches_default_sweep_tolerance() {
+        let circle = crate::Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            3.,
+            crate::UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let fit = try_fit_curve(
+            CurveRef::Circle(&circle),
+            3,
+            2.5e-10,
+            1e-10,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(fit.control_points().len() <= MAX_CURVE_FIT_CONTROL_POINTS);
+        assert!(fit.is_closed().unwrap());
+        for i in 0..=257 {
+            let t = *fit.domain().end() * i as Real / 257.;
+            let source = circle.evaluate(t).unwrap();
+            let actual = fit.evaluate(t).unwrap();
+            assert!(source.distance_to(actual).unwrap() < 2.5e-10, "station {i}");
+        }
+    }
+
+    #[test]
     fn cubic_banded_fit_matches_dense_elimination_with_fixed_kink_handles() {
         let spatial = NurbsCurve::try_new(
             3,
@@ -466,7 +505,7 @@ mod tests {
             for f in [0.03, 0.07, 0.23, 0.31, 0.44, 0.67, 0.88, 0.99] {
                 insert_smooth_break(&mut breaks, f * sampler.total_length());
             }
-            let n = fit_control_count(3, &breaks).unwrap();
+            let n = fit_control_count(3, &breaks, MAX_CURVE_FIT_CONTROL_POINTS).unwrap();
             let knots = fit_knots(3, sampler.total_length(), &breaks, n);
             let mut banded = vec![None; n];
             constrain_endpoint_handles(&sampler, 3, &knots, &mut banded).unwrap();
