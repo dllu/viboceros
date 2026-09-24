@@ -60,6 +60,18 @@
       "op": "cone_plane_surface_intersection",
       "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 3},
       "plane": {"origin": [3, 0, 1.5], "normal": [1, 0, 0], "x_domain": [-6, 6], "y_domain": [-6, 6]}
+    },
+    {
+      "id": "oblique_pole_crossing_hyperbola",
+      "op": "cone_plane_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "plane": {"origin": [0, 0, 1.5], "normal": [-2, 0, 1], "x_domain": [-8, 8], "y_domain": [-8, 8]}
+    },
+    {
+      "id": "pole_crossing_parabola",
+      "op": "cone_plane_surface_intersection",
+      "cone": {"apex": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 3},
+      "plane": {"origin": [0, 0, 1], "normal": [-3, 0, 2], "x_domain": [-8, 8], "y_domain": [-8, 8]}
     }
   ]
 }

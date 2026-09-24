@@ -5,7 +5,7 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 10200500,
+      "elapsed_ns": 13412476,
       "id": "perpendicular_circle",
       "value": {
         "curves": [
@@ -37,7 +37,7 @@
       }
     },
     {
-      "elapsed_ns": 2204895,
+      "elapsed_ns": 2944946,
       "id": "apex_contact",
       "value": {
         "curves": [],
@@ -46,7 +46,7 @@
       }
     },
     {
-      "elapsed_ns": 3799438,
+      "elapsed_ns": 3654480,
       "id": "axial_generatrices",
       "value": {
         "curves": [
@@ -100,7 +100,7 @@
       }
     },
     {
-      "elapsed_ns": 2128601,
+      "elapsed_ns": 2174377,
       "id": "oblique_ellipse",
       "value": {
         "curves": [
@@ -132,7 +132,7 @@
       }
     },
     {
-      "elapsed_ns": 5439758,
+      "elapsed_ns": 4386902,
       "id": "oblique_clipped_by_base",
       "value": {
         "curves": [
@@ -164,7 +164,7 @@
       }
     },
     {
-      "elapsed_ns": 2906799,
+      "elapsed_ns": 3028870,
       "id": "slanted_through_apex",
       "value": {
         "curves": [
@@ -218,7 +218,7 @@
       }
     },
     {
-      "elapsed_ns": 3898621,
+      "elapsed_ns": 3807068,
       "id": "tangent_through_apex",
       "value": {
         "curves": [
@@ -272,7 +272,7 @@
       }
     },
     {
-      "elapsed_ns": 2281189,
+      "elapsed_ns": 2410889,
       "id": "parallel_axis_hyperbola",
       "value": {
         "curves": [
@@ -326,7 +326,7 @@
       }
     },
     {
-      "elapsed_ns": 2113342,
+      "elapsed_ns": 2204895,
       "id": "parallel_axis_base_tangent",
       "value": {
         "curves": [
@@ -380,12 +380,76 @@
       }
     },
     {
-      "elapsed_ns": 68665,
+      "elapsed_ns": 61035,
       "id": "parallel_axis_disjoint",
       "value": {
         "curves": [],
         "points": [],
         "success": false
+      }
+    },
+    {
+      "elapsed_ns": 1808167,
+      "id": "oblique_pole_crossing_hyperbola",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 6.639927737866701,
+            "samples": [
+              [
+                0.7500000000000011,
+                1.8540496217739155,
+                3.000000000000001
+              ],
+              [
+                -0.4285714285714283,
+                4.743845767248069e-16,
+                0.6428571428571426
+              ],
+              [
+                0.7500000000000004,
+                -1.8540496217739153,
+                3.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 3189087,
+      "id": "pole_crossing_parabola",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 3,
+            "length": 6.96879450344406,
+            "samples": [
+              [
+                1.3333333333333326,
+                1.49071198499986,
+                2.9999999999999996
+              ],
+              [
+                -0.3333333333333337,
+                -8.770248325500839e-16,
+                0.4999999999999999
+              ],
+              [
+                1.3333333333333344,
+                -1.4907119849998587,
+                3.0000000000000013
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
       }
     }
   ]

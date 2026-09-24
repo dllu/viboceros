@@ -26758,6 +26758,48 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_finite_pole_crossing_cone_section() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let cone = NurbsSurface::try_cone(frame, 2.0, 3.0).unwrap();
+        let tilted = NurbsSurface::try_bilinear([
+            Point3::try_new(-4.0, -4.0, -6.5).unwrap(),
+            Point3::try_new(4.0, -4.0, 9.5).unwrap(),
+            Point3::try_new(4.0, 4.0, 9.5).unwrap(),
+            Point3::try_new(-4.0, 4.0, -6.5).unwrap(),
+        ])
+        .unwrap();
+        let ids = [
+            document.add_geometry(Geometry::NurbsSurface(cone)).unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(tilted))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(section) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("finite cone section should be an exact conic")
+        };
+        assert_eq!(section.degree(), 2);
+        assert!(!section.is_closed().unwrap());
+        for parameter in [*section.domain().start(), *section.domain().end()] {
+            assert!((section.evaluate(parameter).unwrap().z() - 3.0).abs() < 1e-8);
+        }
+    }
+
+    #[test]
     fn intersect_outputs_coincident_bilinear_patch_boundaries() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

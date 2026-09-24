@@ -523,7 +523,7 @@ fn curve_brep_intersection_events_with_transform(
 /// planar finite patches in exact rational circular curves or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
-/// Canonical cones produce exact circular, elliptical, and hyperbolic sections,
+/// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
 /// Parallel disjoint planes return no
