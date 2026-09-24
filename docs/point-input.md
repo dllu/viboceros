@@ -202,6 +202,7 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `2*(3+4),8/2` | Arithmetic expressions with parentheses |
 | `27cm,1m` | Length suffixes converted to the document's model units |
 | `1'2-3/4",1/2in` | Feet-and-inches and fractional inches |
+| `.x`, `.xy`, `.wx`, `.wxy` | Filter local or world coordinates from a source point before placing a point |
 
 Prefixes are case-insensitive and also apply to polar/spherical inputs. Bare
 angles are decimal degrees; `d`, `'`, and `"` denote degrees, arc minutes,
@@ -211,6 +212,17 @@ Negative spherical distances reverse the horizontal bearing; elevation retains
 its own above/below-plane sign, matching the measured Rhino prompt behavior.
 Spherical elevation must lie between -90° and +90° after full-turn reduction
 (450° is +90°); out-of-range entries remain editable errors.
+
+At an active 3D point prompt, enter `.x`, `.y`, `.z`, `.xy`, `.xz`, or `.yz`
+(either order for a pair), then pick or type a source point. The next picked
+or typed point supplies the remaining coordinates. Prefix the filter with `w`
+to use world axes, such as `.wx` or `.wzy`; otherwise the filter uses the
+construction plane active when it was entered. Object snaps can supply either
+pick. The cursor previews the resulting composite point after the source is
+captured. The source pick does not add geometry or change the last accepted
+point. Another filter cannot be started until the current point is placed;
+Escape or a replacement command clears it. The `point_filters.json` oracle
+fixture matches Rhino's local, world, and two-axis filters in three sequences.
 
 Typed input bypasses Osnap, SmartTrack, and Grid Snap. Invalid or overflowing
 coordinates leave the prompt and text intact for correction; a subsequent mouse

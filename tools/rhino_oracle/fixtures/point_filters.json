@@ -1,0 +1,33 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "filter-local-x-rotated",
+      "origin": [10, 20, 30],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "points": ["0", ".x", "w1,2,3", "w4,5,6"],
+      "expected_point_count": 2
+    },
+    {
+      "op": "point_input",
+      "id": "filter-world-x-rotated",
+      "origin": [10, 20, 30],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "points": ["0", ".wx", "w1,2,3", "w4,5,6"],
+      "expected_point_count": 2
+    },
+    {
+      "op": "point_input",
+      "id": "filter-xy-top",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", ".xy", "w1,2,3", "w4,5,6"],
+      "expected_point_count": 2
+    }
+  ]
+}

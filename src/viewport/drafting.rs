@@ -8,6 +8,7 @@ use viboceros_drafting::{ObjectSnap, OrthogonalTrack, TrackAxis};
 #[derive(Clone, Copy, Debug)]
 pub(super) struct DraftingCursor {
     pub(super) pointer: Pos2,
+    pub(super) source_point: Point3,
     pub(super) point: Point3,
     pub(super) object_snap: Option<ObjectSnap>,
     pub(super) track: Option<OrthogonalTrack>,
@@ -17,6 +18,21 @@ pub(super) struct DraftingCursor {
 }
 
 impl Viewport {
+    pub(super) fn filtered_drafting_cursor(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        input: DraftingInput,
+        filter: Option<viboceros_drafting::PointFilterSession>,
+    ) -> Option<DraftingCursor> {
+        let mut cursor = self.drafting_cursor(pointer, rect, document, input)?;
+        if let Some(filter) = filter {
+            cursor.point = filter.preview_point(cursor.source_point).ok()?;
+        }
+        Some(cursor)
+    }
+
     /// Shared camera-space feature capture for ordinary and constrained prompts.
     /// Parallel views retain indexed point-cloud queries and local-origin precision.
     pub(super) fn object_snap(
@@ -164,6 +180,7 @@ impl Viewport {
             .or(raw_point)?;
         Some(DraftingCursor {
             pointer,
+            source_point: point,
             point,
             object_snap,
             track,

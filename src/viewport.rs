@@ -219,6 +219,7 @@ pub enum FenceSelectionInput<'a> {
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
+    pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
@@ -263,6 +264,7 @@ impl Default for ViewportInput<'_> {
     fn default() -> Self {
         Self {
             drafting: DraftingInput::default(),
+            point_filter: None,
             zoom_window: false,
             rect_selection_mode: None,
             circular_selection: None,
@@ -818,9 +820,9 @@ impl Viewport {
             && !input.zoom_window
             && input.zoom_target.is_none()
         {
-            response
-                .hover_pos()
-                .and_then(|pointer| self.drafting_cursor(pointer, rect, document, drafting))
+            response.hover_pos().and_then(|pointer| {
+                self.filtered_drafting_cursor(pointer, rect, document, drafting, input.point_filter)
+            })
         } else {
             None
         };
@@ -1103,7 +1105,7 @@ impl Viewport {
             }),
             picked_point: response
                 .clicked_by(PointerButton::Primary)
-                .then(|| drafting_cursor.map(|cursor| cursor.point))
+                .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
             selection_click,
             selection_choice,
@@ -3877,6 +3879,38 @@ mod tests {
             assert!(view.undo_view());
             assert_eq!(view.camera_snapshot(), before);
         }
+    }
+
+    #[test]
+    fn filtered_cursor_previews_composite_but_retains_source_pick() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut filter = viboceros_drafting::PointFilterSession::new(
+            viboceros_drafting::PointFilter::parse(".x").unwrap(),
+            viewport.construction_plane(),
+        );
+        assert_eq!(filter.offer_point(point(1.0, 2.0, 3.0)).unwrap(), None);
+        let pointer = viewport.project(point(4.0, 5.0, 0.0), rect).unwrap();
+        let cursor = viewport
+            .filtered_drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    active: true,
+                    ..Default::default()
+                },
+                Some(filter),
+            )
+            .unwrap();
+        assert!(
+            cursor
+                .source_point
+                .distance_to(point(4.0, 5.0, 0.0))
+                .unwrap()
+                < 1e-12
+        );
+        assert!(cursor.point.distance_to(point(1.0, 5.0, 0.0)).unwrap() < 1e-12);
     }
 
     #[test]

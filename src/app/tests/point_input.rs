@@ -6,6 +6,67 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn point_filter_uses_source_without_adding_geometry_or_changing_relative_anchor() {
+    let mut app = test_app();
+    for input in ["Line", "0", ".x"] {
+        enter(&mut app, input);
+    }
+    assert!(app.point_filter.unwrap().awaiting_source());
+    enter(&mut app, "w1,2,3");
+    assert!(!app.point_filter.unwrap().awaiting_source());
+    assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
+    assert_eq!(app.document.objects().count(), 0);
+    assert!(app.accept_filtered_drafting_point(point(4.0, 5.0, 6.0)));
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.end(), point(1.0, 5.0, 6.0));
+    assert_eq!(app.last_point, Some(point(1.0, 5.0, 6.0)));
+    assert!(app.point_filter.is_none());
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
+fn point_filters_distinguish_construction_plane_and_world_axes() {
+    for (filter, expected) in [(".y", point(4.0, 5.0, 3.0)), (".wy", point(4.0, 2.0, 6.0))] {
+        let mut app = test_app();
+        app.active_viewport = 2; // Front CPlane Y is world Z.
+        for input in ["Line", "0", filter, "w1,2,3", "w4,5,6"] {
+            enter(&mut app, input);
+        }
+        let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+            panic!("line");
+        };
+        assert_eq!(line.end(), expected, "{filter}");
+    }
+}
+
+#[test]
+fn failed_filtered_endpoint_can_be_corrected_and_cancel_discards_filter() {
+    let mut app = test_app();
+    for input in ["Line", "0", ".x", "w0,3,4", "w0,0,0"] {
+        enter(&mut app, input);
+    }
+    assert!(app.point_filter.is_some());
+    assert!(app.active_command.is_some());
+    assert_eq!(app.document.objects().count(), 0);
+    enter(&mut app, ".y");
+    assert!(app.point_filter.is_some());
+    enter(&mut app, "w0,5,6");
+    assert!(app.point_filter.is_none());
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.end(), point(0.0, 5.0, 6.0));
+    enter(&mut app, "Line");
+    enter(&mut app, ".z");
+    assert!(app.point_filter.is_some());
+    app.cancel_interactive_command(false);
+    assert!(app.point_filter.is_none());
+}
+
+#[test]
 fn extreme_uniform_interpolation_survives_typed_preview_completion_and_history() {
     for points in [
         ["w-1e308,0,0", "w1e308,0,0"],

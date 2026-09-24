@@ -3206,6 +3206,9 @@ def _point_input_script(points):
     for token in points:
         if not isinstance(token, string_types) or not token or len(token) > 512:
             raise ValueError("invalid point token")
+        if token.lower() in (".x", ".y", ".z", ".xy", ".yx", ".xz", ".zx", ".yz", ".zy",
+                             ".wx", ".wy", ".wz", ".wxy", ".wyx", ".wxz", ".wzx", ".wyz", ".wzy"):
+            continue
         body = token.lstrip("rRwW@")
         # A narrow surveyor/DMS form keeps the macro coordinate-only while
         # permitting Rhino's documented N30d22'54.43"W bearing syntax.
@@ -3401,6 +3404,9 @@ def _plane_transform(operation):
 
 
 def _point_input(operation):
+    expected = operation.get("expected_point_count", len(operation["points"]))
+    if type(expected) is not int or not 2 <= expected <= len(operation["points"]):
+        raise ValueError("invalid expected point-filter output count")
     script = _point_input_script(operation["points"])
     return _in_construction_plane(operation, script, None)
 
@@ -3655,7 +3661,7 @@ def _in_construction_plane(operation, script, record):
         if record is not None:
             return record(outputs[0].Geometry), 0
         success, polyline = outputs[0].Geometry.TryGetPolyline()
-        if not success or len(polyline) != len(operation["points"]):
+        if not success or len(polyline) != operation.get("expected_point_count", len(operation["points"])):
             raise ValueError("Polyline did not consume every typed point")
         return {"points": [_xyz(point) for point in polyline]}, 0
     finally:

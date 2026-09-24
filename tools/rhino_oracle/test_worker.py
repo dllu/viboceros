@@ -1222,16 +1222,22 @@ class RhinoWorkerTests(unittest.TestCase):
         brep.Dispose.assert_called_once_with()
 
     def test_point_input_script_accepts_coordinates_but_not_commands(self):
-        tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0", "5/16,1-3/4", "2*(3+4),1/2", "r(10-3)/7,1", "10*sin(30degrees),10*cos(30degrees)", "atan2(1,1),pow(2,3)", "27cm,1m", "1'2-3/4\",1/2in", "11<N30d22'54.43\"W", "5<15d30'22.345\""]
+        tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0", "5/16,1-3/4", "2*(3+4),1/2", "r(10-3)/7,1", "10*sin(30degrees),10*cos(30degrees)", "atan2(1,1),pow(2,3)", "27cm,1m", "1'2-3/4\",1/2in", "11<N30d22'54.43\"W", "5<15d30'22.345\"", ".x", ".wzy"]
         self.assertEqual(self.worker._point_input_script(tokens), "_Polyline " + " ".join(tokens) + " _Enter")
         for invalid in [[], ["0"], ["0"] * 257, ["0", "_Delete"], ["0", "1,2 _Enter"],
                         ["0", "1,2\n_Delete"], ["0", "1;2"], ["0", "1,2Delete"],
                         ["0", "r"], ["0", None], ["0", "1" * 513],
                         ["0", "11<N30d22'54.43\"W_Delete"],
-                        ["0", "11<N30d22'54.43\"W\n"]]:
+                        ["0", "11<N30d22'54.43\"W\n"], ["0", ".xyz"],
+                        ["0", ".x\n_Delete"]]:
             with self.subTest(invalid=invalid):
                 with self.assertRaises(ValueError):
                     self.worker._point_input_script(invalid)
+        for count in [0, 1, 5, True, "2"]:
+            with self.subTest(count=count):
+                with self.assertRaisesRegex(ValueError, "expected point-filter output count"):
+                    self.worker._point_input({"points": ["0", ".x", "w1,2,3", "w4,5,6"],
+                                              "expected_point_count": count})
 
     def test_control_point_prompt_whitelists_coordinates_and_integer_degree(self):
         operation = {"points": ["w0,0,0", "w0,0,0", "w2,3,0", "w10,0,0"], "degree": 3}

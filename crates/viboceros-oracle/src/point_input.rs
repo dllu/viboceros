@@ -1,7 +1,7 @@
 //! Compare typed coordinate resolution with Rhino's actual Polyline prompt.
 
 use super::*;
-use viboceros_drafting::PointInput;
+use viboceros_drafting::{PointFilter, PointFilterSession, PointInput};
 use viboceros_geometry::LengthUnitSystem;
 
 #[cfg(test)]
@@ -71,6 +71,14 @@ mod tests {
     }
 
     #[test]
+    fn point_filters_match_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_filters.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_filters.json"),
+        );
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"
@@ -118,6 +126,8 @@ pub struct PointInputFixture {
     pub y_axis: [f64; 3],
     pub points: Vec<String>,
     #[serde(default)]
+    pub expected_point_count: Option<usize>,
+    #[serde(default)]
     pub model_units: Option<String>,
 }
 
@@ -137,6 +147,7 @@ pub(super) fn run(
         tolerance,
     )?;
     let mut points = Vec::with_capacity(fixture.points.len());
+    let mut filter: Option<PointFilterSession> = None;
     let units = match fixture.model_units.as_deref() {
         None | Some("Millimeters") => LengthUnitSystem::Millimeters,
         Some("Meters") => LengthUnitSystem::Meters,
@@ -148,13 +159,37 @@ pub(super) fn run(
         }
     };
     for token in &fixture.points {
+        if let Some(next) = PointFilter::parse(token) {
+            if filter.is_some() {
+                return Err(ProbeError::FixtureInvariant("nested point filter"));
+            }
+            filter = Some(PointFilterSession::new(next, plane));
+            continue;
+        }
         let input = PointInput::parse_with_units(token, &units)
             .ok_or(ProbeError::FixtureInvariant("expected a point token"))?
             .map_err(|_| ProbeError::FixtureInvariant("invalid point syntax"))?;
         let point = input
             .resolve(plane, points.last().copied())
             .map_err(|_| ProbeError::FixtureInvariant("point could not be resolved"))?;
-        points.push(point);
+        if let Some(session) = filter.as_mut() {
+            if let Some(point) = session
+                .offer_point(point)
+                .map_err(|_| ProbeError::FixtureInvariant("invalid filtered point"))?
+            {
+                points.push(point);
+                filter = None;
+            }
+        } else {
+            points.push(point);
+        }
+    }
+    if filter.is_some()
+        || points.len() != fixture.expected_point_count.unwrap_or(fixture.points.len())
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "point filter left an incomplete polyline",
+        ));
     }
     let polyline = Polyline3::try_new(points, tolerance)?;
     Ok((

@@ -1,7 +1,7 @@
 //! Route typed and picked points through the same interactive command state.
 
 use super::*;
-use viboceros_drafting::PointInput;
+use viboceros_drafting::{PointFilter, PointFilterSession, PointInput};
 
 /// Curve's point prompt uses a fixed coordinate-wise comparison, not model
 /// distance tolerance. Private Rhino probes check the inclusive 2^-32 boundary
@@ -14,6 +14,29 @@ pub(super) fn coincident_curve_controls(first: Point3, second: Point3) -> bool {
 }
 
 impl VibocerosApp {
+    pub(super) fn try_continue_point_filter(&mut self, input: &str) -> bool {
+        let Some(filter) = PointFilter::parse(input) else {
+            return false;
+        };
+        if self.active_command.is_none()
+            || self.active_command == Some(InteractiveCommand::DomainFace)
+            || self.plane_prompt.is_some()
+        {
+            return false;
+        }
+        if self.point_filter.is_some() {
+            self.push_log("Error: finish the current filtered point first".into());
+        } else {
+            self.point_filter = Some(PointFilterSession::new(
+                filter,
+                self.viewports[self.active_viewport].construction_plane(),
+            ));
+            self.push_log(format!("{input}: pick a coordinate source"));
+            self.command_input.clear();
+        }
+        true
+    }
+
     pub(super) fn try_continue_point_input(&mut self, input: &str) -> bool {
         if input
             .split_whitespace()
@@ -34,11 +57,30 @@ impl VibocerosApp {
         match point {
             Ok(point) => {
                 self.push_log(format!("> {input}"));
-                self.accept_drafting_point(point);
+                self.accept_filtered_drafting_point(point);
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         true
+    }
+
+    pub(super) fn accept_filtered_drafting_point(&mut self, point: Point3) -> bool {
+        let Some(session) = self.point_filter.as_mut() else {
+            return self.accept_drafting_point(point);
+        };
+        match session.offer_point(point) {
+            Ok(None) => {
+                self.snaps.model_override = None;
+                self.command_input.clear();
+                self.push_log("Filter coordinate captured; pick remaining coordinates".into());
+                true
+            }
+            Ok(Some(point)) => self.accept_drafting_point(point),
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                false
+            }
+        }
     }
 
     pub(super) fn accept_drafting_point(&mut self, point: Point3) -> bool {
@@ -49,6 +91,7 @@ impl VibocerosApp {
                 self.drafting_plane.get_or_insert(plane);
             }
             self.last_point = Some(point);
+            self.point_filter = None;
             self.command_input.clear();
             true
         } else {

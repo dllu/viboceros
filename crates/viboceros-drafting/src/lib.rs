@@ -9,6 +9,8 @@ pub use object_snap::{
 };
 mod point_input;
 pub use point_input::{PointInput, PointInputError};
+mod point_filter;
+pub use point_filter::{PointFilter, PointFilterError, PointFilterSession};
 
 use thiserror::Error;
 use viboceros_geometry::{GeometryError, Point3, Real};

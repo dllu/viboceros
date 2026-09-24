@@ -51,6 +51,9 @@ recording without sharing the native and Rhino alignment implementations.
 Typed coordinates are resolved by `viboceros-drafting/point_input`, independent
 of UI and document edits. `app/point_input` shares the interactive command's
 point-validation and transaction path with mouse picks; see [point input](point-input.md).
+`viboceros-drafting/point_filter` composes filtered CPlane/world coordinates
+from a source pick and a final pick. The viewport previews that composite while
+passing the original pick to the app for one-time resolution.
 The command crate's `interchange` module owns the six STL/STEP/3DM import/export
 commands, document-to-file attribute/group adapters, and export mesh aggregation.
 Parsing and file replacement remain in `viboceros-io`; registry transactions

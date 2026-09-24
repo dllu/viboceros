@@ -1449,6 +1449,7 @@ pub struct VibocerosApp {
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
+    point_filter: Option<viboceros_drafting::PointFilterSession>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
@@ -1512,6 +1513,7 @@ impl VibocerosApp {
             active_command: None,
             last_point: None,
             drafting_plane: None,
+            point_filter: None,
             plane_prompt: None,
             object_prompt: None,
             group_prompt: None,
@@ -1656,7 +1658,9 @@ impl VibocerosApp {
             return;
         }
         if self.active_command.is_some()
-            && (self.try_continue_curve_option(&input) || self.try_continue_point_input(&input))
+            && (self.try_continue_curve_option(&input)
+                || self.try_continue_point_filter(&input)
+                || self.try_continue_point_input(&input))
         {
             return;
         }
@@ -3604,6 +3608,7 @@ impl VibocerosApp {
             self.push_log(options.command_line());
         }
         self.push_log(command.prompt().to_owned());
+        self.point_filter = None;
         self.active_command = Some(command);
         true
     }
@@ -3611,6 +3616,7 @@ impl VibocerosApp {
     fn cancel_interactive_command(&mut self, announce: bool) {
         self.cancel_end_analysis_pick(false);
         self.snaps.model_override = None;
+        self.point_filter = None;
         self.finish_points_session();
         self.finish_evaluate_uv_session();
         self.cancel_object_prompt(announce);
@@ -6120,7 +6126,7 @@ impl VibocerosApp {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
             } else {
-                self.accept_drafting_point(point);
+                self.accept_filtered_drafting_point(point);
             }
         } else if let Some(selection) = output.point_cloud_selection {
             self.select_cloud_points(&selection.indices, selection.mode);
@@ -6478,6 +6484,11 @@ impl eframe::App for VibocerosApp {
             .map_or(self.curve_points.as_slice(), |prompt| {
                 prompt.points.as_slice()
             });
+        let point_filter = self
+            .plane_prompt
+            .is_none()
+            .then_some(self.point_filter)
+            .flatten();
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             ui.spacing_mut().item_spacing = egui::Vec2::splat(2.0);
@@ -6499,6 +6510,7 @@ impl eframe::App for VibocerosApp {
                                     document,
                                     ViewportInput {
                                         drafting,
+                                        point_filter,
                                         zoom_window: zoom_window_pending,
                                         rect_selection_mode: selection_window_override,
                                         circular_selection: match circular_selection {
@@ -6765,6 +6777,7 @@ mod tests {
             active_command: None,
             last_point: None,
             drafting_plane: None,
+            point_filter: None,
             plane_prompt: None,
             object_prompt: None,
             curve_points: Vec::new(),
