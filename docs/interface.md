@@ -141,8 +141,11 @@ Esc cancels. The fence can cross points, visible wires, and shaded faces, and
 respects current object filters. Accepted vertices are anchored to the camera
 target plane and reproject after viewport navigation; they can move offscreen
 while the model remains aligned. Rhino also accepts an existing curve as a fence;
-that option remains open. See
+enter `SelFence Curve`, or enter `Curve` while sketching, then click a visible
+source curve. The source is left out of the crossing result. See
 [SelFence](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelFence).
+Curve fences use projected display segments; crossings between tessellation
+samples may still differ from Rhino.
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
 non-finite or empty zoom rectangles. Pan updates that overflow screen coordinates

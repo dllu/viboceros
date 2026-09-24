@@ -138,6 +138,7 @@ SelCrossing
 SelRectangular SelectionMode=InvertCrossing
 SelCircular SelectionMode=Crossing
 SelFence
+SelFence Curve
 SelLast
 SelPrev
 SelLast DeselectOthersBeforeSelect=No

@@ -193,6 +193,7 @@ pub enum InterfaceCommand {
     SelRectangular(RectSelectionMode),
     SelCircular(RectSelectionMode),
     SelFence,
+    SelFenceCurve,
     UndoView,
     RedoView,
     Plan,
@@ -236,7 +237,7 @@ pub const COMMAND_NAMES: [&str; 25] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor <positive number>; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -364,10 +365,10 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             parse_region_mode(&args, RectSelectionMode::Crossing, USAGE)
                 .map(InterfaceCommand::SelCircular)
         } else if name.eq_ignore_ascii_case("SelFence") {
-            if args.is_empty() {
-                Ok(InterfaceCommand::SelFence)
-            } else {
-                Err(InterfaceError::Usage("SelFence"))
+            match args.as_slice() {
+                [] => Ok(InterfaceCommand::SelFence),
+                [option] if keyword(option, "Curve") => Ok(InterfaceCommand::SelFenceCurve),
+                _ => Err(InterfaceError::Usage("SelFence [Curve]")),
             }
         } else if name.eq_ignore_ascii_case("Plan") {
             if args.is_empty() {
@@ -574,6 +575,7 @@ impl InterfaceState {
             }
             InterfaceCommand::SelCircular(mode) => format!("Circular {mode:?} selection requested"),
             InterfaceCommand::SelFence => "Fence selection requested".into(),
+            InterfaceCommand::SelFenceCurve => "Curve fence selection requested".into(),
             InterfaceCommand::UndoView => "Undo view requested (active viewport)".into(),
             InterfaceCommand::RedoView => "Redo view requested (active viewport)".into(),
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),

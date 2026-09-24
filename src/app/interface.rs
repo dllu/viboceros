@@ -72,7 +72,10 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
-                if command == InterfaceCommand::SelFence {
+                if matches!(
+                    command,
+                    InterfaceCommand::SelFence | InterfaceCommand::SelFenceCurve
+                ) {
                     if !self.can_capture_selection() {
                         self.push_log("Fence selection unavailable during this prompt".into());
                         return;
@@ -81,15 +84,18 @@ impl VibocerosApp {
                         viewport: None,
                         points: Vec::new(),
                         mode: viboceros_document::SelectionMode::Replace,
+                        curve_pick: command == InterfaceCommand::SelFenceCurve,
                     });
                     self.selection_window_override = None;
                     self.circular_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
-                    self.push_log(
+                    self.push_log(if command == InterfaceCommand::SelFenceCurve {
+                        "Select an existing curve for the fence; Esc to cancel".into()
+                    } else {
                         "Click fence points in one viewport; Enter/right-click to select, Esc to cancel"
-                            .into(),
-                    );
+                            .into()
+                    });
                     return;
                 }
                 if let InterfaceCommand::SelCircular(mode) = command {

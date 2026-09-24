@@ -130,7 +130,15 @@ fn selection_capture_frame(
                     ui,
                     &app.document,
                     ViewportInput {
-                        object_filter: app.viewport_object_filter(),
+                        object_filter: if app
+                            .fence_selection
+                            .as_ref()
+                            .is_some_and(|state| state.curve_pick)
+                        {
+                            Some(viboceros_command::ObjectSelectionFilter::Curves)
+                        } else {
+                            app.viewport_object_filter()
+                        },
                         rect_selection_mode: app.selection_window_override,
                         circular_selection: match app.circular_selection {
                             Some(CircularSelectionState::PickCenter(_)) => {
@@ -147,6 +155,7 @@ fn selection_capture_frame(
                             None => None,
                         },
                         fence_selection: match app.fence_selection.as_ref() {
+                            Some(state) if state.curve_pick => None,
                             Some(state) if state.viewport.is_none() => {
                                 Some(FenceSelectionInput::PickFirst)
                             }
@@ -184,7 +193,10 @@ fn fence_command_collects_one_viewport_polyline_and_selects_only_crossed_objects
         interface::parse("_SelFence"),
         Some(Ok(InterfaceCommand::SelFence))
     );
-    assert!(interface::parse("SelFence Curve").unwrap().is_err());
+    assert_eq!(
+        interface::parse("SelFence Curve"),
+        Some(Ok(InterfaceCommand::SelFenceCurve))
+    );
     enter(&mut app, "SelFence");
     let context = egui::Context::default();
     let click = |point, pressed| egui::Event::PointerButton {
@@ -297,6 +309,98 @@ fn fence_command_keeps_accepted_points_aligned_after_pan() {
         app.document.selected_object_ids().collect::<Vec<_>>(),
         vec![target]
     );
+}
+
+#[test]
+fn fence_curve_option_picks_a_visible_curve_without_selecting_it() {
+    let mut app = test_app();
+    enter(&mut app, "Line -2,0,0 2,0,0");
+    enter(&mut app, "Point 0,0,0");
+    enter(&mut app, "Point 0,1,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelFence");
+    enter(&mut app, "Curve");
+    assert!(app.fence_selection.as_ref().unwrap().curve_pick);
+    let context = egui::Context::default();
+    let pointer = egui::Pos2::new(460.0, 300.0);
+    let click = |pressed| egui::Event::PointerButton {
+        pos: pointer,
+        button: egui::PointerButton::Primary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(&context, &mut app, vec![]);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(pointer), click(true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![click(false)]);
+    assert_eq!(
+        output.selection_click,
+        Some(SelectionClick {
+            object_id: Some(ids[0]),
+            mode: SelectionMode::Replace,
+        })
+    );
+    assert!(app.handle_viewport_action(output));
+    assert!(app.fence_selection.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[1]]
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
+fn fence_curve_choice_menu_routes_the_chosen_curve_to_the_fence() {
+    let mut app = test_app();
+    enter(&mut app, "Line -2,0,0 2,0,0");
+    enter(&mut app, "Line -2,0,0 2,0,0");
+    enter(&mut app, "Point 0,0,0");
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    enter(&mut app, "SelFence Curve");
+    let context = egui::Context::default();
+    let pointer = egui::Pos2::new(460.0, 300.0);
+    let click = |pressed| egui::Event::PointerButton {
+        pos: pointer,
+        button: egui::PointerButton::Primary,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    selection_capture_frame(&context, &mut app, vec![]);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(pointer), click(true)],
+    );
+    let output = selection_capture_frame(&context, &mut app, vec![click(false)]);
+    assert!(output.selection_click.is_none());
+    assert_eq!(
+        output.selection_choice.as_ref().unwrap().object_ids,
+        ids[..2]
+    );
+    assert!(app.handle_viewport_action(output));
+    assert_eq!(app.document.selected_object_count(), 0);
+    app.selection_menu = None;
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[1]),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![ids[0], ids[2]]
+    );
+    assert!(app.fence_selection.is_none());
 }
 
 #[test]

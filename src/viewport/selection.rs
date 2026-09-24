@@ -85,18 +85,22 @@ impl ProjectedPrimitives {
     }
 
     fn is_crossed_by_fence(&self, fence: &[Pos2]) -> bool {
-        fence.windows(2).any(|edge| {
-            let [start, end] = [edge[0], edge[1]];
-            self.points.iter().any(|&point| {
-                point_segment_distance(point, start, end) <= FENCE_POINT_CAPTURE_PIXELS
-            }) || self
+        fence
+            .windows(2)
+            .any(|edge| self.is_crossed_by_segment(edge[0], edge[1]))
+    }
+
+    fn is_crossed_by_segment(&self, start: Pos2, end: Pos2) -> bool {
+        self.points
+            .iter()
+            .any(|&point| point_segment_distance(point, start, end) <= FENCE_POINT_CAPTURE_PIXELS)
+            || self
                 .segments
                 .iter()
                 .any(|&[a, b]| segments_intersect(start, end, a, b))
-                || self.triangles.iter().any(|&[a, b, c]| {
-                    point_in_triangle(start, a, b, c) || point_in_triangle(end, a, b, c)
-                })
-        })
+            || self.triangles.iter().any(|&[a, b, c]| {
+                point_in_triangle(start, a, b, c) || point_in_triangle(end, a, b, c)
+            })
     }
 }
 
@@ -438,6 +442,53 @@ impl Viewport {
             .collect()
     }
 
+    pub(crate) fn objects_crossed_by_curve_preview(
+        &self,
+        source_id: ObjectId,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Option<Vec<ObjectId>> {
+        let rect = self.last_rect?;
+        let source = document.object(source_id)?;
+        if !ObjectSelectionFilter::Curves.accepts_object(source)
+            || !selection_candidate(document, source, None)
+        {
+            return None;
+        }
+        let display = self
+            .display_cache
+            .borrow_mut()
+            .get(source, document.tolerance());
+        let strokes = self
+            .projected_display(&display, rect, document.tolerance())
+            .segments;
+        if strokes.is_empty() {
+            return None;
+        }
+        Some(
+            document
+                .objects()
+                .filter(|object| {
+                    object.id() != source_id
+                        && filter.accepts_object(object)
+                        && selection_candidate(document, object, preview)
+                })
+                .filter_map(|object| {
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    let projected = self.projected_display(&display, rect, document.tolerance());
+                    strokes
+                        .iter()
+                        .any(|&[start, end]| projected.is_crossed_by_segment(start, end))
+                        .then_some(object.id())
+                })
+                .collect(),
+        )
+    }
+
     pub(super) fn projected_display(
         &self,
         display: &display_cache::DisplayGeometry,
@@ -714,6 +765,85 @@ pub(super) fn is_crossing_selection(start: Pos2, end: Pos2) -> bool {
 mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
+    use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn existing_curve_fence_selects_crossed_objects_without_selecting_the_source() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(-2.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let crossed = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.1, 0.0).unwrap()))
+            .unwrap();
+        assert_eq!(
+            view.objects_crossed_by_curve_preview(
+                source,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            Some(vec![crossed])
+        );
+        document.set_objects_visibility([source], false).unwrap();
+        assert!(
+            view.objects_crossed_by_curve_preview(
+                source,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            )
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn circular_curve_fence_uses_the_visible_stroke_not_its_enclosed_area() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    1.0,
+                    viboceros_geometry::UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT)
+                        .unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let touched = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        assert_eq!(
+            view.objects_crossed_by_curve_preview(
+                source,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            Some(vec![touched])
+        );
+    }
 
     #[test]
     fn fence_crosses_points_segments_and_shaded_faces_without_enclosure() {

@@ -50,6 +50,7 @@ struct FenceSelectionState {
     viewport: Option<usize>,
     points: Vec<Point3>,
     mode: SelectionMode,
+    curve_pick: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -1403,6 +1404,16 @@ impl VibocerosApp {
         }
         if input.is_empty() && self.fence_selection.is_some() {
             self.finish_fence_selection();
+            self.command_input.clear();
+            return;
+        }
+        if input.eq_ignore_ascii_case("Curve")
+            && let Some(state) = self.fence_selection.as_mut()
+        {
+            state.curve_pick = true;
+            state.viewport = None;
+            state.points.clear();
+            self.push_log("Select an existing curve for the fence; Esc to cancel".into());
             self.command_input.clear();
             return;
         }
@@ -5190,6 +5201,16 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self
+            .fence_selection
+            .as_ref()
+            .is_some_and(|state| state.curve_pick)
+        {
+            if let Some(id) = click.object_id {
+                self.finish_curve_fence_selection(id, click.mode);
+            }
+            return;
+        }
         if self.picking_alignment_curve() {
             self.pick_alignment_curve(click.object_id);
             return;
@@ -5287,6 +5308,9 @@ impl VibocerosApp {
         let Some(state) = self.fence_selection.as_ref() else {
             return;
         };
+        if state.curve_pick {
+            return;
+        }
         if let Some(first_viewport) = state.viewport
             && first_viewport != viewport
         {
@@ -5316,6 +5340,11 @@ impl VibocerosApp {
         let Some(state) = self.fence_selection.take() else {
             return;
         };
+        if state.curve_pick {
+            self.fence_selection = Some(state);
+            self.push_log("Select a curve for the fence; Esc to cancel".into());
+            return;
+        }
         if state.points.len() < 2 {
             self.fence_selection = Some(state);
             self.push_log("Fence needs at least two distinct points; Esc to cancel".into());
@@ -5331,7 +5360,11 @@ impl VibocerosApp {
             );
             return;
         };
-        let filter = self.viewport_object_filter().unwrap_or_default();
+        let Some(filter) = self.viewport_object_filter() else {
+            self.fence_selection = Some(state);
+            self.push_log("Fence selection is unavailable during this prompt".into());
+            return;
+        };
         let preview = self
             .object_prompt
             .as_ref()
@@ -5343,14 +5376,48 @@ impl VibocerosApp {
             filter,
             preview,
         );
+        self.apply_fence_selection_ids(ids, state.mode);
+    }
+
+    fn finish_curve_fence_selection(&mut self, source: ObjectId, mode: SelectionMode) {
+        if !self
+            .fence_selection
+            .as_ref()
+            .is_some_and(|state| state.curve_pick)
+        {
+            return;
+        }
+        let Some(filter) = self.viewport_object_filter() else {
+            self.push_log("Fence selection is unavailable during this prompt".into());
+            return;
+        };
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
+        let Some(ids) = self.viewports[self.active_viewport].objects_crossed_by_curve_preview(
+            source,
+            &self.document,
+            filter,
+            preview,
+        ) else {
+            self.push_log("The chosen curve has no visible fence stroke".into());
+            return;
+        };
+        self.fence_selection = None;
+        self.apply_fence_selection_ids(ids, mode);
+    }
+
+    fn apply_fence_selection_ids(&mut self, ids: Vec<ObjectId>, mode: SelectionMode) {
         if self.group_prompt.is_some() {
-            self.select_group_prompt_objects(ids, state.mode);
+            self.select_group_prompt_objects(ids, mode);
         } else if self.intersection_prompt.is_some() {
-            self.select_intersection_prompt_objects(ids, state.mode);
+            self.select_intersection_prompt_objects(ids, mode);
         } else if self.object_prompt.is_some() {
-            self.select_prompt_objects(ids, state.mode);
+            self.select_prompt_objects(ids, mode);
         } else {
-            match self.document.select_objects(ids, state.mode) {
+            match self.document.select_objects(ids, mode) {
                 Ok(count) => self.push_log(format!("Fence selection: {count} object(s) selected")),
                 Err(error) => self.push_log(format!("Error: {error}")),
             }
@@ -5703,6 +5770,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         let fence_selection = self.fence_selection.as_ref();
+        let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -5753,6 +5821,7 @@ impl eframe::App for VibocerosApp {
                                             None => None,
                                         },
                                         fence_selection: match fence_selection {
+                                            Some(state) if state.curve_pick => None,
                                             Some(state) if state.viewport.is_none() => {
                                                 Some(FenceSelectionInput::PickFirst)
                                             }
@@ -5777,8 +5846,16 @@ impl eframe::App for VibocerosApp {
                                             }
                                             None => None,
                                         },
-                                        object_filter,
-                                        selection_preview,
+                                        object_filter: if fence_curve_pick {
+                                            Some(viboceros_command::ObjectSelectionFilter::Curves)
+                                        } else {
+                                            object_filter
+                                        },
+                                        selection_preview: if fence_curve_pick {
+                                            None
+                                        } else {
+                                            selection_preview
+                                        },
                                         selection_preview_ids: &selection_preview_ids,
                                         point_cloud_remove_target,
                                         point_cloud_highlights: &point_cloud_highlights,
