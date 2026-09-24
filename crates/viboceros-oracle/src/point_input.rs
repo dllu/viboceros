@@ -6,6 +6,37 @@ use viboceros_drafting::PointInput;
 #[cfg(test)]
 mod tests {
     #[test]
+    fn xy_elevation_matches_recorded_rhino_points() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/point_input_xy_elevation.json"
+        ))
+        .unwrap();
+        let actual = crate::run_request(&request).unwrap();
+        let recorded: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/point_input_xy_elevation.json"
+        ))
+        .unwrap();
+        let expected = recorded["results"].as_array().unwrap();
+        assert_eq!(actual.results.len(), expected.len());
+        for (result, observation) in actual.results.iter().zip(expected) {
+            assert_eq!(result.id, observation["id"].as_str().unwrap());
+            let points = result.value["points"].as_array().unwrap();
+            let references = observation["value"]["points"].as_array().unwrap();
+            assert_eq!(points.len(), references.len());
+            for (point, reference) in points.iter().zip(references) {
+                for (actual, expected) in point
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .zip(reference.as_array().unwrap())
+                {
+                    assert!((actual.as_f64().unwrap() - expected.as_f64().unwrap()).abs() <= 1e-12);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"

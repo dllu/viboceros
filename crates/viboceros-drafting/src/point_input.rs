@@ -12,7 +12,7 @@ pub struct PointInput {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum PointInputError {
-    #[error("enter x,y[,z], distance<angle[,z], or distance<angle<elevation")]
+    #[error("enter x,y[,z], x,y<elevation, distance<angle[,z], or distance<angle<elevation")]
     Syntax,
     #[error("point coordinates must be finite numbers")]
     InvalidNumber,
@@ -136,7 +136,39 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
                 _ => Err(PointInputError::Syntax),
             }
         }
-        [radius, azimuth] if !radius.contains(',') => {
+        [xy, elevation] if xy.contains(',') => {
+            let mut components = xy.split(',');
+            let (Some(x), Some(y), None) =
+                (components.next(), components.next(), components.next())
+            else {
+                return Err(PointInputError::Syntax);
+            };
+            let [x, y] = [number(x)?, number(y)?];
+            let elevation = reduced_degrees(number(elevation)?);
+            if !(-90.0..=90.0).contains(&elevation) {
+                return Err(PointInputError::ElevationRange);
+            }
+            if (x == 0.0 && y == 0.0) || elevation == 0.0 {
+                return Ok([x, y, 0.0]);
+            }
+            let (sin, cos) = sin_cos_degrees(elevation);
+            if cos == 0.0 {
+                return Err(PointInputError::InvalidNumber);
+            }
+            let scale = x.abs().max(y.abs());
+            let horizontal = (x / scale).hypot(y / scale);
+            let slope = sin / cos;
+            let height = if slope.abs() <= 1.0 {
+                scale * (horizontal * slope)
+            } else {
+                (scale * slope) * horizontal
+            };
+            if !height.is_finite() {
+                return Err(PointInputError::InvalidNumber);
+            }
+            Ok([x, y, height])
+        }
+        [radius, azimuth] => {
             let radius = number(radius)?;
             let components: Vec<_> = azimuth.split(',').collect();
             let (angle, z) = match components.as_slice() {

@@ -1,0 +1,18 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "xy-elevation-zero-top",
+      "value": {"points": [[0.0, 0.0, 0.0], [3.0, 4.0, 237.0]]}
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xy-elevation-zero-rotated",
+      "value": {"points": [[10.0, 20.0, 30.0], [247.0, 23.0, 34.0]]}
+    }
+  ]
+}

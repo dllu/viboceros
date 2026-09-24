@@ -195,6 +195,7 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `wr1,2,3`, `rw1,2,3`, `@w1,2,3` | World displacement |
 | `5<30` or `5<30,2` | Polar distance/angle, with optional height |
 | `5<30<45` | Spherical distance/azimuth/elevation |
+| `5,6<15` | Horizontal X/Y and spherical elevation angle; Z is `hypot(5,6) * tan(15°)` |
 
 Prefixes are case-insensitive and also apply to polar/spherical inputs. Angles
 are decimal degrees. Coordinates contain no internal whitespace. For example,
@@ -224,7 +225,7 @@ coordinate arguments. See [construction-plane primitives](construction-planes.md
 for Circle/Polygon orientation, rectangle projection, and signed box heights.
 
 Not yet implemented: general scalar distance/angle
-constraints, unit expressions, surveyor/DMS notation, `x,y<elevation`, and
+constraints, unit expressions, surveyor/DMS notation, and
 editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 
@@ -254,3 +255,15 @@ Additional probes confirmed negative-distance, negative-elevation input. At
 elevations ±120°, however, Rhino returned unexpected points (including Z=323
 for radius 5), and a multi-point sequence lost vertices. Those results are not
 used as a geometry reference; this elevation range is explicitly unsupported.
+
+`x,y<elevation` retains the typed horizontal coordinates and computes height
+from their distance to the active coordinate origin. It works with CPlane/world
+and relative prefixes. A zero-angle Rhino 8.32 headless prompt returned an
+unexplained height of 237 on both world and rotated planes; the raw observation
+is retained in `tools/rhino_oracle/observations/point_input_xy_elevation_zero.json`.
+Viboceros resolves a zero angle to zero height. Nonzero elevations are compared
+separately against live Rhino in `point_input_xy_elevation.json`: both sequences
+pass at `1e-12`, with a largest coordinate difference of `1.78e-15`.
+The raw Rhino response is saved in
+`tools/rhino_oracle/observations/point_input_xy_elevation.json` for offline replay.
+A vertical angle with nonzero X/Y has no finite height and is rejected.

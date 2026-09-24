@@ -95,6 +95,46 @@ fn polar_and_spherical_coordinates_have_exact_quadrants() {
 }
 
 #[test]
+fn cartesian_horizontal_components_accept_spherical_elevation() {
+    let previous = Some(Point3::try_new(5.0, 6.0, 7.0).unwrap());
+    for (input, expected) in [
+        ("w3,4<30", [3.0, 4.0, 5.0 / 3.0_f64.sqrt()]),
+        ("wr-3,4<45", [2.0, 10.0, 12.0]),
+        ("3,4<30", [10.0 + 5.0 / 3.0_f64.sqrt(), 23.0, 34.0]),
+        ("r-3,4<-45", [0.0, 3.0, 11.0]),
+        ("w3,4<0", [3.0, 4.0, 0.0]),
+        ("w0,0<90", [0.0, 0.0, 0.0]),
+    ] {
+        let actual = resolve(input, previous).unwrap().to_array();
+        for (component, target) in actual.into_iter().zip(expected) {
+            assert!((component - target).abs() <= 2e-14, "{input}: {actual:?}");
+        }
+    }
+    assert_eq!(
+        resolve("w1,0<90", None),
+        Err(PointInputError::InvalidNumber)
+    );
+    assert_eq!(
+        resolve("w1,0<120", None),
+        Err(PointInputError::ElevationRange)
+    );
+    assert_eq!(resolve("w1,2,3<30", None), Err(PointInputError::Syntax));
+    assert_eq!(resolve("w1,,2<30", None), Err(PointInputError::Syntax));
+    assert_eq!(
+        resolve("w1e308,1e308<0", None).unwrap().to_array(),
+        [1e308, 1e308, 0.0]
+    );
+    let large = resolve("w1e308,1e308<30", None).unwrap();
+    assert_eq!(large.x(), 1e308);
+    assert_eq!(large.y(), 1e308);
+    assert!((large.z() / 1e308 - (2.0_f64 / 3.0).sqrt()).abs() < 1e-15);
+    assert_eq!(
+        resolve("w1e308,1e308<89", None),
+        Err(PointInputError::InvalidNumber)
+    );
+}
+
+#[test]
 fn invalid_point_input_is_not_confused_with_a_command() {
     for input in [
         "Line 0,0 1,2",

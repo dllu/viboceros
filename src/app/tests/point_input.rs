@@ -1133,6 +1133,24 @@ fn typed_points_use_each_active_construction_plane_with_world_override() {
 }
 
 #[test]
+fn typed_xy_elevation_finishes_a_line_in_the_active_construction_plane() {
+    let mut app = test_app();
+    app.active_viewport = 2; // Front: local X -> world X, local Y -> world Z.
+    for input in ["Line", "0", "3,4<30"] {
+        enter(&mut app, input);
+    }
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line");
+    };
+    assert_eq!(line.start(), point(0.0, 0.0, 0.0));
+    assert!((line.end().x() - 3.0).abs() < 1e-14);
+    assert!((line.end().y() + 5.0 / 3.0_f64.sqrt()).abs() < 1e-14);
+    assert!((line.end().z() - 4.0).abs() < 1e-14);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
 fn mouse_and_typed_relative_points_share_a_polyline_without_grid_rounding() {
     let mut app = test_app();
     enter(&mut app, "Polyline");
