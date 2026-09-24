@@ -11,6 +11,8 @@ class PointSnapPicker(IdlePicker):
         validate_request(request)
         super().__init__()
         self.delays = {"@point:"+op["id"]:op.get("input_settle_ms",0) for op in request["operations"]}
+        self.detours = {"@point:"+op["id"]:op.get("input_detour",[1,0]) for op in request["operations"]}
+        self.explicit_detours = {"@point:"+op["id"] for op in request["operations"] if "input_detour" in op}
         self.moved = {}
         self.events = {}
 
@@ -23,8 +25,9 @@ class PointSnapPicker(IdlePicker):
         if name not in self.moved:
             # Point-snap calibration reserves one pixel inside the viewport on
             # every side. A one-pixel detour forces motion even for repeat clicks.
+            dx,dy = self.detours[name]
             subprocess.run(["xdotool","windowactivate","--sync",window,
-                            "mousemove",str(int(x)+1),y,"mousemove",x,y],check=True,timeout=10)
+                            "mousemove",str(int(x)+dx),str(int(y)+dy),"mousemove",x,y],check=True,timeout=10)
             self.moved[name] = (window,x,y,time.monotonic())
             return False
         previous,px,py,moved_at = self.moved[name]
@@ -34,6 +37,8 @@ class PointSnapPicker(IdlePicker):
         if elapsed*1000 < delay: return False
         subprocess.run(["xdotool","windowactivate","--sync",window,"click","1"],check=True,timeout=10)
         self.events[name] = dict(requested_settle_ms=delay,motion_to_click_ms=elapsed*1000,detour_pixels=1)
+        if name in self.explicit_detours:
+            self.events[name]["detour"] = list(self.detours[name])
         return True
 
     def record_diagnostics(self, response):

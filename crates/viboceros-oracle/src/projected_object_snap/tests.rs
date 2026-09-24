@@ -447,6 +447,109 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
 }
 
 #[test]
+fn multi_source_intersections_retain_matching_rhino_picks() {
+    let unresolved = [
+        "triple-hvd-vertical-near",
+        "triple-vde",
+        "triple-dev",
+        "triple-vds",
+        "triple-hvd-opposite-quadrant",
+        "motion-vds-right",
+        "motion-vds-left",
+        "motion-vds-down",
+        "motion-vds-up",
+    ];
+    let mut verified = 0;
+    for (input, observed) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/intersection_multi_snaps.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_multi_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_multi_detail_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_multi_detail_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_multi_depth_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_multi_depth_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_multi_orientation_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_multi_orientation_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_multi_motion_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_multi_motion_snaps.json"
+            ),
+        ),
+    ] {
+        let mut input: Value = serde_json::from_str(input).unwrap();
+        let mut observed: Value = serde_json::from_str(observed).unwrap();
+        let operations = input["operations"].as_array().unwrap();
+        let rows = observed["results"].as_array().unwrap();
+        for (op, row) in operations.iter().zip(rows) {
+            if !unresolved.contains(&op["id"].as_str().unwrap()) {
+                continue;
+            }
+            let frame = &row["value"]["frame"];
+            let fixture: ProjectedObjectSnapFixture = serde_json::from_value(json!({
+                "sources":op["sources"],
+                "camera":{"world_to_screen":frame["world_to_screen"],"location":frame["camera_location"],"direction":frame["camera_direction"]},
+                "cursor":frame["click_client"],"capture_radius":op.get("capture_radius").unwrap_or(&json!(12)),
+                "modes":op["persistent_snaps"],"snap_to_meshes":op["snap_to_meshes"]
+            }))
+            .unwrap();
+            let actual = run(&fixture, Tolerance::DEFAULT).unwrap().0;
+            assert_eq!(actual["kind"], "Intersection", "{}", op["id"]);
+            for coordinate in 0..2 {
+                assert!(
+                    (actual["point"][coordinate].as_f64().unwrap()
+                        - row["value"]["point"][coordinate].as_f64().unwrap())
+                    .abs()
+                        < 1e-9,
+                    "{}",
+                    op["id"]
+                );
+            }
+        }
+        let retained: Vec<_> = operations
+            .iter()
+            .zip(rows)
+            .filter(|(op, row)| {
+                assert_eq!(op["id"], row["id"]);
+                !unresolved.contains(&op["id"].as_str().unwrap())
+            })
+            .map(|(op, row)| (op.clone(), row.clone()))
+            .collect();
+        verified += retained.len();
+        input["operations"] =
+            serde_json::Value::Array(retained.iter().map(|(op, _)| op.clone()).collect());
+        observed["results"] =
+            serde_json::Value::Array(retained.iter().map(|(_, row)| row.clone()).collect());
+        let differences = retained_differences(&input.to_string(), &observed.to_string());
+        assert!(differences.is_empty(), "{differences:?}");
+    }
+    assert_eq!(verified, 21);
+}
+
+#[test]
 fn near_tangent_intersections_replay_owned_rhino_picks() {
     for (fixture, observed) in [
         (

@@ -24,7 +24,7 @@ def point(value):
 
 def validate(operation):
     required = set(("op", "id", "sources", "view", "bounds", "aim", "offset", "persistent_snaps", "snap_to_meshes"))
-    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms")) != required
+    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms","input_detour")) != required
             or operation["op"] != "point_snap"):
         raise ValueError("invalid point snap fields")
     radius = operation.get("capture_radius",12)
@@ -32,6 +32,12 @@ def validate(operation):
     if type(operation.get("pick_diagnostics",False)) is not bool: raise ValueError("invalid picking diagnostic switch")
     settle = operation.get("input_settle_ms",0)
     if type(settle) is not int or not 0 <= settle <= 1000: raise ValueError("invalid point input settling interval")
+    detour = operation.get("input_detour",[1,0])
+    if (not isinstance(detour,list) or len(detour) != 2 or
+            any(type(value) is not int for value in detour) or
+            sum(abs(value) for value in detour) != 1 or
+            ("input_detour" in operation and settle == 0)):
+        raise ValueError("invalid point input detour")
     name = operation["id"]
     if not isinstance(name, (str, type(u""))) or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", name) is None:
         raise ValueError("invalid point snap id")

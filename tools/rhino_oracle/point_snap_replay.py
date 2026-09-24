@@ -47,10 +47,13 @@ def prepare(request, observed):
         delay = operation.get("input_settle_ms",0)
         motion = value.get("input_motion")
         if delay:
-            if (not isinstance(motion,dict) or set(motion) != {"requested_settle_ms","motion_to_click_ms","detour_pixels"}
+            fields = {"requested_settle_ms","motion_to_click_ms","detour_pixels"}
+            if "input_detour" in operation: fields.add("detour")
+            if (not isinstance(motion,dict) or set(motion) != fields
                     or type(motion["requested_settle_ms"]) is not int or motion["requested_settle_ms"] != delay
                     or type(motion["detour_pixels"]) is not int or motion["detour_pixels"] != 1
-                    or not probe.finite(motion["motion_to_click_ms"]) or motion["motion_to_click_ms"] < delay):
+                    or not probe.finite(motion["motion_to_click_ms"]) or motion["motion_to_click_ms"] < delay
+                    or ("input_detour" in operation and motion["detour"] != operation["input_detour"])):
                 raise OracleProtocolError("unverified owned point input settling")
         elif motion is not None:
             raise OracleProtocolError("unexpected owned point input settling")

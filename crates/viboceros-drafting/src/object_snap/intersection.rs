@@ -14,6 +14,7 @@ mod nurbs_conic;
 mod nurbs_line;
 mod nurbs_pair;
 mod nurbs_roots;
+mod straight_pairs;
 
 #[derive(Clone, Copy)]
 struct Segment {
@@ -267,52 +268,7 @@ pub(super) fn visit(
             Geometry::Mesh(_) | Geometry::Point(_) | Geometry::PointCloud(_) => {}
         }
     }
-    for first in 0..segments.len() {
-        for second in first + 1..segments.len() {
-            let a = segments[first];
-            let b = segments[second];
-            // Rhino captures a polyline's own corners, but not shared
-            // vertices of wires belonging to one mesh.
-            if a.owner == b.owner && (a.mesh || b.mesh) {
-                continue;
-            }
-            let Some(image) = crossing(a.image_a, a.image_b, b.image_a, b.image_b) else {
-                continue;
-            };
-            let Some(distance) = metric.captured_offset_distance(image) else {
-                continue;
-            };
-            let (Some(point_a), Some(point_b)) = (
-                projected_line::point_at_image(a.a, a.b, image, metric),
-                projected_line::point_at_image(b.a, b.b, image, metric),
-            ) else {
-                continue;
-            };
-            let prefer_a = prefer_first(
-                SourceChoice {
-                    hover_distance: a.hover_distance,
-                    mesh: a.mesh,
-                    curve_priority: 0,
-                    order: a.order,
-                    point: point_a,
-                },
-                SourceChoice {
-                    hover_distance: b.hover_distance,
-                    mesh: b.mesh,
-                    curve_priority: 0,
-                    order: b.order,
-                    point: point_b,
-                },
-                metric,
-            );
-            let (owner, point) = if prefer_a {
-                (a.owner, point_a)
-            } else {
-                (b.owner, point_b)
-            };
-            emit(owner, point, distance);
-        }
-    }
+    straight_pairs::visit(&segments, metric, emit);
     for &conic in &conics {
         for &segment in &segments {
             conic_line_crossings(conic, segment, metric, emit);

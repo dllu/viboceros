@@ -22,6 +22,23 @@ class PointSnapInputTests(unittest.TestCase):
         picker.ready[name]=0
         return picker,name
 
+    def test_cardinal_detours_are_applied_and_recorded(self):
+        for dx,dy in ((1,0),(-1,0),(0,1),(0,-1)):
+            with self.subTest(detour=(dx,dy)):
+                data=request(); data["operations"] = data["operations"][:1]
+                data["operations"][0].update(input_settle_ms=250,input_detour=[dx,dy])
+                picker=PointSnapPicker(data)
+                name="@point:"+data["operations"][0]["id"]
+                with patch("tools.rhino_oracle.point_snap_input.subprocess.run") as run, \
+                     patch("tools.rhino_oracle.point_snap_input.time.monotonic",return_value=2.) as now:
+                    self.assertFalse(picker.send_input(name,"123","456","owned"))
+                    run.assert_called_once_with(["xdotool","windowactivate","--sync","owned",
+                                                 "mousemove",str(123+dx),str(456+dy),"mousemove","123","456"],
+                                                check=True,timeout=10)
+                    now.return_value=2.3
+                    self.assertTrue(picker.send_input(name,"123","456","owned"))
+                    self.assertEqual(picker.events[name]["detour"],[dx,dy])
+
     def test_delayed_motion_is_nonblocking_and_acknowledges_only_one_later_click(self):
         picker,name=self.picker()
         with tempfile.TemporaryDirectory() as directory:
@@ -108,6 +125,12 @@ class PointSnapInputTests(unittest.TestCase):
         for changes in (dict(requested_settle_ms=200),dict(motion_to_click_ms=249.99),dict(motion_to_click_ms=float("nan")),dict(detour_pixels=True)):
             bad=copy.deepcopy(observed); bad["results"][0]["value"]["input_motion"].update(changes)
             with self.assertRaises(OracleProtocolError): prepare(data,bad)
+        data["operations"][0]["input_detour"]=[0,-1]
+        with self.assertRaises(OracleProtocolError): prepare(data,observed)
+        observed["results"][0]["value"]["input_motion"]["detour"]=[0,-1]
+        self.assertEqual(prepare(data,observed)[0],original)
+        observed["results"][0]["value"]["input_motion"]["detour"]=[1,0]
+        with self.assertRaises(OracleProtocolError): prepare(data,observed)
 
 
 if __name__ == "__main__": unittest.main()

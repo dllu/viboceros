@@ -187,6 +187,7 @@ class PointSnapTests(unittest.TestCase):
                         dict(capture_radius=0), dict(capture_radius=65), dict(capture_radius=True), dict(capture_radius=12.5),
                         dict(pick_diagnostics=None), dict(pick_diagnostics=1),
                         dict(input_settle_ms=True), dict(input_settle_ms=-1), dict(input_settle_ms=1001), dict(input_settle_ms=0.5),
+                        dict(input_detour=[1,0]),
                         dict(persistent_snaps=["Near","Near"]), dict(persistent_snaps=[{}]),
                         dict(persistent_snaps=["Near _Delete"]), dict(persistent_snaps=None),
                         dict(bounds=[[2,2,2],[1,1,1]]), dict(view="Perspective _Delete"),
@@ -194,6 +195,11 @@ class PointSnapTests(unittest.TestCase):
                         dict(sources=[dict(type="line",start=[0,0,0],end=[1,2])])]:
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 probe.run(dict(operation, **changes), None, {})
+        for detour in (None, [0,0], [1,1], [2,0], [True,0], [1.0,0], [1], "left"):
+            with self.subTest(detour=detour), self.assertRaises(ValueError):
+                probe.validate(dict(operation,input_settle_ms=250,input_detour=detour))
+        for detour in ([1,0],[-1,0],[0,1],[0,-1]):
+            probe.validate(dict(operation,input_settle_ms=250,input_detour=detour))
         mesh_op = copy.deepcopy(base["operations"][2])
         for face in ([0,1,4], [0,1,True], [0,0,2], [0,1], None):
             mesh_op["sources"][0]["faces"] = [face]

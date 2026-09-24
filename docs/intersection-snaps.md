@@ -131,7 +131,7 @@ the exact circle intersection by about `2.4e-8` in the rotated-frame case.
 
 Surface isocurves and occlusion need further work. The
 [multi-object source audit](intersection-multi-priority.md) retains 22 triple and
-quadruple crossing captures; 15 currently select a different source. Candidate
+quadruple crossing captures; five currently select a different source. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
 can still grow quadratically where many projected wires or conics overlap.
