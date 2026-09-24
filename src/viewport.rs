@@ -151,7 +151,7 @@ pub enum CircularSelectionInput {
 #[derive(Clone, Copy, Debug)]
 pub enum FenceSelectionInput<'a> {
     PickFirst,
-    Continue(&'a [Pos2]),
+    Continue(&'a [Point3]),
     Waiting,
 }
 
@@ -905,13 +905,21 @@ impl Viewport {
         }
         if let Some(FenceSelectionInput::Continue(points)) = input.fence_selection {
             let color = Color32::from_rgb(45, 145, 75);
-            for pair in points.windows(2) {
-                painter.line_segment([pair[0], pair[1]], Stroke::new(1.5, color));
+            let projected = points
+                .iter()
+                .map(|point| self.project(*point, rect))
+                .collect::<Vec<_>>();
+            for pair in projected.windows(2) {
+                if let [Some(start), Some(end)] = pair {
+                    painter.line_segment([*start, *end], Stroke::new(1.5, color));
+                }
             }
-            for &point in points {
-                painter.circle_filled(point, 2.5, color);
+            for point in projected.iter().flatten() {
+                painter.circle_filled(*point, 2.5, color);
             }
-            if let (Some(&start), Some(end)) = (points.last(), response.hover_pos()) {
+            if let (Some(start), Some(end)) =
+                (projected.last().copied().flatten(), response.hover_pos())
+            {
                 painter.line_segment([start, end], Stroke::new(1.25, color));
             }
         }

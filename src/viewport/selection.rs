@@ -418,7 +418,7 @@ impl Viewport {
         let Some(viewport_rect) = self.last_rect else {
             return Vec::new();
         };
-        if fence.len() < 2 || fence.iter().any(|point| !viewport_rect.contains(*point)) {
+        if fence.len() < 2 || fence.iter().any(|point| !point.is_finite()) {
             return Vec::new();
         }
         document
@@ -772,6 +772,58 @@ mod tests {
                 Some(ObjectSelectionFilter::HiddenObjects),
             ),
             [hidden]
+        );
+    }
+
+    #[test]
+    fn fence_reprojects_accepted_vertices_after_pan() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let crossed = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(-1.25, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let first = view.fence_anchor(Pos2::new(380.0, 300.0)).unwrap();
+        view.apply_navigation_drag(
+            PointerButton::Middle,
+            egui::Modifiers::NONE,
+            Vec2::new(40.0, 0.0),
+        );
+        let second = view.fence_anchor(Pos2::new(460.0, 300.0)).unwrap();
+        let fence = view.project_fence(&[first, second]).unwrap();
+        assert_eq!(fence, [Pos2::new(420.0, 300.0), Pos2::new(460.0, 300.0)]);
+        assert_eq!(
+            view.objects_crossed_by_fence_preview(
+                &fence,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            [crossed]
+        );
+    }
+
+    #[test]
+    fn fence_can_cross_objects_with_an_endpoint_offscreen() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Point(Point3::try_new(-10.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        assert_eq!(
+            view.objects_crossed_by_fence_preview(
+                &[Pos2::new(-20.0, 300.0), Pos2::new(20.0, 300.0)],
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            ),
+            [id]
         );
     }
 

@@ -205,7 +205,7 @@ fn fence_command_collects_one_viewport_polyline_and_selects_only_crossed_objects
     assert_eq!(output.fence_point, Some((first, 0, SelectionMode::Replace)));
     assert!(app.handle_viewport_action(output));
     app.add_fence_point(second, 1, SelectionMode::Replace);
-    assert_eq!(app.fence_selection.as_ref().unwrap().points, vec![first]);
+    assert_eq!(app.fence_selection.as_ref().unwrap().points.len(), 1);
     let right = |pressed| egui::Event::PointerButton {
         pos: second,
         button: egui::PointerButton::Secondary,
@@ -259,6 +259,44 @@ fn fence_selection_feeds_an_existing_object_prompt() {
         panic!("expected line");
     };
     assert_eq!(line.start(), point(1.0, 0.0, 0.0));
+}
+
+#[test]
+fn fence_command_keeps_accepted_points_aligned_after_pan() {
+    let mut app = test_app();
+    let target = app
+        .document
+        .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+        .unwrap();
+    app.document
+        .add_geometry(Geometry::Point(point(-1.25, 0.0, 0.0)))
+        .unwrap();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "SelFence");
+    app.add_fence_point(egui::Pos2::new(380.0, 300.0), 0, SelectionMode::Replace);
+    let middle = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        button: egui::PointerButton::Middle,
+        pressed,
+        modifiers: egui::Modifiers::NONE,
+    };
+    let start = egui::Pos2::new(300.0, 200.0);
+    let finish = egui::Pos2::new(340.0, 200.0);
+    selection_capture_frame(&context, &mut app, vec![]);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(start), middle(start, true)],
+    );
+    selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(finish)]);
+    selection_capture_frame(&context, &mut app, vec![middle(finish, false)]);
+    app.add_fence_point(egui::Pos2::new(460.0, 300.0), 0, SelectionMode::Replace);
+    enter(&mut app, "");
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![target]
+    );
 }
 
 #[test]

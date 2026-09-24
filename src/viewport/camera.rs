@@ -422,6 +422,55 @@ impl Viewport {
             .map(|[x, y]| Pos2::new(x as f32, y as f32))
     }
 
+    /// Anchor a view-based fence click on the plane through the camera target.
+    /// This plane is perpendicular to the viewing direction, including in
+    /// perspective, so accepted vertices follow the model through navigation.
+    pub(crate) fn fence_anchor(&self, pointer: Pos2) -> Option<Point3> {
+        let rect = self.last_rect?;
+        if !pointer.is_finite() || !rect.contains(pointer) {
+            return None;
+        }
+        let origin = self.world_origin(rect);
+        let dx = Real::from(pointer.x) - Real::from(origin.x);
+        let dy = Real::from(origin.y) - Real::from(pointer.y);
+        match self.kind {
+            ViewKind::Perspective => {
+                let (right, up, _) = self.perspective_basis();
+                let scale =
+                    self.perspective_camera_distance / self.perspective_focal_length_pixels(rect);
+                let local = right * (dx * scale) + up * (dy * scale);
+                Point3::try_from([
+                    self.target.x + local.x,
+                    self.target.y + local.y,
+                    self.target.z + local.z,
+                ])
+                .ok()
+            }
+            ViewKind::Plan => {
+                let scale = Real::from(self.pixels_per_unit);
+                self.plan_target_frame()?
+                    .point_at([dx / scale, dy / scale, 0.0])
+                    .ok()
+            }
+            _ => {
+                let scale = Real::from(self.pixels_per_unit);
+                let axes = self.kind.parallel_axes()?;
+                let mut point = [self.target.x, self.target.y, self.target.z];
+                point[axes.right.0] += dx / scale * axes.right.1;
+                point[axes.up.0] += dy / scale * axes.up.1;
+                Point3::try_from(point).ok()
+            }
+        }
+    }
+
+    pub(crate) fn project_fence(&self, points: &[Point3]) -> Option<Vec<Pos2>> {
+        let rect = self.last_rect?;
+        points
+            .iter()
+            .map(|point| self.project(*point, rect))
+            .collect()
+    }
+
     /// Keep model-point query minimization independent of egui's f32 raster coordinates.
     pub(super) fn project_precise(&self, point: Point3, rect: Rect) -> Option<[Real; 2]> {
         let origin = self.world_origin(rect);
@@ -942,6 +991,50 @@ fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fence_anchors_follow_the_model_through_pan_zoom_and_resize() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let pointer = Pos2::new(450.0, 260.0);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+            ViewKind::Plan,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            let anchor = view.fence_anchor(pointer).unwrap();
+            assert!(view.project(anchor, rect).unwrap().distance(pointer) < 0.001);
+            view.apply_navigation_drag(
+                PointerButton::Middle,
+                egui::Modifiers::NONE,
+                Vec2::new(35.0, -20.0),
+            );
+            let after_pan = view.project_fence(&[anchor]).unwrap()[0];
+            assert!(after_pan.distance(pointer) > 1.0, "{kind:?}");
+            view.zoom_by(1.3, Some(rect.center()), rect);
+            let after_zoom = view.project_fence(&[anchor]).unwrap()[0];
+            assert!(after_zoom.distance(after_pan) > 1.0, "{kind:?}");
+            let resized = Rect::from_min_size(Pos2::ZERO, Vec2::new(960.0, 650.0));
+            view.last_rect = Some(resized);
+            let after_resize = view.project_fence(&[anchor]).unwrap()[0];
+            assert!(after_resize.distance(after_zoom) > 1.0, "{kind:?}");
+            let recovered = view.fence_anchor(after_resize).unwrap();
+            assert!(
+                anchor
+                    .to_array()
+                    .into_iter()
+                    .zip(recovered.to_array())
+                    .all(|(a, b)| (a - b).abs() < 1e-5),
+                "{kind:?}: anchor={anchor:?}, recovered={recovered:?}"
+            );
+        }
+    }
 
     #[test]
     fn zoom_window_centers_the_chosen_region_in_each_view() {

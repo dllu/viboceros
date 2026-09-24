@@ -48,7 +48,7 @@ enum CircularSelectionState {
 #[derive(Clone, Debug)]
 struct FenceSelectionState {
     viewport: Option<usize>,
-    points: Vec<egui::Pos2>,
+    points: Vec<Point3>,
     mode: SelectionMode,
 }
 
@@ -5284,25 +5284,31 @@ impl VibocerosApp {
     }
 
     fn add_fence_point(&mut self, point: egui::Pos2, viewport: usize, mode: SelectionMode) {
-        let Some(state) = self.fence_selection.as_mut() else {
+        let Some(state) = self.fence_selection.as_ref() else {
             return;
         };
-        if let Some(first_viewport) = state.viewport {
-            if first_viewport != viewport {
-                self.push_log("Continue the fence in its starting viewport".into());
-                return;
-            }
-        } else {
-            state.viewport = Some(viewport);
-        }
-        if state
-            .points
-            .last()
-            .is_some_and(|last| last.distance(point) < 1.0)
+        if let Some(first_viewport) = state.viewport
+            && first_viewport != viewport
         {
+            self.push_log("Continue the fence in its starting viewport".into());
             return;
         }
-        state.points.push(point);
+        let Some(view) = self.viewports.get(viewport) else {
+            return;
+        };
+        let Some(anchor) = view.fence_anchor(point) else {
+            self.push_log("Fence point could not be placed in the view".into());
+            return;
+        };
+        if state.points.last().is_some_and(|last| {
+            view.project_fence(&[*last])
+                .is_some_and(|projected| projected[0].distance(point) < 1.0)
+        }) {
+            return;
+        }
+        let state = self.fence_selection.as_mut().unwrap();
+        state.viewport.get_or_insert(viewport);
+        state.points.push(anchor);
         state.mode = mode;
     }
 
@@ -5318,6 +5324,13 @@ impl VibocerosApp {
         let Some(viewport) = state.viewport else {
             return;
         };
+        let Some(fence) = self.viewports[viewport].project_fence(&state.points) else {
+            self.fence_selection = Some(state);
+            self.push_log(
+                "Fence is outside the current camera view; restore the view or Esc".into(),
+            );
+            return;
+        };
         let filter = self.viewport_object_filter().unwrap_or_default();
         let preview = self
             .object_prompt
@@ -5325,7 +5338,7 @@ impl VibocerosApp {
             .filter(|prompt| prompt.special_selection.is_some())
             .map(|prompt| prompt.description.filter);
         let ids = self.viewports[viewport].objects_crossed_by_fence_preview(
-            &state.points,
+            &fence,
             &self.document,
             filter,
             preview,

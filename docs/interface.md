@@ -138,9 +138,10 @@ view-plane selection.
 `SelFence` collects two or more clicks in one viewport and selects only objects
 crossed by the resulting screen-space polyline. Enter or right-click finishes;
 Esc cancels. The fence can cross points, visible wires, and shaded faces, and
-respects current object filters. Rhino also accepts an existing curve as a fence;
-that option remains open. Fence vertices currently stay at their screen positions
-if the view changes mid-sketch. See
+respects current object filters. Accepted vertices are anchored to the camera
+target plane and reproject after viewport navigation; they can move offscreen
+while the model remains aligned. Rhino also accepts an existing curve as a fence;
+that option remains open. See
 [SelFence](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelFence).
 
 Navigation ignores non-finite drag deltas, invalid zoom factors/pointers, and
