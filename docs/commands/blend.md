@@ -15,7 +15,7 @@ degrees for mixed choices. Curvature ends match the source curvature vector.
 `Handle1` and `Handle2` set handle lengths in model units. Their defaults are
 the endpoint distance for tangency and 40% of it for curvature.
 
-The [Rhino API comparison](../blend-oracle.md) covers nine line input cases;
+The [Rhino API comparison](../blend-oracle.md) covers eleven line input cases;
 mixed-continuity handle shapes still differ from Rhino.
 
 ```text

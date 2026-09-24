@@ -2,7 +2,7 @@
 
 [Blend command](commands/blend.md) · [Oracle setup](oracle.md)
 
-The [nine shared line inputs](../tools/rhino_oracle/fixtures/blend_lines.json)
+The [eleven shared line inputs](../tools/rhino_oracle/fixtures/blend_lines.json)
 were run against Rhino 8.32's public
 [`Curve.CreateBlendCurve`](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/createblendcurve)
 API in an owned private Xvfb session. The
@@ -18,10 +18,10 @@ their degrees and every control point within `1e-12`. Rhino's curve domain
 ends near its computed arc length; the saved raw domains differ from
 Viboceros's independently integrated lengths by less than `3e-8`.
 
-Four mixed-continuity inputs use RhinoCommon's endpoint-specific overload.
-Both engines produce degree 2 for G0/G1 and degree 4 for G1/G2, with matching
-endpoints and normalized `[0,1]` domains. Rhino chooses different interior
-handle lengths, so their shapes remain explicit parity differences. The
+Six mixed-continuity inputs use RhinoCommon's endpoint-specific overload.
+Both engines produce degree 2 for G0/G1, degree 3 for G0/G2, and degree 4 for
+G1/G2. Endpoints and normalized `[0,1]` domains match. Rhino chooses different
+interior handle lengths, so their shapes remain explicit parity differences. The
 [oracle regression](../crates/viboceros-oracle/src/blend_curve.rs) checks
 matched fields without rewriting the recorded Rhino values.
 

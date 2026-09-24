@@ -78,7 +78,7 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
 
 #[cfg(test)]
 mod tests {
-    use crate::{ProbeRequest, ProbeResponse, run_request};
+    use crate::{Operation, ProbeRequest, ProbeResponse, run_request};
 
     #[test]
     fn line_blends_match_rhino_degrees_and_same_continuity_control_shapes() {
@@ -93,6 +93,18 @@ mod tests {
         let native = run_request(&request).unwrap();
         assert_eq!(native.results.len(), rhino.results.len());
         for (index, (actual, expected)) in native.results.iter().zip(&rhino.results).enumerate() {
+            let Operation::BlendCurve { fixture, .. } = &request.operations[index] else {
+                panic!("blend line fixture contains another operation");
+            };
+            let first_mode = fixture
+                .continuity_first
+                .as_deref()
+                .unwrap_or(&fixture.continuity);
+            let second_mode = fixture
+                .continuity_second
+                .as_deref()
+                .unwrap_or(&fixture.continuity);
+            let same_continuity = first_mode == second_mode;
             assert_eq!(actual.id, expected.id);
             assert_eq!(actual.value["degree"], expected.value["degree"]);
             let actual_controls = actual.value["control_points"].as_array().unwrap();
@@ -105,7 +117,9 @@ mod tests {
                     let difference = (actual["point"][coordinate].as_f64().unwrap()
                         - expected["point"][coordinate].as_f64().unwrap())
                     .abs();
-                    if index < 5 || control_index == 0 || control_index + 1 == actual_controls.len()
+                    if same_continuity
+                        || control_index == 0
+                        || control_index + 1 == actual_controls.len()
                     {
                         assert!(
                             difference < 1e-12,
@@ -118,7 +132,7 @@ mod tests {
             }
             let actual_end = actual.value["domain"][1].as_f64().unwrap();
             let expected_end = expected.value["domain"][1].as_f64().unwrap();
-            let maximum = if index < 5 { 3e-8 } else { 1e-12 };
+            let maximum = if same_continuity { 3e-8 } else { 1e-12 };
             assert!(
                 (actual_end - expected_end).abs() < maximum,
                 "{} domain difference {}",
