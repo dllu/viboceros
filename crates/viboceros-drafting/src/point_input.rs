@@ -14,7 +14,9 @@ pub struct PointInput {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum PointInputError {
-    #[error("enter x,y[,z], x,y<elevation, distance<angle[,z], or distance<angle<elevation")]
+    #[error(
+        "enter x,y[,z], x,y<elevation, distance<angle[,z], distance<angle<elevation, or distance<N/Sangle E/W"
+    )]
     Syntax,
     #[error("point coordinates must be finite numbers")]
     InvalidNumber,
@@ -31,7 +33,7 @@ pub enum PointInputError {
 impl PointInput {
     /// Parses a point-like token, returning `None` for ordinary command text.
     /// Coordinates have no internal whitespace. R/@ and W prefixes may be
-    /// combined in either order; angles are decimal degrees, not radians.
+    /// combined in either order; unsuffixed angles are decimal degrees.
     pub fn parse(text: &str) -> Option<Result<Self, PointInputError>> {
         Self::parse_with_units(text, &LengthUnitSystem::Millimeters)
     }
@@ -146,6 +148,9 @@ fn angle_number(text: &str, units: &LengthUnitSystem) -> Result<Real, PointInput
     {
         return Err(PointInputError::Syntax);
     }
+    if text.contains(['\'', '"']) {
+        return dms_angle(text);
+    }
     let lower = text.to_ascii_lowercase();
     for (suffix, multiplier) in [
         ("gradians", 0.9),
@@ -162,6 +167,39 @@ fn angle_number(text: &str, units: &LengthUnitSystem) -> Result<Real, PointInput
         }
     }
     number(text, units)
+}
+
+fn dms_angle(text: &str) -> Result<Real, PointInputError> {
+    let (sign, unsigned) = match text.as_bytes().first() {
+        Some(b'-') => (-1.0, &text[1..]),
+        Some(b'+') => (1.0, &text[1..]),
+        _ => (1.0, text),
+    };
+    let (degrees, minutes_seconds) = match unsigned.find(['d', 'D']) {
+        Some(at) => (unsigned[..at].parse::<Real>().ok(), &unsigned[at + 1..]),
+        None => (Some(0.0), unsigned),
+    };
+    let (minutes, seconds) = minutes_seconds
+        .split_once('\'')
+        .ok_or(PointInputError::Syntax)?;
+    let minutes = minutes
+        .parse::<Real>()
+        .map_err(|_| PointInputError::Syntax)?;
+    let seconds = if seconds.is_empty() {
+        0.0
+    } else {
+        seconds
+            .strip_suffix('"')
+            .ok_or(PointInputError::Syntax)?
+            .parse::<Real>()
+            .map_err(|_| PointInputError::Syntax)?
+    };
+    let degrees = degrees.ok_or(PointInputError::Syntax)?;
+    let value = sign * (degrees + minutes / 60.0 + seconds / 3600.0);
+    if !value.is_finite() || !(0.0..60.0).contains(&minutes) || !(0.0..60.0).contains(&seconds) {
+        return Err(PointInputError::InvalidNumber);
+    }
+    Ok(value)
 }
 
 fn coordinates(text: &str, units: &LengthUnitSystem) -> Result<[Real; 3], PointInputError> {
@@ -215,6 +253,23 @@ fn coordinates(text: &str, units: &LengthUnitSystem) -> Result<[Real; 3], PointI
         [radius, azimuth] => {
             let radius = number(radius, units)?;
             let components = split_components(azimuth);
+            if let [angle] = components.as_slice()
+                && angle.len() >= 3
+                && angle.starts_with(['N', 'n', 'S', 's'])
+            {
+                let north = angle.starts_with(['N', 'n']);
+                let east = angle.ends_with(['E', 'e']);
+                if !east && !angle.ends_with(['W', 'w']) {
+                    return Err(PointInputError::Syntax);
+                }
+                let bearing = angle_number(&angle[1..angle.len() - 1], units)?;
+                let (sin, cos) = sin_cos_degrees(bearing);
+                return Ok([
+                    radius * if east { sin } else { -sin },
+                    radius * if north { cos } else { -cos },
+                    0.0,
+                ]);
+            }
             let (angle, z) = match components.as_slice() {
                 [angle] => (angle_number(angle, units)?, 0.0),
                 [angle, z] => (angle_number(angle, units)?, number(z, units)?),

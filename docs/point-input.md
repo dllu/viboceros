@@ -196,13 +196,16 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `5<30` or `5<30,2` | Polar distance/angle, with optional height |
 | `5<30<45` | Spherical distance/azimuth/elevation |
 | `5,6<15` | Horizontal X/Y and spherical elevation angle; Z is `hypot(5,6) * tan(15°)` |
+| `11<N30d22'54.43"W` | Surveyor bearing measured from north toward west |
+| `5<15d30'22.345"` | Polar angle in degrees, arc minutes, and arc seconds |
 | `5/16,1-3/4` | Fraction and mixed-fraction coordinates |
 | `2*(3+4),8/2` | Arithmetic expressions with parentheses |
 | `27cm,1m` | Length suffixes converted to the document's model units |
 | `1'2-3/4",1/2in` | Feet-and-inches and fractional inches |
 
-Prefixes are case-insensitive and also apply to polar/spherical inputs. Angles
-are decimal degrees. Coordinates contain no internal whitespace. For example,
+Prefixes are case-insensitive and also apply to polar/spherical inputs. Bare
+angles are decimal degrees; `d`, `'`, and `"` denote degrees, arc minutes,
+and arc seconds. Coordinates contain no internal whitespace. For example,
 enter `Polyline`, `0`, `r4,0`, `@3<90`, then Enter.
 Negative spherical distances reverse the horizontal bearing; elevation retains
 its own above/below-plane sign, matching the measured Rhino prompt behavior.
@@ -261,8 +264,14 @@ rejects arithmetic directly after a length suffix. The [failed transcripts](../t
 remain separate from the passing unit fixtures. Other unit names and compound
 unit expressions remain incomplete.
 
+Surveyor bearings use the construction plane's north/south Y axis and east/west
+X axis. The `point_input_surveyor.json` fixture records Rhino's northwest,
+southeast, and relative northwest bearings, plus a polar DMS angle; all replay
+within `1e-12` model units.
+Arc minutes and seconds must each be below 60 in native input.
+
 Not yet implemented: general scalar distance/angle
-constraints, comprehensive length-unit aliases, surveyor/DMS notation, and
+constraints, comprehensive length-unit aliases, and
 editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 

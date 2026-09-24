@@ -1,0 +1,36 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "surveyor-top",
+      "value": {
+        "points": [[0.0, 0.0, 0.0], [-5.563355072841036, 9.489419388639849, 0.0]]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "surveyor-south-east",
+      "value": {
+        "points": [[0.0, 0.0, 0.0], [5.563355072841038, -9.489419388639849, 0.0]]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "surveyor-relative-northwest",
+      "value": {
+        "points": [[0.0, 0.0, 0.0], [-5.563355072841036, 9.489419388639849, 0.0]]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "dms-polar-top",
+      "value": {
+        "points": [[0.0, 0.0, 0.0], [4.818007485944025, 1.3367138307758082, 0.0]]
+      }
+    }
+  ]
+}

@@ -28,6 +28,40 @@ fn resolve_in_units(
 }
 
 #[test]
+fn dms_angles_and_surveyor_bearings_resolve_on_rotated_plane() {
+    let origin = Point3::try_new(10.0, 20.0, 30.0).unwrap();
+    let angle = 30.0_f64 + 22.0 / 60.0 + 54.43 / 3600.0;
+    let (sin, cos) = angle.to_radians().sin_cos();
+    for (token, local) in [
+        ("11<N30d22'54.43\"E", [11.0 * sin, 11.0 * cos]),
+        ("11<N30d22'54.43\"W", [-11.0 * sin, 11.0 * cos]),
+        ("11<S30d22'54.43\"E", [11.0 * sin, -11.0 * cos]),
+        ("11<S30d22'54.43\"W", [-11.0 * sin, -11.0 * cos]),
+    ] {
+        let actual = resolve(token, None).unwrap().to_array();
+        assert!((actual[0] - 10.0).abs() < 1e-12, "{token}");
+        assert!((actual[1] - (20.0 + local[0])).abs() < 1e-12, "{token}");
+        assert!((actual[2] - (30.0 + local[1])).abs() < 1e-12, "{token}");
+    }
+    let polar = resolve("r5<15d30'22.345\"", Some(origin))
+        .unwrap()
+        .to_array();
+    let polar_angle = (15.0_f64 + 30.0 / 60.0 + 22.345 / 3600.0).to_radians();
+    assert!((polar[1] - (20.0 + 5.0 * polar_angle.cos())).abs() < 1e-12);
+    assert!((polar[2] - (30.0 + 5.0 * polar_angle.sin())).abs() < 1e-12);
+    let minutes = resolve("w60<22'", None).unwrap().to_array();
+    assert!((minutes[1] - 60.0 * (22.0_f64 / 60.0).to_radians().sin()).abs() < 1e-12);
+    for invalid in [
+        "5<15d60'",
+        "5<15d30'60\"",
+        "5<15d30'22",
+        "5<N30d22'54.43\"Q",
+    ] {
+        assert!(resolve(invalid, None).is_err(), "{invalid}");
+    }
+}
+
+#[test]
 fn cartesian_prefixes_respect_world_plane_and_previous_point() {
     let previous = Some(Point3::try_new(5.0, 6.0, 7.0).unwrap());
     for (input, expected) in [

@@ -3207,6 +3207,12 @@ def _point_input_script(points):
         if not isinstance(token, string_types) or not token or len(token) > 512:
             raise ValueError("invalid point token")
         body = token.lstrip("rRwW@")
+        # A narrow surveyor/DMS form keeps the macro coordinate-only while
+        # permitting Rhino's documented N30d22'54.43"W bearing syntax.
+        if re.match(r'''^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)<[NnSs][0-9]+(?:\.[0-9]+)?[dD][0-9]+(?:\.[0-9]+)?'[0-9]+(?:\.[0-9]+)?"[EeWw]\Z''', body):
+            continue
+        if re.match(r'''^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)<[0-9]+[dD][0-9]+'[0-9]+(?:\.[0-9]+)?"\Z''', body):
+            continue
         allowed_names = ("pi", "degrees", "radians", "gradians", "sin", "cos", "tan",
                          "asin", "acos", "atan", "atan2", "ln", "log10", "exp",
                          "sinh", "cosh", "tanh", "pow", "sqrt", "mm", "millimeter",

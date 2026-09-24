@@ -63,6 +63,14 @@ mod tests {
     }
 
     #[test]
+    fn surveyor_and_dms_angles_match_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_input_surveyor.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_input_surveyor.json"),
+        );
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"
