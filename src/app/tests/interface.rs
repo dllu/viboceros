@@ -1338,6 +1338,57 @@ fn view_history_is_per_viewport_and_independent_of_model_history() {
 }
 
 #[test]
+fn zoom_factor_prompt_retries_invalid_values_and_preserves_model_input() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    for command in ["Point 1,2,3", "Point 4,5,6", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    let objects = app.document.objects().cloned().collect::<Vec<_>>();
+    let before = app.viewports.each_ref().map(Viewport::camera_snapshot);
+
+    enter(&mut app, "Zoom Factor");
+    assert_eq!(app.zoom_factor_pending, Some(0));
+    assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
+    for invalid in ["0", "NaN", "abc"] {
+        enter(&mut app, invalid);
+        assert_eq!(app.zoom_factor_pending, Some(0));
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
+    }
+    app.active_viewport = 1;
+    enter(&mut app, "2");
+    assert_eq!(app.zoom_factor_pending, None);
+    assert_ne!(app.viewports[0].camera_snapshot(), before[0]);
+    assert_eq!(app.viewports[1].camera_snapshot(), before[1]);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), objects);
+
+    enter(&mut app, "Zoom Factor");
+    assert_eq!(app.zoom_factor_pending, Some(1));
+    enter(&mut app, "");
+    assert_eq!(app.zoom_factor_pending, None);
+    assert_eq!(app.viewports[1].camera_snapshot(), before[1]);
+    app.active_viewport = 0;
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[0].camera_snapshot(), before[0]);
+
+    let mut selection_app = test_app();
+    enter(&mut selection_app, "SelWindow");
+    enter(&mut selection_app, "Zoom Factor");
+    enter(&mut selection_app, "");
+    assert_eq!(selection_app.zoom_factor_pending, None);
+    assert_eq!(
+        selection_app.selection_window_override,
+        Some(viboceros_command::interface::RectSelectionMode::Window)
+    );
+}
+
+#[test]
 fn zoom_all_records_one_independent_view_step_per_viewport() {
     let mut app = test_app();
     enter(&mut app, "Point 10,20,30");

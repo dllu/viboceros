@@ -36,7 +36,8 @@ impl CommandLineState {
 
 impl VibocerosApp {
     fn command_line_idle(&self) -> bool {
-        self.active_command.is_none()
+        self.zoom_factor_pending.is_none()
+            && self.active_command.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -130,7 +131,9 @@ impl VibocerosApp {
                     .completion
                     .refresh(&self.commands, &self.command_input, idle);
                 ui.horizontal(|ui| {
-                    let label = if self.plane_prompt.is_some() {
+                    let label = if self.zoom_factor_pending.is_some() {
+                        "Zoom Factor"
+                    } else if self.plane_prompt.is_some() {
                         "CPlane"
                     } else if let Some(prompt) = &self.object_prompt {
                         prompt.label()
@@ -189,7 +192,9 @@ impl VibocerosApp {
                             .id(id)
                             .lock_focus(true)
                             .desired_width(f32::INFINITY)
-                            .hint_text(if self.plane_prompt.is_some() {
+                            .hint_text(if self.zoom_factor_pending.is_some() {
+                                "Enter a positive factor; Enter or Esc cancels"
+                            } else if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
                             } else if let Some(prompt) = &self.object_prompt {
                                 prompt.hint()

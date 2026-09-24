@@ -36,8 +36,10 @@ already-reached limit reports no change.
 Factors are parsed and applied in f64, including finite values outside f32 range.
 Missing layout, invalid arguments, or an unrepresentable resulting pan leave
 the camera unchanged. Like the other Zoom actions, Factor preserves modeling
-prompts, selection, and undo/redo. It currently requires an inline factor; bare
-`Zoom Factor` does not open a numeric prompt, and `Zoom All Factor` is unsupported.
+prompts, selection, and undo/redo. Bare `Zoom Factor` opens a numeric prompt;
+invalid values leave it open for another entry, while Enter or Esc cancels it.
+The prompt applies to the viewport active when it started. `Zoom All Factor` is
+unsupported, matching Rhino's listed All options.
 
 `Zoom` or `Zoom Window` starts a viewport drag: press the left mouse button,
 draw a rectangle, and release. Ctrl/Cmd+W starts the same action. The chosen

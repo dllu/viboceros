@@ -3,7 +3,7 @@
 use super::*;
 use viboceros_command::interface::{
     self, InterfaceCommand, InterfaceState, RectSelectionMode, SwitchAction, ViewportTarget,
-    WorldView,
+    WorldView, ZoomFactor,
 };
 
 impl VibocerosApp {
@@ -106,6 +106,16 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::ZoomFactorPrompt {
+                    self.zoom_factor_pending = Some(self.active_viewport);
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.push_log(
+                        "Zoom Factor: enter a positive number; Enter or Esc to cancel".into(),
+                    );
+                    return;
+                }
+                self.zoom_factor_pending = None;
                 if let InterfaceCommand::SelBoundary(mode) = command {
                     if !self.can_capture_selection() {
                         self.push_log("Boundary selection unavailable during this prompt".into());
@@ -398,6 +408,37 @@ impl VibocerosApp {
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+    }
+
+    pub(super) fn try_continue_zoom_factor(&mut self, input: &str) -> bool {
+        let Some(viewport) = self.zoom_factor_pending else {
+            return false;
+        };
+        self.command_input.clear();
+        if input.is_empty() {
+            self.zoom_factor_pending = None;
+            self.push_log("Zoom Factor canceled".into());
+            return true;
+        }
+        self.push_log(format!("> {input}"));
+        let Some(factor) = input.parse::<f64>().ok().and_then(ZoomFactor::try_new) else {
+            self.push_log("Error: Zoom Factor requires a finite positive number".into());
+            return true;
+        };
+        self.zoom_factor_pending = None;
+        let result = self.viewports[viewport].zoom_factor(factor.value());
+        self.push_log(match result {
+            Ok(true) => format!(
+                "Zoomed by factor {} (viewport {})",
+                factor.value(),
+                viewport + 1
+            ),
+            Ok(false) => {
+                "Zoom unchanged (factor has no effect at current precision or limits)".into()
+            }
+            Err(error) => format!("Error: {error}"),
+        });
+        true
     }
 
     pub(super) fn try_run_interface_command(&mut self, input: &str) -> bool {

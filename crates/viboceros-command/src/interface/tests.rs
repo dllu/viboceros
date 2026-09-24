@@ -46,8 +46,11 @@ fn zoom_factor_is_finite_positive_and_does_not_mutate_interface_state() {
     for value in [0.0, -0.0, -1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
         assert!(ZoomFactor::try_new(value).is_none());
     }
+    assert_eq!(
+        parse("Zoom Factor"),
+        Some(Ok(InterfaceCommand::ZoomFactorPrompt))
+    );
     for input in [
-        "Zoom Factor",
         "Zoom Factor 0",
         "Zoom Factor -0",
         "Zoom Factor -1",

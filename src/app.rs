@@ -1386,6 +1386,7 @@ pub struct VibocerosApp {
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
     zoom_window_pending: bool,
+    zoom_factor_pending: Option<usize>,
     selection_window_override: Option<viboceros_command::interface::RectSelectionMode>,
     selection_menu: Option<SelectionMenu>,
     circular_selection: Option<CircularSelectionState>,
@@ -1439,6 +1440,7 @@ impl VibocerosApp {
             zoom_scale,
             zoom_extents_borders,
             zoom_window_pending: false,
+            zoom_factor_pending: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
@@ -1471,6 +1473,10 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if input.is_empty() && self.zoom_factor_pending.is_some() {
+            self.try_continue_zoom_factor(&input);
+            return;
+        }
         if input.is_empty() && self.selection_window_override.take().is_some() {
             self.push_log("Selection window canceled".into());
             self.command_input.clear();
@@ -1531,6 +1537,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_zoom_target(&input) {
+            return;
+        }
+        if self.try_continue_zoom_factor(&input) {
             return;
         }
         if self.try_continue_plane_prompt(&input) {
@@ -6141,6 +6150,8 @@ impl eframe::App for VibocerosApp {
                 // Escape dismisses the choice without changing the selection.
             } else if self.zoom_target.take().is_some() {
                 self.push_log("Zoom Target canceled".into());
+            } else if self.zoom_factor_pending.take().is_some() {
+                self.push_log("Zoom Factor canceled".into());
             } else if self.zoom_window_pending {
                 self.zoom_window_pending = false;
                 self.push_log("Zoom window canceled".into());
@@ -6569,6 +6580,7 @@ mod tests {
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),
             zoom_window_pending: false,
+            zoom_factor_pending: None,
             selection_window_override: None,
             selection_menu: None,
             circular_selection: None,
