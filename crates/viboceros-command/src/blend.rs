@@ -185,6 +185,9 @@ mod tests {
             })
             .expect("selected quartic blend");
         assert_eq!(blend.degree(), 4);
+        let controls = blend.control_points();
+        assert!((controls[1].point().x() - 2.1717082451262844).abs() < 1e-12);
+        assert!((controls[3].point().y() - 0.060747286907391285).abs() < 1e-12);
     }
 
     #[test]

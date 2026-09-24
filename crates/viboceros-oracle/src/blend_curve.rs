@@ -81,7 +81,7 @@ mod tests {
     use crate::{Operation, ProbeRequest, ProbeResponse, run_request};
 
     #[test]
-    fn line_blends_match_rhino_degrees_and_same_continuity_control_shapes() {
+    fn line_blends_match_saved_rhino_control_shapes() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/blend_lines.json"
         ))
@@ -110,23 +110,16 @@ mod tests {
             let actual_controls = actual.value["control_points"].as_array().unwrap();
             let expected_controls = expected.value["control_points"].as_array().unwrap();
             assert_eq!(actual_controls.len(), expected_controls.len());
-            for (control_index, (actual, expected)) in
-                actual_controls.iter().zip(expected_controls).enumerate()
-            {
+            for (actual, expected) in actual_controls.iter().zip(expected_controls) {
                 for coordinate in 0..3 {
                     let difference = (actual["point"][coordinate].as_f64().unwrap()
                         - expected["point"][coordinate].as_f64().unwrap())
                     .abs();
-                    if same_continuity
-                        || control_index == 0
-                        || control_index + 1 == actual_controls.len()
-                    {
-                        assert!(
-                            difference < 1e-12,
-                            "{} control difference {difference}",
-                            actual
-                        );
-                    }
+                    assert!(
+                        difference < 1e-12,
+                        "{} control difference {difference}",
+                        actual
+                    );
                 }
                 assert_eq!(actual["weight"], expected["weight"]);
             }
@@ -144,16 +137,27 @@ mod tests {
 
     #[test]
     fn parallel_source_mixed_blends_match_saved_rhino_control_shapes() {
-        let request: ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/blend_parallel_lines.json"
-        ))
-        .unwrap();
-        let rhino: ProbeResponse = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/blend_parallel_lines.json"
-        ))
-        .unwrap();
+        assert_full_line_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_parallel_lines.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_parallel_lines.json"),
+            48,
+        );
+    }
+
+    #[test]
+    fn spatial_mixed_blends_match_saved_rhino_control_shapes() {
+        assert_full_line_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_mixed_spatial.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_mixed_spatial.json"),
+            96,
+        );
+    }
+
+    fn assert_full_line_blend_parity(request_json: &str, rhino_json: &str, expected_count: usize) {
+        let request: ProbeRequest = serde_json::from_str(request_json).unwrap();
+        let rhino: ProbeResponse = serde_json::from_str(rhino_json).unwrap();
         let native = run_request(&request).unwrap();
-        assert_eq!(native.results.len(), 48);
+        assert_eq!(native.results.len(), expected_count);
         assert_eq!(native.results.len(), rhino.results.len());
         for (actual, expected) in native.results.iter().zip(&rhino.results) {
             assert_eq!(actual.id, expected.id);

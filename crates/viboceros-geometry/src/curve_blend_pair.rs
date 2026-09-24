@@ -100,23 +100,18 @@ pub fn try_blend_curve(
     if options.continuity[0] != options.continuity[1]
         && let (Some(first_direction), Some(second_direction)) = (first_direction, second_direction)
     {
-        let first_axis = first_direction.as_vector();
-        let second_axis = second_direction.as_vector();
-        let projection = chord.dot(first_axis)?;
-        if first_axis.cross(second_axis)?.length()? == 0.0
-            && first_axis.dot(second_axis)? > 0.0
-            && projection > 0.0
-        {
-            // Rhino's endpoint-specific blend gives parallel source tangents a
-            // degree-independent endpoint speed of 2 * (1.4 * chord - projected
-            // chord). Thus a degree-n single span uses that speed divided by n.
-            let parallel_handle = 2.0 * (1.4 * chord_length - projection) / degree as Real;
-            if options.handles[0].is_none() {
-                first_handle = parallel_handle;
-            }
-            if options.handles[1].is_none() {
-                second_handle = parallel_handle;
-            }
+        let chord_direction = chord.normalized_nonzero()?.as_vector();
+        // The endpoint-specific Rhino blend uses the absolute chord projections
+        // on both source tangent lines. The resulting endpoint speeds are
+        // independent of the blend degree; divide by degree for Bézier handles.
+        let a = chord_direction.dot(first_direction.as_vector())?.abs();
+        let b = chord_direction.dot(second_direction.as_vector())?.abs();
+        let speed_scale = 2.0 / degree as Real * chord_length;
+        if options.handles[0].is_none() {
+            first_handle = speed_scale * (1.4 - a + (a - b) * (0.3 + 0.5 * b));
+        }
+        if options.handles[1].is_none() {
+            second_handle = speed_scale * (1.4 - b + (b - a) * (0.3 + 0.5 * a));
         }
     }
     let mut controls = vec![start; degree + 1];

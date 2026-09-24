@@ -20,20 +20,32 @@ Viboceros's independently integrated lengths by less than `3e-8`.
 
 Six mixed-continuity inputs use RhinoCommon's endpoint-specific overload.
 Both engines produce degree 2 for G0/G1, degree 3 for G0/G2, and degree 4 for
-G1/G2. Endpoints and normalized `[0,1]` domains match. Rhino chooses different
-interior handle lengths, so their shapes remain explicit parity differences. The
-[oracle regression](../crates/viboceros-oracle/src/blend_curve.rs) checks
-matched fields without rewriting the recorded Rhino values.
+G1/G2. Their controls match within `1e-12`, and both engines retain normalized
+`[0,1]` domains. The [oracle regression](../crates/viboceros-oracle/src/blend_curve.rs)
+checks these fields without rewriting the recorded Rhino values.
 
 The [48 parallel-tangent line inputs](../tools/rhino_oracle/fixtures/blend_parallel_lines.json)
 cover all six mixed combinations with collinear, offset, translated, scaled,
 diagonal, nearly collinear, and spatial endpoints. Their
 [raw Rhino definitions](../tools/rhino_oracle/observations/blend_parallel_lines.json)
-show a degree-independent endpoint speed of `2 × (1.4 × chord length − chord
-projection onto the source tangent)`. Viboceros now matches their degrees,
-knots, weights, domains, and every control point within `1e-12`. The formula
-has been measured for parallel line sources; nonparallel mixed controls remain
-unmatched.
+match Viboceros in degree, knots, weights, domain, and every control point
+within `1e-12`.
+
+Another [96 spatial mixed inputs](../tools/rhino_oracle/fixtures/blend_mixed_spatial.json)
+cover sixteen independent 3D line pairs and all six mixed modes. Their
+[raw definitions](../tools/rhino_oracle/observations/blend_mixed_spatial.json)
+also fully match within `1e-12`. Across these probes, let `L` be the endpoint
+distance and let `a` and `b` be the absolute chord projections onto the two
+unit source tangent lines divided by `L`. The endpoint handle lengths for a
+degree `n` mixed blend are:
+
+```text
+first  = 2L/n × [1.4 − a + (a − b)(0.3 + 0.5b)]
+second = 2L/n × [1.4 − b + (b − a)(0.3 + 0.5a)]
+```
+
+The formula is inferred from line-source Rhino observations. Curved source
+defaults and interactive `Blend` behavior still require separate comparison.
 
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
