@@ -53,3 +53,53 @@ fn joined_curve_fillets_match_saved_rhino_samples() {
         }
     }
 }
+
+#[test]
+fn separate_curve_fillet_options_match_saved_rhino_samples() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/curve_fillet_pair_parts.json"
+    ))
+    .unwrap();
+    let response = run_request(&request).unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/curve_fillet_pair_parts.json"
+    ))
+    .unwrap();
+    assert_eq!(observed["engine"], "rhino");
+    for (row, reference) in response
+        .results
+        .into_iter()
+        .zip(observed["results"].as_array().unwrap())
+    {
+        assert_eq!(row.id, reference["id"].as_str().unwrap());
+        let parts = row.value["parts"].as_array().unwrap();
+        let expected = reference["value"]["parts"].as_array().unwrap();
+        assert_eq!(parts.len(), expected.len(), "{}", row.id);
+        for (part_index, (part, reference)) in parts.iter().zip(expected).enumerate() {
+            assert_eq!(part["closed"], reference["closed"]);
+            let length = part["length"].as_f64().unwrap();
+            let expected_length = reference["length"].as_f64().unwrap();
+            assert!(
+                (length - expected_length).abs() < 1e-10,
+                "{}, part {part_index}",
+                row.id
+            );
+            let samples = part["samples"].as_array().unwrap();
+            let expected_samples = reference["samples"].as_array().unwrap();
+            assert_eq!(samples.len(), 65);
+            for (station, (sample, expected_sample)) in
+                samples.iter().zip(expected_samples).enumerate()
+            {
+                for axis in 0..3 {
+                    let actual = sample[axis].as_f64().unwrap();
+                    let expected = expected_sample[axis].as_f64().unwrap();
+                    assert!(
+                        (actual - expected).abs() < 1e-10,
+                        "{}, part {part_index}, station {station}, axis {axis}: {actual} != {expected}",
+                        row.id
+                    );
+                }
+            }
+        }
+    }
+}

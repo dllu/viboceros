@@ -513,6 +513,16 @@ pub enum Operation {
         pick1: [f64; 3],
         radius: f64,
     },
+    CurveFilletPairParts {
+        id: String,
+        curve0: curve_join_close::CurveInput,
+        curve1: curve_join_close::CurveInput,
+        pick0: [f64; 3],
+        pick1: [f64; 3],
+        radius: f64,
+        join: bool,
+        trim: bool,
+    },
     NonManifoldSelection {
         id: String,
         as_brep: bool,
@@ -1824,6 +1834,7 @@ impl Operation {
             | Self::CurveOffsetGeometry { id, .. }
             | Self::CurveFilletCornersGeometry { id, .. }
             | Self::CurveFilletPairGeometry { id, .. }
+            | Self::CurveFilletPairParts { id, .. }
             | Self::NonManifoldSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
@@ -2425,6 +2436,58 @@ fn execute(
                 json!({"closed": curve.is_closed()?, "length": curve.length(tolerance)?, "samples": samples}),
                 elapsed,
             )
+        }
+        Operation::CurveFilletPairParts {
+            curve0,
+            curve1,
+            pick0,
+            pick1,
+            radius,
+            join,
+            trim,
+            ..
+        } => {
+            let first = curve0.geometry()?;
+            let second = curve1.geometry()?;
+            let first_pick = point(*pick0)?;
+            let second_pick = point(*pick1)?;
+            let (parts, elapsed) = measure(iterations, || {
+                if *join && *trim {
+                    Ok(vec![viboceros_geometry::Curve3::PolyCurve(
+                        viboceros_geometry::try_fillet_curves_joined(
+                            &first,
+                            first_pick,
+                            &second,
+                            second_pick,
+                            *radius,
+                            tolerance,
+                        )?,
+                    )])
+                } else {
+                    viboceros_geometry::try_fillet_curves_parts(
+                        &first,
+                        first_pick,
+                        &second,
+                        second_pick,
+                        *radius,
+                        *trim,
+                        tolerance,
+                    )
+                }
+            })?;
+            let values = parts
+                .iter()
+                .map(|curve| {
+                    let samples = curve
+                        .as_ref()
+                        .sample_equal_length_points(64, true, tolerance)?
+                        .into_iter()
+                        .map(Point3::to_array)
+                        .collect::<Vec<_>>();
+                    Ok(json!({"closed": curve.as_ref().is_closed()?, "length": curve.as_ref().length(tolerance)?, "samples": samples}))
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            (json!({"parts": values}), elapsed)
         }
         Operation::NonManifoldSelection {
             as_brep, preselect, ..

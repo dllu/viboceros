@@ -1,0 +1,263 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "r0.5-jFalse-tTrue",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.5,
+      "join": false,
+      "trim": true
+    },
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "r0.5-jFalse-tFalse",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.5,
+      "join": false,
+      "trim": false
+    },
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "r0.5-jTrue-tFalse",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.5,
+      "join": true,
+      "trim": false
+    },
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "r0.0-jFalse-tTrue",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.0,
+      "join": false,
+      "trim": true
+    },
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "reversed-picks-r0.5",
+      "curve0": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          4,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.5,
+      "join": false,
+      "trim": true
+    },
+    {
+      "op": "curve_fillet_pair_parts",
+      "id": "reversed-picks-r0.0",
+      "curve0": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          4,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.0,
+      "join": false,
+      "trim": true
+    }
+  ]
+}

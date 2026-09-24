@@ -5487,35 +5487,45 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, fillet_corners)
         finally:
             source.Dispose()
-    if kind == "curve_fillet_pair_geometry":
+    if kind in ("curve_fillet_pair_geometry", "curve_fillet_pair_parts"):
         first = _join_close_input(operation["curve0"])
         second = _join_close_input(operation["curve1"])
         pick0 = _point(operation["pick0"])
         pick1 = _point(operation["pick1"])
         radius = _finite(operation["radius"], "fillet radius")
+        join = operation.get("join", True)
+        trim = operation.get("trim", True)
+        if not isinstance(join, bool) or not isinstance(trim, bool):
+            raise ValueError("fillet join and trim must be booleans")
 
         def fillet_pair():
             curves = Rhino.Geometry.Curve.CreateFilletCurves(
-                first, pick0, second, pick1, radius, True, True, True,
+                first, pick0, second, pick1, radius, join, trim, True,
                 tolerance["absolute"], tolerance["angular"]
             )
-            if curves is None or len(curves) != 1:
-                raise ValueError("Rhino joined fillet failed")
-            curve = curves[0]
+            if curves is None or len(curves) == 0:
+                raise ValueError("Rhino fillet failed")
             try:
-                samples = []
-                for index in range(65):
-                    success, parameter = curve.NormalizedLengthParameter(
-                        index / 64.0, 1e-12
-                    )
-                    if not success:
-                        raise ValueError("Rhino fillet arc-length sampling failed")
-                    samples.append(_xyz(curve.PointAt(parameter)))
-                return {
-                    "closed": bool(curve.IsClosed),
-                    "length": float(curve.GetLength(1e-12)),
-                    "samples": samples,
-                }
+                parts = []
+                for curve in curves:
+                    samples = []
+                    for index in range(65):
+                        success, parameter = curve.NormalizedLengthParameter(
+                            index / 64.0, 1e-12
+                        )
+                        if not success:
+                            raise ValueError("Rhino fillet arc-length sampling failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
+                    parts.append({
+                        "closed": bool(curve.IsClosed),
+                        "length": float(curve.GetLength(1e-12)),
+                        "samples": samples,
+                    })
+                if kind == "curve_fillet_pair_parts":
+                    return {"parts": parts}
+                if len(parts) != 1:
+                    raise ValueError("Rhino joined fillet returned multiple curves")
+                return parts[0]
             finally:
                 for part in curves:
                     part.Dispose()

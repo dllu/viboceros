@@ -68,12 +68,102 @@ pub fn try_fillet_curves_joined(
     PolyCurve3::try_new(segments)
 }
 
+/// Returns Rhino's separate fillet pieces. With trimming enabled, the
+/// retained first and second curves precede the circular fillet. Without
+/// trimming, only the fillet arc is returned and the inputs stay untouched.
+pub fn try_fillet_curves_parts(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    radius: Real,
+    trim: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<Curve3>, GeometryError> {
+    if !trim && radius == 0.0 {
+        return Err(unsupported());
+    }
+    let reverse_first = !selected_end(first, first_pick, tolerance)?;
+    let reverse_second = selected_end(second, second_pick, tolerance)?;
+    let first_count = first.to_polycurve()?.segments().len();
+    let joined =
+        try_fillet_curves_joined(first, first_pick, second, second_pick, radius, tolerance)?;
+    let segments = joined.segments();
+    if radius == 0.0 {
+        return Ok(vec![
+            original_direction(
+                curve_from_segments(&segments[..first_count])?,
+                reverse_first,
+                tolerance,
+            )?,
+            original_direction(
+                curve_from_segments(&segments[first_count..])?,
+                reverse_second,
+                tolerance,
+            )?,
+        ]);
+    }
+    let arc = match &segments[first_count] {
+        CurveSegment3::Arc(arc) => Curve3::Arc(*arc),
+        _ => return Err(unsupported()),
+    };
+    if !trim {
+        return Ok(vec![arc]);
+    }
+    Ok(vec![
+        original_direction(
+            curve_from_segments(&segments[..first_count])?,
+            reverse_first,
+            tolerance,
+        )?,
+        original_direction(
+            curve_from_segments(&segments[first_count + 1..])?,
+            reverse_second,
+            tolerance,
+        )?,
+        arc,
+    ])
+}
+
+fn original_direction(
+    curve: Curve3,
+    reverse: bool,
+    tolerance: Tolerance,
+) -> Result<Curve3, GeometryError> {
+    if reverse {
+        curve.reversed(tolerance)
+    } else {
+        Ok(curve)
+    }
+}
+
+fn curve_from_segments(segments: &[CurveSegment3]) -> Result<Curve3, GeometryError> {
+    if segments.len() == 1 {
+        Ok(segments[0].clone().into_curve())
+    } else {
+        Ok(Curve3::PolyCurve(PolyCurve3::try_new(segments.to_vec())?))
+    }
+}
+
 fn oriented(
     source: &Curve3,
     pick: Point3,
     pick_at_end: bool,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
+    let selected_end = selected_end(source, pick, tolerance)?;
+    if selected_end == pick_at_end {
+        source.to_polycurve()
+    } else {
+        source.reversed(tolerance)?.to_polycurve()
+    }
+}
+
+fn selected_end(
+    source: &Curve3,
+    pick: Point3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
     if source.as_ref().is_closed()? {
         return Err(unsupported());
     }
@@ -88,12 +178,7 @@ fn oriented(
             context: "curve fillet pick does not identify an end",
         });
     }
-    let selected_end = end_distance < start_distance;
-    if selected_end == pick_at_end {
-        source.to_polycurve()
-    } else {
-        source.reversed(tolerance)?.to_polycurve()
-    }
+    Ok(end_distance < start_distance)
 }
 
 fn meeting_lines(
