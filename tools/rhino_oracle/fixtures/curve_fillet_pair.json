@@ -328,6 +328,129 @@
         0
       ],
       "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_pair_geometry",
+      "id": "meeting-lines-zero-radius",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        3.8,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        0.2,
+        0
+      ],
+      "radius": 0.0
+    },
+    {
+      "op": "curve_fillet_pair_geometry",
+      "id": "extended-lines-zero-radius",
+      "curve0": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        2.9,
+        0,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          1,
+          0
+        ],
+        "end": [
+          4,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        4,
+        1.1,
+        0
+      ],
+      "radius": 0.0
+    },
+    {
+      "op": "curve_fillet_pair_geometry",
+      "id": "reversed-meeting-lines-zero-radius",
+      "curve0": {
+        "type": "line",
+        "start": [
+          4,
+          4,
+          0
+        ],
+        "end": [
+          4,
+          0,
+          0
+        ]
+      },
+      "pick0": [
+        4,
+        0.2,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          4,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          0,
+          0
+        ]
+      },
+      "pick1": [
+        3.8,
+        0,
+        0
+      ],
+      "radius": 0.0
     }
   ]
 }

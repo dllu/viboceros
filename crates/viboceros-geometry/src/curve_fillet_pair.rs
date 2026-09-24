@@ -5,8 +5,9 @@ use crate::{
 };
 
 /// Trims or extends selected curve ends to a tangent circular fillet and joins
-/// the two retained curves with that arc. Pick points choose which end of each
-/// curve participates. Noncoincident terminal lines may meet by extension.
+/// the two retained curves with that arc. Zero radius joins at a sharp corner.
+/// Pick points choose which end of each curve participates. Noncoincident
+/// terminal lines may meet by extension.
 pub fn try_fillet_curves_joined(
     first: &Curve3,
     first_pick: Point3,
@@ -20,7 +21,7 @@ pub fn try_fillet_curves_joined(
             context: "curve fillet radius",
         });
     }
-    if radius <= tolerance.absolute() {
+    if radius < 0.0 || (radius > 0.0 && radius <= tolerance.absolute()) {
         return Err(GeometryError::Degenerate {
             context: "curve fillet radius",
         });
@@ -51,13 +52,18 @@ pub fn try_fillet_curves_joined(
             }
             (first_terminal, second_terminal)
         };
-    let pair = PolyCurve3::try_new(vec![first_terminal, second_terminal])?;
-    let rounded = pair.try_fillet_corners(radius, tolerance)?;
-    if rounded.segments().len() != 3 || !matches!(rounded.segments()[1], CurveSegment3::Arc(_)) {
-        return Err(unsupported());
-    }
     let mut segments = first.segments()[..last].to_vec();
-    segments.extend_from_slice(rounded.segments());
+    if radius == 0.0 {
+        segments.extend([first_terminal, second_terminal]);
+    } else {
+        let pair = PolyCurve3::try_new(vec![first_terminal, second_terminal])?;
+        let rounded = pair.try_fillet_corners(radius, tolerance)?;
+        if rounded.segments().len() != 3 || !matches!(rounded.segments()[1], CurveSegment3::Arc(_))
+        {
+            return Err(unsupported());
+        }
+        segments.extend_from_slice(rounded.segments());
+    }
     segments.extend_from_slice(&second.segments()[1..]);
     PolyCurve3::try_new(segments)
 }
@@ -203,5 +209,26 @@ mod tests {
         assert!(matches!(result.segments()[1], CurveSegment3::Line(_)));
         assert!(matches!(result.segments()[2], CurveSegment3::Arc(_)));
         assert!(matches!(result.segments()[3], CurveSegment3::Line(_)));
+    }
+
+    #[test]
+    fn zero_radius_joins_at_the_intersection_without_an_arc() {
+        let result = try_fillet_curves_joined(
+            &line(p(0., 0.), p(3., 0.)),
+            p(3., 0.),
+            &line(p(4., 1.), p(4., 4.)),
+            p(4., 1.),
+            0.0,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(result.segments().len(), 2);
+        assert!(
+            result
+                .segments()
+                .iter()
+                .all(|part| matches!(part, CurveSegment3::Line(_)))
+        );
+        assert!((result.length(Tolerance::DEFAULT).unwrap() - 8.0).abs() < 1e-12);
     }
 }

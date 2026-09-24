@@ -7,6 +7,7 @@ Select exactly two open curves, then enter `Fillet 0.5` or
 circular arc, and joins the three pieces into one polycurve. The result is
 selected and the two sources can be restored with one Undo. It inherits the
 first source's attributes and groups.
+With radius zero, the curves meet at a sharp corner without an inserted arc.
 
 The nearest pair of source endpoints determines which ends are filleted. Use
 `Pick1=x,y,z` and `Pick2=x,y,z` to choose different ends. The picks identify
@@ -20,10 +21,10 @@ leaves are still to be implemented. A pick exactly at an arc endpoint can be
 ambiguous in RhinoCommon's public pair-filleting method; pick a nearby point
 on the arc when comparing outputs.
 
-The [six-case fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pair.json)
+The [nine-case fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pair.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_pair.json)
 compare meeting and extended lines, reversed selection, arc-to-line,
-NURBS-to-line, and NURBS-to-NURBS fillets. Each uses 65 equal arc-length
+NURBS-to-line, NURBS-to-NURBS, and zero-radius line joins. Each uses 65 equal arc-length
 stations. The largest coordinate difference is below `3.2e-8`; the NURBS
 cases use a `1e-7` tolerance. Run:
 
