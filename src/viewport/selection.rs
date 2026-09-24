@@ -15,6 +15,29 @@ struct ScreenBoundary {
 }
 
 impl ScreenBoundary {
+    fn from_path(path: &[Pos2]) -> Option<Self> {
+        let mut vertices = Vec::with_capacity(path.len());
+        for &point in path {
+            if !point.is_finite() {
+                return None;
+            }
+            if vertices
+                .last()
+                .is_none_or(|last: &Pos2| last.distance(point) >= 0.5)
+            {
+                vertices.push(point);
+            }
+        }
+        if vertices.len() >= 3 && vertices[0].distance(*vertices.last()?) < 0.5 {
+            vertices.pop();
+        }
+        if vertices.len() < 3 {
+            return None;
+        }
+        let bounds = Rect::from_points(&vertices);
+        (bounds.width() > 1.0 && bounds.height() > 1.0).then_some(Self { vertices })
+    }
+
     fn from_segments(segments: &[[Pos2; 2]]) -> Option<Self> {
         let first = segments.first()?[0];
         let mut vertices = Vec::with_capacity(segments.len());
@@ -180,6 +203,44 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
+    pub(crate) fn objects_in_lasso_preview(
+        &self,
+        path: &[Pos2],
+        mode: RectSelectionMode,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+    ) -> Option<Vec<ObjectId>> {
+        let rect = self.last_rect?;
+        let boundary = ScreenBoundary::from_path(path)?;
+        let crossing = mode.crossing(true);
+        Some(
+            document
+                .objects()
+                .filter(|object| {
+                    filter.accepts_object(object) && selection_candidate(document, object, preview)
+                })
+                .filter_map(|object| {
+                    let display = self
+                        .display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance());
+                    let primitives = self.projected_display(&display, rect, document.tolerance());
+                    if primitives.points.is_empty() {
+                        return None;
+                    }
+                    let selected = match (crossing, mode.inverted()) {
+                        (false, false) => primitives.is_windowed_by_boundary(&boundary),
+                        (true, false) => primitives.is_crossed_by_boundary(&boundary),
+                        (false, true) => !primitives.is_crossed_by_boundary(&boundary),
+                        (true, true) => !primitives.is_windowed_by_boundary(&boundary),
+                    };
+                    selected.then_some(object.id())
+                })
+                .collect(),
+        )
+    }
+
     pub(super) fn pick_point_cloud_member(
         &self,
         pointer: Pos2,
@@ -892,6 +953,63 @@ mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
     use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn lasso_modes_classify_enclosed_crossing_and_outside_objects() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
+        let mut document = Document::default();
+        let inside = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let crossing = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(-5.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let outside = document
+            .add_geometry(Geometry::Point(Point3::try_new(8.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let path = [
+            Pos2::new(385.0, 285.0),
+            Pos2::new(415.0, 285.0),
+            Pos2::new(415.0, 315.0),
+            Pos2::new(385.0, 315.0),
+        ];
+        for (mode, expected) in [
+            (RectSelectionMode::Window, vec![inside]),
+            (RectSelectionMode::Crossing, vec![inside, crossing]),
+            (RectSelectionMode::InvertWindow, vec![outside]),
+            (RectSelectionMode::InvertCrossing, vec![crossing, outside]),
+        ] {
+            assert_eq!(
+                view.objects_in_lasso_preview(
+                    &path,
+                    mode,
+                    &document,
+                    ObjectSelectionFilter::Any,
+                    None,
+                )
+                .unwrap(),
+                expected,
+            );
+        }
+        assert!(
+            view.objects_in_lasso_preview(
+                &[path[0], path[1], path[0]],
+                RectSelectionMode::Crossing,
+                &document,
+                ObjectSelectionFilter::Any,
+                None,
+            )
+            .is_none()
+        );
+    }
 
     #[test]
     fn concave_boundary_checks_whole_segments_and_shaded_faces() {

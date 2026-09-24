@@ -422,6 +422,24 @@ fn zoom_extents_is_a_validated_host_action() {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }
     for (input, mode) in [
+        ("Lasso", RectSelectionMode::Crossing),
+        ("'_Lasso _SelectionMode=_Window", RectSelectionMode::Window),
+        ("Lasso InvertWindow", RectSelectionMode::InvertWindow),
+        (
+            "Lasso SelectionMode=InvertCrossing",
+            RectSelectionMode::InvertCrossing,
+        ),
+    ] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::Lasso(mode))));
+    }
+    for input in [
+        "Lasso Extra",
+        "Lasso SelectionMode=Other",
+        "Lasso Window extra",
+    ] {
+        assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
+    }
+    for (input, mode) in [
         ("SelCircular", RectSelectionMode::Crossing),
         (
             "SelCircular SelectionMode=Window",

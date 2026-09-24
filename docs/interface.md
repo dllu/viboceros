@@ -153,6 +153,18 @@ objects by their projected position in that circle. It accepts the same four
 default. Esc cancels either point prompt. This follows Rhino's
 [SelCircular](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelCircular)
 view-plane selection.
+`Lasso` sketches a closed selection region in one viewport. Drag a freehand
+outline and release to select, or click vertices and press Enter/right-click;
+clicking near the first vertex also finishes. `Undo` removes the last clicked
+vertex, and Esc cancels. `SelectionMode=Window|Crossing|InvertWindow|
+InvertCrossing` works at startup or while collecting points; Crossing is the
+default. Shift and Ctrl/Command use the usual add/remove selection actions.
+The region closes from its final point to its first. Selection uses projected
+display primitives, so curved boundaries follow display tessellation. Panning
+while a click path is unfinished does not retain a fixed world-space outline.
+This implements the object-selection portion of Rhino's
+[Lasso command](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#Lasso);
+sub-object selection remains outside the current selection model.
 `SelBoundary` asks for a visible closed curve and uses its projection in the
 active viewport as a selection region. `SelectionMode=Window|Crossing|
 InvertWindow|InvertCrossing` can be entered with the command or while picking

@@ -217,6 +217,15 @@ pub enum FenceSelectionInput<'a> {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub enum LassoSelectionInput<'a> {
+    Capture {
+        points: &'a [Pos2],
+        mode: RectSelectionMode,
+    },
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -225,6 +234,7 @@ pub struct ViewportInput<'a> {
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
     pub fence_selection: Option<FenceSelectionInput<'a>>,
+    pub lasso_selection: Option<LassoSelectionInput<'a>>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_preview: Option<ObjectSelectionFilter>,
@@ -271,6 +281,7 @@ impl Default for ViewportInput<'_> {
             rect_selection_mode: None,
             circular_selection: None,
             fence_selection: None,
+            lasso_selection: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_preview: None,
@@ -306,6 +317,8 @@ pub struct ViewportOutput {
     pub selection_window: Option<SelectionWindow>,
     pub circular_center_pick: Option<(Pos2, usize)>,
     pub fence_point: Option<(Pos2, usize, SelectionMode)>,
+    pub lasso_point: Option<(Pos2, usize, SelectionMode)>,
+    pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
     pub activated: bool,
@@ -361,6 +374,7 @@ pub struct Viewport {
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
+    lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
     navigation_drag_start: Option<CameraSnapshot>,
     view_undo: Vec<CameraSnapshot>,
@@ -397,6 +411,7 @@ impl Viewport {
             target: NaVector3::zeros(),
             last_rect: None,
             selection_drag_start: None,
+            lasso_drag_path: Vec::new(),
             zoom_window_start: None,
             navigation_drag_start: None,
             view_undo: Vec::new(),
@@ -657,6 +672,7 @@ impl Viewport {
             && input.zoom_target.is_none()
             && input.circular_selection.is_none()
             && input.fence_selection.is_none()
+            && input.lasso_selection.is_none()
             && !drafting.active
             && !component_input
             && input.object_filter.is_some();
@@ -671,6 +687,54 @@ impl Viewport {
             self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
         }
         let selection_pointer = response.interact_pointer_pos();
+        let lasso_capture = matches!(
+            input.lasso_selection,
+            Some(LassoSelectionInput::Capture { .. })
+        );
+        if !lasso_capture {
+            self.lasso_drag_path.clear();
+        } else if response.drag_started_by(PointerButton::Primary) {
+            self.lasso_drag_path.clear();
+            if let Some(start) = ui.input(|input| input.pointer.press_origin()) {
+                self.lasso_drag_path.push(start);
+            }
+        }
+        if lasso_capture
+            && response.dragged_by(PointerButton::Primary)
+            && let Some(pointer) = selection_pointer
+            && pointer.is_finite()
+            && self
+                .lasso_drag_path
+                .last()
+                .is_none_or(|last| last.distance(pointer) >= 1.0)
+        {
+            self.lasso_drag_path.push(pointer);
+        }
+        let lasso_stroke = if lasso_capture && response.drag_stopped_by(PointerButton::Primary) {
+            if let Some(pointer) = selection_pointer
+                && pointer.is_finite()
+                && self
+                    .lasso_drag_path
+                    .last()
+                    .is_none_or(|last| last.distance(pointer) >= 0.5)
+            {
+                self.lasso_drag_path.push(pointer);
+            }
+            (!self.lasso_drag_path.is_empty()).then(|| {
+                (
+                    std::mem::take(&mut self.lasso_drag_path),
+                    viewport_index,
+                    selection_mode(modifiers),
+                )
+            })
+        } else {
+            None
+        };
+        let lasso_point = if lasso_capture && response.clicked_by(PointerButton::Primary) {
+            selection_pointer.map(|point| (point, viewport_index, selection_mode(modifiers)))
+        } else {
+            None
+        };
         if !input.zoom_window {
             self.zoom_window_start = None;
         } else if response.drag_started_by(PointerButton::Primary) {
@@ -839,7 +903,8 @@ impl Viewport {
             || input.zoom_window
             || input.zoom_target.is_some()
             || input.circular_selection.is_some()
-            || input.fence_selection.is_some())
+            || input.fence_selection.is_some()
+            || input.lasso_selection.is_some())
             && response.hovered()
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
@@ -1044,6 +1109,26 @@ impl Viewport {
                 painter.line_segment([start, end], Stroke::new(1.25, color));
             }
         }
+        if let Some(LassoSelectionInput::Capture { points, mode }) = input.lasso_selection {
+            let color = if mode.crossing(true) {
+                Color32::from_rgb(45, 145, 75)
+            } else {
+                Color32::from_rgb(45, 105, 215)
+            };
+            let mut path = points.to_vec();
+            path.extend(self.lasso_drag_path.iter().copied());
+            for pair in path.windows(2) {
+                painter.line_segment([pair[0], pair[1]], Stroke::new(1.5, color));
+            }
+            for &point in points {
+                painter.circle_filled(point, 2.5, color);
+            }
+            if self.lasso_drag_path.is_empty()
+                && let (Some(&start), Some(end)) = (path.last(), response.hover_pos())
+            {
+                painter.line_segment([start, end], Stroke::new(1.0, color));
+            }
+        }
         if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
             painter.rect_stroke(
                 Rect::from_two_pos(start, end).intersect(rect),
@@ -1121,6 +1206,8 @@ impl Viewport {
             selection_window,
             circular_center_pick,
             fence_point,
+            lasso_point,
+            lasso_stroke,
             point_cloud_selection,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()

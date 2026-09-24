@@ -273,6 +273,7 @@ impl VibocerosApp {
         if self.selection_window_override.is_none()
             && self.circular_selection.is_none()
             && self.boundary_selection.is_none()
+            && self.lasso_selection.is_none()
             && !matches!(
                 self.active_command,
                 Some(
@@ -311,6 +312,8 @@ impl VibocerosApp {
                     }
                 } else if self.boundary_selection.is_some() {
                     self.boundary_selection = Some(mode);
+                } else if let Some(state) = self.lasso_selection.as_mut() {
+                    state.mode = mode;
                 } else if let Some(InteractiveCommand::SelVolumeSphere { center, .. }) =
                     self.active_command
                 {
@@ -485,6 +488,7 @@ impl VibocerosApp {
                     self.selection_window_override = None;
                     self.circular_selection = None;
                     self.fence_selection = None;
+                    self.lasso_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     if self.object_prompt.is_none() {
@@ -527,6 +531,7 @@ impl VibocerosApp {
                     self.selection_window_override = None;
                     self.circular_selection = None;
                     self.boundary_selection = None;
+                    self.lasso_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log(if command == InterfaceCommand::SelFenceCurve {
@@ -545,10 +550,31 @@ impl VibocerosApp {
                     self.circular_selection = Some(CircularSelectionState::PickCenter(mode));
                     self.fence_selection = None;
                     self.boundary_selection = None;
+                    self.lasso_selection = None;
                     self.selection_window_override = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
                     self.push_log("Select the circle center in a viewport; Esc to cancel".into());
+                    return;
+                }
+                if let InterfaceCommand::Lasso(mode) = command {
+                    if !self.can_capture_selection() {
+                        self.push_log("Lasso selection unavailable during this prompt".into());
+                        return;
+                    }
+                    self.lasso_selection = Some(LassoSelectionState {
+                        viewport: None,
+                        points: Vec::new(),
+                        mode,
+                        selection_mode: viboceros_document::SelectionMode::Replace,
+                    });
+                    self.selection_window_override = None;
+                    self.circular_selection = None;
+                    self.fence_selection = None;
+                    self.boundary_selection = None;
+                    self.zoom_window_pending = false;
+                    self.zoom_target = None;
+                    self.push_log("Drag a lasso or click its outline; Enter/right-click to finish, Undo removes a point, Esc cancels".into());
                     return;
                 }
                 if matches!(
@@ -570,6 +596,7 @@ impl VibocerosApp {
                     self.selection_window_override = Some(mode);
                     self.circular_selection = None;
                     self.fence_selection = None;
+                    self.lasso_selection = None;
                     self.boundary_selection = None;
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
@@ -588,6 +615,7 @@ impl VibocerosApp {
                 self.selection_window_override = None;
                 self.circular_selection = None;
                 self.fence_selection = None;
+                self.lasso_selection = None;
                 self.boundary_selection = None;
                 if matches!(
                     command,

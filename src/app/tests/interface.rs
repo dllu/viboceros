@@ -166,6 +166,18 @@ fn selection_capture_frame(
                             Some(_) => Some(FenceSelectionInput::Waiting),
                             None => None,
                         },
+                        lasso_selection: match app.lasso_selection.as_ref() {
+                            Some(state)
+                                if state.viewport.is_none() || state.viewport == Some(0) =>
+                            {
+                                Some(LassoSelectionInput::Capture {
+                                    points: &state.points,
+                                    mode: state.mode,
+                                })
+                            }
+                            Some(_) => Some(LassoSelectionInput::Waiting),
+                            None => None,
+                        },
                         ..Default::default()
                     },
                     &[],
@@ -944,6 +956,112 @@ fn rectangular_inverse_modes_distinguish_partial_overlap_from_fully_outside() {
             expected
         );
     }
+}
+
+#[test]
+fn lasso_click_path_supports_undo_and_prompt_selection() {
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "Lasso SelectionMode=Window");
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for point in [
+        egui::Pos2::new(380.0, 280.0),
+        egui::Pos2::new(420.0, 280.0),
+        egui::Pos2::new(420.0, 320.0),
+        egui::Pos2::new(380.0, 320.0),
+    ] {
+        selection_capture_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::PointerMoved(point), button(point, true)],
+        );
+        let output = selection_capture_frame(&context, &mut app, vec![button(point, false)]);
+        assert!(output.selection_click.is_none());
+        assert!(output.lasso_point.is_some());
+        app.handle_viewport_action(output);
+    }
+    assert_eq!(app.lasso_selection.as_ref().unwrap().points.len(), 4);
+    enter(&mut app, "Undo");
+    assert_eq!(app.lasso_selection.as_ref().unwrap().points.len(), 3);
+    enter(&mut app, "SelectionMode=Crossing");
+    assert_eq!(
+        app.lasso_selection.as_ref().unwrap().mode,
+        RectSelectionMode::Crossing
+    );
+    enter(&mut app, "");
+    assert!(app.lasso_selection.is_none());
+    assert!(app.document.is_selected(id));
+}
+
+#[test]
+fn lasso_freehand_drag_selects_once_and_clears_capture() {
+    let mut app = test_app();
+    enter(&mut app, "Point 0,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    enter(&mut app, "Lasso");
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    let start = egui::Pos2::new(380.0, 280.0);
+    selection_capture_frame(
+        &context,
+        &mut app,
+        vec![egui::Event::PointerMoved(start), button(start, true)],
+    );
+    for point in [
+        egui::Pos2::new(420.0, 280.0),
+        egui::Pos2::new(420.0, 320.0),
+        egui::Pos2::new(380.0, 320.0),
+    ] {
+        selection_capture_frame(&context, &mut app, vec![egui::Event::PointerMoved(point)]);
+    }
+    let output = selection_capture_frame(&context, &mut app, vec![button(start, false)]);
+    assert!(output.lasso_stroke.is_some());
+    assert!(output.selection_window.is_none());
+    app.handle_viewport_action(output);
+    assert!(app.document.is_selected(id));
+    assert!(app.lasso_selection.is_none());
+}
+
+#[test]
+fn lasso_can_supply_objects_to_an_active_command_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line -1,0,0 1,0,0");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Flip");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "Lasso SelectionMode=Window");
+    let context = egui::Context::default();
+    layout_viewports(&context, &mut app);
+    for point in [
+        egui::Pos2::new(300.0, 250.0),
+        egui::Pos2::new(500.0, 250.0),
+        egui::Pos2::new(500.0, 350.0),
+        egui::Pos2::new(300.0, 350.0),
+    ] {
+        app.accept_lasso_point(point, 0, SelectionMode::Replace);
+    }
+    app.finish_lasso_selection();
+    assert!(app.lasso_selection.is_none());
+    assert!(app.document.is_selected(id));
+    enter(&mut app, "");
+    let Geometry::Line(line) = app.document.object(id).unwrap().geometry() else {
+        panic!("expected line")
+    };
+    assert_eq!(line.start(), point(1.0, 0.0, 0.0));
 }
 
 #[test]

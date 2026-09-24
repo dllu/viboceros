@@ -27,8 +27,9 @@ use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::GridSettings;
 use crate::viewport::{
     CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerKind, EndMarkerOptions,
-    FenceSelectionInput, SelectionChoice, SelectionClick, SelectionWindow, ViewKind, Viewport,
-    ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput, collect_end_markers,
+    FenceSelectionInput, LassoSelectionInput, SelectionChoice, SelectionClick, SelectionWindow,
+    ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
+    collect_end_markers,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -56,6 +57,14 @@ struct FenceSelectionState {
     points: Vec<Point3>,
     mode: SelectionMode,
     curve_pick: bool,
+}
+
+#[derive(Clone, Debug)]
+struct LassoSelectionState {
+    viewport: Option<usize>,
+    points: Vec<egui::Pos2>,
+    mode: RectSelectionMode,
+    selection_mode: SelectionMode,
 }
 
 #[derive(Clone, Debug)]
@@ -1444,6 +1453,7 @@ pub struct VibocerosApp {
     circular_selection: Option<CircularSelectionState>,
     boundary_selection: Option<RectSelectionMode>,
     fence_selection: Option<FenceSelectionState>,
+    lasso_selection: Option<LassoSelectionState>,
     zoom_target: Option<ZoomTargetState>,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
@@ -1509,6 +1519,7 @@ impl VibocerosApp {
             circular_selection: None,
             boundary_selection: None,
             fence_selection: None,
+            lasso_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
@@ -1571,6 +1582,22 @@ impl VibocerosApp {
             self.command_input.clear();
             return;
         }
+        if input.is_empty() && self.lasso_selection.is_some() {
+            self.finish_lasso_selection();
+            self.command_input.clear();
+            return;
+        }
+        if input.eq_ignore_ascii_case("Undo")
+            && let Some(state) = self.lasso_selection.as_mut()
+        {
+            if state.points.pop().is_none() {
+                self.push_log("No lasso points to undo".into());
+            } else if state.points.is_empty() {
+                state.viewport = None;
+            }
+            self.command_input.clear();
+            return;
+        }
         if input.eq_ignore_ascii_case("Curve")
             && let Some(state) = self.fence_selection.as_mut()
         {
@@ -1601,6 +1628,12 @@ impl VibocerosApp {
         }
         if self.fence_selection.is_some() && !input.is_empty() {
             self.fence_selection = None;
+        }
+        if self.lasso_selection.is_some()
+            && !input.is_empty()
+            && viboceros_command::interface::parse(&input).is_none()
+        {
+            self.lasso_selection = None;
         }
         if self.try_one_shot_snap(&input) {
             return;
@@ -6050,6 +6083,101 @@ impl VibocerosApp {
         }
     }
 
+    fn accept_lasso_point(&mut self, point: egui::Pos2, viewport: usize, mode: SelectionMode) {
+        let Some(state) = self.lasso_selection.as_mut() else {
+            return;
+        };
+        if state.viewport.is_some_and(|active| active != viewport) || !point.is_finite() {
+            return;
+        }
+        state.viewport = Some(viewport);
+        if state.points.is_empty() {
+            state.selection_mode = mode;
+        }
+        if state.points.len() >= 3 && state.points[0].distance(point) <= 5.0 {
+            self.finish_lasso_selection();
+            return;
+        }
+        if state
+            .points
+            .last()
+            .is_none_or(|last| last.distance(point) >= 1.0)
+        {
+            state.points.push(point);
+        }
+    }
+
+    fn accept_lasso_stroke(&mut self, path: Vec<egui::Pos2>, viewport: usize, mode: SelectionMode) {
+        let Some(state) = self.lasso_selection.as_mut() else {
+            return;
+        };
+        if state.viewport.is_some_and(|active| active != viewport)
+            || path.iter().any(|p| !p.is_finite())
+        {
+            return;
+        }
+        state.viewport = Some(viewport);
+        if state.points.is_empty() {
+            state.selection_mode = mode;
+        }
+        for point in path {
+            if state
+                .points
+                .last()
+                .is_none_or(|last| last.distance(point) >= 1.0)
+            {
+                state.points.push(point);
+            }
+        }
+        if state.points.len() >= 3 {
+            self.finish_lasso_selection();
+        }
+    }
+
+    fn finish_lasso_selection(&mut self) {
+        let Some(state) = self.lasso_selection.take() else {
+            return;
+        };
+        let Some(viewport) = state.viewport else {
+            self.lasso_selection = Some(state);
+            self.push_log("Draw a lasso in one viewport".into());
+            return;
+        };
+        let Some(filter) = self.viewport_object_filter() else {
+            self.lasso_selection = Some(state);
+            self.push_log("Lasso selection unavailable during this prompt".into());
+            return;
+        };
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
+        let Some(ids) = self.viewports[viewport].objects_in_lasso_preview(
+            &state.points,
+            state.mode,
+            &self.document,
+            filter,
+            preview,
+        ) else {
+            self.lasso_selection = Some(state);
+            self.push_log("Lasso needs at least three noncollinear points".into());
+            return;
+        };
+        if self.group_prompt.is_some() {
+            self.select_group_prompt_objects(ids, state.selection_mode);
+        } else if self.intersection_prompt.is_some() {
+            self.select_intersection_prompt_objects(ids, state.selection_mode);
+        } else if self.object_prompt.is_some() {
+            self.select_prompt_objects(ids, state.selection_mode);
+        } else {
+            match self.document.select_objects(ids, state.selection_mode) {
+                Ok(count) => self.push_log(format!("Lasso selection: {count} object(s) selected")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+        }
+    }
+
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
         if self.end_analysis_pick.is_some() {
             self.apply_end_analysis_pick_ids(selection.object_ids);
@@ -6117,7 +6245,15 @@ impl VibocerosApp {
                 });
                 self.push_log("Select a radius point in the same viewport; Esc to cancel".into());
             }
+        } else if let Some((path, viewport, mode)) = output.lasso_stroke {
+            self.accept_lasso_stroke(path, viewport, mode);
+        } else if let Some((point, viewport, mode)) = output.lasso_point {
+            self.accept_lasso_point(point, viewport, mode);
         } else if output.enter_pressed {
+            if self.lasso_selection.is_some() {
+                self.finish_lasso_selection();
+                return true;
+            }
             if self.fence_selection.is_some() && self.end_analysis_pick.is_none() {
                 self.finish_fence_selection();
             } else {
@@ -6283,6 +6419,8 @@ impl eframe::App for VibocerosApp {
                 self.push_log("Boundary selection canceled".into());
             } else if self.fence_selection.take().is_some() {
                 self.push_log("Fence selection canceled".into());
+            } else if self.lasso_selection.take().is_some() {
+                self.push_log("Lasso selection canceled".into());
             } else if self.answer_object_prompt_escape() {
                 // A command-owned warning consumed this Escape key.
             } else if self.plane_prompt.is_some() {
@@ -6448,6 +6586,11 @@ impl eframe::App for VibocerosApp {
         } else {
             self.fence_selection.as_ref()
         };
+        let lasso_selection = if end_analysis_picking {
+            None
+        } else {
+            self.lasso_selection.as_ref()
+        };
         let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
         let curve_region_pick = fence_curve_pick
             || self.boundary_selection.is_some()
@@ -6552,6 +6695,19 @@ impl eframe::App for VibocerosApp {
                                                 Some(FenceSelectionInput::Continue(&state.points))
                                             }
                                             Some(_) => Some(FenceSelectionInput::Waiting),
+                                            None => None,
+                                        },
+                                        lasso_selection: match lasso_selection {
+                                            Some(state)
+                                                if state.viewport.is_none()
+                                                    || state.viewport == Some(index) =>
+                                            {
+                                                Some(LassoSelectionInput::Capture {
+                                                    points: &state.points,
+                                                    mode: state.mode,
+                                                })
+                                            }
+                                            Some(_) => Some(LassoSelectionInput::Waiting),
                                             None => None,
                                         },
                                         zoom_target: match zoom_target {
@@ -6783,6 +6939,7 @@ mod tests {
             circular_selection: None,
             boundary_selection: None,
             fence_selection: None,
+            lasso_selection: None,
             zoom_target: None,
             command_focus_requested: false,
             active_command: None,
