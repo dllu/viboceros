@@ -1,7 +1,7 @@
 //! Model-space volume selection, independent of the active viewport.
 
 use super::*;
-use viboceros_geometry::{BoundingBox3, Circle3};
+use viboceros_geometry::{BoundingBox3, Circle3, CircularArc3};
 
 const SEL_VOLUME_SPHERE_USAGE: &str =
     "SelVolumeSphere center radius [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
@@ -207,6 +207,7 @@ impl SelectionSphere {
             Geometry::Line(line) => self.classify_segment(line.start(), line.end()),
             Geometry::Polyline(polyline) => self.classify_polyline(polyline.vertices()),
             Geometry::Circle(circle) => self.classify_circle(*circle),
+            Geometry::Arc(arc) => self.classify_arc(*arc),
             Geometry::Mesh(mesh) => self.classify_mesh(mesh),
             Geometry::NurbsSurface(surface) => {
                 self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
@@ -214,10 +215,7 @@ impl SelectionSphere {
             Geometry::Brep(brep) => {
                 self.classify_mesh(&brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
             }
-            Geometry::Arc(_)
-            | Geometry::Ellipse(_)
-            | Geometry::NurbsCurve(_)
-            | Geometry::PolyCurve(_) => {
+            Geometry::Ellipse(_) | Geometry::NurbsCurve(_) | Geometry::PolyCurve(_) => {
                 let curve = geometry.curve_ref().expect("curve geometry");
                 let points = curve.sample_equal_length_points(CURVE_SAMPLES, true, tolerance)?;
                 self.classify_polyline(&points)
@@ -381,6 +379,30 @@ impl SelectionSphere {
             window: height.hypot(planar + circle.radius()) <= self.radius,
             crossing: height.hypot((planar - circle.radius()).abs()) <= self.radius,
         })
+    }
+
+    /// Distance to a circular arc has stationary points only in the projected
+    /// direction of the sphere center and its opposite. Check those that lie
+    /// on the sweep, as well as both endpoints.
+    fn classify_arc(self, arc: CircularArc3) -> Result<VolumeRelation, CommandError> {
+        let offset = arc.center().vector_to(self.center)?;
+        let x = offset.dot(arc.x_axis().as_vector())?;
+        let y = offset.dot(arc.y_axis().as_vector())?;
+        let nearest_angle = y.atan2(x).rem_euclid(std::f64::consts::TAU);
+        let farthest_angle =
+            (nearest_angle + std::f64::consts::PI).rem_euclid(std::f64::consts::TAU);
+        let sweep = arc.sweep_radians();
+        let mut window = true;
+        let mut crossing = false;
+        for angle in [0.0, sweep, nearest_angle, farthest_angle] {
+            if angle > sweep {
+                continue;
+            }
+            let inside = self.contains(arc.point_at(angle / sweep)?);
+            window &= inside;
+            crossing |= inside;
+        }
+        Ok(VolumeRelation { window, crossing })
     }
 
     fn classify_mesh(
@@ -772,6 +794,57 @@ mod tests {
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn sphere_finds_arc_extrema_between_display_samples() {
+        let circle = Circle3::try_from_frame(
+            p(0.0, 0.0, 0.0),
+            1.0,
+            UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let arc = CircularArc3::try_from_circle_sweep(circle, std::f64::consts::TAU).unwrap();
+        let geometry = Geometry::Arc(arc);
+        let target = circle.point_at_angle(0.017).unwrap();
+        let narrow = SelectionSphere {
+            center: target,
+            radius: 1e-4,
+        };
+        assert!(
+            narrow
+                .classify(&geometry, Tolerance::DEFAULT)
+                .unwrap()
+                .crossing
+        );
+        let samples = geometry
+            .curve_ref()
+            .unwrap()
+            .sample_equal_length_points(CURVE_SAMPLES, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(!narrow.classify_polyline(&samples).unwrap().crossing);
+
+        let enclosing = SelectionSphere {
+            center: circle.point_at_angle(std::f64::consts::PI + 0.017).unwrap(),
+            radius: 1.99995,
+        };
+        assert!(enclosing.classify_polyline(&samples).unwrap().window);
+        let relation = enclosing.classify(&geometry, Tolerance::DEFAULT).unwrap();
+        assert!(!relation.window);
+        assert!(relation.crossing);
+
+        let short = Geometry::Arc(CircularArc3::try_from_circle_sweep(circle, 0.1).unwrap());
+        assert!(
+            !SelectionSphere {
+                center: p(-1.0, 0.0, 0.0),
+                radius: 0.1,
+            }
+            .classify(&short, Tolerance::DEFAULT)
+            .unwrap()
+            .crossing
+        );
     }
 
     #[test]
