@@ -1,6 +1,6 @@
 //! Projected crossings of finite NURBS spans and finite straight wires.
 //! Evaluate the original curve at each root; sampling only isolates brackets.
-use super::{CurvedNurbs, Segment, SourceChoice, prefer_first_exact};
+use super::{CurvedNurbs, Segment, SourceChoice, nurbs_roots, prefer_first_exact};
 use crate::object_snap::{SnapMetric, projected_line};
 use viboceros_document::ObjectId;
 use viboceros_geometry::{NurbsCurveSamplingSpan, Point3, Real};
@@ -49,52 +49,8 @@ fn span_crossings(
         let tangent = metric.tangent_direction(point, tangent)?;
         Some(direction[0] * tangent[1] - direction[1] * tangent[0])
     };
-    let values: [Option<Real>; STATIONS + 1] =
-        std::array::from_fn(|i| score(i as Real / STATIONS as Real));
     let tolerance = 1e-9 * metric.capture_radius().max(1.);
-    if values.iter().flatten().all(|v| v.abs() <= tolerance) {
-        return; // No isolated target along a projected overlap.
-    }
-    let mut roots = Vec::new();
-    for i in 0..STATIONS {
-        let a = i as Real / STATIONS as Real;
-        let b = (i + 1) as Real / STATIONS as Real;
-        if values[i].is_some_and(|v| v.abs() <= tolerance) {
-            roots.push(a);
-        }
-        if let (Some(fa), Some(fb)) = (values[i], values[i + 1])
-            && fa.signum() != fb.signum()
-        {
-            roots.push(bisect(&score, a, b, fa));
-        }
-        if let (Some(da), Some(db)) = (derivative(a), derivative(b))
-            && da.signum() != db.signum()
-        {
-            let stationary = bisect(&derivative, a, b, da);
-            if let Some(value) = score(stationary) {
-                if value.abs() <= tolerance {
-                    roots.push(stationary);
-                } else {
-                    if let Some(fa) = values[i]
-                        && fa.signum() != value.signum()
-                    {
-                        roots.push(bisect(&score, a, stationary, fa));
-                    }
-                    if let Some(fb) = values[i + 1]
-                        && value.signum() != fb.signum()
-                    {
-                        roots.push(bisect(&score, stationary, b, value));
-                    }
-                }
-            }
-        }
-    }
-    if values[STATIONS].is_some_and(|v| v.abs() <= tolerance) {
-        roots.push(1.);
-    }
-    roots.sort_by(Real::total_cmp);
-    roots.dedup_by(|a, b| (*a - *b).abs() <= 1e-10);
-    for root in roots {
+    for root in nurbs_roots::isolate(&score, &derivative, STATIONS, tolerance) {
         let Some(point_curve) = span.evaluate(root).ok() else {
             continue;
         };
@@ -140,23 +96,4 @@ fn span_crossings(
         };
         emit(owner, point, distance);
     }
-}
-
-fn bisect(f: &impl Fn(Real) -> Option<Real>, mut a: Real, mut b: Real, mut fa: Real) -> Real {
-    for _ in 0..72 {
-        let middle = a * 0.5 + b * 0.5;
-        if middle == a || middle == b {
-            break;
-        }
-        let Some(fm) = f(middle) else {
-            break;
-        };
-        if fm.signum() == fa.signum() {
-            a = middle;
-            fa = fm;
-        } else {
-            b = middle;
-        }
-    }
-    a * 0.5 + b * 0.5
 }

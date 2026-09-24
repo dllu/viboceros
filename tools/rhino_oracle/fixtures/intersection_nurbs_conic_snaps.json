@@ -1,0 +1,727 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-left",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -1.4953487812212205,
+        -1.1180339887498947,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-right",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.4953487812212205,
+        -1.1180339887498947,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-left-reverse",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -1.4953487812212205,
+        -1.1180339887498947,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-perspective",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.4953487812212205,
+        -1.1180339887498947,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-apparent",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -1.4953487812212205,
+        -1.1180339887498947,
+        1
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-tangent",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            1,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-circle-disjoint",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            2,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-ellipse-right",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius_x": 2,
+          "radius_y": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.7320508075688772,
+        -1.5,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    }
+  ]
+}

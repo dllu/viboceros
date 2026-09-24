@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "rational-nurbs-circle-left",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            -1,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -1.4736140776768036,
+        -1.2801098892805187,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    }
+  ]
+}

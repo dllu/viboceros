@@ -10,7 +10,9 @@ use viboceros_geometry::{
 };
 
 mod conic_pair;
+mod nurbs_conic;
 mod nurbs_line;
+mod nurbs_roots;
 
 #[derive(Clone, Copy)]
 struct Segment {
@@ -153,6 +155,7 @@ pub(super) fn visit(
     let mut segments = Vec::new();
     let mut conics = Vec::new();
     let mut curved_nurbs = Vec::new();
+    let mut has_surface = false;
     for (order, object) in document.objects().enumerate() {
         let attributes = object.attributes();
         if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
@@ -237,6 +240,7 @@ pub(super) fn visit(
                 }
             }
             Geometry::NurbsSurface(_) => {
+                has_surface = true;
                 for boundary in cache.geometry_curves(object, document.tolerance()) {
                     add_linear_nurbs(&boundary.curve, &mut add);
                 }
@@ -295,29 +299,52 @@ pub(super) fn visit(
             conic_line_crossings(conic, segment, metric, emit);
         }
     }
+    let conic_images: Vec<_> = if conics.len() > 1 || !curved_nurbs.is_empty() || has_surface {
+        conics
+            .iter()
+            .map(|conic| conic_pair::fit(conic.locus, metric))
+            .collect()
+    } else {
+        vec![None; conics.len()]
+    };
     for first in 0..conics.len() {
         for second in first + 1..conics.len() {
-            conic_pair::visit(conics[first], conics[second], metric, emit);
+            if let Some(implicit) = conic_images[second] {
+                conic_pair::visit(conics[first], conics[second], implicit, metric, emit);
+            }
         }
     }
     for curve in curved_nurbs {
         for &segment in &segments {
             nurbs_line::visit(curve, segment, metric, emit);
         }
+        for (&conic, &implicit) in conics.iter().zip(&conic_images) {
+            if let Some(implicit) = implicit {
+                nurbs_conic::visit(curve, conic, implicit, metric, emit);
+            }
+        }
     }
-    for (order, object) in document.objects().enumerate() {
-        let attributes = object.attributes();
-        if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
-            continue;
-        }
-        if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
-            continue;
-        }
-        for boundary in cache.geometry_curves(object, document.tolerance()) {
-            if let Some(curve) = captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
-            {
-                for &segment in &segments {
-                    nurbs_line::visit(curve, segment, metric, emit);
+    if has_surface {
+        for (order, object) in document.objects().enumerate() {
+            let attributes = object.attributes();
+            if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+                continue;
+            }
+            if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
+                continue;
+            }
+            for boundary in cache.geometry_curves(object, document.tolerance()) {
+                if let Some(curve) =
+                    captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
+                {
+                    for &segment in &segments {
+                        nurbs_line::visit(curve, segment, metric, emit);
+                    }
+                    for (&conic, &implicit) in conics.iter().zip(&conic_images) {
+                        if let Some(implicit) = implicit {
+                            nurbs_conic::visit(curve, conic, implicit, metric, emit);
+                        }
+                    }
                 }
             }
         }

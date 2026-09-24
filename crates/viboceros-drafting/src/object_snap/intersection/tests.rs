@@ -533,3 +533,62 @@ fn circle_pairs_capture_two_crossings_and_one_tangency() {
     }
     assert!(pick(0., 4.001, [2.0005, 0.], 0.0245).is_none());
 }
+
+#[test]
+fn nurbs_conic_contacts_stay_on_both_projected_loci() {
+    let arch = || {
+        Geometry::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![p(-2., -2., 0.), p(0., 2., 0.), p(2., -2., 0.)],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap(),
+        )
+    };
+    let circle = |y: Real, radius: Real| {
+        Geometry::Circle(
+            Circle3::try_from_frame(
+                p(0., y, 0.),
+                radius,
+                UnitVector3::try_new(1., 0., 0., Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        )
+    };
+    let pick = |center_y: Real, radius: Real, cursor: [Real; 2]| {
+        let mut doc = Document::default();
+        doc.add_geometry(arch()).unwrap();
+        doc.add_geometry(circle(center_y, radius)).unwrap();
+        ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                cursor,
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+    };
+    let x = 5.0_f64.sqrt().sqrt();
+    for x in [-x, x] {
+        let expected = p(x, -x * x / 2., 0.);
+        let hit = pick(-1., 1.5, [x, expected.y()]).unwrap();
+        assert!(hit.point().distance_to(expected).unwrap() < 1e-9);
+    }
+    assert!(
+        pick(1., 1., [0., 0.])
+            .unwrap()
+            .point()
+            .distance_to(p(0., 0., 0.))
+            .unwrap()
+            < 1e-9
+    );
+    assert!(pick(2., 1., [0., 0.]).is_none());
+}

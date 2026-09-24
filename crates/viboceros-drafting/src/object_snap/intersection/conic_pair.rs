@@ -9,15 +9,16 @@ use viboceros_geometry::{Point3, Real};
 
 const STATIONS: usize = 128;
 
-struct ImageConic {
+#[derive(Clone, Copy)]
+pub(super) struct ImageConic {
     origin: [Real; 2],
     scale: Real,
     coefficients: [Real; 6],
-    fit_error: Real,
+    pub(super) fit_error: Real,
 }
 
 impl ImageConic {
-    fn score(&self, image: [Real; 2]) -> Option<Real> {
+    pub(super) fn score(&self, image: [Real; 2]) -> Option<Real> {
         let x = (image[0] - self.origin[0]) / self.scale;
         let y = (image[1] - self.origin[1]) / self.scale;
         let [xx, xy, yy, x0, y0, constant] = self.coefficients;
@@ -25,7 +26,7 @@ impl ImageConic {
         value.is_finite().then_some(value)
     }
 
-    fn gradient(&self, image: [Real; 2]) -> Option<[Real; 2]> {
+    pub(super) fn gradient(&self, image: [Real; 2]) -> Option<[Real; 2]> {
         let x = (image[0] - self.origin[0]) / self.scale;
         let y = (image[1] - self.origin[1]) / self.scale;
         let [xx, xy, yy, x0, y0, _] = self.coefficients;
@@ -37,7 +38,7 @@ impl ImageConic {
     }
 }
 
-fn fit(locus: ConicLocus, metric: &impl SnapMetric) -> Option<ImageConic> {
+pub(super) fn fit(locus: ConicLocus, metric: &impl SnapMetric) -> Option<ImageConic> {
     const FIT: usize = 8;
     let points: [[Real; 2]; FIT] = std::array::from_fn(|i| {
         locus
@@ -99,12 +100,10 @@ fn fit(locus: ConicLocus, metric: &impl SnapMetric) -> Option<ImageConic> {
 pub(super) fn visit(
     first: Conic,
     second: Conic,
+    implicit: ImageConic,
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(ObjectId, Point3, Real),
 ) {
-    let Some(implicit) = fit(second.locus, metric) else {
-        return;
-    };
     let sweep = first.locus.sweep();
     let score = |angle: Real| {
         let point = first.locus.full_point(angle)?;
@@ -410,7 +409,7 @@ fn bisect_derivative(
     a * 0.5 + b * 0.5
 }
 
-fn closest_point(
+pub(super) fn closest_point(
     locus: ConicLocus,
     image: [Real; 2],
     metric: &impl SnapMetric,
