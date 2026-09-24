@@ -5244,6 +5244,32 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "blend_curve":
+        continuity = operation.get("continuity")
+        if continuity not in ("position", "tangency", "curvature"):
+            raise ValueError("invalid blend continuity")
+        first = operation.get("first")
+        second = operation.get("second")
+        if not isinstance(first, list) or len(first) != 2 or not isinstance(second, list) or len(second) != 2:
+            raise ValueError("blend requires two line endpoint pairs")
+        first_curve = None
+        second_curve = None
+        blend = None
+        try:
+            first_curve = Rhino.Geometry.LineCurve(_point(first[0]), _point(first[1]))
+            second_curve = Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
+            mode = getattr(Rhino.Geometry.BlendContinuity, continuity.capitalize())
+            blend = Rhino.Geometry.Curve.CreateBlendCurve(first_curve, second_curve, mode)
+            if blend is None:
+                raise ValueError("Rhino could not create the blend")
+            return _nurbs_curve_definition(blend), 0
+        finally:
+            if blend is not None:
+                blend.Dispose()
+            if first_curve is not None:
+                first_curve.Dispose()
+            if second_curve is not None:
+                second_curve.Dispose()
     if operation.get("op") == "point_snap":
         import point_snap_probe
         return point_snap_probe.run(operation, tolerance, globals())

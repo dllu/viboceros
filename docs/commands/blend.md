@@ -8,10 +8,16 @@ blend is selected, and `Undo` removes it. `Pick1=x,y,z` and `Pick2=x,y,z`
 choose other source ends.
 
 `Continuity1` and `Continuity2` independently accept `Position`, `Tangency`, or
-`Curvature`; both default to `Tangency`. Position and tangency blends are cubic;
+`Curvature`; both default to `Tangency`. Two position ends produce a line;
+tangency blends are cubic;
 curvature at either end produces a quintic that matches the source curvature
 at that end. `Handle1` and `Handle2` set the respective handle lengths in model
-units. Each defaults to one third of the endpoint distance.
+units. The default length is the endpoint distance for tangency and 40% of it
+for curvature. Position handles default to one third of that distance when
+combined with another continuity mode.
+
+The [Rhino API comparison](../blend-oracle.md) covers the default G0, G1, and
+G2 shapes for five line input cases.
 
 ```text
 Blend Continuity1=Tangency Continuity2=Position Handle1=2.5

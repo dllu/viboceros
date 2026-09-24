@@ -43,6 +43,7 @@ use viboceros_io::{
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
+mod blend_curve;
 mod centroid_command;
 mod construction_plane;
 #[cfg(test)]
@@ -238,6 +239,11 @@ pub enum Operation {
     CurveBounds {
         id: String,
         curve: curve_join_close::CurveInput,
+    },
+    BlendCurve {
+        id: String,
+        #[serde(flatten)]
+        fixture: blend_curve::BlendCurveFixture,
     },
     PlaneArray {
         id: String,
@@ -1777,6 +1783,7 @@ impl Operation {
             | Self::ProjectedObjectSnap { id, .. }
             | Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
+            | Self::BlendCurve { id, .. }
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceClosestPoint { id, .. }
             | Self::SurfaceParameterCurveBounds { id, .. }
@@ -2236,6 +2243,7 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::BlendCurve { fixture, .. } => blend_curve::run(fixture, tolerance)?,
         Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,

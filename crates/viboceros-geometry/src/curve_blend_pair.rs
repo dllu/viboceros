@@ -50,9 +50,13 @@ pub fn try_blend_curve(
             context: "curve blend endpoints",
         });
     }
-    let default_handle = chord_length / 3.0;
-    let first_handle = options.handles[0].unwrap_or(default_handle);
-    let second_handle = options.handles[1].unwrap_or(default_handle);
+    let default_handle = |continuity| match continuity {
+        CurveBlendContinuity::Position => chord_length / 3.0,
+        CurveBlendContinuity::Tangency => chord_length,
+        CurveBlendContinuity::Curvature => chord_length * 0.4,
+    };
+    let first_handle = options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
+    let second_handle = options.handles[1].unwrap_or_else(|| default_handle(options.continuity[1]));
     if !first_handle.is_finite()
         || !second_handle.is_finite()
         || first_handle <= 0.0
@@ -61,6 +65,13 @@ pub fn try_blend_curve(
         return Err(GeometryError::Degenerate {
             context: "curve blend handle length",
         });
+    }
+    if options.continuity == [CurveBlendContinuity::Position; 2] {
+        return NurbsCurve::try_new(
+            1,
+            vec![start, end],
+            vec![0.0, 0.0, chord_length, chord_length],
+        );
     }
     let chord_direction = chord.normalized_nonzero()?;
     let first_direction = match options.continuity[0] {
@@ -105,7 +116,7 @@ pub fn try_blend_curve(
             second_curvature,
             false,
         )?;
-        return NurbsCurve::try_new(
+        let blend = NurbsCurve::try_new(
             5,
             vec![
                 start,
@@ -116,13 +127,15 @@ pub fn try_blend_curve(
                 end,
             ],
             vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-        );
+        )?;
+        return blend.try_reparameterized(0.0..=blend.length(tolerance)?);
     }
-    NurbsCurve::try_new(
+    let blend = NurbsCurve::try_new(
         3,
         vec![start, first_control, second_control, end],
         vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
-    )
+    )?;
+    blend.try_reparameterized(0.0..=blend.length(tolerance)?)
 }
 
 fn endpoint_curvature(
@@ -377,5 +390,54 @@ mod tests {
                 .unwrap()
                 < 1e-12
         );
+    }
+
+    #[test]
+    fn default_line_blends_match_rhino_common_control_shape() {
+        let first = line(p(0., 0.), p(1., 0.));
+        let second = line(p(4., 1.), p(4., 2.));
+        let chord = 10.0_f64.sqrt();
+        for (continuity, degree, expected) in [
+            (
+                CurveBlendContinuity::Position,
+                1,
+                vec![p(1., 0.), p(4., 1.)],
+            ),
+            (
+                CurveBlendContinuity::Tangency,
+                3,
+                vec![p(1., 0.), p(1. + chord, 0.), p(4., 1. - chord), p(4., 1.)],
+            ),
+            (
+                CurveBlendContinuity::Curvature,
+                5,
+                vec![
+                    p(1., 0.),
+                    p(1. + 0.4 * chord, 0.),
+                    p(1. + 0.8 * chord, 0.),
+                    p(4., 1. - 0.8 * chord),
+                    p(4., 1. - 0.4 * chord),
+                    p(4., 1.),
+                ],
+            ),
+        ] {
+            let blend = try_blend_curve(
+                &first,
+                p(1., 0.),
+                &second,
+                p(4., 1.),
+                CurveBlendOptions {
+                    continuity: [continuity; 2],
+                    ..Default::default()
+                },
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(blend.degree(), degree);
+            assert_eq!(blend.control_points().len(), expected.len());
+            for (actual, expected) in blend.control_points().iter().zip(expected) {
+                assert!(actual.point().distance_to(expected).unwrap() < 1e-12);
+            }
+        }
     }
 }
