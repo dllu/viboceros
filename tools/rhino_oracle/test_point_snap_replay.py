@@ -19,6 +19,16 @@ def inputs(name="point_snaps"):
 
 
 class PointSnapReplayTests(unittest.TestCase):
+    def test_multi_object_intersection_captures_prepare_for_native_replay(self):
+        for stem in ("intersection_multi_snaps", "intersection_multi_detail_snaps",
+                     "intersection_multi_depth_snaps", "intersection_multi_orientation_snaps"):
+            with self.subTest(stem=stem):
+                request,observed = inputs(stem)
+                native,evidence = replay.prepare(request,observed)
+                self.assertEqual(len(native["operations"]),len(request["operations"]))
+                self.assertTrue(all(row["value"]["kind"] == "Intersection" for row in evidence["results"]))
+                self.assertTrue(all(op["op"] == "projected_object_snap" for op in native["operations"]))
+
     def test_targets_never_enter_native_input_and_misses_do_not_assert_placement(self):
         request,observed = inputs()
         native,evidence = replay.prepare(request,observed)

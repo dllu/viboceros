@@ -1,0 +1,451 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-hvd",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-hdv",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-dhv",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-ohv",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            2,
+            3
+          ],
+          "end": [
+            2,
+            -2,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-hvo",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            2,
+            3
+          ],
+          "end": [
+            2,
+            -2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "quad-hvdo",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            2,
+            3
+          ],
+          "end": [
+            2,
+            -2,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

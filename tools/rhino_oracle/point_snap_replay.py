@@ -61,10 +61,16 @@ def prepare(request, observed):
         if kind == "None":
             if source is not None: raise OracleProtocolError("unsnapped point has an object source")
             point = None
-        elif kind not in ("Point","End","Midpoint","Center","Quadrant","Near") or type(source) is not int or not 0 <= source < len(operation["sources"]):
+        elif kind not in ("Point","End","Midpoint","Center","Quadrant","Near","Intersection") or type(source) is not int or not 0 <= source < len(operation["sources"]):
             raise OracleProtocolError("invalid observed snap kind/source")
-        expected = [dict(line=[s["start"],s["end"]]) if s["type"] == "line" else
-                    dict(mesh=dict(vertices=s["vertices"],faces=s["faces"])) for s in operation["sources"]]
+        expected = []
+        for item in operation["sources"]:
+            if item["type"] == "line":
+                expected.append(dict(line=[item["start"],item["end"]]))
+            elif item["type"] == "mesh":
+                expected.append(dict(mesh=dict(vertices=item["vertices"],faces=item["faces"])))
+            else:
+                raise OracleProtocolError("calibrated replay needs a source geometry verifier for " + item["type"])
         if value.get("before") != expected or value["before"] != value.get("after"):
             raise OracleProtocolError("source geometry differs from input or changed during snap capture")
         state = value.get("mesh_snap_setting")

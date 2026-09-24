@@ -1,0 +1,1064 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "triple-vhd",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            644,
+            772
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 317.21281504724175,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "source": 1,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "triple-dvh",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            644,
+            772
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 309.2116799671203,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "source": 2,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "triple-hvd-on-diagonal",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            644,
+            768
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 303.31872100941837,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.0,
+          0.0,
+          2.0
+        ],
+        "source": 2,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "triple-hvd-on-diagonal-reverse",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            640,
+            772
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 304.5542569598183,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          0.0,
+          0.0,
+          2.0
+        ],
+        "source": 2,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "triple-hvd-horizontal-near",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            645,
+            772
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 305.9104810236022,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          -1.1102230246251565e-16,
+          0.0,
+          0.0
+        ],
+        "source": 0,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "triple-hvd-vertical-near",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                0.0,
+                -2.0,
+                1.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "line": [
+              [
+                -2.0,
+                -2.0,
+                2.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aim_client": [
+            642.0,
+            770.5
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            0.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            644,
+            773
+          ],
+          "perspective": false,
+          "size": [
+            1284,
+            1541
+          ],
+          "world_to_screen": [
+            [
+              116.72727272727273,
+              0.0,
+              0.0,
+              642.0
+            ],
+            [
+              0.0,
+              -116.72727272727269,
+              0.0,
+              770.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.3333307998552491,
+              0.833334600072376
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 325.792254996486,
+          "requested_settle_ms": 300
+        },
+        "kind": "Intersection",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          -1.1102230246251565e-16,
+          0.0,
+          0.0
+        ],
+        "source": 0,
+        "topology_wires": [
+          null,
+          null,
+          null
+        ]
+      }
+    }
+  ]
+}

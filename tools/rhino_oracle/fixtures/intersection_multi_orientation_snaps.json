@@ -1,0 +1,294 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-vde",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -1,
+            4
+          ],
+          "end": [
+            2,
+            1,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-dev",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -1,
+            4
+          ],
+          "end": [
+            2,
+            1,
+            4
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-vds",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            -2,
+            5
+          ],
+          "end": [
+            1,
+            2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "point_snap",
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        0,
+        0
+      ],
+      "offset": [
+        -2,
+        -3
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300,
+      "id": "triple-hvd-opposite-quadrant",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            1
+          ],
+          "end": [
+            0,
+            2,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -2,
+            -2,
+            2
+          ],
+          "end": [
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -129,8 +129,9 @@ lexicographically smaller center. All 22 picks match in kind and
 source; model points agree within `5e-8`. Rhino's observed points differ from
 the exact circle intersection by about `2.4e-8` in the rotated-frame case.
 
-Surface isocurves,
-occlusion, and multi-object intersection priority need further work. Candidate
+Surface isocurves and occlusion need further work. The
+[multi-object source audit](intersection-multi-priority.md) retains 22 triple and
+quadruple crossing captures; 15 currently select a different source. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
 can still grow quadratically where many projected wires or conics overlap.
