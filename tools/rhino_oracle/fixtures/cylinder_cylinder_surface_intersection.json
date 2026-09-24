@@ -1,0 +1,65 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "two_finite_generatrices",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [2, 0, 1], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "external_tangent_line",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [4, 0, 1], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "internal_tangent_line",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [1, 0, 1], "axis": [0, 0, 1], "radius": 1, "height": 3}
+    },
+    {
+      "id": "transverse_rim_points",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 2},
+      "other_cylinder": {"center": [2, 0, 2], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "coaxial_shared_rim",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 2},
+      "other_cylinder": {"center": [0, 0, 2], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "coaxial_area_overlap",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [0, 0, 1], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "opposed_axes",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [2, 0, 4], "axis": [0, 0, -1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "disjoint_radially",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [5, 0, 1], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "disjoint_axially",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [2, 0, 6], "axis": [0, 0, 1], "radius": 2, "height": 3}
+    },
+    {
+      "id": "contained_radially",
+      "op": "cylinder_cylinder_surface_intersection",
+      "cylinder": {"center": [0, 0, 0], "axis": [0, 0, 1], "radius": 2, "height": 5},
+      "other_cylinder": {"center": [0.5, 0, 1], "axis": [0, 0, 1], "radius": 1, "height": 3}
+    }
+  ]
+}

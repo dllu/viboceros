@@ -1,0 +1,356 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 9101868,
+      "id": "two_finite_generatrices",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 2.999999999999999,
+            "samples": [
+              [
+                1.0000000000000002,
+                1.7320508075688774,
+                3.9999999999999996
+              ],
+              [
+                1.0000000000000002,
+                1.7320508075688774,
+                2.5
+              ],
+              [
+                1.0000000000000002,
+                1.7320508075688774,
+                1.0000000000000002
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0000000000000004,
+            "samples": [
+              [
+                0.9999999999999992,
+                -1.732050807568877,
+                1.0
+              ],
+              [
+                0.9999999999999992,
+                -1.732050807568877,
+                2.5
+              ],
+              [
+                0.9999999999999992,
+                -1.732050807568877,
+                4.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 7690430,
+      "id": "external_tangent_line",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 14068604,
+      "id": "internal_tangent_line",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                4.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.5
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 3135681,
+      "id": "transverse_rim_points",
+      "value": {
+        "curves": [],
+        "points": [
+          [
+            1.0,
+            1.7320508075688772,
+            2.0
+          ],
+          [
+            0.9999999999999998,
+            -1.7320508075688772,
+            2.0
+          ]
+        ],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 17333984,
+      "id": "coaxial_shared_rim",
+      "value": {
+        "curves": [
+          {
+            "closed": true,
+            "degree": 2,
+            "length": 12.566370643255095,
+            "samples": [
+              [
+                2.0,
+                0.0,
+                2.0
+              ],
+              [
+                -2.0,
+                2.4492935982947064e-16,
+                2.0
+              ],
+              [
+                2.0,
+                0.0,
+                2.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 21606445,
+      "id": "coaxial_area_overlap",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 3234863,
+      "id": "opposed_axes",
+      "value": {
+        "curves": [
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.000000000000001,
+            "samples": [
+              [
+                1.0000000000000002,
+                1.7320508075688774,
+                4.000000000000001
+              ],
+              [
+                1.0000000000000002,
+                1.7320508075688772,
+                2.5000000000000004
+              ],
+              [
+                1.0000000000000002,
+                1.7320508075688776,
+                0.9999999999999999
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "degree": 1,
+            "length": 3.0000000000000004,
+            "samples": [
+              [
+                0.9999999999999998,
+                -1.732050807568877,
+                1.0
+              ],
+              [
+                0.9999999999999998,
+                -1.732050807568877,
+                2.5
+              ],
+              [
+                0.9999999999999998,
+                -1.732050807568877,
+                4.0
+              ]
+            ]
+          }
+        ],
+        "points": [],
+        "success": true
+      }
+    },
+    {
+      "elapsed_ns": 61035,
+      "id": "disjoint_radially",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
+      }
+    },
+    {
+      "elapsed_ns": 45776,
+      "id": "disjoint_axially",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
+      }
+    },
+    {
+      "elapsed_ns": 91553,
+      "id": "contained_radially",
+      "value": {
+        "curves": [],
+        "points": [],
+        "success": false
+      }
+    }
+  ]
+}

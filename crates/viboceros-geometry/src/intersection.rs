@@ -1,6 +1,7 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 mod cone_plane;
+mod cylinder_cylinder;
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
@@ -524,6 +525,8 @@ fn curve_brep_intersection_events_with_transform(
 /// circles or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
+/// Parallel canonical cylinder walls intersect in exact finite generatrices,
+/// isolated rim points, or a shared rim circle.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -563,6 +566,13 @@ pub fn surface_surface_intersection_events(
     {
         return cylinder_planar_surface_intersection_events(
             second, frame, radius, height, first, plane, tolerance,
+        );
+    }
+    if let (Some(first_data), Some(second_data)) = (first_cylinder, second_cylinder) {
+        return cylinder_cylinder::parallel_cylinder_intersection_events(
+            first_data,
+            second_data,
+            tolerance,
         );
     }
     let first_sphere = first.canonical_sphere(tolerance)?;

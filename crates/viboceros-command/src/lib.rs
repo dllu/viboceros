@@ -26703,6 +26703,58 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_parallel_cylinder_generatrices() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(frame, 2.0, 0.0, 5.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(
+                        frame.with_origin(Point3::try_new(2.0, 0.0, 1.0).unwrap()),
+                        2.0,
+                        0.0,
+                        3.0,
+                    )
+                    .unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let mut sides = Vec::new();
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(line) = object.geometry() else {
+                panic!("parallel cylinders should create exact line intersections")
+            };
+            assert_eq!(line.degree(), 1);
+            assert!((line.length(document.tolerance()).unwrap() - 3.0).abs() < 1e-9);
+            let sample = line.evaluate(*line.domain().start()).unwrap();
+            assert!((sample.x() - 1.0).abs() < 1e-9);
+            sides.push(sample.y());
+        }
+        sides.sort_by(f64::total_cmp);
+        assert!((sides[0] + 3.0_f64.sqrt()).abs() < 1e-9);
+        assert!((sides[1] - 3.0_f64.sqrt()).abs() < 1e-9);
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_two_cylinder_plane_generatrices() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

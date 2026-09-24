@@ -174,6 +174,14 @@ match Rhino's result. The
 [cylinder/plane fixture](../../tools/rhino_oracle/fixtures/cylinder_plane_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/cylinder_plane_surface_intersection.json)
 cover those cases.
+Parallel canonical cylinder walls intersect in exact, height-clipped
+generatrices. External tangencies retain two coincident lines and internal
+tangencies retain four, matching Rhino's surface API. Rim-only transverse
+contacts produce points; coaxial walls sharing one rim produce its exact circle.
+Coaxial walls overlapping over an area produce no API events, as Rhino does.
+The [cylinder/cylinder fixture](../../tools/rhino_oracle/fixtures/cylinder_cylinder_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/cylinder_cylinder_surface_intersection.json)
+record these cases. Nonparallel wall intersections remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the

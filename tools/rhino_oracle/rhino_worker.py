@@ -11829,6 +11829,7 @@ def _execute(operation, iterations, tolerance):
         "sphere_sphere_surface_intersection",
         "sphere_cylinder_surface_intersection",
         "cylinder_plane_surface_intersection",
+        "cylinder_cylinder_surface_intersection",
         "cone_plane_surface_intersection",
     ):
         source_brep = None
@@ -11843,7 +11844,10 @@ def _execute(operation, iterations, tolerance):
                 _point(sphere_def["center"]),
                 _finite(sphere_def["radius"], "sphere radius"),
             ).ToNurbsSurface()
-        elif kind == "cylinder_plane_surface_intersection":
+        elif kind in (
+            "cylinder_plane_surface_intersection",
+            "cylinder_cylinder_surface_intersection",
+        ):
             cylinder_def = operation["cylinder"]
             cylinder_plane = Rhino.Geometry.Plane(
                 _point(cylinder_def["center"]),
@@ -11878,8 +11882,15 @@ def _execute(operation, iterations, tolerance):
                 _point(other_def["center"]),
                 _finite(other_def["radius"], "other sphere radius"),
             ).ToNurbsSurface()
-        elif kind == "sphere_cylinder_surface_intersection":
-            cylinder_def = operation["cylinder"]
+        elif kind in (
+            "sphere_cylinder_surface_intersection",
+            "cylinder_cylinder_surface_intersection",
+        ):
+            cylinder_def = operation[
+                "cylinder"
+                if kind == "sphere_cylinder_surface_intersection"
+                else "other_cylinder"
+            ]
             cylinder_plane = Rhino.Geometry.Plane(
                 _point(cylinder_def["center"]),
                 _vector(cylinder_def["axis"]),
