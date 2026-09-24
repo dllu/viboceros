@@ -177,6 +177,51 @@
     },
     {
       "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-polyline-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "polyline", "vertices": [[2, 2, 0], [6, 2, 0], [6, 6, 0]]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "arc-to-linear-nurbs-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "arc", "points": [
+          [0, 0, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [2, 2, 0]
+        ]},
+        {"type": "nurbs", "degree": 1,
+          "control_points": [
+            {"point": [2, 2, 0], "weight": 1},
+            {"point": [6, 2, 0], "weight": 1},
+            {"point": [6, 6, 0], "weight": 1}
+          ],
+          "knots": [0, 0, 1, 2, 2]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
+      "id": "polyline-to-arc-kink",
+      "curve": {"type": "polycurve", "segments": [
+        {"type": "polyline", "vertices": [[6, 6, 0], [6, 2, 0], [2, 2, 0]]},
+        {"type": "arc", "points": [
+          [2, 2, 0],
+          [1.4142135623730951, 0.5857864376269049, 0],
+          [0, 0, 0]
+        ]}
+      ]},
+      "radius": 0.5
+    },
+    {
+      "op": "curve_fillet_corners_geometry",
       "id": "closed-arc-line-kinks-and-seam",
       "curve": {"type": "polycurve", "segments": [
         {"type": "arc", "points": [

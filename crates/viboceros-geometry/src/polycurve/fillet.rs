@@ -8,8 +8,8 @@ enum FilletPart {
 }
 
 impl PolyCurve3 {
-    /// Fillets straight-span and coplanar arc-line corners while retaining
-    /// smooth curved leaves. Unsupported curved junctions and internal
+    /// Fillets straight corners and coplanar arc-to-straight corners while
+    /// retaining smooth curved leaves. Unsupported curved junctions and internal
     /// curved-leaf kinks are rejected rather than changing their locus.
     pub fn try_fillet_corners(
         &self,

@@ -4,7 +4,8 @@
 
 Select one or more open or closed polylines or supported polycurves, then enter
 `FilletCorners 0.5` or `FilletCorners Radius=0.5`. Turns between straight spans
-and supported arc-line joints receive exact circular arcs tangent to both sides.
+and supported joints between circular arcs and straight spans receive exact
+circular arcs tangent to both sides.
 The radius must exceed the document absolute tolerance. Each source segment
 must have room for the setbacks at both ends. Adjacent arcs may meet at a tangent point.
 A radius that makes them overlap rejects the entire
@@ -18,19 +19,19 @@ polyline, and linear NURBS knot-span leaves; their junctions must be exact.
 Open and closed polycurves may also contain circular arcs and curved NURBS leaves. These
 leaves retain their exact geometry when their internal knots and adjoining
 leaf junctions are smooth; corners within straight runs receive the fillets.
-Coplanar kinks between a native circular arc and a native line are also
-rounded when the radius fits both leaves, preserving trimmed native curves.
+Coplanar kinks between a native circular arc and a line, polyline, or linear
+NURBS leaf are also rounded when the radius fits both sides. Straight leaves
+are split into their exact line spans when needed; trimmed arcs remain native.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
-Kinks involving curved NURBS, two curved leaves, or a curved leaf and a
-polyline or linear NURBS leaf remain to be implemented, as do viewport radius
-picking and interactive preview.
+Kinks involving curved NURBS or two curved leaves remain to be implemented,
+as do viewport radius picking and interactive preview.
 
 The [geometry fixture](../../tools/rhino_oracle/fixtures/curve_fillet_corners.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_corners.json)
 compare open, closed, tangent-meeting, and spatial polylines, three straight
-polycurves, and nine polycurves with smooth or filleted curved leaves against
-RhinoCommon's public `CreateFilletCornersCurve` method. Fifteen cases use 65 equal arc-length
+polycurves, and twelve polycurves with smooth or filleted curved leaves against
+RhinoCommon's public `CreateFilletCornersCurve` method. Eighteen cases use 65 equal arc-length
 stations; the quadratic NURBS case uses 17 fixed closest-point probes to avoid
 differences in the two engines' arc-length inversion. Closure and total length
 also agree. The largest sampled coordinate difference is `7.5e-9`.

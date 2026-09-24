@@ -29,6 +29,9 @@ fn fillet_corners_geometry_matches_saved_rhino_samples() {
             "arc-to-line-kink"
                 | "line-to-arc-kink"
                 | "arc-to-line-and-line-corner"
+                | "arc-to-polyline-kink"
+                | "arc-to-linear-nurbs-kink"
+                | "polyline-to-arc-kink"
                 | "closed-arc-line-kinks-and-seam"
                 | "arc-to-opposite-line-kink"
         ) {

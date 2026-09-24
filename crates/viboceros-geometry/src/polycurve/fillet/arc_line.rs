@@ -13,9 +13,15 @@ pub(super) fn resolve_arc_line_kinks(
     radius: Real,
     tolerance: Tolerance,
 ) -> Result<Option<PolyCurve3>, GeometryError> {
+    if !source
+        .segments()
+        .iter()
+        .any(|segment| matches!(segment, CurveSegment3::Arc(_)))
+    {
+        return Ok(None);
+    }
     let closed = source.is_closed()?;
-    let mut segments = source.segments().to_vec();
-    let mut changed = false;
+    let (mut segments, mut changed) = expand_straight_arc_neighbors(source, closed, tolerance)?;
     let mut index = 0;
     while index + 1 < segments.len() {
         if let Some((before, fillet, after)) =
@@ -47,6 +53,74 @@ pub(super) fn resolve_arc_line_kinks(
     }
 }
 
+fn expand_straight_arc_neighbors(
+    source: &PolyCurve3,
+    closed: bool,
+    tolerance: Tolerance,
+) -> Result<(Vec<CurveSegment3>, bool), GeometryError> {
+    let leaves = source.segments();
+    let mut expand = vec![false; leaves.len()];
+    for index in 0..leaves.len() - 1 + usize::from(closed) {
+        let next = (index + 1) % leaves.len();
+        let straight_index = match (&leaves[index], &leaves[next]) {
+            (CurveSegment3::Arc(_), CurveSegment3::Polyline(_) | CurveSegment3::NurbsCurve(_)) => {
+                next
+            }
+            (CurveSegment3::Polyline(_) | CurveSegment3::NurbsCurve(_), CurveSegment3::Arc(_)) => {
+                index
+            }
+            _ => continue,
+        };
+        if straight_leaf_vertices(&leaves[straight_index])?.is_some()
+            && sharp_joint(&leaves[index], &leaves[next], tolerance)?
+        {
+            expand[straight_index] = true;
+        }
+    }
+    let changed = expand.iter().any(|&flag| flag);
+    if !changed {
+        return Ok((leaves.to_vec(), false));
+    }
+    let mut segments = Vec::new();
+    for (segment, expand) in leaves.iter().zip(expand) {
+        if expand {
+            let points = straight_leaf_vertices(segment)?.expect("marked leaf is straight");
+            for pair in points.windows(2) {
+                if segments.len() >= MAX_POLYCURVE_SEGMENTS {
+                    return Err(GeometryError::InvalidPolyCurve {
+                        context: "too many fillet segments",
+                    });
+                }
+                segments.push(CurveSegment3::Line(LineSegment::try_new(
+                    pair[0],
+                    pair[1],
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?));
+            }
+        } else {
+            segments.push(segment.clone());
+        }
+    }
+    Ok((segments, true))
+}
+
+fn sharp_joint(
+    before: &CurveSegment3,
+    after: &CurveSegment3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let before_sample = before
+        .as_ref()
+        .evaluate_with_tangent_on_side(*before.domain().end(), ParameterSide::Left)?;
+    let after_sample = after
+        .as_ref()
+        .evaluate_with_tangent_on_side(*after.domain().start(), ParameterSide::Right)?;
+    Ok(tangent_angle(
+        before_sample.tangent().as_vector(),
+        after_sample.tangent().as_vector(),
+    )? > tolerance.angular())
+}
+
 fn fillet_pair(
     before: &CurveSegment3,
     after: &CurveSegment3,
@@ -60,17 +134,7 @@ fn fillet_pair(
         }
         _ => return Ok(None),
     };
-    let before_sample = before
-        .as_ref()
-        .evaluate_with_tangent_on_side(*before.domain().end(), ParameterSide::Left)?;
-    let after_sample = after
-        .as_ref()
-        .evaluate_with_tangent_on_side(*after.domain().start(), ParameterSide::Right)?;
-    if tangent_angle(
-        before_sample.tangent().as_vector(),
-        after_sample.tangent().as_vector(),
-    )? <= tolerance.angular()
-    {
+    if !sharp_joint(before, after, tolerance)? {
         return Ok(None);
     }
     let solution = solve_arc_then_line(arc, line, radius, tolerance)?;
@@ -341,5 +405,51 @@ mod tests {
         assert!(rounded.is_closed().unwrap());
         assert!(matches!(rounded.segments()[0], CurveSegment3::Arc(_)));
         assert!(rounded.segments().len() >= 9);
+    }
+
+    #[test]
+    fn polyline_and_linear_nurbs_neighbors_match_their_exact_line_spans() {
+        let arc = CircularArc3::try_from_three_points(
+            p(0., 0.),
+            p(2_f64.sqrt(), 2. - 2_f64.sqrt()),
+            p(2., 2.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let vertices = vec![p(2., 2.), p(6., 2.), p(6., 6.)];
+        let reference = PolyCurve3::try_new(vec![
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Line(
+                LineSegment::try_new(vertices[0], vertices[1], Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::Line(
+                LineSegment::try_new(vertices[1], vertices[2], Tolerance::DEFAULT).unwrap(),
+            ),
+        ])
+        .unwrap()
+        .try_fillet_corners(0.5, Tolerance::DEFAULT)
+        .unwrap();
+        let leaves = [
+            CurveSegment3::Polyline(
+                Polyline3::try_new(vertices.clone(), Tolerance::DEFAULT).unwrap(),
+            ),
+            CurveSegment3::NurbsCurve(
+                NurbsCurve::try_new(1, vertices, vec![0., 0., 1., 2., 2.]).unwrap(),
+            ),
+        ];
+        for leaf in leaves {
+            let source = PolyCurve3::try_new(vec![CurveSegment3::Arc(arc), leaf]).unwrap();
+            let result = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+            assert_eq!(result.segments().len(), 5);
+            let actual = CurveRef::PolyCurve(&result)
+                .sample_equal_length_points(16, true, Tolerance::DEFAULT)
+                .unwrap();
+            let expected = CurveRef::PolyCurve(&reference)
+                .sample_equal_length_points(16, true, Tolerance::DEFAULT)
+                .unwrap();
+            for (a, b) in actual.into_iter().zip(expected) {
+                assert!(a.distance_to(b).unwrap() < 1e-12);
+            }
+        }
     }
 }
