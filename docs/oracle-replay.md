@@ -41,6 +41,31 @@ Successful records use the same complete recursive comparison as normal mode;
 the reference's order need not match, but its IDs and iteration count must.
 No geometry, table order, parameters, or reference records are normalized.
 
+The eight analytic surface intersection fixture families use the same Python
+API on both engines. For example:
+
+```python
+from tools.rhino_oracle import OracleClient, load_request
+
+fixture = "tools/rhino_oracle/fixtures/sphere_sphere_surface_intersection.json"
+observation = "tools/rhino_oracle/observations/sphere_sphere_surface_intersection.json"
+report = OracleClient().replay(load_request(fixture), load_request(observation), 1e-8, 1e-10)
+for row in report.operations:
+    print(row.id, row.native_error or row.comparison.differences)
+```
+
+The native adapter constructs the same analytic sphere, cylinder, cone, or
+finite plane definition and returns raw point events and curve degree, closure,
+three parameter samples, and length. Replay retains representation differences:
+Rhino may fit a cubic where the kernel returns an exact rational conic, split a
+circle differently, report seam points, or miss an exact tangency. The saved
+samples and lengths are useful diagnostics; three samples alone cannot certify
+that two entire curves lie within a spatial epsilon.
+At absolute epsilon `1e-8` and relative epsilon `1e-10`, the eight saved fixture
+families currently yield 23 full raw matches in 59 cases, three expected native
+noncoaxial-geometry errors, and 33 raw differences. These counts describe the
+recorded API fields, not a certified spatial distance between whole curves.
+
 Replay preflight checks IDs, metadata, and epsilons before launching the native
 process. It does not prove that an arbitrary reference file was produced from
 the supplied inputs: use paired fixtures and the recorded shared-artifact checks

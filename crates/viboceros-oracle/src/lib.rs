@@ -56,6 +56,7 @@ mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
 mod surface_closest;
+mod surface_intersection;
 mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod align;
@@ -236,6 +237,46 @@ pub enum Operation {
         id: String,
         surface: NurbsSurfaceDefinition,
         points: Vec<[f64; 3]>,
+    },
+    SpherePlaneSurfaceIntersection {
+        id: String,
+        sphere: surface_intersection::SphereSpec,
+        plane: surface_intersection::PlaneSpec,
+    },
+    SphereSphereSurfaceIntersection {
+        id: String,
+        sphere: surface_intersection::SphereSpec,
+        other_sphere: surface_intersection::SphereSpec,
+    },
+    SphereCylinderSurfaceIntersection {
+        id: String,
+        sphere: surface_intersection::SphereSpec,
+        cylinder: surface_intersection::CylinderSpec,
+    },
+    SphereConeSurfaceIntersection {
+        id: String,
+        sphere: surface_intersection::SphereSpec,
+        cone: surface_intersection::ConeSpec,
+    },
+    CylinderPlaneSurfaceIntersection {
+        id: String,
+        cylinder: surface_intersection::CylinderSpec,
+        plane: surface_intersection::PlaneSpec,
+    },
+    CylinderCylinderSurfaceIntersection {
+        id: String,
+        cylinder: surface_intersection::CylinderSpec,
+        other_cylinder: surface_intersection::CylinderSpec,
+    },
+    ConePlaneSurfaceIntersection {
+        id: String,
+        cone: surface_intersection::ConeSpec,
+        plane: surface_intersection::PlaneSpec,
+    },
+    ConeCylinderSurfaceIntersection {
+        id: String,
+        cone: surface_intersection::ConeSpec,
+        cylinder: surface_intersection::CylinderSpec,
     },
     CurveBounds {
         id: String,
@@ -1793,6 +1834,14 @@ impl Operation {
             | Self::ConnectCommand { id, .. }
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceClosestPoint { id, .. }
+            | Self::SpherePlaneSurfaceIntersection { id, .. }
+            | Self::SphereSphereSurfaceIntersection { id, .. }
+            | Self::SphereCylinderSurfaceIntersection { id, .. }
+            | Self::SphereConeSurfaceIntersection { id, .. }
+            | Self::CylinderPlaneSurfaceIntersection { id, .. }
+            | Self::CylinderCylinderSurfaceIntersection { id, .. }
+            | Self::ConePlaneSurfaceIntersection { id, .. }
+            | Self::ConeCylinderSurfaceIntersection { id, .. }
             | Self::SurfaceParameterCurveBounds { id, .. }
             | Self::TrimBoundaryBounds { id, .. }
             | Self::TrimmedBrepBounds { id, .. }
@@ -2218,6 +2267,16 @@ fn execute(
         Operation::SurfaceClosestPoint {
             surface, points, ..
         } => surface_closest::run(surface, points, iterations, tolerance)?,
+        Operation::SpherePlaneSurfaceIntersection { .. }
+        | Operation::SphereSphereSurfaceIntersection { .. }
+        | Operation::SphereCylinderSurfaceIntersection { .. }
+        | Operation::SphereConeSurfaceIntersection { .. }
+        | Operation::CylinderPlaneSurfaceIntersection { .. }
+        | Operation::CylinderCylinderSurfaceIntersection { .. }
+        | Operation::ConePlaneSurfaceIntersection { .. }
+        | Operation::ConeCylinderSurfaceIntersection { .. } => {
+            surface_intersection::run(operation, iterations, tolerance)?
+        }
         Operation::SurfaceBounds {
             surface,
             sample_grid,
