@@ -41,7 +41,15 @@ impl NurbsSurface {
             return Ok(None);
         }
         let expected_base_weight = candidate.control_points[2 * 9].weight();
-        let allowed_position = tolerance.absolute().max(tolerance.relative() * radius) * 4.0;
+        let coordinate_scale = center
+            .to_array()
+            .into_iter()
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        // Reconstructing a local frame from distant controls loses several
+        // ulps of their world coordinates even for an exact source sphere.
+        let allowed_position = (tolerance.absolute().max(tolerance.relative() * radius) * 4.0)
+            .max(8.0 * Real::EPSILON * coordinate_scale);
         for (actual, expected) in self.control_points.iter().zip(&candidate.control_points) {
             if actual.point().distance_to(expected.point())? > allowed_position
                 || ((actual.weight() / base_weight) - (expected.weight() / expected_base_weight))
@@ -92,6 +100,22 @@ mod tests {
         let ellipsoid = NurbsSurface::try_ellipsoid(frame, [2.0, 2.0, 3.0]).unwrap();
         assert!(
             ellipsoid
+                .canonical_sphere(Tolerance::DEFAULT)
+                .unwrap()
+                .is_none()
+        );
+
+        let far_frame = frame.with_origin(Point3::try_new(1.0e8, -1.0e8, 1.0e8).unwrap());
+        assert!(
+            NurbsSurface::try_sphere(far_frame, 2.0)
+                .unwrap()
+                .canonical_sphere(Tolerance::DEFAULT)
+                .unwrap()
+                .is_some()
+        );
+        assert!(
+            NurbsSurface::try_ellipsoid(far_frame, [2.0, 2.0, 2.0001])
+                .unwrap()
                 .canonical_sphere(Tolerance::DEFAULT)
                 .unwrap()
                 .is_none()

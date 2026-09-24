@@ -11827,13 +11827,16 @@ def _execute(operation, iterations, tolerance):
     if kind in (
         "sphere_plane_surface_intersection",
         "sphere_sphere_surface_intersection",
+        "sphere_cylinder_surface_intersection",
         "cylinder_plane_surface_intersection",
         "cone_plane_surface_intersection",
     ):
         source_brep = None
+        patch_brep = None
         if kind in (
             "sphere_plane_surface_intersection",
             "sphere_sphere_surface_intersection",
+            "sphere_cylinder_surface_intersection",
         ):
             sphere_def = operation["sphere"]
             source = Rhino.Geometry.Sphere(
@@ -11875,6 +11878,22 @@ def _execute(operation, iterations, tolerance):
                 _point(other_def["center"]),
                 _finite(other_def["radius"], "other sphere radius"),
             ).ToNurbsSurface()
+        elif kind == "sphere_cylinder_surface_intersection":
+            cylinder_def = operation["cylinder"]
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(cylinder_def["center"]),
+                _vector(cylinder_def["axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(cylinder_def["radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(cylinder_def["height"], "cylinder height"),
+            )
+            patch_brep = cylinder.ToBrep(False, False)
+            patch = patch_brep.Faces[0].ToNurbsSurface()
         else:
             plane_def = operation["plane"]
             plane = Rhino.Geometry.Plane(
@@ -11888,7 +11907,7 @@ def _execute(operation, iterations, tolerance):
                 Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
             )
 
-        def intersect_analytic_plane_surfaces():
+        def intersect_analytic_surfaces():
             success, curves, points = (
                 Rhino.Geometry.Intersect.Intersection.SurfaceSurface(
                     source,
@@ -11927,12 +11946,14 @@ def _execute(operation, iterations, tolerance):
             }
 
         try:
-            return _measure(iterations, intersect_analytic_plane_surfaces)
+            return _measure(iterations, intersect_analytic_surfaces)
         finally:
             source.Dispose()
             if source_brep is not None:
                 source_brep.Dispose()
             patch.Dispose()
+            if patch_brep is not None:
+                patch_brep.Dispose()
 
     if kind == "surface_surface_intersect_command":
         document = Rhino.RhinoDoc.ActiveDoc

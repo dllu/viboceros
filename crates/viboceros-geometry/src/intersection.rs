@@ -520,7 +520,8 @@ fn curve_brep_intersection_events_with_transform(
 /// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
 /// corner produces no event, matching Rhino. Canonical spheres intersect
-/// each other and planar finite patches in exact rational circles or tangent points.
+/// each other, coaxial cylinders, and planar finite patches in exact rational
+/// circles or tangent points.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
@@ -548,14 +549,16 @@ pub fn surface_surface_intersection_events(
             second, frame, radius, height, first, plane, tolerance,
         );
     }
-    if let Some((frame, radius, height)) = first.canonical_cylinder(tolerance)?
+    let first_cylinder = first.canonical_cylinder(tolerance)?;
+    let second_cylinder = second.canonical_cylinder(tolerance)?;
+    if let Some((frame, radius, height)) = first_cylinder
         && let Some(plane) = second.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
             first, frame, radius, height, second, plane, tolerance,
         );
     }
-    if let Some((frame, radius, height)) = second.canonical_cylinder(tolerance)?
+    if let Some((frame, radius, height)) = second_cylinder
         && let Some(plane) = first.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
@@ -572,6 +575,30 @@ pub fn surface_surface_intersection_events(
             first_radius,
             second_center,
             second_radius,
+            tolerance,
+        );
+    }
+    if let (Some((center, sphere_radius)), Some((frame, cylinder_radius, height))) =
+        (first_sphere, second_cylinder)
+    {
+        return sphere_cylinder_surface_intersection_events(
+            center,
+            sphere_radius,
+            frame,
+            cylinder_radius,
+            height,
+            tolerance,
+        );
+    }
+    if let (Some((center, sphere_radius)), Some((frame, cylinder_radius, height))) =
+        (second_sphere, first_cylinder)
+    {
+        return sphere_cylinder_surface_intersection_events(
+            center,
+            sphere_radius,
+            frame,
+            cylinder_radius,
+            height,
             tolerance,
         );
     }
@@ -683,6 +710,72 @@ pub fn surface_surface_intersection_events(
         .collect()
 }
 
+fn sphere_cylinder_surface_intersection_events(
+    sphere_center: Point3,
+    sphere_radius: Real,
+    cylinder_frame: crate::Frame3,
+    cylinder_radius: Real,
+    height: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let [radial_x, radial_y, axial_center] = cylinder_frame.coordinates_of(sphere_center)?;
+    let radial_offset = radial_x.hypot(radial_y);
+    let coordinate_scale = cylinder_frame
+        .origin()
+        .to_array()
+        .into_iter()
+        .chain(sphere_center.to_array())
+        .map(Real::abs)
+        .fold(0.0, Real::max);
+    let radial_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * sphere_radius.max(cylinder_radius).max(radial_offset));
+    let coaxial_tolerance = radial_tolerance.max(8.0 * Real::EPSILON * coordinate_scale);
+    let axial_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * sphere_radius.max(height))
+        .max(8.0 * Real::EPSILON * coordinate_scale);
+    let nearest_axial = axial_center.clamp(0.0, height);
+    let axial_offset = (axial_center - nearest_axial).abs();
+    let nearest_radial = (radial_offset - cylinder_radius).abs();
+    if nearest_radial.hypot(axial_offset) > sphere_radius + coaxial_tolerance.max(axial_tolerance) {
+        return Ok(Vec::new());
+    }
+    if radial_offset > coaxial_tolerance {
+        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "noncoaxial sphere and cylinder",
+        });
+    }
+    if cylinder_radius > sphere_radius {
+        return Ok(Vec::new());
+    }
+    let axial_offset =
+        ((sphere_radius - cylinder_radius) * (sphere_radius + cylinder_radius)).sqrt();
+    let axial_offsets = if axial_offset <= axial_tolerance {
+        vec![0.0]
+    } else {
+        vec![-axial_offset, axial_offset]
+    };
+    let mut events = Vec::new();
+    for offset in axial_offsets {
+        let axial_position = axial_center + offset;
+        if axial_position < -axial_tolerance || axial_position > height + axial_tolerance {
+            continue;
+        }
+        let center = cylinder_frame.point_at([0.0, 0.0, axial_position.clamp(0.0, height)])?;
+        let circle = Circle3::try_from_frame(
+            center,
+            cylinder_radius,
+            cylinder_frame.x_axis(),
+            cylinder_frame.z_axis(),
+            tolerance,
+        )?
+        .to_nurbs()?;
+        events.push(SurfaceSurfaceIntersectionEvent::Curve(circle));
+    }
+    Ok(events)
+}
+
 fn sphere_sphere_surface_intersection_events(
     first_center: Point3,
     first_radius: Real,
@@ -714,16 +807,14 @@ fn sphere_sphere_surface_intersection_events(
     let axial_distance =
         0.5 * (separation + (first_radius - second_radius) * radius_sum / separation);
     let circle_center = first_center.translated(axis.as_vector().scaled(axial_distance)?)?;
-    if (separation - radius_sum).abs() <= distance_tolerance
-        || (separation - radius_difference).abs() <= distance_tolerance
-    {
+    let squared_radius = (first_radius - axial_distance) * (first_radius + axial_distance);
+    if squared_radius <= distance_tolerance * distance_tolerance {
         return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(circle_center)]);
     }
-    let squared_radius = (first_radius - axial_distance) * (first_radius + axial_distance);
     let circle_frame = crate::Frame3::try_from_normal(circle_center, axis.as_vector(), tolerance)?;
     let circle = Circle3::try_from_frame(
         circle_center,
-        squared_radius.max(0.0).sqrt(),
+        squared_radius.sqrt(),
         circle_frame.y_axis(),
         axis.opposite(),
         tolerance,
@@ -3470,6 +3561,130 @@ mod tests {
     }
 
     #[test]
+    fn sphere_cylinder_intersection_returns_exact_finite_circles() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 1.5, 0.0, 5.0).unwrap();
+        let sphere_at = |height, radius| {
+            NurbsSurface::try_sphere(frame.with_origin(point(0.0, 0.0, height)), radius).unwrap()
+        };
+        let sphere = sphere_at(2.5, 2.5);
+        for (first, second) in [(&sphere, &cylinder), (&cylinder, &sphere)] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for (event, expected_z) in events.iter().zip([0.5, 4.5]) {
+                let SurfaceSurfaceIntersectionEvent::Curve(circle) = event else {
+                    panic!("expected exact circles, got {events:#?}")
+                };
+                assert_eq!(circle.degree(), 2);
+                assert!(circle.is_closed().unwrap());
+                assert!(
+                    (circle.length(Tolerance::DEFAULT).unwrap() - 3.0 * std::f64::consts::PI).abs()
+                        < 1e-8
+                );
+                let domain = circle.domain();
+                for fraction in [0.0, 0.125, 0.33, 0.75] {
+                    let sample = circle
+                        .evaluate(*domain.start() + fraction * (*domain.end() - *domain.start()))
+                        .unwrap();
+                    assert!((sample.z() - expected_z).abs() < 1e-9);
+                    assert!((sample.x().hypot(sample.y()) - 1.5).abs() < 1e-9);
+                    assert!((sample.distance_to(point(0.0, 0.0, 2.5)).unwrap() - 2.5).abs() < 1e-9);
+                }
+            }
+        }
+        for (sphere, expected_z) in [(sphere_at(0.0, 2.5), 2.0), (sphere_at(2.5, 1.5), 2.5)] {
+            let events =
+                surface_surface_intersection_events(&sphere, &cylinder, Tolerance::DEFAULT)
+                    .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(circle)] = events.as_slice() else {
+                panic!("expected one finite circle, got {events:#?}")
+            };
+            assert!(
+                (circle.evaluate(*circle.domain().start()).unwrap().z() - expected_z).abs() < 1e-9
+            );
+        }
+        let rim_cylinder = NurbsSurface::try_cylinder(frame, 1.5, 0.0, 2.0).unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(
+                &sphere_at(0.0, 2.5),
+                &rim_cylinder,
+                Tolerance::DEFAULT
+            )
+            .unwrap()
+            .len(),
+            1
+        );
+        assert!(
+            surface_surface_intersection_events(
+                &sphere_at(2.5, 1.0),
+                &cylinder,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+        let near_tangent = surface_surface_intersection_events(
+            &sphere_at(2.5, 1.5 + 1.0e-9),
+            &cylinder,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(near_tangent.len(), 2);
+        let offset_sphere =
+            NurbsSurface::try_sphere(frame.with_origin(point(0.5, 0.0, 2.5)), 2.5).unwrap();
+        assert!(matches!(
+            surface_surface_intersection_events(&offset_sphere, &cylinder, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
+        ));
+    }
+
+    #[test]
+    fn sphere_cylinder_intersection_respects_rotated_axis_far_from_origin() {
+        let frame = crate::Frame3::try_from_normal(
+            point(1.0e8, -1.0e8, 1.0e8),
+            crate::Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 1.5, 0.0, 5.0).unwrap();
+        let sphere = NurbsSurface::try_sphere(
+            frame.with_origin(frame.point_at([0.0, 0.0, 2.5]).unwrap()),
+            2.5,
+        )
+        .unwrap();
+        assert!(
+            cylinder
+                .canonical_cylinder(Tolerance::DEFAULT)
+                .unwrap()
+                .is_some()
+        );
+        assert!(
+            sphere
+                .canonical_sphere(Tolerance::DEFAULT)
+                .unwrap()
+                .is_some()
+        );
+        let events =
+            surface_surface_intersection_events(&sphere, &cylinder, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2);
+        for (event, expected_axial) in events.iter().zip([0.5, 4.5]) {
+            let SurfaceSurfaceIntersectionEvent::Curve(circle) = event else {
+                panic!("expected exact circles, got {events:#?}")
+            };
+            let sample = circle.evaluate(*circle.domain().start()).unwrap();
+            let local = frame.coordinates_of(sample).unwrap();
+            assert!((local[2] - expected_axial).abs() < 1e-7);
+            assert!((local[0].hypot(local[1]) - 1.5).abs() < 1e-7);
+        }
+    }
+
+    #[test]
     fn sphere_sphere_intersection_returns_exact_circle_in_both_orders() {
         let sphere = |center, radius| {
             NurbsSurface::try_sphere(
@@ -3575,6 +3790,16 @@ mod tests {
             surface_surface_intersection_events(&first, &coincident, Tolerance::DEFAULT),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
         ));
+        let near_external_tangent = sphere(point(5.0 - 1.0e-9, 0.0, 0.0), 2.0);
+        let events =
+            surface_surface_intersection_events(&first, &near_external_tangent, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(events.len(), 2);
+        assert!(
+            events
+                .iter()
+                .all(|event| matches!(event, SurfaceSurfaceIntersectionEvent::Curve(_)))
+        );
     }
 
     #[test]

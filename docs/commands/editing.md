@@ -156,6 +156,15 @@ and [observations](../../tools/rhino_oracle/observations/sphere_sphere_surface_i
 record secant, tangent, disjoint, and concentric cases. Rhino's numerical API
 missed the internal tangent point in that fixture. Coincident spheres still
 report an unsupported two-dimensional overlap.
+Canonical coaxial spheres and finite cylindrical walls intersect in exact
+rational circles, including tangent circles and sections on the cylinder rims.
+The [sphere/cylinder fixture](../../tools/rhino_oracle/fixtures/sphere_cylinder_surface_intersection.json)
+and [observations](../../tools/rhino_oracle/observations/sphere_cylinder_surface_intersection.json)
+record two circles, clipping to one, rim contact, tangency, and noncoaxial
+reference geometry. Rhino's surface API also reports duplicate seam points
+on the transverse circles; the native result retains the exact circles.
+Noncoaxial intersections remain unsupported when they cannot be ruled out as
+disjoint.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
 rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted
