@@ -1,0 +1,173 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "op": "connect_command",
+      "id": "nurbs-line-line",
+      "source_first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "source_second": {
+        "type": "line",
+        "start": [
+          3,
+          3,
+          0
+        ],
+        "end": [
+          3,
+          4,
+          0
+        ]
+      },
+      "other_extension": "Line"
+    },
+    {
+      "op": "connect_command",
+      "id": "nurbs-line-smooth",
+      "source_first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "source_second": {
+        "type": "line",
+        "start": [
+          3,
+          3,
+          0
+        ],
+        "end": [
+          3,
+          4,
+          0
+        ]
+      },
+      "other_extension": "Smooth"
+    },
+    {
+      "op": "connect_command",
+      "id": "line-nurbs-smooth",
+      "source_first": {
+        "type": "line",
+        "start": [
+          3,
+          4,
+          0
+        ],
+        "end": [
+          3,
+          3,
+          0
+        ]
+      },
+      "source_second": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "other_extension": "Smooth"
+    }
+  ]
+}

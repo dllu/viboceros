@@ -5244,6 +5244,53 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "connect_command":
+        extension = operation.get("other_extension", "Line")
+        if extension not in ("Line", "Smooth"):
+            raise ValueError("invalid Connect extension style")
+        document = Rhino.RhinoDoc.ActiveDoc
+        first = _join_close_input(operation["source_first"])
+        second = _join_close_input(operation["source_second"])
+        ids = []
+        result_ids = []
+        try:
+            ids = [document.Objects.AddCurve(first), document.Objects.AddCurve(second)]
+            if any(identifier == System.Guid.Empty for identifier in ids):
+                raise ValueError("could not add connect probe curves")
+            document.Objects.UnselectAll()
+            for identifier in ids:
+                document.Objects.Select(identifier)
+            before = {item.Id for item in document.Objects}
+            command = "_Connect _ExtendOtherCurvesBy=_%s _SelID %s _SelID %s _Enter" % (extension, ids[0], ids[1])
+            succeeded = Rhino.RhinoApp.RunScript(command, True)
+            if not succeeded:
+                raise ValueError("Connect command failed: %s" % Rhino.RhinoApp.CommandHistoryWindowText[-1000:])
+            results = [item for item in document.Objects if item.Id in ids or item.Id not in before]
+            result_ids = [item.Id for item in results]
+            curves = []
+            for item in results:
+                geometry = item.Geometry
+                if not isinstance(geometry, Rhino.Geometry.Curve):
+                    continue
+                nurbs = geometry.ToNurbsCurve()
+                try:
+                    curves.append({
+                        "kind": "line" if isinstance(geometry, Rhino.Geometry.LineCurve) else "nurbs",
+                        "start": _xyz(geometry.PointAtStart),
+                        "end": _xyz(geometry.PointAtEnd),
+                        "control_points": [_xyz(nurbs.Points[index].Location) for index in range(nurbs.Points.Count)],
+                    })
+                finally:
+                    nurbs.Dispose()
+            curves.sort(key=lambda curve: (curve["kind"] != "nurbs", tuple(curve["start"])))
+            return {"curves": curves}, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            document.Objects.UnselectAll()
+            for identifier in result_ids + ids:
+                document.Objects.Delete(identifier, True)
+            first.Dispose()
+            second.Dispose()
     if operation.get("op") == "blend_curve":
         continuity = operation.get("continuity")
         continuity_first = operation.get("continuity_first", continuity)

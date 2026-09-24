@@ -2,11 +2,11 @@
 
 use super::*;
 use viboceros_geometry::{
-    CurveArcExtensionStyle, try_connect_curves_joined_with_arc_style,
-    try_connect_curves_parts_with_arc_style,
+    CurveArcExtensionStyle, CurveOtherExtensionStyle, try_connect_curves_joined_with_styles,
+    try_connect_curves_parts_with_styles,
 };
 
-const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line]";
+const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
 
 pub(super) struct ConnectCommand;
 
@@ -14,6 +14,7 @@ struct ConnectOptions {
     picks: [Option<Point3>; 2],
     join: bool,
     arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
 }
 
 impl Command for ConnectCommand {
@@ -26,6 +27,7 @@ impl Command for ConnectCommand {
             picks,
             join,
             arc_extension,
+            other_extension,
         } = parse(arguments)?;
         let selected = document
             .selected_objects()
@@ -49,23 +51,25 @@ impl Command for ConnectCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join {
-            let joined = try_connect_curves_joined_with_arc_style(
+            let joined = try_connect_curves_joined_with_styles(
                 first,
                 picks[0],
                 second,
                 picks[1],
                 arc_extension,
+                other_extension,
                 document.tolerance(),
             )?;
             document
                 .copy_object_pieces_into_source_groups([(*first_id, Geometry::PolyCurve(joined))])?
         } else {
-            let parts = try_connect_curves_parts_with_arc_style(
+            let parts = try_connect_curves_parts_with_styles(
                 first,
                 picks[0],
                 second,
                 picks[1],
                 arc_extension,
+                other_extension,
                 document.tolerance(),
             )?;
             document.copy_object_pieces_into_source_groups(
@@ -99,14 +103,20 @@ fn parse(arguments: &[&str]) -> Result<ConnectOptions, CommandError> {
     let mut picks = [None, None];
     let mut join = None;
     let mut arc_extension = None;
-    let mut other_extension = false;
+    let mut other_extension = None;
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
         if option_name_eq(name, "ExtendOtherCurvesBy") {
-            if other_extension || !value.eq_ignore_ascii_case("Line") {
+            let style = if value.eq_ignore_ascii_case("Line") {
+                CurveOtherExtensionStyle::Line
+            } else if value.eq_ignore_ascii_case("Smooth") {
+                CurveOtherExtensionStyle::Smooth
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            if other_extension.replace(style).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
-            other_extension = true;
             continue;
         }
         if option_name_eq(name, "ExtendArcsBy") {
@@ -151,6 +161,7 @@ fn parse(arguments: &[&str]) -> Result<ConnectOptions, CommandError> {
         picks,
         join: join.unwrap_or(false),
         arc_extension: arc_extension.unwrap_or(CurveArcExtensionStyle::Arc),
+        other_extension: other_extension.unwrap_or(CurveOtherExtensionStyle::Line),
     })
 }
 
@@ -222,7 +233,7 @@ mod tests {
     }
 
     #[test]
-    fn connects_nurbs_endpoint_with_a_straight_tangent_extension() {
+    fn connects_nurbs_endpoint_with_line_or_joined_smooth_extension() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
@@ -253,6 +264,58 @@ mod tests {
                 CurveSegment3::Line(_)
             ]
         ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry
+            .execute(&mut document, "Connect ExtendOtherCurvesBy=Smooth Join=Yes")
+            .unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined smooth connection");
+        };
+        assert_eq!(joined.segments().len(), 2);
+    }
+
+    #[test]
+    fn smooth_option_extends_nurbs_shape_and_preserves_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let nurbs = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(3., 3.), p(3., 4.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::NurbsCurve(nurbs)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(&mut document, "Connect ExtendOtherCurvesBy=Smooth")
+            .unwrap();
+        let curves = document.objects().collect::<Vec<_>>();
+        assert_eq!(curves.len(), 2);
+        let meeting = curves[0]
+            .geometry()
+            .curve_ref()
+            .unwrap()
+            .end_point()
+            .unwrap();
+        assert!(meeting.distance_to(p(3., 2.25)).unwrap() < 1e-10);
+        assert!(
+            curves[1]
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .start_point()
+                .unwrap()
+                .distance_to(meeting)
+                .unwrap()
+                < 1e-10
+        );
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }

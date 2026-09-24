@@ -12,12 +12,23 @@ sources' attributes and groups; a joined output inherits the first source's.
 
 Straight terminal segments may meet by extension. Nonmeeting NURBS and
 polyline ends can extend with straight tangent segments; this is also available
-as `ExtendOtherCurvesBy=Line`. Curved terminal segments are also supported when
-their selected endpoints already meet.
+as `ExtendOtherCurvesBy=Line`. `ExtendOtherCurvesBy=Smooth` continues a NURBS
+terminal span to the supporting line of the other curve, preserving its smooth
+shape; `Join=Yes` joins the two results. Curved terminal segments are also
+supported when their selected endpoints already meet.
 
 For coplanar arc/line pairs, the default `ExtendArcsBy=Arc` trims or extends
 the selected arc end on its supporting circle to a valid line intersection.
 Coplanar arc pairs can trim or extend their selected ends to a
 supporting-circle intersection. `ExtendArcsBy=Line` adds a straight tangent
 extension instead. Other curved-pair extensions and the
-`ExtendOtherCurvesBy=Smooth` option remain pending.
+smooth extension of two nonmeeting NURBS ends remain pending.
+
+The [three-case Connect fixture](../../tools/rhino_oracle/fixtures/connect_nurbs_line.json)
+and [saved Rhino command output](../../tools/rhino_oracle/observations/connect_nurbs_line.json)
+compare straight and smooth NURBS-to-line extensions, including reversed
+selection. Endpoints and NURBS control points agree within `1e-10`.
+
+```text
+Connect ExtendOtherCurvesBy=Smooth Join=Yes
+```

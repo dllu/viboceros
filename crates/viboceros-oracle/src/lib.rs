@@ -45,6 +45,7 @@ use viboceros_io::{
 
 mod blend_curve;
 mod centroid_command;
+mod connect_command;
 mod construction_plane;
 #[cfg(test)]
 mod curve_closest_tests;
@@ -244,6 +245,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: blend_curve::BlendCurveFixture,
+    },
+    ConnectCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: connect_command::Fixture,
     },
     PlaneArray {
         id: String,
@@ -1784,6 +1790,7 @@ impl Operation {
             | Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
             | Self::BlendCurve { id, .. }
+            | Self::ConnectCommand { id, .. }
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceClosestPoint { id, .. }
             | Self::SurfaceParameterCurveBounds { id, .. }
@@ -2244,6 +2251,7 @@ fn execute(
             )
         }
         Operation::BlendCurve { fixture, .. } => blend_curve::run(fixture, tolerance)?,
+        Operation::ConnectCommand { fixture, .. } => connect_command::run(fixture, tolerance)?,
         Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
