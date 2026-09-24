@@ -1,7 +1,7 @@
 //! Extends or trims selected curve ends until they meet.
 
 use super::*;
-use viboceros_geometry::{try_fillet_curves_joined, try_fillet_curves_parts};
+use viboceros_geometry::{try_connect_curves_joined, try_connect_curves_parts};
 
 const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No]";
 
@@ -41,26 +41,13 @@ impl Command for ConnectCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join {
-            let joined = try_fillet_curves_joined(
-                first,
-                picks[0],
-                second,
-                picks[1],
-                0.0,
-                document.tolerance(),
-            )?;
+            let joined =
+                try_connect_curves_joined(first, picks[0], second, picks[1], document.tolerance())?;
             document
                 .copy_object_pieces_into_source_groups([(*first_id, Geometry::PolyCurve(joined))])?
         } else {
-            let parts = try_fillet_curves_parts(
-                first,
-                picks[0],
-                second,
-                picks[1],
-                0.0,
-                true,
-                document.tolerance(),
-            )?;
+            let parts =
+                try_connect_curves_parts(first, picks[0], second, picks[1], document.tolerance())?;
             document.copy_object_pieces_into_source_groups(
                 [*first_id, *second_id]
                     .into_iter()
@@ -127,7 +114,7 @@ fn parse(arguments: &[&str]) -> Result<ConnectOptions, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{CircularArc3, LineSegment};
+    use viboceros_geometry::{CircularArc3, CurveSegment3, LineSegment, NurbsCurve};
 
     #[test]
     fn connects_extended_lines_with_or_without_join_and_undo() {
@@ -189,5 +176,39 @@ mod tests {
                 .any(|object| matches!(object.geometry(), Geometry::Line(_)))
         );
         assert!(document.object(first).is_none() && document.object(second).is_none());
+    }
+
+    #[test]
+    fn connects_nurbs_endpoint_with_a_straight_tangent_extension() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let nurbs = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(1., 0.), p(2., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(3., 3.), p(3., 4.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::NurbsCurve(nurbs)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Connect Join=Yes").unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined NURBS connection");
+        };
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::NurbsCurve(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 }

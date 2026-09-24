@@ -3,7 +3,7 @@
 use crate::{
     Curve3, CurveSegment3, GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
     curve::ArcLengthSampler,
-    curve_fillet_pair::{
+    curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end,
     },
 };

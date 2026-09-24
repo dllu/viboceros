@@ -1,7 +1,10 @@
 //! Joined, trimmed fillets between selected ends of two open curves.
 
 use crate::{
-    Curve3, CurveSegment3, GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
+    Curve3, CurveSegment3, GeometryError, Point3, PolyCurve3, Real, Tolerance,
+    curve_pair_support::{
+        curve_from_segments, meeting_lines, oriented, original_direction, selected_end, unsupported,
+    },
 };
 
 /// Trims or extends selected curve ends to a tangent circular fillet and joins
@@ -125,105 +128,10 @@ pub fn try_fillet_curves_parts(
     ])
 }
 
-pub(super) fn original_direction(
-    curve: Curve3,
-    reverse: bool,
-    tolerance: Tolerance,
-) -> Result<Curve3, GeometryError> {
-    if reverse {
-        curve.reversed(tolerance)
-    } else {
-        Ok(curve)
-    }
-}
-
-pub(super) fn curve_from_segments(segments: &[CurveSegment3]) -> Result<Curve3, GeometryError> {
-    if segments.len() == 1 {
-        Ok(segments[0].clone().into_curve())
-    } else {
-        Ok(Curve3::PolyCurve(PolyCurve3::try_new(segments.to_vec())?))
-    }
-}
-
-pub(super) fn oriented(
-    source: &Curve3,
-    pick: Point3,
-    pick_at_end: bool,
-    tolerance: Tolerance,
-) -> Result<PolyCurve3, GeometryError> {
-    let selected_end = selected_end(source, pick, tolerance)?;
-    if selected_end == pick_at_end {
-        source.to_polycurve()
-    } else {
-        source.reversed(tolerance)?.to_polycurve()
-    }
-}
-
-pub(super) fn selected_end(
-    source: &Curve3,
-    pick: Point3,
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    if source.as_ref().is_closed()? {
-        return Err(unsupported());
-    }
-    let start = source
-        .as_ref()
-        .evaluate(*source.as_ref().domain().start())?;
-    let end = source.as_ref().evaluate(*source.as_ref().domain().end())?;
-    let start_distance = pick.distance_to(start)?;
-    let end_distance = pick.distance_to(end)?;
-    if (start_distance - end_distance).abs() <= tolerance.absolute() {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "curve fillet pick does not identify an end",
-        });
-    }
-    Ok(end_distance < start_distance)
-}
-
-pub(super) fn meeting_lines(
-    first: LineSegment,
-    second: LineSegment,
-    tolerance: Tolerance,
-) -> Result<(LineSegment, LineSegment), GeometryError> {
-    let first_direction = first.direction(tolerance)?.as_vector();
-    let second_direction = second.direction(tolerance)?.as_vector();
-    let normal = first_direction.cross(second_direction)?;
-    let denominator = normal.dot(normal)?;
-    if denominator <= tolerance.angular().sin().powi(2) {
-        return Err(unsupported());
-    }
-    let between = first.start().vector_to(second.start())?;
-    let first_distance = between.cross(second_direction)?.dot(normal)? / denominator;
-    let second_distance = between.cross(first_direction)?.dot(normal)? / denominator;
-    let first_meeting = first
-        .start()
-        .translated(first_direction.scaled(first_distance)?)?;
-    let second_meeting = second
-        .start()
-        .translated(second_direction.scaled(second_distance)?)?;
-    if first_meeting.distance_to(second_meeting)? > tolerance.absolute()
-        || first_distance <= tolerance.absolute()
-        || second_distance >= second.length()? - tolerance.absolute()
-    {
-        return Err(unsupported());
-    }
-    let meeting = first_meeting.midpoint(second_meeting)?;
-    Ok((
-        LineSegment::try_new(first.start(), meeting, Tolerance::NUMERICAL_VALIDATION)?,
-        LineSegment::try_new(meeting, second.end(), Tolerance::NUMERICAL_VALIDATION)?,
-    ))
-}
-
-fn unsupported() -> GeometryError {
-    GeometryError::InvalidPolyCurve {
-        context: "selected curve ends cannot form a supported corner operation",
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::LineSegment;
 
     fn p(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.).unwrap()

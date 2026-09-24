@@ -10,7 +10,8 @@ The nearest pair of endpoints is used by default. `Pick1=x,y,z` and
 `Pick2=x,y,z` choose other ends. Separate outputs inherit their respective
 sources' attributes and groups; a joined output inherits the first source's.
 
-Straight terminal segments may meet by extension. Curved terminal segments
-are supported when their selected endpoints already meet. Extension of
-nonmeeting arcs and NURBS curves, and Rhino's extension-style options, are
-still pending.
+Straight terminal segments may meet by extension. Nonmeeting NURBS and
+polyline ends can extend with straight tangent segments. Curved terminal
+segments are also supported when their selected endpoints already meet.
+Extension of nonmeeting arcs and Rhino's extension-style options remain
+pending.
