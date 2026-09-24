@@ -4,7 +4,7 @@
 point prompt, enter `Int` or `Intersection` for one pick. It is initially off.
 The mode finds crossings of straight line and polyline segments, degree-one
 NURBS spans, straight surface and B-rep edges, mesh face-boundary wires, and
-circles, circular arcs, and ellipses against those straight wires. Mesh wires
+circles, circular arcs, and ellipses against straight wires and each other. Mesh wires
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 
@@ -16,7 +16,10 @@ The source whose projected wire is closer to the cursor supplies the 3D point;
 projected wire distances are rounded to pixels for ownership, then frontmost
 depth resolves measured ties. A circle or transverse arc wins a rounded tie
 against a line; the line wins against an ellipse or tangent arc.
-Projected segment interpolation returns a point on the original 3D locus.
+Conic pairs use the exact cursor distance for ownership; at a tangent seam,
+the seam's curve supplies the point. Coincident circles expose quadrant
+targets from either circle's frame. Projected segment interpolation returns a
+point on the original 3D locus.
 Collinear overlaps do not produce an Int target in the measured interior pick.
 The square snap aperture
 applies to the crossing, not to the line endpoints.
@@ -61,11 +64,27 @@ and [observations](../tools/rhino_oracle/observations/intersection_arc_ellipse_s
 cover finite arc sweeps, tangent and endpoint contacts, and perspective and
 apparent ellipse crossings. [Reverse source-order inputs](../tools/rhino_oracle/fixtures/intersection_arc_ellipse_priority_snaps.json)
 with [results](../tools/rhino_oracle/observations/intersection_arc_ellipse_priority_snaps.json)
-confirm ownership at six competing picks. All 57 retained picks replay with
-matching kind and source and points within `1e-9` model units.
+confirm ownership at six competing picks.
 
-Other curved loci, conic-conic intersections, curved self-intersections, surface isocurves,
+[Circle pair inputs](../tools/rhino_oracle/fixtures/intersection_circle_circle_snaps.json)
+and [observations](../tools/rhino_oracle/observations/intersection_circle_circle_snaps.json)
+cover transverse, tangent, apparent, disjoint, perspective, and coincident
+circles. Further [coincident picks](../tools/rhino_oracle/fixtures/intersection_circle_circle_detail_snaps.json),
+[rotated frames](../tools/rhino_oracle/fixtures/intersection_circle_circle_overlap_snaps.json),
+[seams](../tools/rhino_oracle/fixtures/intersection_circle_circle_seams_snaps.json), and
+[rotated quadrants](../tools/rhino_oracle/fixtures/intersection_circle_circle_quadrants_snaps.json)
+record discrete overlap targets and their source attribution.
+[Other conic pair inputs](../tools/rhino_oracle/fixtures/intersection_conic_pairs_snaps.json)
+and [observations](../tools/rhino_oracle/observations/intersection_conic_pairs_snaps.json)
+cover circle-ellipse, circle-arc, ellipse-ellipse, and tangencies. Projected
+conics are fitted in normalized screen coordinates and validated against
+interleaved samples. Roots on the first exact locus are isolated with sign
+brackets and stationary points; candidates are checked against the second
+locus. All 94 retained picks replay with matching kind and source and points
+within `1e-9` model units.
+
+Other curved loci, curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts
-can still grow quadratically where many projected wires overlap.
+can still grow quadratically where many projected wires or conics overlap.

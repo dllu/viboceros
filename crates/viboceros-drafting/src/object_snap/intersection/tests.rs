@@ -342,3 +342,49 @@ fn arc_sweep_and_ellipse_tangent_bound_finite_intersections() {
             < 1e-12
     );
 }
+
+#[test]
+fn circle_pairs_capture_two_crossings_and_one_tangency() {
+    let circle = |x: Real| {
+        Geometry::Circle(
+            Circle3::try_from_frame(
+                p(x, 0., 0.),
+                2.,
+                UnitVector3::try_new(1., 0., 0., Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        )
+    };
+    let pick = |x1: Real, x2: Real, cursor: [Real; 2]| {
+        let mut doc = Document::default();
+        doc.add_geometry(circle(x1)).unwrap();
+        doc.add_geometry(circle(x2)).unwrap();
+        ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                cursor,
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+    };
+    let height = 3.0_f64.sqrt();
+    for y in [height, -height] {
+        let hit = pick(-1., 1., [0.05, y - 0.05]).unwrap();
+        assert!(hit.point().distance_to(p(0., y, 0.)).unwrap() < 1e-10);
+    }
+    let hit = pick(0., 4., [2.05, -0.05]).unwrap();
+    assert!(
+        hit.point().distance_to(p(2., 0., 0.)).unwrap() < 1e-9,
+        "{:?}",
+        hit.point()
+    );
+    assert!(pick(-3., 3., [0., 0.]).is_none());
+}

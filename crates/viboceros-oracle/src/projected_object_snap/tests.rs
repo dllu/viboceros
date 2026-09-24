@@ -320,6 +320,54 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
                 "../../../../tools/rhino_oracle/observations/intersection_arc_ellipse_priority_snaps.json"
             ),
         ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_circle_circle_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_circle_circle_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_circle_circle_detail_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_circle_circle_detail_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_circle_circle_overlap_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_circle_circle_overlap_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_circle_circle_seams_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_circle_circle_seams_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_circle_circle_quadrants_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_circle_circle_quadrants_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_conic_pairs_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_conic_pairs_snaps.json"
+            ),
+        ),
     ] {
         let differences = retained_differences(fixture, observed);
         assert!(differences.is_empty(), "{differences:?}");

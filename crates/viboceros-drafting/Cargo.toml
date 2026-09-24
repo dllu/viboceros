@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+nalgebra.workspace = true
 thiserror.workspace = true
 viboceros-document.workspace = true
 viboceros-geometry.workspace = true

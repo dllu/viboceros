@@ -5,7 +5,11 @@
 use super::{ObjectSnapCache, SnapMetric, projected_line, proximity};
 use std::collections::HashSet;
 use viboceros_document::{Document, Geometry, LayerId, ObjectId};
-use viboceros_geometry::{Circle3, CircularArc3, CurveRef, Ellipse3, NurbsCurve, Point3, Real};
+use viboceros_geometry::{
+    Circle3, CircularArc3, CurveRef, Ellipse3, NurbsCurve, Point3, Real, Vector3,
+};
+
+mod conic_pair;
 
 #[derive(Clone, Copy)]
 struct Segment {
@@ -88,6 +92,21 @@ impl ConicLocus {
             Self::Arc(a) => angle <= a.sweep_radians() + 64. * Real::EPSILON,
             _ => true,
         }
+    }
+
+    fn tangent_at_angle(self, angle: Real) -> Option<Vector3> {
+        let (x, y, rx, ry) = match self {
+            Self::Circle(c) => (c.x_axis(), c.y_axis(), c.radius(), c.radius()),
+            Self::Arc(a) => (a.x_axis(), a.y_axis(), a.radius(), a.radius()),
+            Self::Ellipse(e) => (e.x_axis(), e.y_axis(), e.radius_x(), e.radius_y()),
+        };
+        let (sine, cosine) = angle.sin_cos();
+        let x = x.as_vector().to_array();
+        let y = y.as_vector().to_array();
+        Vector3::try_from(std::array::from_fn(|i| {
+            (-rx * sine).mul_add(x[i], ry * cosine * y[i])
+        }))
+        .ok()
     }
 
     fn priority(self, tangent: bool) -> i8 {
@@ -247,9 +266,14 @@ pub(super) fn visit(
             emit(owner, point, distance);
         }
     }
-    for conic in conics {
+    for &conic in &conics {
         for &segment in &segments {
             conic_line_crossings(conic, segment, metric, emit);
+        }
+    }
+    for first in 0..conics.len() {
+        for second in first + 1..conics.len() {
+            conic_pair::visit(conics[first], conics[second], metric, emit);
         }
     }
 }
@@ -613,6 +637,20 @@ fn crossing(a: [Real; 2], b: [Real; 2], c: [Real; 2], d: [Real; 2]) -> Option<[R
 fn prefer_first(a: SourceChoice, b: SourceChoice, metric: &impl SnapMetric) -> bool {
     let hover_a = metric.ownership_distance(a.hover_distance);
     let hover_b = metric.ownership_distance(b.hover_distance);
+    prefer_first_ranked(a, b, hover_a, hover_b, metric)
+}
+
+fn prefer_first_exact(a: SourceChoice, b: SourceChoice, metric: &impl SnapMetric) -> bool {
+    prefer_first_ranked(a, b, a.hover_distance, b.hover_distance, metric)
+}
+
+fn prefer_first_ranked(
+    a: SourceChoice,
+    b: SourceChoice,
+    hover_a: Real,
+    hover_b: Real,
+    metric: &impl SnapMetric,
+) -> bool {
     let scale = hover_a.max(hover_b).max(1.);
     let tie = 64. * Real::EPSILON * scale;
     if (hover_a - hover_b).abs() > tie {
