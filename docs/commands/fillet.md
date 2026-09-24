@@ -47,8 +47,8 @@ The [separate-output fixture](../../tools/rhino_oracle/fixtures/curve_fillet_pai
 and [saved response](../../tools/rhino_oracle/observations/curve_fillet_pair_parts.json)
 cover `Join` and `Trim` combinations, including zero radius and reversed picks.
 
-The [nonmeeting arc fixture](../../tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json)
+The [nonmeeting curve fixture](../../tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_nonmeeting.json)
-compare arc-to-line and line-to-arc selections. Across 65 equal-length stations
-per case, the largest coordinate difference in a live comparison was below
-`3.3e-15`.
+compare arc/line and NURBS/line selections in both orders. Across 65
+equal-length stations per case, the largest coordinate difference in a live
+comparison was below `2.3e-8`. The arc cases alone were below `3.3e-15`.

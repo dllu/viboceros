@@ -96,6 +96,138 @@
         0
       ],
       "radius": 0.2
+    },
+    {
+      "op": "curve_fillet_pair_geometry",
+      "id": "nurbs-line",
+      "curve0": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "pick0": [
+        2,
+        1,
+        0
+      ],
+      "curve1": {
+        "type": "line",
+        "start": [
+          3,
+          3,
+          0
+        ],
+        "end": [
+          3,
+          4,
+          0
+        ]
+      },
+      "pick1": [
+        3,
+        3,
+        0
+      ],
+      "radius": 0.2
+    },
+    {
+      "op": "curve_fillet_pair_geometry",
+      "id": "line-nurbs",
+      "curve0": {
+        "type": "line",
+        "start": [
+          3,
+          3,
+          0
+        ],
+        "end": [
+          3,
+          4,
+          0
+        ]
+      },
+      "pick0": [
+        3,
+        3,
+        0
+      ],
+      "curve1": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "pick1": [
+        2,
+        1,
+        0
+      ],
+      "radius": 0.2
     }
   ]
 }

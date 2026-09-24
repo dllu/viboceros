@@ -349,7 +349,7 @@ mod tests {
     }
 
     #[test]
-    fn smooth_nurbs_extension_option_creates_a_fillet() {
+    fn nurbs_extension_options_create_fillets() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
@@ -365,6 +365,22 @@ mod tests {
         document
             .select_objects_direct([first, second], SelectionMode::Replace)
             .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Fillet 0.2").unwrap();
+        let Geometry::PolyCurve(joined) = document.objects().next().unwrap().geometry() else {
+            panic!("joined tangent-extension fillet")
+        };
+        assert!(matches!(
+            joined.segments(),
+            [
+                CurveSegment3::NurbsCurve(_),
+                CurveSegment3::Line(_),
+                CurveSegment3::Arc(_),
+                CurveSegment3::Line(_)
+            ]
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
         registry
             .execute(&mut document, "Fillet 0.2 ExtendOtherCurvesBy=Smooth")
             .unwrap();
