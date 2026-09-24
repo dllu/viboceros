@@ -14,8 +14,10 @@ Straight terminal segments may meet by extension. Nonmeeting NURBS and
 polyline ends can extend with straight tangent segments; this is also available
 as `ExtendOtherCurvesBy=Line`. Curved terminal segments are also supported when
 their selected endpoints already meet.
-For coplanar arc/line pairs, the default `ExtendArcsBy=Arc` extends the arc on
-its supporting circle to a valid line intersection. Coplanar arc pairs can
-extend both arcs to a supporting-circle intersection. `ExtendArcsBy=Line` adds a
-straight tangent extension instead. Other curved-pair extensions and the
+
+For coplanar arc/line pairs, the default `ExtendArcsBy=Arc` trims or extends
+the selected arc end on its supporting circle to a valid line intersection.
+Coplanar arc pairs can trim or extend their selected ends to a
+supporting-circle intersection. `ExtendArcsBy=Line` adds a straight tangent
+extension instead. Other curved-pair extensions and the
 `ExtendOtherCurvesBy=Smooth` option remain pending.

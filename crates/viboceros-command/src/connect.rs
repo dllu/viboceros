@@ -326,4 +326,34 @@ mod tests {
             [CurveSegment3::Arc(_), CurveSegment3::Arc(_)]
         ));
     }
+
+    #[test]
+    fn default_arc_style_trims_arc_to_line() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = CircularArc3::try_from_three_points(
+            p(1., 0.),
+            p(diagonal, diagonal),
+            p(0., 1.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let line = LineSegment::try_new(p(0.5, 2.), p(0.5, 3.), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let second = document.add_geometry(Geometry::Line(line)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "Connect").unwrap();
+        let trimmed = document
+            .objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::Arc(arc) => Some(*arc),
+                _ => None,
+            })
+            .expect("native trimmed arc");
+        assert!((trimmed.sweep_radians() - std::f64::consts::PI / 3.0).abs() < 1e-12);
+    }
 }

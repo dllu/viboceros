@@ -211,22 +211,19 @@ fn connect_arc_arc(
         let meeting = base.translated(sideways.scaled(sign * height)?)?;
         let before_angle = circle_angle_at(before, meeting)?;
         let after_angle = circle_angle_at(after, meeting)?;
-        if before_angle <= before.sweep_radians() + tolerance.angular()
-            || before_angle >= std::f64::consts::TAU - tolerance.angular()
-            || after_angle <= after.sweep_radians() + tolerance.angular()
-            || after_angle >= std::f64::consts::TAU - tolerance.angular()
-        {
-            continue;
-        }
-        let Ok(before_extended) = before.try_extended_to_circle_angle(before_angle, true) else {
+        let Some((before_adjusted, before_change)) =
+            arc_at_circle_angle(before, before_angle, true, tolerance)?
+        else {
             continue;
         };
-        let Ok(after_extended) = after.try_extended_to_circle_angle(after_angle, false) else {
+        let Some((after_adjusted, after_change)) =
+            arc_at_circle_angle(after, after_angle, false, tolerance)?
+        else {
             continue;
         };
         let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
-        first_segments.push(CurveSegment3::Arc(before_extended));
-        let mut second_segments = vec![CurveSegment3::Arc(after_extended)];
+        first_segments.push(CurveSegment3::Arc(before_adjusted));
+        let mut second_segments = vec![CurveSegment3::Arc(after_adjusted)];
         second_segments.extend_from_slice(&second.segments()[1..]);
         let Ok(first_result) = PolyCurve3::try_new(first_segments) else {
             continue;
@@ -234,15 +231,14 @@ fn connect_arc_arc(
         let Ok(second_result) = PolyCurve3::try_new(second_segments) else {
             continue;
         };
-        if before_extended
+        if before_adjusted
             .end()?
-            .distance_to(after_extended.start()?)?
+            .distance_to(after_adjusted.start()?)?
             > tolerance.absolute()
         {
             continue;
         }
-        let extra_length = radius_before * (before_angle - before.sweep_radians())
-            + radius_after * (std::f64::consts::TAU - after_angle);
+        let extra_length = before_change + after_change;
         if best
             .as_ref()
             .is_none_or(|(prior, _, _)| extra_length < *prior)
@@ -262,9 +258,52 @@ fn circle_angle_at(arc: CircularArc3, point: Point3) -> Result<Real, GeometryErr
         .rem_euclid(std::f64::consts::TAU))
 }
 
-/// Finds a circle/line meeting on the unused portion of the arc's circle.
-/// The line support must lie in the arc plane; the chosen arc spans less than
-/// one full revolution and retains its original radius, center, and direction.
+/// Adjusts the chosen arc endpoint to a point on its circle, retaining its
+/// center and radius. A point inside the current sweep trims the chosen end;
+/// a point in the unused sweep extends it without making a full circle.
+fn arc_at_circle_angle(
+    arc: CircularArc3,
+    angle: Real,
+    at_end: bool,
+    tolerance: Tolerance,
+) -> Result<Option<(CircularArc3, Real)>, GeometryError> {
+    let sweep = arc.sweep_radians();
+    let angular = tolerance.angular();
+    if at_end && (angle - sweep).abs() <= angular {
+        return Ok(Some((arc, 0.0)));
+    }
+    if !at_end && angle <= angular {
+        return Ok(Some((arc, 0.0)));
+    }
+    if angle <= angular || angle >= std::f64::consts::TAU - angular {
+        return Ok(None);
+    }
+    if angle > sweep + angular {
+        let extended = arc.try_extended_to_circle_angle(angle, at_end)?;
+        let added = if at_end {
+            angle - sweep
+        } else {
+            std::f64::consts::TAU - angle
+        };
+        return Ok(Some((extended, arc.radius() * added)));
+    }
+    if angle >= sweep - angular {
+        return Ok(None);
+    }
+    let domain = arc.domain();
+    let parameter =
+        *domain.start() + (*domain.end() - *domain.start()) * angle / arc.sweep_radians();
+    let trimmed = if at_end {
+        arc.try_trimmed(*domain.start()..=parameter)?
+    } else {
+        arc.try_trimmed(parameter..=*domain.end())?
+    };
+    let removed = if at_end { sweep - angle } else { angle };
+    Ok(Some((trimmed, arc.radius() * removed)))
+}
+
+/// Finds a circle/line meeting for the selected arc end. The line support must
+/// lie in the arc plane; the adjusted arc keeps its radius, center, and sense.
 fn connect_arc_line(
     first: &PolyCurve3,
     second: &PolyCurve3,
@@ -300,37 +339,26 @@ fn connect_arc_line(
     for distance in [-along - height, -along + height] {
         let meeting = line.start().translated(direction.scaled(distance)?)?;
         let angle = circle_angle_at(arc, meeting)?;
-        if angle <= arc.sweep_radians() + tolerance.angular()
-            || angle >= std::f64::consts::TAU - tolerance.angular()
-        {
-            continue;
-        }
         let (extended, line_segments, extra_length) = if arc_is_first {
-            let Ok(extended) = arc.try_extended_to_circle_angle(angle, true) else {
+            let Some((extended, extra_length)) = arc_at_circle_angle(arc, angle, true, tolerance)?
+            else {
                 continue;
             };
             let Ok(line_segments) = retained_head(&CurveSegment3::Line(line), meeting, tolerance)
             else {
                 continue;
             };
-            (
-                extended,
-                line_segments,
-                arc.radius() * (angle - arc.sweep_radians()),
-            )
+            (extended, line_segments, extra_length)
         } else {
-            let Ok(extended) = arc.try_extended_to_circle_angle(angle, false) else {
+            let Some((extended, extra_length)) = arc_at_circle_angle(arc, angle, false, tolerance)?
+            else {
                 continue;
             };
             let Ok(line_segments) = retained_tail(&CurveSegment3::Line(line), meeting, tolerance)
             else {
                 continue;
             };
-            (
-                extended,
-                line_segments,
-                arc.radius() * (std::f64::consts::TAU - angle),
-            )
+            (extended, line_segments, extra_length)
         };
         let (first_segments, second_segments) = if arc_is_first {
             let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
@@ -716,6 +744,60 @@ mod tests {
     }
 
     #[test]
+    fn arc_end_trims_to_meet_a_line() {
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(diagonal, diagonal),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let line = line(p(0.5, 2.), p(0.5, 3.));
+        let parts =
+            try_connect_curves_parts(&arc, p(0., 1.), &line, p(0.5, 2.), Tolerance::DEFAULT)
+                .unwrap();
+        let Curve3::Arc(trimmed) = parts[0] else {
+            panic!("expected a native trimmed arc")
+        };
+        assert!(
+            trimmed
+                .end()
+                .unwrap()
+                .distance_to(p(0.5, 3.0_f64.sqrt() / 2.0))
+                .unwrap()
+                < 1e-12
+        );
+        assert!((trimmed.sweep_radians() - std::f64::consts::PI / 3.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn arc_start_trims_to_meet_a_line() {
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let arc = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(diagonal, diagonal),
+                p(0., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let x = 3.0_f64.sqrt() / 2.0;
+        let line = line(p(x, 0.), p(x, 0.1));
+        let parts = try_connect_curves_parts(&line, p(x, 0.1), &arc, p(1., 0.), Tolerance::DEFAULT)
+            .unwrap();
+        let Curve3::Arc(trimmed) = parts[1] else {
+            panic!("expected a native trimmed arc")
+        };
+        assert!(trimmed.start().unwrap().distance_to(p(x, 0.5)).unwrap() < 1e-12);
+        assert!(trimmed.end().unwrap().distance_to(p(0., 1.)).unwrap() < 1e-12);
+        assert!((trimmed.sweep_radians() - std::f64::consts::PI / 3.0).abs() < 1e-12);
+    }
+
+    #[test]
     fn two_arcs_extend_on_their_supporting_circles() {
         let diagonal = 2.0_f64.sqrt() / 2.0;
         let first = Curve3::Arc(
@@ -778,5 +860,45 @@ mod tests {
         let meeting = p(-0.5, 3.0_f64.sqrt() / 2.0);
         assert!(before.end().unwrap().distance_to(meeting).unwrap() < 1e-12);
         assert!(after.start().unwrap().distance_to(meeting).unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn two_arcs_trim_their_selected_ends_to_crossing() {
+        let root_three = 3.0_f64.sqrt();
+        let diagonal = 2.0_f64.sqrt() / 2.0;
+        let first = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(1., 0.),
+                p(0., 1.),
+                p(-root_three / 2., 0.5),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let second = Curve3::Arc(
+            CircularArc3::try_from_three_points(
+                p(0., 0.),
+                p(-1. + diagonal, diagonal),
+                p(-1., 1.),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let parts = try_connect_curves_parts(
+            &first,
+            p(-root_three / 2., 0.5),
+            &second,
+            p(0., 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [Curve3::Arc(before), Curve3::Arc(after)] = parts.as_slice() else {
+            panic!("expected two native trimmed arcs")
+        };
+        let meeting = p(-0.5, root_three / 2.);
+        assert!(before.end().unwrap().distance_to(meeting).unwrap() < 1e-12);
+        assert!(after.start().unwrap().distance_to(meeting).unwrap() < 1e-12);
+        assert!((before.sweep_radians() - 2.0 * std::f64::consts::PI / 3.0).abs() < 1e-12);
+        assert!((after.sweep_radians() - std::f64::consts::PI / 6.0).abs() < 1e-12);
     }
 }
