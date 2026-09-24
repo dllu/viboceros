@@ -34,6 +34,7 @@ mod edge_surface;
 mod ellipse;
 mod error;
 mod exact_scalar;
+pub use exact_scalar::scaled_quotient;
 mod finite_sum;
 mod frame;
 mod integration;

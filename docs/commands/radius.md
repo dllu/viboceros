@@ -38,7 +38,10 @@ report. The option may be given before or after the point, or entered during the
 interactive point prompt. A preselected object makes `Units` unavailable, as in
 [Rhino's Radius/Diameter options](https://docs.mcneel.com/rhino/8/help/en-us/commands/diameter.htm).
 Physical source units are required for conversion; invalid and unrepresentable
-conversions leave the model and its history intact.
+conversions leave the model and its history intact. The curvature-to-length
+quotient applies display scaling before its final binary64 rounding, so a
+finite converted diameter can be reported even if its model-unit value would
+overflow.
 
 Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2),
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,

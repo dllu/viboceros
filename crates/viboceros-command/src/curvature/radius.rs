@@ -27,11 +27,7 @@ pub fn preselected_circular_radius(document: &Document) -> Result<Option<f64>, C
     })
 }
 
-fn radius_report(
-    radius: f64,
-    scale: f64,
-    target: Option<&LengthUnitSystem>,
-) -> Result<String, CommandError> {
+fn radius_report(radius: f64) -> Result<String, CommandError> {
     let diameter = 2. * radius;
     if !radius.is_finite() || !diameter.is_finite() {
         return Err(GeometryError::Degenerate {
@@ -39,11 +35,27 @@ fn radius_report(
         }
         .into());
     }
-    let radius = crate::measurements::display_value(radius, scale)?;
-    let diameter = crate::measurements::display_value(diameter, scale)?;
-    let suffix = target.map_or_else(String::new, |units| format!(" {}", units.name()));
+    Ok(format!("Radius = {radius}; Diameter = {diameter}"))
+}
+
+fn curvature_report(
+    magnitude: f64,
+    scale: f64,
+    target: Option<&LengthUnitSystem>,
+) -> Result<String, CommandError> {
+    let length = |factor: f64| -> Result<String, CommandError> {
+        if magnitude == 0. {
+            return Ok("infinite".into());
+        }
+        Ok(viboceros_geometry::scaled_quotient(factor, scale, magnitude)?.to_string())
+    };
+    let suffix = target
+        .filter(|_| magnitude != 0.)
+        .map_or_else(String::new, |units| format!(" {}", units.name()));
     Ok(format!(
-        "Radius = {radius}{suffix}; Diameter = {diameter}{suffix}"
+        "Radius = {}{suffix}; Diameter = {}{suffix}",
+        length(1.)?,
+        length(2.)?
     ))
 }
 
@@ -56,7 +68,7 @@ impl Command for RadiusCommand {
         if arguments.is_empty()
             && let Some(radius) = preselected_circular_radius(document)?
         {
-            return radius_report(radius, 1., None);
+            return radius_report(radius);
         }
         let usage = if self.diameter {
             "Diameter [MarkDiameter=Yes|No] [Units=name] point-on-curve"
@@ -137,27 +149,7 @@ impl Command for RadiusCommand {
             unreachable!()
         };
         let magnitude = curvature.length()?;
-        let length = |factor: f64| -> Result<String, CommandError> {
-            if magnitude == 0. {
-                return Ok("infinite".into());
-            }
-            let value = factor / magnitude;
-            if !value.is_finite() {
-                return Err(GeometryError::Degenerate {
-                    context: "unrepresentable curvature radius",
-                }
-                .into());
-            }
-            Ok(crate::measurements::display_value(value, scale)?.to_string())
-        };
-        let suffix = target
-            .filter(|_| magnitude != 0.)
-            .map_or_else(String::new, |units| format!(" {}", units.name()));
-        let report = format!(
-            "Radius = {}{suffix}; Diameter = {}{suffix}",
-            length(1.)?,
-            length(2.)?
-        );
+        let report = curvature_report(magnitude, scale, target.as_ref())?;
         if mark {
             // Construct all markers before changing the document. Registry
             // transactions also make insertion failures atomic.
@@ -382,5 +374,17 @@ mod tests {
         let before_unitless = format!("{doc:?}");
         assert!(registry.execute(&mut doc, "Radius 2,0,0 Units=cm").is_err());
         assert_eq!(format!("{doc:?}"), before_unitless);
+    }
+
+    #[test]
+    fn radius_units_can_represent_a_diameter_whose_model_unit_value_overflows() {
+        let report = curvature_report(1e-308, 1e-3, Some(&LengthUnitSystem::Kilometers)).unwrap();
+        let values = report
+            .split([' ', ';'])
+            .filter_map(|token| token.parse::<f64>().ok())
+            .collect::<Vec<_>>();
+        assert_eq!(values.len(), 2, "{report}");
+        assert!((values[0] / 1e305 - 1.).abs() < 1e-12, "{report}");
+        assert!((values[1] / 2e305 - 1.).abs() < 1e-12, "{report}");
     }
 }

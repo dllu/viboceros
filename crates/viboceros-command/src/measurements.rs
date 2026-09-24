@@ -25,7 +25,6 @@ pub use evaluate_uv::{EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv};
 #[cfg(test)]
 mod tests;
 pub(super) use distance::DistanceCommand;
-pub(crate) use distance::display_value;
 pub use distance::distance_display_units;
 
 fn format_measurement(value: Real) -> String {
