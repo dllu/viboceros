@@ -35,6 +35,10 @@ pub struct BlendCurveFixture {
     pick_first: Option<BlendPickEnd>,
     #[serde(default)]
     pick_second: Option<BlendPickEnd>,
+    #[serde(default)]
+    bulge_first: Option<f64>,
+    #[serde(default)]
+    bulge_second: Option<f64>,
 }
 
 pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -74,6 +78,20 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
         };
     let first = source(fixture.source_first.as_ref(), fixture.first)?;
     let second = source(fixture.source_second.as_ref(), fixture.second)?;
+    if fixture.bulge_first.is_some() != fixture.bulge_second.is_some() {
+        return Err(ProbeError::FixtureInvariant(
+            "blend bulge overload requires both bulges",
+        ));
+    }
+    if fixture.bulge_first.is_some()
+        && (modes[0] != modes[1]
+            || fixture.pick_first.unwrap_or(BlendPickEnd::End) != BlendPickEnd::End
+            || fixture.pick_second.unwrap_or(BlendPickEnd::Start) != BlendPickEnd::Start)
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "blend bulge overload needs equal continuity and default ends",
+        ));
+    }
     let first_reference = first.as_ref();
     let second_reference = second.as_ref();
     let first_parameter = match fixture.pick_first.unwrap_or(BlendPickEnd::End) {
@@ -93,6 +111,10 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
         second_pick,
         CurveBlendOptions {
             continuity: modes,
+            bulges: [
+                fixture.bulge_first.unwrap_or(1.0),
+                fixture.bulge_second.unwrap_or(1.0),
+            ],
             endpoint_specific: fixture.continuity_first.is_some()
                 || fixture.continuity_second.is_some()
                 || fixture.pick_first.is_some()
@@ -208,6 +230,7 @@ mod tests {
             include_str!("../../../tools/rhino_oracle/fixtures/blend_curved_sources.json"),
             include_str!("../../../tools/rhino_oracle/observations/blend_curved_sources.json"),
             21,
+            1e-12,
         );
     }
 
@@ -217,6 +240,7 @@ mod tests {
             include_str!("../../../tools/rhino_oracle/fixtures/blend_nurbs_sources.json"),
             include_str!("../../../tools/rhino_oracle/observations/blend_nurbs_sources.json"),
             28,
+            1e-12,
         );
     }
 
@@ -226,6 +250,17 @@ mod tests {
             include_str!("../../../tools/rhino_oracle/fixtures/blend_polycurve_sources.json"),
             include_str!("../../../tools/rhino_oracle/observations/blend_polycurve_sources.json"),
             21,
+            1e-12,
+        );
+    }
+
+    #[test]
+    fn bulge_overload_matches_saved_rhino_control_shapes() {
+        assert_curved_source_blend_parity(
+            include_str!("../../../tools/rhino_oracle/fixtures/blend_bulges.json"),
+            include_str!("../../../tools/rhino_oracle/observations/blend_bulges.json"),
+            27,
+            5e-8,
         );
     }
 
@@ -233,6 +268,7 @@ mod tests {
         request_json: &str,
         rhino_json: &str,
         expected_count: usize,
+        domain_tolerance: f64,
     ) {
         let request: ProbeRequest = serde_json::from_str(request_json).unwrap();
         let rhino: ProbeResponse = serde_json::from_str(rhino_json).unwrap();
@@ -255,9 +291,9 @@ mod tests {
                 }
             }
             let maximum = if actual.id.ends_with("curvature-curvature") {
-                3e-8
+                domain_tolerance.max(3e-8)
             } else {
-                1e-12
+                domain_tolerance
             };
             for field in ["domain", "knots"] {
                 let actual_values = actual.value[field].as_array().unwrap();

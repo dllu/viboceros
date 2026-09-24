@@ -1,0 +1,1238 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "op": "blend_curve",
+      "id": "line-position-bulge-1-1",
+      "continuity": "position",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-position-bulge-0.5-1.5",
+      "continuity": "position",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-position-bulge-2-0.5",
+      "continuity": "position",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-tangency-bulge-1-1",
+      "continuity": "tangency",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-tangency-bulge-0.5-1.5",
+      "continuity": "tangency",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-tangency-bulge-2-0.5",
+      "continuity": "tangency",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-curvature-bulge-1-1",
+      "continuity": "curvature",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-curvature-bulge-0.5-1.5",
+      "continuity": "curvature",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "line-curvature-bulge-2-0.5",
+      "continuity": "curvature",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "first": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-position-bulge-1-1",
+      "continuity": "position",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-position-bulge-0.5-1.5",
+      "continuity": "position",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-position-bulge-2-0.5",
+      "continuity": "position",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-tangency-bulge-1-1",
+      "continuity": "tangency",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-tangency-bulge-0.5-1.5",
+      "continuity": "tangency",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-tangency-bulge-2-0.5",
+      "continuity": "tangency",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-curvature-bulge-1-1",
+      "continuity": "curvature",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-curvature-bulge-0.5-1.5",
+      "continuity": "curvature",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "arc-curvature-bulge-2-0.5",
+      "continuity": "curvature",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "arc",
+        "points": [
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            -1.4142135623730951,
+            1.4142135623730951,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-position-bulge-1-1",
+      "continuity": "position",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-position-bulge-0.5-1.5",
+      "continuity": "position",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-position-bulge-2-0.5",
+      "continuity": "position",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-tangency-bulge-1-1",
+      "continuity": "tangency",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-tangency-bulge-0.5-1.5",
+      "continuity": "tangency",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-tangency-bulge-2-0.5",
+      "continuity": "tangency",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-curvature-bulge-1-1",
+      "continuity": "curvature",
+      "bulge_first": 1,
+      "bulge_second": 1,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-curvature-bulge-0.5-1.5",
+      "continuity": "curvature",
+      "bulge_first": 0.5,
+      "bulge_second": 1.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "blend_curve",
+      "id": "nurbs-curvature-bulge-2-0.5",
+      "continuity": "curvature",
+      "bulge_first": 2,
+      "bulge_second": 0.5,
+      "source_first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": [
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          4,
+          2,
+          0
+        ]
+      ]
+    }
+  ]
+}

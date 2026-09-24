@@ -18,6 +18,9 @@ pub enum CurveBlendContinuity {
 pub struct CurveBlendOptions {
     pub continuity: [CurveBlendContinuity; 2],
     pub handles: [Option<Real>; 2],
+    /// Multipliers for the default handle lengths. An explicit handle length
+    /// takes precedence at that end.
+    pub bulges: [Real; 2],
     /// Requests endpoint-specific defaults even for equal continuity at the
     /// first curve's end and second curve's start. Other picks or mixed
     /// continuity always use endpoint-specific defaults.
@@ -29,6 +32,7 @@ impl Default for CurveBlendOptions {
         Self {
             continuity: [CurveBlendContinuity::Tangency; 2],
             handles: [None, None],
+            bulges: [1.0, 1.0],
             endpoint_specific: false,
         }
     }
@@ -65,6 +69,15 @@ pub fn try_blend_curve(
         CurveBlendContinuity::Tangency => chord_length,
         CurveBlendContinuity::Curvature => chord_length * 0.4,
     };
+    if options
+        .bulges
+        .iter()
+        .any(|bulge| !bulge.is_finite() || *bulge <= 0.0)
+    {
+        return Err(GeometryError::Degenerate {
+            context: "curve blend bulge",
+        });
+    }
     let mut first_handle =
         options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
     let mut second_handle =
@@ -119,6 +132,17 @@ pub fn try_blend_curve(
         if options.handles[1].is_none() {
             second_handle = speed_scale * (1.4 - b + (b - a) * (0.3 + 0.5 * a));
         }
+    }
+    if options.handles[0].is_none() {
+        first_handle *= options.bulges[0];
+    }
+    if options.handles[1].is_none() {
+        second_handle *= options.bulges[1];
+    }
+    if !first_handle.is_finite() || !second_handle.is_finite() {
+        return Err(GeometryError::Degenerate {
+            context: "curve blend handle length",
+        });
     }
     let mut controls = vec![start; degree + 1];
     controls[degree] = end;

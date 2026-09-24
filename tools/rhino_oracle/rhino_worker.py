@@ -5254,6 +5254,10 @@ def _execute(operation, iterations, tolerance):
         pick_second = operation.get("pick_second", "start")
         if pick_first not in ("start", "end") or pick_second not in ("start", "end"):
             raise ValueError("invalid blend endpoint pick")
+        bulge_first = operation.get("bulge_first")
+        bulge_second = operation.get("bulge_second")
+        if (bulge_first is None) != (bulge_second is None):
+            raise ValueError("blend bulge overload requires both bulges")
         first = operation.get("first")
         second = operation.get("second")
         source_first = operation.get("source_first")
@@ -5270,7 +5274,14 @@ def _execute(operation, iterations, tolerance):
             second_curve = _join_close_input(source_second) if source_second is not None else Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
             mode_first = getattr(Rhino.Geometry.BlendContinuity, continuity_first.capitalize())
             mode_second = getattr(Rhino.Geometry.BlendContinuity, continuity_second.capitalize())
-            if "continuity_first" in operation or "continuity_second" in operation or "pick_first" in operation or "pick_second" in operation:
+            if bulge_first is not None:
+                if continuity_first != continuity_second or pick_first != "end" or pick_second != "start":
+                    raise ValueError("blend bulge overload needs equal continuity and default ends")
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(
+                    first_curve, second_curve, mode_first,
+                    _finite(bulge_first, "blend first bulge"),
+                    _finite(bulge_second, "blend second bulge"))
+            elif "continuity_first" in operation or "continuity_second" in operation or "pick_first" in operation or "pick_second" in operation:
                 first_parameter = first_curve.Domain.T0 if pick_first == "start" else first_curve.Domain.T1
                 second_parameter = second_curve.Domain.T0 if pick_second == "start" else second_curve.Domain.T1
                 blend = Rhino.Geometry.Curve.CreateBlendCurve(

@@ -3,7 +3,7 @@
 use super::*;
 use viboceros_geometry::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
 
-const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=Position|Tangency|Curvature] [Continuity2=Position|Tangency|Curvature] [Handle1=length] [Handle2=length]";
+const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=Position|Tangency|Curvature] [Continuity2=Position|Tangency|Curvature] [Handle1=length|Bulge1=factor] [Handle2=length|Bulge2=factor]";
 
 pub(super) struct BlendCurveCommand;
 
@@ -11,6 +11,7 @@ struct BlendOptions {
     picks: [Option<Point3>; 2],
     continuity: [CurveBlendContinuity; 2],
     handles: [Option<Real>; 2],
+    bulges: [Real; 2],
 }
 
 impl Command for BlendCurveCommand {
@@ -42,6 +43,7 @@ impl Command for BlendCurveCommand {
             CurveBlendOptions {
                 continuity: options.continuity,
                 handles: options.handles,
+                bulges: options.bulges,
                 ..Default::default()
             },
             document.tolerance(),
@@ -71,6 +73,7 @@ fn parse(arguments: &[&str]) -> Result<BlendOptions, CommandError> {
     let mut picks = [None, None];
     let mut continuity = [None, None];
     let mut handles = [None, None];
+    let mut bulges = [None, None];
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
         let index = if name.ends_with('1') {
@@ -105,7 +108,13 @@ fn parse(arguments: &[&str]) -> Result<BlendOptions, CommandError> {
             }
         } else if option_name_eq(stem, "Handle") {
             let handle = parse_finite_real(value)?;
-            if handle <= 0.0 || handles[index].replace(handle).is_some() {
+            if handle <= 0.0 || handles[index].replace(handle).is_some() || bulges[index].is_some()
+            {
+                return Err(CommandError::Usage(USAGE));
+            }
+        } else if option_name_eq(stem, "Bulge") {
+            let bulge = parse_finite_real(value)?;
+            if bulge <= 0.0 || bulges[index].replace(bulge).is_some() || handles[index].is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
         } else {
@@ -116,6 +125,7 @@ fn parse(arguments: &[&str]) -> Result<BlendOptions, CommandError> {
         picks,
         continuity: continuity.map(|value| value.unwrap_or(CurveBlendContinuity::Tangency)),
         handles,
+        bulges: bulges.map(|value| value.unwrap_or(1.0)),
     })
 }
 
@@ -159,12 +169,41 @@ mod tests {
         registry.execute(&mut document, "SelAll").unwrap();
         let before = document.objects().cloned().collect::<Vec<_>>();
         assert!(registry.execute(&mut document, "Blend Handle1=0").is_err());
+        assert!(registry.execute(&mut document, "Blend Bulge2=0").is_err());
+        assert!(
+            registry
+                .execute(&mut document, "Blend Handle1=2 Bulge1=0.5")
+                .is_err()
+        );
         assert!(
             registry
                 .execute(&mut document, "Blend Continuity2=G3")
                 .is_err()
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn bulge_options_scale_independent_default_handles() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 1,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,2,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "Blend Bulge1=0.5 Bulge2=2")
+            .unwrap();
+        let blend = document
+            .selected_objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .unwrap();
+        let controls = blend.control_points();
+        let distance = 10.0_f64.sqrt();
+        assert!((controls[1].point().x() - (1.0 + distance * 0.5)).abs() < 1e-12);
+        assert!((controls[2].point().y() - (1.0 - distance * 2.0)).abs() < 1e-12);
     }
 
     #[test]

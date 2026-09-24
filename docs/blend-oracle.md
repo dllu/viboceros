@@ -75,6 +75,16 @@ Rhino's endpoint-specific overload uses the chord-projection handle formula
 also for G1/G1 and G2/G2. Interactive `Blend`, surface edges, and other source
 types remain unmeasured.
 
+The [27 bulge inputs](../tools/rhino_oracle/fixtures/blend_bulges.json) use
+the three-argument overload's default endpoint pair with explicit bulge
+factors on line, arc, and cubic NURBS sources. Their
+[raw Rhino definitions](../tools/rhino_oracle/observations/blend_bulges.json)
+show that each factor scales its corresponding default handle, leaving the
+other handle independent. G0 remains a straight line. The oracle regression
+checks the degree, controls, weights, knots, and domain against these saved
+definitions. Control points differ by less than `1e-12`; independently
+computed curve-length domains differ by less than `5e-8`.
+
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
 cargo test -p viboceros-oracle --lib blend_curve::tests

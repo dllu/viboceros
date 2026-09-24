@@ -16,14 +16,16 @@ degrees for mixed choices. Curvature ends match the source curvature vector.
 `Handle1` and `Handle2` set handle lengths in model units. Equal-continuity
 defaults use the endpoint distance for tangency and 40% of it for curvature.
 Mixed blends use Rhino-calibrated defaults from both source tangents when
-available. Explicit handle lengths override those defaults independently.
+available. `Bulge1` and `Bulge2` multiply the default handle lengths; each
+defaults to 1. An explicit handle length replaces the bulge at that end.
 
-The [Rhino API comparison](../blend-oracle.md) covers 255 line, arc, polynomial
+The [Rhino API comparison](../blend-oracle.md) covers 282 line, arc, polynomial
 or rational NURBS, polyline, and polycurve inputs, including nonparallel spatial
-cases and alternate endpoint picks.
+cases, alternate endpoint picks, and bulge factors.
 
 ```text
 Blend Continuity1=Tangency Continuity2=Position Handle1=2.5
+Blend Bulge1=0.5 Bulge2=1.5
 ```
 
 G3 and higher continuity, surface-edge selection, interactive handle adjustment,
