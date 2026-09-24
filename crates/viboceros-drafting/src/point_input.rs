@@ -64,7 +64,18 @@ impl PointInput {
             || ((world || relative) && body.is_empty())
             || numeric_head.eq_ignore_ascii_case("nan")
             || numeric_head.eq_ignore_ascii_case("inf")
-            || numeric_head.eq_ignore_ascii_case("infinity");
+            || numeric_head.eq_ignore_ascii_case("infinity")
+            || numeric_head.eq_ignore_ascii_case("pi")
+            || [
+                "sin(", "cos(", "tan(", "asin(", "acos(", "atan(", "atan2(", "ln(", "log10(",
+                "exp(", "sinh(", "cosh(", "tanh(", "pow(", "sqrt(",
+            ]
+            .iter()
+            .any(|prefix| {
+                numeric_head
+                    .get(..prefix.len())
+                    .is_some_and(|head| head.eq_ignore_ascii_case(prefix))
+            });
         // Do not mistake Rotate, Rebuild, Weld, or a full command containing
         // coordinate arguments for point continuation.
         if !numeric {
@@ -117,11 +128,39 @@ fn number(text: &str) -> Result<Real, PointInputError> {
     calculator::evaluate(text).ok_or(PointInputError::InvalidNumber)
 }
 
+fn angle_number(text: &str) -> Result<Real, PointInputError> {
+    // Rhino's point prompt accepts calculator functions in coordinates but
+    // rejects function calls after the polar/spherical angle separator.
+    if text
+        .as_bytes()
+        .windows(2)
+        .any(|pair| pair[1] == b'(' && pair[0].is_ascii_alphanumeric())
+    {
+        return Err(PointInputError::Syntax);
+    }
+    let lower = text.to_ascii_lowercase();
+    for (suffix, multiplier) in [
+        ("gradians", 0.9),
+        ("degrees", 1.0),
+        ("radians", 180.0 / std::f64::consts::PI),
+        ("d", 1.0),
+    ] {
+        if lower.ends_with(suffix) {
+            let value = number(&text[..text.len() - suffix.len()])? * multiplier;
+            return value
+                .is_finite()
+                .then_some(value)
+                .ok_or(PointInputError::InvalidNumber);
+        }
+    }
+    number(text)
+}
+
 fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
     let angles: Vec<_> = text.split('<').collect();
     match angles.as_slice() {
         [cartesian] => {
-            let components: Vec<_> = cartesian.split(',').collect();
+            let components = split_components(cartesian);
             match components.as_slice() {
                 [single] => {
                     if number(single)? == 0.0 {
@@ -135,15 +174,13 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
                 _ => Err(PointInputError::Syntax),
             }
         }
-        [xy, elevation] if xy.contains(',') => {
-            let mut components = xy.split(',');
-            let (Some(x), Some(y), None) =
-                (components.next(), components.next(), components.next())
-            else {
+        [xy, elevation] if split_components(xy).len() > 1 => {
+            let components = split_components(xy);
+            let [x, y] = components.as_slice() else {
                 return Err(PointInputError::Syntax);
             };
             let [x, y] = [number(x)?, number(y)?];
-            let elevation = reduced_degrees(number(elevation)?);
+            let elevation = reduced_degrees(angle_number(elevation)?);
             if !(-90.0..=90.0).contains(&elevation) {
                 return Err(PointInputError::ElevationRange);
             }
@@ -169,10 +206,10 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
         }
         [radius, azimuth] => {
             let radius = number(radius)?;
-            let components: Vec<_> = azimuth.split(',').collect();
+            let components = split_components(azimuth);
             let (angle, z) = match components.as_slice() {
-                [angle] => (number(angle)?, 0.0),
-                [angle, z] => (number(angle)?, number(z)?),
+                [angle] => (angle_number(angle)?, 0.0),
+                [angle, z] => (angle_number(angle)?, number(z)?),
                 _ => return Err(PointInputError::Syntax),
             };
             let (sin, cos) = sin_cos_degrees(angle);
@@ -180,8 +217,8 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
         }
         [radius, azimuth, elevation] => {
             let radius = number(radius)?;
-            let (sin_a, cos_a) = sin_cos_degrees(number(azimuth)?);
-            let elevation = reduced_degrees(number(elevation)?);
+            let (sin_a, cos_a) = sin_cos_degrees(angle_number(azimuth)?);
+            let elevation = reduced_degrees(angle_number(elevation)?);
             if !(-90.0..=90.0).contains(&elevation) {
                 return Err(PointInputError::ElevationRange);
             }
@@ -193,6 +230,31 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
         }
         _ => Err(PointInputError::Syntax),
     }
+}
+
+fn split_components(text: &str) -> Vec<&str> {
+    let mut components = Vec::new();
+    let mut depth = 0_i32;
+    let mut start = 0;
+    for (index, character) in text.char_indices() {
+        match character {
+            '(' => depth += 1,
+            ')' => depth -= 1,
+            ',' if depth == 0 => {
+                components.push(&text[start..index]);
+                start = index + 1;
+            }
+            _ => {}
+        }
+        if depth < 0 {
+            return Vec::new();
+        }
+    }
+    if depth != 0 {
+        return Vec::new();
+    }
+    components.push(&text[start..]);
+    components
 }
 
 fn reduced_degrees(degrees: Real) -> Real {

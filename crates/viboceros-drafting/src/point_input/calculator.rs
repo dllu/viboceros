@@ -57,22 +57,89 @@ impl Parser<'_> {
         if depth > 32 {
             return None;
         }
-        match self.peek()? {
+        let value = match self.peek()? {
             b'+' => {
                 self.offset += 1;
-                self.factor(depth + 1)
+                return self.factor(depth + 1);
             }
             b'-' => {
                 self.offset += 1;
-                Some(-self.factor(depth + 1)?)
+                return Some(-self.factor(depth + 1)?);
             }
             b'(' if depth < 32 => {
                 self.offset += 1;
                 let value = self.expression(depth + 1)?;
-                (self.take() == Some(b')')).then_some(value)
+                if self.take() != Some(b')') {
+                    return None;
+                }
+                value
             }
-            b'0'..=b'9' | b'.' => self.number(),
-            _ => None,
+            b'0'..=b'9' | b'.' => self.number()?,
+            b'a'..=b'z' | b'A'..=b'Z' => self.named(depth)?,
+            _ => return None,
+        };
+        if self.peek().is_some_and(|c| c.is_ascii_alphabetic()) {
+            let suffix = self.identifier()?.to_ascii_lowercase();
+            let factor = match suffix.as_str() {
+                "d" | "degrees" => std::f64::consts::PI / 180.0,
+                "radians" => 1.0,
+                "gradians" => std::f64::consts::PI / 200.0,
+                _ => return None,
+            };
+            Some(value * factor)
+        } else {
+            Some(value)
+        }
+    }
+
+    fn named(&mut self, depth: usize) -> Option<Real> {
+        let name = self.identifier()?.to_ascii_lowercase();
+        if name == "pi" {
+            return Some(std::f64::consts::PI);
+        }
+        if self.take() != Some(b'(') {
+            return None;
+        }
+        let first = self.expression(depth + 1)?;
+        let value = match name.as_str() {
+            "atan2" | "pow" => {
+                if self.take() != Some(b',') {
+                    return None;
+                }
+                let second = self.expression(depth + 1)?;
+                if name == "atan2" {
+                    first.atan2(second)
+                } else {
+                    first.powf(second)
+                }
+            }
+            "sin" => first.sin(),
+            "cos" => first.cos(),
+            "tan" => first.tan(),
+            "asin" => first.asin(),
+            "acos" => first.acos(),
+            "atan" => first.atan(),
+            "ln" => first.ln(),
+            "log10" => first.log10(),
+            "exp" => first.exp(),
+            "sinh" => first.sinh(),
+            "cosh" => first.cosh(),
+            "tanh" => first.tanh(),
+            "sqrt" => first.sqrt(),
+            _ => return None,
+        };
+        (self.take() == Some(b')') && value.is_finite()).then_some(value)
+    }
+
+    fn identifier(&mut self) -> Option<&str> {
+        let start = self.offset;
+        while self.peek().is_some_and(|c| c.is_ascii_alphanumeric()) {
+            self.offset += 1;
+        }
+        if self.offset == start {
+            None
+        } else {
+            std::str::from_utf8(&self.text[start..self.offset]).ok()
         }
     }
 
@@ -172,6 +239,42 @@ mod tests {
         }
         for input in [
             "", ".", "1/0", "1-2/0", "1e", "2*(3+4", "1+", "nan", "1e309",
+        ] {
+            assert_eq!(evaluate(input), None, "{input}");
+        }
+    }
+
+    #[test]
+    fn constants_functions_and_angle_units() {
+        for (input, expected) in [
+            ("pi", std::f64::consts::PI),
+            ("10*sin(30degrees)", 5.0),
+            ("10*cos(30degrees)", 5.0 * 3.0_f64.sqrt()),
+            ("atan2(1,1)", std::f64::consts::FRAC_PI_4),
+            ("pow(2,3)", 8.0),
+            ("sqrt(9)", 3.0),
+            ("ln(exp(1))", 1.0),
+            ("log10(100)", 2.0),
+            ("asin(1)", std::f64::consts::FRAC_PI_2),
+            ("acos(0)", std::f64::consts::FRAC_PI_2),
+            ("atan(1)", std::f64::consts::FRAC_PI_4),
+            ("sinh(0)", 0.0),
+            ("cosh(0)", 1.0),
+            ("tanh(0)", 0.0),
+            ("100gradians", std::f64::consts::FRAC_PI_2),
+            ("pi/2radians", std::f64::consts::FRAC_PI_2),
+        ] {
+            let actual = evaluate(input).unwrap();
+            assert!((actual - expected).abs() < 2e-14, "{input}: {actual}");
+        }
+        for input in [
+            "unknown(1)",
+            "sin()",
+            "pow(2)",
+            "atan2(1,)",
+            "sqrt(-1)",
+            "ln(0)",
+            "acos(2)",
         ] {
             assert_eq!(evaluate(input), None, "{input}");
         }

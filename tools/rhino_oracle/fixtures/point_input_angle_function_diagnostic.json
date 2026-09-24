@@ -1,0 +1,14 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "angle-function-diagnostic",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "w5<sin(30degrees)"]
+    }
+  ]
+}

@@ -235,8 +235,21 @@ polar, spherical, world, and relative coordinates. The
 including arithmetic in a rotated construction plane; all three replay within
 `1e-12` model units.
 
+The calculator also accepts `pi`, `sin`, `cos`, `tan`, `asin`, `acos`, `atan`,
+`atan2`, `ln`, `log10`, `exp`, `sinh`, `cosh`, `tanh`, `pow`, and `sqrt`.
+Trigonometric functions take radians: `sin(30degrees)` converts the angle,
+while `sin(30)` uses 30 radians. `atan2` and `pow` accept two arguments separated
+by a comma without splitting the point's own X/Y components. Polar and
+spherical angles remain decimal degrees by default; whole-angle `degrees`,
+`radians`, and `gradians` suffixes convert to that degree input. The
+`point_input_functions.json` fixture retains Rhino responses for these forms.
+Rhino rejected both `w5<sin(30degrees)` and `w5<sin(30degrees)*90` in a
+headless point prompt, so function calls are rejected in native angle fields
+too. The [failed prompt transcript](../tools/rhino_oracle/observations/point_input_angle_function_diagnostic.txt)
+is retained; other calculator expressions in angle fields remain unverified.
+
 Not yet implemented: general scalar distance/angle
-constraints, unit expressions, math functions/constants, surveyor/DMS notation, and
+constraints, length-unit expressions, surveyor/DMS notation, and
 editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 

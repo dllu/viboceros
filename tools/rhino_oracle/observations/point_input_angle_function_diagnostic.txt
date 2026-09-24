@@ -1,0 +1,13 @@
+Rhino 8.32.26160.13001, private Xvfb, point_input_angle_function_diagnostic.json
+
+The bounded point_input probe failed before producing geometry:
+
+Command: _Polyline
+Start of polyline ( PersistentClose=No ): 0
+Next point of polyline ( PersistentClose=No  Mode=Line  Helpers=No  Undo ): w5<sin(30degrees)
+Unknown command: w5<sin(30degrees)
+Next point of polyline ( PersistentClose=No  Mode=Line  Helpers=No  Undo ): _Enter
+Next point of polyline. Press Enter when done ( PersistentClose=No  Mode=Line  Helpers=No  Undo )
+
+The earlier five-point angle-units probe likewise rejected
+w5<sin(30degrees)*90 after accepting three explicit unit-suffix points.

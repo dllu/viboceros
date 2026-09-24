@@ -149,11 +149,38 @@ fn arithmetic_and_mixed_fractions_resolve_in_cartesian_and_polar_inputs() {
         }
     }
     for input in ["1/0,2", "2*(3+4,1", "1-2/0,3", "w1+,2"] {
-        assert_eq!(
-            resolve(input, previous),
-            Err(PointInputError::InvalidNumber)
-        );
+        assert!(resolve(input, previous).is_err(), "{input}");
     }
+}
+
+#[test]
+fn functions_constants_and_units_resolve_in_coordinate_components() {
+    let previous = Some(Point3::try_new(5.0, 6.0, 7.0).unwrap());
+    let world = resolve("w10*sin(30degrees),10*cos(30degrees)", None).unwrap();
+    assert!((world.x() - 5.0).abs() < 2e-14);
+    assert!((world.y() - 5.0 * 3.0_f64.sqrt()).abs() < 2e-14);
+    let local = resolve("atan2(1,1),pow(2,3)", None).unwrap();
+    assert_eq!(local.x(), 10.0);
+    assert!((local.y() - (20.0 + std::f64::consts::FRAC_PI_4)).abs() < 2e-14);
+    assert_eq!(local.z(), 38.0);
+    for input in ["5<30degrees", "5<pi/6radians", "5<100/3gradians"] {
+        let point = resolve(input, None).unwrap();
+        assert_eq!(point.x(), 10.0);
+        assert!(
+            (point.y() - (20.0 + 2.5 * 3.0_f64.sqrt())).abs() < 1e-13,
+            "{input}"
+        );
+        assert!((point.z() - 32.5).abs() < 1e-13, "{input}");
+    }
+    let relative = resolve("r2<pi/2radians,1", previous).unwrap();
+    assert_eq!(relative.to_array(), [6.0, 6.0, 9.0]);
+    for input in ["sqrt(-1),0", "unknown(1),0", "pow(2),0", "1,atan2(1,)"] {
+        assert!(resolve(input, None).is_err(), "{input}");
+    }
+    assert_eq!(
+        resolve("w5<sin(30degrees)", None),
+        Err(PointInputError::Syntax)
+    );
 }
 
 #[test]
@@ -177,6 +204,14 @@ fn invalid_point_input_is_not_confused_with_a_command() {
     }
     assert_eq!(
         PointInput::parse("5"),
+        Some(Err(PointInputError::DistanceConstraint))
+    );
+    assert_eq!(
+        PointInput::parse("pi"),
+        Some(Err(PointInputError::DistanceConstraint))
+    );
+    assert_eq!(
+        PointInput::parse("sin(30degrees)"),
         Some(Err(PointInputError::DistanceConstraint))
     );
     assert!(

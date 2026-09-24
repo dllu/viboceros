@@ -1,0 +1,38 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "functions-basic",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "10*sin(30degrees),10*cos(30degrees)", "pi,0", "sqrt(9),exp(0)"]
+    },
+    {
+      "op": "point_input",
+      "id": "functions-two-argument",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "atan2(1,1),pow(2,3)", "sin(pi/2),cos(pi)"]
+    },
+    {
+      "op": "point_input",
+      "id": "functions-extended",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "asin(1),acos(0)", "atan(1),ln(exp(1))", "log10(100),sinh(0)", "cosh(0),tanh(0)", "sin(30),0"]
+    },
+    {
+      "op": "point_input",
+      "id": "angle-units",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "5<30degrees", "r2<pi/2radians,1", "w5<100gradians"]
+    }
+  ]
+}

@@ -46,6 +46,14 @@ mod tests {
     }
 
     #[test]
+    fn functions_match_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_input_functions.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_input_functions.json"),
+        );
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"

@@ -1166,6 +1166,33 @@ fn typed_fraction_and_arithmetic_point_finish_a_line() {
 }
 
 #[test]
+fn typed_functions_and_angle_units_finish_a_polyline() {
+    let mut app = test_app();
+    for input in [
+        "Polyline",
+        "0",
+        "atan2(1,1),pow(2,3)",
+        "r2<pi/2radians,1",
+        "",
+    ] {
+        enter(&mut app, input);
+    }
+    let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
+        panic!("polyline");
+    };
+    let vertices = polyline.vertices();
+    assert_eq!(vertices.len(), 3);
+    assert_eq!(vertices[0], point(0.0, 0.0, 0.0));
+    assert!((vertices[1].x() - std::f64::consts::FRAC_PI_4).abs() < 1e-14);
+    assert_eq!(vertices[1].y(), 8.0);
+    assert!((vertices[2].x() - std::f64::consts::FRAC_PI_4).abs() < 1e-14);
+    assert_eq!(vertices[2].y(), 10.0);
+    assert_eq!(vertices[2].z(), 1.0);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 0);
+}
+
+#[test]
 fn mouse_and_typed_relative_points_share_a_polyline_without_grid_rounding() {
     let mut app = test_app();
     enter(&mut app, "Polyline");
@@ -1215,6 +1242,9 @@ fn invalid_typed_points_preserve_the_draft_last_point_and_editable_input() {
         "w5<30<120",
         "w1/0,2",
         "2*(3+4,1",
+        "sqrt(-1),0",
+        "atan2(1,),0",
+        "w5<sin(30degrees)",
     ] {
         enter(&mut app, input);
         assert_eq!(app.active_command, active);

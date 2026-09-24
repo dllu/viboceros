@@ -3207,7 +3207,14 @@ def _point_input_script(points):
         if not isinstance(token, string_types) or not token or len(token) > 512:
             raise ValueError("invalid point token")
         body = token.lstrip("rRwW@")
-        if not body or body[0] not in "+-.(0123456789" or any(c not in "0123456789eE+-,.<>rRwW@*/()" for c in token):
+        allowed_names = ("pi", "degrees", "radians", "gradians", "sin", "cos", "tan",
+                         "asin", "acos", "atan", "atan2", "ln", "log10", "exp",
+                         "sinh", "cosh", "tanh", "pow", "sqrt")
+        if (not body or
+                (body[0] not in "+-.(0123456789" and not body.lower().startswith(allowed_names)) or
+                any(c not in "0123456789eE+-,.<>rRwW@*/()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for c in token) or
+                any(name.lower() not in allowed_names + ("e",) for name in re.findall(r"[A-Za-z]+[0-9]*", body)
+                    if not (name.lower().startswith("e") and name[1:].isdigit()))):
             raise ValueError("point tokens cannot contain commands or whitespace")
     return "_Polyline " + " ".join(points) + " _Enter"
 
