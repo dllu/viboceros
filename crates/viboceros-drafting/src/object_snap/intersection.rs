@@ -1,11 +1,11 @@
-//! Apparent intersections of visible straight wires and circle loci.
+//! Apparent intersections of visible straight wires and conic loci.
 //! A screen crossing is mapped back to each source locus before choosing the
 //! source whose wire the cursor approached. Collinear overlaps have no single
 //! intersection target.
 use super::{ObjectSnapCache, SnapMetric, projected_line, proximity};
 use std::collections::HashSet;
 use viboceros_document::{Document, Geometry, LayerId, ObjectId};
-use viboceros_geometry::{Circle3, CurveRef, NurbsCurve, Point3, Real};
+use viboceros_geometry::{Circle3, CircularArc3, CurveRef, Ellipse3, NurbsCurve, Point3, Real};
 
 #[derive(Clone, Copy)]
 struct Segment {
@@ -20,18 +20,96 @@ struct Segment {
 }
 
 #[derive(Clone, Copy)]
-struct Circle {
+struct Conic {
     owner: ObjectId,
     order: usize,
-    locus: Circle3,
+    locus: ConicLocus,
     hover_distance: Real,
+}
+
+#[derive(Clone, Copy)]
+enum ConicLocus {
+    Circle(Circle3),
+    Arc(CircularArc3),
+    Ellipse(Ellipse3),
+}
+
+impl ConicLocus {
+    fn center(self) -> Point3 {
+        match self {
+            Self::Circle(c) => c.center(),
+            Self::Arc(a) => a.center(),
+            Self::Ellipse(e) => e.center(),
+        }
+    }
+
+    fn radius_bound(self) -> Real {
+        match self {
+            Self::Circle(c) => c.radius(),
+            Self::Arc(a) => a.radius(),
+            Self::Ellipse(e) => e.radius_x().max(e.radius_y()),
+        }
+    }
+
+    fn sweep(self) -> Real {
+        match self {
+            Self::Arc(a) => a.sweep_radians(),
+            _ => std::f64::consts::TAU,
+        }
+    }
+
+    fn full_point(self, angle: Real) -> Option<Point3> {
+        match self {
+            Self::Circle(c) => c.point_at_angle(angle).ok(),
+            Self::Ellipse(e) => e.point_at_angle(angle).ok(),
+            Self::Arc(a) => {
+                let (sine, cosine) = angle.sin_cos();
+                let center = a.center().to_array();
+                let x = a.x_axis().as_vector().to_array();
+                let y = a.y_axis().as_vector().to_array();
+                Point3::try_from(std::array::from_fn(|i| {
+                    (a.radius() * cosine)
+                        .mul_add(x[i], (a.radius() * sine).mul_add(y[i], center[i]))
+                }))
+                .ok()
+            }
+        }
+    }
+
+    fn point_on_curve(self, angle: Real) -> Option<Point3> {
+        match self {
+            Self::Arc(a) => a.point_at((angle / a.sweep_radians()).clamp(0., 1.)).ok(),
+            _ => self.full_point(angle),
+        }
+    }
+
+    fn contains_angle(self, angle: Real) -> bool {
+        match self {
+            Self::Arc(a) => angle <= a.sweep_radians() + 64. * Real::EPSILON,
+            _ => true,
+        }
+    }
+
+    fn priority(self, tangent: bool) -> i8 {
+        match self {
+            Self::Circle(_) => 1,
+            Self::Arc(_) if !tangent => 1,
+            Self::Arc(_) | Self::Ellipse(_) => -1,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct ConicRoot {
+    angle: Real,
+    tangent: bool,
 }
 
 #[derive(Clone, Copy)]
 struct SourceChoice {
     hover_distance: Real,
     mesh: bool,
-    curved: bool,
+    curve_priority: i8,
     order: usize,
     point: Point3,
 }
@@ -45,7 +123,7 @@ pub(super) fn visit(
     emit: &mut impl FnMut(ObjectId, Point3, Real),
 ) {
     let mut segments = Vec::new();
-    let mut circles = Vec::new();
+    let mut conics = Vec::new();
     for (order, object) in document.objects().enumerate() {
         let attributes = object.attributes();
         if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
@@ -68,12 +146,45 @@ pub(super) fn visit(
                 }
             }
             Geometry::NurbsCurve(curve) => add_linear_nurbs(curve, &mut add),
-            Geometry::Circle(circle) => add_circle(&mut circles, owner, order, *circle, metric),
+            Geometry::Circle(circle) => add_conic(
+                &mut conics,
+                owner,
+                order,
+                ConicLocus::Circle(*circle),
+                metric,
+            ),
+            Geometry::Arc(arc) => {
+                add_conic(&mut conics, owner, order, ConicLocus::Arc(*arc), metric)
+            }
+            Geometry::Ellipse(ellipse) => add_conic(
+                &mut conics,
+                owner,
+                order,
+                ConicLocus::Ellipse(*ellipse),
+                metric,
+            ),
             Geometry::PolyCurve(polycurve) => {
                 for part in polycurve.segments() {
                     add_curve(part.as_ref(), &mut add);
-                    if let CurveRef::Circle(circle) = part.as_ref() {
-                        add_circle(&mut circles, owner, order, *circle, metric);
+                    match part.as_ref() {
+                        CurveRef::Circle(circle) => add_conic(
+                            &mut conics,
+                            owner,
+                            order,
+                            ConicLocus::Circle(*circle),
+                            metric,
+                        ),
+                        CurveRef::Arc(arc) => {
+                            add_conic(&mut conics, owner, order, ConicLocus::Arc(*arc), metric)
+                        }
+                        CurveRef::Ellipse(ellipse) => add_conic(
+                            &mut conics,
+                            owner,
+                            order,
+                            ConicLocus::Ellipse(*ellipse),
+                            metric,
+                        ),
+                        _ => {}
                     }
                 }
             }
@@ -87,11 +198,7 @@ pub(super) fn visit(
                     add_linear_nurbs(&boundary.curve, &mut add);
                 }
             }
-            Geometry::Mesh(_)
-            | Geometry::Point(_)
-            | Geometry::PointCloud(_)
-            | Geometry::Arc(_)
-            | Geometry::Ellipse(_) => {}
+            Geometry::Mesh(_) | Geometry::Point(_) | Geometry::PointCloud(_) => {}
         }
     }
     for first in 0..segments.len() {
@@ -119,14 +226,14 @@ pub(super) fn visit(
                 SourceChoice {
                     hover_distance: a.hover_distance,
                     mesh: a.mesh,
-                    curved: false,
+                    curve_priority: 0,
                     order: a.order,
                     point: point_a,
                 },
                 SourceChoice {
                     hover_distance: b.hover_distance,
                     mesh: b.mesh,
-                    curved: false,
+                    curve_priority: 0,
                     order: b.order,
                     point: point_b,
                 },
@@ -140,25 +247,25 @@ pub(super) fn visit(
             emit(owner, point, distance);
         }
     }
-    for circle in circles {
+    for conic in conics {
         for &segment in &segments {
-            circle_line_crossings(circle, segment, metric, emit);
+            conic_line_crossings(conic, segment, metric, emit);
         }
     }
 }
 
-fn add_circle(
-    circles: &mut Vec<Circle>,
+fn add_conic(
+    conics: &mut Vec<Conic>,
     owner: ObjectId,
     order: usize,
-    locus: Circle3,
+    locus: ConicLocus,
     metric: &impl SnapMetric,
 ) {
-    if proximity::outside_sphere(locus.center(), locus.radius(), metric) {
+    if proximity::outside_sphere(locus.center(), locus.radius_bound(), metric) {
         return;
     }
     let Some(hover_distance) = proximity::projected_distance(|t| {
-        let p = locus.point_at_angle(std::f64::consts::TAU * t).ok()?;
+        let p = locus.point_on_curve(locus.sweep() * t)?;
         let [x, y] = metric.offset(p)?;
         Some(x.hypot(y))
     }) else {
@@ -167,7 +274,7 @@ fn add_circle(
     if hover_distance > metric.capture_radius().hypot(metric.capture_radius()) {
         return;
     }
-    circles.push(Circle {
+    conics.push(Conic {
         owner,
         order,
         locus,
@@ -175,8 +282,8 @@ fn add_circle(
     });
 }
 
-fn circle_line_crossings(
-    circle: Circle,
+fn conic_line_crossings(
+    conic: Conic,
     segment: Segment,
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(ObjectId, Point3, Real),
@@ -191,28 +298,23 @@ fn circle_line_crossings(
         return;
     }
     let score = |angle: Real| {
-        let point = circle.locus.point_at_angle(angle).ok()?;
+        let point = conic.locus.full_point(angle)?;
         let image = metric.offset(point)?;
         let dx = image[0] - segment.image_a[0];
         let dy = image[1] - segment.image_a[1];
         let signed = direction[0].mul_add(dy, -direction[1] * dx) / length;
         signed.is_finite().then_some(signed)
     };
-    let mut roots: Vec<Real> = Vec::new();
+    let mut roots: Vec<ConicRoot> = Vec::new();
     if metric.is_affine() {
-        let Some(center) = metric.offset(circle.locus.center()) else {
+        let Some(center) = metric.offset(conic.locus.center()) else {
             return;
         };
         let (Some(x), Some(y)) = (
-            circle
+            conic.locus.full_point(0.).and_then(|p| metric.offset(p)),
+            conic
                 .locus
-                .point_at_angle(0.)
-                .ok()
-                .and_then(|p| metric.offset(p)),
-            circle
-                .locus
-                .point_at_angle(std::f64::consts::FRAC_PI_2)
-                .ok()
+                .full_point(std::f64::consts::FRAC_PI_2)
                 .and_then(|p| metric.offset(p)),
         ) else {
             return;
@@ -225,25 +327,8 @@ fn circle_line_crossings(
         let a = signed(from_start);
         let b = signed([x[0] - center[0], x[1] - center[1]]);
         let c = signed([y[0] - center[0], y[1] - center[1]]);
-        let amplitude = b.hypot(c);
-        if amplitude == 0. || !amplitude.is_finite() {
-            return;
-        }
-        let ratio = -a / amplitude;
-        if !ratio.is_finite() || ratio.abs() > 1. + 64. * Real::EPSILON {
-            return;
-        }
-        let phase = c.atan2(b);
-        let opening = if (ratio.abs() - 1.).abs() <= 64. * Real::EPSILON {
-            if ratio > 0. { 0. } else { std::f64::consts::PI }
-        } else {
-            ratio.acos()
-        };
-        roots.push((phase + opening).rem_euclid(std::f64::consts::TAU));
-        if opening != 0. && opening != std::f64::consts::PI {
-            roots.push((phase - opening).rem_euclid(std::f64::consts::TAU));
-        }
-    } else if let Some(fitted) = projective_circle_roots(&score) {
+        roots = trigonometric_roots(a, b, c);
+    } else if let Some(fitted) = projective_conic_roots(&score) {
         roots = fitted;
     } else {
         let mut previous = score(0.);
@@ -251,7 +336,10 @@ fn circle_line_crossings(
             let end = std::f64::consts::TAU * i as Real / STATIONS as Real;
             let current = score(end);
             if previous == Some(0.) {
-                roots.push(std::f64::consts::TAU * (i - 1) as Real / STATIONS as Real);
+                roots.push(ConicRoot {
+                    angle: std::f64::consts::TAU * (i - 1) as Real / STATIONS as Real,
+                    tangent: false,
+                });
             } else if let (Some(mut low_score), Some(high_score)) = (previous, current)
                 && low_score.signum() != high_score.signum()
             {
@@ -272,16 +360,23 @@ fn circle_line_crossings(
                         high = middle;
                     }
                 }
-                roots.push((low + high) * 0.5);
+                roots.push(ConicRoot {
+                    angle: (low + high) * 0.5,
+                    tangent: false,
+                });
             }
             previous = current;
         }
     }
-    for angle in roots {
-        let Some(point_circle) = circle.locus.point_at_angle(angle).ok() else {
+    for root in roots {
+        let angle = root.angle;
+        if !conic.locus.contains_angle(angle) {
+            continue;
+        }
+        let Some(point_conic) = conic.locus.point_on_curve(angle) else {
             continue;
         };
-        let Some(image) = metric.offset(point_circle) else {
+        let Some(image) = metric.offset(point_conic) else {
             continue;
         };
         let from_start = [image[0] - segment.image_a[0], image[1] - segment.image_a[1]];
@@ -298,25 +393,25 @@ fn circle_line_crossings(
         else {
             continue;
         };
-        let prefer_circle = prefer_first(
+        let prefer_conic = prefer_first(
             SourceChoice {
-                hover_distance: circle.hover_distance,
+                hover_distance: conic.hover_distance,
                 mesh: false,
-                curved: true,
-                order: circle.order,
-                point: point_circle,
+                curve_priority: conic.locus.priority(root.tangent),
+                order: conic.order,
+                point: point_conic,
             },
             SourceChoice {
                 hover_distance: segment.hover_distance,
                 mesh: segment.mesh,
-                curved: false,
+                curve_priority: 0,
                 order: segment.order,
                 point: point_line,
             },
             metric,
         );
-        let (owner, point) = if prefer_circle {
-            (circle.owner, point_circle)
+        let (owner, point) = if prefer_conic {
+            (conic.owner, point_conic)
         } else {
             (segment.owner, point_line)
         };
@@ -326,11 +421,11 @@ fn circle_line_crossings(
 
 /// For a projective camera, the signed distance to a projected line has the
 /// form `(a + b cos(t) + c sin(t)) / (1 + e cos(t) + f sin(t))` when the
-/// circle center has nonzero homogeneous weight. Five visible samples recover
+/// conic center has nonzero homogeneous weight. Five visible samples recover
 /// the numerator's exact roots, including a double root at tangency. Check
 /// independent stations because arbitrary projected callbacks need not be
-/// projective. Partially clipped circles fall back to sampled sign brackets.
-fn projective_circle_roots(score: &impl Fn(Real) -> Option<Real>) -> Option<Vec<Real>> {
+/// projective. Partially clipped conics fall back to sampled sign brackets.
+fn projective_conic_roots(score: &impl Fn(Real) -> Option<Real>) -> Option<Vec<ConicRoot>> {
     const N: usize = 5;
     let mut rows = [[0.; N + 1]; N];
     for (i, row) in rows.iter_mut().enumerate() {
@@ -380,25 +475,36 @@ fn projective_circle_roots(score: &impl Fn(Real) -> Option<Real>) -> Option<Vec<
             return None;
         }
     }
+    Some(trigonometric_roots(a, b, c))
+}
+
+fn trigonometric_roots(a: Real, b: Real, c: Real) -> Vec<ConicRoot> {
     let amplitude = b.hypot(c);
     if amplitude == 0. || !amplitude.is_finite() {
-        return Some(Vec::new());
+        return Vec::new();
     }
     let ratio = -a / amplitude;
     if !ratio.is_finite() || ratio.abs() > 1. + 64. * Real::EPSILON {
-        return Some(Vec::new());
+        return Vec::new();
     }
     let phase = c.atan2(b);
-    let opening = if (ratio.abs() - 1.).abs() <= 64. * Real::EPSILON {
+    let tangent = (ratio.abs() - 1.).abs() <= 64. * Real::EPSILON;
+    let opening = if tangent {
         if ratio > 0. { 0. } else { std::f64::consts::PI }
     } else {
         ratio.acos()
     };
-    let mut roots = vec![(phase + opening).rem_euclid(std::f64::consts::TAU)];
-    if opening != 0. && opening != std::f64::consts::PI {
-        roots.push((phase - opening).rem_euclid(std::f64::consts::TAU));
+    let mut roots = vec![ConicRoot {
+        angle: (phase + opening).rem_euclid(std::f64::consts::TAU),
+        tangent,
+    }];
+    if !tangent {
+        roots.push(ConicRoot {
+            angle: (phase - opening).rem_euclid(std::f64::consts::TAU),
+            tangent: false,
+        });
     }
-    Some(roots)
+    roots
 }
 
 fn add_curve(curve: CurveRef<'_>, add: &mut impl FnMut(Point3, Point3, bool)) {
@@ -521,8 +627,8 @@ fn prefer_first(a: SourceChoice, b: SourceChoice, metric: &impl SnapMetric) -> b
     if a.mesh != b.mesh {
         return !a.mesh;
     }
-    if a.curved != b.curved {
-        return a.curved;
+    if a.curve_priority != b.curve_priority {
+        return a.curve_priority > b.curve_priority;
     }
     a.order <= b.order
 }

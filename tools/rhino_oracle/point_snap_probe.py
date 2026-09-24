@@ -67,6 +67,15 @@ def validate(operation):
                     or not all(point(source[key]) for key in ("center", "x_axis", "normal"))
                     or not finite(source["radius"]) or source["radius"] <= 0):
                 raise ValueError("invalid point snap circle")
+        elif source.get("type") == "arc":
+            if (set(source) != set(("type", "points")) or not isinstance(source["points"], list)
+                    or len(source["points"]) != 3 or not all(point(v) for v in source["points"])):
+                raise ValueError("invalid point snap arc")
+        elif source.get("type") == "ellipse":
+            if (set(source) != set(("type", "center", "radius_x", "radius_y", "x_axis", "y_axis"))
+                    or not all(point(source[key]) for key in ("center", "x_axis", "y_axis"))
+                    or not all(finite(source[key]) and source[key] > 0 for key in ("radius_x", "radius_y"))):
+                raise ValueError("invalid point snap ellipse")
         elif source.get("type") == "mesh":
             if set(source) != set(("type", "vertices", "faces")): raise ValueError("invalid point snap mesh fields")
             vertices, faces = source["vertices"], source["faces"]
@@ -228,10 +237,17 @@ def run(operation, tolerance, host):
     def record(geometry):
         if isinstance(geometry, Rhino.Geometry.Mesh): return dict(mesh=host["_polygon_mesh_value"](geometry))
         if isinstance(geometry, getattr(Rhino.Geometry, "ArcCurve", ())):
-            success, circle = geometry.TryGetCircle()
-            if not success: raise ValueError("point snap circle changed representation")
-            return dict(circle=[host["_xyz"](circle.Center),float(circle.Radius),
-                                host["_xyz"](circle.Plane.XAxis),host["_xyz"](circle.Plane.Normal)])
+            if geometry.IsClosed:
+                success, circle = geometry.TryGetCircle()
+                if not success: raise ValueError("point snap circle changed representation")
+                return dict(circle=[host["_xyz"](circle.Center),float(circle.Radius),
+                                    host["_xyz"](circle.Plane.XAxis),host["_xyz"](circle.Plane.Normal)])
+            return dict(arc=[host["_xyz"](geometry.PointAt(geometry.Domain.ParameterAt(t)))
+                             for t in (0.0,0.25,0.5,0.75,1.0)])
+        if isinstance(geometry, getattr(Rhino.Geometry, "NurbsCurve", ())):
+            return dict(nurbs_curve=[int(geometry.Degree),
+                                     [host["_xyz"](geometry.PointAt(geometry.Domain.ParameterAt(t)))
+                                      for t in (0.0,0.25,0.5,0.75,1.0)]])
         if isinstance(geometry, getattr(Rhino.Geometry, "PolylineCurve", ())):
             success, polyline = geometry.TryGetPolyline()
             if not success: raise ValueError("point snap polyline changed representation")

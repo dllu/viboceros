@@ -4,7 +4,7 @@
 point prompt, enter `Int` or `Intersection` for one pick. It is initially off.
 The mode finds crossings of straight line and polyline segments, degree-one
 NURBS spans, straight surface and B-rep edges, mesh face-boundary wires, and
-circles against those straight wires. Mesh wires
+circles, circular arcs, and ellipses against those straight wires. Mesh wires
 require `SnapToMeshes Enable`; ordinary curves do not. It works in parallel
 and perspective viewports and leaves the source geometry unchanged.
 
@@ -14,7 +14,8 @@ produce Int targets, matching Rhino's measured behavior.
 Wires within one mesh do not generate Int targets at their shared vertex.
 The source whose projected wire is closer to the cursor supplies the 3D point;
 projected wire distances are rounded to pixels for ownership, then frontmost
-depth, curve-over-mesh and curved-locus priority resolve measured ties.
+depth resolves measured ties. A circle or transverse arc wins a rounded tie
+against a line; the line wins against an ellipse or tangent arc.
 Projected segment interpolation returns a point on the original 3D locus.
 Collinear overlaps do not produce an Int target in the measured interior pick.
 The square snap aperture
@@ -50,13 +51,20 @@ and [observations](../tools/rhino_oracle/observations/intersection_circle_line_s
 include transverse intersections, a tangent, an apparent crossing, and a
 perspective pick. [Perspective ownership inputs](../tools/rhino_oracle/fixtures/intersection_circle_line_detail_snaps.json)
 and [observations](../tools/rhino_oracle/observations/intersection_circle_line_detail_snaps.json)
-add seven cursor/source-order cases, including perspective tangency. All 39
-retained picks replay with exact kind and source and points within `1e-9` model
-units. Affine views solve circle-line roots analytically. Projective views fit
+add seven cursor/source-order cases, including perspective tangency. Affine
+views solve conic-line roots analytically. Projective views fit
 and validate the rational trigonometric line equation; partially clipped
-circles use visible sign brackets.
+conics use visible sign brackets.
 
-Other curved loci, circle-circle intersections, curved self-intersections, surface isocurves,
+[Arc and ellipse inputs](../tools/rhino_oracle/fixtures/intersection_arc_ellipse_snaps.json)
+and [observations](../tools/rhino_oracle/observations/intersection_arc_ellipse_snaps.json)
+cover finite arc sweeps, tangent and endpoint contacts, and perspective and
+apparent ellipse crossings. [Reverse source-order inputs](../tools/rhino_oracle/fixtures/intersection_arc_ellipse_priority_snaps.json)
+with [results](../tools/rhino_oracle/observations/intersection_arc_ellipse_priority_snaps.json)
+confirm ownership at six competing picks. All 57 retained picks replay with
+matching kind and source and points within `1e-9` model units.
+
+Other curved loci, conic-conic intersections, curved self-intersections, surface isocurves,
 occlusion, and multi-object intersection priority need further work. Candidate
 mesh wires use the existing snapshot-cached bounds hierarchy; the remaining
 near-cursor segment pairs are examined for crossings. Worst-case pair counts

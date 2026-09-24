@@ -1,0 +1,785 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "arc-alone",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.7320508075688772,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-right",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.7320508075688772,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-left",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -1.7320508075688772,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-outside-sweep",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            -1,
+            0
+          ],
+          "end": [
+            4,
+            -1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.7320508075688772,
+        -1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-tangent",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            2,
+            0
+          ],
+          "end": [
+            4,
+            2,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        2,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-endpoint",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            -1,
+            0
+          ],
+          "end": [
+            2,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        2,
+        0,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-line-perspective",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              -2,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        1.7320508075688772,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-line-right",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 3,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        2.598076211353316,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-line-left",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 3,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        -2.598076211353316,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-line-tangent",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 3,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            2,
+            0
+          ],
+          "end": [
+            4,
+            2,
+            0
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        0,
+        2,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-line-perspective",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 3,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        2.598076211353316,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-line-apparent",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 3,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4,
+            1,
+            1
+          ],
+          "end": [
+            4,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Top",
+      "bounds": [
+        [
+          -5,
+          -5,
+          -5
+        ],
+        [
+          5,
+          5,
+          5
+        ]
+      ],
+      "aim": [
+        2.598076211353316,
+        1,
+        0
+      ],
+      "offset": [
+        2,
+        2
+      ],
+      "persistent_snaps": [
+        "Int"
+      ],
+      "snap_to_meshes": false,
+      "input_settle_ms": 300
+    }
+  ]
+}

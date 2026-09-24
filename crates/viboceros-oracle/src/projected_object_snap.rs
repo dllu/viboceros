@@ -29,6 +29,16 @@ pub enum SnapSource {
         x_axis: [f64; 3],
         normal: [f64; 3],
     },
+    Arc {
+        points: [[f64; 3]; 3],
+    },
+    Ellipse {
+        center: [f64; 3],
+        radius_x: f64,
+        radius_y: f64,
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -68,6 +78,26 @@ impl SnapSource {
                 *radius,
                 UnitVector3::try_new(x_axis[0], x_axis[1], x_axis[2], tolerance)?,
                 UnitVector3::try_new(normal[0], normal[1], normal[2], tolerance)?,
+                tolerance,
+            )?),
+            Self::Arc { points } => Geometry::Arc(CircularArc3::try_from_three_points(
+                Point3::try_from(points[0])?,
+                Point3::try_from(points[1])?,
+                Point3::try_from(points[2])?,
+                tolerance,
+            )?),
+            Self::Ellipse {
+                center,
+                radius_x,
+                radius_y,
+                x_axis,
+                y_axis,
+            } => Geometry::Ellipse(Ellipse3::try_new(
+                Point3::try_from(*center)?,
+                *radius_x,
+                *radius_y,
+                UnitVector3::try_new(x_axis[0], x_axis[1], x_axis[2], tolerance)?,
+                UnitVector3::try_new(y_axis[0], y_axis[1], y_axis[2], tolerance)?,
                 tolerance,
             )?),
             Self::Mesh { vertices, faces } => {

@@ -304,6 +304,22 @@ fn straight_intersection_snaps_replay_owned_rhino_picks() {
                 "../../../../tools/rhino_oracle/observations/intersection_circle_line_detail_snaps.json"
             ),
         ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_arc_ellipse_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_arc_ellipse_snaps.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/intersection_arc_ellipse_priority_snaps.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/intersection_arc_ellipse_priority_snaps.json"
+            ),
+        ),
     ] {
         let differences = retained_differences(fixture, observed);
         assert!(differences.is_empty(), "{differences:?}");

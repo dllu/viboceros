@@ -74,6 +74,28 @@ class IntersectionSnapTests(unittest.TestCase):
                 "perspective-line-first": "Intersection",
                 "perspective-tangent": "Intersection",
             },
+            "intersection_arc_ellipse_snaps": {
+                "arc-alone": "None",
+                "arc-line-right": "Intersection",
+                "arc-line-left": "Intersection",
+                "arc-line-outside-sweep": "None",
+                "arc-line-tangent": "Intersection",
+                "arc-line-endpoint": "Intersection",
+                "arc-line-perspective": "Intersection",
+                "ellipse-line-right": "Intersection",
+                "ellipse-line-left": "Intersection",
+                "ellipse-line-tangent": "Intersection",
+                "ellipse-line-perspective": "Intersection",
+                "ellipse-line-apparent": "Intersection",
+            },
+            "intersection_arc_ellipse_priority_snaps": {
+                "arc-line-tangent-reverse": "Intersection",
+                "arc-line-endpoint-reverse": "Intersection",
+                "arc-line-perspective-reverse": "Intersection",
+                "ellipse-line-left-reverse": "Intersection",
+                "ellipse-line-tangent-reverse": "Intersection",
+                "ellipse-line-perspective-reverse": "Intersection",
+            },
         }
         for stem, expected in cases.items():
             with self.subTest(stem=stem):

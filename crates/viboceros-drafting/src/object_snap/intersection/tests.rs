@@ -2,8 +2,8 @@ use super::*;
 use crate::object_snap::{ObjectSnapKind, ObjectSnapModes, ObjectSnapOptions};
 use viboceros_document::Geometry;
 use viboceros_geometry::{
-    Circle3, LineSegment, MeshFace, NurbsCurve, NurbsSurface, PointCloudProjection, Polyline3,
-    Tolerance, TriangleMesh, UnitVector3,
+    Circle3, CircularArc3, Ellipse3, LineSegment, MeshFace, NurbsCurve, NurbsSurface,
+    PointCloudProjection, Polyline3, Tolerance, TriangleMesh, UnitVector3,
 };
 
 fn p(x: Real, y: Real, z: Real) -> Point3 {
@@ -270,4 +270,75 @@ fn circle_line_crossings_include_tangencies_and_reject_infinite_line_extension()
     assert!(tangent.point().distance_to(p(0., 2., 0.)).unwrap() < 1e-12);
     assert!(pick(line(p(-3., 2.000_001, 0.), p(3., 2.000_001, 0.)), [0., 2.]).is_none());
     assert!(pick(line(p(-3., 1., 0.), p(-2.5, 1., 0.)), [-root, 1.]).is_none());
+}
+
+#[test]
+fn arc_sweep_and_ellipse_tangent_bound_finite_intersections() {
+    let arc = Geometry::Arc(
+        CircularArc3::try_from_three_points(
+            p(2., 0., 0.),
+            p(0., 2., 0.),
+            p(-2., 0., 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    );
+    let ellipse = Geometry::Ellipse(
+        Ellipse3::try_new(
+            p(0., 0., 0.),
+            3.,
+            2.,
+            UnitVector3::try_new(1., 0., 0., Tolerance::DEFAULT).unwrap(),
+            UnitVector3::try_new(0., 1., 0., Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    );
+    let pick = |curve: Geometry, wire: Geometry, cursor: [Real; 2]| {
+        let mut doc = Document::default();
+        doc.add_geometry(curve).unwrap();
+        doc.add_geometry(wire).unwrap();
+        ObjectSnapCache::default()
+            .nearest_axis_aligned_with_options(
+                &doc,
+                PointCloudProjection::Xy,
+                p(0., 0., 0.),
+                cursor,
+                0.2,
+                ObjectSnapOptions {
+                    modes: ObjectSnapModes::only(ObjectSnapKind::Intersection),
+                    mesh_edges: false,
+                },
+            )
+            .unwrap()
+    };
+    let root = 3.0_f64.sqrt();
+    assert!(
+        pick(
+            arc.clone(),
+            line(p(-3., -1., 0.), p(3., -1., 0.)),
+            [root, -1.]
+        )
+        .is_none()
+    );
+    assert!(
+        pick(
+            arc,
+            line(p(-3., 1., 0.), p(3., 1., 0.)),
+            [root + 0.05, 1.05]
+        )
+        .unwrap()
+        .point()
+        .distance_to(p(root, 1., 0.))
+        .unwrap()
+            < 1e-12
+    );
+    assert!(
+        pick(ellipse, line(p(-4., 2., 0.), p(4., 2., 0.)), [0.05, 2.05])
+            .unwrap()
+            .point()
+            .distance_to(p(0., 2., 0.))
+            .unwrap()
+            < 1e-12
+    );
 }
