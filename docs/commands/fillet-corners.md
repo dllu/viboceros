@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/fillet.htm)
 
-Select one or more open or closed polylines or supported polycurves, then enter
+Select one or more open or closed polylines, NURBS curves, or supported polycurves, then enter
 `FilletCorners 0.5` or `FilletCorners Radius=0.5`. Turns between straight spans
 and supported joints involving circular arcs or planar NURBS curves receive exact
 circular arcs tangent to both sides.
@@ -27,21 +27,25 @@ Coplanar kinks between a curved NURBS leaf and a line or circular arc receive
 a native tangent arc while the NURBS remains a trimmed NURBS leaf.
 Coplanar kinks between two curved NURBS leaves also receive a native tangent
 arc, with both source leaves trimmed at their tangent points.
+Sharp internal knots of a curved NURBS leaf are split into exact NURBS pieces
+and rounded in the same way, including when the selected object is a standalone
+NURBS curve.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
 The same seam convention applies to a sharp curved NURBS junction.
-Kinks inside a curved NURBS leaf, viewport radius picking, and interactive
-preview remain to be implemented.
+Stationary cusps, viewport radius picking, and interactive preview remain to be
+implemented.
 
 The [geometry fixture](../../tools/rhino_oracle/fixtures/curve_fillet_corners.json)
 and [saved Rhino response](../../tools/rhino_oracle/observations/curve_fillet_corners.json)
 compare open, closed, tangent-meeting, and spatial polylines, three straight
-polycurves, and twenty-two polycurves with smooth or filleted curved leaves against
-RhinoCommon's public `CreateFilletCornersCurve` method. Twenty-eight cases use 65
+polycurves, twenty-three polycurves with smooth or filleted curved leaves, and
+one standalone NURBS curve against RhinoCommon's public
+`CreateFilletCornersCurve` method. Thirty cases use 65
 equal arc-length stations; the smooth quadratic NURBS case uses 17 fixed
 closest-point probes to avoid differences in the two engines' arc-length
 inversion. Closure and total length also agree. The largest sampled coordinate
-difference is `5.1e-8`, in a curved NURBS fillet. The seven curved NURBS kink
+difference is `5.1e-8`, in a curved NURBS fillet. The nine curved NURBS kink
 cases have a `1e-7` comparison tolerance; earlier cases retain their tighter
 saved oracle tolerances.
 Rhino places a closed fillet result's seam at the incoming tangent

@@ -3,6 +3,7 @@ use super::*;
 mod arc_arc;
 mod arc_line;
 mod nurbs_arc;
+mod nurbs_internal;
 mod nurbs_line;
 mod nurbs_nurbs;
 
@@ -25,6 +26,9 @@ impl PolyCurve3 {
             return Err(GeometryError::Degenerate {
                 context: "fillet radius",
             });
+        }
+        if let Some(split) = nurbs_internal::split_sharp_knots(self, tolerance)? {
+            return split.try_fillet_corners(radius, tolerance);
         }
         if let Some(rounded) = arc_line::resolve_arc_line_kinks(self, radius, tolerance)? {
             return rounded.try_fillet_corners(radius, tolerance);

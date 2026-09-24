@@ -33,6 +33,10 @@ impl Command for FilletCornersCommand {
                 Geometry::PolyCurve(polycurve) => {
                     polycurve.try_fillet_corners(radius, document.tolerance())?
                 }
+                Geometry::NurbsCurve(curve) => viboceros_geometry::PolyCurve3::try_new(vec![
+                    viboceros_geometry::CurveSegment3::NurbsCurve(curve.clone()),
+                ])?
+                .try_fillet_corners(radius, document.tolerance())?,
                 _ => return Err(CommandError::FilletCornersRequiresSupportedCurves),
             };
             replacements.push((object.id(), Geometry::PolyCurve(curve)));
@@ -264,6 +268,38 @@ mod tests {
         assert_eq!(
             document.object(id).unwrap().geometry(),
             &Geometry::PolyCurve(source)
+        );
+    }
+
+    #[test]
+    fn internal_nurbs_kink_is_rounded_in_place_and_undoable() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let source = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(2., 0.), p(2., 2.), p(4., 2.), p(4., 4.)],
+            vec![0., 0., 0., 1., 1., 2., 2., 2.],
+        )
+        .unwrap();
+        let id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "FilletCorners Radius=0.5")
+            .unwrap();
+        let Geometry::PolyCurve(result) = document.object(id).unwrap().geometry() else {
+            panic!("filleted result is a polycurve")
+        };
+        assert_eq!(result.segments().len(), 3);
+        assert!(matches!(result.segments()[1], CurveSegment3::Arc(_)));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
         );
     }
 }

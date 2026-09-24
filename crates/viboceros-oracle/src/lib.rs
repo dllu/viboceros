@@ -2350,8 +2350,14 @@ fn execute(
                 viboceros_geometry::Curve3::PolyCurve(polycurve) => {
                     polycurve.try_fillet_corners(*radius, tolerance)
                 }
+                viboceros_geometry::Curve3::NurbsCurve(curve) => {
+                    viboceros_geometry::PolyCurve3::try_new(vec![
+                        viboceros_geometry::CurveSegment3::NurbsCurve(curve.clone()),
+                    ])?
+                    .try_fillet_corners(*radius, tolerance)
+                }
                 _ => Err(GeometryError::InvalidPolyCurve {
-                    context: "FilletCorners requires a polyline or polycurve",
+                    context: "FilletCorners requires a polyline, NURBS curve, or polycurve",
                 }),
             })?;
             let samples = if let Some(queries) = queries {
