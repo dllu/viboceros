@@ -6,6 +6,7 @@ Rhino's complete command set is still a work in progress.
 
 - [Curve creation and editing](curves.md)
 - [Analytic curve offsets](offset.md)
+- [Planar surface offsets](offset-srf.md)
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
 - [Connect two curves](connect.md)

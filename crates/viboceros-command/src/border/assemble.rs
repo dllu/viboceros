@@ -59,7 +59,7 @@ fn linear(curves: &[NurbsCurve]) -> bool {
         .all(|curve| curve.degree() == 1 && curve.control_points().len() == 2)
 }
 
-pub(super) fn assemble(
+pub(crate) fn assemble(
     curves: Vec<NurbsCurve>,
     tolerance: Tolerance,
 ) -> Result<Geometry, GeometryError> {
