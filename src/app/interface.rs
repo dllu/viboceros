@@ -20,7 +20,9 @@ impl VibocerosApp {
             && self.boundary_selection.is_none()
             && !matches!(
                 self.active_command,
-                Some(InteractiveCommand::SelVolumeSphere { .. })
+                Some(
+                    InteractiveCommand::SelVolumeSphere { .. } | InteractiveCommand::SelBox { .. }
+                )
             )
         {
             return false;
@@ -56,6 +58,14 @@ impl VibocerosApp {
                 {
                     self.active_command =
                         Some(InteractiveCommand::SelVolumeSphere { center, mode });
+                } else if let Some(InteractiveCommand::SelBox { base, opposite, .. }) =
+                    self.active_command
+                {
+                    self.active_command = Some(InteractiveCommand::SelBox {
+                        base,
+                        opposite,
+                        mode,
+                    });
                 } else {
                     self.selection_window_override = Some(mode);
                 }

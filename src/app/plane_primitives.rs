@@ -8,12 +8,18 @@ impl VibocerosApp {
         base: Option<Point3>,
         opposite: Option<Point3>,
         point: Point3,
+        selection_mode: Option<RectSelectionMode>,
     ) -> bool {
-        let command = match (base, opposite) {
-            (None, None) => InteractiveCommand::Box {
-                base: Some(point),
-                opposite: None,
+        let command = |base, opposite| match selection_mode {
+            Some(mode) => InteractiveCommand::SelBox {
+                base,
+                opposite,
+                mode,
             },
+            None => InteractiveCommand::Box { base, opposite },
+        };
+        let command = match (base, opposite) {
+            (None, None) => command(Some(point), None),
             (Some(base), None) => {
                 if !plane_rectangle_exceeds_tolerance(plane, base, point, self.document.tolerance())
                 {
@@ -30,10 +36,7 @@ impl VibocerosApp {
                     self.push_log("Error: box base corner is not finite".to_owned());
                     return false;
                 };
-                InteractiveCommand::Box {
-                    base: Some(base),
-                    opposite: Some(opposite),
-                }
+                command(Some(base), Some(opposite))
             }
             (Some(base), Some(opposite)) => {
                 if !plane
@@ -45,8 +48,15 @@ impl VibocerosApp {
                     return false;
                 }
                 self.active_command = None;
+                let mode_option = selection_mode
+                    .map_or_else(String::new, |mode| format!(" SelectionMode={mode:?}"));
                 self.execute_command(&format!(
-                    "Box {} {} {}",
+                    "{} {} {} {}{mode_option}",
+                    if selection_mode.is_some() {
+                        "SelBox"
+                    } else {
+                        "Box"
+                    },
                     format_model_point(base),
                     format_model_point(opposite),
                     format_model_point(point)

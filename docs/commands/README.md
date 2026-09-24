@@ -38,7 +38,7 @@ Rhino's complete command set is still a work in progress.
 - [Curve and surface parameter domains](domain.md)
 - [Surface UV coordinates of a point](evaluate-uv-point.md)
 - [Selection, attributes, layers, and groups](document.md)
-- [Sphere volume selection](volume-selection.md)
+- [Box and sphere volume selection](volume-selection.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
 - [Native planar STEP export](export-step.md)
@@ -139,6 +139,7 @@ SelCrossing
 SelRectangular SelectionMode=InvertCrossing
 SelCircular SelectionMode=Crossing
 SelBoundary SelectionMode=Crossing
+SelBox 0,0,0 5,4,0 3 SelectionMode=Crossing
 SelVolumeSphere 0,0,0 5 SelectionMode=Crossing
 SelFence
 SelFence Curve

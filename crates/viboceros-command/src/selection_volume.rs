@@ -5,10 +5,94 @@ use viboceros_geometry::{BoundingBox3, Circle3};
 
 const SEL_VOLUME_SPHERE_USAGE: &str =
     "SelVolumeSphere center radius [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
+const SEL_BOX_USAGE: &str = "SelBox base-corner opposite-base-corner height [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]";
 const CURVE_SAMPLES: usize = 128;
 const SURFACE_SAMPLES_PER_SPAN: usize = 16;
 
 pub(super) struct SelVolumeSphereCommand;
+pub(super) struct SelBoxCommand;
+
+impl Command for SelBoxCommand {
+    fn name(&self) -> &'static str {
+        "SelBox"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        self.run_in_context(document, arguments, CommandContext::default())
+    }
+
+    fn run_in_context(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let (base, base_count) = parse_point(arguments)?;
+        let (opposite, opposite_count) = parse_point(&arguments[base_count..])?;
+        let remaining = &arguments[base_count + opposite_count..];
+        let (height, height_count) = if let Some(first) = remaining.first()
+            && !first.contains(',')
+            && let Ok(height) = first.parse::<Real>()
+        {
+            (height, 1)
+        } else {
+            let (height_point, count) = parse_point(remaining)?;
+            let frame = context.construction_plane.with_origin(base);
+            (frame.coordinates_of(height_point)?[2], count)
+        };
+        if !height.is_finite() {
+            return Err(CommandError::Usage(SEL_BOX_USAGE));
+        }
+        let mode = match &remaining[height_count..] {
+            [] => interface::RectSelectionMode::Crossing,
+            [option] => parse_volume_mode(option, SEL_BOX_USAGE)?,
+            _ => return Err(CommandError::Usage(SEL_BOX_USAGE)),
+        };
+        let frame = context.construction_plane.with_origin(base);
+        let delta = frame.coordinates_of(opposite)?;
+        let intervals = [delta[0], delta[1], height].map(|value| [value.min(0.0), value.max(0.0)]);
+        if intervals
+            .iter()
+            .any(|[low, high]| high - low <= document.tolerance().absolute())
+        {
+            return Err(CommandError::Usage(SEL_BOX_USAGE));
+        }
+        let box_region = SelectionBox { frame, intervals };
+        let mut ids = Vec::new();
+        for object in document.selectable_objects() {
+            if let Geometry::PointCloud(cloud) = object.geometry()
+                && cloud.hidden_count() == cloud.points().len()
+            {
+                continue;
+            }
+            let relation = box_region.classify(object.geometry(), document.tolerance())?;
+            if relation.selected(mode) {
+                ids.push(object.id());
+            }
+        }
+        let count = document.select_objects(ids, SelectionMode::Replace)?;
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+fn parse_volume_mode(
+    option: &str,
+    usage: &'static str,
+) -> Result<interface::RectSelectionMode, CommandError> {
+    let value = option
+        .split_once('=')
+        .filter(|(name, _)| {
+            name.trim_start_matches('_')
+                .eq_ignore_ascii_case("SelectionMode")
+        })
+        .map_or(option, |(_, value)| value);
+    interface::RectSelectionMode::parse(value.trim_start_matches('_'))
+        .ok_or(CommandError::Usage(usage))
+}
 
 impl Command for SelVolumeSphereCommand {
     fn name(&self) -> &'static str {
@@ -32,17 +116,7 @@ impl Command for SelVolumeSphereCommand {
         }
         let mode = match &arguments[consumed + 1..] {
             [] => interface::RectSelectionMode::Crossing,
-            [option] => {
-                let value = option
-                    .split_once('=')
-                    .filter(|(name, _)| {
-                        name.trim_start_matches('_')
-                            .eq_ignore_ascii_case("SelectionMode")
-                    })
-                    .map_or(*option, |(_, value)| value);
-                interface::RectSelectionMode::parse(value.trim_start_matches('_'))
-                    .ok_or(CommandError::Usage(SEL_VOLUME_SPHERE_USAGE))?
-            }
+            [option] => parse_volume_mode(option, SEL_VOLUME_SPHERE_USAGE)?,
             _ => return Err(CommandError::Usage(SEL_VOLUME_SPHERE_USAGE)),
         };
         let sphere = SelectionSphere { center, radius };
@@ -54,13 +128,7 @@ impl Command for SelVolumeSphereCommand {
                 continue;
             }
             let relation = sphere.classify(object.geometry(), document.tolerance())?;
-            let selected = match (mode.crossing(true), mode.inverted()) {
-                (false, false) => relation.window,
-                (true, false) => relation.crossing,
-                (false, true) => !relation.crossing,
-                (true, true) => !relation.window,
-            };
-            if selected {
+            if relation.selected(mode) {
                 ids.push(object.id());
             }
         }
@@ -70,12 +138,12 @@ impl Command for SelVolumeSphereCommand {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-struct SphereRelation {
+struct VolumeRelation {
     window: bool,
     crossing: bool,
 }
 
-impl SphereRelation {
+impl VolumeRelation {
     const INSIDE: Self = Self {
         window: true,
         crossing: true,
@@ -84,6 +152,15 @@ impl SphereRelation {
         window: false,
         crossing: false,
     };
+
+    fn selected(self, mode: interface::RectSelectionMode) -> bool {
+        match (mode.crossing(true), mode.inverted()) {
+            (false, false) => self.window,
+            (true, false) => self.crossing,
+            (false, true) => !self.crossing,
+            (true, true) => !self.window,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -108,7 +185,7 @@ impl SelectionSphere {
         self,
         geometry: &Geometry,
         tolerance: Tolerance,
-    ) -> Result<SphereRelation, CommandError> {
+    ) -> Result<VolumeRelation, CommandError> {
         if !matches!(geometry, Geometry::PointCloud(_))
             && let Some(relation) = self.classify_bounds(geometry.bounds())
         {
@@ -116,9 +193,9 @@ impl SelectionSphere {
         }
         match geometry {
             Geometry::Point(point) => Ok(if self.contains(*point) {
-                SphereRelation::INSIDE
+                VolumeRelation::INSIDE
             } else {
-                SphereRelation::OUTSIDE
+                VolumeRelation::OUTSIDE
             }),
             Geometry::PointCloud(cloud) => self.classify_points(
                 cloud
@@ -150,7 +227,7 @@ impl SelectionSphere {
 
     /// A bounding box entirely in or disjoint from the sphere settles the
     /// classification without sampling the object's representation.
-    fn classify_bounds(self, bounds: BoundingBox3) -> Option<SphereRelation> {
+    fn classify_bounds(self, bounds: BoundingBox3) -> Option<VolumeRelation> {
         let center = self.center.to_array();
         let min = bounds.min().to_array();
         let max = bounds.max().to_array();
@@ -170,9 +247,9 @@ impl SelectionSphere {
         }
         let norm = |v: [Real; 3]| v[0].hypot(v[1]).hypot(v[2]);
         if norm(nearest) > self.radius {
-            Some(SphereRelation::OUTSIDE)
+            Some(VolumeRelation::OUTSIDE)
         } else if norm(farthest) <= self.radius {
-            Some(SphereRelation::INSIDE)
+            Some(VolumeRelation::INSIDE)
         } else {
             None
         }
@@ -181,7 +258,7 @@ impl SelectionSphere {
     fn classify_points(
         self,
         points: impl IntoIterator<Item = Point3>,
-    ) -> Result<SphereRelation, CommandError> {
+    ) -> Result<VolumeRelation, CommandError> {
         let mut any = false;
         let mut window = true;
         let mut crossing = false;
@@ -191,17 +268,17 @@ impl SelectionSphere {
             window &= inside;
             crossing |= inside;
         }
-        Ok(SphereRelation {
+        Ok(VolumeRelation {
             window: any && window,
             crossing,
         })
     }
 
-    fn classify_segment(self, start: Point3, end: Point3) -> Result<SphereRelation, CommandError> {
+    fn classify_segment(self, start: Point3, end: Point3) -> Result<VolumeRelation, CommandError> {
         let start_inside = self.contains(start);
         let end_inside = self.contains(end);
         if start_inside && end_inside {
-            return Ok(SphereRelation::INSIDE);
+            return Ok(VolumeRelation::INSIDE);
         }
         let a = start.to_array();
         let b = end.to_array();
@@ -262,13 +339,13 @@ impl SelectionSphere {
             (1.0 - t).mul_add(a[1], t * b[1]),
             (1.0 - t).mul_add(a[2], t * b[2]),
         )?;
-        Ok(SphereRelation {
+        Ok(VolumeRelation {
             window: false,
             crossing: start_inside || end_inside || self.contains(closest),
         })
     }
 
-    fn classify_polyline(self, points: &[Point3]) -> Result<SphereRelation, CommandError> {
+    fn classify_polyline(self, points: &[Point3]) -> Result<VolumeRelation, CommandError> {
         let vertices = self.classify_points(points.iter().copied())?;
         if vertices.window || points.len() < 2 {
             return Ok(vertices);
@@ -280,13 +357,13 @@ impl SelectionSphere {
                 break;
             }
         }
-        Ok(SphereRelation {
+        Ok(VolumeRelation {
             window: false,
             crossing,
         })
     }
 
-    fn classify_circle(self, circle: Circle3) -> Result<SphereRelation, CommandError> {
+    fn classify_circle(self, circle: Circle3) -> Result<VolumeRelation, CommandError> {
         let center = self.center.to_array();
         let origin = circle.center().to_array();
         let offset = [
@@ -300,7 +377,7 @@ impl SelectionSphere {
         };
         let planar = dot(circle.x_axis()).hypot(dot(circle.y_axis()));
         let height = dot(circle.normal()?).abs();
-        Ok(SphereRelation {
+        Ok(VolumeRelation {
             window: height.hypot(planar + circle.radius()) <= self.radius,
             crossing: height.hypot((planar - circle.radius()).abs()) <= self.radius,
         })
@@ -309,30 +386,394 @@ impl SelectionSphere {
     fn classify_mesh(
         self,
         mesh: &viboceros_geometry::TriangleMesh,
-    ) -> Result<SphereRelation, CommandError> {
+    ) -> Result<VolumeRelation, CommandError> {
         let vertices = self.classify_points(mesh.vertices().iter().copied())?;
         if vertices.window || vertices.crossing {
             return Ok(vertices);
         }
         for index in 0..mesh.faces().len() {
             if self.contains(mesh.closest_point_on_face(index, self.center)?) {
-                return Ok(SphereRelation {
+                return Ok(VolumeRelation {
                     window: false,
                     crossing: true,
                 });
             }
         }
-        Ok(SphereRelation::OUTSIDE)
+        Ok(VolumeRelation::OUTSIDE)
+    }
+}
+
+#[derive(Clone, Copy)]
+struct SelectionBox {
+    frame: Frame3,
+    intervals: [[Real; 2]; 3],
+}
+
+impl SelectionBox {
+    fn contains_local(self, point: [Real; 3]) -> bool {
+        point
+            .into_iter()
+            .zip(self.intervals)
+            .all(|(value, [low, high])| low <= value && value <= high)
+    }
+
+    fn contains(self, point: Point3) -> Result<bool, CommandError> {
+        Ok(self.contains_local(self.frame.coordinates_of(point)?))
+    }
+
+    fn classify_bounds(self, bounds: BoundingBox3) -> Option<VolumeRelation> {
+        let min = bounds.min().to_array();
+        let max = bounds.max().to_array();
+        let mut local_min = [Real::INFINITY; 3];
+        let mut local_max = [Real::NEG_INFINITY; 3];
+        for x in [min[0], max[0]] {
+            for y in [min[1], max[1]] {
+                for z in [min[2], max[2]] {
+                    let point = Point3::try_new(x, y, z).ok()?;
+                    let local = self.frame.coordinates_of(point).ok()?;
+                    for axis in 0..3 {
+                        local_min[axis] = local_min[axis].min(local[axis]);
+                        local_max[axis] = local_max[axis].max(local[axis]);
+                    }
+                }
+            }
+        }
+        if (0..3).any(|axis| {
+            local_min[axis] > self.intervals[axis][1] || local_max[axis] < self.intervals[axis][0]
+        }) {
+            Some(VolumeRelation::OUTSIDE)
+        } else if (0..3).all(|axis| {
+            local_min[axis] >= self.intervals[axis][0] && local_max[axis] <= self.intervals[axis][1]
+        }) {
+            Some(VolumeRelation::INSIDE)
+        } else {
+            None
+        }
+    }
+
+    fn classify(
+        self,
+        geometry: &Geometry,
+        tolerance: Tolerance,
+    ) -> Result<VolumeRelation, CommandError> {
+        if !matches!(geometry, Geometry::PointCloud(_))
+            && let Some(relation) = self.classify_bounds(geometry.bounds())
+        {
+            return Ok(relation);
+        }
+        match geometry {
+            Geometry::Point(point) => Ok(if self.contains(*point)? {
+                VolumeRelation::INSIDE
+            } else {
+                VolumeRelation::OUTSIDE
+            }),
+            Geometry::PointCloud(cloud) => self.classify_points(
+                cloud
+                    .points()
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, point)| (!cloud.is_hidden(i)).then_some(*point)),
+            ),
+            Geometry::Line(line) => self.classify_segment(line.start(), line.end()),
+            Geometry::Polyline(polyline) => self.classify_polyline(polyline.vertices()),
+            Geometry::Mesh(mesh) => self.classify_mesh(mesh),
+            Geometry::NurbsSurface(surface) => {
+                self.classify_mesh(&surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
+            }
+            Geometry::Brep(brep) => {
+                self.classify_mesh(&brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)?)
+            }
+            Geometry::Circle(_)
+            | Geometry::Arc(_)
+            | Geometry::Ellipse(_)
+            | Geometry::NurbsCurve(_)
+            | Geometry::PolyCurve(_) => {
+                let curve = geometry.curve_ref().expect("curve geometry");
+                let points = curve.sample_equal_length_points(CURVE_SAMPLES, true, tolerance)?;
+                self.classify_polyline(&points)
+            }
+        }
+    }
+
+    fn classify_points(
+        self,
+        points: impl IntoIterator<Item = Point3>,
+    ) -> Result<VolumeRelation, CommandError> {
+        let mut any = false;
+        let mut window = true;
+        let mut crossing = false;
+        for point in points {
+            any = true;
+            let inside = self.contains(point)?;
+            window &= inside;
+            crossing |= inside;
+        }
+        Ok(VolumeRelation {
+            window: any && window,
+            crossing,
+        })
+    }
+
+    fn classify_segment(self, start: Point3, end: Point3) -> Result<VolumeRelation, CommandError> {
+        let a = self.frame.coordinates_of(start)?;
+        let b = self.frame.coordinates_of(end)?;
+        let window = self.contains_local(a) && self.contains_local(b);
+        if window {
+            return Ok(VolumeRelation::INSIDE);
+        }
+        let mut entering: Real = 0.0;
+        let mut leaving: Real = 1.0;
+        for axis in 0..3 {
+            let [low, high] = self.intervals[axis];
+            let direct = [b[axis] - a[axis], low - a[axis], high - a[axis]];
+            let (start, direction, low, high) = if direct.iter().all(|value| value.is_finite()) {
+                (a[axis], direct[0], low, high)
+            } else {
+                let scale = [a[axis], b[axis], low, high]
+                    .into_iter()
+                    .map(Real::abs)
+                    .fold(0.0, Real::max);
+                (
+                    a[axis] / scale,
+                    b[axis] / scale - a[axis] / scale,
+                    low / scale,
+                    high / scale,
+                )
+            };
+            if direction == 0.0 {
+                if start < low || start > high {
+                    return Ok(VolumeRelation::OUTSIDE);
+                }
+                continue;
+            }
+            let first = (low - start) / direction;
+            let second = (high - start) / direction;
+            entering = entering.max(first.min(second));
+            leaving = leaving.min(first.max(second));
+            if entering > leaving {
+                return Ok(VolumeRelation::OUTSIDE);
+            }
+        }
+        Ok(VolumeRelation {
+            window: false,
+            crossing: entering <= leaving,
+        })
+    }
+
+    fn classify_polyline(self, points: &[Point3]) -> Result<VolumeRelation, CommandError> {
+        let vertices = self.classify_points(points.iter().copied())?;
+        if vertices.window || points.len() < 2 {
+            return Ok(vertices);
+        }
+        let mut crossing = vertices.crossing;
+        for pair in points.windows(2) {
+            crossing |= self.classify_segment(pair[0], pair[1])?.crossing;
+            if crossing {
+                break;
+            }
+        }
+        Ok(VolumeRelation {
+            window: false,
+            crossing,
+        })
+    }
+
+    fn classify_mesh(
+        self,
+        mesh: &viboceros_geometry::TriangleMesh,
+    ) -> Result<VolumeRelation, CommandError> {
+        let vertices = self.classify_points(mesh.vertices().iter().copied())?;
+        if vertices.window || vertices.crossing {
+            return Ok(vertices);
+        }
+        for index in 0..mesh.triangles().len() {
+            let Some(points) = mesh.triangle_points(index) else {
+                continue;
+            };
+            let triangle = [
+                self.frame.coordinates_of(points[0])?,
+                self.frame.coordinates_of(points[1])?,
+                self.frame.coordinates_of(points[2])?,
+            ];
+            if self.triangle_crosses(triangle) {
+                return Ok(VolumeRelation {
+                    window: false,
+                    crossing: true,
+                });
+            }
+        }
+        Ok(VolumeRelation::OUTSIDE)
+    }
+
+    fn triangle_crosses(self, triangle: [[Real; 3]; 3]) -> bool {
+        let mut polygon = triangle.to_vec();
+        for axis in 0..3 {
+            for (bound, lower) in [
+                (self.intervals[axis][0], true),
+                (self.intervals[axis][1], false),
+            ] {
+                if polygon.is_empty() {
+                    return false;
+                }
+                let mut clipped = Vec::new();
+                let mut previous = *polygon.last().unwrap();
+                let mut previous_inside = if lower {
+                    previous[axis] >= bound
+                } else {
+                    previous[axis] <= bound
+                };
+                for &current in &polygon {
+                    let current_inside = if lower {
+                        current[axis] >= bound
+                    } else {
+                        current[axis] <= bound
+                    };
+                    if previous_inside != current_inside {
+                        let t = (bound - previous[axis]) / (current[axis] - previous[axis]);
+                        let mut intersection = [0.0; 3];
+                        for coordinate in 0..3 {
+                            intersection[coordinate] = previous[coordinate]
+                                + t * (current[coordinate] - previous[coordinate]);
+                        }
+                        intersection[axis] = bound;
+                        clipped.push(intersection);
+                    }
+                    if current_inside {
+                        clipped.push(current);
+                    }
+                    previous = current;
+                    previous_inside = current_inside;
+                }
+                polygon = clipped;
+            }
+        }
+        !polygon.is_empty()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{LineSegment, PointCloud3, TriangleMesh, UnitVector3};
+    use viboceros_geometry::{LineSegment, PointCloud3, TriangleMesh, UnitVector3, Vector3};
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn sel_box_classifies_points_segments_and_faces_in_all_modes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let inside = document
+            .add_geometry(Geometry::Point(p(1.0, 1.0, 1.0)))
+            .unwrap();
+        let outside = document
+            .add_geometry(Geometry::Point(p(3.0, 1.0, 1.0)))
+            .unwrap();
+        let crossing = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(-1.0, 1.0, 1.0), p(3.0, 1.0, 1.0), Tolerance::DEFAULT)
+                    .unwrap(),
+            ))
+            .unwrap();
+        let face = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![p(-5.0, -5.0, 1.0), p(5.0, -5.0, 1.0), p(0.0, 5.0, 1.0)],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![p(1.0, 1.0, 1.0)])
+                    .unwrap()
+                    .with_hidden(vec![true])
+                    .unwrap(),
+            ))
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for (mode, expected) in [
+            ("Window", vec![inside]),
+            ("Crossing", vec![inside, crossing, face]),
+            ("InvertWindow", vec![outside]),
+            ("InvertCrossing", vec![outside, crossing, face]),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("SelBox 0,0,0 2,2,0 2 SelectionMode={mode}"),
+                )
+                .unwrap();
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                expected.into_iter().collect(),
+                "{mode}",
+            );
+        }
+        registry
+            .execute(&mut document, "SelBox 0,0,2 2,2,2 -2")
+            .unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([inside, crossing, face])
+        );
+        registry
+            .execute(
+                &mut document,
+                "SelBox 0,0,0 2,2,0 2 SelectionMode=InvertCrossing",
+            )
+            .unwrap();
+        for input in [
+            "SelBox 0,0,0 2,2,0",
+            "SelBox 0,0,0 2,2,0 0",
+            "SelBox 0,0,0 0,2,0 2",
+            "SelBox 0,0,0 2,2,0 2 SelectionMode=Nope",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                BTreeSet::from([outside, crossing, face]),
+                "{input}",
+            );
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
+    fn sel_box_uses_active_construction_plane_and_height_point() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let inside = document
+            .add_geometry(Geometry::Point(p(1.0, 1.0, 1.0)))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(p(-1.0, 1.0, 1.0)))
+            .unwrap();
+        let context = CommandContext {
+            construction_plane: Frame3::try_from_directions(
+                p(0.0, 0.0, 0.0),
+                Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        };
+        registry
+            .execute_in_context(
+                &mut document,
+                "SelBox 0,0,0 0,2,2 2,0,0 SelectionMode=Window",
+                context,
+            )
+            .unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            vec![inside]
+        );
     }
 
     #[test]
@@ -386,7 +827,7 @@ mod tests {
         );
         assert_eq!(
             sphere.classify(&tangent, Tolerance::DEFAULT).unwrap(),
-            SphereRelation {
+            VolumeRelation {
                 window: false,
                 crossing: true,
             }
@@ -402,7 +843,7 @@ mod tests {
         );
         assert_eq!(
             sphere.classify(&mesh, Tolerance::DEFAULT).unwrap(),
-            SphereRelation {
+            VolumeRelation {
                 window: false,
                 crossing: true,
             }
@@ -423,7 +864,7 @@ mod tests {
             sphere
                 .classify(&Geometry::PointCloud(cloud), Tolerance::DEFAULT)
                 .unwrap(),
-            SphereRelation::OUTSIDE
+            VolumeRelation::OUTSIDE
         );
     }
 

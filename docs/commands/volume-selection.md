@@ -1,4 +1,20 @@
-# Sphere volume selection
+# Box and sphere volume selection
+
+`SelBox [base-corner opposite-base-corner height] [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
+selects against a three dimensional box aligned to the active construction
+plane. Enter it without coordinates to pick the two opposite base corners and a
+height point. Typed height may be a signed distance or a point. For example:
+
+```text
+SelBox 0,0,0 5,4,0 3 SelectionMode=Crossing
+```
+
+The box checks points and line segments directly, clips mesh triangles against
+the six box planes, and samples curved geometry as described below. Rhino's
+[SelBox](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelBox)
+also uses point samples and warns that it may miss some crossing objects.
+
+## Sphere
 
 `SelVolumeSphere [center radius] [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]`
 selects objects against a sphere in model coordinates. Enter the command without
@@ -15,11 +31,11 @@ intersections. InvertWindow selects objects wholly outside; InvertCrossing
 also includes partial intersections. Hidden and locked objects are skipped,
 and the command does not create geometry or change undo history.
 
-Points, line segments, circles, polylines, and mesh faces use direct geometric
-checks. Other curves use 128 equal-length segments, and surfaces and B-reps
-use 16 tessellation samples per span. Near tangencies on those sampled objects
-may differ from exact Rhino selection. While picking points, enter a
-`SelectionMode` option to change the mode.
+The sphere checks points, line segments, circles, polylines, and mesh faces
+directly. For both commands, other curves use 128 equal-length segments, and
+surfaces and B-reps use 16 tessellation samples per span. Near tangencies on
+those sampled objects may differ from exact Rhino selection. While picking
+points, enter a `SelectionMode` option to change the mode.
 
 This follows Rhino's
 [SelVolumeSphere](https://docs.mcneel.com/rhino/8/help/en-us/commands/selection_commands.htm#SelVolumeSphere)

@@ -273,6 +273,11 @@ enum InteractiveCommand {
         base: Option<Point3>,
         opposite: Option<Point3>,
     },
+    SelBox {
+        base: Option<Point3>,
+        opposite: Option<Point3>,
+        mode: RectSelectionMode,
+    },
     PointGrid {
         base: Option<Point3>,
         opposite: Option<Point3>,
@@ -501,6 +506,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
+            Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
@@ -774,6 +780,15 @@ impl InteractiveCommand {
             Self::Box {
                 opposite: Some(_), ..
             } => "Box: pick a height point (Esc to cancel)",
+            Self::SelBox { base: None, .. } => "SelBox: pick the first base corner (Esc to cancel)",
+            Self::SelBox {
+                base: Some(_),
+                opposite: None,
+                ..
+            } => "SelBox: pick the opposite base corner (Esc to cancel)",
+            Self::SelBox {
+                opposite: Some(_), ..
+            } => "SelBox: pick a height point (Esc to cancel)",
             Self::MeshCone { center: None, .. } => {
                 "MeshCone: pick the base center in the viewport (Esc to cancel)"
             }
@@ -1128,6 +1143,7 @@ impl InteractiveCommand {
             | Self::InterpCrv { .. }
             | Self::Rectangle { first: None }
             | Self::Box { base: None, .. }
+            | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
@@ -1199,6 +1215,7 @@ impl InteractiveCommand {
             | Self::SelVolumeSphere { center: start, .. }
             | Self::Rectangle { first: start }
             | Self::Box { base: start, .. }
+            | Self::SelBox { base: start, .. }
             | Self::PointGrid { base: start, .. }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
@@ -3169,7 +3186,7 @@ impl VibocerosApp {
                 rotate,
                 z_offset,
             }
-        } else if normalized == "selvolumesphere" {
+        } else if matches!(normalized.as_str(), "selvolumesphere" | "selbox") {
             let mode = match arguments.as_slice() {
                 [] => RectSelectionMode::Crossing,
                 [option] => {
@@ -3189,7 +3206,15 @@ impl VibocerosApp {
                 }
                 _ => return false,
             };
-            InteractiveCommand::SelVolumeSphere { center: None, mode }
+            if normalized == "selbox" {
+                InteractiveCommand::SelBox {
+                    base: None,
+                    opposite: None,
+                    mode,
+                }
+            } else {
+                InteractiveCommand::SelVolumeSphere { center: None, mode }
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -3999,7 +4024,14 @@ impl VibocerosApp {
                 ..
             } => unreachable!("mesh-box opposite corner requires a base corner"),
             InteractiveCommand::Box { base, opposite } => {
-                return self.apply_box_point(plane, base, opposite, point);
+                return self.apply_box_point(plane, base, opposite, point, None);
+            }
+            InteractiveCommand::SelBox {
+                base,
+                opposite,
+                mode,
+            } => {
+                return self.apply_box_point(plane, base, opposite, point, Some(mode));
             }
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);

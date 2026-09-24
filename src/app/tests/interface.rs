@@ -536,6 +536,43 @@ fn volume_sphere_picks_model_points_and_accepts_mode_changes() {
 }
 
 #[test]
+fn sel_box_picks_base_and_height_without_creating_geometry() {
+    let mut app = test_app();
+    enter(&mut app, "Point 1,1,1");
+    enter(&mut app, "Point 4,1,1");
+    let inside = app.document.objects().next().unwrap().id();
+    let original = app.document.objects().cloned().collect::<Vec<_>>();
+    let undo = app.document.undo_label().map(str::to_owned);
+    enter(&mut app, "SelBox SelectionMode=InvertWindow");
+    for coordinates in [(0.0, 0.0, 0.0), (2.0, 2.0, 0.0)] {
+        assert!(app.accept_drafting_point(
+            Point3::try_new(coordinates.0, coordinates.1, coordinates.2).unwrap()
+        ));
+    }
+    app.command_input = "SelectionMode=Window".into();
+    app.run_command_input();
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::SelBox {
+            opposite: Some(_),
+            mode: RectSelectionMode::Window,
+            ..
+        })
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(0.0, 0.0, 2.0).unwrap()));
+    assert!(app.active_command.is_none());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![inside]
+    );
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        original
+    );
+    assert_eq!(app.document.undo_label(), undo.as_deref());
+}
+
+#[test]
 fn typed_window_commands_force_mode_for_one_drag_and_preserve_model_history() {
     let mut app = test_app();
     enter(&mut app, "Point 0,0,0");
