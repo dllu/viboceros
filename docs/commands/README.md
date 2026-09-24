@@ -91,6 +91,7 @@ Cap DeleteInput=No Crease=No Triangles=No
 Loft Type=Normal Closed=No
 Sweep1 RailName=Rail Parameters=0 RefitRail=No
 Pipe 1.5 2.0 Cap=Flat ShapeBlending=Global
+Pipe 1 WallThickness=0.25 Cap=Flat
 EdgeSrf
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2

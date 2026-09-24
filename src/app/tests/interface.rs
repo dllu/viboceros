@@ -670,6 +670,52 @@ fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
         app.document.objects().last().unwrap().geometry(),
         Geometry::Brep(brep) if brep.is_closed()
     ));
+
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Pipe Cap=Flat Thick=Yes WallThickness=0.2");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            source: Some(id),
+            wall_thickness: Some(thickness),
+            ..
+        }) if id == source && thickness == 0.2
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Brep(brep) if brep.is_closed() && brep.faces().len() == 4
+    ));
+
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Pipe Thick=Yes");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            source: Some(id),
+            pick_second_radius: true,
+            first_radius: None,
+            ..
+        }) if id == source
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            first_radius: Some(radius),
+            ..
+        }) if radius == 1.0
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1.2, 0.).unwrap()));
+    assert!(app.active_command.is_none());
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Brep(brep) if brep.is_closed() && brep.faces().len() == 4
+    ));
 }
 
 #[test]

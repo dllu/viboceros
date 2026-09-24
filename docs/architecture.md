@@ -14,7 +14,8 @@ surface boundary points, and uses retried ray parity for interior tests. Volume
 object selection uses that query for mesh and tessellated B-rep sources.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
-hole capping closes the swept ends when requested.
+hole capping closes the swept ends when requested. Thick pipes combine outer
+and reversed inner walls before planar annulus capping.
 Its [compact exact-product fallback](compact-exact-products.md) selects bounded
 integer windows without weakening rounding or full-range recovery.
 

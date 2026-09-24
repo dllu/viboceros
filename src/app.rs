@@ -261,6 +261,9 @@ enum InteractiveCommand {
         source: Option<ObjectId>,
         cap_flat: bool,
         blend_global: bool,
+        wall_thickness: Option<f64>,
+        pick_second_radius: bool,
+        first_radius: Option<f64>,
     },
     Ellipsoid {
         points: [Option<Point3>; 3],
@@ -681,6 +684,16 @@ impl InteractiveCommand {
                 "SelVolumeObject: select a closed mesh or polysurface (Esc to cancel)"
             }
             Self::Pipe { source: None, .. } => "Pipe: select a rail curve (Esc to cancel)",
+            Self::Pipe {
+                source: Some(_),
+                first_radius: Some(_),
+                ..
+            } => "Pipe: pick the second radius point near the rail (Esc to cancel)",
+            Self::Pipe {
+                source: Some(_),
+                pick_second_radius: true,
+                ..
+            } => "Pipe: pick the first radius point near the rail (Esc to cancel)",
             Self::Pipe {
                 source: Some(_), ..
             } => "Pipe: pick a radius point near the rail (Esc to cancel)",
@@ -2691,6 +2704,8 @@ impl VibocerosApp {
             let mut blend_global = false;
             let mut cap_seen = false;
             let mut blend_seen = false;
+            let mut thick = None;
+            let mut wall_thickness = None;
             for argument in &arguments {
                 let Some((name, value)) = argument.split_once('=') else {
                     return false;
@@ -2717,10 +2732,36 @@ impl VibocerosApp {
                         return false;
                     };
                     blend_seen = true;
+                } else if name.trim_start_matches('_').eq_ignore_ascii_case("Thick")
+                    && thick.is_none()
+                {
+                    thick = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                        Some(true)
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                        Some(false)
+                    } else {
+                        return false;
+                    };
+                } else if name
+                    .trim_start_matches('_')
+                    .eq_ignore_ascii_case("WallThickness")
+                    && wall_thickness.is_none()
+                {
+                    let Ok(value) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !value.is_finite() || value == 0.0 {
+                        return false;
+                    }
+                    wall_thickness = Some(value);
                 } else {
                     return false;
                 }
             }
+            if thick == Some(false) && wall_thickness.is_some() {
+                return false;
+            }
+            let pick_second_radius = thick == Some(true) && wall_thickness.is_none();
             let selected = self
                 .document
                 .selected_object_ids()
@@ -2741,6 +2782,9 @@ impl VibocerosApp {
                 source,
                 cap_flat,
                 blend_global,
+                wall_thickness,
+                pick_second_radius,
+                first_radius: None,
             }
         } else if matches!(
             normalized.as_str(),
@@ -3741,6 +3785,9 @@ impl VibocerosApp {
                 source: Some(source),
                 cap_flat,
                 blend_global,
+                wall_thickness,
+                pick_second_radius,
+                first_radius,
             } => {
                 let radius = self
                     .document
@@ -3757,11 +3804,41 @@ impl VibocerosApp {
                     self.push_log("Error: pipe radius must be positive".to_owned());
                     return false;
                 };
+                if pick_second_radius && first_radius.is_none() {
+                    let command = InteractiveCommand::Pipe {
+                        source: Some(source),
+                        cap_flat,
+                        blend_global,
+                        wall_thickness,
+                        pick_second_radius,
+                        first_radius: Some(radius),
+                    };
+                    self.active_command = Some(command);
+                    self.push_log(command.prompt().to_owned());
+                    return true;
+                }
+                let start_radius = first_radius.unwrap_or(radius);
+                let wall_thickness = if pick_second_radius {
+                    Some(radius - start_radius)
+                } else {
+                    wall_thickness
+                };
+                if wall_thickness
+                    .is_some_and(|thickness| thickness == 0.0 || start_radius + thickness <= 0.0)
+                {
+                    self.push_log(
+                        "Error: second pipe radius must be positive and distinct".to_owned(),
+                    );
+                    return false;
+                }
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "Pipe {source} {radius} Cap={} ShapeBlending={}",
+                    "Pipe {source} {start_radius} Cap={} ShapeBlending={}{}",
                     if cap_flat { "Flat" } else { "None" },
-                    if blend_global { "Global" } else { "Local" }
+                    if blend_global { "Global" } else { "Local" },
+                    wall_thickness.map_or_else(String::new, |thickness| {
+                        format!(" WallThickness={thickness}")
+                    })
                 ));
             }
             InteractiveCommand::Ellipsoid { mut points } => {
@@ -5513,6 +5590,9 @@ impl VibocerosApp {
             source: None,
             cap_flat,
             blend_global,
+            wall_thickness,
+            pick_second_radius,
+            first_radius,
         }) = self.active_command
         {
             if let Some(source) = click.object_id
@@ -5526,6 +5606,9 @@ impl VibocerosApp {
                     source: Some(source),
                     cap_flat,
                     blend_global,
+                    wall_thickness,
+                    pick_second_radius,
+                    first_radius,
                 };
                 self.active_command = Some(command);
                 self.push_log(command.prompt().to_owned());
