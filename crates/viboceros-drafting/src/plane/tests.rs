@@ -92,6 +92,34 @@ fn projected_anchor_capture_does_not_require_unrepresentable_axis_candidates() {
 }
 
 #[test]
+fn projected_tracking_checks_the_other_axis_when_one_point_overflows() {
+    let plane = Frame3::try_from_directions(
+        point(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+        Vector3::try_new(-1.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let anchor = point(1.5e308, 0.0, 0.0);
+    let frame = plane.with_origin(anchor);
+    let cursor = point(1.5e308, 2.0_f64.sqrt() * 1e308, 0.0);
+    let [x, y, _] = frame.coordinates_of(cursor).unwrap();
+    assert!(frame.point_at([x, 0.0, 0.0]).is_err());
+    let expected = frame.point_at([0.0, y, 0.0]).unwrap();
+    let tracked = orthogonal_track_projected(cursor, anchor, plane, [10.0, 20.0], 1.0, |point| {
+        if point == expected {
+            Some([10.0, 20.0])
+        } else {
+            Some([100.0, 100.0])
+        }
+    })
+    .unwrap()
+    .unwrap();
+    assert_eq!(tracked.axis(), TrackAxis::Vertical);
+    assert_eq!(tracked.point(), expected);
+}
+
+#[test]
 fn fine_grid_spacing_does_not_overflow_a_finite_coordinate() {
     let plane = Frame3::try_from_directions(
         point(0.0, 0.0, 0.0),

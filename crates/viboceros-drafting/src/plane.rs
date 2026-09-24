@@ -172,11 +172,15 @@ pub fn orthogonal_track_projected(
     let [x, y, _] = frame.coordinates_of(cursor)?;
     let mut best = None;
     let mut best_distance = capture_radius;
-    // Otherwise the closer local axis wins (X on ties).
-    for (point, axis) in [
-        (frame.point_at([x, 0., 0.])?, TrackAxis::Horizontal),
-        (frame.point_at([0., y, 0.])?, TrackAxis::Vertical),
+    // Otherwise the closer local axis wins (X on ties). One candidate can
+    // overflow world coordinates even when the other remains representable.
+    for (coordinates, axis) in [
+        ([x, 0., 0.], TrackAxis::Horizontal),
+        ([0., y, 0.], TrackAxis::Vertical),
     ] {
+        let Ok(point) = frame.point_at(coordinates) else {
+            continue;
+        };
         if let Some(screen) = project(point) {
             let distance = (screen[0] - pointer[0]).hypot(screen[1] - pointer[1]);
             if distance.is_finite()
