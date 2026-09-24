@@ -198,6 +198,8 @@ The supported forms follow [Rhino's coordinate-entry documentation](https://docs
 | `5,6<15` | Horizontal X/Y and spherical elevation angle; Z is `hypot(5,6) * tan(15°)` |
 | `5/16,1-3/4` | Fraction and mixed-fraction coordinates |
 | `2*(3+4),8/2` | Arithmetic expressions with parentheses |
+| `27cm,1m` | Length suffixes converted to the document's model units |
+| `1'2-3/4",1/2in` | Feet-and-inches and fractional inches |
 
 Prefixes are case-insensitive and also apply to polar/spherical inputs. Angles
 are decimal degrees. Coordinates contain no internal whitespace. For example,
@@ -248,8 +250,19 @@ headless point prompt, so function calls are rejected in native angle fields
 too. The [failed prompt transcript](../tools/rhino_oracle/observations/point_input_angle_function_diagnostic.txt)
 is retained; other calculator expressions in angle fields remain unverified.
 
+Typed points accept `mm`, `cm`, `m`, `in`, and `ft`, their common English names,
+and feet/inches quote notation. Their values are converted using the model-unit
+setting at entry; existing geometry follows the `Units` command's `Scale` choice. The
+`point_input_length_units.json` fixture compares actual Rhino point prompts in
+millimeter, meter, and inch documents, plus fractional inches and mixed feet
+and inches. All four sequences replay within `1e-12` model units.
+Rhino rejected `1m+20,0` and `1m+20cm,0` in the point prompt; native input also
+rejects arithmetic directly after a length suffix. The [failed transcripts](../tools/rhino_oracle/observations/point_input_length_expression_diagnostic.txt)
+remain separate from the passing unit fixtures. Other unit names and compound
+unit expressions remain incomplete.
+
 Not yet implemented: general scalar distance/angle
-constraints, length-unit expressions, surveyor/DMS notation, and
+constraints, comprehensive length-unit aliases, surveyor/DMS notation, and
 editing other command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.
 

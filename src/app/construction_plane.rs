@@ -196,7 +196,7 @@ impl VibocerosApp {
             }
             return true;
         }
-        let point = PointInput::parse(input)
+        let point = PointInput::parse_with_units(input, self.document.units())
             .ok_or(PlaneCommandError::Usage)
             .and_then(|p| p.map_err(PlaneCommandError::from))
             .and_then(|p| {

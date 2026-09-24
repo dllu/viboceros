@@ -1245,6 +1245,7 @@ fn invalid_typed_points_preserve_the_draft_last_point_and_editable_input() {
         "sqrt(-1),0",
         "atan2(1,),0",
         "w5<sin(30degrees)",
+        "1m+20,0",
     ] {
         enter(&mut app, input);
         assert_eq!(app.active_command, active);
@@ -1316,6 +1317,25 @@ fn unit_scale_changes_invalidate_old_relative_point_references() {
         enter(&mut app, input);
     }
     assert_eq!(app.last_point, None);
+}
+
+#[test]
+fn typed_length_suffixes_follow_document_unit_changes() {
+    let mut app = test_app();
+    for (unit_command, endpoint, expected) in [
+        ("Units Meters Scale=No", "27cm,1m", [0.27, 1.0, 0.0]),
+        ("Units Inches Scale=No", "2in,3ft", [2.0, 36.0, 0.0]),
+    ] {
+        for input in [unit_command, "Line", "0", endpoint] {
+            enter(&mut app, input);
+        }
+        let Geometry::Line(line) = app.document.objects().last().unwrap().geometry() else {
+            panic!("line");
+        };
+        for (actual, target) in line.end().to_array().into_iter().zip(expected) {
+            assert!((actual - target).abs() < 1e-12, "{endpoint}");
+        }
+    }
 }
 
 #[test]

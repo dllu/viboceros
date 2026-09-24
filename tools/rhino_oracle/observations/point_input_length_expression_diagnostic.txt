@@ -1,0 +1,17 @@
+Rhino 8.32.26160.13001, private Xvfb, millimeter model units
+
+point_input_length_expression_diagnostic.json:
+Command: _Polyline
+Start of polyline ( PersistentClose=No ): 0
+Next point of polyline ( PersistentClose=No  Mode=Line  Helpers=No  Undo ): 1m+20cm,0
+Unknown command: 1m+20cm,0
+
+point_input_length_scalar_diagnostic.json:
+Command: _Polyline
+Start of polyline ( PersistentClose=No ): 0
+Next point of polyline ( PersistentClose=No  Mode=Line  Helpers=No  Undo ): 1m+20,0
+Unknown command: 1m+20,0
+
+Both probes were bounded Polyline point-entry macros. They did not produce a
+point-input response; the worker canceled the incomplete command and cleaned
+up its owned objects, selection, construction plane, and model-unit setting.

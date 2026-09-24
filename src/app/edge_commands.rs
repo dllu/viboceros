@@ -183,7 +183,9 @@ impl VibocerosApp {
                         }),
                         Err(error) => self.push_log(format!("Error: {error}")),
                     }
-                } else if let Some(point) = viboceros_drafting::PointInput::parse(input) {
+                } else if let Some(point) =
+                    viboceros_drafting::PointInput::parse_with_units(input, self.document.units())
+                {
                     match point.and_then(|p| {
                         p.resolve(
                             self.viewports[self.active_viewport].construction_plane(),

@@ -17,6 +17,16 @@ fn resolve(input: &str, previous: Option<Point3>) -> Result<Point3, PointInputEr
         .resolve(plane(), previous)
 }
 
+fn resolve_in_units(
+    input: &str,
+    units: &LengthUnitSystem,
+    previous: Option<Point3>,
+) -> Result<Point3, PointInputError> {
+    PointInput::parse_with_units(input, units)
+        .unwrap()?
+        .resolve(plane(), previous)
+}
+
 #[test]
 fn cartesian_prefixes_respect_world_plane_and_previous_point() {
     let previous = Some(Point3::try_new(5.0, 6.0, 7.0).unwrap());
@@ -180,6 +190,29 @@ fn functions_constants_and_units_resolve_in_coordinate_components() {
     assert_eq!(
         resolve("w5<sin(30degrees)", None),
         Err(PointInputError::Syntax)
+    );
+}
+
+#[test]
+fn explicit_length_units_follow_the_active_model_units() {
+    for (units, expected) in [
+        (LengthUnitSystem::Millimeters, [270.0, 1000.0, 0.0]),
+        (LengthUnitSystem::Meters, [0.27, 1.0, 0.0]),
+        (LengthUnitSystem::Inches, [270.0 / 25.4, 1000.0 / 25.4, 0.0]),
+    ] {
+        let actual = resolve_in_units("w27cm,1m", &units, None)
+            .unwrap()
+            .to_array();
+        for (coordinate, target) in actual.into_iter().zip(expected) {
+            assert!((coordinate - target).abs() < 1e-12, "{units:?}: {actual:?}");
+        }
+    }
+    let feet = resolve_in_units("w1'2-3/4\",1/2in", &LengthUnitSystem::Millimeters, None).unwrap();
+    assert!((feet.x() - 374.65).abs() < 1e-12);
+    assert!((feet.y() - 12.7).abs() < 1e-12);
+    assert_eq!(
+        resolve_in_units("w1m+20,0", &LengthUnitSystem::Millimeters, None),
+        Err(PointInputError::InvalidNumber)
     );
 }
 

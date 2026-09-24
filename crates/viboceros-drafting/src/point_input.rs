@@ -3,7 +3,7 @@
 mod calculator;
 
 use thiserror::Error;
-use viboceros_geometry::{Frame3, GeometryError, Point3, Real};
+use viboceros_geometry::{Frame3, GeometryError, LengthUnitSystem, Point3, Real};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct PointInput {
@@ -33,6 +33,14 @@ impl PointInput {
     /// Coordinates have no internal whitespace. R/@ and W prefixes may be
     /// combined in either order; angles are decimal degrees, not radians.
     pub fn parse(text: &str) -> Option<Result<Self, PointInputError>> {
+        Self::parse_with_units(text, &LengthUnitSystem::Millimeters)
+    }
+
+    /// Interpret explicit length suffixes in the caller's current model units.
+    pub fn parse_with_units(
+        text: &str,
+        units: &LengthUnitSystem,
+    ) -> Option<Result<Self, PointInputError>> {
         let text = text.trim();
         let mut body = text;
         let (mut world, mut relative, mut duplicate) = (false, false, false);
@@ -86,7 +94,7 @@ impl PointInput {
                 return Err(PointInputError::Syntax);
             }
             Ok(Self {
-                coordinates: coordinates(body)?,
+                coordinates: coordinates(body, units)?,
                 world,
                 relative,
             })
@@ -124,11 +132,11 @@ impl PointInput {
     }
 }
 
-fn number(text: &str) -> Result<Real, PointInputError> {
-    calculator::evaluate(text).ok_or(PointInputError::InvalidNumber)
+fn number(text: &str, units: &LengthUnitSystem) -> Result<Real, PointInputError> {
+    calculator::evaluate_in_units(text, units).ok_or(PointInputError::InvalidNumber)
 }
 
-fn angle_number(text: &str) -> Result<Real, PointInputError> {
+fn angle_number(text: &str, units: &LengthUnitSystem) -> Result<Real, PointInputError> {
     // Rhino's point prompt accepts calculator functions in coordinates but
     // rejects function calls after the polar/spherical angle separator.
     if text
@@ -146,31 +154,31 @@ fn angle_number(text: &str) -> Result<Real, PointInputError> {
         ("d", 1.0),
     ] {
         if lower.ends_with(suffix) {
-            let value = number(&text[..text.len() - suffix.len()])? * multiplier;
+            let value = number(&text[..text.len() - suffix.len()], units)? * multiplier;
             return value
                 .is_finite()
                 .then_some(value)
                 .ok_or(PointInputError::InvalidNumber);
         }
     }
-    number(text)
+    number(text, units)
 }
 
-fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
+fn coordinates(text: &str, units: &LengthUnitSystem) -> Result<[Real; 3], PointInputError> {
     let angles: Vec<_> = text.split('<').collect();
     match angles.as_slice() {
         [cartesian] => {
             let components = split_components(cartesian);
             match components.as_slice() {
                 [single] => {
-                    if number(single)? == 0.0 {
+                    if number(single, units)? == 0.0 {
                         Ok([0.0; 3])
                     } else {
                         Err(PointInputError::DistanceConstraint)
                     }
                 }
-                [x, y] => Ok([number(x)?, number(y)?, 0.0]),
-                [x, y, z] => Ok([number(x)?, number(y)?, number(z)?]),
+                [x, y] => Ok([number(x, units)?, number(y, units)?, 0.0]),
+                [x, y, z] => Ok([number(x, units)?, number(y, units)?, number(z, units)?]),
                 _ => Err(PointInputError::Syntax),
             }
         }
@@ -179,8 +187,8 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
             let [x, y] = components.as_slice() else {
                 return Err(PointInputError::Syntax);
             };
-            let [x, y] = [number(x)?, number(y)?];
-            let elevation = reduced_degrees(angle_number(elevation)?);
+            let [x, y] = [number(x, units)?, number(y, units)?];
+            let elevation = reduced_degrees(angle_number(elevation, units)?);
             if !(-90.0..=90.0).contains(&elevation) {
                 return Err(PointInputError::ElevationRange);
             }
@@ -205,20 +213,20 @@ fn coordinates(text: &str) -> Result<[Real; 3], PointInputError> {
             Ok([x, y, height])
         }
         [radius, azimuth] => {
-            let radius = number(radius)?;
+            let radius = number(radius, units)?;
             let components = split_components(azimuth);
             let (angle, z) = match components.as_slice() {
-                [angle] => (angle_number(angle)?, 0.0),
-                [angle, z] => (angle_number(angle)?, number(z)?),
+                [angle] => (angle_number(angle, units)?, 0.0),
+                [angle, z] => (angle_number(angle, units)?, number(z, units)?),
                 _ => return Err(PointInputError::Syntax),
             };
             let (sin, cos) = sin_cos_degrees(angle);
             Ok([radius * cos, radius * sin, z])
         }
         [radius, azimuth, elevation] => {
-            let radius = number(radius)?;
-            let (sin_a, cos_a) = sin_cos_degrees(angle_number(azimuth)?);
-            let elevation = reduced_degrees(angle_number(elevation)?);
+            let radius = number(radius, units)?;
+            let (sin_a, cos_a) = sin_cos_degrees(angle_number(azimuth, units)?);
+            let elevation = reduced_degrees(angle_number(elevation, units)?);
             if !(-90.0..=90.0).contains(&elevation) {
                 return Err(PointInputError::ElevationRange);
             }

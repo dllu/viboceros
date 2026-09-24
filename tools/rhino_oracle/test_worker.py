@@ -1222,7 +1222,7 @@ class RhinoWorkerTests(unittest.TestCase):
         brep.Dispose.assert_called_once_with()
 
     def test_point_input_script_accepts_coordinates_but_not_commands(self):
-        tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0", "5/16,1-3/4", "2*(3+4),1/2", "r(10-3)/7,1", "10*sin(30degrees),10*cos(30degrees)", "atan2(1,1),pow(2,3)"]
+        tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0", "5/16,1-3/4", "2*(3+4),1/2", "r(10-3)/7,1", "10*sin(30degrees),10*cos(30degrees)", "atan2(1,1),pow(2,3)", "27cm,1m", "1'2-3/4\",1/2in"]
         self.assertEqual(self.worker._point_input_script(tokens), "_Polyline " + " ".join(tokens) + " _Enter")
         for invalid in [[], ["0"], ["0"] * 257, ["0", "_Delete"], ["0", "1,2 _Enter"],
                         ["0", "1,2\n_Delete"], ["0", "1;2"], ["0", "1,2Delete"],
@@ -1325,8 +1325,8 @@ class RhinoWorkerTests(unittest.TestCase):
             disposed.assert_called_once_with()
 
     def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
-        for failed in [False, True]:
-            with self.subTest(failed=failed):
+        for failed, model_units in [(False, None), (True, None), (False, "Meters"), (True, "Meters")]:
+            with self.subTest(failed=failed, model_units=model_units):
                 original_plane = object()
                 current_plane = [original_plane]
                 viewport = SimpleNamespace(
@@ -1341,6 +1341,13 @@ class RhinoWorkerTests(unittest.TestCase):
                     Delete=lambda object_id, _: objects.pop(object_id))
                 self.document.Objects = table
                 self.document.Views = SimpleNamespace(ActiveView=SimpleNamespace(ActiveViewport=viewport))
+                self.document.ModelUnitSystem = "original"
+                unit_changes = []
+                def adjust_units(units, scale):
+                    unit_changes.append((units, scale))
+                    self.document.ModelUnitSystem = units
+                self.document.AdjustModelUnitSystem = adjust_units
+                self.worker.Rhino.UnitSystem = SimpleNamespace(Meters="meters")
                 self.worker.Rhino.DocObjects = SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace)
                 self.worker.Rhino.Geometry = SimpleNamespace(Plane=lambda *args: SimpleNamespace(IsValid=True))
                 self.worker.Rhino.RhinoApp.RunScript = Mock()
@@ -1352,6 +1359,8 @@ class RhinoWorkerTests(unittest.TestCase):
                         raise ValueError("failed coordinate command")
                     return True
                 operation = {"points": ["0", "1,2"], "origin": [0,0,0], "x_axis": [1,0,0], "y_axis": [0,1,0]}
+                if model_units is not None:
+                    operation["model_units"] = model_units
                 with patch.object(self.worker, "_point", side_effect=lambda value: value), patch.object(
                     self.worker, "_vector", side_effect=lambda value: value), patch.object(self.worker, "_run_surface_script", side_effect=run):
                     if failed:
@@ -1364,6 +1373,8 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.assertIs(current_plane[0], original_plane)
                 self.assertEqual(set(objects), {"existing"})
                 self.assertEqual(selected, {"existing"})
+                self.assertEqual(self.document.ModelUnitSystem, "original")
+                self.assertEqual(unit_changes, [("meters", False), ("original", False)] if model_units else [])
                 self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
 
     def test_loft_samples_are_unrounded_and_use_native_domains(self):

@@ -2,6 +2,7 @@
 
 use super::*;
 use viboceros_drafting::PointInput;
+use viboceros_geometry::LengthUnitSystem;
 
 #[cfg(test)]
 mod tests {
@@ -54,6 +55,14 @@ mod tests {
     }
 
     #[test]
+    fn length_units_match_recorded_rhino_points() {
+        check_recorded_points(
+            include_str!("../../../tools/rhino_oracle/fixtures/point_input_length_units.json"),
+            include_str!("../../../tools/rhino_oracle/observations/point_input_length_units.json"),
+        );
+    }
+
+    #[test]
     fn permanent_fixture_checks_world_and_rotated_plane_point_sequences() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/point_input.json"
@@ -100,6 +109,8 @@ pub struct PointInputFixture {
     pub x_axis: [f64; 3],
     pub y_axis: [f64; 3],
     pub points: Vec<String>,
+    #[serde(default)]
+    pub model_units: Option<String>,
 }
 
 pub(super) fn run(
@@ -118,8 +129,18 @@ pub(super) fn run(
         tolerance,
     )?;
     let mut points = Vec::with_capacity(fixture.points.len());
+    let units = match fixture.model_units.as_deref() {
+        None | Some("Millimeters") => LengthUnitSystem::Millimeters,
+        Some("Meters") => LengthUnitSystem::Meters,
+        Some("Inches") => LengthUnitSystem::Inches,
+        Some(_) => {
+            return Err(ProbeError::FixtureInvariant(
+                "unsupported point-input model units",
+            ));
+        }
+    };
     for token in &fixture.points {
-        let input = PointInput::parse(token)
+        let input = PointInput::parse_with_units(token, &units)
             .ok_or(ProbeError::FixtureInvariant("expected a point token"))?
             .map_err(|_| ProbeError::FixtureInvariant("invalid point syntax"))?;
         let point = input

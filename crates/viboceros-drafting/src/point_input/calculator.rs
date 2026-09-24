@@ -1,12 +1,18 @@
 //! Bounded scalar arithmetic for typed coordinates. Rhino treats `1-3/4` as
 //! a mixed fraction, so that spelling is one number rather than subtraction.
 
-use viboceros_geometry::Real;
+use viboceros_geometry::{LengthUnitSystem, Real};
 
+#[cfg(test)]
 pub(super) fn evaluate(text: &str) -> Option<Real> {
+    evaluate_in_units(text, &LengthUnitSystem::Millimeters)
+}
+
+pub(super) fn evaluate_in_units(text: &str, units: &LengthUnitSystem) -> Option<Real> {
     let mut parser = Parser {
         text: text.as_bytes(),
         offset: 0,
+        units,
     };
     let value = parser.expression(0)?;
     (parser.offset == parser.text.len() && value.is_finite()).then_some(value)
@@ -15,6 +21,7 @@ pub(super) fn evaluate(text: &str) -> Option<Real> {
 struct Parser<'a> {
     text: &'a [u8],
     offset: usize,
+    units: &'a LengthUnitSystem,
 }
 
 impl Parser<'_> {
@@ -78,15 +85,38 @@ impl Parser<'_> {
             b'a'..=b'z' | b'A'..=b'Z' => self.named(depth)?,
             _ => return None,
         };
+        if self.peek() == Some(b'\'') {
+            self.offset += 1;
+            let feet = value * LengthUnitSystem::Feet.scale_to(self.units).ok()?;
+            if self.peek().is_some_and(|c| c.is_ascii_digit() || c == b'.') {
+                let inches = self.number()? * LengthUnitSystem::Inches.scale_to(self.units).ok()?;
+                if self.take() != Some(b'"') {
+                    return None;
+                }
+                return Some(feet + inches);
+            }
+            return Some(feet);
+        }
+        if self.peek() == Some(b'"') {
+            self.offset += 1;
+            return Some(value * LengthUnitSystem::Inches.scale_to(self.units).ok()?);
+        }
         if self.peek().is_some_and(|c| c.is_ascii_alphabetic()) {
             let suffix = self.identifier()?.to_ascii_lowercase();
             let factor = match suffix.as_str() {
-                "d" | "degrees" => std::f64::consts::PI / 180.0,
-                "radians" => 1.0,
-                "gradians" => std::f64::consts::PI / 200.0,
-                _ => return None,
+                "d" | "degrees" => Some(std::f64::consts::PI / 180.0),
+                "radians" => Some(1.0),
+                "gradians" => Some(std::f64::consts::PI / 200.0),
+                _ => {
+                    // Rhino's point prompt accepts a length suffix at the end
+                    // of a value, but rejects `1m+20` and `1m+20cm`.
+                    if matches!(self.peek(), Some(b'+' | b'-' | b'*' | b'/')) {
+                        return None;
+                    }
+                    length_unit(&suffix).and_then(|source| source.scale_to(self.units).ok())
+                }
             };
-            Some(value * factor)
+            Some(value * factor?)
         } else {
             Some(value)
         }
@@ -204,6 +234,22 @@ impl Parser<'_> {
             }
             self.offset = separator;
         }
+        if integer_end == self.offset && self.peek() == Some(b'/') {
+            let separator = self.offset;
+            self.offset += 1;
+            let denominator_start = self.offset;
+            while self.peek().is_some_and(|c| c.is_ascii_digit()) {
+                self.offset += 1;
+            }
+            if self.offset > denominator_start && !matches!(self.peek(), Some(b'.' | b'e' | b'E')) {
+                let denominator = std::str::from_utf8(&self.text[denominator_start..self.offset])
+                    .ok()?
+                    .parse::<Real>()
+                    .ok()?;
+                return (denominator != 0.0).then_some(whole / denominator);
+            }
+            self.offset = separator;
+        }
         Some(whole)
     }
 
@@ -218,9 +264,25 @@ impl Parser<'_> {
     }
 }
 
+fn length_unit(name: &str) -> Option<LengthUnitSystem> {
+    Some(match name {
+        "mm" | "millimeter" | "millimeters" | "millimetre" | "millimetres" => {
+            LengthUnitSystem::Millimeters
+        }
+        "cm" | "centimeter" | "centimeters" | "centimetre" | "centimetres" => {
+            LengthUnitSystem::Centimeters
+        }
+        "m" | "meter" | "meters" | "metre" | "metres" => LengthUnitSystem::Meters,
+        "in" | "inch" | "inches" => LengthUnitSystem::Inches,
+        "ft" | "foot" | "feet" => LengthUnitSystem::Feet,
+        _ => return None,
+    })
+}
+
 #[cfg(test)]
 mod tests {
-    use super::evaluate;
+    use super::{evaluate, evaluate_in_units};
+    use viboceros_geometry::LengthUnitSystem;
 
     #[test]
     fn fraction_precedence_and_errors() {
@@ -277,6 +339,41 @@ mod tests {
             "acos(2)",
         ] {
             assert_eq!(evaluate(input), None, "{input}");
+        }
+    }
+
+    #[test]
+    fn length_suffixes_follow_model_units() {
+        for (units, expected) in [
+            (LengthUnitSystem::Millimeters, [270.0, 1000.0, 50.8, 914.4]),
+            (LengthUnitSystem::Meters, [0.27, 1.0, 0.0508, 0.9144]),
+            (
+                LengthUnitSystem::Inches,
+                [270.0 / 25.4, 1000.0 / 25.4, 2.0, 36.0],
+            ),
+        ] {
+            for (input, target) in ["27cm", "1m", "2in", "3ft"].into_iter().zip(expected) {
+                let actual = evaluate_in_units(input, &units).unwrap();
+                assert!(
+                    (actual - target).abs() < 1e-12,
+                    "{input} in {units:?}: {actual}"
+                );
+            }
+        }
+        let mm = LengthUnitSystem::Millimeters;
+        for (input, target) in [
+            ("1'2-3/4\"", 374.65),
+            ("1/2in", 12.7),
+            ("+16'5\"", 5003.8),
+            ("(1+0.2)m", 1200.0),
+        ] {
+            assert!(
+                (evaluate_in_units(input, &mm).unwrap() - target).abs() < 1e-12,
+                "{input}"
+            );
+        }
+        for input in ["1m+20", "1m+20cm", "1m*2"] {
+            assert_eq!(evaluate_in_units(input, &mm), None, "{input}");
         }
     }
 }

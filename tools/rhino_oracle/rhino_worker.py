@@ -3209,10 +3209,12 @@ def _point_input_script(points):
         body = token.lstrip("rRwW@")
         allowed_names = ("pi", "degrees", "radians", "gradians", "sin", "cos", "tan",
                          "asin", "acos", "atan", "atan2", "ln", "log10", "exp",
-                         "sinh", "cosh", "tanh", "pow", "sqrt")
+                         "sinh", "cosh", "tanh", "pow", "sqrt", "mm", "millimeter",
+                         "millimeters", "cm", "centimeter", "centimeters", "m", "meter",
+                         "meters", "in", "inch", "inches", "ft", "foot", "feet")
         if (not body or
                 (body[0] not in "+-.(0123456789" and not body.lower().startswith(allowed_names)) or
-                any(c not in "0123456789eE+-,.<>rRwW@*/()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for c in token) or
+                any(c not in "0123456789eE+-,.<>rRwW@*/()'\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for c in token) or
                 any(name.lower() not in allowed_names + ("e",) for name in re.findall(r"[A-Za-z]+[0-9]*", body)
                     if not (name.lower().startswith("e") and name[1:].isdigit()))):
             raise ValueError("point tokens cannot contain commands or whitespace")
@@ -3621,6 +3623,10 @@ def _in_construction_plane(operation, script, record):
     document = Rhino.RhinoDoc.ActiveDoc
     viewport = document.Views.ActiveView.ActiveViewport
     original_plane = viewport.ConstructionPlane()
+    unit_name = operation.get("model_units")
+    if unit_name is not None and unit_name not in ("Millimeters", "Meters", "Inches"):
+        raise ValueError("unsupported point-input model units")
+    original_units = document.ModelUnitSystem if unit_name is not None else None
     plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
     if not plane.IsValid:
         raise ValueError("invalid point-input construction plane")
@@ -3631,6 +3637,8 @@ def _in_construction_plane(operation, script, record):
     before = set(obj.Id for obj in objects())
     selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
     try:
+        if unit_name is not None:
+            document.AdjustModelUnitSystem(getattr(Rhino.UnitSystem, unit_name), False)
         viewport.SetConstructionPlane(plane)
         document.Objects.UnselectAll()
         if not _run_surface_script(script, True):
@@ -3650,6 +3658,8 @@ def _in_construction_plane(operation, script, record):
             if obj.Id not in before:
                 document.Objects.Delete(obj.Id, True)
         viewport.SetConstructionPlane(original_plane)
+        if unit_name is not None:
+            document.AdjustModelUnitSystem(original_units, False)
         document.Objects.UnselectAll()
         for object_id in selected:
             document.Objects.Select(object_id)

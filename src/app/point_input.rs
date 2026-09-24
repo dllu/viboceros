@@ -22,7 +22,7 @@ impl VibocerosApp {
         {
             return false;
         }
-        let Some(parsed) = PointInput::parse(input) else {
+        let Some(parsed) = PointInput::parse_with_units(input, self.document.units()) else {
             return false;
         };
         let point = parsed.and_then(|input| {

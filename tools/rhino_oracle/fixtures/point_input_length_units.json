@@ -1,0 +1,42 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "length-units-millimeters",
+      "model_units": "Millimeters",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "27cm,1m", "2in,3ft", "r1m,2in"]
+    },
+    {
+      "op": "point_input",
+      "id": "length-units-meters",
+      "model_units": "Meters",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "27cm,1m", "2in,3ft", "r1m,2in"]
+    },
+    {
+      "op": "point_input",
+      "id": "length-units-inches",
+      "model_units": "Inches",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "27cm,1m", "2in,3ft", "r1m,2in"]
+    },
+    {
+      "op": "point_input",
+      "id": "length-units-feet-and-fractions",
+      "model_units": "Millimeters",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "points": ["0", "1'2-3/4\",1/2in", "+16'5\",2in"]
+    }
+  ]
+}

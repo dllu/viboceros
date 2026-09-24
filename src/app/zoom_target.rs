@@ -37,7 +37,7 @@ impl VibocerosApp {
             self.push_log("Zoom Target canceled".into());
             return true;
         }
-        let Some(parsed) = PointInput::parse(input) else {
+        let Some(parsed) = PointInput::parse_with_units(input, self.document.units()) else {
             self.zoom_target = None;
             return false;
         };
