@@ -8,6 +8,7 @@ mod sphere_cone;
 mod sphere_cylinder_noncoaxial;
 mod sphere_cylinder_singular;
 mod sphere_cylinder_turning;
+mod torus_cone;
 mod torus_cylinder;
 mod torus_plane;
 mod torus_sphere;
@@ -578,6 +579,7 @@ fn curve_brep_intersection_events_with_transform(
 /// Coaxial torus and finite cylinder walls meet in exact rational circles.
 /// Axis-centered spheres and canonical tori meet in exact rational circles.
 /// Coaxial canonical tori meet in exact rational circles.
+/// Coaxial canonical tori and finite cone walls meet in exact rational circles.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -712,6 +714,12 @@ pub fn surface_surface_intersection_events(
     let second_torus = second.canonical_torus(tolerance)?;
     if let (Some(first_data), Some(second_data)) = (first_torus, second_torus) {
         return torus_torus::intersect(first_data, second_data, tolerance);
+    }
+    if let (Some(torus), Some(cone)) = (first_torus, second_cone) {
+        return torus_cone::intersect(torus, cone, tolerance);
+    }
+    if let (Some(torus), Some(cone)) = (second_torus, first_cone) {
+        return torus_cone::intersect(torus, cone, tolerance);
     }
     if let (Some(torus), Some(cylinder)) = (first_torus, second_cylinder) {
         return torus_cylinder::intersect(torus, cylinder, tolerance);

@@ -270,6 +270,9 @@ Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles; spheres with offset centers remain unsupported.
 Coaxial tori likewise intersect in one or two exact rational circles, including
 tangent circles. Coincident and noncoaxial tori remain unsupported.
+Coaxial tori and finite cone walls intersect in up to two exact rational
+circles, clipped to the cone height. Tangent circles and cone rims are included;
+offset and nonparallel torus/cone axes remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
