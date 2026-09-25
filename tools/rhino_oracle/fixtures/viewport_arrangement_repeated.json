@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "repeated-new-viewport",
+      "commands": ["NewViewport", "NewViewport", "CloseViewport", "CloseViewport"]
+    }
+  ]
+}

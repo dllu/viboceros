@@ -4088,6 +4088,23 @@ def _viewport_arrangement_probe(operation):
     if any(command not in allowed for command in commands):
         raise ValueError("unsupported viewport arrangement command")
     document = Rhino.RhinoDoc.ActiveDoc
+    active_name = operation.get("active_name")
+    if active_name is not None:
+        if active_name not in ("Perspective", "Top", "Front", "Right"):
+            raise ValueError("unsupported active viewport name")
+        matching = [view for view in document.Views.GetViewList(True, False)
+                    if view.ActiveViewport.Name == active_name]
+        if len(matching) != 1:
+            raise ValueError("active viewport name is missing or ambiguous")
+        document.Views.ActiveView = matching[0]
+    source_mode = operation.get("source_display_mode")
+    if source_mode is not None:
+        if source_mode not in ("Wireframe", "Shaded", "Ghosted"):
+            raise ValueError("unsupported source display mode")
+        mode = Rhino.Display.DisplayModeDescription.FindByName(source_mode)
+        if mode is None:
+            raise ValueError("source display mode unavailable")
+        document.Views.ActiveView.ActiveViewport.DisplayMode = mode
 
     def rectangle(value):
         return [int(value.Left), int(value.Top), int(value.Right), int(value.Bottom)]
@@ -4105,6 +4122,7 @@ def _viewport_arrangement_probe(operation):
                 "screen_rectangle": rectangle(view.ScreenRectangle),
                 "floating": bool(view.Floating),
                 "maximized": bool(view.Maximized),
+                "display_mode": view.ActiveViewport.DisplayMode.EnglishName,
                 "perspective": bool(view.ActiveViewport.IsPerspectiveProjection),
                 "camera_location": _xyz(view.ActiveViewport.CameraLocation),
                 "camera_target": _xyz(view.ActiveViewport.CameraTarget),

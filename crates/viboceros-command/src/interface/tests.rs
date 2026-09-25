@@ -613,6 +613,7 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
             "'_SplitViewportVertical",
             InterfaceCommand::SplitViewportVertical,
         ),
+        ("NewViewport", InterfaceCommand::NewViewport),
     ] {
         assert_eq!(parse(input), Some(Ok(command)));
         let before = state.clone();
@@ -622,6 +623,10 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
     assert_eq!(
         parse("SplitViewportVertical extra"),
         Some(Err(InterfaceError::Usage("SplitViewportVertical")))
+    );
+    assert_eq!(
+        parse("NewViewport extra"),
+        Some(Err(InterfaceError::Usage("NewViewport")))
     );
     assert_eq!(
         parse("'_CloseViewport"),

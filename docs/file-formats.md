@@ -58,7 +58,8 @@ the matching 2×2 slots and renders their normalized rectangles, preserving
 unequal splits. Files with three views retain their own rectangles; missing or
 invalid rectangles use a layout appropriate to the number of views. Layouts
 created by `SplitViewportHorizontal` and `SplitViewportVertical` save each
-viewport and its rectangle.
+viewport and its rectangle. Centered overlapping views created by
+`NewViewport` are saved with their own rectangles as well.
 `ReadViewportsFromFile path.3dm` reads the saved model viewports,
 converting camera positions, frustum distances, and grid spacing into the
 current document's units. It leaves objects, layers, named views, and the

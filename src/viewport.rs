@@ -373,6 +373,8 @@ pub struct Viewport {
     kind: ViewKind,
     title: Option<String>,
     title_reference: Option<(CameraSnapshot, Frame3)>,
+    /// View to reactivate when a NewViewport-created view is closed this session.
+    pub(crate) new_viewport_parent: Option<usize>,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
@@ -414,6 +416,7 @@ impl Viewport {
             kind,
             title: None,
             title_reference: None,
+            new_viewport_parent: None,
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
             cplane_direction: None,
@@ -604,6 +607,13 @@ impl Viewport {
         duplicate.grid = self.grid;
         duplicate.set_view_title(title);
         duplicate
+    }
+
+    pub(crate) fn new_for_layout(source: &Self, kind: ViewKind) -> Self {
+        let mut viewport = Self::new(kind);
+        viewport.display_cache = std::rc::Rc::clone(&source.display_cache);
+        viewport.grid = source.grid;
+        viewport
     }
 
     /// The preset menu resets the plane explicitly. CPlane edits never change

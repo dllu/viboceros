@@ -18,6 +18,7 @@ class RhinoWorkerTests(unittest.TestCase):
         def view(name, number, bounds):
             viewport = SimpleNamespace(
                 Name=name, IsPerspectiveProjection=False,
+                DisplayMode=SimpleNamespace(EnglishName="Wireframe"),
                 CameraLocation=point(0, 0, 10), CameraTarget=point(0, 0, 0),
                 CameraDirection=point(0, 0, -1), CameraUp=point(0, 1, 0))
             return SimpleNamespace(
@@ -53,6 +54,9 @@ class RhinoWorkerTests(unittest.TestCase):
                 with self.subTest(commands=commands):
                     with self.assertRaises(ValueError):
                         self.worker._viewport_arrangement_probe({"commands": commands})
+            with self.assertRaisesRegex(ValueError, "source display mode"):
+                self.worker._viewport_arrangement_probe({
+                    "commands": ["NewViewport"], "source_display_mode": "Rendered"})
             run.assert_not_called()
 
     def test_solid_orientation_reads_uninserted_geometry_and_disposes_its_file(self):

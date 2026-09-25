@@ -606,6 +606,33 @@ fn split_viewport_layout_round_trips_through_3dm() {
 }
 
 #[test]
+fn new_overlapping_viewport_round_trips_through_3dm() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-new-viewport-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    source.active_viewport = 1;
+    enter(&mut source, "NewViewport");
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    let saved = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.viewports.len(), 5);
+    assert_eq!(saved.viewports[4].camera.name, "Top");
+    assert_eq!(saved.viewports[4].position, [0.25, 0.75, 0.25, 0.75]);
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports.len(), 5);
+    assert_eq!(opened.viewport_positions, source.viewport_positions);
+    assert_eq!(opened.active_viewport, 4);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn closed_viewport_layout_round_trips_through_3dm() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-close-viewport-{}-{}.3dm",

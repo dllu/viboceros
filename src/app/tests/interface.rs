@@ -147,6 +147,85 @@ fn split_viewport_rejects_an_unrepresentable_midpoint_atomically() {
 }
 
 #[test]
+fn new_viewport_overlays_a_top_view_and_close_restores_its_parent() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    app.viewports[1].display_mode = DisplayMode::Ghosted;
+    enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+    let grid = app.viewports[1].grid_settings();
+    let original_positions = app.viewport_positions.clone();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "NewViewport");
+    assert_eq!(app.viewports.len(), 5);
+    assert_eq!(app.viewport_positions[4], [0.25, 0.75, 0.25, 0.75]);
+    assert_eq!(app.active_viewport, 4);
+    assert_eq!(app.viewports[4].kind(), ViewKind::Top);
+    assert_eq!(app.viewports[4].view_label(), "Top");
+    assert_eq!(app.viewports[4].display_mode, DisplayMode::Wireframe);
+    assert_eq!(app.viewports[4].grid_settings(), grid);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 4);
+    assert_eq!(app.viewport_positions, original_positions);
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn repeated_new_viewports_stack_at_the_same_position_and_close_in_order() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    enter(&mut app, "NewViewport");
+    enter(&mut app, "NewViewport");
+    assert_eq!(app.viewports.len(), 6);
+    assert_eq!(app.active_viewport, 5);
+    assert_eq!(app.viewport_positions[4], app.viewport_positions[5]);
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 5);
+    assert_eq!(app.active_viewport, 4);
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 4);
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS.to_vec());
+}
+
+#[test]
+fn close_half_of_split_overlapping_viewport_expands_its_sibling() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    enter(&mut app, "NewViewport");
+    enter(&mut app, "SplitViewportVertical");
+    assert_eq!(app.viewport_positions[4], [0.25, 0.5, 0.25, 0.75]);
+    assert_eq!(app.viewport_positions[5], [0.5, 0.75, 0.25, 0.75]);
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 5);
+    assert_eq!(app.viewport_positions[4], [0.25, 0.75, 0.25, 0.75]);
+    assert_eq!(app.viewport_positions[..4], DEFAULT_VIEWPORT_POSITIONS);
+}
+
+#[test]
+fn close_tiled_view_beneath_new_viewport_keeps_overlay_and_rebases_parent() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    enter(&mut app, "NewViewport");
+    app.active_viewport = 0;
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 4);
+    assert_eq!(app.viewport_positions[0], [0.0, 1.0, 0.0, 0.5]);
+    assert_eq!(app.viewport_positions[3], [0.25, 0.75, 0.25, 0.75]);
+    assert_eq!(app.viewports[3].new_viewport_parent, Some(0));
+    app.active_viewport = 3;
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.active_viewport, 0);
+    assert_eq!(app.viewports.len(), 3);
+    assert_eq!(app.viewport_positions[0], [0.0, 1.0, 0.0, 0.5]);
+}
+
+#[test]
 fn close_viewport_fills_a_split_strip_and_keeps_the_model_prompt() {
     let mut app = test_app();
     enter(&mut app, "SplitViewportVertical");

@@ -377,6 +377,10 @@ impl VibocerosApp {
                     self.split_active_viewport(command);
                     return;
                 }
+                if command == InterfaceCommand::NewViewport {
+                    self.new_viewport();
+                    return;
+                }
                 if command == InterfaceCommand::CloseViewport {
                     self.close_active_viewport();
                     return;

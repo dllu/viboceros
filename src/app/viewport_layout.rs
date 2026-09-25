@@ -54,6 +54,46 @@ fn rectangles_overlap(position: [f64; 4], other: [f64; 4]) -> bool {
     overlap_x > 1e-12 && overlap_y > 1e-12
 }
 
+fn region_is_covered(region: [f64; 4], rectangles: &[[f64; 4]]) -> bool {
+    let [left, right, top, bottom] = region;
+    if !(left < right && top < bottom) {
+        return false;
+    }
+    let mut x_cuts = vec![left, right];
+    for rectangle in rectangles {
+        if rectangles_overlap(region, *rectangle) {
+            x_cuts.push(rectangle[0].clamp(left, right));
+            x_cuts.push(rectangle[1].clamp(left, right));
+        }
+    }
+    x_cuts.sort_by(f64::total_cmp);
+    x_cuts.dedup_by(|a, b| (*a - *b).abs() <= 1e-12);
+    if x_cuts.len() < 2 {
+        return false;
+    }
+    x_cuts.windows(2).all(|window| {
+        let middle = window[0] + (window[1] - window[0]) * 0.5;
+        let mut spans = rectangles
+            .iter()
+            .filter(|rectangle| rectangle[0] <= middle && middle < rectangle[1])
+            .filter_map(|rectangle| {
+                let start = rectangle[2].max(top);
+                let end = rectangle[3].min(bottom);
+                (start < end).then_some((start, end))
+            })
+            .collect::<Vec<_>>();
+        spans.sort_by(|a, b| a.0.total_cmp(&b.0));
+        let mut cursor = top;
+        for (start, end) in spans {
+            if start > cursor + 1e-12 {
+                return false;
+            }
+            cursor = cursor.max(end);
+        }
+        cursor >= bottom - 1e-12
+    })
+}
+
 fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]> {
     let hole = positions[removed];
     let remaining = positions
@@ -113,16 +153,37 @@ fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]
         if result.iter().enumerate().all(|(index, position)| {
             result
                 .iter()
+                .enumerate()
                 .skip(index + 1)
-                .all(|other| !rectangles_overlap(*position, *other))
+                .all(|(other_index, other)| {
+                    !rectangles_overlap(*position, *other)
+                        || rectangles_overlap(remaining[index], remaining[other_index])
+                        || rectangles_overlap(hole, remaining[index])
+                        || rectangles_overlap(hole, remaining[other_index])
+                })
         }) {
             return result;
         }
+    }
+    if region_is_covered(hole, &remaining) {
+        return remaining;
     }
     super::named_view::default_viewport_positions(remaining.len())
 }
 
 impl VibocerosApp {
+    pub(super) fn new_viewport(&mut self) {
+        let source_index = self.active_viewport;
+        let source = &self.viewports[source_index];
+        let mut viewport = Viewport::new_for_layout(source, ViewKind::Top);
+        viewport.new_viewport_parent = Some(source_index);
+        self.viewports.push(viewport);
+        self.viewport_positions.push([0.25, 0.75, 0.25, 0.75]);
+        self.active_viewport = self.viewports.len() - 1;
+        self.maximized_viewport = None;
+        self.push_log(format!("Created viewport {} (Top)", self.viewports.len()));
+    }
+
     pub(super) fn try_run_viewport_properties_command(&mut self, input: &str) -> bool {
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let command = input[..end].trim_start_matches(['\'', '_', '-']);
@@ -197,9 +258,17 @@ impl VibocerosApp {
         }
         let removed = self.active_viewport;
         let closed_title = self.viewports[removed].view_label().to_owned();
+        let parent = self.viewports[removed]
+            .new_viewport_parent
+            .and_then(|index| remap_viewport_index(index, removed));
         self.viewport_positions = positions_after_close(&self.viewport_positions, removed);
         self.viewports.remove(removed);
-        self.active_viewport = removed.min(self.viewports.len() - 1);
+        for viewport in &mut self.viewports {
+            viewport.new_viewport_parent = viewport
+                .new_viewport_parent
+                .and_then(|index| remap_viewport_index(index, removed));
+        }
+        self.active_viewport = parent.unwrap_or_else(|| removed.min(self.viewports.len() - 1));
         self.maximized_viewport = self
             .maximized_viewport
             .and_then(|index| remap_viewport_index(index, removed));

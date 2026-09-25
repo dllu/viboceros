@@ -231,9 +231,15 @@ rectangle into equal parts and copy its camera, CPlane, display mode, and grid
 settings to the new viewport. The new viewport gets a distinct title, and both
 rectangles are saved in 3DM. See Rhino's
 [viewport arrangement commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/viewport_arrangement.htm).
-`CloseViewport` removes the active view. Adjacent views expand into the gap;
-if the saved layout has no neighboring strip that can fill it, the remaining
-views use a regular layout. The last viewport remains open. See Rhino's
+`NewViewport` creates an active Wireframe Top viewport centered over the model
+area at half its width and height. Its grid settings come from the previously active
+view. This overlaps the existing views, matching the measured Rhino 8 command
+behavior; closing it leaves their rectangles in place. See Rhino's
+[NewViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
+`CloseViewport` removes the active view. Other views stay in place if they
+already cover its area. Otherwise adjacent views expand into the gap; if the
+saved layout has no neighboring strip that can fill it, the remaining views
+use a regular layout. The last viewport remains open. See Rhino's
 [CloseViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
 `-ViewportProperties Title="name"` sets the active viewport title. The title
 is saved in 3DM and can be used by `SetActiveViewport` and

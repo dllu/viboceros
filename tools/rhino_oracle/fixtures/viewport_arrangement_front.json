@@ -1,0 +1,12 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "new-viewport-from-front",
+      "active_name": "Front",
+      "commands": ["NewViewport", "CloseViewport"]
+    }
+  ]
+}

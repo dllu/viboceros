@@ -11,8 +11,17 @@ sequence of `NewViewport`, `CloseViewport`, `3View`, `4View`, and viewport split
 commands. Run its [fixture](../tools/rhino_oracle/fixtures/viewport_arrangement.json)
 with `tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_arrangement.json --timeout 300`.
 It uses public [RhinoView properties](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Properties_T_Rhino_Display_RhinoView.htm).
-Two attempts on 2026-09-25 exited during Rhino's .NET startup
-under Wine before the worker ran, so the probe has no saved observation yet.
+The [default-view](viewport-arrangement-rhino-reference.json) and
+[Front-active](viewport-arrangement-front-rhino-reference.json) Rhino 8.32
+responses on 2026-09-25 confirm a centered, overlapping Top view and activation
+of the previously active view when it closes. A
+[repeated-NewViewport run](viewport-arrangement-repeated-rhino-reference.json)
+confirms that successive views stack at the same centered rectangle and close
+back through the prior active views. A
+[Shaded-source run](viewport-arrangement-shaded-rhino-reference.json) confirms
+that the new Top view starts in Wireframe even when the source is Shaded.
+The Wine session required a normal
+launcher `stop` before these probes could start.
 
 The [orientation audit](orientation-audit.md) separates public document insertion
 and replacement from actual `Flip` command behavior, retaining full definitions
