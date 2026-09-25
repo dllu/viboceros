@@ -63,10 +63,17 @@ pub(super) fn intersect(
         }
         return Ok(Vec::new());
     }
+    let critical = major - minor;
+    let critical_difference = (offset - critical).abs();
+    // Near the pinched section, the loop separation grows as sqrt(distance).
+    // A plane offset by the ordinary modeling tolerance can therefore have a
+    // visibly different topology. Only merge the branches when that separation
+    // itself is below the requested spatial tolerance.
+    let pinched_tolerance = fit_tolerance * fit_tolerance / (2.0 * outer);
     let outer_lateral = ((outer - offset) * (outer + offset)).sqrt();
-    let branches: &[Branch] = if (offset - (major - minor)).abs() <= fit_tolerance {
+    let branches: &[Branch] = if critical_difference <= pinched_tolerance {
         &[Branch::PinchedPositive, Branch::PinchedNegative]
-    } else if offset < major - minor {
+    } else if offset < critical {
         &[Branch::OuterSide, Branch::InnerSide]
     } else {
         &[Branch::Joined]
@@ -157,64 +164,87 @@ impl Section {
 }
 
 fn fit(section: Section, frame: Frame3, fit_tolerance: Real) -> Result<NurbsCurve, GeometryError> {
-    let mut segments = 8;
-    loop {
-        let step = TURN / segments as Real;
-        let mut controls = Vec::with_capacity(3 * segments + 1);
-        let mut knots = Vec::with_capacity(3 * segments + 5);
-        knots.extend([0.0; 4]);
-        let first = section.sample(0.0);
-        controls.push(frame.point_at([first.lateral, first.vertical, 0.0])?);
-        let mut previous = first;
-        let mut acceptable = true;
-        for segment in 0..segments {
-            let start = step * segment as Real;
-            let end = step * (segment + 1) as Real;
-            let mut next = section.sample(end);
-            if segment + 1 == segments {
-                next.lateral = first.lateral;
-                next.vertical = first.vertical;
-            }
-            let handle = step / 3.0;
-            let control = [
-                [previous.lateral, previous.vertical],
-                [
-                    previous.lateral + handle * previous.lateral_derivative,
-                    previous.vertical + handle * previous.vertical_derivative,
-                ],
-                [
-                    next.lateral - handle * next.lateral_derivative,
-                    next.vertical - handle * next.vertical_derivative,
-                ],
-                [next.lateral, next.vertical],
-            ];
-            for fraction in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875] {
-                let expected = section.sample(start + step * fraction);
-                let actual = bezier(control, fraction);
-                if (actual[0] - expected.lateral).hypot(actual[1] - expected.vertical)
-                    > fit_tolerance * 0.25
-                {
-                    acceptable = false;
-                    break;
-                }
-            }
-            controls.push(frame.point_at([control[1][0], control[1][1], 0.0])?);
-            controls.push(frame.point_at([control[2][0], control[2][1], 0.0])?);
-            controls.push(frame.point_at([control[3][0], control[3][1], 0.0])?);
-            knots.extend([end; 3]);
-            previous = next;
-        }
-        knots.push(TURN);
-        if acceptable {
-            return NurbsCurve::try_new(3, controls, knots);
-        }
-        if segments >= MAX_SEGMENTS {
+    let mut segments = Vec::new();
+    for index in 0..8 {
+        fit_interval(
+            section,
+            TURN * index as Real / 8.0,
+            TURN * (index + 1) as Real / 8.0,
+            fit_tolerance,
+            0,
+            &mut segments,
+        )?;
+    }
+    let first = section.sample(0.0);
+    let first_point = frame.point_at([first.lateral, first.vertical, 0.0])?;
+    let mut controls = Vec::with_capacity(3 * segments.len() + 1);
+    let mut knots = Vec::with_capacity(3 * segments.len() + 5);
+    controls.push(first_point);
+    knots.extend([0.0; 4]);
+    let count = segments.len();
+    for (index, (end, control)) in segments.into_iter().enumerate() {
+        controls.push(frame.point_at([control[1][0], control[1][1], 0.0])?);
+        controls.push(frame.point_at([control[2][0], control[2][1], 0.0])?);
+        controls.push(if index + 1 == count {
+            first_point
+        } else {
+            frame.point_at([control[3][0], control[3][1], 0.0])?
+        });
+        knots.extend([end; 3]);
+    }
+    knots.push(TURN);
+    NurbsCurve::try_new(3, controls, knots)
+}
+
+fn fit_interval(
+    section: Section,
+    start: Real,
+    end: Real,
+    fit_tolerance: Real,
+    depth: usize,
+    segments: &mut Vec<(Real, [[Real; 2]; 4])>,
+) -> Result<(), GeometryError> {
+    let first = section.sample(start);
+    let last = section.sample(end);
+    let handle = (end - start) / 3.0;
+    let control = [
+        [first.lateral, first.vertical],
+        [
+            first.lateral + handle * first.lateral_derivative,
+            first.vertical + handle * first.vertical_derivative,
+        ],
+        [
+            last.lateral - handle * last.lateral_derivative,
+            last.vertical - handle * last.vertical_derivative,
+        ],
+        [last.lateral, last.vertical],
+    ];
+    let accurate = [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875]
+        .into_iter()
+        .all(|fraction| {
+            let expected = section.sample(start + (end - start) * fraction);
+            let actual = bezier(control, fraction);
+            (actual[0] - expected.lateral).hypot(actual[1] - expected.vertical)
+                <= fit_tolerance * 0.25
+        });
+    if accurate {
+        if segments.len() >= MAX_SEGMENTS {
             return Err(GeometryError::TooManyCurveFitControlPoints {
                 maximum: 3 * MAX_SEGMENTS + 1,
             });
         }
-        segments *= 2;
+        segments.push((end, control));
+        return Ok(());
     }
+    if depth >= 32 || segments.len() >= MAX_SEGMENTS || end - start <= 16.0 * Real::EPSILON {
+        return Err(GeometryError::TooManyCurveFitControlPoints {
+            maximum: 3 * MAX_SEGMENTS + 1,
+        });
+    }
+    let middle = 0.5 * (start + end);
+    fit_interval(section, start, middle, fit_tolerance, depth + 1, segments)?;
+    fit_interval(section, middle, end, fit_tolerance, depth + 1, segments)?;
+    Ok(())
 }
 
 fn bezier(control: [[Real; 2]; 4], fraction: Real) -> [Real; 2] {
@@ -344,6 +374,28 @@ mod tests {
                 assert!(((radial - 4.0).hypot(location.z()) - 1.0).abs() < 5e-9);
             }
         }
+        for (offset, expected) in [(3.0 - 5.0e-10, 2), (3.0 + 5.0e-10, 1)] {
+            let events = surface_surface_intersection_events(
+                &torus,
+                &plane(offset, -6.0, 6.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(events.len(), expected);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("near-pinched section should retain its loop topology")
+                };
+                assert!(curve.is_closed().unwrap());
+                for index in 0..=128 {
+                    let parameter = TURN * index as Real / 128.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    let radial = location.x().hypot(location.y());
+                    assert!((location.x() - offset).abs() < 5e-9);
+                    assert!(((radial - 4.0).hypot(location.z()) - 1.0).abs() < 5e-9);
+                }
+            }
+        }
     }
 
     #[test]
@@ -394,6 +446,8 @@ mod tests {
             (4.75, Branch::Joined),
             (3.0, Branch::PinchedPositive),
             (3.0, Branch::PinchedNegative),
+            (3.0 - 5.0e-10, Branch::OuterSide),
+            (3.0 + 5.0e-10, Branch::Joined),
         ] {
             let section = Section {
                 major: 4.0,
