@@ -163,13 +163,54 @@ impl Command for CircleCommand {
             let arguments = &arguments[1..];
             let (first, first_count) = parse_point(arguments)?;
             let (second, second_count) = parse_point(&arguments[first_count..])?;
-            let (third, third_count) = parse_point(&arguments[first_count + second_count..])?;
-            require_consumed(
-                arguments,
-                first_count + second_count + third_count,
-                "Circle 3Point first second third",
-            )?;
-            Circle3::try_from_three_points(first, second, third, document.tolerance())?
+            let remaining = &arguments[first_count + second_count..];
+            let radius = remaining.first().and_then(|option| {
+                if option_name_eq(option, "Radius") {
+                    Some((1, remaining.get(1).copied()))
+                } else if let Some((name, value)) = option.split_once('=')
+                    && option_name_eq(name, "Radius")
+                {
+                    Some((0, Some(value)))
+                } else {
+                    None
+                }
+            });
+            if let Some((extra, value)) = radius {
+                if extra == 1
+                    && let Ok((radius_point, count)) = parse_point(&remaining[1..])
+                    && count + 1 == remaining.len()
+                {
+                    Circle3::try_from_two_points_radius_direction(
+                        first,
+                        second,
+                        first.distance_to(radius_point)?,
+                        radius_point,
+                        document.tolerance(),
+                    )?
+                } else {
+                    let radius = parse_finite_real(value.ok_or(CommandError::Usage(
+                        "Circle 3Point first second Radius radius direction-point",
+                    ))?)?;
+                    let direction_arguments = &remaining[1 + extra..];
+                    let (direction_point, count) = parse_point(direction_arguments)?;
+                    require_consumed(
+                        direction_arguments,
+                        count,
+                        "Circle 3Point first second Radius radius direction-point",
+                    )?;
+                    Circle3::try_from_two_points_radius_direction(
+                        first,
+                        second,
+                        radius,
+                        direction_point,
+                        document.tolerance(),
+                    )?
+                }
+            } else {
+                let (third, third_count) = parse_point(remaining)?;
+                require_consumed(remaining, third_count, "Circle 3Point first second third")?;
+                Circle3::try_from_three_points(first, second, third, document.tolerance())?
+            }
         } else {
             let (center, consumed) = parse_point(arguments)?;
             let remaining = &arguments[consumed..];

@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-radius-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3PointRadius",
+      "points": [[4, 0, 0], [0, 4, 0], [0, 0, 0]],
+      "value": 5
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-radius-opposite",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3PointRadius",
+      "points": [[4, 0, 0], [0, 4, 0], [4, 4, 0]],
+      "value": 5
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-radius-off-plane",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3PointRadius",
+      "points": [[4, 0, 0], [0, 4, 0], [2, 2, 5]],
+      "value": 5
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-radius-reversed",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3PointRadius",
+      "points": [[0, 4, 0], [4, 0, 0], [0, 0, 0]],
+      "value": 5
+    }
+  ]
+}

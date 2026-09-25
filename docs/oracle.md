@@ -540,6 +540,12 @@ checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including
 reversed point order and off-CPlane geometry. Complete sampled curve records
 and domains agree within `1e-10`; command execution is untimed.
+The [three-point Radius fixture](../tools/rhino_oracle/fixtures/circle_three_point_radius.json)
+checks four numeric-radius orientations against
+[Rhino 8 records](circle-three-point-radius-rhino-reference.json). The
+[picked Radius fixture](../tools/rhino_oracle/fixtures/circle_three_point_radius_picks.json)
+checks on-plane and off-plane radius locations against
+[live results](circle-three-point-radius-picks-rhino-reference.json).
 The [circle size fixture](../tools/rhino_oracle/fixtures/circle_size_options.json)
 checks Diameter, Circumference, and Area against
 [Rhino 8 numeric results](circle-size-options-rhino-reference.json). The

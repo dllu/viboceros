@@ -108,6 +108,39 @@ impl VibocerosApp {
             self.push_log(next.prompt().to_owned());
             return true;
         }
+        if let InteractiveCommand::CircleThreePoint {
+            points: [Some(first), Some(second)],
+        } = state
+        {
+            let option = input.trim().trim_start_matches('_');
+            if option.eq_ignore_ascii_case("Radius") {
+                let next = InteractiveCommand::CircleThreePointRadius {
+                    first,
+                    second,
+                    radius: None,
+                };
+                self.active_command = Some(next);
+                self.command_input.clear();
+                self.push_log(next.prompt().to_owned());
+                return true;
+            }
+            if let Some((name, value)) = option.split_once('=')
+                && name.eq_ignore_ascii_case("Radius")
+            {
+                return self.accept_three_point_radius_value(first, second, value);
+            }
+        }
+        if let InteractiveCommand::CircleThreePointRadius {
+            first,
+            second,
+            radius: None,
+        } = state
+        {
+            if input.trim().parse::<f64>().is_err() {
+                return false;
+            }
+            return self.accept_three_point_radius_value(first, second, input.trim());
+        }
         if let InteractiveCommand::CircleVertical {
             center: Some(center),
             radius,
@@ -233,6 +266,34 @@ impl VibocerosApp {
         success
     }
 
+    fn accept_three_point_radius_value(
+        &mut self,
+        first: Point3,
+        second: Point3,
+        value: &str,
+    ) -> bool {
+        let radius = value.trim().parse::<f64>().ok();
+        let chord = first.distance_to(second).ok();
+        let valid = radius.zip(chord).is_some_and(|(radius, chord)| {
+            radius.is_finite()
+                && radius > self.document.tolerance().absolute()
+                && radius >= chord * 0.5
+        });
+        self.command_input.clear();
+        if !valid {
+            self.push_log("Error: radius must be at least half the point separation".into());
+            return true;
+        }
+        let next = InteractiveCommand::CircleThreePointRadius {
+            first,
+            second,
+            radius,
+        };
+        self.active_command = Some(next);
+        self.push_log(next.prompt().to_owned());
+        true
+    }
+
     pub(super) fn finish_circle_vertical(
         &mut self,
         state: InteractiveCommand,
@@ -305,6 +366,49 @@ impl VibocerosApp {
             format_model_point(center),
             format_model_point(normal_point)
         );
+        let drafting_plane = self.drafting_plane;
+        self.active_command = None;
+        self.command_input.clear();
+        let success = self.try_execute_command(&command);
+        if !success {
+            self.active_command = Some(state);
+            self.drafting_plane = drafting_plane;
+            self.push_log(state.prompt().to_owned());
+        }
+        success
+    }
+
+    pub(super) fn finish_three_point_radius(
+        &mut self,
+        state: InteractiveCommand,
+        point: Point3,
+    ) -> bool {
+        let InteractiveCommand::CircleThreePointRadius {
+            first,
+            second,
+            radius,
+        } = state
+        else {
+            unreachable!("three-point radius requires two circumference points");
+        };
+        let radius_argument = radius
+            .map(|radius| radius.to_string())
+            .unwrap_or_else(|| format_model_point(point));
+        let command = if radius.is_some() {
+            format!(
+                "Circle 3Point {} {} Radius={radius_argument} {}",
+                format_model_point(first),
+                format_model_point(second),
+                format_model_point(point)
+            )
+        } else {
+            format!(
+                "Circle 3Point {} {} Radius {}",
+                format_model_point(first),
+                format_model_point(second),
+                radius_argument
+            )
+        };
         let drafting_plane = self.drafting_plane;
         self.active_command = None;
         self.command_input.clear();

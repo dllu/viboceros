@@ -3400,6 +3400,10 @@ def _plane_primitive_script(operation):
         expected = 2
     elif primitive == "Circle3Point" and value is None:
         expected = 3
+    elif primitive == "Circle3PointRadius" and value is not None:
+        expected = 3
+    elif primitive == "Circle3PointRadiusPick" and value is None:
+        expected = 3
     elif primitive in ("Box", "MeshBox"):
         expected = 2 if value is not None else 3
     elif primitive in ("Rectangle", "MeshPlane") and value is None:
@@ -3410,6 +3414,8 @@ def _plane_primitive_script(operation):
         raise ValueError("incorrect primitive arguments")
     script = {"Circle2Point": "_Circle _2Point ",
               "Circle3Point": "_Circle _3Point ",
+              "Circle3PointRadius": "_Circle _3Point ",
+              "Circle3PointRadiusPick": "_Circle _3Point ",
               "CircleVertical": "_Circle _Vertical ",
               "CircleOrientation": "_Circle ",
               "CircleOrientationPick": "_Circle ",
@@ -3432,6 +3438,17 @@ def _plane_primitive_script(operation):
         script += "w" + _command_point(points[0])
         script += " %.17g" % _finite(value, "primitive size")
         script += " w" + _command_point(points[1])
+        return script
+    if primitive == "Circle3PointRadius":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Radius %.17g" % _finite(value, "primitive size")
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive == "Circle3PointRadiusPick":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Radius w" + _command_point(points[2])
         return script
     if primitive == "CircleOrientation":
         script += "w" + _command_point(points[0])

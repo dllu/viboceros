@@ -63,6 +63,45 @@ impl Circle3 {
             tolerance,
         )
     }
+    /// Constructs a circle through two circumference points with a fixed
+    /// radius. The direction point selects the center on their perpendicular
+    /// bisector, and the second circumference point is the seam.
+    pub fn try_from_two_points_radius_direction(
+        first: Point3,
+        second: Point3,
+        radius: Real,
+        direction_point: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        crate::require_finite([radius], "circle radius")?;
+        let chord = first.vector_to(second)?;
+        let half_chord = chord.length()? * 0.5;
+        if radius <= tolerance.absolute() || radius < half_chord {
+            return Err(GeometryError::Degenerate {
+                context: "two-point circle radius",
+            });
+        }
+        let midpoint = first.midpoint(second)?;
+        let chord_unit = chord.normalized(tolerance)?;
+        let toward = midpoint.vector_to(direction_point)?;
+        let projection = toward.dot(chord_unit.as_vector())?;
+        let direction = toward.to_array();
+        let axis = chord_unit.as_vector().to_array();
+        let perpendicular = Vector3::try_new(
+            (-projection).mul_add(axis[0], direction[0]),
+            (-projection).mul_add(axis[1], direction[1]),
+            (-projection).mul_add(axis[2], direction[2]),
+        )?
+        .normalized(tolerance)?;
+        let height = (radius - half_chord).sqrt() * (radius + half_chord).sqrt();
+        let center = midpoint.translated(perpendicular.as_vector().scaled(height)?)?;
+        let x_axis = center.vector_to(second)?.normalized(tolerance)?;
+        let normal = chord_unit
+            .as_vector()
+            .cross(perpendicular.as_vector())?
+            .normalized(tolerance)?;
+        Self::try_from_frame(center, radius, x_axis, normal, tolerance)
+    }
     /// Constructs a diameter circle, orienting its plane as close as possible
     /// to the supplied construction plane. The diameter cannot be normal to it.
     pub fn try_from_diameter_on_plane(

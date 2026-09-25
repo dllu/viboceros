@@ -47,6 +47,7 @@ cargo run --release
 Linux supports Wayland and X11; wgpu uses Vulkan when available. Enter commands
 such as `Line 0,0,0 10,5,0`, or enter `Line` to pick points in a viewport.
 `Circle 3Point 4,0,0 0,4,0 -4,0,0` constructs a circle through three world points.
+`Circle 3Point 4,0,0 0,4,0 Radius=5 0,0,0` fixes its radius and center direction.
 `Circle 0,0,0 Diameter=6` creates a radius-three circle; Circle also accepts
 `Circumference=` and `Area=` sizes, including at its interactive prompt.
 `Circle Vertical 1,2,3 5,2,3` draws a circle perpendicular to the construction

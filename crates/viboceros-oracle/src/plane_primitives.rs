@@ -80,6 +80,22 @@ mod tests {
     }
 
     #[test]
+    fn three_point_circle_radius_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
+            include_str!("../../../docs/circle-three-point-radius-rhino-reference.json"),
+            4,
+        );
+        assert_circle_records_match(
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/circle_three_point_radius_picks.json"
+            ),
+            include_str!("../../../docs/circle-three-point-radius-picks-rhino-reference.json"),
+            2,
+        );
+    }
+
+    #[test]
     fn two_point_circle_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_two_point.json"),
@@ -184,6 +200,8 @@ pub(super) fn run(
         }
         "Circle2Point" if f.value.is_none() => ("Circle 2Point", 2),
         "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
+        "Circle3PointRadius" if f.value.is_some() => ("Circle 3Point", 3),
+        "Circle3PointRadiusPick" if f.value.is_none() => ("Circle 3Point", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -201,6 +219,18 @@ pub(super) fn run(
         Point3::try_from(*p)?;
     }
     for (index, p) in f.points.iter().enumerate() {
+        if index == 2
+            && f.primitive == "Circle3PointRadius"
+            && let Some(value) = f.value
+        {
+            if !value.is_finite() {
+                return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));
+            }
+            command.push_str(&format!(" Radius={value}"));
+        }
+        if index == 2 && f.primitive == "Circle3PointRadiusPick" {
+            command.push_str(" Radius");
+        }
         if index == 1
             && f.primitive == "CircleVertical"
             && let Some(value) = f.value
@@ -241,7 +271,10 @@ pub(super) fn run(
         }
     }
     if let Some(value) = f.value
-        && f.primitive != "CircleVertical"
+        && !matches!(
+            f.primitive.as_str(),
+            "CircleVertical" | "Circle3PointRadius"
+        )
     {
         if !value.is_finite() {
             return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));

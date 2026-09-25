@@ -316,6 +316,11 @@ enum InteractiveCommand {
     CircleThreePoint {
         points: [Option<Point3>; 2],
     },
+    CircleThreePointRadius {
+        first: Point3,
+        second: Point3,
+        radius: Option<f64>,
+    },
     Sphere {
         center: Option<Point3>,
     },
@@ -592,6 +597,7 @@ impl InteractiveCommand {
             Self::CircleOrientation { .. } => "Circle",
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
+            Self::CircleThreePointRadius { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
@@ -775,6 +781,12 @@ impl InteractiveCommand {
                 points: [Some(_), None],
             } => "Circle 3Point: pick the second point (Esc cancels)",
             Self::CircleThreePoint { .. } => "Circle 3Point: pick the third point (Esc cancels)",
+            Self::CircleThreePointRadius { radius: None, .. } => {
+                "Circle 3Point Radius: pick a radius location or enter a radius (Esc cancels)"
+            }
+            Self::CircleThreePointRadius {
+                radius: Some(_), ..
+            } => "Circle 3Point Radius: pick the center direction (Esc cancels)",
             Self::Sphere { center: None } => {
                 "Sphere: pick the center in the viewport (Esc to cancel)"
             }
@@ -1452,6 +1464,7 @@ impl InteractiveCommand {
             | Self::CircleThreePoint {
                 points: [Some(point), None],
             } => Some(point),
+            Self::CircleThreePointRadius { second, .. } => Some(second),
             Self::SrfPt {
                 corners: [_, _, Some(corner)],
             }
@@ -4146,6 +4159,20 @@ impl VibocerosApp {
                         format_model_point(point)
                     ));
                 }
+            }
+            InteractiveCommand::CircleThreePointRadius {
+                first,
+                second,
+                radius,
+            } => {
+                return self.finish_three_point_radius(
+                    InteractiveCommand::CircleThreePointRadius {
+                        first,
+                        second,
+                        radius,
+                    },
+                    point,
+                );
             }
             InteractiveCommand::Sphere { center: None } => {
                 let command = InteractiveCommand::Sphere {

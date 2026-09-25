@@ -91,6 +91,66 @@ fn three_point_circle_uses_pick_order_and_rejects_degenerate_input_atomically() 
 }
 
 #[test]
+fn three_point_circle_radius_chooses_center_and_second_point_seam() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle 3Point 4,0,0 0,4,0 Radius=5 0,0,0")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    let center_component = 2.0 - 17.0_f64.sqrt() / 2.0_f64.sqrt();
+    assert!(circle.center().is_near(
+        point(center_component, center_component, 0.0),
+        Tolerance::DEFAULT,
+    ));
+    assert!((circle.radius() - 5.0).abs() < 1e-12);
+    assert!(
+        circle
+            .point_at_angle(0.0)
+            .unwrap()
+            .is_near(point(0.0, 4.0, 0.0), Tolerance::DEFAULT)
+    );
+    assert_eq!(
+        circle.normal().unwrap().as_vector().to_array(),
+        [0.0, 0.0, 1.0]
+    );
+
+    registry
+        .execute(&mut document, "Circle 3Point 4,0,0 0,4,0 Radius 5 2,2,5")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert!(
+        circle
+            .center()
+            .is_near(point(2.0, 2.0, 17.0_f64.sqrt()), Tolerance::DEFAULT,)
+    );
+    assert!(
+        circle
+            .point_at_angle(0.0)
+            .unwrap()
+            .is_near(point(0.0, 4.0, 0.0), Tolerance::DEFAULT)
+    );
+
+    let before = format!("{document:?}");
+    for command in [
+        "Circle 3Point 4,0,0 0,4,0 Radius=2 0,0,0",
+        "Circle 3Point 4,0,0 0,4,0 Radius=5 2,2,0",
+        "Circle 3Point 4,0,0 0,4,0 Radius=0 0,0,0",
+        "Circle 3Point 4,0,0 0,4,0 Radius=5 0,0,0 extra",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn two_point_circle_uses_cplane_seam_and_rejects_normal_diameter() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();

@@ -1290,6 +1290,8 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle")), "_Circle w1,2,3 w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle2Point")), "_Circle _2Point w1,2,3 w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle3Point", points=[[1,2,3],[4,5,6],[7,8,9]])), "_Circle _3Point w1,2,3 w4,5,6 w7,8,9")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle3PointRadius", points=[[1,2,3],[4,5,6],[7,8,9]], value=5)), "_Circle _3Point w1,2,3 w4,5,6 _Radius 5 w7,8,9")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle3PointRadiusPick", points=[[1,2,3],[4,5,6],[7,8,9]])), "_Circle _3Point w1,2,3 w4,5,6 _Radius w7,8,9")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleDiameter", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Diameter 8")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleCircumference", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Circumference 8")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleArea", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Area 8")

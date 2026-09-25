@@ -136,6 +136,53 @@ fn oriented_circle_accepts_normal_then_numeric_or_projected_radius() {
     }
 }
 
+#[test]
+fn three_point_circle_radius_prompt_accepts_number_or_location() {
+    let mut app = test_app();
+    enter(&mut app, "Circle 3Point");
+    assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
+    assert!(app.accept_drafting_point(point(0.0, 4.0, 0.0)));
+    enter(&mut app, "Radius");
+    enter(&mut app, "5");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::CircleThreePointRadius {
+            radius: Some(5.0),
+            ..
+        })
+    ));
+    assert!(!app.accept_drafting_point(point(2.0, 2.0, 0.0)));
+    assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if (circle.radius() - 5.0).abs() < 1e-12
+            && circle.point_at_angle(0.0).unwrap().is_near(point(0.0, 4.0, 0.0), Tolerance::DEFAULT)
+    ));
+
+    enter(&mut app, "Circle 3Point");
+    assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
+    assert!(app.accept_drafting_point(point(0.0, 4.0, 0.0)));
+    enter(&mut app, "Radius");
+    assert!(app.accept_drafting_point(point(5.0, 4.0, 0.0)));
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if (circle.radius() - 17.0_f64.sqrt()).abs() < 1e-12
+            && circle.point_at_angle(0.0).unwrap().is_near(point(0.0, 4.0, 0.0), Tolerance::DEFAULT)
+    ));
+
+    enter(&mut app, "Circle 3Point");
+    assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
+    assert!(app.accept_drafting_point(point(0.0, 4.0, 0.0)));
+    enter(&mut app, "Radius=5");
+    assert!(app.accept_drafting_point(point(4.0, 4.0, 0.0)));
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if (circle.radius() - 5.0).abs() < 1e-12
+    ));
+}
+
 fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context
