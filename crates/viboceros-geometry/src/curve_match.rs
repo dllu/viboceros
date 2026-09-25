@@ -19,11 +19,10 @@ struct MatchTarget {
     curvature: Option<Vector3>,
 }
 
-/// Changes the selected end of one open, single-span curve to meet another
-/// open curve with G0, G1, or G2 continuity. Degree elevation leaves the
-/// original rational locus unchanged before the end controls are modified.
-/// The opposite end's requested position, tangent, or curvature is preserved
-/// by reserving that many untouched Bézier controls.
+/// Changes the selected end of one open curve to meet another with G0, G1, or
+/// G2 continuity. Multi-span position matching first trims toward the nearest
+/// location to the reference end. Degree elevation leaves a single-span
+/// rational locus unchanged before its end controls are modified.
 pub fn try_match_curve_end(
     source: &Curve3,
     source_at_end: bool,
@@ -58,10 +57,15 @@ pub fn try_match_curve_end(
     // Two selected starts (or two selected ends) must point in opposite
     // natural directions at the join; unlike ends point the same way.
     let original = source.as_ref().to_nurbs()?;
+    let original = if continuity == CurveBlendContinuity::Position && original.spans().count() > 1 {
+        trim_toward_target(source.as_ref(), source_at_end, sample.point(), tolerance)?
+    } else {
+        original
+    };
     let source_single_span = original.spans().count() == 1;
-    if !source_single_span && continuity != CurveBlendContinuity::Tangency {
+    if !source_single_span && continuity == CurveBlendContinuity::Curvature {
         return Err(GeometryError::InvalidPolyCurve {
-            context: "Match multi-span source currently supports tangency",
+            context: "Match multi-span curvature currently needs knot edits",
         });
     }
     let matched = match_end_to_target(
@@ -143,8 +147,8 @@ pub fn try_average_match_curve_ends(
     };
     let midpoint = first_point.midpoint(second_point)?;
     if continuity == CurveBlendContinuity::Position {
-        let first_nurbs = trim_to_midpoint(first_curve, first_at_end, midpoint, tolerance)?;
-        let second_nurbs = trim_to_midpoint(second_curve, second_at_end, midpoint, tolerance)?;
+        let first_nurbs = trim_toward_target(first_curve, first_at_end, midpoint, tolerance)?;
+        let second_nurbs = trim_toward_target(second_curve, second_at_end, midpoint, tolerance)?;
         let first_output = match_end_to_target(
             &first_nurbs,
             first_at_end,
@@ -257,7 +261,7 @@ pub fn try_average_match_curve_ends(
     Ok((first_output, second_output))
 }
 
-fn trim_to_midpoint(
+fn trim_toward_target(
     curve: CurveRef<'_>,
     selected_at_end: bool,
     midpoint: Point3,

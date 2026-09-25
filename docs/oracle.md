@@ -4,6 +4,10 @@
 
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
+On Linux, the CLI automatically runs live `rhino` and `compare` probes under
+the dedicated `run_headless.sh` Xvfb display. Replay and native-only modes do
+not launch Rhino. Set `VIBOCEROS_RHINO_VISIBLE=1` only for an intentional
+interactive desktop run.
 
 The [Match fixture](../tools/rhino_oracle/fixtures/curve_match_geometry.json)
 contains 33 live Rhino `CreateMatchCurve` cases for single-span line, polynomial,
@@ -30,8 +34,12 @@ preserved far tangents remains unimplemented natively. The
 adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_tangency.json)
 for cubic and quadratic two-span sources, opposite-end preservation, and
 reversed picks. The
+[multi-span position fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_position.json)
+adds seven matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_position.json).
+A more precise NURBS closest-point stopping rule resolves the interior trim
+parameter at the default model tolerance. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-retains two-span position and curvature examples for later implementation.
+retains a two-span curvature example for later implementation.
 
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded

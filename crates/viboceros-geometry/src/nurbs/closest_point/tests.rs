@@ -10,6 +10,30 @@ fn line(start: Point3, end: Point3) -> NurbsCurve {
 }
 
 #[test]
+fn closest_multispan_parameter_is_precise_enough_for_control_point_trimming() {
+    let curve = NurbsCurve::try_new(
+        3,
+        [
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(2., 1., 0.),
+            p(3., 1., 0.),
+            p(4., 0., 0.),
+        ]
+        .to_vec(),
+        vec![0., 0., 0., 0., 1., 2., 2., 2., 2.],
+    )
+    .unwrap();
+    let parameter = curve
+        .closest_parameter(p(4., 1., 0.), Tolerance::DEFAULT)
+        .unwrap();
+    assert!(
+        (parameter - 1.8313300081231163).abs() < 1e-12,
+        "{parameter}"
+    );
+}
+
+#[test]
 fn closest_curve_distant_projection_does_not_tie_with_the_first_endpoint() {
     let curve = line(p(0., 0., 0.), p(1., 0., 0.));
     let target = p(0.37, 1e100, 0.);

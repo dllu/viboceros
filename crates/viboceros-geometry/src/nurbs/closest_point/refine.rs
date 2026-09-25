@@ -45,7 +45,15 @@ impl CurveQuery<'_> {
             let projection = unit
                 .as_vector()
                 .dot_point_difference(target, current.point());
-            if projection.abs() <= tolerance.absolute() {
+            // Model tolerance describes acceptable distances, not the
+            // precision of the nearest parameter. A coarser stop here can
+            // leave a visible control-point error after trimming to the hit.
+            let numerical_projection_tolerance = derivative
+                .length()
+                .ok()
+                .map(|speed| (8.0 * Real::EPSILON * speed).min(tolerance.absolute()))
+                .unwrap_or(tolerance.absolute());
+            if projection.abs() <= numerical_projection_tolerance {
                 break;
             }
             let tangent = derivative.parameter_step(projection);
