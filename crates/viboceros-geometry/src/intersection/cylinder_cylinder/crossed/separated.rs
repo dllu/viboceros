@@ -4,9 +4,7 @@
 //! square root at every angle. Its two signs are separate closed branches.
 //! Finite-height cuts reduce to quadratic or quartic equations.
 
-mod skew_clip;
-
-use super::SurfaceSurfaceIntersectionEvent;
+use super::{SurfaceSurfaceIntersectionEvent, skew_clip};
 use crate::{GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3};
 
 const MAX_SEGMENTS_PER_BRANCH: usize = 2048;
@@ -278,15 +276,12 @@ fn active_intervals(
                     fit_tolerance,
                 )?;
             } else {
-                skew_clip::add_boundary_angles(
-                    &mut angles,
-                    basis,
-                    sign,
+                angles.extend(skew_clip::boundary_angles(
+                    (basis.small, basis.big, basis.miss),
                     coefficients,
                     boundary - center,
-                    small_axial,
                     fit_tolerance,
-                )?;
+                )?);
             }
         }
     }
@@ -635,9 +630,9 @@ mod tests {
     }
 
     #[test]
-    fn skew_cylinders_with_joining_square_root_branches_remain_unsupported() {
+    fn skew_cylinders_at_internal_branch_tangency_remain_unsupported() {
         let ((first, _), (second, _)) =
-            cylinders_with_miss(std::f64::consts::FRAC_PI_3, 1.5, -4.0, 8.0, -4.0, 8.0);
+            cylinders_with_miss(std::f64::consts::FRAC_PI_3, 1.0, -4.0, 8.0, -4.0, 8.0);
         assert!(matches!(
             surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })

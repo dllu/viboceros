@@ -279,10 +279,40 @@ mod tests {
             2.0,
             2.0,
         );
-        assert!(matches!(
-            surface_surface_intersection_events(&first, &skew, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
+        let events =
+            surface_surface_intersection_events(&first, &skew, Tolerance::DEFAULT).unwrap();
+        assert!(!events.is_empty());
+        let first_frame =
+            Frame3::try_from_normal(point(0.0, 0.0, 0.0), z_axis(), Tolerance::DEFAULT).unwrap();
+        let skew_frame = Frame3::try_from_normal(
+            point(1.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let assert_on_walls = |location: Point3| {
+            for (frame, height) in [(first_frame, 5.0), (skew_frame, 2.0)] {
+                let local = frame.coordinates_of(location).unwrap();
+                assert!((local[0].hypot(local[1]) - 2.0).abs() < 2e-9);
+                assert!((-1e-9..=height + 1e-9).contains(&local[2]));
+            }
+        };
+        for event in events {
+            match event {
+                SurfaceSurfaceIntersectionEvent::Point(location) => assert_on_walls(location),
+                SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                    let domain = curve.domain();
+                    for fraction in [0.0, 0.5, 1.0] {
+                        let parameter = if fraction == 1.0 {
+                            *domain.end()
+                        } else {
+                            *domain.start() + (*domain.end() - *domain.start()) * fraction
+                        };
+                        assert_on_walls(curve.evaluate(parameter).unwrap());
+                    }
+                }
+            }
+        }
     }
 
     #[test]

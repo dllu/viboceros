@@ -1,6 +1,8 @@
 //! Intersections of finite cylinders with nonparallel crossing or skew axes.
 
+mod joined;
 mod separated;
+mod skew_clip;
 mod unequal;
 
 use super::SurfaceSurfaceIntersectionEvent;
@@ -68,25 +70,28 @@ pub(super) fn intersect(
         let second_closest = second_frame
             .origin()
             .translated(second_axis.scaled(second_at_crossing)?)?;
-        return separated::intersect(
-            (
-                first_axis,
-                first_radius,
-                first_height,
-                first_at_crossing,
-                crossing,
-            ),
-            (
-                second_axis,
-                second_radius,
-                second_height,
-                second_at_crossing,
-                second_closest,
-            ),
-            axis_miss,
-            tolerance,
-            roundoff,
+        let first = (
+            first_axis,
+            first_radius,
+            first_height,
+            first_at_crossing,
+            crossing,
         );
+        let second = (
+            second_axis,
+            second_radius,
+            second_height,
+            second_at_crossing,
+            second_closest,
+        );
+        let radial_roundoff = roundoff
+            .max(64.0 * Real::EPSILON * first_radius.max(second_radius).max(axis_miss.abs()));
+        if first_radius.max(second_radius)
+            > first_radius.min(second_radius) + axis_miss.abs() + radial_roundoff
+        {
+            return separated::intersect(first, second, axis_miss, tolerance, roundoff);
+        }
+        return joined::intersect(first, second, axis_miss, tolerance, roundoff);
     }
     if !equal_radii {
         if axis_dot.abs() * scale > spatial_tolerance.max(roundoff) {

@@ -207,8 +207,11 @@ crossings. Finite heights clip them to arcs and retain isolated rim contacts.
 Skew-axis cylinders with disjoint finite wall bounds report no intersection.
 When the larger radius exceeds the smaller radius plus the axis separation,
 their walls produce two separate fitted cubic curves; finite heights clip the
-curves to arcs or isolated rim contacts. Other overlapping skew-axis wall
-intersections remain unsupported.
+curves to arcs or isolated rim contacts. When the axis separation lies between
+the radius difference and the radius sum, the walls produce one connected
+fitted cubic loop, likewise clipped to finite heights. External tangency
+produces an isolated point. Internal tangency at exactly the radius difference
+remains unsupported.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
 when the cylinder radius occurs within both finite height ranges. Opposed
 surface axes yield two exact semicircles, matching Rhino's event structure.
