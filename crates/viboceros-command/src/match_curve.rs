@@ -5,7 +5,7 @@ use viboceros_geometry::{
     try_match_curve_end,
 };
 
-const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No (Tangency only)]";
+const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No]";
 
 pub(super) struct MatchCurveCommand;
 
@@ -67,14 +67,12 @@ impl Command for MatchCurveCommand {
             document.tolerance(),
         )?;
         if options.average {
-            if options.continuity != CurveBlendContinuity::Tangency {
-                return Err(CommandError::Usage(USAGE));
-            }
             let (first, second) = try_average_match_curve_ends(
                 &source,
                 source_end,
                 &reference,
                 reference_end,
+                options.continuity,
                 options.preserve,
                 document.tolerance(),
             )?;
@@ -288,5 +286,64 @@ mod tests {
                 Geometry::Line(_)
             ));
         }
+    }
+
+    #[test]
+    fn average_curvature_matches_an_arc_and_preserves_source_far_end() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let reference_id = document
+            .add_geometry(Geometry::Arc(
+                CircularArc3::try_from_three_points(
+                    Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 2.0, 0.0).unwrap(),
+                    Point3::try_new(6.0, 1.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, reference_id], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "Match Continuity=Curvature AverageCurves=Yes PreserveOtherEnd=Position Pick1=0,0,0 Pick2=4,1,0").unwrap();
+        let first = document
+            .object(source_id)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        let second = document
+            .object(reference_id)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        assert_eq!(
+            curve_end_continuity(first, false, second, false, document.tolerance())
+                .unwrap()
+                .level,
+            CurveContinuityLevel::CurvatureOrHigher
+        );
+        assert_eq!(first.end_point().unwrap().to_array(), [3.0, 0.0, 0.0]);
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(source_id).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+        assert!(matches!(
+            document.object(reference_id).unwrap().geometry(),
+            Geometry::Arc(_)
+        ));
     }
 }

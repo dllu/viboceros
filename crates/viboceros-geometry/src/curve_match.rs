@@ -83,19 +83,25 @@ pub fn try_match_curve_end(
 }
 
 /// Moves both selected ends to their midpoint and bisects their tangents.
-/// Each curve retains its original end-handle length and the requested degree
-/// of continuity at its opposite end. This is the `AverageCurves=Yes` G1 path.
+/// For G2, the target curvature vector is the average of the original endpoint
+/// vectors. Both curves retain their original end-handle lengths.
 pub fn try_average_match_curve_ends(
     first: &Curve3,
     first_at_end: bool,
     second: &Curve3,
     second_at_end: bool,
+    continuity: CurveBlendContinuity,
     preserve: CurveMatchPreserveEnd,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve, NurbsCurve), GeometryError> {
     if first.as_ref().is_closed()? || second.as_ref().is_closed()? {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match requires open curves",
+        });
+    }
+    if continuity == CurveBlendContinuity::Position {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "average Match position requires shape redistribution",
         });
     }
     let first_curve = first.as_ref();
@@ -135,15 +141,39 @@ pub fn try_average_match_curve_ends(
         first_sample.tangent().z() + second_direction.z(),
     )?;
     let tangent = tangent_sum.normalized(tolerance)?;
+    let first_nurbs = first_curve.to_nurbs()?;
+    let second_nurbs = second_curve.to_nurbs()?;
+    if continuity == CurveBlendContinuity::Curvature
+        && second_nurbs.spans().count() > 1
+        && matches!(
+            preserve,
+            CurveMatchPreserveEnd::Tangency | CurveMatchPreserveEnd::Curvature
+        )
+    {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "average Match curvature with a preserved multi-span opposite end",
+        });
+    }
+    let curvature = if continuity == CurveBlendContinuity::Curvature {
+        let first_curvature = first_curve.curvature_vector(first_parameter)?;
+        let second_curvature = second_curve.curvature_vector(second_parameter)?;
+        Some(Vector3::try_new(
+            first_curvature.x().midpoint(second_curvature.x()),
+            first_curvature.y().midpoint(second_curvature.y()),
+            first_curvature.z().midpoint(second_curvature.z()),
+        )?)
+    } else {
+        None
+    };
     let first_output = match_end_to_target(
-        &first_curve.to_nurbs()?,
+        &first_nurbs,
         first_at_end,
         MatchTarget {
             point: midpoint,
             tangent,
-            curvature: None,
+            curvature,
         },
-        CurveBlendContinuity::Tangency,
+        continuity,
         preserve,
         true,
     )?;
@@ -153,23 +183,23 @@ pub fn try_average_match_curve_ends(
         tangent
     };
     let second_output = match_end_to_target(
-        &second_curve.to_nurbs()?,
+        &second_nurbs,
         second_at_end,
         MatchTarget {
             point: midpoint,
             tangent: second_tangent,
-            curvature: None,
+            curvature,
         },
-        CurveBlendContinuity::Tangency,
+        continuity,
         preserve,
-        false,
+        second_nurbs.spans().count() == 1,
     )?;
     require_continuity(
         &first_output,
         first_at_end,
         CurveRef::NurbsCurve(&second_output),
         second_at_end,
-        CurveBlendContinuity::Tangency,
+        continuity,
         tolerance,
     )?;
     Ok((first_output, second_output))

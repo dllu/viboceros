@@ -2710,17 +2710,13 @@ fn execute(
             };
             let (matched, elapsed) = measure(iterations, || {
                 if *average {
-                    if continuity != viboceros_geometry::CurveBlendContinuity::Tangency {
-                        return Err(viboceros_geometry::GeometryError::InvalidPolyCurve {
-                            context: "average Match currently supports tangency",
-                        });
-                    }
                     let (first_output, second_output) =
                         viboceros_geometry::try_average_match_curve_ends(
                             &first,
                             *reverse_first,
                             &second,
                             *reverse_second,
+                            continuity,
                             preserve,
                             tolerance,
                         )?;

@@ -14,7 +14,11 @@ All 33 outputs agree within the default 1e-10 absolute tolerance. The
 [average-tangency fixture](../tools/rhino_oracle/fixtures/curve_match_average_tangency.json)
 adds eight live cases, including rational handles and reversed selected ends;
 all eight match their [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_tangency.json)
-within the same tolerance. Average position and curvature matching remain
+within the same tolerance. The
+[average-curvature fixture](../tools/rhino_oracle/fixtures/curve_match_average_curvature.json)
+adds six matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_curvature.json)
+for opposite-end preservation of None or Position. Average position and
+multi-span reference curvature matching with preserved far tangents remain
 unimplemented natively. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
 retains two-span examples for later implementation.
