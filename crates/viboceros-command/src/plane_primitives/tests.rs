@@ -158,6 +158,61 @@ fn circle_numeric_size_options_use_the_same_radius_and_keep_history_atomic() {
 }
 
 #[test]
+fn vertical_circle_uses_cplane_up_and_keeps_pick_direction() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle Vertical 1,2,3 5,2,3")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(circle.point_at_angle(0.0).unwrap(), point(5.0, 2.0, 3.0));
+
+    registry
+        .execute(&mut document, "Circle Vertical 1,2,3 Diameter 8 9,2,3")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(
+        circle.normal().unwrap().as_vector().to_array(),
+        [0.0, 1.0, 0.0]
+    );
+    assert!(
+        circle
+            .point_at_angle(std::f64::consts::FRAC_PI_2)
+            .unwrap()
+            .is_near(point(1.0, 2.0, -1.0), Tolerance::DEFAULT)
+    );
+
+    registry
+        .execute(&mut document, "Circle Vertical 1,2,3 4 9,2,3")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(circle.point_at_angle(0.0).unwrap(), point(5.0, 2.0, 3.0));
+
+    let before = format!("{document:?}");
+    for command in [
+        "Circle Vertical 1,2,3 1,2,3",
+        "Circle Vertical 1,2,3 1,2,7",
+        "Circle Vertical 1,2,3 0 5,2,3",
+        "Circle Vertical 1,2,3 5,2,3 extra",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn rectangle_normalizes_corner_order_on_a_translated_oblique_plane() {
     let registry = CommandRegistry::with_builtins();
     let context = context();

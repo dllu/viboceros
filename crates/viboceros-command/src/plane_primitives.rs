@@ -75,6 +75,46 @@ impl Command for CircleCommand {
         let plane = context.construction_plane;
         let circle = if arguments
             .first()
+            .is_some_and(|option| option_name_eq(option, "Vertical"))
+        {
+            let arguments = &arguments[1..];
+            let (center, consumed) = parse_point(arguments)?;
+            let remaining = &arguments[consumed..];
+            let direction_point = parse_point(remaining)
+                .ok()
+                .filter(|(_, count)| *count == remaining.len());
+            let (radius, point) = if let Some((point, _)) = direction_point {
+                (center.distance_to(point)?, point)
+            } else {
+                let mut parsed = None;
+                for size_tokens in [1, 2] {
+                    if remaining.len() <= size_tokens {
+                        continue;
+                    }
+                    if size_tokens == 1 && CircleSizeMode::parse(remaining[0]).is_some() {
+                        continue;
+                    }
+                    if let Some(radius) = circle_numeric_radius(&remaining[..size_tokens])?
+                        && let Ok((point, count)) = parse_point(&remaining[size_tokens..])
+                        && size_tokens + count == remaining.len()
+                    {
+                        parsed = Some((radius, point));
+                        break;
+                    }
+                }
+                parsed.ok_or(CommandError::Usage(
+                    "Circle Vertical center point | center radius direction-point",
+                ))?
+            };
+            Circle3::try_from_vertical_direction(
+                center,
+                radius,
+                point,
+                plane,
+                document.tolerance(),
+            )?
+        } else if arguments
+            .first()
             .is_some_and(|option| option_name_eq(option, "2Point"))
         {
             let arguments = &arguments[1..];

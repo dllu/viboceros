@@ -3388,7 +3388,7 @@ def _plane_primitive_script(operation):
         expected = 1 if value is not None else 2
     elif primitive in ("CircleDiameter", "CircleCircumference", "CircleArea") and value is not None:
         expected = 1
-    elif primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick") and value is None:
+    elif primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick", "CircleVertical"):
         expected = 2
     elif primitive == "Circle2Point" and value is None:
         expected = 2
@@ -3404,6 +3404,7 @@ def _plane_primitive_script(operation):
         raise ValueError("incorrect primitive arguments")
     script = {"Circle2Point": "_Circle _2Point ",
               "Circle3Point": "_Circle _3Point ",
+              "CircleVertical": "_Circle _Vertical ",
               "CircleDiameter": "_Circle ",
               "CircleCircumference": "_Circle ",
               "CircleArea": "_Circle ",
@@ -3416,6 +3417,11 @@ def _plane_primitive_script(operation):
         script += "_XCount=2 _YCount=3 "
     if primitive == "MeshBox":
         script += "_XCount=2 _YCount=3 _ZCount=2 "
+    if primitive == "CircleVertical" and value is not None:
+        script += "w" + _command_point(points[0])
+        script += " %.17g" % _finite(value, "primitive size")
+        script += " w" + _command_point(points[1])
+        return script
     if primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick"):
         script += "w" + _command_point(points[0])
         script += " _" + primitive[len("Circle"):-len("Pick")]

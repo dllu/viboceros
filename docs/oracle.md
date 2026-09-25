@@ -546,6 +546,12 @@ checks Diameter, Circumference, and Area against
 [picked size fixture](../tools/rhino_oracle/fixtures/circle_size_picks.json)
 checks Rhino's distinct point behavior for the same three options against
 [live results](circle-size-picks-rhino-reference.json).
+The [Vertical fixture](../tools/rhino_oracle/fixtures/circle_vertical.json)
+checks world, off-plane, and rotated-CPlane direction picks against
+[Rhino records](circle-vertical-rhino-reference.json). A separate
+[numeric-radius fixture](../tools/rhino_oracle/fixtures/circle_vertical_numeric.json)
+uses a direction point beyond the fixed radius and matches its
+[Rhino result](circle-vertical-numeric-rhino-reference.json).
 
 `plane_transforms.json` checks 140 actual transform commands using four affinely
 independent point witnesses per operation, including copied/original identity

@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-vertical-numeric-xy",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "CircleVertical",
+      "points": [[1, 2, 3], [9, 2, 3]],
+      "value": 4
+    }
+  ]
+}

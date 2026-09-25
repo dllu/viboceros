@@ -20,6 +20,56 @@ fn circle_size_option_works_through_the_command_line() {
     ));
 }
 
+#[test]
+fn vertical_circle_uses_a_direction_pick_after_numeric_radius() {
+    let mut app = test_app();
+    enter(&mut app, "Circle");
+    enter(&mut app, "Vertical");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "4");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::CircleVertical {
+            center: Some(_),
+            radius: Some(4.0),
+            ..
+        })
+    ));
+    assert!(app.accept_drafting_point(point(9.0, 2.0, 3.0)));
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if circle.radius() == 4.0
+            && circle.point_at_angle(0.0).unwrap() == point(5.0, 2.0, 3.0)
+    ));
+
+    enter(&mut app, "Circle Vertical");
+    assert!(app.accept_drafting_point(point(1.0, 2.0, 3.0)));
+    assert!(!app.accept_drafting_point(point(1.0, 2.0, 7.0)));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::CircleVertical {
+            center: Some(_),
+            ..
+        })
+    ));
+    assert!(app.accept_drafting_point(point(5.0, 2.0, 5.0)));
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if (circle.radius() - 20.0_f64.sqrt()).abs() < 1e-12
+    ));
+
+    enter(&mut app, "Circle Vertical");
+    assert!(app.accept_drafting_point(point(1.0, 2.0, 3.0)));
+    enter(&mut app, "Diameter 8");
+    assert!(app.accept_drafting_point(point(9.0, 2.0, 3.0)));
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if circle.radius() == 4.0
+    ));
+}
+
 fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context

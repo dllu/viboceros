@@ -34,6 +34,15 @@ impl CircleSizeMode {
         }
     }
 
+    fn radius(self, value: f64) -> f64 {
+        match self {
+            Self::Radius => value,
+            Self::Diameter => value * 0.5,
+            Self::Circumference => value / std::f64::consts::TAU,
+            Self::Area => (value / std::f64::consts::PI).sqrt(),
+        }
+    }
+
     pub(super) const fn prompt(self) -> &'static str {
         match self {
             Self::Radius => "Circle Radius: pick a radius point or enter a radius (Esc cancels)",
@@ -62,11 +71,69 @@ impl VibocerosApp {
                 InteractiveCommand::CircleTwoPoint { first: None }
             } else if option.eq_ignore_ascii_case("3Point") {
                 InteractiveCommand::CircleThreePoint { points: [None; 2] }
+            } else if option.eq_ignore_ascii_case("Vertical") {
+                InteractiveCommand::CircleVertical {
+                    center: None,
+                    radius: None,
+                    mode: CircleSizeMode::Radius,
+                }
             } else {
                 return false;
             };
             self.command_input.clear();
             self.active_command = Some(next);
+            self.push_log(next.prompt().to_owned());
+            return true;
+        }
+        if let InteractiveCommand::CircleVertical {
+            center: Some(center),
+            radius,
+            mode,
+        } = state
+        {
+            let input = input.trim();
+            let (next_mode, value) = if let Some((name, value)) = input.split_once('=') {
+                let Some(next_mode) = CircleSizeMode::parse(name) else {
+                    return false;
+                };
+                (next_mode, Some(value.trim()))
+            } else if let Some(next_mode) = CircleSizeMode::parse(input) {
+                (next_mode, None)
+            } else if let Some((name, value)) = input.split_once(char::is_whitespace) {
+                let Some(next_mode) = CircleSizeMode::parse(name) else {
+                    return false;
+                };
+                (next_mode, Some(value.trim()))
+            } else if input.parse::<f64>().is_ok() {
+                (mode, Some(input))
+            } else {
+                return false;
+            };
+            let next_radius = if let Some(value) = value {
+                let Ok(value) = value.parse::<f64>() else {
+                    self.push_log("Error: circle size must be a finite number".into());
+                    self.command_input.clear();
+                    return true;
+                };
+                let converted = next_mode.radius(value);
+                if !converted.is_finite() || converted <= self.document.tolerance().absolute() {
+                    self.push_log("Error: circle radius must exceed document tolerance".into());
+                    self.command_input.clear();
+                    return true;
+                }
+                Some(converted)
+            } else if next_mode == mode {
+                radius
+            } else {
+                None
+            };
+            let next = InteractiveCommand::CircleVertical {
+                center: Some(center),
+                radius: next_radius,
+                mode: next_mode,
+            };
+            self.active_command = Some(next);
+            self.command_input.clear();
             self.push_log(next.prompt().to_owned());
             return true;
         }
@@ -119,6 +186,44 @@ impl VibocerosApp {
             _ => unreachable!("circle size requires a center"),
         };
         let command = format!("Circle {} {argument}", format_model_point(center));
+        let drafting_plane = self.drafting_plane;
+        self.active_command = None;
+        self.command_input.clear();
+        let success = self.try_execute_command(&command);
+        if !success {
+            self.active_command = Some(state);
+            self.drafting_plane = drafting_plane;
+            self.push_log(state.prompt().to_owned());
+        }
+        success
+    }
+
+    pub(super) fn finish_circle_vertical(
+        &mut self,
+        state: InteractiveCommand,
+        point: Point3,
+    ) -> bool {
+        let InteractiveCommand::CircleVertical {
+            center: Some(center),
+            radius,
+            ..
+        } = state
+        else {
+            unreachable!("vertical circle requires a center");
+        };
+        let command = if let Some(radius) = radius {
+            format!(
+                "Circle Vertical {} {radius} {}",
+                format_model_point(center),
+                format_model_point(point)
+            )
+        } else {
+            format!(
+                "Circle Vertical {} {}",
+                format_model_point(center),
+                format_model_point(point)
+            )
+        };
         let drafting_plane = self.drafting_plane;
         self.active_command = None;
         self.command_input.clear();

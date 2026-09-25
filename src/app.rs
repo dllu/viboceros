@@ -300,6 +300,11 @@ enum InteractiveCommand {
         center: Point3,
         mode: CircleSizeMode,
     },
+    CircleVertical {
+        center: Option<Point3>,
+        radius: Option<f64>,
+        mode: CircleSizeMode,
+    },
     CircleTwoPoint {
         first: Option<Point3>,
     },
@@ -578,6 +583,7 @@ impl InteractiveCommand {
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
             Self::CircleSize { .. } => "Circle",
+            Self::CircleVertical { .. } => "Circle",
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
@@ -730,6 +736,19 @@ impl InteractiveCommand {
                 "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
             }
             Self::CircleSize { mode, .. } => mode.prompt(),
+            Self::CircleVertical { center: None, .. } => {
+                "Circle Vertical: pick the center (Esc cancels)"
+            }
+            Self::CircleVertical {
+                center: Some(_),
+                radius: None,
+                ..
+            } => "Circle Vertical: pick a radius point or enter a size (Esc cancels)",
+            Self::CircleVertical {
+                center: Some(_),
+                radius: Some(_),
+                ..
+            } => "Circle Vertical: pick a direction point (Esc cancels)",
             Self::CircleTwoPoint { first: None } => {
                 "Circle 2Point: pick the first diameter end (Esc cancels)"
             }
@@ -1257,6 +1276,7 @@ impl InteractiveCommand {
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
+            | Self::CircleVertical { center: None, .. }
             | Self::CircleTwoPoint { first: None }
             | Self::CircleThreePoint { points: [None, _] }
             | Self::Sphere { center: None }
@@ -1366,6 +1386,10 @@ impl InteractiveCommand {
                 axis_start: start, ..
             } => start,
             Self::CircleSize { center, .. } => Some(center),
+            Self::CircleVertical {
+                center: Some(center),
+                ..
+            } => Some(center),
             Self::MeshTruncatedCone {
                 center: Some(center),
                 end_center: None,
@@ -3654,6 +3678,17 @@ impl VibocerosApp {
             } else {
                 InteractiveCommand::SelVolumeSphere { center: None, mode }
             }
+        } else if matches!(normalized.as_str(), "circle" | "c")
+            && arguments.len() == 1
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Vertical")
+        {
+            InteractiveCommand::CircleVertical {
+                center: None,
+                radius: None,
+                mode: CircleSizeMode::Radius,
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -3965,6 +4000,32 @@ impl VibocerosApp {
                     InteractiveCommand::CircleSize { center, mode },
                     &argument,
                 );
+            }
+            InteractiveCommand::CircleVertical {
+                center: None,
+                radius,
+                mode,
+            } => {
+                let next = InteractiveCommand::CircleVertical {
+                    center: Some(point),
+                    radius,
+                    mode,
+                };
+                self.active_command = Some(next);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(next.prompt().to_owned());
+            }
+            InteractiveCommand::CircleVertical {
+                center: Some(center),
+                radius,
+                mode,
+            } => {
+                let state = InteractiveCommand::CircleVertical {
+                    center: Some(center),
+                    radius,
+                    mode,
+                };
+                return self.finish_circle_vertical(state, point);
             }
             InteractiveCommand::CircleTwoPoint { first: None } => {
                 let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };

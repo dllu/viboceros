@@ -103,6 +103,26 @@ impl Circle3 {
         })?;
         Self::try_from_frame(center, radius, x_axis, normal, tolerance)
     }
+    /// Constructs a circle in a plane perpendicular to the construction plane.
+    /// The direction point sets the seam; `radius` may independently constrain
+    /// its size. A direction parallel to the construction-plane normal is
+    /// ambiguous and therefore invalid.
+    pub fn try_from_vertical_direction(
+        center: Point3,
+        radius: Real,
+        direction_point: Point3,
+        construction_plane: Frame3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let direction = center.vector_to(direction_point)?;
+        let x_axis = direction.normalized(tolerance)?;
+        let normal = construction_plane
+            .z_axis()
+            .as_vector()
+            .cross(x_axis.as_vector())?
+            .normalized(tolerance)?;
+        Self::try_from_frame(center, radius, x_axis, normal, tolerance)
+    }
     pub fn try_from_frame(
         center: Point3,
         radius: Real,

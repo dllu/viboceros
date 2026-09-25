@@ -1296,6 +1296,8 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleDiameterPick")), "_Circle w1,2,3 _Diameter w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleCircumferencePick")), "_Circle w1,2,3 _Circumference w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleAreaPick")), "_Circle w1,2,3 _Area w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleVertical")), "_Circle _Vertical w1,2,3 w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleVertical", value=4)), "_Circle _Vertical w1,2,3 4 w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Polygon")), "_Polygon _NumSides=5 _Mode=_Inscribed w1,2,3 w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="MeshBox", value=-4)), "_MeshBox _XCount=2 _YCount=3 _ZCount=2 w1,2,3 w4,5,6 -4")
         for invalid in [dict(operation, primitive="Delete"), dict(operation, primitive="Circle _Delete"),

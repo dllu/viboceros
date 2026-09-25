@@ -34,6 +34,14 @@ point; Circumference and Area picks use their distance from the center as the
 numeric size. Numeric sizes and picked sizes match the corresponding
 [Rhino records](../circle-size-options-rhino-reference.json) and
 [pick records](../circle-size-picks-rhino-reference.json) within `1e-10`.
+`Circle Vertical center radius-point` draws a circle perpendicular to the
+construction plane, with the picked point setting its seam. An off-plane pick
+sets both radius and seam direction. `Circle Vertical center radius direction-point`
+fixes the radius while the final point sets direction. Enter `Vertical` at
+Circle's first prompt for the same interactive sequence. Three
+[picked-point Rhino records](../circle-vertical-rhino-reference.json) and one
+[numeric-radius record](../circle-vertical-numeric-rhino-reference.json) match
+the native sampled curves and domains within `1e-10`.
 
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.

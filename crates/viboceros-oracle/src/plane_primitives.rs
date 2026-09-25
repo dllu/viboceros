@@ -105,6 +105,20 @@ mod tests {
             3,
         );
     }
+
+    #[test]
+    fn vertical_circle_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_vertical.json"),
+            include_str!("../../../docs/circle-vertical-rhino-reference.json"),
+            3,
+        );
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_vertical_numeric.json"),
+            include_str!("../../../docs/circle-vertical-numeric-rhino-reference.json"),
+            1,
+        );
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -139,6 +153,7 @@ pub(super) fn run(
         {
             ("Circle", 2)
         }
+        "CircleVertical" => ("Circle Vertical", 2),
         "Circle2Point" if f.value.is_none() => ("Circle 2Point", 2),
         "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
@@ -158,6 +173,15 @@ pub(super) fn run(
         Point3::try_from(*p)?;
     }
     for (index, p) in f.points.iter().enumerate() {
+        if index == 1
+            && f.primitive == "CircleVertical"
+            && let Some(value) = f.value
+        {
+            if !value.is_finite() {
+                return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));
+            }
+            command.push_str(&format!(" {value}"));
+        }
         if index == 1 && f.primitive.ends_with("Pick") && f.primitive != "CircleDiameterPick" {
             let size = Point3::try_from(f.points[0])?.distance_to(Point3::try_from(*p)?)?;
             let option = f
@@ -170,7 +194,9 @@ pub(super) fn run(
             command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
         }
     }
-    if let Some(value) = f.value {
+    if let Some(value) = f.value
+        && f.primitive != "CircleVertical"
+    {
         if !value.is_finite() {
             return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));
         }
