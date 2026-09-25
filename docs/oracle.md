@@ -32,6 +32,14 @@ view, and a shifted Perspective camera. In these cases the first plain `4View`
 call restored standard views and activated Perspective. Shaded Perspective
 survived either projection arrangement, while Right-to-Left and Bottom-to-Top
 replacements started in Wireframe.
+The [grid-spacing run](viewport-arrangement-fourview-grid-rhino-reference.json)
+sets distinctive grid and snap spacing through each viewport's public
+construction-plane API before plain and explicit `4View` calls. It confirms
+that unchanged Top keeps its spacing, first-angle Left takes Right's spacing,
+and returning to third-angle resets Right's spacing. Each operation first
+establishes a standard four-view layout with unit grid and snap spacing.
+The changed Top-to-Bottom case also gives Right the active Bottom spacing when
+plain `4View` restores Top; this side effect remains unmatched.
 
 The [orientation audit](orientation-audit.md) separates public document insertion
 and replacement from actual `Flip` command behavior, retaining full definitions

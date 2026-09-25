@@ -176,10 +176,11 @@ fn four_view_projection_options_restore_rhino_arrangements_and_active_perspectiv
     );
     assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS);
     assert_eq!(app.active_viewport, 3);
+    assert_eq!(app.viewports[0].grid_settings(), grid);
     assert!(
-        app.viewports
+        app.viewports[1..]
             .iter()
-            .all(|view| view.grid_settings() == grid)
+            .all(|view| view.grid_settings() == GridSettings::default())
     );
     assert!(
         app.viewports
@@ -275,6 +276,29 @@ fn four_view_keeps_display_modes_only_for_views_that_survive_the_projection() {
     assert_eq!(app.viewports[0].kind(), ViewKind::Top);
     assert_eq!(app.viewports[0].display_mode, DisplayMode::Wireframe);
     assert_eq!(app.viewports[1].display_mode, DisplayMode::Shaded);
+}
+
+#[test]
+fn four_view_keeps_grid_settings_with_surviving_views() {
+    let mut app = test_app();
+    app.active_viewport = 0;
+    enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+    let top_grid = app.viewports[0].grid_settings();
+    app.active_viewport = 3;
+    enter(&mut app, "Grid SnapSpacing=0.75 MinorLineSpacing=7.5");
+    let right_grid = app.viewports[3].grid_settings();
+
+    enter(&mut app, "4View");
+    assert_eq!(app.viewports[0].grid_settings(), top_grid);
+    assert_eq!(app.viewports[3].grid_settings(), right_grid);
+    assert_eq!(app.viewports[1].grid_settings(), GridSettings::default());
+    enter(&mut app, "4View Projection=FirstAngle");
+    assert_eq!(app.viewports[2].grid_settings(), top_grid);
+    assert_eq!(app.viewports[1].grid_settings(), right_grid);
+    assert_eq!(app.viewports[0].grid_settings(), GridSettings::default());
+    enter(&mut app, "4View Projection=ThirdAngle");
+    assert_eq!(app.viewports[0].grid_settings(), top_grid);
+    assert_eq!(app.viewports[3].grid_settings(), GridSettings::default());
 }
 
 #[test]

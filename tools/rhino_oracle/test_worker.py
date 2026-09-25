@@ -16,11 +16,14 @@ class RhinoWorkerTests(unittest.TestCase):
         point = lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)
 
         def view(name, number, bounds):
+            construction_plane = SimpleNamespace(GridSpacing=1.0, SnapSpacing=1.0)
             viewport = SimpleNamespace(
                 Name=name, IsPerspectiveProjection=False,
                 DisplayMode=SimpleNamespace(EnglishName="Wireframe"),
                 CameraLocation=point(0, 0, 10), CameraTarget=point(0, 0, 0),
-                CameraDirection=point(0, 0, -1), CameraUp=point(0, 1, 0))
+                CameraDirection=point(0, 0, -1), CameraUp=point(0, 1, 0),
+                GetConstructionPlane=lambda: construction_plane,
+                SetConstructionPlane=lambda plane: None)
             return SimpleNamespace(
                 ActiveViewportID=number, ActiveViewport=viewport,
                 Bounds=bounds, ScreenRectangle=bounds, Floating=False, Maximized=False)
@@ -48,7 +51,14 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(value["states"][1]["active_viewport"], 1)
             self.assertEqual(value["states"][1]["views"][1]["bounds"], [400, 0, 800, 600])
             self.assertEqual(value["states"][1]["views"][1]["camera_direction"], [0., 0., -1.])
+            self.assertEqual(value["states"][0]["views"][0]["grid_spacing"], 1.0)
             run.assert_called_once_with("_NewViewport", True)
+            collection.ActiveView = first
+            value, _ = self.worker._viewport_arrangement_probe({
+                "commands": ["NewViewport"], "source_grid_spacing": 2.5,
+                "source_snap_spacing": 0.25})
+            self.assertEqual(value["states"][0]["views"][0]["grid_spacing"], 2.5)
+            self.assertEqual(value["states"][0]["views"][0]["snap_spacing"], 0.25)
         with patch.object(self.worker, "_record_progress"), patch.object(
             self.worker, "_run_surface_script", return_value=True
         ) as run:
@@ -63,6 +73,13 @@ class RhinoWorkerTests(unittest.TestCase):
             run.reset_mock()
             self.worker._viewport_arrangement_probe({"commands": ["SetView World Bottom"]})
             run.assert_called_once_with("_SetView _World _Bottom", True)
+            run.reset_mock()
+            self.worker._viewport_arrangement_probe({
+                "commands": ["4View"], "baseline_four_view": True})
+            self.assertEqual(run.call_args_list, [
+                unittest.mock.call("_4View _Projection=_ThirdAngle _Enter", True),
+                unittest.mock.call("_4View _Enter", True),
+            ])
         with patch.object(self.worker, "_run_surface_script") as run:
             for commands in ([], ["Exit"], ["NewViewport"] * 13):
                 with self.subTest(commands=commands):

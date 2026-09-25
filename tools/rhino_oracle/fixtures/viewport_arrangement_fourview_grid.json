@@ -1,0 +1,37 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-changing-top-grid",
+      "baseline_four_view": true,
+      "active_name": "Top",
+      "source_grid_spacing": 2.5,
+      "source_snap_spacing": 0.25,
+      "commands": [
+        "4View",
+        "4View Projection FirstAngle",
+        "4View Projection ThirdAngle"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-changing-top-to-bottom-with-grid",
+      "baseline_four_view": true,
+      "active_name": "Top",
+      "source_grid_spacing": 2.5,
+      "source_snap_spacing": 0.25,
+      "commands": ["SetView World Bottom", "4View"]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "first-angle-after-distinct-right-grid",
+      "baseline_four_view": true,
+      "active_name": "Right",
+      "source_grid_spacing": 7.5,
+      "source_snap_spacing": 0.75,
+      "commands": ["4View Projection FirstAngle", "4View Projection ThirdAngle"]
+    }
+  ]
+}

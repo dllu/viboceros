@@ -212,6 +212,14 @@ impl VibocerosApp {
                 let mut viewport = Viewport::new_for_layout(source, kind);
                 if let Some(previous) = self.viewports.iter().find(|view| view.kind() == kind) {
                     viewport.display_mode = previous.display_mode;
+                    viewport.set_grid_settings(previous.grid_settings());
+                } else if kind == ViewKind::Left
+                    && let Some(right) = self
+                        .viewports
+                        .iter()
+                        .find(|view| view.kind() == ViewKind::Right)
+                {
+                    viewport.set_grid_settings(right.grid_settings());
                 }
                 viewport
             })

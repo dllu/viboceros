@@ -4090,6 +4090,15 @@ def _viewport_arrangement_probe(operation):
     if any(command not in allowed for command in commands):
         raise ValueError("unsupported viewport arrangement command")
     document = Rhino.RhinoDoc.ActiveDoc
+    if operation.get("baseline_four_view"):
+        if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+            raise ValueError("could not establish four-view baseline")
+        for view in document.Views.GetViewList(True, False):
+            viewport = view.ActiveViewport
+            plane = viewport.GetConstructionPlane()
+            plane.GridSpacing = 1.0
+            plane.SnapSpacing = 1.0
+            viewport.SetConstructionPlane(plane)
     active_name = operation.get("active_name")
     if active_name is not None:
         if active_name not in ("Perspective", "Top", "Front", "Right"):
@@ -4111,6 +4120,19 @@ def _viewport_arrangement_probe(operation):
     if shift is not None:
         viewport = document.Views.ActiveView.ActiveViewport
         viewport.SetCameraTarget(viewport.CameraTarget + _vector(shift), True)
+    if "source_grid_spacing" in operation or "source_snap_spacing" in operation:
+        viewport = document.Views.ActiveView.ActiveViewport
+        plane = viewport.GetConstructionPlane()
+        def spacing(key, label):
+            value = _finite(operation[key], label)
+            if value <= 0.0:
+                raise ValueError(label + " must be positive")
+            return value
+        if "source_grid_spacing" in operation:
+            plane.GridSpacing = spacing("source_grid_spacing", "grid spacing")
+        if "source_snap_spacing" in operation:
+            plane.SnapSpacing = spacing("source_snap_spacing", "snap spacing")
+        viewport.SetConstructionPlane(plane)
 
     def rectangle(value):
         return [int(value.Left), int(value.Top), int(value.Right), int(value.Bottom)]
@@ -4134,6 +4156,8 @@ def _viewport_arrangement_probe(operation):
                 "camera_target": _xyz(view.ActiveViewport.CameraTarget),
                 "camera_direction": _xyz(view.ActiveViewport.CameraDirection),
                 "camera_up": _xyz(view.ActiveViewport.CameraUp),
+                "grid_spacing": float(view.ActiveViewport.GetConstructionPlane().GridSpacing),
+                "snap_spacing": float(view.ActiveViewport.GetConstructionPlane().SnapSpacing),
             } for view in views],
         }
 

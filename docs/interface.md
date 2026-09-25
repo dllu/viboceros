@@ -244,6 +244,9 @@ The plain command's camera reset and active view were checked with
 [repeated-command observations](viewport-arrangement-fourview-repeat-rhino-reference.json).
 Surviving views keep their display mode; a view created in place of a different
 projection starts in Wireframe.
+Surviving views also keep their grid and snap spacing. The first-angle Left
+view inherits spacing from Right; returning to third-angle creates Right with
+default spacing in the [grid probe](viewport-arrangement-fourview-grid-rhino-reference.json).
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active
 rectangle into equal parts and copy its camera, CPlane, display mode, and grid
 settings to the new viewport. The new viewport gets a distinct title, and both
