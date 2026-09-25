@@ -53,23 +53,51 @@ pub(super) fn sphere_cone_intersection_events(
         if apex_distance > sphere_radius + coaxial_tolerance {
             let slope = cone_radius / height;
             let quadratic = slope.mul_add(slope, 1.0);
-            let constant = (apex_distance - sphere_radius) * (apex_distance + sphere_radius);
             let highest_linear = axial_center + slope * radial_offset;
             if highest_linear <= 0.0 {
                 return Ok(Vec::new());
             }
-            let maximum_discriminant = highest_linear * highest_linear - quadratic * constant;
-            if maximum_discriminant < 0.0 {
-                return Ok(Vec::new());
-            }
             let lowest_linear = axial_center - slope * radial_offset;
-            let opposite_discriminant = lowest_linear * lowest_linear - quadratic * constant;
+            // The generator discriminants factor as A*R² minus a squared
+            // perpendicular distance. This avoids subtracting B² and A*C
+            // after both have grown large.
+            let maximum_distance = radial_offset - slope * axial_center;
+            let opposite_distance = radial_offset + slope * axial_center;
+            let maximum_discriminant =
+                quadratic * sphere_radius * sphere_radius - maximum_distance * maximum_distance;
+            let opposite_discriminant =
+                quadratic * sphere_radius * sphere_radius - opposite_distance * opposite_distance;
             let scale = highest_linear
                 .abs()
                 .max(lowest_linear.abs())
                 .max(sphere_radius)
                 .max(cone_radius);
-            let discriminant_roundoff = 64.0 * Real::EPSILON * scale * scale;
+            let displacement_roundoff = (1.0 + slope.abs()) * coordinate_roundoff;
+            let discriminant_roundoff = 64.0 * Real::EPSILON * scale * scale
+                + 2.0 * maximum_distance.abs().max(opposite_distance.abs()) * displacement_roundoff
+                + displacement_roundoff * displacement_roundoff
+                + quadratic * coordinate_roundoff * (2.0 * sphere_radius + coordinate_roundoff);
+            if !discriminant_roundoff.is_finite() {
+                return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                    context: "noncoaxial sphere/cone discriminant is ill-conditioned",
+                });
+            }
+            if maximum_discriminant < -discriminant_roundoff {
+                return Ok(Vec::new());
+            }
+            if maximum_discriminant.abs() <= discriminant_roundoff {
+                let axial = highest_linear / quadratic;
+                if axial > height + axial_tolerance || slope * axial <= radial_tolerance {
+                    return Ok(Vec::new());
+                }
+                let radius = slope * axial;
+                let point = cone_frame.point_at([
+                    radius * radial_x / radial_offset,
+                    radius * radial_y / radial_offset,
+                    signed_height.signum() * axial,
+                ])?;
+                return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(point)]);
+            }
             if maximum_discriminant > discriminant_roundoff
                 && opposite_discriminant < -discriminant_roundoff
             {
@@ -236,6 +264,88 @@ mod tests {
                 .is_empty()
             );
         }
+    }
+
+    #[test]
+    fn noncoaxial_sphere_cone_external_tangency_is_one_point() {
+        let cone = NurbsSurface::try_cone(frame(), 3.0, 4.0).unwrap();
+        let tangent = sphere(point(0.5, 0.0, 2.0), 0.8);
+        let expected = point(1.14, 0.0, 1.52);
+        for (first, second) in [(&tangent, &cone), (&cone, &tangent)] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Point(contact)] = events.as_slice() else {
+                panic!("external sphere/cone tangency must create one point, got {events:#?}")
+            };
+            assert!(contact.distance_to(expected).unwrap() < 5e-9);
+            assert!((contact.distance_to(point(0.5, 0.0, 2.0)).unwrap() - 0.8).abs() < 5e-9);
+        }
+        let shortened = NurbsSurface::try_cone(frame(), 0.75, 1.0).unwrap();
+        assert!(
+            surface_surface_intersection_events(&tangent, &shortened, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            surface_surface_intersection_events(
+                &sphere(point(0.5, 0.0, 2.0), 0.7),
+                &cone,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+        assert_eq!(
+            surface_surface_intersection_events(
+                &sphere(point(0.5, 0.0, 2.0), 0.9),
+                &cone,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .len(),
+            2
+        );
+    }
+
+    #[test]
+    fn noncoaxial_sphere_cone_tangency_handles_negative_and_distant_rotated_frames() {
+        let negative = NurbsSurface::try_cone(frame(), 3.0, -4.0).unwrap();
+        let tangent = sphere(point(0.5, 0.0, -2.0), 0.8);
+        let events =
+            surface_surface_intersection_events(&tangent, &negative, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Point(contact)] = events.as_slice() else {
+            panic!("negative cone must retain the tangent point")
+        };
+        assert!(contact.distance_to(point(1.14, 0.0, -1.52)).unwrap() < 5e-9);
+
+        let rotated = Frame3::try_from_normal(
+            point(1.0e8, -1.0e8, 1.0e8),
+            Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let center = rotated.point_at([0.3, 0.4, 2.0]).unwrap();
+        let cone = NurbsSurface::try_cone(rotated, 3.0, 4.0).unwrap();
+        let sphere = NurbsSurface::try_sphere(rotated.with_origin(center), 0.8).unwrap();
+        for (first, second) in [(&sphere, &cone), (&cone, &sphere)] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Point(contact)] = events.as_slice() else {
+                panic!("rotated distant tangency must produce one point, got {events:#?}")
+            };
+            let local = rotated.coordinates_of(*contact).unwrap();
+            assert!((local[0] - 0.684).abs() < 4e-7);
+            assert!((local[1] - 0.912).abs() < 4e-7);
+            assert!((local[2] - 1.52).abs() < 4e-7);
+            assert!((contact.distance_to(center).unwrap() - 0.8).abs() < 4e-7);
+        }
+        let secant = NurbsSurface::try_sphere(rotated.with_origin(center), 0.81).unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(&secant, &cone, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            2
+        );
     }
 
     #[test]

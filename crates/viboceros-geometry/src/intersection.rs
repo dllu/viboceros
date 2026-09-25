@@ -537,6 +537,7 @@ fn curve_brep_intersection_events_with_transform(
 /// to arcs or isolated base-rim contacts.
 /// Offset spheres outside the apex with two radial turns produce two fitted
 /// open branches, likewise clipped at the base.
+/// At their external tangency the two branches reduce to one exact point.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,

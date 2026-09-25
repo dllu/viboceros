@@ -189,6 +189,7 @@ meet at radial turns, they produce two fitted open curves, clipped at the base
 or reduced to one tangent point. This
 includes the saved noncoaxial fixture; its two native branch lengths agree
 with Rhino within 2×10⁻⁶. Rhino also reports redundant seam points there.
+An external tangency creates one point, clipped to the finite cone height.
 Other noncoaxial sphere/cone sections remain unsupported.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
