@@ -346,4 +346,47 @@ mod tests {
             Geometry::Arc(_)
         ));
     }
+
+    #[test]
+    fn average_position_trims_toward_midpoint_and_undo_restores_both() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,3,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids.clone(), SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document,
+            "Match Continuity=Position AverageCurves=Yes PreserveOtherEnd=Position Pick1=0,0,0 Pick2=4,1,0"
+        ).unwrap();
+        let Geometry::NurbsCurve(first) = document.object(ids[0]).unwrap().geometry() else {
+            panic!("first curve is NURBS");
+        };
+        assert_eq!(
+            first.control_points()[0].point().to_array(),
+            [2.0, 0.5, 0.0]
+        );
+        assert_eq!(
+            first.control_points()[1].point().to_array(),
+            [3.0, 0.0, 0.0]
+        );
+        let second = document
+            .object(ids[1])
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        assert_eq!(second.start_point().unwrap().to_array(), [2.0, 0.5, 0.0]);
+        document.undo().unwrap();
+        for id in ids {
+            assert!(matches!(
+                document.object(id).unwrap().geometry(),
+                Geometry::Line(_)
+            ));
+        }
+    }
 }

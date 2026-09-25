@@ -15,7 +15,7 @@ pub enum CurveMatchPreserveEnd {
 
 struct MatchTarget {
     point: Point3,
-    tangent: UnitVector3,
+    tangent: Option<UnitVector3>,
     curvature: Option<Vector3>,
 }
 
@@ -62,7 +62,7 @@ pub fn try_match_curve_end(
         source_at_end,
         MatchTarget {
             point: sample.point(),
-            tangent: desired_tangent,
+            tangent: Some(desired_tangent),
             curvature: (continuity == CurveBlendContinuity::Curvature)
                 .then(|| reference_curve.curvature_vector(reference_parameter))
                 .transpose()?,
@@ -82,7 +82,10 @@ pub fn try_match_curve_end(
     Ok(matched)
 }
 
-/// Moves both selected ends to their midpoint and bisects their tangents.
+/// Moves both selected ends to their midpoint. Position matching first trims
+/// each curve to the nearest location to that midpoint, then restores its
+/// original domain before moving the endpoint control.
+/// For G1 and G2, bisects the original tangents.
 /// For G2, the target curvature vector is the average of the original endpoint
 /// vectors. Both curves retain their original end-handle lengths.
 pub fn try_average_match_curve_ends(
@@ -97,11 +100,6 @@ pub fn try_average_match_curve_ends(
     if first.as_ref().is_closed()? || second.as_ref().is_closed()? {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match requires open curves",
-        });
-    }
-    if continuity == CurveBlendContinuity::Position {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "average Match position requires shape redistribution",
         });
     }
     let first_curve = first.as_ref();
@@ -126,10 +124,57 @@ pub fn try_average_match_curve_ends(
     } else {
         ParameterSide::Right
     };
+    let first_point = if first_at_end {
+        first_curve.end_point()?
+    } else {
+        first_curve.start_point()?
+    };
+    let second_point = if second_at_end {
+        second_curve.end_point()?
+    } else {
+        second_curve.start_point()?
+    };
+    let midpoint = first_point.midpoint(second_point)?;
+    if continuity == CurveBlendContinuity::Position {
+        let first_nurbs = trim_to_midpoint(first_curve, first_at_end, midpoint, tolerance)?;
+        let second_nurbs = trim_to_midpoint(second_curve, second_at_end, midpoint, tolerance)?;
+        let first_output = match_end_to_target(
+            &first_nurbs,
+            first_at_end,
+            MatchTarget {
+                point: midpoint,
+                tangent: None,
+                curvature: None,
+            },
+            continuity,
+            preserve,
+            first_nurbs.spans().count() == 1,
+        )?;
+        let second_output = match_end_to_target(
+            &second_nurbs,
+            second_at_end,
+            MatchTarget {
+                point: midpoint,
+                tangent: None,
+                curvature: None,
+            },
+            continuity,
+            preserve,
+            second_nurbs.spans().count() == 1,
+        )?;
+        require_continuity(
+            &first_output,
+            first_at_end,
+            CurveRef::NurbsCurve(&second_output),
+            second_at_end,
+            continuity,
+            tolerance,
+        )?;
+        return Ok((first_output, second_output));
+    }
     let first_sample = first_curve.evaluate_with_tangent_on_side(first_parameter, first_side)?;
     let second_sample =
         second_curve.evaluate_with_tangent_on_side(second_parameter, second_side)?;
-    let midpoint = first_sample.point().midpoint(second_sample.point())?;
     let second_direction = if first_at_end == second_at_end {
         second_sample.tangent().opposite()
     } else {
@@ -170,7 +215,7 @@ pub fn try_average_match_curve_ends(
         first_at_end,
         MatchTarget {
             point: midpoint,
-            tangent,
+            tangent: Some(tangent),
             curvature,
         },
         continuity,
@@ -187,7 +232,7 @@ pub fn try_average_match_curve_ends(
         second_at_end,
         MatchTarget {
             point: midpoint,
-            tangent: second_tangent,
+            tangent: Some(second_tangent),
             curvature,
         },
         continuity,
@@ -203,6 +248,26 @@ pub fn try_average_match_curve_ends(
         tolerance,
     )?;
     Ok((first_output, second_output))
+}
+
+fn trim_to_midpoint(
+    curve: CurveRef<'_>,
+    selected_at_end: bool,
+    midpoint: Point3,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    let original = curve.to_nurbs()?;
+    let domain = original.domain();
+    let closest = curve.closest_parameter(midpoint, tolerance)?;
+    if closest <= *domain.start() || closest >= *domain.end() {
+        return Ok(original);
+    }
+    let interval = if selected_at_end {
+        *domain.start()..=closest
+    } else {
+        closest..=*domain.end()
+    };
+    original.try_trimmed(interval)?.try_reparameterized(domain)
 }
 
 fn match_end_to_target(
@@ -257,6 +322,9 @@ fn match_end_to_target(
         let direction_sign = if at_end { -1.0 } else { 1.0 };
         let offset = target
             .tangent
+            .ok_or(GeometryError::Degenerate {
+                context: "Match target tangent",
+            })?
             .as_vector()
             .scaled(direction_sign * a.signum() * handle)?;
         let adjacent = target.point.translated(offset)?;
