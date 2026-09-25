@@ -262,8 +262,10 @@ unsupported.
 Canonical ring tori intersect planes perpendicular to their axes in two exact
 rational circles, or one tangent circle at the tube's top or bottom. Planes
 containing the axis cut two exact tube circles. Finite planar patches clip
-these circles to arcs or points; other torus/plane orientations remain
-unsupported. Coaxial torus and finite cylinder walls meet in one or two
+these circles to arcs or points. Axis-parallel offset planes produce one or two
+cubic loops fitted to the modeling tolerance and clipped to the finite patch;
+the pinched inner tangency and oblique orientations remain unsupported. Coaxial
+torus and finite cylinder walls meet in one or two
 exact rational circles, including tangent sections and circles on cylinder
 rims. Offset and nonparallel torus/cylinder axes remain unsupported.
 Spheres centered on a torus axis intersect it in one or two exact rational

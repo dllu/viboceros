@@ -1,4 +1,6 @@
-//! Exact circular sections of a canonical torus and a finite planar patch.
+//! Sections of a canonical torus and a finite planar patch.
+
+mod parallel_offset;
 
 use super::{SurfaceSurfaceIntersectionEvent, intersect_curve_with_planar_surface};
 use crate::{Circle3, Frame3, GeometryError, NurbsSurface, Plane, Real, Tolerance};
@@ -74,6 +76,18 @@ pub(super) fn intersect(
             )?);
         }
         return Ok(events);
+    }
+    if axial_dot.abs() <= angular_tolerance {
+        return parallel_offset::intersect(
+            frame,
+            major_radius,
+            minor_radius,
+            planar_surface,
+            plane,
+            signed_distance,
+            tolerance,
+            distance_tolerance,
+        );
     }
     Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
         context: "oblique torus/plane section",
