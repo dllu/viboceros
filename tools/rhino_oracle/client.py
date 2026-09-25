@@ -230,7 +230,8 @@ class OracleClient:
             from .point_snap_input import PointSnapPicker
             interaction = PointSnapPicker(request)
         if any(op.get("op") == "angle_cursor_diagnostic" or
-               (op.get("op") == "plane_primitive" and op.get("primitive") == "ArcCenterEndpoint")
+               (op.get("op") == "plane_primitive" and op.get("primitive") in
+                ("ArcCenterEndpoint", "ArcStartCenterEndpoint"))
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
             if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):

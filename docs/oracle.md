@@ -562,6 +562,12 @@ compares five typed Rhino direction constructions with
 [live sampled curves](arc-start-direction-rhino-reference.json): both turn
 directions, a major arc, an oriented construction plane, and an off-plane
 endpoint. Native samples and domains agree within `1e-10`.
+The [Arc StartPoint Center fixture](../tools/rhino_oracle/fixtures/arc_start_center.json)
+compares ten actual Rhino commands and viewport endpoint picks with
+[live sampled curves](arc-start-center-rhino-reference.json), including signed
+angles and lengths, major and quarter arcs, and reversed construction-plane
+normal. Native curves and domains agree within `1e-10` when endpoint sweeps
+are made explicit.
 The [three-point circle fixture](../tools/rhino_oracle/fixtures/circle_three_point.json)
 checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including

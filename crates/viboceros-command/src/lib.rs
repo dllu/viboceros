@@ -1352,6 +1352,27 @@ impl Command for ArcCommand {
         {
             let (start, count) = parse_point(&arguments[1..])?;
             let remaining = &arguments[1 + count..];
+            if let Some((name, value)) = remaining.first().and_then(|token| token.split_once('='))
+                && option_name_eq(name, "Center")
+            {
+                let (_, used) = parse_point(&[value])?;
+                require_consumed(&[value], used, ARC_START_USAGE)?;
+                let mut reordered = vec!["Center", value];
+                reordered.extend_from_slice(&arguments[1..1 + count]);
+                reordered.extend_from_slice(&remaining[1..]);
+                return self.run_in_context(document, &reordered, context);
+            }
+            if remaining
+                .first()
+                .is_some_and(|token| option_name_eq(token, "Center"))
+            {
+                let (_, used) = parse_point(&remaining[1..])?;
+                let mut reordered = vec!["Center"];
+                reordered.extend_from_slice(&remaining[1..1 + used]);
+                reordered.extend_from_slice(&arguments[1..1 + count]);
+                reordered.extend_from_slice(&remaining[1 + used..]);
+                return self.run_in_context(document, &reordered, context);
+            }
             let arc = if let Some((name, value)) =
                 remaining.first().and_then(|token| token.split_once('='))
                 && option_name_eq(name, "Direction")
@@ -1508,8 +1529,7 @@ impl Command for ArcCommand {
 }
 
 const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
-const ARC_START_USAGE: &str =
-    "Arc StartPoint start end through | start Direction=tangent-point end";
+const ARC_START_USAGE: &str = "Arc StartPoint start end through | start Direction=tangent-point end | start Center=center angle|Length=distance|End=point";
 
 struct EllipseCommand;
 
@@ -18404,6 +18424,38 @@ mod tests {
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
             assert_eq!(document.objects().len(), 4);
+        }
+    }
+
+    #[test]
+    fn arc_start_point_center_orders_inputs_and_supports_signed_sweep_and_endpoint() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for input in [
+            "Arc StartPoint 5,2,3 Center=1,2,3 90",
+            "Arc StartPoint 5,2,3 Center 1,2,3 Length=-6.283185307179586",
+            "Arc StartPoint 5,2,3 Center=1,2,3 End=1,10,3 Direction=Counterclockwise",
+        ] {
+            registry.execute(&mut document, input).unwrap();
+        }
+        let arcs = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 3);
+        assert!((arcs[0].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+        assert!(arcs[1].point_at(0.25).unwrap().y() < 2.0);
+        assert!((arcs[2].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+        for input in [
+            "Arc StartPoint 5,2,3 Center=5,2,3 90",
+            "Arc StartPoint 5,2,3 Center=1,2,3 Length=0",
+            "Arc StartPoint 5,2,3 Center=1,2,3 End=1,2,3",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 3);
         }
     }
 

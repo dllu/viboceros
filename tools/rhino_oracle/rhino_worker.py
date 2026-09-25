@@ -3406,7 +3406,9 @@ def _plane_primitive_script(operation):
         expected = 3
     elif primitive in ("ArcCenterAngle", "ArcCenterLength") and value is not None:
         expected = 2
-    elif primitive == "ArcCenterEndpoint" and value is None:
+    elif primitive in ("ArcStartCenterAngle", "ArcStartCenterLength") and value is not None:
+        expected = 2
+    elif primitive in ("ArcCenterEndpoint", "ArcStartCenterEndpoint") and value is None:
         expected = 3
     elif primitive == "ArcStartDirection" and value is None:
         expected = 3
@@ -3425,6 +3427,9 @@ def _plane_primitive_script(operation):
               "ArcCenterAngle": "_Arc _Center ",
               "ArcCenterLength": "_Arc _Center ",
               "ArcCenterEndpoint": "_Arc _Center ",
+              "ArcStartCenterAngle": "_Arc _StartPoint ",
+              "ArcStartCenterLength": "_Arc _StartPoint ",
+              "ArcStartCenterEndpoint": "_Arc _StartPoint ",
               "ArcStartDirection": "_Arc _StartPoint ",
               "CircleVertical": "_Circle _Vertical ",
               "CircleOrientation": "_Circle ",
@@ -3455,6 +3460,18 @@ def _plane_primitive_script(operation):
         if primitive == "ArcCenterLength":
             script += " _Length"
         script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive in ("ArcStartCenterAngle", "ArcStartCenterLength"):
+        script += "w" + _command_point(points[0])
+        script += " _Center w" + _command_point(points[1])
+        if primitive == "ArcStartCenterLength":
+            script += " _Length"
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcStartCenterEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " _Center w" + _command_point(points[1])
+        script += " _Pause"
         return script
     if primitive == "ArcCenterEndpoint":
         script += "w" + _command_point(points[0])
@@ -3885,7 +3902,7 @@ def _in_construction_plane(operation, script, record):
     view = document.Views.ActiveView
     viewport = view.ActiveViewport
     original_plane = viewport.ConstructionPlane()
-    endpoint_click = operation.get("primitive") == "ArcCenterEndpoint"
+    endpoint_click = operation.get("primitive") in ("ArcCenterEndpoint", "ArcStartCenterEndpoint")
     original_projection = Rhino.DocObjects.ViewportInfo(viewport) if endpoint_click else None
     original_name = viewport.Name if endpoint_click else None
     original_target = viewport.CameraTarget if endpoint_click else None

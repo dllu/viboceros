@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-quarter",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterAngle",
+      "points": [[5, 2, 3], [1, 2, 3]],
+      "value": 90
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-negative",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterAngle",
+      "points": [[5, 2, 3], [1, 2, 3]],
+      "value": -90
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-major",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterAngle",
+      "points": [[5, 2, 3], [1, 2, 3]],
+      "value": 270
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-length",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterLength",
+      "points": [[5, 2, 3], [1, 2, 3]],
+      "value": 6.283185307179586
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-negative-length",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterLength",
+      "points": [[5, 2, 3], [1, 2, 3]],
+      "value": -6.283185307179586
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-oriented",
+      "origin": [1, 2, 3],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "primitive": "ArcStartCenterAngle",
+      "points": [[2, 3, 7], [2, 3, 4]],
+      "value": 135
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-north-end",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterEndpoint",
+      "points": [[5, 2, 3], [1, 2, 3], [1, 6, 3]],
+      "direction": "Clockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-south-end",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterEndpoint",
+      "points": [[5, 2, 3], [1, 2, 3], [1, -2, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-outside-end",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartCenterEndpoint",
+      "points": [[5, 2, 3], [1, 2, 3], [1, 10, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-center-reversed-plane-end",
+      "origin": [0, 0, 0],
+      "x_axis": [0, 1, 0],
+      "y_axis": [1, 0, 0],
+      "primitive": "ArcStartCenterEndpoint",
+      "points": [[5, 2, 3], [1, 2, 3], [1, 6, 3]],
+      "direction": "Clockwise"
+    }
+  ]
+}

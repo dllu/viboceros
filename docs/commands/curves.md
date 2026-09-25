@@ -46,6 +46,15 @@ endpoint determine the arc plane, including when the endpoint is off the
 construction plane. Five [live Rhino direction records](../arc-start-direction-rhino-reference.json)
 cover both turn directions, a major arc, and tilted planes; sampled curves and
 domains match within `1e-10`.
+At the second `Arc StartPoint` prompt, choose `Center` to pick a center after
+the start point. Enter an angle, choose `Length` and enter a signed distance,
+or pick an endpoint. The direct form is `Arc StartPoint start Center=center angle`;
+use `Length=distance` or `End=point` in place of the angle. An endpoint can include
+`Direction=Clockwise|Counterclockwise` to choose its sweep. Ten
+[live Rhino StartPoint Center records](../arc-start-center-rhino-reference.json)
+cover all three endings and a reversed construction-plane normal. Their
+sampled curves and domains match within `1e-10` when endpoint direction is
+specified.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a
