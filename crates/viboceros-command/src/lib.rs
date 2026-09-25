@@ -26929,6 +26929,53 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_pinched_torus_plane_loops() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let point = |y, z| Point3::try_new(3.0, y, z).unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_torus(frame, 4.0, 1.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_bilinear([
+                        point(-6.0, -2.0),
+                        point(6.0, -2.0),
+                        point(6.0, 2.0),
+                        point(-6.0, 2.0),
+                    ])
+                    .unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let loops = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(loops.len(), 2);
+        for object in loops {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("inner tangent torus/plane section should create pinched loops")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+        }
+    }
+
+    #[test]
     fn intersect_outputs_exact_coaxial_torus_cylinder_circles() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

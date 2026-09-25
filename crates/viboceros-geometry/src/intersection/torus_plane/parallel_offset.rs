@@ -11,6 +11,8 @@ enum Branch {
     InnerSide,
     OuterSide,
     Joined,
+    PinchedPositive,
+    PinchedNegative,
 }
 
 #[derive(Clone, Copy)]
@@ -61,14 +63,10 @@ pub(super) fn intersect(
         }
         return Ok(Vec::new());
     }
-    if (offset - (major - minor)).abs() <= fit_tolerance {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "pinched axis-parallel torus/plane section",
-        });
-    }
-
     let outer_lateral = ((outer - offset) * (outer + offset)).sqrt();
-    let branches: &[Branch] = if offset < major - minor {
+    let branches: &[Branch] = if (offset - (major - minor)).abs() <= fit_tolerance {
+        &[Branch::PinchedPositive, Branch::PinchedNegative]
+    } else if offset < major - minor {
         &[Branch::OuterSide, Branch::InnerSide]
     } else {
         &[Branch::Joined]
@@ -129,6 +127,31 @@ impl Section {
                         * (cosine * root + sine * root_derivative),
                 }
             }
+            Branch::PinchedPositive | Branch::PinchedNegative => {
+                let meridian = angle - std::f64::consts::PI;
+                let (meridian_sine, meridian_cosine) = meridian.sin_cos();
+                let half_sine = (0.5 * meridian).sin();
+                let half_cosine = (0.5 * meridian).cos();
+                let critical_offset = self.major - self.minor;
+                let radius = self.major + self.minor * meridian_cosine;
+                let second_root = (radius + critical_offset).sqrt();
+                let scale = (2.0 * self.minor).sqrt();
+                let sign = if matches!(self.branch, Branch::PinchedPositive) {
+                    1.0
+                } else {
+                    -1.0
+                };
+                let radial_derivative = -self.minor * meridian_sine;
+                Sample {
+                    lateral: sign * scale * half_cosine * second_root,
+                    vertical: self.minor * meridian_sine,
+                    lateral_derivative: sign
+                        * scale
+                        * (-0.5 * half_sine * second_root
+                            + half_cosine * radial_derivative / (2.0 * second_root)),
+                    vertical_derivative: self.minor * meridian_cosine,
+                }
+            }
         }
     }
 }
@@ -147,11 +170,11 @@ fn fit(section: Section, frame: Frame3, fit_tolerance: Real) -> Result<NurbsCurv
         for segment in 0..segments {
             let start = step * segment as Real;
             let end = step * (segment + 1) as Real;
-            let next = if segment + 1 == segments {
-                first
-            } else {
-                section.sample(end)
-            };
+            let mut next = section.sample(end);
+            if segment + 1 == segments {
+                next.lateral = first.lateral;
+                next.vertical = first.vertical;
+            }
             let handle = step / 3.0;
             let control = [
                 [previous.lateral, previous.vertical],
@@ -300,10 +323,27 @@ mod tests {
             tangent.as_slice(),
             [SurfaceSurfaceIntersectionEvent::Point(_)]
         ));
-        assert!(matches!(
-            surface_surface_intersection_events(&torus, &plane(3.0, -6.0, 6.0), Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
+        let pinched =
+            surface_surface_intersection_events(&torus, &plane(3.0, -6.0, 6.0), Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(pinched.len(), 2);
+        for event in pinched {
+            let SurfaceSurfaceIntersectionEvent::Curve(loop_curve) = event else {
+                panic!("inner tangent plane should retain both pinched loops")
+            };
+            assert!(loop_curve.is_closed().unwrap());
+            let pinch = loop_curve.evaluate(*loop_curve.domain().start()).unwrap();
+            assert!(pinch.distance_to(point(3.0, 0.0, 0.0)).unwrap() < 5e-9);
+            for index in 0..=64 {
+                let domain = loop_curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                let location = loop_curve.evaluate(parameter).unwrap();
+                let radial = location.x().hypot(location.y());
+                assert!((location.x() - 3.0).abs() < 5e-9);
+                assert!(((radial - 4.0).hypot(location.z()) - 1.0).abs() < 5e-9);
+            }
+        }
     }
 
     #[test]
@@ -315,30 +355,32 @@ mod tests {
         )
         .unwrap();
         let torus = NurbsSurface::try_torus(rotated, 4.0, 1.0).unwrap();
-        let corner = |y: Real, z: Real| rotated.point_at([1.0, y, z]).unwrap();
-        let patch = NurbsSurface::try_bilinear([
-            corner(-6.0, -2.0),
-            corner(6.0, -2.0),
-            corner(6.0, 2.0),
-            corner(-6.0, 2.0),
-        ])
-        .unwrap();
-        let events =
-            surface_surface_intersection_events(&torus, &patch, Tolerance::DEFAULT).unwrap();
-        assert_eq!(events.len(), 2);
-        for event in events {
-            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
-                panic!("rotated parallel offset section should be a loop")
-            };
-            for index in 0..=32 {
-                let domain = curve.domain();
-                let parameter =
-                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 32.0);
-                let local = rotated
-                    .coordinates_of(curve.evaluate(parameter).unwrap())
-                    .unwrap();
-                assert!((local[0] - 1.0).abs() < 4e-7);
-                assert!(((local[0].hypot(local[1]) - 4.0).hypot(local[2]) - 1.0).abs() < 4e-7);
+        for offset in [1.0, 3.0] {
+            let corner = |y: Real, z: Real| rotated.point_at([offset, y, z]).unwrap();
+            let patch = NurbsSurface::try_bilinear([
+                corner(-6.0, -2.0),
+                corner(6.0, -2.0),
+                corner(6.0, 2.0),
+                corner(-6.0, 2.0),
+            ])
+            .unwrap();
+            let events =
+                surface_surface_intersection_events(&torus, &patch, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("rotated parallel offset section should be a loop")
+                };
+                for index in 0..=32 {
+                    let domain = curve.domain();
+                    let parameter = *domain.start()
+                        + (*domain.end() - *domain.start()) * (index as Real / 32.0);
+                    let local = rotated
+                        .coordinates_of(curve.evaluate(parameter).unwrap())
+                        .unwrap();
+                    assert!((local[0] - offset).abs() < 4e-7);
+                    assert!(((local[0].hypot(local[1]) - 4.0).hypot(local[2]) - 1.0).abs() < 4e-7);
+                }
             }
         }
     }
@@ -350,6 +392,8 @@ mod tests {
             (2.75, Branch::InnerSide),
             (3.25, Branch::Joined),
             (4.75, Branch::Joined),
+            (3.0, Branch::PinchedPositive),
+            (3.0, Branch::PinchedNegative),
         ] {
             let section = Section {
                 major: 4.0,
@@ -359,6 +403,11 @@ mod tests {
                 branch,
             };
             let curve = fit(section, frame(), 1.0e-9).unwrap();
+            if matches!(branch, Branch::PinchedPositive | Branch::PinchedNegative) {
+                let (_, start_tangent) = curve.evaluate_with_derivative(0.0).unwrap();
+                let (_, end_tangent) = curve.evaluate_with_derivative(TURN).unwrap();
+                assert!(start_tangent.x() * end_tangent.x() < 0.0);
+            }
             for index in 0..=1024 {
                 let angle = TURN * index as Real / 1024.0;
                 let expected = section.sample(angle);
