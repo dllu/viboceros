@@ -1,4 +1,6 @@
-//! Exact circles where two coaxial canonical ring tori intersect.
+//! Coaxial circles and equal parallel offset ring-torus intersections.
+
+mod parallel_equal;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Real, Tolerance};
@@ -29,6 +31,17 @@ pub(super) fn intersect(
     }
     let [offset_x, offset_y, second_height] = first_frame.coordinates_of(second_frame.origin())?;
     if offset_x.hypot(offset_y) > spatial_tolerance {
+        if second_height.abs() <= spatial_tolerance
+            && (first_major - second_major).abs() <= spatial_tolerance
+            && (first_minor - second_minor).abs() <= spatial_tolerance
+        {
+            return parallel_equal::intersect(
+                (first_frame, first_major, first_minor),
+                [offset_x, offset_y],
+                tolerance,
+                spatial_tolerance,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "noncoaxial tori",
         });
@@ -171,10 +184,12 @@ mod tests {
             Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
         );
         let offset = NurbsSurface::try_torus(offset_frame, 4.0, 1.0).unwrap();
-        assert!(matches!(
-            surface_surface_intersection_events(&first, &offset, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
+        assert_eq!(
+            surface_surface_intersection_events(&first, &offset, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            4
+        );
     }
 
     #[test]

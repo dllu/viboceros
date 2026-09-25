@@ -582,6 +582,7 @@ fn curve_brep_intersection_events_with_transform(
 /// Parallel offset cylinder walls meet tori in fitted cubic loops, arcs, or points.
 /// Axis-centered spheres and canonical tori meet in exact rational circles.
 /// Coaxial canonical tori meet in exact rational circles.
+/// Equal parallel offset tori meet in fitted symmetry-plane and elliptic sections.
 /// Coaxial canonical tori and finite cone walls meet in exact rational circles.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no

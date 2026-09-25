@@ -365,4 +365,36 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn python_oracle_reports_equal_parallel_offset_torus_sections() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json"
+        ))
+        .unwrap();
+        let response = run_request_audit(&request).unwrap();
+        let expected = [
+            ("coaxial_two_circles", vec![2, 2]),
+            ("coaxial_tangent_circle", vec![2]),
+            ("equal_parallel_offset_four_loops", vec![3, 3, 3, 3]),
+            ("equal_parallel_offset_meridian", vec![2, 3]),
+            ("disjoint", vec![]),
+        ];
+        assert_eq!(response.outcomes.len(), expected.len());
+        for (outcome, (id, expected_degrees)) in response.outcomes.iter().zip(expected) {
+            let OperationOutcome::Success { result } = outcome else {
+                panic!("torus/torus oracle fixture {id} must succeed")
+            };
+            assert_eq!(result.id, id);
+            let mut degrees = result.value["curves"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|curve| curve["degree"].as_u64().unwrap())
+                .collect::<Vec<_>>();
+            degrees.sort_unstable();
+            assert_eq!(degrees, expected_degrees, "{id}");
+            assert!(result.value["points"].as_array().unwrap().is_empty());
+        }
+    }
 }
