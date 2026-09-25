@@ -1039,6 +1039,10 @@ checks a planar surface against a split planar B-rep face, with the surface
 either enclosing or cutting through the face. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_trimmed_planar_face_intersect_command.json)
 match the native closed perimeters exactly after canonicalizing linear curve
 orientation and parameterization (`2/2` cases, zero coordinate difference).
+The [coincident trimmed B-rep face fixture](../tools/rhino_oracle/fixtures/coincident_trimmed_brep_faces_intersect_command.json)
+uses the same two regions as B-rep/B-rep command inputs. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_trimmed_brep_faces_intersect_command.json)
+also match the native closed perimeters exactly after the same linear curve
+canonicalization (`2/2` cases, zero coordinate difference).
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally

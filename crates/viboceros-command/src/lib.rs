@@ -29892,6 +29892,69 @@ mod tests {
     }
 
     #[test]
+    fn intersect_creates_coincident_trimmed_brep_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let rectangle = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 4.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let [south, _north] = Brep::try_split_rectangular_surface_face_v(
+            rectangle,
+            0.0..=1.0,
+            0.0..=1.0,
+            0.5,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let partial = NurbsSurface::try_bilinear([
+            Point3::try_new(1.0, -1.0, 0.0).unwrap(),
+            Point3::try_new(3.0, -1.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 3.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 3.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let second = Brep::try_surface_face(partial, Tolerance::DEFAULT).unwrap();
+        let input_ids = [
+            document.add_geometry(Geometry::Brep(south)).unwrap(),
+            document.add_geometry(Geometry::Brep(second)).unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(curve) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("coincident trimmed faces must create their shared perimeter")
+        };
+        assert!(curve.is_closed().unwrap());
+        for corner in [
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+        ] {
+            let parameter = curve.closest_parameter(corner, Tolerance::DEFAULT).unwrap();
+            assert!(
+                curve
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(corner)
+                    .unwrap()
+                    < 1e-9
+            );
+        }
+    }
+
+    #[test]
     fn intersect_joins_planar_brep_brep_curves() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

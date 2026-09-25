@@ -1335,9 +1335,9 @@ fn coincident_planar_surface_brep_face_boundary(
 /// multi-face path handles planar and curved faces, including exact trim loops.
 /// Face-pair results are clipped against trim regions when needed;
 /// then shared-topology duplicates are removed and connected pieces are joined
-/// into maximal components. Coincident pairs currently require both faces to
-/// cover their complete natural surface domains, with at most one coincident
-/// area-overlap pair per B-rep pair.
+/// into maximal components. Coincident planar face pairs contribute their
+/// shared region boundaries, with at most one coincident area-overlap pair per
+/// B-rep pair.
 pub fn brep_brep_intersection_events(
     first: &Brep,
     second: &Brep,
@@ -1376,29 +1376,54 @@ pub fn brep_brep_intersection_events(
         for second_face in second.faces() {
             let second_plane = second_face.surface().plane(tolerance)?;
             let second_full = crate::brep::face_covers_full_surface_domain(second_face, tolerance)?;
+            let coincident =
+                if let (Some(first_plane), Some(second_plane)) = (first_plane, second_plane) {
+                    planes_are_coincident(first_plane, second_plane, tolerance, distance_tolerance)?
+                } else {
+                    false
+                };
+            if coincident && (!first_full || !second_full) {
+                let (pair_points, pair_curves) = coincident_planar_brep_faces_boundary(
+                    first,
+                    first_face,
+                    second,
+                    second_face,
+                    tolerance,
+                    distance_tolerance,
+                )?;
+                let (pair_curves, pair_points) = finalize_brep_intersection_geometry(
+                    pair_points,
+                    pair_curves,
+                    tolerance,
+                    distance_tolerance,
+                )?;
+                let mut has_area_overlap = false;
+                for curve in &pair_curves {
+                    if curve.is_closed()? {
+                        has_area_overlap = true;
+                        break;
+                    }
+                }
+                if has_area_overlap {
+                    coincident_area_pairs += 1;
+                    if coincident_area_pairs > 1 {
+                        return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                            context: "multiple coincident face regions",
+                        });
+                    }
+                }
+                for point in pair_points {
+                    push_unique_brep_point(&mut points, point, distance_tolerance);
+                }
+                curves.extend(pair_curves);
+                continue;
+            }
             let face_events = surface_surface_intersection_events(
                 first_face.surface(),
                 second_face.surface(),
                 tolerance,
             )?;
-            let coincident =
-                if let (Some(first_plane), Some(second_plane)) = (first_plane, second_plane) {
-                    !face_events.is_empty()
-                        && planes_are_coincident(
-                            first_plane,
-                            second_plane,
-                            tolerance,
-                            distance_tolerance,
-                        )?
-                } else {
-                    false
-                };
             if coincident {
-                if !first_full || !second_full {
-                    return Err(GeometryError::UnsupportedBrepBrepIntersection {
-                        context: "coincident trimmed face regions",
-                    });
-                }
                 let mut has_area_overlap = false;
                 for event in &face_events {
                     if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event
@@ -1501,6 +1526,46 @@ pub fn brep_brep_intersection_events(
         .map(BrepBrepIntersectionEvent::Curve)
         .chain(points.into_iter().map(BrepBrepIntersectionEvent::Point))
         .collect())
+}
+
+fn coincident_planar_brep_faces_boundary(
+    first: &Brep,
+    first_face: &BrepFace,
+    second: &Brep,
+    second_face: &BrepFace,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<(Vec<Point3>, Vec<NurbsCurve>), GeometryError> {
+    let mut points = Vec::new();
+    let mut curves = Vec::new();
+    for (source_brep, source_face, target_brep, target_face) in [
+        (first, first_face, second, second_face),
+        (second, second_face, first, first_face),
+    ] {
+        let mut seen_edges = vec![false; source_brep.edges().len()];
+        for face_loop in source_face.loops() {
+            for trim in face_loop.trims() {
+                let Some(edge_index) = trim.edge() else {
+                    continue;
+                };
+                if std::mem::replace(&mut seen_edges[edge_index], true) {
+                    continue;
+                }
+                let (edge_points, edge_curves) = clip_curve_to_brep_face(
+                    source_brep.edges()[edge_index].curve(),
+                    target_brep,
+                    target_face,
+                    tolerance,
+                    distance_tolerance,
+                )?;
+                for point in edge_points {
+                    push_unique_brep_point(&mut points, point, distance_tolerance);
+                }
+                curves.extend(edge_curves);
+            }
+        }
+    }
+    Ok((points, curves))
 }
 
 fn planes_are_coincident(
@@ -5999,12 +6064,106 @@ mod tests {
             assert!((actual[1] - expected[1]).abs() < 1.0e-10);
         }
 
-        assert_eq!(
-            brep_brep_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedBrepBrepIntersection {
-                context: "coincident trimmed face regions",
-            })
-        );
+        let coincident =
+            brep_brep_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT).unwrap();
+        assert_eq!(coincident.len(), 2, "outer and hole loops: {coincident:#?}");
+        assert!(coincident.iter().all(|event| matches!(
+            event,
+            BrepBrepIntersectionEvent::Curve(curve) if curve.is_closed().unwrap()
+        )));
+    }
+
+    #[test]
+    fn brep_brep_intersection_traces_coincident_disk_and_partial_faces() {
+        let circle = Circle3::try_new(
+            point(0.0, 0.0, 0.0),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let disk = Brep::try_planar_face(&circle, Tolerance::DEFAULT).unwrap();
+        let broad = Brep::try_surface_face(
+            horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let events = brep_brep_intersection_events(&disk, &broad, Tolerance::DEFAULT).unwrap();
+        let [BrepBrepIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+            panic!("expected one exact disk perimeter, got {events:#?}")
+        };
+        assert!(perimeter.is_closed().unwrap());
+        assert_eq!(perimeter.control_points(), circle.control_points());
+
+        let [south, _north] = Brep::try_split_rectangular_surface_face_v(
+            horizontal_rectangle(0.0, 4.0, 0.0, 4.0, 0.0),
+            0.0..=4.0,
+            0.0..=4.0,
+            2.0,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let partial = Brep::try_surface_face(
+            horizontal_rectangle(1.0, 3.0, -1.0, 3.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (first, second) in [(&south, &partial), (&partial, &south)] {
+            let events = brep_brep_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [BrepBrepIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("expected one partial overlap perimeter, got {events:#?}")
+            };
+            assert!(perimeter.is_closed().unwrap());
+            for corner in [
+                point(1.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 2.0, 0.0),
+                point(1.0, 2.0, 0.0),
+            ] {
+                let parameter = perimeter
+                    .closest_parameter(corner, Tolerance::DEFAULT)
+                    .unwrap();
+                assert!(
+                    perimeter
+                        .evaluate(parameter)
+                        .unwrap()
+                        .distance_to(corner)
+                        .unwrap()
+                        < 1e-9
+                );
+            }
+        }
+        let edge_neighbor = Brep::try_surface_face(
+            horizontal_rectangle(4.0, 6.0, 0.0, 2.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge_events =
+            brep_brep_intersection_events(&south, &edge_neighbor, Tolerance::DEFAULT).unwrap();
+        let [BrepBrepIntersectionEvent::Curve(edge)] = edge_events.as_slice() else {
+            panic!("expected one shared face edge, got {edge_events:#?}")
+        };
+        let endpoints = [
+            edge.control_points().first().unwrap().point(),
+            edge.control_points().last().unwrap().point(),
+        ];
+        assert!(endpoints.contains(&point(4.0, 0.0, 0.0)));
+        assert!(endpoints.contains(&point(4.0, 2.0, 0.0)));
+
+        let vertex_neighbor = Brep::try_surface_face(
+            horizontal_rectangle(4.0, 6.0, 2.0, 4.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let vertex_events =
+            brep_brep_intersection_events(&south, &vertex_neighbor, Tolerance::DEFAULT).unwrap();
+        let [BrepBrepIntersectionEvent::Point(contact)] = vertex_events.as_slice() else {
+            panic!("expected one shared face vertex, got {vertex_events:#?}")
+        };
+        assert!(contact.is_near(point(4.0, 2.0, 0.0), Tolerance::DEFAULT));
     }
 
     #[test]

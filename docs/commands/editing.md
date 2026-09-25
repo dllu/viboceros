@@ -159,9 +159,9 @@ orientation and loop-domain rules. Supported surface/B-rep and B-rep/B-rep
 intersections are clipped to exact face trim regions when needed, deduplicated
 at shared edges and vertices, and joined into maximal components. Curved
 surfaces against trimmed planar and spherical faces are included. Coincident
-planar surface/B-rep pairs return the shared region perimeter, including trim
-holes and curved cap boundaries. Coincident B-rep/B-rep faces still require
-untrimmed natural domains and one area-overlap face pair.
+planar surface/B-rep and B-rep/B-rep pairs return the shared region perimeter,
+including trim holes and curved cap boundaries. B-rep/B-rep intersections
+currently allow one coincident area-overlap face pair.
 Canonical spherical surfaces and planar surface patches intersect in exact
 rational circles or circular arcs clipped to the finite patch. Exact tangency
 creates a point. Rhino's surface intersection API can instead return tiny

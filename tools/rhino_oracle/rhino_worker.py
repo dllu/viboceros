@@ -967,6 +967,51 @@ def _nurbs_curve_from_definition(definition, dimension=3):
         raise
 
 
+def _brep_face_with_v_split(surface, trim_v, upper, tolerance):
+    brep = Rhino.Geometry.Brep.CreateFromSurface(surface)
+    if brep is None:
+        raise ValueError("could not create B-rep from face surface")
+    if trim_v is None:
+        return brep
+    try:
+        trim_v = _finite(trim_v, "B-rep face V split")
+        v_domain = surface.Domain(1)
+        if not v_domain.T0 < trim_v < v_domain.T1:
+            raise ValueError("B-rep face V split must be interior")
+        cutter = surface.IsoCurve(0, trim_v)
+        if cutter is None:
+            raise ValueError("could not construct B-rep face split isocurve")
+        try:
+            split = brep.Faces[0].Split(
+                [cutter], float(tolerance["absolute"])
+            )
+            if split is None or split.Faces.Count != 2:
+                raise ValueError("B-rep face split did not create two faces")
+            try:
+                u_domain = surface.Domain(0)
+                u_middle = 0.5 * (u_domain.T0 + u_domain.T1)
+                v_probe = 0.5 * (
+                    trim_v + (v_domain.T1 if upper else v_domain.T0)
+                )
+                selected = [
+                    face for face in split.Faces
+                    if face.IsPointOnFace(u_middle, v_probe)
+                    == Rhino.Geometry.PointFaceRelation.Interior
+                ]
+                if len(selected) != 1:
+                    raise ValueError("could not identify split B-rep face")
+                piece = selected[0].DuplicateFace(False)
+                if piece is None:
+                    raise ValueError("could not duplicate split B-rep face")
+            finally:
+                split.Dispose()
+        finally:
+            cutter.Dispose()
+    finally:
+        brep.Dispose()
+    return piece
+
+
 def _nurbs_surface_from_definition(definition):
     degree_u = int(definition["degree_u"])
     degree_v = int(definition["degree_v"])
@@ -12523,52 +12568,12 @@ def _execute(operation, iterations, tolerance):
         if kind == "surface_brep_face_intersect_command":
             brep_surface = _nurbs_surface_from_definition(operation["brep_surface"])
             try:
-                brep = Rhino.Geometry.Brep.CreateFromSurface(brep_surface)
-                if brep is None:
-                    raise ValueError("could not create B-rep from face surface")
-                trim_v = operation.get("brep_trim_v")
-                if trim_v is not None:
-                    source_brep = brep
-                    try:
-                        trim_v = _finite(trim_v, "B-rep face V split")
-                        v_domain = brep_surface.Domain(1)
-                        if not v_domain.T0 < trim_v < v_domain.T1:
-                            raise ValueError("B-rep face V split must be interior")
-                        cutter = brep_surface.IsoCurve(0, trim_v)
-                        if cutter is None:
-                            raise ValueError("could not construct B-rep face split isocurve")
-                        try:
-                            split = source_brep.Faces[0].Split(
-                                [cutter], float(tolerance["absolute"])
-                            )
-                            if split is None or split.Faces.Count != 2:
-                                raise ValueError("B-rep face split did not create two faces")
-                            try:
-                                u_domain = brep_surface.Domain(0)
-                                u_middle = 0.5 * (u_domain.T0 + u_domain.T1)
-                                v_probe = 0.5 * (
-                                    trim_v + (
-                                        v_domain.T1 if operation.get("brep_trim_upper", False)
-                                        else v_domain.T0
-                                    )
-                                )
-                                selected = [
-                                    face for face in split.Faces
-                                    if face.IsPointOnFace(u_middle, v_probe)
-                                    == Rhino.Geometry.PointFaceRelation.Interior
-                                ]
-                                if len(selected) != 1:
-                                    raise ValueError("could not identify split B-rep face")
-                                piece = selected[0].DuplicateFace(False)
-                                if piece is None:
-                                    raise ValueError("could not duplicate split B-rep face")
-                            finally:
-                                split.Dispose()
-                        finally:
-                            cutter.Dispose()
-                    finally:
-                        source_brep.Dispose()
-                    brep = piece
+                brep = _brep_face_with_v_split(
+                    brep_surface,
+                    operation.get("brep_trim_v"),
+                    operation.get("brep_trim_upper", False),
+                    tolerance,
+                )
             finally:
                 brep_surface.Dispose()
         elif kind == "cylinder_brep_intersect_command":
@@ -12815,8 +12820,22 @@ def _execute(operation, iterations, tolerance):
             first_surface = _nurbs_surface_from_definition(operation["first"])
             second_surface = _nurbs_surface_from_definition(operation["second"])
             try:
-                first = Rhino.Geometry.Brep.CreateFromSurface(first_surface)
-                second = Rhino.Geometry.Brep.CreateFromSurface(second_surface)
+                first = _brep_face_with_v_split(
+                    first_surface,
+                    operation.get("first_trim_v"),
+                    operation.get("first_trim_upper", False),
+                    tolerance,
+                )
+                try:
+                    second = _brep_face_with_v_split(
+                        second_surface,
+                        operation.get("second_trim_v"),
+                        operation.get("second_trim_upper", False),
+                        tolerance,
+                    )
+                except Exception:
+                    first.Dispose()
+                    raise
             finally:
                 first_surface.Dispose()
                 second_surface.Dispose()

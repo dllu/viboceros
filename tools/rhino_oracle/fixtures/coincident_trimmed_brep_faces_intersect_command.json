@@ -1,0 +1,233 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "brep_face_brep_face_intersect_command",
+      "id": "brep-over-south-face",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ]
+      },
+      "first_trim_v": 2.0,
+      "first_trim_upper": false,
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -1.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -1.0,
+          -1.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -1.0,
+          -1.0,
+          5.0,
+          5.0
+        ]
+      },
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_face_brep_face_intersect_command",
+      "id": "brep-cuts-south-face",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ]
+      },
+      "first_trim_v": 2.0,
+      "first_trim_upper": false,
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          1.0,
+          1.0,
+          3.0,
+          3.0
+        ],
+        "knots_v": [
+          -1.0,
+          -1.0,
+          3.0,
+          3.0
+        ]
+      },
+      "canonicalize_linear_curves": true
+    }
+  ]
+}

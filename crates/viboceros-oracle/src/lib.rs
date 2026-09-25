@@ -1337,6 +1337,14 @@ pub enum Operation {
         first: NurbsSurfaceDefinition,
         second: NurbsSurfaceDefinition,
         #[serde(default)]
+        first_trim_v: Option<f64>,
+        #[serde(default)]
+        first_trim_upper: bool,
+        #[serde(default)]
+        second_trim_v: Option<f64>,
+        #[serde(default)]
+        second_trim_upper: bool,
+        #[serde(default)]
         reverse_selection: bool,
         #[serde(default)]
         canonicalize_closed_curves: bool,
@@ -4865,18 +4873,36 @@ fn execute(
         Operation::BrepFaceBrepFaceIntersectCommand {
             first,
             second,
+            first_trim_v,
+            first_trim_upper,
+            second_trim_v,
+            second_trim_upper,
             canonicalize_closed_curves,
             canonicalize_linear_curves,
             ..
         } => {
-            let first = Geometry::Brep(Brep::try_surface_face(
-                nurbs_surface_from_definition(first)?,
-                tolerance,
-            )?);
-            let second = Geometry::Brep(Brep::try_surface_face(
-                nurbs_surface_from_definition(second)?,
-                tolerance,
-            )?);
+            let face_brep = |definition: &NurbsSurfaceDefinition,
+                             trim_v: Option<f64>,
+                             trim_upper: bool|
+             -> Result<Geometry, ProbeError> {
+                let surface = nurbs_surface_from_definition(definition)?;
+                let brep = if let Some(split) = trim_v {
+                    let [lower, upper] = Brep::try_split_rectangular_surface_face_v(
+                        surface.clone(),
+                        surface.domain_u(),
+                        surface.domain_v(),
+                        split,
+                        false,
+                        tolerance,
+                    )?;
+                    if trim_upper { upper } else { lower }
+                } else {
+                    Brep::try_surface_face(surface, tolerance)?
+                };
+                Ok(Geometry::Brep(brep))
+            };
+            let first = face_brep(first, *first_trim_v, *first_trim_upper)?;
+            let second = face_brep(second, *second_trim_v, *second_trim_upper)?;
             // Rhino traverses these pairs in document insertion order even
             // when the two existing objects are selected in reverse order.
             let inputs = [first, second];
