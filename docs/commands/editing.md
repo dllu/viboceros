@@ -268,6 +268,8 @@ exact rational circles, including tangent sections and circles on cylinder
 rims. Offset and nonparallel torus/cylinder axes remain unsupported.
 Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles; spheres with offset centers remain unsupported.
+Coaxial tori likewise intersect in one or two exact rational circles, including
+tangent circles. Coincident and noncoaxial tori remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
