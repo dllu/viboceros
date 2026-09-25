@@ -75,6 +75,13 @@ class RhinoWorkerTests(unittest.TestCase):
             run.assert_called_once_with("_SetView _World _Bottom", True)
             run.reset_mock()
             self.worker._viewport_arrangement_probe({
+                "commands": ["SetView World Back", "SetView World Left"]})
+            self.assertEqual(run.call_args_list, [
+                unittest.mock.call("_SetView _World _Back", True),
+                unittest.mock.call("_SetView _World _Left", True),
+            ])
+            run.reset_mock()
+            self.worker._viewport_arrangement_probe({
                 "commands": ["4View"], "baseline_four_view": True})
             self.assertEqual(run.call_args_list, [
                 unittest.mock.call("_4View _Projection=_ThirdAngle _Enter", True),

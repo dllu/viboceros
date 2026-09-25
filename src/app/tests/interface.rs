@@ -302,6 +302,21 @@ fn four_view_keeps_grid_settings_with_surviving_views() {
 }
 
 #[test]
+fn four_view_reuses_changed_orthographic_grid_for_right() {
+    for (index, command) in [(0, "SetView World Bottom"), (2, "SetView World Back")] {
+        let mut app = test_app();
+        app.active_viewport = index;
+        enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+        let changed_grid = app.viewports[index].grid_settings();
+        enter(&mut app, command);
+        enter(&mut app, "4View");
+        assert_eq!(app.viewports[index].grid_settings(), changed_grid);
+        assert_eq!(app.viewports[3].grid_settings(), changed_grid);
+        assert_eq!(app.viewports[1].grid_settings(), GridSettings::default());
+    }
+}
+
+#[test]
 fn split_viewport_commands_partition_the_active_view_and_keep_model_input() {
     let mut app = test_app();
     app.viewports[0].display_mode = DisplayMode::Ghosted;

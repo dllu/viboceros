@@ -32,6 +32,24 @@
       "source_grid_spacing": 7.5,
       "source_snap_spacing": 0.75,
       "commands": ["4View Projection FirstAngle", "4View Projection ThirdAngle"]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-changing-front-to-back-with-grid",
+      "baseline_four_view": true,
+      "active_name": "Front",
+      "source_grid_spacing": 2.5,
+      "source_snap_spacing": 0.25,
+      "commands": ["SetView World Back", "4View"]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-changing-right-to-left-with-grid",
+      "baseline_four_view": true,
+      "active_name": "Right",
+      "source_grid_spacing": 2.5,
+      "source_snap_spacing": 0.25,
+      "commands": ["SetView World Left", "4View"]
     }
   ]
 }

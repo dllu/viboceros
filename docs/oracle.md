@@ -38,8 +38,9 @@ construction-plane API before plain and explicit `4View` calls. It confirms
 that unchanged Top keeps its spacing, first-angle Left takes Right's spacing,
 and returning to third-angle resets Right's spacing. Each operation first
 establishes a standard four-view layout with unit grid and snap spacing.
-The changed Top-to-Bottom case also gives Right the active Bottom spacing when
-plain `4View` restores Top; this side effect remains unmatched.
+Changing Top to Bottom or Front to Back before plain `4View` gives the restored
+Top or Front and Right the changed viewport's spacing. A changed Right-to-Left
+view restores Right's spacing without changing the other grids.
 
 The [orientation audit](orientation-audit.md) separates public document insertion
 and replacement from actual `Flip` command behavior, retaining full definitions

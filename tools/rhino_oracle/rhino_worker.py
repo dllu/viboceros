@@ -4084,7 +4084,7 @@ def _viewport_arrangement_probe(operation):
     allowed = ("NewViewport", "CloseViewport", "3View", "4View", "MaxViewport",
                "4View Projection FirstAngle", "4View Projection ThirdAngle",
                "SplitViewportHorizontal", "SplitViewportVertical",
-               "SetView World Bottom")
+               "SetView World Bottom", "SetView World Back", "SetView World Left")
     if not isinstance(commands, list) or not 1 <= len(commands) <= 12:
         raise ValueError("expected 1 to 12 viewport arrangement commands")
     if any(command not in allowed for command in commands):
@@ -4169,6 +4169,8 @@ def _viewport_arrangement_probe(operation):
             "4View Projection FirstAngle": "_4View _Projection=_FirstAngle _Enter",
             "4View Projection ThirdAngle": "_4View _Projection=_ThirdAngle _Enter",
             "SetView World Bottom": "_SetView _World _Bottom",
+            "SetView World Back": "_SetView _World _Back",
+            "SetView World Left": "_SetView _World _Left",
         }.get(command, "_" + command)
         if not _run_surface_script(script, True):
             raise ValueError("viewport arrangement failed: " + command)

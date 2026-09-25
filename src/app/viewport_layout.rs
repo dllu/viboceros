@@ -210,8 +210,16 @@ impl VibocerosApp {
             .into_iter()
             .map(|kind| {
                 let mut viewport = Viewport::new_for_layout(source, kind);
-                if let Some(previous) = self.viewports.iter().find(|view| view.kind() == kind) {
+                let previous = self.viewports.iter().find(|view| view.kind() == kind);
+                if let Some(previous) = previous {
                     viewport.display_mode = previous.display_mode;
+                }
+                if projection == FourViewProjection::ThirdAngle
+                    && kind == ViewKind::Right
+                    && matches!(source.kind(), ViewKind::Bottom | ViewKind::Back)
+                {
+                    viewport.set_grid_settings(source.grid_settings());
+                } else if let Some(previous) = previous {
                     viewport.set_grid_settings(previous.grid_settings());
                 } else if kind == ViewKind::Left
                     && let Some(right) = self

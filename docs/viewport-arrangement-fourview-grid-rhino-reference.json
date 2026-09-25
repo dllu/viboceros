@@ -1730,6 +1730,1044 @@
           }
         ]
       }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "four-view-after-changing-front-to-back-with-grid",
+      "value": {
+        "commands": [
+          "SetView World Back",
+          "4View"
+        ],
+        "states": [
+          {
+            "active_viewport": 2,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  0.0,
+                  100.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  -80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Front",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -100.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_location": [
+                  80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Right",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 1.0
+              }
+            ]
+          },
+          {
+            "active_viewport": 2,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -0.0,
+                  -1.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Back",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -100.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_location": [
+                  80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Right",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 1.0
+              }
+            ]
+          },
+          {
+            "active_viewport": 0,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  0.0,
+                  100.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  -80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Front",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -100.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_location": [
+                  80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Right",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "four-view-after-changing-right-to-left-with-grid",
+      "value": {
+        "commands": [
+          "SetView World Left",
+          "4View"
+        ],
+        "states": [
+          {
+            "active_viewport": 3,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  0.0,
+                  100.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  -80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Front",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -100.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_location": [
+                  80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Right",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              }
+            ]
+          },
+          {
+            "active_viewport": 3,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  0.0,
+                  100.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  -80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Front",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  1.0,
+                  -0.0,
+                  -0.0
+                ],
+                "camera_location": [
+                  -80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Left",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              }
+            ]
+          },
+          {
+            "active_viewport": 0,
+            "views": [
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  -43.3,
+                  75.0,
+                  -50.0
+                ],
+                "camera_location": [
+                  43.11149477068236,
+                  -74.67348978755606,
+                  49.78232652503737
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Perspective",
+                "perspective": true,
+                "screen_rectangle": [
+                  903,
+                  303,
+                  1608,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  365
+                ],
+                "camera_direction": [
+                  0.0,
+                  0.0,
+                  -100.0
+                ],
+                "camera_location": [
+                  0.0,
+                  0.0,
+                  80.2123006609122
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Top",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  303,
+                  897,
+                  668
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  0.0,
+                  100.0,
+                  0.0
+                ],
+                "camera_location": [
+                  0.0,
+                  -80.2123006609122,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 1.0,
+                "maximized": false,
+                "name": "Front",
+                "perspective": false,
+                "screen_rectangle": [
+                  192,
+                  674,
+                  897,
+                  1038
+                ],
+                "snap_spacing": 1.0
+              },
+              {
+                "bounds": [
+                  0,
+                  0,
+                  705,
+                  364
+                ],
+                "camera_direction": [
+                  -100.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_location": [
+                  80.2123006609122,
+                  0.0,
+                  0.0
+                ],
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "camera_up": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "display_mode": "Wireframe",
+                "floating": false,
+                "grid_spacing": 2.5,
+                "maximized": false,
+                "name": "Right",
+                "perspective": false,
+                "screen_rectangle": [
+                  903,
+                  674,
+                  1608,
+                  1038
+                ],
+                "snap_spacing": 0.25
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
