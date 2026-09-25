@@ -3,6 +3,34 @@
 #[cfg(test)]
 mod tests {
     #[test]
+    fn continuity_fixture_covers_endpoint_orientation_and_bend() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_end_continuity.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 5);
+        let by_id = |id| {
+            response
+                .results
+                .iter()
+                .find(|row| row.id == id)
+                .unwrap()
+                .value
+                .clone()
+        };
+        for id in ["collinear-lines", "opposite-parameterization"] {
+            let value = by_id(id);
+            assert_eq!(value["gap"], 0.0);
+            assert_eq!(value["angle_degrees"], 0.0);
+            assert_eq!(value["curvature_delta"], 0.0);
+        }
+        assert_eq!(by_id("right-angle-kink")["angle_degrees"], 90.0);
+        assert!(by_id("disconnected")["gap"].as_f64().unwrap() > 0.09);
+        assert!(by_id("opposite-bend")["curvature_delta"].as_f64().unwrap() > 1.0);
+    }
+
+    #[test]
     fn direction_match_fixture_agrees_with_live_rhino_observations() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curve_direction_match.json"

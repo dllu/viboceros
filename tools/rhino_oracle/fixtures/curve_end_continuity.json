@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_end_continuity",
+      "id": "collinear-lines",
+      "first": {"type": "line", "start": [0, 0, 0], "end": [1, 0, 0]},
+      "second": {"type": "line", "start": [1, 0, 0], "end": [2, 0, 0]},
+      "first_at_end": true,
+      "second_at_end": false
+    },
+    {
+      "op": "curve_end_continuity",
+      "id": "opposite-parameterization",
+      "first": {"type": "line", "start": [0, 0, 0], "end": [1, 0, 0]},
+      "second": {"type": "line", "start": [2, 0, 0], "end": [1, 0, 0]},
+      "first_at_end": true,
+      "second_at_end": true
+    },
+    {
+      "op": "curve_end_continuity",
+      "id": "right-angle-kink",
+      "first": {"type": "line", "start": [0, 0, 0], "end": [1, 0, 0]},
+      "second": {"type": "line", "start": [1, 0, 0], "end": [1, 1, 0]},
+      "first_at_end": true,
+      "second_at_end": false
+    },
+    {
+      "op": "curve_end_continuity",
+      "id": "disconnected",
+      "first": {"type": "line", "start": [0, 0, 0], "end": [1, 0, 0]},
+      "second": {"type": "line", "start": [1.1, 0, 0], "end": [2.1, 0, 0]},
+      "first_at_end": true,
+      "second_at_end": false
+    },
+    {
+      "op": "curve_end_continuity",
+      "id": "opposite-bend",
+      "first": {"type": "arc", "points": [[0, 0, 0], [1, 1, 0], [2, 0, 0]]},
+      "second": {"type": "arc", "points": [[2, 0, 0], [3, -1, 0], [4, 0, 0]]},
+      "first_at_end": true,
+      "second_at_end": false
+    }
+  ]
+}

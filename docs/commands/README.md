@@ -41,6 +41,7 @@ Rhino's complete command set is still a work in progress.
 - [Signed scalar volume and open-boundary confirmation](volume.md)
 - [Signed-volume centroid markers](volume-centroid.md)
 - [Local curve radius and diameter](radius.md)
+- [Endpoint geometric continuity](gcon.md)
 - [World and construction-plane point coordinates](evaluate-point.md)
 - [Curve and surface parameter domains](domain.md)
 - [Surface UV coordinates of a point](evaluate-uv-point.md)
@@ -330,6 +331,8 @@ Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
 Dir Mode=FlipU
+GCon
+GCon Pick1=0,0,0 Pick2=4,0,0
 MatchCrvDir
 MatchCrvDir Reference=Rail
 Flip

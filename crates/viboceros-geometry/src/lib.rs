@@ -20,6 +20,7 @@ mod curve;
 mod curve_blend_pair;
 mod curve_chamfer_pair;
 mod curve_connect_pair;
+mod curve_continuity;
 mod curve_edit;
 mod curve_evaluate;
 mod curve_fillet_pair;
@@ -103,6 +104,7 @@ pub use curve_connect_pair::{
     try_connect_curves_parts, try_connect_curves_parts_with_arc_style,
     try_connect_curves_parts_with_styles,
 };
+pub use curve_continuity::{CurveContinuityLevel, CurveContinuityReport, curve_end_continuity};
 pub use curve_edit::{Curve3, CurveClosure};
 pub use curve_fillet_pair::{
     CurveFilletExtensionStyles, try_fillet_curves_joined, try_fillet_curves_joined_with_styles,

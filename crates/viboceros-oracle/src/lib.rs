@@ -628,6 +628,13 @@ pub enum Operation {
         reference: curve_join_close::CurveInput,
         target: curve_join_close::CurveInput,
     },
+    CurveEndContinuity {
+        id: String,
+        first: curve_join_close::CurveInput,
+        second: curve_join_close::CurveInput,
+        first_at_end: bool,
+        second_at_end: bool,
+    },
     PolycurveDocument {
         id: String,
         #[serde(flatten)]
@@ -1939,6 +1946,7 @@ impl Operation {
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
             | Self::CurveDirectionMatch { id, .. }
+            | Self::CurveEndContinuity { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::TrimmedSurfaceIsocurves { id, .. }
@@ -2631,6 +2639,33 @@ fn execute(
                 reference.as_ref().directions_match(target.as_ref())
             })?;
             (json!({"match": matches}), elapsed)
+        }
+        Operation::CurveEndContinuity {
+            first,
+            second,
+            first_at_end,
+            second_at_end,
+            ..
+        } => {
+            let first = first.geometry()?;
+            let second = second.geometry()?;
+            let (report, elapsed) = measure(iterations, || {
+                viboceros_geometry::curve_end_continuity(
+                    first.as_ref(),
+                    *first_at_end,
+                    second.as_ref(),
+                    *second_at_end,
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "gap": report.gap,
+                    "angle_degrees": report.tangent_angle_radians.to_degrees(),
+                    "curvature_delta": report.curvature_vector_difference,
+                }),
+                elapsed,
+            )
         }
         Operation::PolycurveDocument { fixture, .. } => {
             polycurve_document::run(fixture, iterations, tolerance)?

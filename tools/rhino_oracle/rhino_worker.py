@@ -5999,6 +5999,35 @@ def _execute(operation, iterations, tolerance):
         finally:
             target.Dispose()
             reference.Dispose()
+    if kind == "curve_end_continuity":
+        first = _join_close_input(operation["first"])
+        second = _join_close_input(operation["second"])
+        try:
+            at_first_end = bool(operation["first_at_end"])
+            at_second_end = bool(operation["second_at_end"])
+            u = first.Domain.T1 if at_first_end else first.Domain.T0
+            v = second.Domain.T1 if at_second_end else second.Domain.T0
+            a = _xyz(first.PointAt(u))
+            b = _xyz(second.PointAt(v))
+            tangent_a = _xyz(first.TangentAt(u))
+            tangent_b = _xyz(second.TangentAt(v))
+            if not at_first_end:
+                tangent_a = [-x for x in tangent_a]
+            if at_second_end:
+                tangent_b = [-x for x in tangent_b]
+            cross = [tangent_a[1]*tangent_b[2]-tangent_a[2]*tangent_b[1],
+                     tangent_a[2]*tangent_b[0]-tangent_a[0]*tangent_b[2],
+                     tangent_a[0]*tangent_b[1]-tangent_a[1]*tangent_b[0]]
+            angle = math.degrees(math.atan2(math.sqrt(sum(x*x for x in cross)),
+                                            sum(x*y for x,y in zip(tangent_a,tangent_b))))
+            curvature_a = _xyz(first.CurvatureAt(u))
+            curvature_b = _xyz(second.CurvatureAt(v))
+            return {"gap": math.sqrt(sum((x-y)**2 for x,y in zip(a,b))),
+                    "angle_degrees": angle,
+                    "curvature_delta": math.sqrt(sum((x-y)**2 for x,y in zip(curvature_a,curvature_b)))}, 0
+        finally:
+            second.Dispose()
+            first.Dispose()
     if kind == "polycurve_native":
         return _polycurve_native(operation, iterations, tolerance)
     if kind == "curve_native":
