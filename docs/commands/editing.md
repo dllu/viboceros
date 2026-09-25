@@ -270,8 +270,10 @@ planes produce one or two cubic loops fitted to the modeling tolerance, with
 finite patches clipping them to arcs. Critical oblique cuts retain crossing
 loops, while isolated oblique tangencies return points. Coaxial torus and finite
 cylinder walls meet in one or two exact rational circles, including tangent
-sections and circles on cylinder rims. Offset and nonparallel torus/cylinder
-axes remain unsupported.
+sections and circles on cylinder rims. Parallel offset cylinder axes produce
+fitted cubic loops, finite rim-clipped arcs, or isolated contact points.
+Critical sections retain their single, pinched, and crossing loops. Nonparallel
+torus/cylinder axes remain unsupported.
 Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles. Offset spheres produce fitted cubic loops
 or isolated tangent points. The

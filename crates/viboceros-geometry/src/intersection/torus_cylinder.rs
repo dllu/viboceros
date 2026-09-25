@@ -1,4 +1,6 @@
-//! Exact circles where a finite coaxial cylinder cuts a canonical ring torus.
+//! Exact coaxial circles and fitted parallel offset torus/cylinder sections.
+
+mod offset_parallel;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Real, Tolerance};
@@ -37,9 +39,12 @@ pub(super) fn intersect(
     let [offset_x, offset_y, cylinder_start] =
         torus_frame.coordinates_of(cylinder_frame.origin())?;
     if offset_x.hypot(offset_y) > spatial_tolerance {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "noncoaxial torus/cylinder walls",
-        });
+        return offset_parallel::intersect(
+            (torus_frame, major_radius, minor_radius),
+            (cylinder_frame, cylinder_radius, cylinder_height),
+            [offset_x, offset_y, cylinder_start],
+            spatial_tolerance,
+        );
     }
     let cylinder_end = torus_axis
         .dot(cylinder_axis)?
