@@ -79,7 +79,14 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
         .command_names()
         .into_iter()
         .chain(viboceros_command::interface::COMMAND_NAMES)
-        .chain(["CPlane", "NamedView", "ReadViewportsFromFile", "Help"])
+        .chain([
+            "CPlane",
+            "NamedView",
+            "ReadViewportsFromFile",
+            "SetActiveViewport",
+            "SetMaximizedViewport",
+            "Help",
+        ])
         .filter_map(|name| score(&query, &name.to_ascii_lowercase()).map(|score| (score, name)))
         .collect::<Vec<_>>();
     names.sort_unstable();
@@ -293,6 +300,10 @@ mod tests {
         assert_eq!(
             command_completions(&commands, "readviewport")[0],
             "ReadViewportsFromFile"
+        );
+        assert_eq!(
+            command_completions(&commands, "setactiveviewport")[0],
+            "SetActiveViewport"
         );
         assert_eq!(command_completions(&commands, "mshsph")[0], "MeshSphere");
         assert_eq!(command_completions(&commands, "circel")[0], "Circle");

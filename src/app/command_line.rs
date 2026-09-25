@@ -57,6 +57,8 @@ impl VibocerosApp {
             || command_name.eq_ignore_ascii_case("CPlane")
             || command_name.eq_ignore_ascii_case("NamedView")
             || command_name.eq_ignore_ascii_case("ReadViewportsFromFile")
+            || command_name.eq_ignore_ascii_case("SetActiveViewport")
+            || command_name.eq_ignore_ascii_case("SetMaximizedViewport")
             || viboceros_command::interface::COMMAND_NAMES
                 .iter()
                 .any(|n| n.eq_ignore_ascii_case(command_name));

@@ -948,6 +948,8 @@ impl VibocerosApp {
                     names.push("CPlane");
                     names.push("NamedView");
                     names.push("ReadViewportsFromFile");
+                    names.push("SetActiveViewport");
+                    names.push("SetMaximizedViewport");
                     names.sort_unstable();
                     names.dedup();
                     self.push_log(format!("Commands: {}", names.join(", ")));
@@ -960,10 +962,14 @@ impl VibocerosApp {
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
                     self.push_log("ReadViewportsFromFile path.3dm: copy four saved model viewports and their layout from a 3DM file".into());
+                    self.push_log("SetActiveViewport name|1..4; SetMaximizedViewport name|1..4: select a displayed viewport".into());
                     self.command_input.clear();
                 }
                 _ => self.push_log("Usage: Help [UI]".into()),
             }
+            return true;
+        }
+        if self.try_run_named_viewport_command(input) {
             return true;
         }
         let Some(command) = interface::parse(input) else {
@@ -973,6 +979,72 @@ impl VibocerosApp {
         match command {
             Ok(command) => {
                 self.apply_interface_command(command);
+                self.command_input.clear();
+            }
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        true
+    }
+
+    fn try_run_named_viewport_command(&mut self, input: &str) -> bool {
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        let name = input[..end].trim_start_matches(['\'', '_', '-']);
+        let maximize = name.eq_ignore_ascii_case("SetMaximizedViewport");
+        if !maximize && !name.eq_ignore_ascii_case("SetActiveViewport") {
+            return false;
+        }
+        self.push_log(format!("> {input}"));
+        let result = (|| {
+            let argument = input[end..].trim();
+            let argument =
+                if argument.len() >= 2 && argument.starts_with('"') && argument.ends_with('"') {
+                    &argument[1..argument.len() - 1]
+                } else {
+                    argument
+                };
+            let usage = if maximize {
+                "SetMaximizedViewport name|1..4"
+            } else {
+                "SetActiveViewport name|1..4"
+            };
+            if argument.is_empty() {
+                return Err(format!("Usage: {usage}"));
+            }
+            let index = if let Ok(number) = argument.parse::<usize>() {
+                number
+                    .checked_sub(1)
+                    .filter(|index| *index < self.viewports.len())
+            } else {
+                let mut matches = self
+                    .viewports
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, view)| view.view_label().eq_ignore_ascii_case(argument))
+                    .map(|(index, _)| index);
+                let first = matches.next();
+                if matches.next().is_some() {
+                    return Err(format!(
+                        "Viewport name '{argument}' is ambiguous; use a number from 1 to {}",
+                        self.viewports.len()
+                    ));
+                }
+                first
+            }
+            .ok_or_else(|| format!("No viewport named '{argument}'"))?;
+            self.active_viewport = index;
+            if maximize || self.maximized_viewport.is_some() {
+                self.maximized_viewport = Some(index);
+            }
+            Ok(format!(
+                "{} viewport: {} ({})",
+                if maximize { "Maximized" } else { "Active" },
+                index + 1,
+                self.viewports[index].view_label()
+            ))
+        })();
+        match result {
+            Ok(message) => {
+                self.push_log(message);
                 self.command_input.clear();
             }
             Err(error) => self.push_log(format!("Error: {error}")),

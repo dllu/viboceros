@@ -16,6 +16,8 @@ and the active layer.
 `ReadViewportsFromFile path.3dm` loads the four saved model views and layout
 into the current document. `MaxViewport` and `4View` switch the workspace layout. `Export3dm`
 leaves the current file name unchanged.
+`SetActiveViewport name` selects a displayed viewport; `SetMaximizedViewport name`
+selects and maximizes it. Both accept a viewport number from 1 to 4.
 
 This is an early implementation. It supports analytic and NURBS geometry,
 trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL

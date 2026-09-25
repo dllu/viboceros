@@ -230,6 +230,12 @@ from another model, including display and grid settings. It converts view
 coordinates to the current document's units and keeps its objects and named
 views. See Rhino's
 [ReadViewportsFromFile](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
+`SetActiveViewport name` selects a displayed viewport by its title;
+`SetMaximizedViewport name` selects and maximizes it. Both accept a number from
+1 to 4 when titles repeat. Switching the active viewport while one is maximized
+shows the newly selected viewport. See Rhino's
+[SetActiveViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/setactiveviewport.htm)
+and [SetMaximizedViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/setmaximizedviewport.htm).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;

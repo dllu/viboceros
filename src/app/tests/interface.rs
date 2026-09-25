@@ -56,6 +56,59 @@ fn max_viewport_tracks_active_view_and_preserves_modeling_prompt() {
 }
 
 #[test]
+fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    enter(&mut app, "SetActiveViewport front");
+    assert_eq!(app.active_viewport, 2);
+    assert_eq!(app.maximized_viewport, None);
+    enter(&mut app, "SetMaximizedViewport Right");
+    assert_eq!(app.active_viewport, 3);
+    assert_eq!(app.maximized_viewport, Some(3));
+    enter(&mut app, "SetMaximizedViewport Right");
+    assert_eq!(app.maximized_viewport, Some(3));
+    enter(&mut app, "_SetActiveViewport Perspective");
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.maximized_viewport, Some(1));
+    for input in ["SetActiveViewport Missing", "SetMaximizedViewport 0"] {
+        enter(&mut app, input);
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        assert_eq!(app.active_viewport, 1);
+        assert_eq!(app.maximized_viewport, Some(1));
+    }
+    enter(&mut app, "SetActiveViewport 1");
+    assert_eq!(app.active_viewport, 0);
+    assert_eq!(app.maximized_viewport, Some(0));
+    assert_eq!(app.active_command, pending);
+    assert_eq!(
+        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        cameras
+    );
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn named_viewport_commands_reject_ambiguous_titles_without_switching() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    enter(&mut app, "SetView World Top");
+    app.active_viewport = 3;
+    enter(&mut app, "SetActiveViewport Top");
+    assert!(app.command_log.back().unwrap().contains("ambiguous"));
+    assert_eq!(app.active_viewport, 3);
+    enter(&mut app, "SetActiveViewport 2");
+    assert_eq!(app.active_viewport, 1);
+    enter(&mut app, "SetView CPlane Front");
+    app.active_viewport = 3;
+    enter(&mut app, "SetActiveViewport \"CPlane Front\"");
+    assert_eq!(app.active_viewport, 1);
+}
+
+#[test]
 fn double_clicking_viewport_title_requests_layout_toggle() {
     let context = egui::Context::default();
     let mut viewport = Viewport::new(ViewKind::Top);

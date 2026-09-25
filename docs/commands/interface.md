@@ -28,6 +28,8 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `SetView CPlane Top\|Bottom\|Front\|Back\|Right\|Left` | Align the camera to a standard direction of the active CPlane while keeping projection and CPlane; [details](set-view.md). |
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
 | `ReadViewportsFromFile path.3dm` | Copy four saved model views and their layout into the current document, converting view coordinates to its units. |
+| `SetActiveViewport name\|1..4` | Activate a displayed viewport by title or number. |
+| `SetMaximizedViewport name\|1..4` | Activate and maximize a displayed viewport by title or number. |
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
