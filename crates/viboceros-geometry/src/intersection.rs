@@ -1,5 +1,6 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
+mod cone_cone;
 mod cone_cylinder;
 mod cone_plane;
 mod cylinder_cylinder;
@@ -560,6 +561,8 @@ fn curve_brep_intersection_events_with_transform(
 /// corner at the apex.
 /// A perpendicular cylinder axis through the cone apex produces a smooth cubic
 /// loop, clipped to both finite height ranges.
+/// Coaxial cone walls meet in an exact rational circle when their finite
+/// radius profiles cross; coincident wall regions remain unsupported.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -573,6 +576,9 @@ pub fn surface_surface_intersection_events(
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let first_cone = first.canonical_cone(tolerance)?;
     let second_cone = second.canonical_cone(tolerance)?;
+    if let (Some(first_data), Some(second_data)) = (first_cone, second_cone) {
+        return cone_cone::cone_cone_intersection_events(first_data, second_data, tolerance);
+    }
     if let Some((frame, radius, height)) = first_cone
         && let Some(plane) = second.plane(tolerance)?
     {

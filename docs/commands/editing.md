@@ -246,6 +246,12 @@ intersect in a fitted cubic loop. Both finite height ranges clip it to arcs or
 isolated rim contacts; a cone base tangent to the loop creates two points.
 Other nonparallel cone/cylinder axes remain unsupported.
 
+Coaxial canonical cone walls meet in an exact rational circle when their
+linear radius profiles cross inside both finite height ranges. This includes
+opposed axes and a circle shared by both base rims. An apex-only contact is
+omitted; coincident wall regions remain unsupported. Offset and nonparallel
+cone pairs remain unsupported.
+
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
 singular apex produces no result, matching Rhino. The two coincident tangent
