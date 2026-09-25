@@ -252,8 +252,10 @@ opposed axes and a circle shared by both base rims. An apex-only contact is
 omitted; coincident wall regions remain unsupported. Parallel offset cones
 with equal slopes (within modeling tolerance) use a conic plane
 section, clipped to both finite height ranges. When their bases meet in only
-one axial plane, isolated contacts are returned as points. Other offset and
-nonparallel cone pairs remain unsupported.
+one axial plane, isolated contacts are returned as points. Parallel offset cones
+with unequal slopes produce two cubic branches fitted within the modeling
+tolerance, clipped at both cone bases; a single tangent contact produces a
+point. Nonparallel cone pairs remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the

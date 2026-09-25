@@ -1,6 +1,7 @@
 //! Finite sections of two canonical cones with a shared axis.
 
 mod parallel_equal_slope;
+mod parallel_unequal_slope;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, NurbsSurface, Real, Tolerance};
@@ -54,9 +55,13 @@ pub(super) fn cone_cone_intersection_events(
                 spatial_tolerance,
             );
         }
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "noncoaxial cone walls",
-        });
+        return parallel_unequal_slope::intersect(
+            (first_frame, first_radius, first_signed_height),
+            (second_frame, second_radius, second_signed_height),
+            (offset_x, offset_y, offset_z),
+            tolerance,
+            spatial_tolerance,
+        );
     }
     let first_sign = first_signed_height.signum();
     let second_direction =

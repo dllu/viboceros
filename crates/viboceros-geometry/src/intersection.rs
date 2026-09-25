@@ -565,6 +565,8 @@ fn curve_brep_intersection_events_with_transform(
 /// radius profiles cross; coincident wall regions remain unsupported.
 /// Parallel offset cones of equal slope meet in an exact conic plane section,
 /// clipped to both finite height ranges.
+/// Unequal-slope parallel cones meet in bounded-error cubic branches, clipped
+/// to both finite height ranges.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
