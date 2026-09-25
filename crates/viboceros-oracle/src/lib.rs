@@ -1300,11 +1300,16 @@ pub enum Operation {
         cylinder_axis: [f64; 3],
         cylinder_radius: f64,
         cylinder_height: f64,
-        /// Retain one isocurve-split wall face instead of the capped solid.
+        /// Retain one height-split wall face instead of the capped solid.
         #[serde(default)]
         trim_v: Option<f64>,
         #[serde(default)]
         trim_upper: bool,
+        /// Retain one angularly split wall face instead of the capped solid.
+        #[serde(default)]
+        trim_u: Option<f64>,
+        #[serde(default)]
+        trim_east: bool,
         #[serde(default)]
         surface_as_brep: bool,
         #[serde(default)]
@@ -2173,6 +2178,8 @@ pub struct OperationResult {
 pub enum ProbeError {
     #[error("invalid Match option: {0}")]
     InvalidMatchOption(&'static str),
+    #[error("a cylinder oracle case cannot split both U and V at once")]
+    ConflictingCylinderTrim,
     #[error(transparent)]
     Io(#[from] std::io::Error),
 
@@ -4750,11 +4757,16 @@ fn execute(
             cylinder_height,
             trim_v,
             trim_upper,
+            trim_u,
+            trim_east,
             surface_as_brep,
             brep_first,
             canonicalize_closed_curves,
             ..
         } => {
+            if trim_u.is_some() && trim_v.is_some() {
+                return Err(ProbeError::ConflictingCylinderTrim);
+            }
             let frame = Frame3::try_from_normal(
                 Point3::try_new(cylinder_center[0], cylinder_center[1], cylinder_center[2])?,
                 Vector3::try_new(cylinder_axis[0], cylinder_axis[1], cylinder_axis[2])?,
@@ -4772,6 +4784,18 @@ fn execute(
                     tolerance,
                 )?;
                 Geometry::Brep(if *trim_upper { high } else { low })
+            } else if let Some(split) = trim_u {
+                let wall =
+                    NurbsSurface::try_cylinder(frame, *cylinder_radius, 0.0, *cylinder_height)?;
+                let [west, east] = Brep::try_split_rectangular_surface_face_u(
+                    wall.clone(),
+                    wall.domain_u(),
+                    wall.domain_v(),
+                    *split,
+                    false,
+                    tolerance,
+                )?;
+                Geometry::Brep(if *trim_east { east } else { west })
             } else {
                 Geometry::Brep(Brep::try_cylinder(
                     frame,

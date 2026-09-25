@@ -1230,7 +1230,9 @@ pub fn surface_brep_intersection_events(
                         // the surface pair intersection. Clipping the same
                         // perimeter again can shift endpoint parameters by
                         // a few ulps on elevated edge curves.
-                        curves.push(brep_cylinder_circle_domain(curve, brep, face, tolerance)?);
+                        curves.push(brep_cylinder_transverse_section_domain(
+                            curve, brep, face, tolerance,
+                        )?);
                         continue;
                     }
                     let (face_points, face_curves) =
@@ -1239,7 +1241,9 @@ pub fn surface_brep_intersection_events(
                         push_unique_brep_point(&mut points, point, distance_tolerance);
                     }
                     for curve in face_curves {
-                        curves.push(brep_cylinder_circle_domain(curve, brep, face, tolerance)?);
+                        curves.push(brep_cylinder_transverse_section_domain(
+                            curve, brep, face, tolerance,
+                        )?);
                     }
                 }
             }
@@ -1404,10 +1408,10 @@ pub fn brep_brep_intersection_events(
                                 push_unique_brep_point(&mut points, point, distance_tolerance);
                             }
                             for curve in first_curves {
-                                let curve = brep_cylinder_circle_domain(
+                                let curve = brep_cylinder_transverse_section_domain(
                                     curve, first, first_face, tolerance,
                                 )?;
-                                curves.push(brep_cylinder_circle_domain(
+                                curves.push(brep_cylinder_transverse_section_domain(
                                     curve,
                                     second,
                                     second_face,
@@ -1444,16 +1448,16 @@ fn planes_are_coincident(
         && first.signed_distance_to(second.origin())?.abs() <= distance_tolerance * 2.0)
 }
 
-/// Rhino's Intersect command parameterizes a circular cut from a capped
-/// cylinder or a trimmed cylinder wall over two turns. An untrimmed standalone
-/// cylinder face uses one turn.
-fn brep_cylinder_circle_domain(
+/// Rhino's Intersect command doubles the angular parameter interval of a
+/// transverse circular section from a capped or trimmed cylinder wall.
+/// An untrimmed standalone cylinder face retains the original interval.
+fn brep_cylinder_transverse_section_domain(
     curve: NurbsCurve,
     brep: &Brep,
     face: &BrepFace,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
-    if curve.degree() != 2 || !curve.is_rational() || !curve.is_closed()? {
+    if curve.degree() != 2 || !curve.is_rational() {
         return Ok(curve);
     }
     let Some((frame, _, _)) = face.surface().canonical_cylinder(tolerance)? else {
@@ -1485,10 +1489,10 @@ fn brep_cylinder_circle_domain(
     let domain = curve.domain();
     let start = *domain.start();
     let span = *domain.end() - start;
-    if (span - std::f64::consts::TAU).abs() > tolerance.angular() * 10.0 {
+    if span <= 0.0 || span > std::f64::consts::TAU + tolerance.angular() * 10.0 {
         return Ok(curve);
     }
-    curve.try_reparameterized(start..=start + 2.0 * span)
+    curve.try_reparameterized(2.0 * start..=2.0 * *domain.end())
 }
 
 fn finalize_brep_intersection_geometry(
@@ -4085,7 +4089,10 @@ mod tests {
         )
         .unwrap();
         let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
-        for brep in [&west, &east] {
+        for (brep, domain) in [
+            (&west, 0.0..=std::f64::consts::TAU),
+            (&east, std::f64::consts::TAU..=2.0 * std::f64::consts::TAU),
+        ] {
             let events =
                 surface_brep_intersection_events(&plane, brep, Tolerance::DEFAULT).unwrap();
             assert_eq!(events.len(), 1, "{events:#?}");
@@ -4094,6 +4101,7 @@ mod tests {
             };
             assert_eq!(arc.degree(), 2);
             assert!(!arc.is_closed().unwrap());
+            assert_eq!(arc.domain(), domain);
             let length = arc.length(Tolerance::DEFAULT).unwrap();
             assert!(
                 (length - 2.0 * std::f64::consts::PI).abs() < 1e-8,

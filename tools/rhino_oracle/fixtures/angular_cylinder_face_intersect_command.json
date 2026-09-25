@@ -1,0 +1,230 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "cylinder_brep_intersect_command",
+      "id": "west-half-section",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ]
+      },
+      "cylinder_center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cylinder_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "cylinder_radius": 2.0,
+      "cylinder_height": 4.0,
+      "surface_as_brep": false,
+      "brep_first": false,
+      "canonicalize_closed_curves": true,
+      "trim_u": 3.141592653589793,
+      "trim_east": false
+    },
+    {
+      "op": "cylinder_brep_intersect_command",
+      "id": "east-half-section",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ]
+      },
+      "cylinder_center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cylinder_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "cylinder_radius": 2.0,
+      "cylinder_height": 4.0,
+      "surface_as_brep": false,
+      "brep_first": false,
+      "canonicalize_closed_curves": true,
+      "trim_u": 3.141592653589793,
+      "trim_east": true
+    },
+    {
+      "op": "cylinder_brep_intersect_command",
+      "id": "east-half-brep-section",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          3.0,
+          3.0
+        ]
+      },
+      "cylinder_center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "cylinder_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "cylinder_radius": 2.0,
+      "cylinder_height": 4.0,
+      "surface_as_brep": true,
+      "brep_first": false,
+      "canonicalize_closed_curves": true,
+      "trim_u": 3.141592653589793,
+      "trim_east": true
+    }
+  ]
+}

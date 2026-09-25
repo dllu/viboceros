@@ -12539,40 +12539,78 @@ def _execute(operation, iterations, tolerance):
                 cylinder_circle,
                 _finite(operation["cylinder_height"], "cylinder height"),
             )
-            if operation.get("trim_v") is None:
+            trim_u = operation.get("trim_u")
+            trim_v = operation.get("trim_v")
+            if trim_u is not None and trim_v is not None:
+                raise ValueError("cylinder wall cannot be split in U and V at once")
+            if trim_u is None and trim_v is None:
                 brep = cylinder.ToBrep(True, True)
             else:
-                split_height = _finite(operation["trim_v"], "cylinder trim height")
+                split_u = trim_u is not None
+                split_value = _finite(
+                    trim_u if split_u else trim_v, "cylinder trim parameter"
+                )
                 wall_brep = cylinder.ToBrep(False, False)
                 wall_surface = wall_brep.Faces[0].ToNurbsSurface()
                 original_ids = set(item.Id for item in document.Objects)
                 brep = None
+                split_stage = "add source"
                 try:
                     document.Objects.UnselectAll()
                     source_id = document.Objects.AddSurface(wall_surface)
                     if source_id == System.Guid.Empty:
                         raise ValueError("could not add cylinder wall for trim")
                     document.Objects.Select(source_id)
-                    pick = cylinder_plane.PointAt(
-                        0.0, float(operation["cylinder_radius"]), split_height
-                    )
-                    # Rhino names the direction of the isocurve, not the
-                    # parameter being cut: U runs around the wall at fixed V.
+                    radius = float(operation["cylinder_radius"])
+                    if split_u:
+                        pick = cylinder_plane.PointAt(
+                            radius * math.cos(split_value),
+                            radius * math.sin(split_value),
+                            float(operation["cylinder_height"]) * 0.5,
+                        )
+                        direction = "V"
+                        coordinate = "X"
+                    else:
+                        pick = cylinder_plane.PointAt(0.0, radius, split_value)
+                        direction = "U"
+                        coordinate = "Y"
+                    # Rhino names the direction along the isocurve; the other
+                    # parameter is fixed at the split value.
+                    split_stage = "run isocurve Split"
                     command = (
-                        "_-Split _Isocurve _Direction=_U _Shrink=_No %s _Enter"
-                        % _command_point(_xyz(pick))
+                        "_-Split _Isocurve _Direction=_%s _Shrink=_No %s _Enter"
+                        % (direction, _command_point(_xyz(pick)))
                     )
                     succeeded = Rhino.RhinoApp.RunScript(command, False)
                     pieces = []
+                    piece_errors = []
+                    split_stage = "inspect split pieces"
                     for item in document.Objects:
                         if item.Id in original_ids or not isinstance(
                             item.Geometry, Rhino.Geometry.Brep
                         ) or item.Geometry.Faces.Count != 1:
                             continue
-                        trims = item.Geometry.Faces[0].OuterLoop.Trims
-                        positions = [float(trim.PointAtStart.Y) for trim in trims]
-                        positions.extend(float(trim.PointAtEnd.Y) for trim in trims)
-                        pieces.append((min(positions), item.Geometry))
+                        try:
+                            face = item.Geometry.Faces[0]
+                            if face.Loops.Count == 0:
+                                piece_errors.append("one face has no loops")
+                                continue
+                            trims = face.OuterLoop.Trims
+                            positions = []
+                            for trim in trims:
+                                try:
+                                    positions.extend([
+                                        float(getattr(trim.PointAtStart, coordinate)),
+                                        float(getattr(trim.PointAtEnd, coordinate)),
+                                    ])
+                                except Exception as error:
+                                    piece_errors.append("trim endpoint: %s" % error)
+                            if positions:
+                                pieces.append((min(positions), item.Geometry))
+                            else:
+                                piece_errors.append("one face has no usable trim endpoints")
+                        except Exception as error:
+                            piece_errors.append("one face: %s" % error)
                     pieces.sort(key=lambda entry: entry[0])
                     if not succeeded or len(pieces) != 2:
                         found = [
@@ -12584,10 +12622,16 @@ def _execute(operation, iterations, tolerance):
                             if item.Id not in original_ids
                         ]
                         raise ValueError(
-                            "cylinder wall Split returned %r and %d pieces: %s"
-                            % (succeeded, len(pieces), found)
+                            "cylinder wall Split returned %r and %d pieces: %s; %s"
+                            % (succeeded, len(pieces), found, piece_errors)
                         )
-                    brep = pieces[1 if operation.get("trim_upper", False) else 0][1].DuplicateBrep()
+                    split_stage = "duplicate retained piece"
+                    retain_high = operation.get("trim_east" if split_u else "trim_upper", False)
+                    brep = pieces[1 if retain_high else 0][1].DuplicateBrep()
+                except Exception as error:
+                    raise ValueError(
+                        "cylinder wall Split at %s: %s" % (split_stage, error)
+                    )
                 finally:
                     document.Objects.UnselectAll()
                     for item in list(document.Objects):

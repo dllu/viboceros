@@ -1023,6 +1023,11 @@ compares four [Rhino observations](../tools/rhino_oracle/observations/trimmed_cy
 for lower and upper wall pieces, a disjoint plane, and a planar B-rep cutter.
 All four match full curve definitions, including Rhino's `4π` domain for a
 closed section of a trimmed cylindrical face.
+The [angular wall fixture](../tools/rhino_oracle/fixtures/angular_cylinder_face_intersect_command.json)
+matches three more [Rhino observations](../tools/rhino_oracle/observations/angular_cylinder_face_intersect_command.json)
+for both half-cylinder faces and a B-rep cutter. Rhino doubles the parameter
+interval of each exact semicircular section, so the two halves use `0..2π`
+and `2π..4π`.
 
 ```sh
 python3 tools/rhino_oracle/audit_cylinder_sections.py \

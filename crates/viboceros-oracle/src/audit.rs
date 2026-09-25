@@ -38,6 +38,7 @@ impl From<ProbeError> for OperationFailure {
             ProbeError::ProtocolVersion { .. }
             | ProbeError::InvalidIterations(_)
             | ProbeError::InvalidOperationId(_)
+            | ProbeError::ConflictingCylinderTrim
             | ProbeError::InvalidMatchOption(_)
             | ProbeError::InvalidMaximumCurveLength(_)
             | ProbeError::InvalidStateCycleObjectCount(_)
