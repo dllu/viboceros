@@ -134,6 +134,15 @@ uses the longest boundary edge and a strict greater-than test. Quad diagonals
 are excluded. It shares the area command's `MakeCopy` and `BorderOnly` behavior,
 atomic staging, attributes, groups, selection, and undo.
 
+`ExtractMeshFacesByAspectRatio AspectRatio=9` extracts faces whose aspect ratio
+is strictly greater than the threshold. A triangle's ratio is its longest edge
+divided by the opposite altitude. A quad uses the largest ratio among its four
+vertex triples, matching [McNeel's stated quad rule](https://discourse.mcneel.com/t/mesh-elements-aspect-ratio/181343/11).
+A square therefore has ratio 2. Collinear triples count as infinite ratio.
+`MakeCopy` and `BorderOnly` use the same output policy as the other metric
+extraction commands. The triangle formula is an independent implementation;
+direct Rhino oracle comparison is still needed for exact threshold parity.
+
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,

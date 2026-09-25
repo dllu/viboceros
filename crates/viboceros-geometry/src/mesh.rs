@@ -1,4 +1,5 @@
 mod append;
+mod aspect_ratio;
 mod join;
 mod mass_triangles;
 pub use join::{MeshJoinComponent, MeshJoinOptions, join_meshes};
