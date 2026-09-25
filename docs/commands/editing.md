@@ -241,7 +241,10 @@ fitted as cubic curves within the modeling tolerance and clipped to both finite
 surfaces; isolated rim contacts create points. A cylinder wall through the cone
 apex produces a cubic curve with an exact corner there. Full sections can be
 closed; finite rim cuts produce arcs and an apex-only contact produces no event.
-Nonparallel cone/cylinder axes remain unsupported.
+When a perpendicular cylinder axis passes through the cone apex, the walls
+intersect in a fitted cubic loop. Both finite height ranges clip it to arcs or
+isolated rim contacts; a cone base tangent to the loop creates two points.
+Other nonparallel cone/cylinder axes remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the

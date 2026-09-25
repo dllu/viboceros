@@ -558,6 +558,8 @@ fn curve_brep_intersection_events_with_transform(
 /// axes produce tolerance-bounded cubic curves, clipped to both finite rims.
 /// A cylinder wall through the cone apex produces a cubic curve with an exact
 /// corner at the apex.
+/// A perpendicular cylinder axis through the cone apex produces a smooth cubic
+/// loop, clipped to both finite height ranges.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.

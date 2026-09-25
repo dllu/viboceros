@@ -1,6 +1,7 @@
 //! Intersections of finite canonical cone and cylinder walls.
 
 mod parallel_offset;
+mod perpendicular_apex;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Real, Tolerance};
@@ -29,6 +30,35 @@ pub(super) fn cone_cylinder_intersection_events(
                 .max(cylinder_height),
     );
     if axis_drift > spatial_tolerance.max(coordinate_roundoff) {
+        let [origin_x, origin_y, origin_z] = cone_frame.coordinates_of(cylinder_frame.origin())?;
+        let cylinder_direction = [
+            cone_frame.x_axis().as_vector().dot(cylinder_axis)?,
+            cone_frame.y_axis().as_vector().dot(cylinder_axis)?,
+            cone_axis.dot(cylinder_axis)?,
+        ];
+        let angular_drift = cylinder_direction[2].abs()
+            * cone_radius
+                .max(signed_cone_height.abs())
+                .max(cylinder_height);
+        let line_offset = (origin_y * cylinder_direction[2] - origin_z * cylinder_direction[1])
+            .hypot(origin_z * cylinder_direction[0] - origin_x * cylinder_direction[2])
+            .hypot(origin_x * cylinder_direction[1] - origin_y * cylinder_direction[0]);
+        if angular_drift <= spatial_tolerance.max(coordinate_roundoff)
+            && line_offset <= spatial_tolerance.max(coordinate_roundoff)
+        {
+            return perpendicular_apex::intersect(
+                (cone_frame, cone_radius, signed_cone_height),
+                (cylinder_radius, cylinder_height),
+                (
+                    origin_x,
+                    origin_y,
+                    cylinder_direction[0],
+                    cylinder_direction[1],
+                ),
+                tolerance,
+                coordinate_roundoff,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nonparallel cone and cylinder walls",
         });
