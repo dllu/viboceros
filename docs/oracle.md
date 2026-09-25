@@ -1030,6 +1030,10 @@ matches three more [Rhino observations](../tools/rhino_oracle/observations/angul
 for both half-cylinder faces and a B-rep cutter. Rhino doubles the parameter
 interval of each exact semicircular section, so the two halves use `0..2π`
 and `2π..4π`.
+The [trimmed planar face fixture](../tools/rhino_oracle/fixtures/curved_surface_trimmed_plane_intersect_command.json)
+checks the opposite arrangement: a cylindrical surface against either half
+of a split planar B-rep face. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/curved_surface_trimmed_plane_intersect_command.json)
+match the complete native NURBS definitions within `1e-10`.
 
 ```sh
 python3 tools/rhino_oracle/audit_cylinder_sections.py \

@@ -12524,6 +12524,51 @@ def _execute(operation, iterations, tolerance):
             brep_surface = _nurbs_surface_from_definition(operation["brep_surface"])
             try:
                 brep = Rhino.Geometry.Brep.CreateFromSurface(brep_surface)
+                if brep is None:
+                    raise ValueError("could not create B-rep from face surface")
+                trim_v = operation.get("brep_trim_v")
+                if trim_v is not None:
+                    source_brep = brep
+                    try:
+                        trim_v = _finite(trim_v, "B-rep face V split")
+                        v_domain = brep_surface.Domain(1)
+                        if not v_domain.T0 < trim_v < v_domain.T1:
+                            raise ValueError("B-rep face V split must be interior")
+                        cutter = brep_surface.IsoCurve(0, trim_v)
+                        if cutter is None:
+                            raise ValueError("could not construct B-rep face split isocurve")
+                        try:
+                            split = source_brep.Faces[0].Split(
+                                [cutter], float(tolerance["absolute"])
+                            )
+                            if split is None or split.Faces.Count != 2:
+                                raise ValueError("B-rep face split did not create two faces")
+                            try:
+                                u_domain = brep_surface.Domain(0)
+                                u_middle = 0.5 * (u_domain.T0 + u_domain.T1)
+                                v_probe = 0.5 * (
+                                    trim_v + (
+                                        v_domain.T1 if operation.get("brep_trim_upper", False)
+                                        else v_domain.T0
+                                    )
+                                )
+                                selected = [
+                                    face for face in split.Faces
+                                    if face.IsPointOnFace(u_middle, v_probe)
+                                    == Rhino.Geometry.PointFaceRelation.Interior
+                                ]
+                                if len(selected) != 1:
+                                    raise ValueError("could not identify split B-rep face")
+                                piece = selected[0].DuplicateFace(False)
+                                if piece is None:
+                                    raise ValueError("could not duplicate split B-rep face")
+                            finally:
+                                split.Dispose()
+                        finally:
+                            cutter.Dispose()
+                    finally:
+                        source_brep.Dispose()
+                    brep = piece
             finally:
                 brep_surface.Dispose()
         elif kind == "cylinder_brep_intersect_command":

@@ -1287,6 +1287,10 @@ pub enum Operation {
         surface: NurbsSurfaceDefinition,
         brep_surface: NurbsSurfaceDefinition,
         #[serde(default)]
+        brep_trim_v: Option<f64>,
+        #[serde(default)]
+        brep_trim_upper: bool,
+        #[serde(default)]
         brep_first: bool,
         #[serde(default)]
         canonicalize_closed_curves: bool,
@@ -4716,16 +4720,29 @@ fn execute(
         Operation::SurfaceBrepFaceIntersectCommand {
             surface,
             brep_surface,
+            brep_trim_v,
+            brep_trim_upper,
             brep_first,
             canonicalize_closed_curves,
             canonicalize_linear_curves,
             ..
         } => {
             let surface = Geometry::NurbsSurface(nurbs_surface_from_definition(surface)?);
-            let brep = Geometry::Brep(Brep::try_surface_face(
-                nurbs_surface_from_definition(brep_surface)?,
-                tolerance,
-            )?);
+            let brep_surface = nurbs_surface_from_definition(brep_surface)?;
+            let brep = if let Some(split) = brep_trim_v {
+                let [lower, upper] = Brep::try_split_rectangular_surface_face_v(
+                    brep_surface.clone(),
+                    brep_surface.domain_u(),
+                    brep_surface.domain_v(),
+                    *split,
+                    false,
+                    tolerance,
+                )?;
+                if *brep_trim_upper { upper } else { lower }
+            } else {
+                Brep::try_surface_face(brep_surface, tolerance)?
+            };
+            let brep = Geometry::Brep(brep);
             let inputs = if *brep_first {
                 [brep, surface]
             } else {
