@@ -272,6 +272,7 @@ ExtractPt OutputLayer=Input Output=PointCloud
 ExtractControlPolygon OutputLayer=Current
 ExtractSrf 2,1,0 Copy=No OutputLayer=Input
 ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
+ExtractSubCrv Segments=0,2 Copy=Yes Join=No OutputLayer=Input
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
 DeleteFaces Faces=2,0

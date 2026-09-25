@@ -50,6 +50,22 @@ selected results default to the current layer (`OutputLayer=Input` is also
 supported). Unlike `DupBorder`, its `Input` option copies only the layer, not
 the source name, color, or groups.
 
+## Polycurve segment extraction
+
+Select one or more polycurves or polylines and enter
+`ExtractSubCrv Segments=0,2 Copy=Yes Join=No OutputLayer=Input`. Segment indices
+are zero-based and apply to each selected object; `Segments=All` selects every
+segment. The default removes selected segments, leaves the remainder on the
+source object where possible, and puts output on the current layer.
+`Copy=Yes` preserves the source. `Join=Yes` combines connected selected runs,
+including runs across a closed curve's seam. Disconnected remainder runs become
+separate objects. Outputs keep exact segment geometry, source attributes, and
+group membership. Invalid indices reject the whole command without edits.
+
+Rhino's [ExtractSubCrv command](https://docs.mcneel.com/rhino/8/help/en-us/commands/extractsubcrv.htm)
+also offers mouse selection of segments. The native command currently uses
+explicit indices for deterministic command-line input.
+
 ## Control polygons
 
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
