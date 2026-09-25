@@ -249,8 +249,11 @@ Other nonparallel cone/cylinder axes remain unsupported.
 Coaxial canonical cone walls meet in an exact rational circle when their
 linear radius profiles cross inside both finite height ranges. This includes
 opposed axes and a circle shared by both base rims. An apex-only contact is
-omitted; coincident wall regions remain unsupported. Offset and nonparallel
-cone pairs remain unsupported.
+omitted; coincident wall regions remain unsupported. Parallel offset cones
+with equal slopes (within modeling tolerance) use a conic plane
+section, clipped to both finite height ranges. When their bases meet in only
+one axial plane, isolated contacts are returned as points. Other offset and
+nonparallel cone pairs remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the

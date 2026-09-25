@@ -563,6 +563,8 @@ fn curve_brep_intersection_events_with_transform(
 /// loop, clipped to both finite height ranges.
 /// Coaxial cone walls meet in an exact rational circle when their finite
 /// radius profiles cross; coincident wall regions remain unsupported.
+/// Parallel offset cones of equal slope meet in an exact conic plane section,
+/// clipped to both finite height ranges.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -577,7 +579,7 @@ pub fn surface_surface_intersection_events(
     let first_cone = first.canonical_cone(tolerance)?;
     let second_cone = second.canonical_cone(tolerance)?;
     if let (Some(first_data), Some(second_data)) = (first_cone, second_cone) {
-        return cone_cone::cone_cone_intersection_events(first_data, second_data, tolerance);
+        return cone_cone::cone_cone_intersection_events(first, first_data, second_data, tolerance);
     }
     if let Some((frame, radius, height)) = first_cone
         && let Some(plane) = second.plane(tolerance)?
