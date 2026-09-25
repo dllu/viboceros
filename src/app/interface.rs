@@ -387,6 +387,9 @@ impl VibocerosApp {
                 }
                 if let InterfaceCommand::ViewportTabs(action) = command {
                     self.viewport_tabs_visible = action.apply(self.viewport_tabs_visible);
+                    if !self.viewport_tabs_visible {
+                        self.viewport_tab_rename = None;
+                    }
                     self.push_log(format!(
                         "Viewport tabs: {}",
                         if self.viewport_tabs_visible {
@@ -398,6 +401,7 @@ impl VibocerosApp {
                     return;
                 }
                 if command == InterfaceCommand::ThreeView {
+                    self.viewport_tab_rename = None;
                     let grid = self.viewports[self.active_viewport].grid_settings();
                     self.viewports = Viewport::standard_views().into_iter().take(3).collect();
                     for viewport in &mut self.viewports {
@@ -410,6 +414,7 @@ impl VibocerosApp {
                     return;
                 }
                 if command == InterfaceCommand::FourView && self.viewports.len() != 4 {
+                    self.viewport_tab_rename = None;
                     let grid = self.viewports[self.active_viewport].grid_settings();
                     self.viewports = Viewport::standard_views().into();
                     for viewport in &mut self.viewports {

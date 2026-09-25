@@ -6,9 +6,16 @@ use viboceros_command::interface::InterfaceCommand;
 #[derive(Clone, Copy)]
 enum ViewportTabAction {
     Select(usize),
+    Rename(usize),
     Maximize(usize),
     Close(usize),
     New,
+}
+
+pub(super) struct ViewportTabRename {
+    index: usize,
+    text: String,
+    focus_requested: bool,
 }
 
 fn split_rect(position: [f64; 4], horizontal: bool) -> Option<([f64; 4], [f64; 4])> {
@@ -215,11 +222,15 @@ impl VibocerosApp {
                                     action = Some(ViewportTabAction::Select(index));
                                 }
                                 if response.double_clicked() {
-                                    action = Some(ViewportTabAction::Maximize(index));
+                                    action = Some(ViewportTabAction::Rename(index));
                                 }
                                 response.context_menu(|ui| {
                                     if ui.button("Activate").clicked() {
                                         action = Some(ViewportTabAction::Select(index));
+                                        ui.close();
+                                    }
+                                    if ui.button("Rename").clicked() {
+                                        action = Some(ViewportTabAction::Rename(index));
                                         ui.close();
                                     }
                                     if ui
@@ -252,11 +263,74 @@ impl VibocerosApp {
         if let Some(action) = action {
             self.apply_viewport_tab_action(action);
         }
+        self.show_viewport_tab_rename(root.ctx());
+    }
+
+    fn show_viewport_tab_rename(&mut self, context: &egui::Context) {
+        let Some(edit) = &mut self.viewport_tab_rename else {
+            return;
+        };
+        let mut save = false;
+        let mut cancel = false;
+        egui::Window::new("Rename viewport")
+            .collapsible(false)
+            .resizable(false)
+            .show(context, |ui| {
+                ui.label(format!("Viewport {}", edit.index + 1));
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut edit.text)
+                        .desired_width(240.0)
+                        .hint_text("Viewport title"),
+                );
+                if edit.focus_requested {
+                    response.request_focus();
+                    edit.focus_requested = false;
+                }
+                if response.lost_focus() && ui.input(|input| input.key_pressed(egui::Key::Enter)) {
+                    save = true;
+                }
+                if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
+                    cancel = true;
+                }
+                ui.horizontal(|ui| {
+                    save |= ui.button("Rename").clicked();
+                    cancel |= ui.button("Cancel").clicked();
+                });
+            });
+        if cancel {
+            self.viewport_tab_rename = None;
+        } else if save {
+            self.commit_viewport_tab_rename();
+        }
+    }
+
+    fn commit_viewport_tab_rename(&mut self) {
+        let Some(edit) = self.viewport_tab_rename.take() else {
+            return;
+        };
+        let title = edit.text.trim();
+        if title.is_empty() || title.chars().any(char::is_control) {
+            self.push_log("Error: Viewport title must contain printable text".into());
+            self.viewport_tab_rename = Some(edit);
+        } else if let Some(viewport) = self.viewports.get_mut(edit.index) {
+            viewport.set_view_title(title);
+            self.push_log(format!("Viewport title: {title}"));
+        }
     }
 
     fn apply_viewport_tab_action(&mut self, action: ViewportTabAction) {
         match action {
             ViewportTabAction::Select(index) => self.activate_model_viewport(index),
+            ViewportTabAction::Rename(index) => {
+                if let Some(viewport) = self.viewports.get(index) {
+                    self.viewport_tab_rename = Some(ViewportTabRename {
+                        index,
+                        text: viewport.view_label().to_owned(),
+                        focus_requested: true,
+                    });
+                    self.activate_model_viewport(index);
+                }
+            }
             ViewportTabAction::Maximize(index) => {
                 let restore = self.maximized_viewport == Some(index);
                 self.activate_model_viewport(index);
@@ -364,6 +438,10 @@ impl VibocerosApp {
             .and_then(|index| remap_viewport_index(index, removed));
         self.viewport_positions = positions_after_close(&self.viewport_positions, removed);
         self.viewports.remove(removed);
+        self.viewport_tab_rename = self.viewport_tab_rename.take().and_then(|mut edit| {
+            edit.index = remap_viewport_index(edit.index, removed)?;
+            Some(edit)
+        });
         for viewport in &mut self.viewports {
             viewport.new_viewport_parent = viewport
                 .new_viewport_parent
@@ -464,5 +542,18 @@ mod tests {
         assert_eq!(app.viewports.len(), 3);
         assert!(app.active_viewport < app.viewports.len());
         assert_eq!(app.maximized_viewport, None);
+    }
+
+    #[test]
+    fn tab_rename_targets_the_chosen_view_after_another_view_closes() {
+        let mut app = super::super::tests::test_app();
+        app.apply_viewport_tab_action(ViewportTabAction::New);
+        app.apply_viewport_tab_action(ViewportTabAction::Rename(4));
+        app.viewport_tab_rename.as_mut().unwrap().text = "Detail".into();
+        app.apply_viewport_tab_action(ViewportTabAction::Close(0));
+        assert_eq!(app.viewport_tab_rename.as_ref().unwrap().index, 3);
+        app.commit_viewport_tab_rename();
+        assert_eq!(app.viewports[3].view_label(), "Detail");
+        assert_eq!(app.viewports[0].view_label(), "Perspective");
     }
 }

@@ -109,6 +109,7 @@ impl VibocerosApp {
         let current_views = views_in_grid_order(current_views);
         self.viewport_positions = file_viewport_positions(&current_views);
         self.viewports = Viewport::standard_views().into();
+        self.viewport_tab_rename = None;
         if !current_views.is_empty() {
             self.viewports
                 .resize_with(current_views.len(), || Viewport::new(ViewKind::Perspective));

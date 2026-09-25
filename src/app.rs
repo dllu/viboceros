@@ -1473,6 +1473,7 @@ pub struct VibocerosApp {
     maximized_viewport: Option<usize>,
     viewport_positions: Vec<[f64; 4]>,
     viewport_tabs_visible: bool,
+    viewport_tab_rename: Option<viewport_layout::ViewportTabRename>,
     osnap: bool,
     snaps: snapping::SnapControls,
     smart_track: bool,
@@ -1546,6 +1547,7 @@ impl VibocerosApp {
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             viewport_tabs_visible,
+            viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -6472,7 +6474,9 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.selection_menu.take().is_some() {
+            if self.viewport_tab_rename.take().is_some() {
+                // Escape dismisses the rename editor without canceling a modeling prompt.
+            } else if self.selection_menu.take().is_some() {
                 // Escape dismisses the choice without changing the selection.
             } else if self.end_analysis_pick.is_some() {
                 self.cancel_end_analysis_pick(true);
@@ -7009,6 +7013,7 @@ mod tests {
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             viewport_tabs_visible: true,
+            viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
