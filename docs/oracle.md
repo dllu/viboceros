@@ -11,8 +11,13 @@ and rational curves across end orientation, continuity, and preserved opposite
 end options. Replay against its [saved observation](../tools/rhino_oracle/observations/curve_match_geometry.json)
 with `python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/curve_match_geometry.json --observations tools/rhino_oracle/observations/curve_match_geometry.json`.
 All 33 outputs agree within the default 1e-10 absolute tolerance. The
+[average-tangency fixture](../tools/rhino_oracle/fixtures/curve_match_average_tangency.json)
+adds eight live cases, including rational handles and reversed selected ends;
+all eight match their [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_tangency.json)
+within the same tolerance. Average position and curvature matching remain
+unimplemented natively. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-retains two-span and average-curves examples for later implementation.
+retains two-span examples for later implementation.
 
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded

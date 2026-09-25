@@ -334,6 +334,7 @@ Dir Mode=FlipU
 GCon
 GCon Pick1=0,0,0 Pick2=4,0,0
 Match Continuity=Tangency PreserveOtherEnd=Position
+Match Continuity=Tangency AverageCurves=Yes PreserveOtherEnd=Position
 Match Pick1=0,0,0 Pick2=4,0,0 Continuity=Curvature PreserveOtherEnd=Curvature
 MatchCrvDir
 MatchCrvDir Reference=Rail

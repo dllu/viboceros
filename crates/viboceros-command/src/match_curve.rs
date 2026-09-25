@@ -1,10 +1,11 @@
 //! Match the selected end of the first curve to the second curve.
 use super::*;
 use viboceros_geometry::{
-    CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef, try_match_curve_end,
+    CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef, try_average_match_curve_ends,
+    try_match_curve_end,
 };
 
-const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature]";
+const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No (Tangency only)]";
 
 pub(super) struct MatchCurveCommand;
 
@@ -12,6 +13,7 @@ struct MatchOptions {
     picks: [Option<Point3>; 2],
     continuity: CurveBlendContinuity,
     preserve: CurveMatchPreserveEnd,
+    average: bool,
 }
 
 impl Command for MatchCurveCommand {
@@ -64,17 +66,36 @@ impl Command for MatchCurveCommand {
             options.picks[1].unwrap_or(default_reference),
             document.tolerance(),
         )?;
-        let matched = try_match_curve_end(
-            &source,
-            source_end,
-            &reference,
-            reference_end,
-            options.continuity,
-            options.preserve,
-            document.tolerance(),
-        )?;
-        document.replace_object_geometries([(*source_id, Geometry::NurbsCurve(matched))])?;
-        Ok("Matched curve end".to_owned())
+        if options.average {
+            if options.continuity != CurveBlendContinuity::Tangency {
+                return Err(CommandError::Usage(USAGE));
+            }
+            let (first, second) = try_average_match_curve_ends(
+                &source,
+                source_end,
+                &reference,
+                reference_end,
+                options.preserve,
+                document.tolerance(),
+            )?;
+            document.replace_object_geometries([
+                (*source_id, Geometry::NurbsCurve(first)),
+                (*reference_id, Geometry::NurbsCurve(second)),
+            ])?;
+            Ok("Averaged and matched curve ends".to_owned())
+        } else {
+            let matched = try_match_curve_end(
+                &source,
+                source_end,
+                &reference,
+                reference_end,
+                options.continuity,
+                options.preserve,
+                document.tolerance(),
+            )?;
+            document.replace_object_geometries([(*source_id, Geometry::NurbsCurve(matched))])?;
+            Ok("Matched curve end".to_owned())
+        }
     }
 }
 
@@ -82,6 +103,7 @@ fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
     let mut picks = [None, None];
     let mut continuity = None;
     let mut preserve = None;
+    let mut average = None;
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
         if option_name_eq(name, "Pick1") || option_name_eq(name, "Pick2") {
@@ -111,6 +133,17 @@ fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
             if preserve.replace(value).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
+        } else if option_name_eq(name, "AverageCurves") {
+            let value = if value.eq_ignore_ascii_case("Yes") || value.eq_ignore_ascii_case("True") {
+                true
+            } else if value.eq_ignore_ascii_case("No") || value.eq_ignore_ascii_case("False") {
+                false
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            if average.replace(value).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
         } else {
             return Err(CommandError::Usage(USAGE));
         }
@@ -119,6 +152,7 @@ fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
         picks,
         continuity: continuity.unwrap_or(CurveBlendContinuity::Tangency),
         preserve: preserve.unwrap_or(CurveMatchPreserveEnd::Position),
+        average: average.unwrap_or(false),
     })
 }
 
@@ -203,5 +237,56 @@ mod tests {
             document.object(id).unwrap().geometry(),
             Geometry::Line(_)
         ));
+    }
+
+    #[test]
+    fn averaging_replaces_both_curves_in_one_undoable_step() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,3,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids.clone(), SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Match Continuity=Tangency AverageCurves=Yes PreserveOtherEnd=Position"
+                )
+                .unwrap(),
+            "Averaged and matched curve ends"
+        );
+        let first = document
+            .object(ids[0])
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        let second = document
+            .object(ids[1])
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        assert_eq!(first.end_point().unwrap().to_array(), [3.5, 0.5, 0.0]);
+        assert_eq!(second.start_point().unwrap().to_array(), [3.5, 0.5, 0.0]);
+        assert_eq!(
+            curve_end_continuity(first, true, second, false, document.tolerance())
+                .unwrap()
+                .level,
+            CurveContinuityLevel::Tangency
+        );
+        document.undo().unwrap();
+        for id in ids {
+            assert!(matches!(
+                document.object(id).unwrap().geometry(),
+                Geometry::Line(_)
+            ));
+        }
     }
 }

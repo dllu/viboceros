@@ -645,6 +645,8 @@ pub enum Operation {
         reverse_second: bool,
         continuity: String,
         preserve_other_end: String,
+        #[serde(default)]
+        average: bool,
     },
     PolycurveDocument {
         id: String,
@@ -2688,6 +2690,7 @@ fn execute(
             reverse_second,
             continuity,
             preserve_other_end,
+            average,
             ..
         } => {
             let first = first.geometry()?;
@@ -2706,27 +2709,44 @@ fn execute(
                 _ => return Err(ProbeError::InvalidMatchOption("preserve_other_end")),
             };
             let (matched, elapsed) = measure(iterations, || {
-                viboceros_geometry::try_match_curve_end(
-                    &first,
-                    *reverse_first,
-                    &second,
-                    *reverse_second,
-                    continuity,
-                    preserve,
-                    tolerance,
-                )
+                if *average {
+                    if continuity != viboceros_geometry::CurveBlendContinuity::Tangency {
+                        return Err(viboceros_geometry::GeometryError::InvalidPolyCurve {
+                            context: "average Match currently supports tangency",
+                        });
+                    }
+                    let (first_output, second_output) =
+                        viboceros_geometry::try_average_match_curve_ends(
+                            &first,
+                            *reverse_first,
+                            &second,
+                            *reverse_second,
+                            preserve,
+                            tolerance,
+                        )?;
+                    Ok(vec![first_output, second_output])
+                } else {
+                    viboceros_geometry::try_match_curve_end(
+                        &first,
+                        *reverse_first,
+                        &second,
+                        *reverse_second,
+                        continuity,
+                        preserve,
+                        tolerance,
+                    )
+                    .map(|curve| vec![curve])
+                }
             })?;
-            let samples = (0..=16)
-                .map(|index| {
-                    matched
-                        .evaluate(matched.parameter_at(index as f64 / 16.0)?)
-                        .map(Point3::to_array)
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            (
-                json!({"outputs": [{"definition": nurbs_curve_definition_value(&matched), "samples": samples}]}),
-                elapsed,
-            )
+            let outputs = matched.iter().map(|curve| {
+                let samples = (0..=16)
+                    .map(|index| {
+                        curve.evaluate(curve.parameter_at(index as f64 / 16.0)?).map(Point3::to_array)
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                Ok(json!({"definition": nurbs_curve_definition_value(curve), "samples": samples}))
+            }).collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?;
+            (json!({"outputs": outputs}), elapsed)
         }
         Operation::PolycurveDocument { fixture, .. } => {
             polycurve_document::run(fixture, iterations, tolerance)?

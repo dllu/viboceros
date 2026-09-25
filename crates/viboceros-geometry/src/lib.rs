@@ -114,7 +114,7 @@ pub use curve_fillet_pair::{
 pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
-pub use curve_match::{CurveMatchPreserveEnd, try_match_curve_end};
+pub use curve_match::{CurveMatchPreserveEnd, try_average_match_curve_ends, try_match_curve_end};
 pub use curve_offset::CurveOffsetCornerStyle;
 pub use curve_rebuild::{
     MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT, try_rebuild_curve,

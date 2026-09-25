@@ -57,6 +57,8 @@ Select two open curves, then use `Match Continuity=Tangency PreserveOtherEnd=Pos
 to edit the first curve at the nearest pair of ends. `Pick1=` and `Pick2=` choose
 other ends; single-span curves currently support position, tangent, and curvature
 matching.
+`AverageCurves=Yes` moves both curves for tangent matching and keeps the change
+in one undo step.
 Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development

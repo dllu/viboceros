@@ -1,8 +1,8 @@
 //! End matching for a single NURBS span, retaining its rational weights.
 
 use crate::{
-    Curve3, CurveBlendContinuity, CurveRef, GeometryError, NurbsCurve, ParameterSide, Real,
-    Tolerance, WeightedPoint3,
+    Curve3, CurveBlendContinuity, CurveRef, GeometryError, NurbsCurve, ParameterSide, Point3, Real,
+    Tolerance, UnitVector3, Vector3, WeightedPoint3,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -11,6 +11,12 @@ pub enum CurveMatchPreserveEnd {
     Position,
     Tangency,
     Curvature,
+}
+
+struct MatchTarget {
+    point: Point3,
+    tangent: UnitVector3,
+    curvature: Option<Vector3>,
 }
 
 /// Changes the selected end of one open, single-span curve to meet another
@@ -32,29 +38,6 @@ pub fn try_match_curve_end(
             context: "Match requires open curves",
         });
     }
-    let original = source.as_ref().to_nurbs()?;
-    if original.spans().count() != 1 {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "Match currently requires a single-span source curve",
-        });
-    }
-    let matched_controls = continuity_control_count(continuity);
-    let preserved_controls = preserve_control_count(preserve);
-    let desired_degree = original
-        .degree()
-        .max(matched_controls + preserved_controls - 1);
-    let elevated = original.try_change_degree(desired_degree, false)?;
-    let mut controls = elevated.control_points().to_vec();
-    let last = controls.len() - 1;
-    let endpoint_index = if source_at_end { last } else { 0 };
-    let adjacent_index = if source_at_end { last - 1 } else { 1 };
-    let second_index = if source_at_end {
-        last.saturating_sub(2)
-    } else {
-        2
-    };
-    let endpoint = controls[endpoint_index].point();
-    let handle = endpoint.distance_to(controls[adjacent_index].point())?;
     let reference_curve = reference.as_ref();
     let reference_parameter = if reference_at_end {
         *reference_curve.domain().end()
@@ -74,8 +57,156 @@ pub fn try_match_curve_end(
     }
     // Two selected starts (or two selected ends) must point in opposite
     // natural directions at the join; unlike ends point the same way.
+    let matched = match_end_to_target(
+        &source.as_ref().to_nurbs()?,
+        source_at_end,
+        MatchTarget {
+            point: sample.point(),
+            tangent: desired_tangent,
+            curvature: (continuity == CurveBlendContinuity::Curvature)
+                .then(|| reference_curve.curvature_vector(reference_parameter))
+                .transpose()?,
+        },
+        continuity,
+        preserve,
+        true,
+    )?;
+    require_continuity(
+        &matched,
+        source_at_end,
+        reference_curve,
+        reference_at_end,
+        continuity,
+        tolerance,
+    )?;
+    Ok(matched)
+}
+
+/// Moves both selected ends to their midpoint and bisects their tangents.
+/// Each curve retains its original end-handle length and the requested degree
+/// of continuity at its opposite end. This is the `AverageCurves=Yes` G1 path.
+pub fn try_average_match_curve_ends(
+    first: &Curve3,
+    first_at_end: bool,
+    second: &Curve3,
+    second_at_end: bool,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<(NurbsCurve, NurbsCurve), GeometryError> {
+    if first.as_ref().is_closed()? || second.as_ref().is_closed()? {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match requires open curves",
+        });
+    }
+    let first_curve = first.as_ref();
+    let second_curve = second.as_ref();
+    let first_parameter = if first_at_end {
+        *first_curve.domain().end()
+    } else {
+        *first_curve.domain().start()
+    };
+    let second_parameter = if second_at_end {
+        *second_curve.domain().end()
+    } else {
+        *second_curve.domain().start()
+    };
+    let first_side = if first_at_end {
+        ParameterSide::Left
+    } else {
+        ParameterSide::Right
+    };
+    let second_side = if second_at_end {
+        ParameterSide::Left
+    } else {
+        ParameterSide::Right
+    };
+    let first_sample = first_curve.evaluate_with_tangent_on_side(first_parameter, first_side)?;
+    let second_sample =
+        second_curve.evaluate_with_tangent_on_side(second_parameter, second_side)?;
+    let midpoint = first_sample.point().midpoint(second_sample.point())?;
+    let second_direction = if first_at_end == second_at_end {
+        second_sample.tangent().opposite()
+    } else {
+        second_sample.tangent()
+    };
+    let tangent_sum = Vector3::try_new(
+        first_sample.tangent().x() + second_direction.x(),
+        first_sample.tangent().y() + second_direction.y(),
+        first_sample.tangent().z() + second_direction.z(),
+    )?;
+    let tangent = tangent_sum.normalized(tolerance)?;
+    let first_output = match_end_to_target(
+        &first_curve.to_nurbs()?,
+        first_at_end,
+        MatchTarget {
+            point: midpoint,
+            tangent,
+            curvature: None,
+        },
+        CurveBlendContinuity::Tangency,
+        preserve,
+        true,
+    )?;
+    let second_tangent = if first_at_end == second_at_end {
+        tangent.opposite()
+    } else {
+        tangent
+    };
+    let second_output = match_end_to_target(
+        &second_curve.to_nurbs()?,
+        second_at_end,
+        MatchTarget {
+            point: midpoint,
+            tangent: second_tangent,
+            curvature: None,
+        },
+        CurveBlendContinuity::Tangency,
+        preserve,
+        false,
+    )?;
+    require_continuity(
+        &first_output,
+        first_at_end,
+        CurveRef::NurbsCurve(&second_output),
+        second_at_end,
+        CurveBlendContinuity::Tangency,
+        tolerance,
+    )?;
+    Ok((first_output, second_output))
+}
+
+fn match_end_to_target(
+    original: &NurbsCurve,
+    at_end: bool,
+    target: MatchTarget,
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    require_single_span: bool,
+) -> Result<NurbsCurve, GeometryError> {
+    if require_single_span && original.spans().count() != 1 {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match currently requires a single-span source curve",
+        });
+    }
+    let matched_controls = continuity_control_count(continuity);
+    let preserved_controls = preserve_control_count(preserve);
+    let desired_degree = if require_single_span {
+        original
+            .degree()
+            .max(matched_controls + preserved_controls - 1)
+    } else {
+        original.degree()
+    };
+    let elevated = original.try_change_degree(desired_degree, false)?;
+    let mut controls = elevated.control_points().to_vec();
+    let last = controls.len() - 1;
+    let endpoint_index = if at_end { last } else { 0 };
+    let adjacent_index = if at_end { last - 1 } else { 1 };
+    let second_index = if at_end { last.saturating_sub(2) } else { 2 };
+    let endpoint = controls[endpoint_index].point();
+    let handle = endpoint.distance_to(controls[adjacent_index].point())?;
     controls[endpoint_index] =
-        WeightedPoint3::try_new(sample.point(), controls[endpoint_index].weight())?;
+        WeightedPoint3::try_new(target.point, controls[endpoint_index].weight())?;
     if continuity != CurveBlendContinuity::Position {
         if handle == 0.0 {
             return Err(GeometryError::Degenerate {
@@ -93,20 +224,23 @@ pub fn try_match_curve_end(
                 context: "Match endpoint weights",
             });
         }
-        let direction_sign = if source_at_end { -1.0 } else { 1.0 };
-        let offset = desired_tangent
+        let direction_sign = if at_end { -1.0 } else { 1.0 };
+        let offset = target
+            .tangent
             .as_vector()
             .scaled(direction_sign * a.signum() * handle)?;
-        let adjacent = sample.point().translated(offset)?;
+        let adjacent = target.point.translated(offset)?;
         controls[adjacent_index] =
             WeightedPoint3::try_new(adjacent, controls[adjacent_index].weight())?;
         if continuity == CurveBlendContinuity::Curvature {
             let degree = desired_degree as Real;
             let tangential_coefficient = 2.0 * (degree * a * a - a) / ((degree - 1.0) * b);
             let curvature_coefficient = degree * a * a * handle * handle / ((degree - 1.0) * b);
-            let curvature = reference_curve.curvature_vector(reference_parameter)?;
-            let second = sample
-                .point()
+            let curvature = target.curvature.ok_or(GeometryError::Degenerate {
+                context: "Match target curvature",
+            })?;
+            let second = target
+                .point
                 .translated(offset.scaled(tangential_coefficient)?)?
                 .translated(curvature.scaled(curvature_coefficient)?)?;
             controls[second_index] =
@@ -115,23 +249,24 @@ pub fn try_match_curve_end(
     }
     let matched =
         NurbsCurve::try_new_rational(desired_degree, controls, elevated.knots().to_vec())?;
-    let report = if source_at_end {
-        crate::curve_end_continuity(
-            CurveRef::NurbsCurve(&matched),
-            true,
-            reference_curve,
-            reference_at_end,
-            tolerance,
-        )?
-    } else {
-        crate::curve_end_continuity(
-            CurveRef::NurbsCurve(&matched),
-            false,
-            reference_curve,
-            reference_at_end,
-            tolerance,
-        )?
-    };
+    Ok(matched)
+}
+
+fn require_continuity(
+    matched: &NurbsCurve,
+    matched_at_end: bool,
+    reference: CurveRef<'_>,
+    reference_at_end: bool,
+    continuity: CurveBlendContinuity,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let report = crate::curve_end_continuity(
+        CurveRef::NurbsCurve(matched),
+        matched_at_end,
+        reference,
+        reference_at_end,
+        tolerance,
+    )?;
     let achieved = match continuity {
         CurveBlendContinuity::Position => report.gap <= tolerance.absolute(),
         CurveBlendContinuity::Tangency => matches!(
@@ -147,7 +282,7 @@ pub fn try_match_curve_end(
             context: "Match continuity could not be reached",
         });
     }
-    Ok(matched)
+    Ok(())
 }
 
 const fn continuity_control_count(continuity: CurveBlendContinuity) -> usize {
