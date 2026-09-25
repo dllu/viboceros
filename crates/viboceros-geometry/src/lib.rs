@@ -147,12 +147,12 @@ pub use mesh::{
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MeshAlignSelection,
     MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEdgeMatchOptions,
-    MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions, MeshFace, MeshFaceExtraction,
-    MeshHoleFill, MeshJoinComponent, MeshJoinOptions, MeshNgon, MeshOffsetDirection,
-    MeshPartBoundary, MeshSingleFaceComponents, MeshSolid, MeshSubdivisionSphereOptions,
-    MeshTopology, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NonPlanarQuadCriterion, QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices,
-    join_meshes, match_mesh_edges,
+    MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions, MeshExtrudeDirection,
+    MeshExtrudeSelection, MeshFace, MeshFaceExtraction, MeshHoleFill, MeshJoinComponent,
+    MeshJoinOptions, MeshNgon, MeshOffsetDirection, MeshPartBoundary, MeshSingleFaceComponents,
+    MeshSolid, MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions,
+    MeshTruncatedConeOptions, MeshUvSphereOptions, NonPlanarQuadCriterion, QuadSplitMethod,
+    SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes, match_mesh_edges,
 };
 pub use morph::{
     MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS, MAX_MORPH_SURFACE_SAMPLES,

@@ -19,6 +19,8 @@ mod containment;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod edge_collapse;
 mod edge_split;
+mod extrude;
+pub use extrude::{MeshExtrudeDirection, MeshExtrudeSelection};
 #[cfg(test)]
 mod edge_unweld_tests;
 mod edge_weld;

@@ -324,6 +324,17 @@ and edge 2 on the second.
 `Join=Yes` joins touching output meshes; the default keeps input objects
 separate. Invalid resulting faces are rejected before document mutation.
 
+`ExtrudeMesh 2 Faces=0,1` displaces selected polygon faces and adds quads along
+the selected region boundary. With no component option it extrudes every face
+of each selected mesh. `Edges=0,2` extends selected naked topology edges with
+quads. `Basis=UVN Direction=N` follows averaged selected face normals and is
+the default; boundary edges also accept `Direction=V` to extend outward in
+their adjacent face planes. `Basis=WCS Direction=X|Y|Z` uses a world axis;
+`Direction=x,y,z` accepts any nonzero world vector. Original object identity,
+attributes, colors, and valid n-gons are retained. Face and edge indices are
+the source mesh's original indices. Invalid components or degenerate faces
+reject the whole selection before document mutation.
+
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
 edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a
