@@ -258,6 +258,11 @@ pub enum Operation {
         sphere: surface_intersection::SphereSpec,
         cone: surface_intersection::ConeSpec,
     },
+    TorusSphereSurfaceIntersection {
+        id: String,
+        torus: surface_intersection::TorusSpec,
+        sphere: surface_intersection::SphereSpec,
+    },
     CylinderPlaneSurfaceIntersection {
         id: String,
         cylinder: surface_intersection::CylinderSpec,
@@ -1838,6 +1843,7 @@ impl Operation {
             | Self::SphereSphereSurfaceIntersection { id, .. }
             | Self::SphereCylinderSurfaceIntersection { id, .. }
             | Self::SphereConeSurfaceIntersection { id, .. }
+            | Self::TorusSphereSurfaceIntersection { id, .. }
             | Self::CylinderPlaneSurfaceIntersection { id, .. }
             | Self::CylinderCylinderSurfaceIntersection { id, .. }
             | Self::ConePlaneSurfaceIntersection { id, .. }
@@ -2271,6 +2277,7 @@ fn execute(
         | Operation::SphereSphereSurfaceIntersection { .. }
         | Operation::SphereCylinderSurfaceIntersection { .. }
         | Operation::SphereConeSurfaceIntersection { .. }
+        | Operation::TorusSphereSurfaceIntersection { .. }
         | Operation::CylinderPlaneSurfaceIntersection { .. }
         | Operation::CylinderCylinderSurfaceIntersection { .. }
         | Operation::ConePlaneSurfaceIntersection { .. }

@@ -274,7 +274,9 @@ sections and circles on cylinder rims. Offset and nonparallel torus/cylinder
 axes remain unsupported.
 Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles. Offset spheres produce fitted cubic loops
-or isolated tangent points.
+or isolated tangent points. The
+[torus/sphere oracle fixture](../../tools/rhino_oracle/fixtures/torus_sphere_surface_intersection.json)
+covers axial, offset, tangent, contained-meridian, and disjoint cases.
 Coaxial tori likewise intersect in one or two exact rational circles, including
 tangent circles. Coincident and noncoaxial tori remain unsupported.
 Coaxial tori and finite cone walls intersect in up to two exact rational

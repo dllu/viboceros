@@ -11829,6 +11829,7 @@ def _execute(operation, iterations, tolerance):
         "sphere_sphere_surface_intersection",
         "sphere_cylinder_surface_intersection",
         "sphere_cone_surface_intersection",
+        "torus_sphere_surface_intersection",
         "cylinder_plane_surface_intersection",
         "cylinder_cylinder_surface_intersection",
         "cone_plane_surface_intersection",
@@ -11866,6 +11867,19 @@ def _execute(operation, iterations, tolerance):
             )
             source_brep = cylinder.ToBrep(False, False)
             source = source_brep.Faces[0].ToNurbsSurface()
+        elif kind == "torus_sphere_surface_intersection":
+            torus_def = operation["torus"]
+            torus_plane = Rhino.Geometry.Plane(
+                _point(torus_def["center"]),
+                _vector(torus_def["axis"]),
+            )
+            torus = Rhino.Geometry.Torus(
+                torus_plane,
+                _finite(torus_def["major_radius"], "torus major radius"),
+                _finite(torus_def["minor_radius"], "torus minor radius"),
+            )
+            source_brep = torus.ToBrep()
+            source = source_brep.Faces[0].ToNurbsSurface()
         else:
             cone_def = operation["cone"]
             cone_plane = Rhino.Geometry.Plane(
@@ -11884,6 +11898,12 @@ def _execute(operation, iterations, tolerance):
             patch = Rhino.Geometry.Sphere(
                 _point(other_def["center"]),
                 _finite(other_def["radius"], "other sphere radius"),
+            ).ToNurbsSurface()
+        elif kind == "torus_sphere_surface_intersection":
+            sphere_def = operation["sphere"]
+            patch = Rhino.Geometry.Sphere(
+                _point(sphere_def["center"]),
+                _finite(sphere_def["radius"], "sphere radius"),
             ).ToNurbsSurface()
         elif kind in (
             "sphere_cylinder_surface_intersection",

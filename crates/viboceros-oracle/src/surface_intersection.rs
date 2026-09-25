@@ -31,6 +31,14 @@ pub struct ConeSpec {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct TorusSpec {
+    center: [f64; 3],
+    axis: [f64; 3],
+    major_radius: f64,
+    minor_radius: f64,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct PlaneSpec {
     origin: [f64; 3],
     normal: [f64; 3],
@@ -71,6 +79,17 @@ impl ConeSpec {
     }
 }
 
+impl TorusSpec {
+    fn surface(&self, tolerance: Tolerance) -> Result<NurbsSurface, GeometryError> {
+        let frame = Frame3::try_from_normal(
+            Point3::try_from(self.center)?,
+            Vector3::try_from(self.axis)?,
+            tolerance,
+        )?;
+        NurbsSurface::try_torus(frame, self.major_radius, self.minor_radius)
+    }
+}
+
 impl PlaneSpec {
     fn surface(&self, tolerance: Tolerance) -> Result<NurbsSurface, GeometryError> {
         let frame = Frame3::try_from_normal(
@@ -108,6 +127,9 @@ pub(super) fn run(
         } => (sphere.surface(tolerance)?, cylinder.surface(tolerance)?),
         Operation::SphereConeSurfaceIntersection { sphere, cone, .. } => {
             (sphere.surface(tolerance)?, cone.surface(tolerance)?)
+        }
+        Operation::TorusSphereSurfaceIntersection { torus, sphere, .. } => {
+            (torus.surface(tolerance)?, sphere.surface(tolerance)?)
         }
         Operation::CylinderPlaneSurfaceIntersection {
             cylinder, plane, ..
@@ -181,6 +203,9 @@ mod tests {
                 "../../../tools/rhino_oracle/fixtures/sphere_cone_surface_intersection.json"
             ),
             include_str!(
+                "../../../tools/rhino_oracle/fixtures/torus_sphere_surface_intersection.json"
+            ),
+            include_str!(
                 "../../../tools/rhino_oracle/fixtures/cylinder_plane_surface_intersection.json"
             ),
             include_str!(
@@ -198,25 +223,14 @@ mod tests {
             let response = run_request_audit(&request).unwrap();
             assert_eq!(response.outcomes.len(), request.operations.len());
             for (operation, outcome) in request.operations.iter().zip(response.outcomes) {
-                let intentionally_unsupported =
-                    matches!(operation.id(), "noncoaxial" | "parallel_noncoaxial");
                 match outcome {
                     OperationOutcome::Success { result } => {
-                        assert!(
-                            !intentionally_unsupported,
-                            "{} must report an unsupported geometry",
-                            operation.id()
-                        );
                         assert!(result.value["success"].is_boolean());
                         assert!(result.value["curves"].is_array());
                         assert!(result.value["points"].is_array());
                     }
                     OperationOutcome::Failure { id, error } => {
-                        assert!(
-                            intentionally_unsupported,
-                            "unexpected failure for {id}: {error:?}"
-                        );
-                        assert_eq!(error.kind, "geometry");
+                        panic!("unexpected failure for {id}: {error:?} (operation={operation:?})");
                     }
                 }
             }
@@ -241,6 +255,43 @@ mod tests {
             for sample in curve["samples"].as_array().unwrap() {
                 let location = sample.as_array().unwrap();
                 assert!((location[0].as_f64().unwrap() - 1.0).abs() < 1e-9);
+            }
+        }
+    }
+
+    #[test]
+    fn python_oracle_reports_offset_torus_sphere_topology() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/torus_sphere_surface_intersection.json"
+        ))
+        .unwrap();
+        let response = run_request_audit(&request).unwrap();
+        let expected = [
+            ("two_axial_circles", 2, 0, Some(2)),
+            ("two_offset_loops", 2, 0, Some(3)),
+            ("two_turned_loops", 2, 0, Some(3)),
+            ("offset_axial_loops", 2, 0, Some(3)),
+            ("isolated_tangent", 0, 1, None),
+            ("contained_meridian", 1, 0, Some(2)),
+            ("disjoint", 0, 0, None),
+        ];
+        for (outcome, (id, curve_count, point_count, degree)) in
+            response.outcomes.iter().zip(expected)
+        {
+            let OperationOutcome::Success { result } = outcome else {
+                panic!("torus/sphere oracle fixture {id} must succeed")
+            };
+            assert_eq!(result.id, id);
+            let curves = result.value["curves"].as_array().unwrap();
+            assert_eq!(curves.len(), curve_count, "{id}");
+            assert_eq!(
+                result.value["points"].as_array().unwrap().len(),
+                point_count,
+                "{id}"
+            );
+            for curve in curves {
+                assert_eq!(curve["degree"], degree.unwrap());
+                assert_eq!(curve["closed"], true);
             }
         }
     }
