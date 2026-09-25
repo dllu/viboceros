@@ -19,7 +19,9 @@ mod edge_split;
 mod edge_unweld_tests;
 mod edge_weld;
 mod ngon;
+mod nonplanar_quads;
 mod normals;
+pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
@@ -2005,6 +2007,16 @@ impl TriangleMesh {
     /// Rhino's `ConvertQuadsToTriangles` face ordering. Vertices are retained
     /// verbatim, including unused vertices.
     pub fn triangulate_quads(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
+        self.triangulate_selected_quads(tolerance, |vertices, quad| {
+            Ok(Some(mass_triangles::split(vertices, quad)))
+        })
+    }
+
+    fn triangulate_selected_quads(
+        &self,
+        tolerance: Tolerance,
+        mut split: impl FnMut(&[Point3], [u32; 4]) -> Result<Option<[[u32; 3]; 2]>, GeometryError>,
+    ) -> Result<(Self, usize), GeometryError> {
         let quad_count = self.faces.iter().filter(|face| face.is_quad()).count();
         if quad_count == 0 {
             return Ok((self.clone(), 0));
@@ -2018,17 +2030,24 @@ impl TriangleMesh {
         } else {
             vec![None; self.faces.len()]
         };
+        let mut converted = 0;
         for face_index in 0..self.faces.len() {
             let MeshFace::Quad([a, b, c, d]) = self.faces[face_index] else {
                 continue;
             };
-            let [first, second] = mass_triangles::split(&self.vertices, [a, b, c, d]);
+            let Some([first, second]) = split(&self.vertices, [a, b, c, d])? else {
+                continue;
+            };
+            converted += 1;
             faces[face_index] = MeshFace::Triangle(first);
             if !self.ngons.is_empty() {
                 appended_by_source[face_index] =
                     Some(u32::try_from(faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?);
             }
             faces.push(MeshFace::Triangle(second));
+        }
+        if converted == 0 {
+            return Ok((self.clone(), 0));
         }
         let mut triangulated = Self::try_new_faces(self.vertices.clone(), faces, tolerance)?;
         triangulated.vertex_colors = self.vertex_colors.clone();
@@ -2049,7 +2068,7 @@ impl TriangleMesh {
                 .collect();
             triangulated = triangulated.try_with_ngons(ngons)?;
         }
-        Ok((triangulated, quad_count))
+        Ok((triangulated, converted))
     }
 
     /// Replaces one welded interior triangle edge with the opposite diagonal.
