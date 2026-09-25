@@ -1,5 +1,6 @@
 //! Intersections of finite cylinders with crossing axes.
 
+mod oblique_unequal;
 mod unequal;
 
 use super::SurfaceSurfaceIntersectionEvent;
@@ -63,9 +64,18 @@ pub(super) fn intersect(
         .translated(first_axis.scaled(first_at_crossing)?)?;
     if !equal_radii {
         if axis_dot.abs() * scale > spatial_tolerance.max(roundoff) {
-            return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "oblique unequal-radius crossed cylinder walls",
-            });
+            return oblique_unequal::intersect(
+                (first_axis, first_radius, first_height, first_at_crossing),
+                (
+                    second_axis,
+                    second_radius,
+                    second_height,
+                    second_at_crossing,
+                ),
+                crossing,
+                tolerance,
+                roundoff,
+            );
         }
         return unequal::intersect(
             (first_axis, first_radius, first_height, first_at_crossing),

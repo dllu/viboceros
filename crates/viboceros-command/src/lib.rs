@@ -27063,6 +27063,62 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_oblique_unequal_cylinder_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let (sine, cosine) = std::f64::consts::FRAC_PI_3.sin_cos();
+        let first_frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, -4.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            Point3::try_new(-4.0 * sine, 0.0, -4.0 * cosine).unwrap(),
+            Vector3::try_new(sine, 0.0, cosine).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(first_frame, 1.0, 0.0, 8.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(second_frame, 2.0, 0.0, 8.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("oblique unequal cylinders should create curves")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for index in 0..=32 {
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as f64 / 32.0);
+                let sample = curve.evaluate(parameter).unwrap();
+                for (frame, radius) in [(first_frame, 1.0), (second_frame, 2.0)] {
+                    let local = frame.coordinates_of(sample).unwrap();
+                    assert!((local[0].hypot(local[1]) - radius).abs() < 2e-9);
+                }
+            }
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_two_cylinder_plane_generatrices() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

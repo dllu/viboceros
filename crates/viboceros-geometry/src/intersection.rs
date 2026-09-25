@@ -537,8 +537,8 @@ fn curve_brep_intersection_events_with_transform(
 /// isolated rim points, or a shared rim circle.
 /// Equal-radius cylinders with crossing axes intersect in exact
 /// rational ellipses clipped to their finite heights.
-/// Unequal-radius perpendicular cylinders with crossing axes intersect in
-/// tolerance-bounded cubic curves, also clipped to their finite heights.
+/// Unequal-radius cylinders with crossing axes intersect in tolerance-bounded
+/// cubic curves, also clipped to their finite heights.
 /// Coaxial cone and cylinder walls meet in an exact circle, clipped to both
 /// finite surfaces.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
