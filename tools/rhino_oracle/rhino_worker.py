@@ -12539,7 +12539,62 @@ def _execute(operation, iterations, tolerance):
                 cylinder_circle,
                 _finite(operation["cylinder_height"], "cylinder height"),
             )
-            brep = cylinder.ToBrep(True, True)
+            if operation.get("trim_v") is None:
+                brep = cylinder.ToBrep(True, True)
+            else:
+                split_height = _finite(operation["trim_v"], "cylinder trim height")
+                wall_brep = cylinder.ToBrep(False, False)
+                wall_surface = wall_brep.Faces[0].ToNurbsSurface()
+                original_ids = set(item.Id for item in document.Objects)
+                brep = None
+                try:
+                    document.Objects.UnselectAll()
+                    source_id = document.Objects.AddSurface(wall_surface)
+                    if source_id == System.Guid.Empty:
+                        raise ValueError("could not add cylinder wall for trim")
+                    document.Objects.Select(source_id)
+                    pick = cylinder_plane.PointAt(
+                        0.0, float(operation["cylinder_radius"]), split_height
+                    )
+                    # Rhino names the direction of the isocurve, not the
+                    # parameter being cut: U runs around the wall at fixed V.
+                    command = (
+                        "_-Split _Isocurve _Direction=_U _Shrink=_No %s _Enter"
+                        % _command_point(_xyz(pick))
+                    )
+                    succeeded = Rhino.RhinoApp.RunScript(command, False)
+                    pieces = []
+                    for item in document.Objects:
+                        if item.Id in original_ids or not isinstance(
+                            item.Geometry, Rhino.Geometry.Brep
+                        ) or item.Geometry.Faces.Count != 1:
+                            continue
+                        trims = item.Geometry.Faces[0].OuterLoop.Trims
+                        positions = [float(trim.PointAtStart.Y) for trim in trims]
+                        positions.extend(float(trim.PointAtEnd.Y) for trim in trims)
+                        pieces.append((min(positions), item.Geometry))
+                    pieces.sort(key=lambda entry: entry[0])
+                    if not succeeded or len(pieces) != 2:
+                        found = [
+                            "%s(faces=%s)" % (
+                                type(item.Geometry).__name__,
+                                getattr(getattr(item.Geometry, "Faces", None), "Count", "-"),
+                            )
+                            for item in document.Objects
+                            if item.Id not in original_ids
+                        ]
+                        raise ValueError(
+                            "cylinder wall Split returned %r and %d pieces: %s"
+                            % (succeeded, len(pieces), found)
+                        )
+                    brep = pieces[1 if operation.get("trim_upper", False) else 0][1].DuplicateBrep()
+                finally:
+                    document.Objects.UnselectAll()
+                    for item in list(document.Objects):
+                        if item.Id not in original_ids:
+                            document.Objects.Delete(item.Id, True)
+                    wall_surface.Dispose()
+                    wall_brep.Dispose()
             if operation.get("surface_as_brep", False):
                 surface_input = Rhino.Geometry.Brep.CreateFromSurface(surface)
         else:

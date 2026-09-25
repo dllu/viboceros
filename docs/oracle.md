@@ -1015,7 +1015,14 @@ deviation up to `3.5e-6`; the native curves' sampled deviation is below `1e-14`.
 The [section geometry audit](../tools/rhino_oracle/audit_cylinder_sections.py)
 checks planarity, solid boundary, bounds, and closure independent of curve
 degree and parameterization. Full NURBS definitions differ in these cases.
-Trimmed curved faces still need exact face clipping.
+The B-rep intersection path also clips sections against curved face trim loops.
+Height and angular isocurve trims on cylinder walls have exact kernel tests;
+general curved trim loops still need broader oracle coverage.
+The [trimmed wall Intersect fixture](../tools/rhino_oracle/fixtures/trimmed_cylinder_face_intersect_command.json)
+compares four [Rhino observations](../tools/rhino_oracle/observations/trimmed_cylinder_face_intersect_command.json)
+for lower and upper wall pieces, a disjoint plane, and a planar B-rep cutter.
+All four match full curve definitions, including Rhino's `4π` domain for a
+closed section of a trimmed cylindrical face.
 
 ```sh
 python3 tools/rhino_oracle/audit_cylinder_sections.py \

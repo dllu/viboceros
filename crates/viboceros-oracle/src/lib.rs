@@ -1300,6 +1300,11 @@ pub enum Operation {
         cylinder_axis: [f64; 3],
         cylinder_radius: f64,
         cylinder_height: f64,
+        /// Retain one isocurve-split wall face instead of the capped solid.
+        #[serde(default)]
+        trim_v: Option<f64>,
+        #[serde(default)]
+        trim_upper: bool,
         #[serde(default)]
         surface_as_brep: bool,
         #[serde(default)]
@@ -4743,6 +4748,8 @@ fn execute(
             cylinder_axis,
             cylinder_radius,
             cylinder_height,
+            trim_v,
+            trim_upper,
             surface_as_brep,
             brep_first,
             canonicalize_closed_curves,
@@ -4753,13 +4760,27 @@ fn execute(
                 Vector3::try_new(cylinder_axis[0], cylinder_axis[1], cylinder_axis[2])?,
                 tolerance,
             )?;
-            let cylinder = Geometry::Brep(Brep::try_cylinder(
-                frame,
-                *cylinder_radius,
-                0.0,
-                *cylinder_height,
-                tolerance,
-            )?);
+            let cylinder = if let Some(split) = trim_v {
+                let wall =
+                    NurbsSurface::try_cylinder(frame, *cylinder_radius, 0.0, *cylinder_height)?;
+                let [low, high] = Brep::try_split_rectangular_surface_face_v(
+                    wall.clone(),
+                    wall.domain_u(),
+                    wall.domain_v(),
+                    *split,
+                    false,
+                    tolerance,
+                )?;
+                Geometry::Brep(if *trim_upper { high } else { low })
+            } else {
+                Geometry::Brep(Brep::try_cylinder(
+                    frame,
+                    *cylinder_radius,
+                    0.0,
+                    *cylinder_height,
+                    tolerance,
+                )?)
+            };
             let surface = nurbs_surface_from_definition(surface)?;
             let surface = if *surface_as_brep {
                 Geometry::Brep(Brep::try_surface_face(surface, tolerance)?)
