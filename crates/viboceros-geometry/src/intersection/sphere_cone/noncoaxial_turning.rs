@@ -60,11 +60,15 @@ pub(super) fn intersect(
         axial_middle: 0.5 * (low + high),
         axial_radius: 0.5 * (high - low),
     };
+    // The opposite generator may have roots only at negative cone heights.
+    // In that case its quadratic can have a negative minimum on the full
+    // number line while remaining positive throughout this finite branch.
+    let other_lower_bound = basis.other_quadratic((other_linear / quadratic).clamp(low, high));
     let fit_tolerance = tolerance
         .absolute()
         .max(tolerance.relative() * cone_radius.max(height).max(sphere_radius))
         .max(coordinate_roundoff);
-    if !fit_tolerance.is_finite() || !other_minimum.is_finite() || other_minimum <= 0.0 {
+    if !fit_tolerance.is_finite() || !other_lower_bound.is_finite() || other_lower_bound <= 0.0 {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "turning sphere/cone fit is ill-conditioned",
         });
@@ -77,7 +81,7 @@ pub(super) fn intersect(
             basis.sample(0.0, 1.0)?.0,
         )]);
     }
-    let derivative_bound = fourth_derivative_bound(basis);
+    let derivative_bound = fourth_derivative_bound(basis, other_lower_bound);
     if !derivative_bound.is_finite() {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "turning sphere/cone derivative bound is not finite",
@@ -116,6 +120,10 @@ pub(super) fn intersect(
 
 impl Basis {
     fn other_quadratic(self, axial: Real) -> Real {
+        if self.other_linear <= 0.0 {
+            return (self.quadratic * axial - 2.0 * self.other_linear)
+                .mul_add(axial, self.constant);
+        }
         let difference = axial - self.other_linear / self.quadratic;
         self.quadratic
             .mul_add(difference * difference, self.other_minimum)
@@ -159,17 +167,17 @@ impl Basis {
     }
 }
 
-fn fourth_derivative_bound(basis: Basis) -> Real {
+fn fourth_derivative_bound(basis: Basis, other_lower_bound: Real) -> Real {
     let middle = basis.axial_middle;
     let radius = basis.axial_radius;
     let a = basis.quadratic;
     let b = basis.other_linear;
     let low = middle - radius;
     let high = middle + radius;
-    let root = basis.other_minimum.sqrt();
-    let lower3 = basis.other_minimum * root;
-    let lower5 = basis.other_minimum * lower3;
-    let lower7 = basis.other_minimum * lower5;
+    let root = other_lower_bound.sqrt();
+    let lower3 = other_lower_bound * root;
+    let lower5 = other_lower_bound * lower3;
+    let lower7 = other_lower_bound * lower5;
     let g0 = basis
         .other_quadratic(low)
         .max(basis.other_quadratic(high))
@@ -415,6 +423,104 @@ mod tests {
                     let local = rotated.coordinates_of(location).unwrap();
                     assert!((local[2] - 4.0 * local[0].hypot(local[1]) / 3.0).abs() < 4e-7);
                     assert!((location.distance_to(center).unwrap() - 1.5).abs() < 4e-7);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn turning_section_remains_on_positive_cone_when_opposite_roots_are_negative() {
+        let center = point(2.0, 0.0, 0.5);
+        let sphere = NurbsSurface::try_sphere(frame().with_origin(center), 2.0).unwrap();
+        for height in [4.0, 1.5] {
+            let cone = cone(height);
+            for (first, second) in [(&sphere, &cone), (&cone, &sphere)] {
+                let events =
+                    surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+                let [
+                    SurfaceSurfaceIntersectionEvent::Curve(upper),
+                    SurfaceSurfaceIntersectionEvent::Curve(lower),
+                ] = events.as_slice()
+                else {
+                    panic!("expected two turning branches, got {events:#?}")
+                };
+                for curve in [upper, lower] {
+                    assert!(!curve.is_closed().unwrap());
+                    for sample in 0..=64 {
+                        let domain = curve.domain();
+                        let parameter = *domain.start()
+                            + (*domain.end() - *domain.start()) * (sample as Real / 64.0);
+                        let location = curve.evaluate(parameter).unwrap();
+                        assert!((location.distance_to(center).unwrap() - 2.0).abs() < 5e-9);
+                        assert!(
+                            (location.z() - 4.0 * location.x().hypot(location.y()) / 3.0).abs()
+                                < 5e-9
+                        );
+                        assert!((-5e-9..=height + 5e-9).contains(&location.z()));
+                    }
+                }
+                assert!(
+                    upper
+                        .evaluate(*upper.domain().start())
+                        .unwrap()
+                        .distance_to(lower.evaluate(*lower.domain().end()).unwrap())
+                        .unwrap()
+                        < 5e-9
+                );
+                if height == 4.0 {
+                    assert!(
+                        upper
+                            .evaluate(*upper.domain().end())
+                            .unwrap()
+                            .distance_to(lower.evaluate(*lower.domain().start()).unwrap())
+                            .unwrap()
+                            < 5e-9
+                    );
+                } else {
+                    for curve in [upper, lower] {
+                        let end = curve.evaluate(*curve.domain().end()).unwrap();
+                        let start = curve.evaluate(*curve.domain().start()).unwrap();
+                        assert!(
+                            (end.z() - height).abs() < 5e-9 || (start.z() - height).abs() < 5e-9
+                        );
+                    }
+                }
+            }
+        }
+        assert!(
+            surface_surface_intersection_events(&sphere, &cone(0.03), Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn turning_section_with_negative_opposite_roots_supports_signed_and_rotated_cones() {
+        let rotated = Frame3::try_from_normal(
+            point(1.0e8, -1.0e8, 1.0e8),
+            Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (cone_frame, sign) in [(frame(), -1.0), (rotated, 1.0)] {
+            let center = cone_frame.point_at([1.2, 1.6, sign * 0.5]).unwrap();
+            let cone = NurbsSurface::try_cone(cone_frame, 3.0, sign * 4.0).unwrap();
+            let sphere = NurbsSurface::try_sphere(cone_frame.with_origin(center), 2.0).unwrap();
+            let events =
+                surface_surface_intersection_events(&sphere, &cone, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("expected a turning branch")
+                };
+                for sample in 0..=32 {
+                    let domain = curve.domain();
+                    let parameter = *domain.start()
+                        + (*domain.end() - *domain.start()) * (sample as Real / 32.0);
+                    let location = curve.evaluate(parameter).unwrap();
+                    let local = cone_frame.coordinates_of(location).unwrap();
+                    assert!((sign * local[2] - 4.0 * local[0].hypot(local[1]) / 3.0).abs() < 4e-7);
+                    assert!((location.distance_to(center).unwrap() - 2.0).abs() < 4e-7);
                 }
             }
         }

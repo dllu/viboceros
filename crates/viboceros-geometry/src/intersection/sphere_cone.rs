@@ -110,7 +110,7 @@ pub(super) fn sphere_cone_intersection_events(
                 return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(point)]);
             }
             if maximum_discriminant > discriminant_roundoff
-                && opposite_discriminant < -discriminant_roundoff
+                && (opposite_discriminant < -discriminant_roundoff || lowest_linear <= 0.0)
             {
                 return noncoaxial_turning::intersect(
                     sphere_center,
