@@ -9,6 +9,7 @@ mod area_tests;
 mod compaction_tests;
 mod components;
 mod connected_faces;
+pub use connected_faces::MeshPartBoundary;
 mod containment;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod edge_collapse;

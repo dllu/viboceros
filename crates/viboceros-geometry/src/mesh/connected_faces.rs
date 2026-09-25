@@ -1,8 +1,64 @@
-//! Face traversal across topological edges with a per-edge normal-angle rule.
+//! Face traversal across topological edges with angle or edge-boundary rules.
 
-use super::{GeometryError, Real, TriangleMesh, VecDeque};
+use super::{GeometryError, Real, TriangleMesh, VecDeque, edge_uses_are_unwelded};
+
+/// Edge boundaries that limit extraction of one mesh part.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MeshPartBoundary {
+    /// Stop only at naked edges, retaining the whole edge-connected piece.
+    Naked,
+    /// Stop at naked or unwelded edges.
+    Unwelded,
+    /// Stop at naked, unwelded, or nonmanifold edges.
+    UnweldedAndNonManifold,
+}
 
 impl TriangleMesh {
+    /// Stored faces reachable from `seed` without crossing the chosen edge
+    /// boundaries. Coincident raw vertices form a topological edge, but an
+    /// unwelded edge has distinct raw vertex indices at both endpoints.
+    pub fn mesh_part_faces(
+        &self,
+        seed: usize,
+        boundary: MeshPartBoundary,
+    ) -> Result<Vec<usize>, GeometryError> {
+        self.validate_seed_face(seed)?;
+        let mut adjacency = vec![Vec::new(); self.face_count()];
+        for incidence in self.topology_data().edges.values() {
+            if incidence.count < 2
+                || (boundary == MeshPartBoundary::UnweldedAndNonManifold && incidence.count > 2)
+                || (boundary != MeshPartBoundary::Naked && edge_uses_are_unwelded(incidence.uses()))
+            {
+                continue;
+            }
+            let mut uses = incidence.uses();
+            let first = uses.next().expect("edge has at least two uses").face;
+            for edge_use in uses {
+                if first != edge_use.face {
+                    adjacency[first].push(edge_use.face);
+                    adjacency[edge_use.face].push(first);
+                }
+            }
+        }
+
+        let mut visited = vec![false; self.face_count()];
+        let mut queue = VecDeque::from([seed]);
+        visited[seed] = true;
+        while let Some(face) = queue.pop_front() {
+            for &neighbor in &adjacency[face] {
+                if !visited[neighbor] {
+                    visited[neighbor] = true;
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+        Ok(visited
+            .into_iter()
+            .enumerate()
+            .filter_map(|(index, included)| included.then_some(index))
+            .collect())
+    }
+
     /// Stored faces reachable from `seed` across edges whose adjacent face
     /// normals meet an inclusive angle comparison. The seed is always included.
     /// Unwelded vertices at identical positions share a topological edge.
@@ -12,13 +68,8 @@ impl TriangleMesh {
         angle_degrees: Real,
         greater_than: bool,
     ) -> Result<Vec<usize>, GeometryError> {
+        self.validate_seed_face(seed)?;
         let face_count = self.face_count();
-        if seed >= face_count {
-            return Err(GeometryError::MeshFaceIndexOutOfRange {
-                face: seed,
-                face_count,
-            });
-        }
         if !angle_degrees.is_finite() || !(0.0..=180.0).contains(&angle_degrees) {
             return Err(GeometryError::InvalidMeshFaceAngleInterval);
         }
@@ -80,6 +131,16 @@ impl TriangleMesh {
             .enumerate()
             .filter_map(|(index, included)| included.then_some(index))
             .collect())
+    }
+
+    fn validate_seed_face(&self, seed: usize) -> Result<(), GeometryError> {
+        if seed >= self.face_count() {
+            return Err(GeometryError::MeshFaceIndexOutOfRange {
+                face: seed,
+                face_count: self.face_count(),
+            });
+        }
+        Ok(())
     }
 }
 
@@ -187,5 +248,52 @@ mod tests {
             mesh.connected_faces_by_angle(0, 90.0, false).unwrap(),
             vec![0, 1, 2]
         );
+        assert_eq!(
+            mesh.mesh_part_faces(0, MeshPartBoundary::UnweldedAndNonManifold)
+                .unwrap(),
+            vec![0]
+        );
+        assert_eq!(
+            mesh.mesh_part_faces(0, MeshPartBoundary::Unwelded).unwrap(),
+            vec![0, 1, 2]
+        );
+    }
+
+    #[test]
+    fn mesh_part_stops_at_unwelded_edges_and_ignores_vertex_only_contacts() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+            ],
+            vec![
+                MeshFace::Triangle([0, 1, 2]),
+                MeshFace::Triangle([1, 3, 2]),
+                MeshFace::Triangle([4, 6, 5]),
+                MeshFace::Triangle([0, 7, 8]),
+            ],
+            Tolerance::default(),
+        )
+        .unwrap();
+        assert_eq!(
+            mesh.mesh_part_faces(0, MeshPartBoundary::UnweldedAndNonManifold)
+                .unwrap(),
+            vec![0, 1]
+        );
+        assert_eq!(
+            mesh.mesh_part_faces(0, MeshPartBoundary::Naked).unwrap(),
+            vec![0, 1, 2]
+        );
+        assert!(matches!(
+            mesh.mesh_part_faces(4, MeshPartBoundary::Naked),
+            Err(GeometryError::MeshFaceIndexOutOfRange { .. })
+        ));
     }
 }

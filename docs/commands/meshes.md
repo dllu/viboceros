@@ -154,6 +154,16 @@ vertices at identical positions count as connected. `MakeCopy=Yes` and
 commands' attributes, groups, result selection, and undo behavior. Viewport
 subobject picking is still pending, so scripts must supply `Face`.
 
+`ExtractMeshPart Face=0` extracts the region reachable from stored face 0
+without crossing naked, unwelded, or nonmanifold topology edges. The script
+option `ExtractToNonManifoldEdges=No` allows traversal across nonmanifold
+edges, while `ExtractWholeDisjointParts=Yes` crosses both nonmanifold and
+unwelded edges, stopping only at naked edges. An unwelded edge has distinct
+raw vertex indices on both ends for each incident face. `MakeCopy=Yes` and
+`BorderOnly=Yes` use the shared extraction output policy. The current
+scripted form accepts one seed face per selected mesh; multiple picked faces
+and `JoinOutput` remain pending.
+
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,
