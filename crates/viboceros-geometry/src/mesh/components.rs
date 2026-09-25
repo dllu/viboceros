@@ -51,6 +51,12 @@ fn component_faces(
 }
 
 impl TriangleMesh {
+    /// One mesh per stored face in source order, compacting raw vertices and
+    /// retaining any one-face n-gon overlay.
+    pub fn individual_face_meshes(&self) -> Vec<Self> {
+        self.pieces_from_faces((0..self.faces.len()).map(|face| vec![face]).collect())
+    }
+
     /// Splits the mesh into exact-location edge-connected components. A lone
     /// shared vertex does not connect faces. Each result retains source face
     /// order and compacts referenced raw vertices in first-use order.

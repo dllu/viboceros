@@ -155,14 +155,16 @@ commands' attributes, groups, result selection, and undo behavior. Viewport
 subobject picking is still pending, so scripts must supply `Face`.
 
 `ExtractMeshPart Face=0` extracts the region reachable from stored face 0
-without crossing naked, unwelded, or nonmanifold topology edges. The script
+without crossing naked, unwelded, or nonmanifold topology edges. `Faces=0,2`
+selects multiple seed regions, and `Faces=All` selects every region. The script
 option `ExtractToNonManifoldEdges=No` allows traversal across nonmanifold
 edges, while `ExtractWholeDisjointParts=Yes` crosses both nonmanifold and
 unwelded edges, stopping only at naked edges. An unwelded edge has distinct
-raw vertex indices on both ends for each incident face. `MakeCopy=Yes` and
-`BorderOnly=Yes` use the shared extraction output policy. The current
-scripted form accepts one seed face per selected mesh; multiple picked faces
-and `JoinOutput` remain pending.
+raw vertex indices on both ends for each incident face. `JoinOutput=Yes`
+combines selected faces into one mesh per source; `JoinOutput=No` emits one
+mesh per face. `MakeCopy=Yes` retains the source; `BorderOnly=Yes` emits a line
+segment for each boundary edge and leaves the source unchanged. Viewport
+subobject picking remains pending, so scripts supply `Face` or `Faces`.
 
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source

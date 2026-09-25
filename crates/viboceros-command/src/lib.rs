@@ -17399,9 +17399,6 @@ pub enum CommandError {
     #[error("ExtractMeshPart supports selected meshes only")]
     UnsupportedExtractMeshPartGeometry,
 
-    #[error("none of the selected meshes has a part to extract")]
-    NoMeshPartFaces,
-
     #[error("the selected mesh parts have no border curves")]
     NoMeshPartBorders,
 

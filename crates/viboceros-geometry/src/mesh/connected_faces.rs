@@ -22,7 +22,19 @@ impl TriangleMesh {
         seed: usize,
         boundary: MeshPartBoundary,
     ) -> Result<Vec<usize>, GeometryError> {
-        self.validate_seed_face(seed)?;
+        Ok(self.mesh_part_face_groups(&[seed], boundary)?.remove(0))
+    }
+
+    /// Distinct regions reached from the supplied seed faces, in first-seed
+    /// order. Multiple seeds in one region produce a single group.
+    pub fn mesh_part_face_groups(
+        &self,
+        seeds: &[usize],
+        boundary: MeshPartBoundary,
+    ) -> Result<Vec<Vec<usize>>, GeometryError> {
+        for &seed in seeds {
+            self.validate_seed_face(seed)?;
+        }
         let mut adjacency = vec![Vec::new(); self.face_count()];
         for incidence in self.topology_data().edges.values() {
             if incidence.count < 2
@@ -42,21 +54,27 @@ impl TriangleMesh {
         }
 
         let mut visited = vec![false; self.face_count()];
-        let mut queue = VecDeque::from([seed]);
-        visited[seed] = true;
-        while let Some(face) = queue.pop_front() {
-            for &neighbor in &adjacency[face] {
-                if !visited[neighbor] {
-                    visited[neighbor] = true;
-                    queue.push_back(neighbor);
+        let mut groups = Vec::new();
+        for &seed in seeds {
+            if visited[seed] {
+                continue;
+            }
+            let mut queue = VecDeque::from([seed]);
+            let mut group = Vec::new();
+            visited[seed] = true;
+            while let Some(face) = queue.pop_front() {
+                group.push(face);
+                for &neighbor in &adjacency[face] {
+                    if !visited[neighbor] {
+                        visited[neighbor] = true;
+                        queue.push_back(neighbor);
+                    }
                 }
             }
+            group.sort_unstable();
+            groups.push(group);
         }
-        Ok(visited
-            .into_iter()
-            .enumerate()
-            .filter_map(|(index, included)| included.then_some(index))
-            .collect())
+        Ok(groups)
     }
 
     /// Stored faces reachable from `seed` across edges whose adjacent face
@@ -293,6 +311,15 @@ mod tests {
         );
         assert!(matches!(
             mesh.mesh_part_faces(4, MeshPartBoundary::Naked),
+            Err(GeometryError::MeshFaceIndexOutOfRange { .. })
+        ));
+        assert_eq!(
+            mesh.mesh_part_face_groups(&[2, 0, 1, 3], MeshPartBoundary::Unwelded)
+                .unwrap(),
+            vec![vec![2], vec![0, 1], vec![3]]
+        );
+        assert!(matches!(
+            mesh.mesh_part_face_groups(&[0, 4], MeshPartBoundary::Naked),
             Err(GeometryError::MeshFaceIndexOutOfRange { .. })
         ));
     }
