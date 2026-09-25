@@ -17,9 +17,16 @@ Circle, Polygon, and Rectangle use the active [construction plane](../constructi
 and start point, sweeping about the active construction-plane normal. Enter
 `Arc Center` to pick the center and start, then type the angle; `Center` is also
 available at Arc's first prompt. Negative angles sweep in the opposite
-direction, and 360° produces a full arc. Five [live Rhino records](../arc-center-angle-rhino-reference.json)
-cover both cases, a quarter arc, a 270° arc, and an oriented construction plane. Sampled
+direction, and angles beyond 360° cap at a full arc. Six
+[live Rhino records](../arc-center-angle-rhino-reference.json) cover both
+cases, a quarter arc, a 270° arc, and an oriented construction plane. Sampled
 curves and domains match within `1e-10`.
+`Arc Center center start Length=distance` uses a signed arc length; choose
+`Length` after the interactive start pick, then enter the distance. Lengths
+beyond one circumference produce a full arc. Five
+[live Rhino length records](../arc-center-length-rhino-reference.json) cover
+positive and negative lengths, both full-arc cap directions, and a rotated
+construction plane, with sampled curves and domains matching within `1e-10`.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

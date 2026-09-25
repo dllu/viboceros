@@ -84,6 +84,15 @@ mod tests {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/arc_center_angle.json"),
             include_str!("../../../docs/arc-center-angle-rhino-reference.json"),
+            6,
+        );
+    }
+
+    #[test]
+    fn arc_center_length_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_center_length.json"),
+            include_str!("../../../docs/arc-center-length-rhino-reference.json"),
             5,
         );
     }
@@ -212,6 +221,7 @@ pub(super) fn run(
         "Circle3PointRadius" if f.value.is_some() => ("Circle 3Point", 3),
         "Circle3PointRadiusPick" if f.value.is_none() => ("Circle 3Point", 3),
         "ArcCenterAngle" if f.value.is_some() => ("Arc Center", 2),
+        "ArcCenterLength" if f.value.is_some() => ("Arc Center", 2),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -289,7 +299,9 @@ pub(super) fn run(
         if !value.is_finite() {
             return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));
         }
-        if let Some(option) = f.primitive.strip_prefix("Circle")
+        if f.primitive == "ArcCenterLength" {
+            command.push_str(&format!(" Length={value}"));
+        } else if let Some(option) = f.primitive.strip_prefix("Circle")
             && matches!(option, "Diameter" | "Circumference" | "Area")
         {
             command.push_str(&format!(" {option}={value}"));

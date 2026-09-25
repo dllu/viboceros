@@ -353,6 +353,10 @@ enum InteractiveCommand {
         center: Option<Point3>,
         start: Option<Point3>,
     },
+    ArcCenterLength {
+        center: Point3,
+        start: Point3,
+    },
     Ellipse {
         center: Option<Point3>,
         first_axis: Option<Point3>,
@@ -610,6 +614,7 @@ impl InteractiveCommand {
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
             Self::ArcCenter { .. } => "Arc",
+            Self::ArcCenterLength { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
@@ -850,8 +855,9 @@ impl InteractiveCommand {
             Self::ArcCenter { start: None, .. } => {
                 "Arc Center: pick the start point in the viewport (Esc to cancel)"
             }
-            Self::ArcCenter { .. } => {
-                "Arc Center: enter the sweep angle in degrees (Esc to cancel)"
+            Self::ArcCenter { .. } => "Arc Center: enter an angle or choose Length (Esc to cancel)",
+            Self::ArcCenterLength { .. } => {
+                "Arc Center Length: enter a signed arc length (Esc to cancel)"
             }
             Self::Ellipse { center: None, .. } => {
                 "Ellipse: pick the center in the viewport (Esc to cancel)"
@@ -1486,6 +1492,7 @@ impl InteractiveCommand {
             Self::ArcCenter {
                 start: Some(start), ..
             } => Some(start),
+            Self::ArcCenterLength { start, .. } => Some(start),
             Self::CircleThreePointRadius { second, .. } => Some(second),
             Self::SrfPt {
                 corners: [_, _, Some(corner)],
@@ -1915,23 +1922,53 @@ impl VibocerosApp {
             self.push_log(command.prompt().to_owned());
             return true;
         }
-        let Some(InteractiveCommand::ArcCenter {
-            center: Some(center),
-            start: Some(start),
-        }) = self.active_command
-        else {
+        let (center, start, is_length) = match self.active_command {
+            Some(InteractiveCommand::ArcCenter {
+                center: Some(center),
+                start: Some(start),
+            }) => (center, start, false),
+            Some(InteractiveCommand::ArcCenterLength { center, start }) => (center, start, true),
+            _ => return false,
+        };
+        let input = input.trim();
+        if !is_length && input.trim_start_matches('_').eq_ignore_ascii_case("Length") {
+            let command = InteractiveCommand::ArcCenterLength { center, start };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        let length_value = input
+            .split_once('=')
+            .filter(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Length"))
+            .map(|(_, value)| value)
+            .or_else(|| {
+                input
+                    .split_once(' ')
+                    .filter(|(name, _)| name.trim_start_matches('_').eq_ignore_ascii_case("Length"))
+                    .map(|(_, value)| value)
+            });
+        let is_length = is_length || length_value.is_some();
+        let Ok(value) = length_value.unwrap_or(input).trim().parse::<f64>() else {
             return false;
         };
-        let Ok(angle) = input.trim().parse::<f64>() else {
-            return false;
-        };
-        if !(angle.is_finite() && angle != 0.0 && angle.abs() <= 360.0) {
-            self.push_log("Error: arc angle must be nonzero and within 360 degrees".into());
+        let valid = value.is_finite() && value != 0.0;
+        if !valid {
+            self.push_log(if is_length {
+                "Error: arc length must be a nonzero finite number".into()
+            } else {
+                "Error: arc angle must be a nonzero finite number".into()
+            });
             return true;
         }
         self.active_command = None;
+        let size = if is_length {
+            format!("Length={value}")
+        } else {
+            value.to_string()
+        };
         self.execute_command(&format!(
-            "Arc Center {} {} {angle}",
+            "Arc Center {} {} {size}",
             format_model_point(center),
             format_model_point(start)
         ));
@@ -4604,7 +4641,11 @@ impl VibocerosApp {
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::ArcCenter { .. } => {
-                self.push_log("Enter an arc sweep angle in degrees".into());
+                self.push_log("Enter an arc sweep angle or choose Length".into());
+                return false;
+            }
+            InteractiveCommand::ArcCenterLength { .. } => {
+                self.push_log("Enter a signed arc length".into());
                 return false;
             }
             InteractiveCommand::Arc { mut points } => {
@@ -7891,6 +7932,53 @@ mod tests {
             panic!("expected arc");
         };
         assert!(arc.point_at(1.0).unwrap().y() < center.y());
+
+        assert!(app.try_start_interactive_command("Arc Center"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("450"));
+        let Geometry::Arc(full) = app.document.objects().nth(2).unwrap().geometry() else {
+            panic!("expected full arc")
+        };
+        assert!((full.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+    }
+
+    #[test]
+    fn interactive_arc_center_length_accepts_signed_sizes() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Arc Center"));
+        let center = point(1.0, 2.0, 3.0);
+        let start = point(5.0, 2.0, 3.0);
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("Length"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenterLength { center, start })
+        );
+        assert!(app.try_continue_arc("0"));
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(app.try_continue_arc("-6.283185307179586"));
+        let Geometry::Arc(arc) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected arc")
+        };
+        assert!((*arc.domain().end() - std::f64::consts::TAU).abs() < 1e-12);
+        assert!(arc.point_at(1.0).unwrap().y() < center.y());
+
+        assert!(app.try_start_interactive_command("Arc Center"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("Length=9.42477796076938"));
+        assert_eq!(app.document.objects().len(), 2);
+
+        assert!(app.try_start_interactive_command("Arc Center"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("Length=100"));
+        let Geometry::Arc(full) = app.document.objects().nth(2).unwrap().geometry() else {
+            panic!("expected full arc")
+        };
+        assert!((full.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
     }
 
     #[test]

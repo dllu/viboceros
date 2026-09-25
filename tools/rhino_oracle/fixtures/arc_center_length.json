@@ -4,63 +4,53 @@
   "operations": [
     {
       "op": "plane_primitive",
-      "id": "arc-center-quarter-angle",
+      "id": "arc-center-short-length",
       "origin": [0, 0, 0],
       "x_axis": [1, 0, 0],
       "y_axis": [0, 1, 0],
-      "primitive": "ArcCenterAngle",
+      "primitive": "ArcCenterLength",
       "points": [[1, 2, 3], [5, 2, 3]],
-      "value": 90
+      "value": 6.283185307179586
     },
     {
       "op": "plane_primitive",
-      "id": "arc-center-major-angle",
+      "id": "arc-center-negative-length",
       "origin": [0, 0, 0],
       "x_axis": [1, 0, 0],
       "y_axis": [0, 1, 0],
-      "primitive": "ArcCenterAngle",
-      "points": [[-2, 1, 0], [1, 1, 0]],
-      "value": 270
+      "primitive": "ArcCenterLength",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": -6.283185307179586
     },
     {
       "op": "plane_primitive",
-      "id": "arc-center-oriented-angle",
+      "id": "arc-center-oriented-length",
       "origin": [1, 2, 3],
       "x_axis": [0, 1, 0],
       "y_axis": [0, 0, 1],
-      "primitive": "ArcCenterAngle",
+      "primitive": "ArcCenterLength",
       "points": [[2, 3, 4], [2, 3, 7]],
-      "value": 135
+      "value": 9.42477796076938
     },
     {
       "op": "plane_primitive",
-      "id": "arc-center-full-angle",
+      "id": "arc-center-overfull-length",
       "origin": [0, 0, 0],
       "x_axis": [1, 0, 0],
       "y_axis": [0, 1, 0],
-      "primitive": "ArcCenterAngle",
+      "primitive": "ArcCenterLength",
       "points": [[1, 2, 3], [5, 2, 3]],
-      "value": 360
+      "value": 30
     },
     {
       "op": "plane_primitive",
-      "id": "arc-center-negative-angle",
+      "id": "arc-center-negative-overfull-length",
       "origin": [0, 0, 0],
       "x_axis": [1, 0, 0],
       "y_axis": [0, 1, 0],
-      "primitive": "ArcCenterAngle",
+      "primitive": "ArcCenterLength",
       "points": [[1, 2, 3], [5, 2, 3]],
-      "value": -90
-    },
-    {
-      "op": "plane_primitive",
-      "id": "arc-center-overfull-angle",
-      "origin": [0, 0, 0],
-      "x_axis": [1, 0, 0],
-      "y_axis": [0, 1, 0],
-      "primitive": "ArcCenterAngle",
-      "points": [[1, 2, 3], [5, 2, 3]],
-      "value": 450
+      "value": -30
     }
   ]
 }

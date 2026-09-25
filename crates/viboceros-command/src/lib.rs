@@ -1354,13 +1354,27 @@ impl Command for ArcCommand {
             let (center, center_count) = parse_point(arguments)?;
             let (start, start_count) = parse_point(&arguments[center_count..])?;
             let remaining = &arguments[center_count + start_count..];
-            let [angle] = remaining else {
-                return Err(CommandError::Usage("Arc Center center start angle-degrees"));
-            };
-            let sweep_degrees = parse_finite_real(angle)?;
             let radial = center.vector_to(start)?;
             let radius = radial.length()?;
-            let normal = if sweep_degrees < 0.0 {
+            let (value, is_length) = match remaining {
+                [single] if let Some((name, value)) = single.split_once('=') => {
+                    if !option_name_eq(name, "Length") {
+                        return Err(CommandError::Usage(ARC_CENTER_USAGE));
+                    }
+                    (parse_finite_real(value)?, true)
+                }
+                [name, value] if option_name_eq(name, "Length") => {
+                    (parse_finite_real(value)?, true)
+                }
+                [angle] => (parse_finite_real(angle)?, false),
+                _ => return Err(CommandError::Usage(ARC_CENTER_USAGE)),
+            };
+            let signed_sweep = if is_length {
+                value / radius
+            } else {
+                value.to_radians()
+            };
+            let normal = if signed_sweep < 0.0 {
                 context.construction_plane.z_axis().opposite()
             } else {
                 context.construction_plane.z_axis()
@@ -1372,8 +1386,9 @@ impl Command for ArcCommand {
                 normal,
                 document.tolerance(),
             )?;
-            let arc =
-                CircularArc3::try_from_circle_sweep(circle, sweep_degrees.abs().to_radians())?;
+            let sweep = signed_sweep.abs().min(std::f64::consts::TAU);
+            let arc = CircularArc3::try_from_circle_sweep(circle, sweep)?;
+            let sweep_degrees = sweep.to_degrees().copysign(signed_sweep);
             let id = document.add_geometry(Geometry::Arc(arc))?;
             return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
         }
@@ -1391,6 +1406,8 @@ impl Command for ArcCommand {
         Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
     }
 }
+
+const ARC_CENTER_USAGE: &str = "Arc Center center start angle-degrees | Length=arc-length";
 
 struct EllipseCommand;
 
@@ -18143,18 +18160,69 @@ mod tests {
         registry
             .execute(&mut document, "Arc Center 1,2,3 5,2,3 360")
             .unwrap();
+        registry
+            .execute(&mut document, "Arc Center 1,2,3 5,2,3 450")
+            .unwrap();
         let Geometry::Arc(full) = document.objects().nth(2).unwrap().geometry() else {
             panic!("expected full arc")
         };
         assert!((full.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+        let Geometry::Arc(overfull) = document.objects().nth(3).unwrap().geometry() else {
+            panic!("expected capped arc")
+        };
+        assert!((overfull.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
         for input in [
             "Arc Center 1,2,3 1,2,3 90",
             "Arc Center 1,2,3 1,2,7 0",
-            "Arc Center 1,2,3 1,2,7 361",
             "Arc Center 1,2,3 1,2,7 nan",
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
-            assert_eq!(document.objects().len(), 3);
+            assert_eq!(document.objects().len(), 4);
+        }
+    }
+
+    #[test]
+    fn arc_center_length_uses_signed_arc_length_and_rolls_back_invalid_sizes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(
+                &mut document,
+                "Arc Center 1,2,3 5,2,3 Length=6.283185307179586",
+            )
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Arc Center 1,2,3 5,2,3 Length -6.283185307179586",
+            )
+            .unwrap();
+        registry
+            .execute(&mut document, "Arc Center 1,2,3 5,2,3 Length=30")
+            .unwrap();
+        registry
+            .execute(&mut document, "Arc Center 1,2,3 5,2,3 Length=-30")
+            .unwrap();
+        let arcs = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected an arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 4);
+        assert!((*arcs[0].domain().end() - std::f64::consts::TAU).abs() < 1e-12);
+        assert!(arcs[0].point_at(1.0).unwrap().y() > 2.0);
+        assert!(arcs[1].point_at(1.0).unwrap().y() < 2.0);
+        assert!((arcs[2].sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+        assert!((arcs[3].sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+        assert!(arcs[3].point_at(0.25).unwrap().y() < 2.0);
+        for input in [
+            "Arc Center 1,2,3 5,2,3 Length=0",
+            "Arc Center 1,2,3 5,2,3 Length=nan",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 4);
         }
     }
 

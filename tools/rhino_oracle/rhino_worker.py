@@ -3404,7 +3404,7 @@ def _plane_primitive_script(operation):
         expected = 3
     elif primitive == "Circle3PointRadiusPick" and value is None:
         expected = 3
-    elif primitive == "ArcCenterAngle" and value is not None:
+    elif primitive in ("ArcCenterAngle", "ArcCenterLength") and value is not None:
         expected = 2
     elif primitive in ("Box", "MeshBox"):
         expected = 2 if value is not None else 3
@@ -3419,6 +3419,7 @@ def _plane_primitive_script(operation):
               "Circle3PointRadius": "_Circle _3Point ",
               "Circle3PointRadiusPick": "_Circle _3Point ",
               "ArcCenterAngle": "_Arc _Center ",
+              "ArcCenterLength": "_Arc _Center ",
               "CircleVertical": "_Circle _Vertical ",
               "CircleOrientation": "_Circle ",
               "CircleOrientationPick": "_Circle ",
@@ -3442,10 +3443,12 @@ def _plane_primitive_script(operation):
         script += " %.17g" % _finite(value, "primitive size")
         script += " w" + _command_point(points[1])
         return script
-    if primitive == "ArcCenterAngle":
+    if primitive in ("ArcCenterAngle", "ArcCenterLength"):
         script += "w" + _command_point(points[0])
         script += " w" + _command_point(points[1])
-        script += " %.17g" % _finite(value, "primitive angle")
+        if primitive == "ArcCenterLength":
+            script += " _Length"
+        script += " %.17g" % _finite(value, "primitive arc size")
         return script
     if primitive == "Circle3PointRadius":
         script += "w" + _command_point(points[0])

@@ -536,10 +536,15 @@ checks six actual `_Circle _2Point` results against
 [Rhino 8 observations](circle-two-point-rhino-reference.json), including
 reversed diameter endpoints, oblique diameter, and tilted CPlane.
 The [Arc Center angle fixture](../tools/rhino_oracle/fixtures/arc_center_angle.json)
-compares three actual `_Arc _Center` commands with
+compares six actual `_Arc _Center` commands with
 [Rhino 8 sampled curves](arc-center-angle-rhino-reference.json), including a
-major arc, full sweep, negative sweep, and rotated construction plane. Native samples and domains agree
-within `1e-10`.
+major arc, capped sweep, negative sweep, and rotated construction plane. Native
+samples and domains agree within `1e-10`.
+The [Arc Center Length fixture](../tools/rhino_oracle/fixtures/arc_center_length.json)
+compares five signed-length `_Arc _Center` commands against
+[live Rhino 8 results](arc-center-length-rhino-reference.json), including a
+rotated construction plane and both signs of length beyond one circumference.
+Native curve samples and domains agree within `1e-10`.
 The [three-point circle fixture](../tools/rhino_oracle/fixtures/circle_three_point.json)
 checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including
