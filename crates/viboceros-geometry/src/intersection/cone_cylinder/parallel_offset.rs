@@ -2,7 +2,10 @@
 //!
 //! At cylinder angle u the distance to the cone axis is
 //! sqrt(d²+c²+2dc cos(u)). The cone height is proportional to that distance.
-//! Cubic Hermite spans have a fourth-derivative error bound while d != c.
+//! Cubic Hermite spans have a fourth-derivative error bound. The d = c case
+//! has a separate analytic branch at the singular cone apex.
+
+mod apex;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3};
@@ -59,9 +62,16 @@ pub(super) fn intersect(
         return Ok(Vec::new());
     }
     if minimum <= coordinate_roundoff {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "offset cone/cylinder section touches the singular cone apex",
-        });
+        return apex::intersect(
+            Section {
+                offset: cylinder_radius,
+                ..section
+            },
+            (radial_low, radial_high),
+            (cylinder_start, cylinder_height, axis_dot),
+            cone_height,
+            fit_tolerance,
+        );
     }
     let derivative_bound = fourth_derivative_bound(section, minimum);
     if !derivative_bound.is_finite() {
@@ -69,20 +79,7 @@ pub(super) fn intersect(
             context: "offset cone/cylinder fit is ill-conditioned",
         });
     }
-    let mut cuts = vec![0.0, std::f64::consts::PI, TURN];
-    for radius in [radial_low, radial_high] {
-        if radius > minimum && radius < maximum {
-            let half_cosine = ((radius - minimum) * (radius + minimum)
-                / (4.0 * offset * cylinder_radius))
-                .clamp(0.0, 1.0)
-                .sqrt();
-            let angle = 2.0 * half_cosine.acos();
-            cuts.push(angle);
-            cuts.push(TURN - angle);
-        }
-    }
-    cuts.sort_by(Real::total_cmp);
-    cuts.dedup_by(|left, right| (*left - *right).abs() <= 32.0 * Real::EPSILON);
+    let cuts = angular_cuts(section, radial_low, radial_high);
     let intervals = active_intervals(section, &cuts, radial_low, radial_high);
     let mut events = Vec::new();
     for angle in cuts {
@@ -163,6 +160,26 @@ impl Section {
         }))?;
         Ok((self.frame.point_at(local)?, tangent))
     }
+}
+
+fn angular_cuts(section: Section, radial_low: Real, radial_high: Real) -> Vec<Real> {
+    let minimum = (section.offset - section.radius).abs();
+    let maximum = section.offset + section.radius;
+    let mut cuts = vec![0.0, std::f64::consts::PI, TURN];
+    for radius in [radial_low, radial_high] {
+        if radius > minimum && radius < maximum {
+            let half_cosine = ((radius - minimum) * (radius + minimum)
+                / (4.0 * section.offset * section.radius))
+                .clamp(0.0, 1.0)
+                .sqrt();
+            let angle = 2.0 * half_cosine.acos();
+            cuts.push(angle);
+            cuts.push(TURN - angle);
+        }
+    }
+    cuts.sort_by(Real::total_cmp);
+    cuts.dedup_by(|left, right| (*left - *right).abs() <= 32.0 * Real::EPSILON);
+    cuts
 }
 
 fn fourth_derivative_bound(section: Section, minimum: Real) -> Real {
@@ -433,17 +450,6 @@ mod tests {
                 assert!((cylinder_local[0].hypot(cylinder_local[1]) - 1.5).abs() < 4e-7);
             }
         }
-    }
-
-    #[test]
-    fn parallel_offset_cone_cylinder_reports_apex_crossing() {
-        let through_apex =
-            NurbsSurface::try_cylinder(frame().with_origin(point(1.5, 0.0, 0.0)), 1.5, 0.0, 4.0)
-                .unwrap();
-        assert!(matches!(
-            surface_surface_intersection_events(&cone(), &through_apex, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
     }
 
     #[test]

@@ -222,8 +222,10 @@ cover aligned and opposed axes, rim contacts, clipping, and a noncoaxial pair.
 Rhino also reports two redundant seam points with the full circle; the native
 result retains the circle. With parallel offset axes, smooth intersections are
 fitted as cubic curves within the modeling tolerance and clipped to both finite
-surfaces; isolated rim contacts create points. Sections through the singular
-cone apex and nonparallel cone/cylinder axes remain unsupported.
+surfaces; isolated rim contacts create points. A cylinder wall through the cone
+apex produces a cubic curve with an exact corner there. Full sections can be
+closed; finite rim cuts produce arcs and an apex-only contact produces no event.
+Nonparallel cone/cylinder axes remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
