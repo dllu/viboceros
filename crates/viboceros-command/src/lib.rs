@@ -26952,6 +26952,62 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_crossed_cylinder_ellipses() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let first_frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, -2.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            Point3::try_new(-2.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(first_frame, 1.0, 0.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(second_frame, 1.0, 0.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        for object in document.selected_objects() {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("crossed cylinders should create ellipses")
+            };
+            assert_eq!(curve.degree(), 2);
+            assert!(curve.is_rational());
+            assert!(curve.is_closed().unwrap());
+            for index in 0..=32 {
+                let domain = curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as f64 / 32.0);
+                let sample = curve.evaluate(parameter).unwrap();
+                for frame in [first_frame, second_frame] {
+                    let local = frame.coordinates_of(sample).unwrap();
+                    assert!((local[0].hypot(local[1]) - 1.0).abs() < 2e-12);
+                }
+            }
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_two_cylinder_plane_generatrices() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

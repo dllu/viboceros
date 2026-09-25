@@ -198,7 +198,11 @@ contacts produce points; coaxial walls sharing one rim produce its exact circle.
 Coaxial walls overlapping over an area produce no API events, as Rhino does.
 The [cylinder/cylinder fixture](../../tools/rhino_oracle/fixtures/cylinder_cylinder_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/cylinder_cylinder_surface_intersection.json)
-record these cases. Nonparallel wall intersections remain unsupported.
+record these parallel cases.
+Equal-radius cylinder walls whose axes cross at right angles intersect in two
+exact rational ellipses. Both finite height ranges clip them to exact conic
+arcs or isolated rim points. Other nonparallel wall intersections remain
+unsupported.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
 when the cylinder radius occurs within both finite height ranges. Opposed
 surface axes yield two exact semicircles, matching Rhino's event structure.

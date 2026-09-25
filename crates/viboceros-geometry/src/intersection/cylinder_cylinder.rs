@@ -3,6 +3,8 @@
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, NurbsCurve, Real, Tolerance};
 
+mod orthogonal;
+
 pub(super) fn parallel_cylinder_intersection_events(
     (first_frame, first_radius, first_height): (Frame3, Real, Real),
     (second_frame, second_radius, second_height): (Frame3, Real, Real),
@@ -23,9 +25,11 @@ pub(super) fn parallel_cylinder_intersection_events(
         .length()?
         * second_height;
     if axis_drift > (tolerance.angular() * second_height).max(coordinate_roundoff) {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "nonparallel cylinder walls",
-        });
+        return orthogonal::intersect(
+            (first_frame, first_radius, first_height),
+            (second_frame, second_radius, second_height),
+            tolerance,
+        );
     }
 
     let [center_x, center_y, second_start] = first_frame.coordinates_of(second_frame.origin())?;
