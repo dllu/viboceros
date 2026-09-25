@@ -12512,14 +12512,21 @@ def _execute(operation, iterations, tolerance):
             for surface in surfaces:
                 surface.Dispose()
 
-    if kind == "surface_brep_intersect_command":
+    if kind in ("surface_brep_intersect_command", "surface_brep_face_intersect_command"):
         document = Rhino.RhinoDoc.ActiveDoc
         surface = _nurbs_surface_from_definition(operation["surface"])
-        box_min = _point(operation["box_min"])
-        box_max = _point(operation["box_max"])
-        brep = Rhino.Geometry.Brep.CreateFromBox(
-            Rhino.Geometry.BoundingBox(box_min, box_max)
-        )
+        if kind == "surface_brep_face_intersect_command":
+            brep_surface = _nurbs_surface_from_definition(operation["brep_surface"])
+            try:
+                brep = Rhino.Geometry.Brep.CreateFromSurface(brep_surface)
+            finally:
+                brep_surface.Dispose()
+        else:
+            box_min = _point(operation["box_min"])
+            box_max = _point(operation["box_max"])
+            brep = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(box_min, box_max)
+            )
         if brep is None:
             surface.Dispose()
             raise ValueError("could not create surface/B-rep Intersect box")
@@ -12573,7 +12580,11 @@ def _execute(operation, iterations, tolerance):
                             float(location.Z),
                         )
                     elif isinstance(geometry, Rhino.Geometry.Curve):
-                        if operation.get("canonicalize_linear_curves", False):
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        elif operation.get("canonicalize_linear_curves", False):
                             definition = (
                                 _canonical_linear_intersection_curve_definition(geometry)
                             )
@@ -12628,20 +12639,30 @@ def _execute(operation, iterations, tolerance):
             surface.Dispose()
             brep.Dispose()
 
-    if kind == "brep_brep_intersect_command":
+    if kind in ("brep_brep_intersect_command", "brep_face_brep_face_intersect_command"):
         document = Rhino.RhinoDoc.ActiveDoc
-        first = Rhino.Geometry.Brep.CreateFromBox(
-            Rhino.Geometry.BoundingBox(
-                _point(operation["first_box_min"]),
-                _point(operation["first_box_max"]),
+        if kind == "brep_face_brep_face_intersect_command":
+            first_surface = _nurbs_surface_from_definition(operation["first"])
+            second_surface = _nurbs_surface_from_definition(operation["second"])
+            try:
+                first = Rhino.Geometry.Brep.CreateFromSurface(first_surface)
+                second = Rhino.Geometry.Brep.CreateFromSurface(second_surface)
+            finally:
+                first_surface.Dispose()
+                second_surface.Dispose()
+        else:
+            first = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(
+                    _point(operation["first_box_min"]),
+                    _point(operation["first_box_max"]),
+                )
             )
-        )
-        second = Rhino.Geometry.Brep.CreateFromBox(
-            Rhino.Geometry.BoundingBox(
-                _point(operation["second_box_min"]),
-                _point(operation["second_box_max"]),
+            second = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(
+                    _point(operation["second_box_min"]),
+                    _point(operation["second_box_max"]),
+                )
             )
-        )
         if first is None or second is None:
             if first is not None:
                 first.Dispose()
@@ -12698,7 +12719,11 @@ def _execute(operation, iterations, tolerance):
                             float(location.Z),
                         )
                     elif isinstance(geometry, Rhino.Geometry.Curve):
-                        if operation.get("canonicalize_linear_curves", False):
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        elif operation.get("canonicalize_linear_curves", False):
                             definition = (
                                 _canonical_linear_intersection_curve_definition(geometry)
                             )

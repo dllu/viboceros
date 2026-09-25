@@ -1282,6 +1282,17 @@ pub enum Operation {
         #[serde(default)]
         canonicalize_linear_curves: bool,
     },
+    SurfaceBrepFaceIntersectCommand {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        brep_surface: NurbsSurfaceDefinition,
+        #[serde(default)]
+        brep_first: bool,
+        #[serde(default)]
+        canonicalize_closed_curves: bool,
+        #[serde(default)]
+        canonicalize_linear_curves: bool,
+    },
     BrepBrepIntersectCommand {
         id: String,
         first_box_min: [f64; 3],
@@ -1290,6 +1301,17 @@ pub enum Operation {
         second_box_max: [f64; 3],
         #[serde(default)]
         reverse_selection: bool,
+        #[serde(default)]
+        canonicalize_linear_curves: bool,
+    },
+    BrepFaceBrepFaceIntersectCommand {
+        id: String,
+        first: NurbsSurfaceDefinition,
+        second: NurbsSurfaceDefinition,
+        #[serde(default)]
+        reverse_selection: bool,
+        #[serde(default)]
+        canonicalize_closed_curves: bool,
         #[serde(default)]
         canonicalize_linear_curves: bool,
     },
@@ -2061,7 +2083,9 @@ impl Operation {
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
+            | Self::SurfaceBrepFaceIntersectCommand { id, .. }
             | Self::BrepBrepIntersectCommand { id, .. }
+            | Self::BrepFaceBrepFaceIntersectCommand { id, .. }
             | Self::SurfaceSurfaceIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
@@ -4662,6 +4686,42 @@ fn execute(
             *canonicalize_linear_curves,
             tolerance,
         )?,
+        Operation::SurfaceBrepFaceIntersectCommand {
+            surface,
+            brep_surface,
+            brep_first,
+            canonicalize_closed_curves,
+            canonicalize_linear_curves,
+            ..
+        } => {
+            let surface = Geometry::NurbsSurface(nurbs_surface_from_definition(surface)?);
+            let brep = Geometry::Brep(Brep::try_surface_face(
+                nurbs_surface_from_definition(brep_surface)?,
+                tolerance,
+            )?);
+            let inputs = if *brep_first {
+                [brep, surface]
+            } else {
+                [surface, brep]
+            };
+            if *canonicalize_linear_curves {
+                intersect_command_with_curve_serializer(
+                    iterations,
+                    &inputs,
+                    tolerance,
+                    canonical_linear_intersection_curve_value,
+                )?
+            } else if *canonicalize_closed_curves {
+                intersect_command_with_curve_serializer(
+                    iterations,
+                    &inputs,
+                    tolerance,
+                    canonical_closed_intersection_curve_value,
+                )?
+            } else {
+                intersect_command(iterations, &inputs, tolerance)?
+            }
+        }
         Operation::BrepBrepIntersectCommand {
             first_box_min,
             first_box_max,
@@ -4680,6 +4740,45 @@ fn execute(
             *canonicalize_linear_curves,
             tolerance,
         )?,
+        Operation::BrepFaceBrepFaceIntersectCommand {
+            first,
+            second,
+            reverse_selection,
+            canonicalize_closed_curves,
+            canonicalize_linear_curves,
+            ..
+        } => {
+            let first = Geometry::Brep(Brep::try_surface_face(
+                nurbs_surface_from_definition(first)?,
+                tolerance,
+            )?);
+            let second = Geometry::Brep(Brep::try_surface_face(
+                nurbs_surface_from_definition(second)?,
+                tolerance,
+            )?);
+            let inputs = if *reverse_selection {
+                [second, first]
+            } else {
+                [first, second]
+            };
+            if *canonicalize_linear_curves {
+                intersect_command_with_curve_serializer(
+                    iterations,
+                    &inputs,
+                    tolerance,
+                    canonical_linear_intersection_curve_value,
+                )?
+            } else if *canonicalize_closed_curves {
+                intersect_command_with_curve_serializer(
+                    iterations,
+                    &inputs,
+                    tolerance,
+                    canonical_closed_intersection_curve_value,
+                )?
+            } else {
+                intersect_command(iterations, &inputs, tolerance)?
+            }
+        }
         Operation::SurfaceSurfaceIntersectCommand {
             first,
             second,

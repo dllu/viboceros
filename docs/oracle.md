@@ -993,6 +993,17 @@ Join command records also compare source identity, names, and overlapping groups
 document results are sorted by their unique source names. The native command
 path executes the real command registry. See [curve editing](curve-editing.md).
 
+The [curved face Intersect fixture](../tools/rhino_oracle/fixtures/curved_brep_face_intersect_command.json)
+compares three live cylinder/plane surface-B-rep and B-rep/B-rep commands. All
+three [saved observations](../tools/rhino_oracle/observations/curved_brep_face_intersect_command.json)
+match after canonicalizing the direction of straight intersection curves;
+Rhino chooses branch directions from input order. The
+[circle boundary fixture](../tools/rhino_oracle/fixtures/curved_brep_face_intersect_boundary.json)
+retains two [raw observations](../tools/rhino_oracle/observations/curved_brep_face_intersect_boundary.json)
+with different circle domains and winding. Curved B-rep intersection currently
+requires one full-domain face; trimmed and multi-face curved B-reps still need
+curve clipping and component joining.
+
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
 
@@ -1137,6 +1148,11 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/brep_brep_intersect_command.json \
   --absolute-epsilon 1e-9 --relative-epsilon 1e-11
+
+# Full-domain curved B-rep faces against surfaces or another face.
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/curved_brep_face_intersect_command.json \
+  --observations tools/rhino_oracle/observations/curved_brep_face_intersect_command.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_trim_command.json \

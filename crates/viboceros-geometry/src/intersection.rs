@@ -1140,8 +1140,9 @@ fn intersect_curve_with_planar_surface(
 
 /// Intersects a finite NURBS surface with the trimmed faces of a B-rep.
 ///
-/// The current exact path handles planar surfaces against B-reps whose
-/// underlying face surfaces are planar. Face-level curves are clipped against
+/// Single full-domain curved faces use the exact surface/surface path. The
+/// multi-face path handles planar surfaces against B-reps whose underlying
+/// face surfaces are planar. Face-level curves are clipped against
 /// exact trim regions when needed, deduplicated across shared topology, and
 /// joined into maximal linear components. A coincident face must cover its
 /// underlying surface's complete natural domain; other coincident trim regions are
@@ -1151,6 +1152,24 @@ pub fn surface_brep_intersection_events(
     brep: &Brep,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceBrepIntersectionEvent>, GeometryError> {
+    if let [face] = brep.faces()
+        && crate::brep::face_covers_full_surface_domain(face, tolerance)?
+        && (surface.plane(tolerance)?.is_none() || face.surface().plane(tolerance)?.is_none())
+    {
+        return Ok(
+            surface_surface_intersection_events(surface, face.surface(), tolerance)?
+                .into_iter()
+                .map(|event| match event {
+                    SurfaceSurfaceIntersectionEvent::Point(point) => {
+                        SurfaceBrepIntersectionEvent::Point(point)
+                    }
+                    SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                        SurfaceBrepIntersectionEvent::Curve(curve)
+                    }
+                })
+                .collect(),
+        );
+    }
     let surface_plane =
         surface
             .plane(tolerance)?
@@ -1225,8 +1244,9 @@ pub fn surface_brep_intersection_events(
 
 /// Intersects the trimmed faces of two B-reps.
 ///
-/// The current exact path handles B-reps whose underlying face surfaces are
-/// planar. Face-pair results are clipped against trim regions when needed;
+/// Single full-domain curved faces use the exact surface/surface path. The
+/// multi-face path handles B-reps whose underlying face surfaces are planar.
+/// Face-pair results are clipped against trim regions when needed;
 /// then shared-topology duplicates are removed and linear pieces are joined
 /// into maximal components. Coincident pairs currently require both faces to
 /// cover their complete natural surface domains, with at most one coincident
@@ -1236,6 +1256,28 @@ pub fn brep_brep_intersection_events(
     second: &Brep,
     tolerance: Tolerance,
 ) -> Result<Vec<BrepBrepIntersectionEvent>, GeometryError> {
+    if let ([first_face], [second_face]) = (first.faces(), second.faces())
+        && crate::brep::face_covers_full_surface_domain(first_face, tolerance)?
+        && crate::brep::face_covers_full_surface_domain(second_face, tolerance)?
+        && (first_face.surface().plane(tolerance)?.is_none()
+            || second_face.surface().plane(tolerance)?.is_none())
+    {
+        return Ok(surface_surface_intersection_events(
+            first_face.surface(),
+            second_face.surface(),
+            tolerance,
+        )?
+        .into_iter()
+        .map(|event| match event {
+            SurfaceSurfaceIntersectionEvent::Point(point) => {
+                BrepBrepIntersectionEvent::Point(point)
+            }
+            SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                BrepBrepIntersectionEvent::Curve(curve)
+            }
+        })
+        .collect());
+    }
     let distance_tolerance = brep_brep_distance_tolerance(first, second, tolerance);
     let mut points = Vec::new();
     let mut curves = Vec::new();
@@ -3705,6 +3747,33 @@ mod tests {
         ])
         .and_then(|surface| surface.try_reparameterized(x_start..=x_end, y_start..=y_end))
         .unwrap()
+    }
+
+    #[test]
+    fn full_curved_brep_face_uses_exact_surface_intersection_curves() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 1.5, 0.0, 5.0).unwrap();
+        let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        let cylinder_brep = Brep::try_surface_face(cylinder.clone(), Tolerance::DEFAULT).unwrap();
+        let plane_brep = Brep::try_surface_face(plane.clone(), Tolerance::DEFAULT).unwrap();
+        let expected_events =
+            surface_surface_intersection_events(&cylinder, &plane, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(expected)] = expected_events.as_slice() else {
+            panic!("expected one cylinder section");
+        };
+        assert_eq!(
+            surface_brep_intersection_events(&plane, &cylinder_brep, Tolerance::DEFAULT).unwrap(),
+            vec![SurfaceBrepIntersectionEvent::Curve(expected.clone())]
+        );
+        assert_eq!(
+            brep_brep_intersection_events(&cylinder_brep, &plane_brep, Tolerance::DEFAULT).unwrap(),
+            vec![BrepBrepIntersectionEvent::Curve(expected.clone())]
+        );
     }
 
     fn vertical_surface(x_start: Real, x_end: Real) -> NurbsSurface {
