@@ -29848,6 +29848,50 @@ mod tests {
     }
 
     #[test]
+    fn intersect_creates_coincident_planar_surface_disk_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let plane = NurbsSurface::try_bilinear([
+            Point3::try_new(-3.0, -3.0, 0.0).unwrap(),
+            Point3::try_new(3.0, -3.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 3.0, 0.0).unwrap(),
+            Point3::try_new(-3.0, 3.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let boundary = Circle3::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let disk = Brep::try_planar_face(&boundary, Tolerance::DEFAULT).unwrap();
+        let input_ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(plane))
+                .unwrap(),
+            document.add_geometry(Geometry::Brep(disk)).unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(curve) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("coincident disk must create its circular boundary")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert_eq!(curve.control_points(), boundary.control_points());
+        assert!(input_ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_joins_planar_brep_brep_curves() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

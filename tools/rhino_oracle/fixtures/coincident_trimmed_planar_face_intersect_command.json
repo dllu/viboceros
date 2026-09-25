@@ -1,0 +1,233 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "surface_brep_face_intersect_command",
+      "id": "plane-over-south-face",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -1.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -1.0,
+          -1.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -1.0,
+          -1.0,
+          5.0,
+          5.0
+        ]
+      },
+      "brep_surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ]
+      },
+      "brep_trim_v": 2.0,
+      "brep_trim_upper": false,
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "surface_brep_face_intersect_command",
+      "id": "plane-cuts-south-face",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          1.0,
+          1.0,
+          3.0,
+          3.0
+        ],
+        "knots_v": [
+          -1.0,
+          -1.0,
+          3.0,
+          3.0
+        ]
+      },
+      "brep_surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          4.0,
+          4.0
+        ]
+      },
+      "brep_trim_v": 2.0,
+      "brep_trim_upper": false,
+      "canonicalize_linear_curves": true
+    }
+  ]
+}

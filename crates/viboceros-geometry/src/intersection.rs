@@ -1176,9 +1176,8 @@ fn intersect_curve_with_planar_surface(
 /// multi-face path handles planar surfaces against planar and curved B-rep
 /// faces. Face-level curves are clipped against exact trim regions when needed,
 /// deduplicated across shared topology, and
-/// joined into maximal connected components. A coincident face must cover its
-/// underlying surface's complete natural domain; other coincident trim regions are
-/// rejected explicitly until planar region Boolean intersection is available.
+/// joined into maximal connected components. Coincident planar faces contribute
+/// the parts of both region boundaries that lie in the other region.
 pub fn surface_brep_intersection_events(
     surface: &NurbsSurface,
     brep: &Brep,
@@ -1216,12 +1215,21 @@ pub fn surface_brep_intersection_events(
             } else {
                 false
             };
-        let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
-        if coincident && !face_events.is_empty() && !full_domain {
-            return Err(GeometryError::UnsupportedSurfaceBrepIntersection {
-                context: "coincident trimmed face regions",
-            });
+        if coincident && !full_domain {
+            let (face_points, face_curves) = coincident_planar_surface_brep_face_boundary(
+                surface,
+                brep,
+                face,
+                tolerance,
+                distance_tolerance,
+            )?;
+            for point in face_points {
+                push_unique_brep_point(&mut points, point, distance_tolerance);
+            }
+            curves.extend(face_curves);
+            continue;
         }
+        let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
 
         for event in face_events {
             match event {
@@ -1266,6 +1274,59 @@ pub fn surface_brep_intersection_events(
         .map(SurfaceBrepIntersectionEvent::Curve)
         .chain(points.into_iter().map(SurfaceBrepIntersectionEvent::Point))
         .collect())
+}
+
+/// The boundary of the common region of a planar surface patch and a
+/// coincident trimmed planar face. Both sets of boundary curves are needed:
+/// either region may cut through the interior of the other.
+fn coincident_planar_surface_brep_face_boundary(
+    surface: &NurbsSurface,
+    brep: &Brep,
+    face: &BrepFace,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<(Vec<Point3>, Vec<NurbsCurve>), GeometryError> {
+    let mut points = Vec::new();
+    let mut curves = Vec::new();
+    let mut seen_edges = vec![false; brep.edges().len()];
+    for face_loop in face.loops() {
+        for trim in face_loop.trims() {
+            let Some(edge_index) = trim.edge() else {
+                continue;
+            };
+            if std::mem::replace(&mut seen_edges[edge_index], true) {
+                continue;
+            }
+            for event in intersect_curve_with_planar_surface(
+                brep.edges()[edge_index].curve(),
+                surface,
+                tolerance,
+            )? {
+                match event {
+                    SurfaceSurfaceIntersectionEvent::Point(point) => {
+                        push_unique_brep_point(&mut points, point, distance_tolerance);
+                    }
+                    SurfaceSurfaceIntersectionEvent::Curve(curve) => curves.push(curve),
+                }
+            }
+        }
+    }
+    let u = surface.domain_u();
+    let v = surface.domain_v();
+    for boundary in [
+        surface.isocurve_u(*v.start())?,
+        surface.isocurve_v(*u.end())?,
+        surface.isocurve_u(*v.end())?,
+        surface.isocurve_v(*u.start())?,
+    ] {
+        let (boundary_points, boundary_curves) =
+            clip_curve_to_brep_face(&boundary, brep, face, tolerance, distance_tolerance)?;
+        for point in boundary_points {
+            push_unique_brep_point(&mut points, point, distance_tolerance);
+        }
+        curves.extend(boundary_curves);
+    }
+    Ok((points, curves))
 }
 
 /// Intersects the trimmed faces of two B-reps.
@@ -6051,7 +6112,7 @@ mod tests {
     }
 
     #[test]
-    fn surface_brep_intersection_clips_face_holes_and_rejects_coincident_trim_regions() {
+    fn surface_brep_intersection_clips_face_holes_and_traces_coincident_boundaries() {
         let outer = NurbsCurve::try_new(
             1,
             vec![
@@ -6101,12 +6162,14 @@ mod tests {
             assert!((actual[1] - expected[1]).abs() < 1.0e-10);
         }
 
-        assert_eq!(
-            surface_brep_intersection_events(&horizontal_surface(0.0), &face, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceBrepIntersection {
-                context: "coincident trimmed face regions",
-            })
-        );
+        let coincident =
+            surface_brep_intersection_events(&horizontal_surface(0.0), &face, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(coincident.len(), 2, "outer and hole loops: {coincident:#?}");
+        assert!(coincident.iter().all(|event| matches!(
+            event,
+            SurfaceBrepIntersectionEvent::Curve(curve) if curve.is_closed().unwrap()
+        )));
         assert!(
             surface_brep_intersection_events(
                 &horizontal_rectangle(20.0, 30.0, 20.0, 30.0, 0.0),
@@ -6116,6 +6179,94 @@ mod tests {
             .unwrap()
             .is_empty()
         );
+    }
+
+    #[test]
+    fn surface_brep_intersection_traces_coincident_disk_and_partial_rectangle() {
+        let disk_boundary = Circle3::try_new(
+            point(0.0, 0.0, 0.0),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let disk = Brep::try_planar_face(&disk_boundary, Tolerance::DEFAULT).unwrap();
+        let broad_plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 0.0);
+        let disk_events =
+            surface_brep_intersection_events(&broad_plane, &disk, Tolerance::DEFAULT).unwrap();
+        let [SurfaceBrepIntersectionEvent::Curve(circle)] = disk_events.as_slice() else {
+            panic!("expected one exact disk boundary, got {disk_events:#?}")
+        };
+        assert!(circle.is_closed().unwrap());
+        assert_eq!(circle.degree(), disk_boundary.degree());
+        assert_eq!(circle.control_points(), disk_boundary.control_points());
+
+        let half_plane = horizontal_rectangle(0.0, 3.0, -3.0, 3.0, 0.0);
+        let half_events =
+            surface_brep_intersection_events(&half_plane, &disk, Tolerance::DEFAULT).unwrap();
+        let [SurfaceBrepIntersectionEvent::Curve(half_perimeter)] = half_events.as_slice() else {
+            panic!("expected one half-disk perimeter, got {half_events:#?}")
+        };
+        assert!(half_perimeter.is_closed().unwrap());
+        for endpoint in [point(0.0, -2.0, 0.0), point(0.0, 2.0, 0.0)] {
+            let parameter = half_perimeter
+                .closest_parameter(endpoint, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(
+                half_perimeter
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(endpoint)
+                    .unwrap()
+                    < 1.0e-9
+            );
+        }
+        let tangent_plane = horizontal_rectangle(2.0, 3.0, -3.0, 3.0, 0.0);
+        let tangent_events =
+            surface_brep_intersection_events(&tangent_plane, &disk, Tolerance::DEFAULT).unwrap();
+        let [SurfaceBrepIntersectionEvent::Point(contact)] = tangent_events.as_slice() else {
+            panic!("expected one disk tangent point, got {tangent_events:#?}")
+        };
+        assert!(contact.is_near(point(2.0, 0.0, 0.0), Tolerance::DEFAULT));
+
+        let rectangle = horizontal_rectangle(0.0, 4.0, 0.0, 4.0, 0.0);
+        let [south, _north] = Brep::try_split_rectangular_surface_face_v(
+            rectangle,
+            0.0..=4.0,
+            0.0..=4.0,
+            2.0,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let partial_plane = horizontal_rectangle(1.0, 3.0, -1.0, 3.0, 0.0);
+        let partial_events =
+            surface_brep_intersection_events(&partial_plane, &south, Tolerance::DEFAULT).unwrap();
+        let [SurfaceBrepIntersectionEvent::Curve(perimeter)] = partial_events.as_slice() else {
+            panic!("expected one overlap perimeter, got {partial_events:#?}")
+        };
+        assert!(perimeter.is_closed().unwrap());
+        let corners = [
+            point(1.0, 0.0, 0.0),
+            point(3.0, 0.0, 0.0),
+            point(3.0, 2.0, 0.0),
+            point(1.0, 2.0, 0.0),
+        ];
+        for corner in corners {
+            let parameter = perimeter
+                .closest_parameter(corner, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(
+                perimeter
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(corner)
+                    .unwrap()
+                    < 1.0e-9
+            );
+        }
     }
 
     #[test]

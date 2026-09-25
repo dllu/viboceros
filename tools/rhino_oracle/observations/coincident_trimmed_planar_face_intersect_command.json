@@ -1,0 +1,166 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 110328674,
+      "id": "plane-over-south-face",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.25,
+                0.5,
+                0.75,
+                1.0,
+                1.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 119422913,
+      "id": "plane-cuts-south-face",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                1.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.25,
+                0.5,
+                0.75,
+                1.0,
+                1.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

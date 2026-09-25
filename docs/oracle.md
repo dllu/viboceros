@@ -1034,6 +1034,11 @@ The [trimmed planar face fixture](../tools/rhino_oracle/fixtures/curved_surface_
 checks the opposite arrangement: a cylindrical surface against either half
 of a split planar B-rep face. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/curved_surface_trimmed_plane_intersect_command.json)
 match the complete native NURBS definitions within `1e-10`.
+The [coincident trimmed planar face fixture](../tools/rhino_oracle/fixtures/coincident_trimmed_planar_face_intersect_command.json)
+checks a planar surface against a split planar B-rep face, with the surface
+either enclosing or cutting through the face. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_trimmed_planar_face_intersect_command.json)
+match the native closed perimeters exactly after canonicalizing linear curve
+orientation and parameterization (`2/2` cases, zero coordinate difference).
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally
