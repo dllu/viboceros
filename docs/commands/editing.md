@@ -180,8 +180,11 @@ contact only at the singular apex produces no event. The
 and [observations](../../tools/rhino_oracle/observations/sphere_cone_surface_intersection.json)
 record these cases. Rhino's surface API missed the exact tangent circle and
 reported redundant seam points alongside transverse circles in this fixture;
-the native result retains the exact circles. Noncoaxial sphere/cone sections
-remain unsupported.
+the native result retains the exact circles. When a noncoaxial sphere strictly
+contains the cone apex, its intersection with the cone is a fitted cubic loop,
+an arc clipped at the cone base, or an isolated base-rim contact. Other
+noncoaxial sphere/cone sections, including the saved fixture case, remain
+unsupported.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
 rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted

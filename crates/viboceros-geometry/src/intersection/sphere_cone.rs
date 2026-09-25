@@ -1,9 +1,11 @@
-//! Exact finite circular sections of a canonical cone and a coaxial sphere.
+//! Finite intersections of a canonical cone and a sphere.
+
+mod noncoaxial_inside_apex;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Point3, Real, Tolerance};
 
-pub(super) fn coaxial_sphere_cone_intersection_events(
+pub(super) fn sphere_cone_intersection_events(
     sphere_center: Point3,
     sphere_radius: Real,
     (cone_frame, cone_radius, signed_height): (Frame3, Real, Real),
@@ -36,6 +38,16 @@ pub(super) fn coaxial_sphere_cone_intersection_events(
         return Ok(Vec::new());
     }
     if radial_offset > coaxial_tolerance {
+        let apex_distance = radial_offset.hypot(axial_center);
+        if apex_distance < sphere_radius - coaxial_tolerance {
+            return noncoaxial_inside_apex::intersect(
+                sphere_center,
+                sphere_radius,
+                (cone_frame, cone_radius, signed_height),
+                tolerance,
+                coordinate_roundoff,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "noncoaxial sphere and cone",
         });

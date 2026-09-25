@@ -531,6 +531,8 @@ fn curve_brep_intersection_events_with_transform(
 /// branches are fitted as cubic curves within the modeling tolerance and
 /// clipped to the finite cylinder height. Their singular crossing is an exact
 /// rational quartic, also clipped to the finite height.
+/// Noncoaxial sphere/cone sections form tolerance-bounded cubic curves when
+/// the sphere strictly contains the cone apex, clipped at the cone base.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,
@@ -626,7 +628,7 @@ pub fn surface_surface_intersection_events(
         );
     }
     if let (Some((center, sphere_radius)), Some(cone_data)) = (first_sphere, second_cone) {
-        return sphere_cone::coaxial_sphere_cone_intersection_events(
+        return sphere_cone::sphere_cone_intersection_events(
             center,
             sphere_radius,
             cone_data,
@@ -634,7 +636,7 @@ pub fn surface_surface_intersection_events(
         );
     }
     if let (Some((center, sphere_radius)), Some(cone_data)) = (second_sphere, first_cone) {
-        return sphere_cone::coaxial_sphere_cone_intersection_events(
+        return sphere_cone::sphere_cone_intersection_events(
             center,
             sphere_radius,
             cone_data,
