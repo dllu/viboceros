@@ -8,6 +8,7 @@ mod sphere_cone;
 mod sphere_cylinder_noncoaxial;
 mod sphere_cylinder_singular;
 mod sphere_cylinder_turning;
+mod torus_cylinder;
 mod torus_plane;
 
 use crate::{
@@ -572,6 +573,7 @@ fn curve_brep_intersection_events_with_transform(
 /// generators where their directional circles cross or touch.
 /// Canonical tori meet perpendicular or axis-containing planar patches in
 /// exact rational circles, clipped to the finite patch.
+/// Coaxial torus and finite cylinder walls meet in exact rational circles.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -702,12 +704,20 @@ pub fn surface_surface_intersection_events(
     {
         return sphere_planar_surface_intersection_events(center, radius, first, plane, tolerance);
     }
-    if let Some(torus) = first.canonical_torus(tolerance)?
+    let first_torus = first.canonical_torus(tolerance)?;
+    let second_torus = second.canonical_torus(tolerance)?;
+    if let (Some(torus), Some(cylinder)) = (first_torus, second_cylinder) {
+        return torus_cylinder::intersect(torus, cylinder, tolerance);
+    }
+    if let (Some(torus), Some(cylinder)) = (second_torus, first_cylinder) {
+        return torus_cylinder::intersect(torus, cylinder, tolerance);
+    }
+    if let Some(torus) = first_torus
         && let Some(plane) = second.plane(tolerance)?
     {
         return torus_plane::intersect(torus, second, plane, tolerance);
     }
-    if let Some(torus) = second.canonical_torus(tolerance)?
+    if let Some(torus) = second_torus
         && let Some(plane) = first.plane(tolerance)?
     {
         return torus_plane::intersect(torus, first, plane, tolerance);

@@ -263,7 +263,9 @@ Canonical ring tori intersect planes perpendicular to their axes in two exact
 rational circles, or one tangent circle at the tube's top or bottom. Planes
 containing the axis cut two exact tube circles. Finite planar patches clip
 these circles to arcs or points; other torus/plane orientations remain
-unsupported.
+unsupported. Coaxial torus and finite cylinder walls meet in one or two
+exact rational circles, including tangent sections and circles on cylinder
+rims. Offset and nonparallel torus/cylinder axes remain unsupported.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
