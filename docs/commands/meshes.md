@@ -274,6 +274,15 @@ leaves already-closed meshes unchanged, and rejects ambiguous branched or
 self-crossing boundary topology rather than guessing a repair.
 Existing source n-gons remain attached through each filled boundary.
 
+`PatchSingleFace Vertices=0,1,2`, `PatchSingleFace Vertex=2 Edge=0`, and
+`PatchSingleFace Edges=0,5` create one triangle or quad from selected mesh
+topology components. The chosen face must use at least one naked edge and must
+oppose existing boundary winding; nonmanifold sides and crossing quads are
+rejected. `JoinMesh=Yes` appends the patch to the source while preserving its
+identity, attributes, vertex colors, and n-gons. `JoinMesh=No` creates a
+separate mesh with copied object attributes. The indices are deterministic
+exact-location topology indices, matching the mesh edge and vertex APIs.
+
 ## Direction, welding, and topology
 
 `UnifyMeshNormals` repairs inconsistent face winding across exact

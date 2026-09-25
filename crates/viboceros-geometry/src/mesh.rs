@@ -25,7 +25,9 @@ pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
+mod patch_single_face;
 mod planar_cap;
+pub use patch_single_face::MeshSingleFaceComponents;
 mod quadrangulate;
 mod radial;
 use radial::{
