@@ -77,8 +77,10 @@ editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
 switches among seven standard world directions while retaining its camera
 target and zoom. `SetView World` resets the camera; see the [view reference](set-view.md).
-`Plan` and `SetView CPlane` align the camera to the active CPlane. Two-point
-perspective and named views remain pending.
+`Plan` and `SetView CPlane` align the camera to the active CPlane.
+`NamedView` saves and restores camera and CPlane state by name within the
+current session; see the [named-view reference](named-view.md). Two-point
+perspective and 3DM named-view persistence remain pending.
 
 ## Scope and validation
 

@@ -52,6 +52,7 @@ Rhino's complete command set is still a work in progress.
 - [Display modes and drafting controls](interface.md)
 - [Zoom, extents, and border settings](zoom.md)
 - [World and construction-plane views](set-view.md)
+- [Named views](named-view.md)
 - [Construction-plane editing](../cplane.md)
 
 See [viewport controls](../interface.md) for picking and interactive input, and

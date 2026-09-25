@@ -27,9 +27,9 @@ use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::GridSettings;
 use crate::viewport::{
     CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerKind, EndMarkerOptions,
-    FenceSelectionInput, LassoSelectionInput, SelectionChoice, SelectionClick, SelectionWindow,
-    ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders, ZoomTargetInput,
-    collect_end_markers,
+    FenceSelectionInput, LassoSelectionInput, NamedViewSnapshot, SelectionChoice, SelectionClick,
+    SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders,
+    ZoomTargetInput, collect_end_markers,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -145,6 +145,7 @@ mod group_prompt;
 mod interface;
 mod intersect_two_sets;
 mod length;
+mod named_view;
 mod object_selection;
 mod plane_primitives;
 mod point_grid;
@@ -1430,6 +1431,7 @@ pub struct VibocerosApp {
     command_log: VecDeque<String>,
     command_line: command_line::CommandLineState,
     viewports: [Viewport; 4],
+    named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
     active_viewport: usize,
     osnap: bool,
     snaps: snapping::SnapControls,
@@ -1496,6 +1498,7 @@ impl VibocerosApp {
             command_input: String::new(),
             command_log,
             viewports: Viewport::standard_views(),
+            named_views: Default::default(),
             active_viewport: 0,
             osnap: true,
             snaps: snapping::SnapControls::default(),
@@ -1639,7 +1642,9 @@ impl VibocerosApp {
             return;
         }
         if !input.is_empty()
-            && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
+            && (self.try_run_plane_command(&input)
+                || self.try_run_named_view_command(&input)
+                || self.try_run_interface_command(&input))
         {
             return;
         }
@@ -6911,6 +6916,7 @@ mod tests {
     mod intersect_two_sets;
     mod length;
     mod merge_edge;
+    mod named_view;
     mod nurbs_selection;
     mod object_selection;
     mod plane_arrays;
@@ -6934,6 +6940,7 @@ mod tests {
             command_log: VecDeque::new(),
             command_line: Default::default(),
             viewports: Viewport::standard_views(),
+            named_views: Default::default(),
             active_viewport: 0,
             osnap: true,
             snaps: snapping::SnapControls::default(),

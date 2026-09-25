@@ -16,6 +16,7 @@ pub use interpolation_options::{
     format_interp_curve_options, parse_interp_curve_options, update_interp_curve_options,
 };
 mod model_tolerance;
+pub mod named_view;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
 use interchange::{

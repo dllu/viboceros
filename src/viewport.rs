@@ -117,6 +117,12 @@ pub(crate) struct CameraSnapshot {
     pub(crate) target: NaVector3<Real>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct NamedViewSnapshot {
+    camera: CameraSnapshot,
+    plane: Frame3,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
     Top,
@@ -432,6 +438,22 @@ impl Viewport {
             perspective_camera_distance: self.perspective_camera_distance,
             target: self.target,
         }
+    }
+
+    pub(crate) fn named_view_snapshot(&self) -> NamedViewSnapshot {
+        NamedViewSnapshot {
+            camera: self.camera_snapshot(),
+            plane: self.construction_plane(),
+        }
+    }
+
+    pub(crate) fn restore_named_view(&mut self, saved: NamedViewSnapshot) {
+        let previous = self.camera_snapshot();
+        if self.construction_plane() != saved.plane {
+            self.plane.set(saved.plane);
+        }
+        self.restore_camera(saved.camera);
+        self.record_camera_change(previous);
     }
 
     pub(crate) fn snap_spacing(&self) -> Real {

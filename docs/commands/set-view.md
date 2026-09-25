@@ -25,8 +25,10 @@ plane orientation, so later CPlane edits do not rotate it. View history restores
 the captured orientation, and perspective orbit continues from it.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
-unfinished modeling prompt. Named views, two-point perspective, and Rhino's
-configurable named-view projection/CPlane policy remain pending. See
+unfinished modeling prompt. [Named views](named-view.md) save and restore
+camera and CPlane state within the current session. Two-point perspective,
+3DM named-view persistence, and Rhino's configurable named-view projection/CPlane
+policy remain pending. See
 [Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
 
 `Plan` changes the active viewport to a parallel view looking down the current

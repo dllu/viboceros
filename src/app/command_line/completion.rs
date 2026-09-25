@@ -79,7 +79,7 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
         .command_names()
         .into_iter()
         .chain(viboceros_command::interface::COMMAND_NAMES)
-        .chain(["CPlane", "Help"])
+        .chain(["CPlane", "NamedView", "Help"])
         .filter_map(|name| score(&query, &name.to_ascii_lowercase()).map(|score| (score, name)))
         .collect::<Vec<_>>();
     names.sort_unstable();
