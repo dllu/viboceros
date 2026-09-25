@@ -2,6 +2,7 @@
 
 mod noncoaxial_inside_apex;
 mod noncoaxial_turning;
+mod noncoaxial_two_loops;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Point3, Real, Tolerance};
@@ -73,6 +74,18 @@ pub(super) fn sphere_cone_intersection_events(
                 && opposite_discriminant < -discriminant_roundoff
             {
                 return noncoaxial_turning::intersect(
+                    sphere_center,
+                    sphere_radius,
+                    (cone_frame, cone_radius, signed_height),
+                    tolerance,
+                    coordinate_roundoff,
+                );
+            }
+            if maximum_discriminant > discriminant_roundoff
+                && opposite_discriminant > discriminant_roundoff
+                && lowest_linear > 0.0
+            {
+                return noncoaxial_two_loops::intersect(
                     sphere_center,
                     sphere_radius,
                     (cone_frame, cone_radius, signed_height),

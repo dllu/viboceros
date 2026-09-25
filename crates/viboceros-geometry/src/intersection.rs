@@ -533,6 +533,8 @@ fn curve_brep_intersection_events_with_transform(
 /// rational quartic, also clipped to the finite height.
 /// Noncoaxial sphere/cone sections form tolerance-bounded cubic curves when
 /// the sphere strictly contains the cone apex, clipped at the cone base.
+/// Spheres outside the apex can form two separate cubic loops, each clipped
+/// to arcs or isolated base-rim contacts.
 /// Offset spheres outside the apex with two radial turns produce two fitted
 /// open branches, likewise clipped at the base.
 /// Planar sections of canonical cylinders produce exact circles, rational

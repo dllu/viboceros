@@ -26786,6 +26786,51 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_two_separated_sphere_cone_loops() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_sphere(
+                        frame.with_origin(Point3::try_new(0.2, 0.0, 2.0).unwrap()),
+                        1.5,
+                    )
+                    .unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cone(frame, 3.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 2);
+        for object in selected {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("separated sphere/cone branches must create curves")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_turning_sphere_cone_branches() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
