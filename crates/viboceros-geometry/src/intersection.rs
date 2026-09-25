@@ -567,6 +567,8 @@ fn curve_brep_intersection_events_with_transform(
 /// clipped to both finite height ranges.
 /// Unequal-slope parallel cones meet in bounded-error cubic branches, clipped
 /// to both finite height ranges.
+/// Cones with different axis directions and a shared apex meet in exact finite
+/// generators where their directional circles cross or touch.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.

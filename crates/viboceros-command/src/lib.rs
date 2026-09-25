@@ -26779,6 +26779,60 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_shared_apex_cone_generators() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let first_frame = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cone(first_frame, 8.0, 4.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cone(second_frame, 6.0, 3.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let lines = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(lines.len(), 2);
+        for object in lines {
+            let Geometry::NurbsCurve(line) = object.geometry() else {
+                panic!("shared-apex cones should create line segments")
+            };
+            assert_eq!(line.degree(), 1);
+            assert!(
+                line.evaluate(*line.domain().start())
+                    .unwrap()
+                    .distance_to(origin)
+                    .unwrap()
+                    < 1e-9
+            );
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_offset_parallel_cone_cylinder_section() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

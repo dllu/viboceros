@@ -2,6 +2,7 @@
 
 mod parallel_equal_slope;
 mod parallel_unequal_slope;
+mod shared_apex;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, NurbsSurface, Real, Tolerance};
@@ -34,6 +35,14 @@ pub(super) fn cone_cone_intersection_events(
         .max(coordinate_roundoff);
     let angular_drift = first_axis.cross(second_axis)?.length()? * first_height.max(second_height);
     if angular_drift > spatial_tolerance {
+        if first_frame.origin().distance_to(second_frame.origin())? <= spatial_tolerance {
+            return shared_apex::intersect(
+                (first_frame, first_radius, first_signed_height),
+                (second_frame, second_radius, second_signed_height),
+                tolerance,
+                spatial_tolerance,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nonparallel cone walls",
         });
