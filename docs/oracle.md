@@ -552,6 +552,15 @@ checks world, off-plane, and rotated-CPlane direction picks against
 [numeric-radius fixture](../tools/rhino_oracle/fixtures/circle_vertical_numeric.json)
 uses a direction point beyond the fixed radius and matches its
 [Rhino result](circle-vertical-numeric-rhino-reference.json).
+The [Orientation fixture](../tools/rhino_oracle/fixtures/circle_orientation.json)
+checks five normal directions and construction planes against
+[Rhino records](circle-orientation-rhino-reference.json). The
+[radius-point fixture](../tools/rhino_oracle/fixtures/circle_orientation_picks.json)
+checks on-plane and projected off-plane picks against
+[live results](circle-orientation-picks-rhino-reference.json). The
+[picked-size fixture](../tools/rhino_oracle/fixtures/circle_orientation_size_picks.json)
+checks off-plane Diameter, Circumference, and Area input against
+[live results](circle-orientation-size-picks-rhino-reference.json).
 
 `plane_transforms.json` checks 140 actual transform commands using four affinely
 independent point witnesses per operation, including copied/original identity

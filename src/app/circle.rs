@@ -57,6 +57,29 @@ impl CircleSizeMode {
     }
 }
 
+fn parse_size_input(
+    input: &str,
+    current_mode: CircleSizeMode,
+) -> Option<(CircleSizeMode, Option<&str>)> {
+    let input = input.trim();
+    if let Some((name, value)) = input.split_once('=') {
+        return Some((CircleSizeMode::parse(name)?, Some(value.trim())));
+    }
+    let mut parts = input.split_whitespace();
+    match (parts.next(), parts.next(), parts.next()) {
+        (Some(name), None, None) if CircleSizeMode::parse(name).is_some() => {
+            Some((CircleSizeMode::parse(name)?, None))
+        }
+        (Some(name), Some(value), None) if CircleSizeMode::parse(name).is_some() => {
+            Some((CircleSizeMode::parse(name)?, Some(value)))
+        }
+        (Some(value), None, None) if value.parse::<f64>().is_ok() => {
+            Some((current_mode, Some(value)))
+        }
+        _ => None,
+    }
+}
+
 impl VibocerosApp {
     pub(super) fn try_continue_circle(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
@@ -91,22 +114,7 @@ impl VibocerosApp {
             mode,
         } = state
         {
-            let input = input.trim();
-            let (next_mode, value) = if let Some((name, value)) = input.split_once('=') {
-                let Some(next_mode) = CircleSizeMode::parse(name) else {
-                    return false;
-                };
-                (next_mode, Some(value.trim()))
-            } else if let Some(next_mode) = CircleSizeMode::parse(input) {
-                (next_mode, None)
-            } else if let Some((name, value)) = input.split_once(char::is_whitespace) {
-                let Some(next_mode) = CircleSizeMode::parse(name) else {
-                    return false;
-                };
-                (next_mode, Some(value.trim()))
-            } else if input.parse::<f64>().is_ok() {
-                (mode, Some(input))
-            } else {
+            let Some((next_mode, value)) = parse_size_input(input, mode) else {
                 return false;
             };
             let next_radius = if let Some(value) = value {
@@ -137,6 +145,51 @@ impl VibocerosApp {
             self.push_log(next.prompt().to_owned());
             return true;
         }
+        if let InteractiveCommand::CircleOrientation {
+            center,
+            normal_point: Some(normal_point),
+            mode: current_mode,
+        } = state
+        {
+            let Some((mode, value)) = parse_size_input(input, current_mode) else {
+                return false;
+            };
+            let next = InteractiveCommand::CircleOrientation {
+                center,
+                normal_point: Some(normal_point),
+                mode,
+            };
+            self.command_input.clear();
+            if let Some(value) = value {
+                self.execute_circle_orientation(next, &format!("{}={value}", mode.label()));
+            } else {
+                self.active_command = Some(next);
+                self.push_log(next.prompt().to_owned());
+            }
+            return true;
+        }
+        if input
+            .trim()
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("Orientation")
+        {
+            let center = match state {
+                InteractiveCommand::Circle {
+                    center: Some(center),
+                }
+                | InteractiveCommand::CircleSize { center, .. } => center,
+                _ => return false,
+            };
+            let next = InteractiveCommand::CircleOrientation {
+                center,
+                normal_point: None,
+                mode: CircleSizeMode::Radius,
+            };
+            self.active_command = Some(next);
+            self.command_input.clear();
+            self.push_log(next.prompt().to_owned());
+            return true;
+        }
         let (center, current_mode) = match state {
             InteractiveCommand::Circle {
                 center: Some(center),
@@ -144,26 +197,8 @@ impl VibocerosApp {
             InteractiveCommand::CircleSize { center, mode } => (center, mode),
             _ => return false,
         };
-        let input = input.trim();
-        let (mode, value) = if let Some((name, value)) = input.split_once('=') {
-            let Some(mode) = CircleSizeMode::parse(name) else {
-                return false;
-            };
-            (mode, Some(value.trim()))
-        } else {
-            let mut parts = input.split_whitespace();
-            match (parts.next(), parts.next(), parts.next()) {
-                (Some(name), None, None) if CircleSizeMode::parse(name).is_some() => {
-                    (CircleSizeMode::parse(name).unwrap(), None)
-                }
-                (Some(name), Some(value), None) if CircleSizeMode::parse(name).is_some() => {
-                    (CircleSizeMode::parse(name).unwrap(), Some(value))
-                }
-                (Some(value), None, None) if value.parse::<f64>().is_ok() => {
-                    (current_mode, Some(value))
-                }
-                _ => return false,
-            }
+        let Some((mode, value)) = parse_size_input(input, current_mode) else {
+            return false;
         };
         self.command_input.clear();
         if let Some(value) = value {
@@ -224,6 +259,52 @@ impl VibocerosApp {
                 format_model_point(point)
             )
         };
+        let drafting_plane = self.drafting_plane;
+        self.active_command = None;
+        self.command_input.clear();
+        let success = self.try_execute_command(&command);
+        if !success {
+            self.active_command = Some(state);
+            self.drafting_plane = drafting_plane;
+            self.push_log(state.prompt().to_owned());
+        }
+        success
+    }
+
+    pub(super) fn finish_circle_orientation(
+        &mut self,
+        state: InteractiveCommand,
+        point: Point3,
+    ) -> bool {
+        let InteractiveCommand::CircleOrientation { center, mode, .. } = state else {
+            unreachable!("circle orientation requires a center");
+        };
+        let argument = if matches!(mode, CircleSizeMode::Radius | CircleSizeMode::Diameter) {
+            format_model_point(point)
+        } else {
+            let Ok(distance) = center.distance_to(point) else {
+                self.push_log("Error: circle size is not representable".into());
+                return false;
+            };
+            format!("{}={distance}", mode.label())
+        };
+        self.execute_circle_orientation(state, &argument)
+    }
+
+    fn execute_circle_orientation(&mut self, state: InteractiveCommand, argument: &str) -> bool {
+        let InteractiveCommand::CircleOrientation {
+            center,
+            normal_point: Some(normal_point),
+            ..
+        } = state
+        else {
+            unreachable!("circle orientation requires a direction");
+        };
+        let command = format!(
+            "Circle Orientation {} {} {argument}",
+            format_model_point(center),
+            format_model_point(normal_point)
+        );
         let drafting_plane = self.drafting_plane;
         self.active_command = None;
         self.command_input.clear();

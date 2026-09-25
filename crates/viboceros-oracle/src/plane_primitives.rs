@@ -119,6 +119,25 @@ mod tests {
             1,
         );
     }
+
+    #[test]
+    fn oriented_circle_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_orientation.json"),
+            include_str!("../../../docs/circle-orientation-rhino-reference.json"),
+            5,
+        );
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_orientation_picks.json"),
+            include_str!("../../../docs/circle-orientation-picks-rhino-reference.json"),
+            2,
+        );
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_orientation_size_picks.json"),
+            include_str!("../../../docs/circle-orientation-size-picks-rhino-reference.json"),
+            3,
+        );
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -154,6 +173,15 @@ pub(super) fn run(
             ("Circle", 2)
         }
         "CircleVertical" => ("Circle Vertical", 2),
+        "CircleOrientation" if f.value.is_some() => ("Circle Orientation", 2),
+        "CircleOrientationPick" if f.value.is_none() => ("Circle Orientation", 3),
+        "CircleOrientationDiameterPick"
+        | "CircleOrientationCircumferencePick"
+        | "CircleOrientationAreaPick"
+            if f.value.is_none() =>
+        {
+            ("Circle Orientation", 3)
+        }
         "Circle2Point" if f.value.is_none() => ("Circle 2Point", 2),
         "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
@@ -182,7 +210,25 @@ pub(super) fn run(
             }
             command.push_str(&format!(" {value}"));
         }
-        if index == 1 && f.primitive.ends_with("Pick") && f.primitive != "CircleDiameterPick" {
+        if index == 2
+            && matches!(
+                f.primitive.as_str(),
+                "CircleOrientationCircumferencePick" | "CircleOrientationAreaPick"
+            )
+        {
+            let size = Point3::try_from(f.points[0])?.distance_to(Point3::try_from(*p)?)?;
+            let option = f
+                .primitive
+                .strip_prefix("CircleOrientation")
+                .and_then(|name| name.strip_suffix("Pick"))
+                .unwrap();
+            command.push_str(&format!(" {option}={size}"));
+        } else if index == 1
+            && matches!(
+                f.primitive.as_str(),
+                "CircleCircumferencePick" | "CircleAreaPick"
+            )
+        {
             let size = Point3::try_from(f.points[0])?.distance_to(Point3::try_from(*p)?)?;
             let option = f
                 .primitive

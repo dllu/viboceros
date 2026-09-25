@@ -42,6 +42,18 @@ Circle's first prompt for the same interactive sequence. Three
 [picked-point Rhino records](../circle-vertical-rhino-reference.json) and one
 [numeric-radius record](../circle-vertical-numeric-rhino-reference.json) match
 the native sampled curves and domains within `1e-10`.
+`Circle Orientation center normal-point radius` draws a circle with a normal
+pointing from the center toward the second point. Its seam follows Rhino's
+normal-based frame. With a final radius point, the pick is projected onto the
+circle plane and sets both radius and seam. In the interactive Circle prompt,
+choose `Orientation` after the center, then pick the normal direction. An
+off-plane Diameter pick still acts as a radius point. Circumference and Area
+size picks use their full 3D distance from the center and keep the
+normal-based seam. The
+[five numeric](../circle-orientation-rhino-reference.json),
+[two radius-point](../circle-orientation-picks-rhino-reference.json), and
+[three picked-size](../circle-orientation-size-picks-rhino-reference.json) Rhino
+records match the native sampled curves and domains within `1e-10`.
 
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.

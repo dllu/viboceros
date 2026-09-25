@@ -115,6 +115,36 @@ impl Command for CircleCommand {
             )?
         } else if arguments
             .first()
+            .is_some_and(|option| option_name_eq(option, "Orientation"))
+        {
+            let arguments = &arguments[1..];
+            let (center, center_count) = parse_point(arguments)?;
+            let (normal_point, normal_count) = parse_point(&arguments[center_count..])?;
+            let remaining = &arguments[center_count + normal_count..];
+            let frame = Frame3::try_from_normal(
+                center,
+                center.vector_to(normal_point)?,
+                document.tolerance(),
+            )?;
+            if let Some(radius) = circle_numeric_radius(remaining)? {
+                Circle3::try_from_frame(
+                    center,
+                    radius,
+                    frame.x_axis(),
+                    frame.z_axis(),
+                    document.tolerance(),
+                )?
+            } else {
+                let (point, count) = parse_point(remaining)?;
+                require_consumed(
+                    remaining,
+                    count,
+                    "Circle Orientation center normal-point radius | radius-point",
+                )?;
+                Circle3::try_from_center_point(center, point, frame.z_axis(), document.tolerance())?
+            }
+        } else if arguments
+            .first()
             .is_some_and(|option| option_name_eq(option, "2Point"))
         {
             let arguments = &arguments[1..];

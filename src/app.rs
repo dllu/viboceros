@@ -305,6 +305,11 @@ enum InteractiveCommand {
         radius: Option<f64>,
         mode: CircleSizeMode,
     },
+    CircleOrientation {
+        center: Point3,
+        normal_point: Option<Point3>,
+        mode: CircleSizeMode,
+    },
     CircleTwoPoint {
         first: Option<Point3>,
     },
@@ -584,6 +589,7 @@ impl InteractiveCommand {
             Self::Circle { .. } => "Circle",
             Self::CircleSize { .. } => "Circle",
             Self::CircleVertical { .. } => "Circle",
+            Self::CircleOrientation { .. } => "Circle",
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
@@ -749,6 +755,13 @@ impl InteractiveCommand {
                 radius: Some(_),
                 ..
             } => "Circle Vertical: pick a direction point (Esc cancels)",
+            Self::CircleOrientation {
+                normal_point: None, ..
+            } => "Circle Orientation: pick a perpendicular direction point (Esc cancels)",
+            Self::CircleOrientation {
+                normal_point: Some(_),
+                ..
+            } => "Circle Orientation: pick a radius point or enter a size (Esc cancels)",
             Self::CircleTwoPoint { first: None } => {
                 "Circle 2Point: pick the first diameter end (Esc cancels)"
             }
@@ -1390,6 +1403,15 @@ impl InteractiveCommand {
                 center: Some(center),
                 ..
             } => Some(center),
+            Self::CircleOrientation {
+                center,
+                normal_point: None,
+                ..
+            } => Some(center),
+            Self::CircleOrientation {
+                normal_point: Some(normal_point),
+                ..
+            } => Some(normal_point),
             Self::MeshTruncatedCone {
                 center: Some(center),
                 end_center: None,
@@ -4026,6 +4048,46 @@ impl VibocerosApp {
                     mode,
                 };
                 return self.finish_circle_vertical(state, point);
+            }
+            InteractiveCommand::CircleOrientation {
+                center,
+                normal_point: None,
+                mode,
+            } => {
+                let direction = match center.vector_to(point) {
+                    Ok(direction) => direction,
+                    Err(error) => {
+                        self.push_log(format!("Error: {error}"));
+                        return false;
+                    }
+                };
+                if let Err(error) =
+                    Frame3::try_from_normal(center, direction, self.document.tolerance())
+                {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                let next = InteractiveCommand::CircleOrientation {
+                    center,
+                    normal_point: Some(point),
+                    mode,
+                };
+                self.active_command = Some(next);
+                self.push_log(next.prompt().to_owned());
+            }
+            InteractiveCommand::CircleOrientation {
+                center,
+                normal_point: Some(normal_point),
+                mode,
+            } => {
+                return self.finish_circle_orientation(
+                    InteractiveCommand::CircleOrientation {
+                        center,
+                        normal_point: Some(normal_point),
+                        mode,
+                    },
+                    point,
+                );
             }
             InteractiveCommand::CircleTwoPoint { first: None } => {
                 let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };

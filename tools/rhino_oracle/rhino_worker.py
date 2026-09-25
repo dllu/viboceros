@@ -3390,6 +3390,12 @@ def _plane_primitive_script(operation):
         expected = 1
     elif primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick", "CircleVertical"):
         expected = 2
+    elif primitive == "CircleOrientation" and value is not None:
+        expected = 2
+    elif primitive == "CircleOrientationPick" and value is None:
+        expected = 3
+    elif primitive in ("CircleOrientationDiameterPick", "CircleOrientationCircumferencePick", "CircleOrientationAreaPick") and value is None:
+        expected = 3
     elif primitive == "Circle2Point" and value is None:
         expected = 2
     elif primitive == "Circle3Point" and value is None:
@@ -3405,6 +3411,11 @@ def _plane_primitive_script(operation):
     script = {"Circle2Point": "_Circle _2Point ",
               "Circle3Point": "_Circle _3Point ",
               "CircleVertical": "_Circle _Vertical ",
+              "CircleOrientation": "_Circle ",
+              "CircleOrientationPick": "_Circle ",
+              "CircleOrientationDiameterPick": "_Circle ",
+              "CircleOrientationCircumferencePick": "_Circle ",
+              "CircleOrientationAreaPick": "_Circle ",
               "CircleDiameter": "_Circle ",
               "CircleCircumference": "_Circle ",
               "CircleArea": "_Circle ",
@@ -3421,6 +3432,22 @@ def _plane_primitive_script(operation):
         script += "w" + _command_point(points[0])
         script += " %.17g" % _finite(value, "primitive size")
         script += " w" + _command_point(points[1])
+        return script
+    if primitive == "CircleOrientation":
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        script += " %.17g" % _finite(value, "primitive size")
+        return script
+    if primitive == "CircleOrientationPick":
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive in ("CircleOrientationDiameterPick", "CircleOrientationCircumferencePick", "CircleOrientationAreaPick"):
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        option = primitive[len("CircleOrientation"):-len("Pick")]
+        script += " _" + option + " w" + _command_point(points[2])
         return script
     if primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick"):
         script += "w" + _command_point(points[0])

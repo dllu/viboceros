@@ -1,0 +1,33 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-orientation-diameter-pick-off-plane",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "CircleOrientationDiameterPick",
+      "points": [[1, 2, 3], [1, 3, 3], [5, 4, 3]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-orientation-circumference-pick-off-plane",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "CircleOrientationCircumferencePick",
+      "points": [[1, 2, 3], [1, 3, 3], [5, 4, 3]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-orientation-area-pick-off-plane",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "CircleOrientationAreaPick",
+      "points": [[1, 2, 3], [1, 3, 3], [5, 4, 3]]
+    }
+  ]
+}

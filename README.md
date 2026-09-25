@@ -51,6 +51,7 @@ such as `Line 0,0,0 10,5,0`, or enter `Line` to pick points in a viewport.
 `Circumference=` and `Area=` sizes, including at its interactive prompt.
 `Circle Vertical 1,2,3 5,2,3` draws a circle perpendicular to the construction
 plane; enter a radius before the direction point to fix its size.
+`Circle Orientation 1,2,3 1,3,3 4` chooses a plane normal from the second point.
 Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development

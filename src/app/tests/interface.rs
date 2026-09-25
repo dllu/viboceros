@@ -70,6 +70,72 @@ fn vertical_circle_uses_a_direction_pick_after_numeric_radius() {
     ));
 }
 
+#[test]
+fn oriented_circle_accepts_normal_then_numeric_or_projected_radius() {
+    let mut app = test_app();
+    enter(&mut app, "Circle");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "Orientation");
+    assert!(!app.accept_drafting_point(point(1.0, 2.0, 3.0)));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::CircleOrientation {
+            normal_point: None,
+            ..
+        })
+    ));
+    assert!(app.accept_drafting_point(point(1.0, 3.0, 3.0)));
+    enter(&mut app, "4");
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if circle.radius() == 4.0
+            && circle.point_at_angle(0.0).unwrap() == point(1.0, 2.0, 7.0)
+    ));
+
+    enter(&mut app, "Circle");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "Orientation");
+    assert!(app.accept_drafting_point(point(1.0, 3.0, 3.0)));
+    assert!(app.accept_drafting_point(point(5.0, 4.0, 3.0)));
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if circle.radius() == 4.0
+            && circle.point_at_angle(0.0).unwrap() == point(5.0, 2.0, 3.0)
+    ));
+
+    enter(&mut app, "Circle");
+    enter(&mut app, "1,2,3");
+    enter(&mut app, "Orientation");
+    assert!(app.accept_drafting_point(point(1.0, 3.0, 3.0)));
+    enter(&mut app, "Diameter");
+    assert!(app.accept_drafting_point(point(5.0, 4.0, 3.0)));
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Circle(circle) if circle.radius() == 4.0
+            && circle.point_at_angle(0.0).unwrap() == point(5.0, 2.0, 3.0)
+    ));
+
+    for (mode, expected_radius) in [
+        ("Circumference", 20.0_f64.sqrt() / std::f64::consts::TAU),
+        ("Area", (20.0_f64.sqrt() / std::f64::consts::PI).sqrt()),
+    ] {
+        enter(&mut app, "Circle");
+        enter(&mut app, "1,2,3");
+        enter(&mut app, "Orientation");
+        assert!(app.accept_drafting_point(point(1.0, 3.0, 3.0)));
+        enter(&mut app, mode);
+        assert!(app.accept_drafting_point(point(5.0, 4.0, 3.0)));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().last().unwrap().geometry(),
+            Geometry::Circle(circle) if (circle.radius() - expected_radius).abs() < 1e-12
+                && (circle.point_at_angle(0.0).unwrap().z() - (3.0 + expected_radius)).abs() < 1e-12
+        ));
+    }
+}
+
 fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context

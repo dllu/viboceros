@@ -213,6 +213,47 @@ fn vertical_circle_uses_cplane_up_and_keeps_pick_direction() {
 }
 
 #[test]
+fn oriented_circle_uses_normal_frame_and_projects_radius_picks() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle Orientation 1,2,3 1,3,3 4")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(circle.point_at_angle(0.0).unwrap(), point(1.0, 2.0, 7.0));
+    assert_eq!(
+        circle.normal().unwrap().as_vector().to_array(),
+        [0.0, 1.0, 0.0]
+    );
+
+    registry
+        .execute(&mut document, "Circle Orientation 1,2,3 1,3,3 5,4,3")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(circle.point_at_angle(0.0).unwrap(), point(5.0, 2.0, 3.0));
+
+    let before = format!("{document:?}");
+    for command in [
+        "Circle Orientation 1,2,3 1,2,3 4",
+        "Circle Orientation 1,2,3 1,3,3 1,5,3",
+        "Circle Orientation 1,2,3 1,3,3 Area=-1",
+        "Circle Orientation 1,2,3 1,3,3 4 extra",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn rectangle_normalizes_corner_order_on_a_translated_oblique_plane() {
     let registry = CommandRegistry::with_builtins();
     let context = context();
