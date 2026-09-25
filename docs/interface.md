@@ -231,6 +231,10 @@ rectangle into equal parts and copy its camera, CPlane, display mode, and grid
 settings to the new viewport. The new viewport gets a distinct title, and both
 rectangles are saved in 3DM. See Rhino's
 [viewport arrangement commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/viewport_arrangement.htm).
+`CloseViewport` removes the active view. Adjacent views expand into the gap;
+if the saved layout has no neighboring strip that can fill it, the remaining
+views use a regular layout. The last viewport remains open. See Rhino's
+[CloseViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
 `ReadViewportsFromFile path.3dm` copies a model's viewport layout and views
 from another model, including display and grid settings. It converts view
 coordinates to the current document's units and keeps its objects and named

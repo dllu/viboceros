@@ -606,6 +606,37 @@ fn split_viewport_layout_round_trips_through_3dm() {
 }
 
 #[test]
+fn closed_viewport_layout_round_trips_through_3dm() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-close-viewport-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "3View");
+    enter(&mut source, "SetActiveViewport Top");
+    enter(&mut source, "CloseViewport");
+    assert_eq!(source.viewport_positions[0], [0.0, 1.0, 0.0, 0.5]);
+    assert_eq!(source.viewport_positions[1], [0.0, 1.0, 0.5, 1.0]);
+    let expected_positions = source.viewport_positions.clone();
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    let saved = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.viewports.len(), 2);
+    assert_eq!(saved.viewports[0].camera.name, "Perspective");
+    assert_eq!(saved.viewports[1].camera.name, "Front");
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports.len(), 2);
+    assert_eq!(opened.viewport_positions, expected_positions);
+    assert_eq!(opened.active_viewport, source.active_viewport);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn open_3dm_replaces_session_document_and_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-open-view-{}-{}.3dm",

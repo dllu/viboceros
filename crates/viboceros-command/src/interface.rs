@@ -259,6 +259,7 @@ pub enum InterfaceCommand {
     FourView,
     SplitViewportHorizontal,
     SplitViewportVertical,
+    CloseViewport,
     Plan,
     SetViewWorld(WorldView),
     SetViewCPlane(WorldPlane),
@@ -285,7 +286,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 47] = [
+pub const COMMAND_NAMES: [&str; 48] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -322,6 +323,7 @@ pub const COMMAND_NAMES: [&str; 47] = [
     "4View",
     "SplitViewportHorizontal",
     "SplitViewportVertical",
+    "CloseViewport",
     "SetView",
     "Plan",
     "SelWindow",
@@ -335,7 +337,7 @@ pub const COMMAND_NAMES: [&str; 47] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View; SplitViewportHorizontal; SplitViewportVertical; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -544,6 +546,7 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             || name.eq_ignore_ascii_case("4View")
             || name.eq_ignore_ascii_case("SplitViewportHorizontal")
             || name.eq_ignore_ascii_case("SplitViewportVertical")
+            || name.eq_ignore_ascii_case("CloseViewport")
         {
             if args.is_empty() {
                 Ok(if name.eq_ignore_ascii_case("MaxViewport") {
@@ -554,6 +557,8 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     InterfaceCommand::SplitViewportHorizontal
                 } else if name.eq_ignore_ascii_case("SplitViewportVertical") {
                     InterfaceCommand::SplitViewportVertical
+                } else if name.eq_ignore_ascii_case("CloseViewport") {
+                    InterfaceCommand::CloseViewport
                 } else {
                     InterfaceCommand::FourView
                 })
@@ -567,6 +572,8 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                         "SplitViewportHorizontal"
                     } else if name.eq_ignore_ascii_case("SplitViewportVertical") {
                         "SplitViewportVertical"
+                    } else if name.eq_ignore_ascii_case("CloseViewport") {
+                        "CloseViewport"
                     } else {
                         "4View"
                     },
@@ -968,6 +975,7 @@ impl InterfaceState {
                 "Split active viewport horizontally".into()
             }
             InterfaceCommand::SplitViewportVertical => "Split active viewport vertically".into(),
+            InterfaceCommand::CloseViewport => "Close active viewport".into(),
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),
             InterfaceCommand::SetViewWorld(view) => format!(
                 "Set world {} view requested (active viewport)",

@@ -147,6 +147,100 @@ fn split_viewport_rejects_an_unrepresentable_midpoint_atomically() {
 }
 
 #[test]
+fn close_viewport_fills_a_split_strip_and_keeps_the_model_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "SplitViewportVertical");
+    enter(&mut app, "SetActiveViewport Top (2)");
+    enter(&mut app, "SplitViewportHorizontal");
+    enter(&mut app, "SetActiveViewport Top");
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 5);
+    assert_eq!(app.viewport_positions[3], [0.0, 0.5, 0.0, 0.25]);
+    assert_eq!(app.viewport_positions[4], [0.0, 0.5, 0.25, 0.5]);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn close_viewport_remaps_pending_view_references_and_keeps_one_view() {
+    let mut app = test_app();
+    app.zoom_factor_pending = Some(3);
+    app.snap_size_pending = Some((interface::ViewportTarget::Active, 2));
+    app.zoom_target = Some(ZoomTargetState::PickWindow {
+        target: Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+        viewport: 3,
+    });
+    app.circular_selection = Some(CircularSelectionState::PickRadius {
+        mode: interface::RectSelectionMode::Window,
+        center: egui::Pos2::ZERO,
+        viewport: 2,
+    });
+    app.active_viewport = 1;
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 3);
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.viewport_positions[0], [0.0, 1.0, 0.0, 0.5]);
+    assert_eq!(app.zoom_factor_pending, Some(2));
+    assert_eq!(
+        app.snap_size_pending,
+        Some((interface::ViewportTarget::Active, 1))
+    );
+    assert!(matches!(
+        app.zoom_target,
+        Some(ZoomTargetState::PickWindow { viewport: 2, .. })
+    ));
+    assert!(matches!(
+        app.circular_selection,
+        Some(CircularSelectionState::PickRadius { viewport: 1, .. })
+    ));
+    app.active_viewport = 2;
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.zoom_factor_pending, None);
+    assert!(app.zoom_target.is_none());
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 1);
+    assert_eq!(app.viewport_positions, vec![[0.0, 1.0, 0.0, 1.0]]);
+    assert!(app.snap_size_pending.is_none());
+    assert!(app.circular_selection.is_none());
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 1);
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "Error: Cannot close the last viewport"
+    );
+}
+
+#[test]
+fn close_maximized_viewport_restores_the_remaining_layout() {
+    let mut app = test_app();
+    app.active_viewport = 3;
+    enter(&mut app, "MaxViewport");
+    assert_eq!(app.maximized_viewport, Some(3));
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewports.len(), 3);
+    assert_eq!(app.active_viewport, 2);
+    assert_eq!(app.maximized_viewport, None);
+    assert_eq!(app.viewport_positions[2], [0.0, 1.0, 0.5, 1.0]);
+}
+
+#[test]
+fn close_viewport_retiles_when_saved_positions_have_no_adjacent_strip() {
+    let mut app = test_app();
+    app.viewport_positions = vec![
+        [0.0, 0.2, 0.0, 0.2],
+        [0.3, 0.5, 0.0, 0.2],
+        [0.0, 0.2, 0.3, 0.5],
+        [0.3, 0.5, 0.3, 0.5],
+    ];
+    enter(&mut app, "CloseViewport");
+    assert_eq!(app.viewport_positions, THREE_VIEWPORT_POSITIONS.to_vec());
+}
+
+#[test]
 fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() {
     let mut app = test_app();
     enter(&mut app, "Line");

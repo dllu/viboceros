@@ -623,6 +623,20 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
         parse("SplitViewportVertical extra"),
         Some(Err(InterfaceError::Usage("SplitViewportVertical")))
     );
+    assert_eq!(
+        parse("'_CloseViewport"),
+        Some(Ok(InterfaceCommand::CloseViewport))
+    );
+    assert_eq!(
+        parse("CloseViewport extra"),
+        Some(Err(InterfaceError::Usage("CloseViewport")))
+    );
+    let before = state.clone();
+    assert_eq!(
+        state.apply(InterfaceCommand::CloseViewport).unwrap(),
+        "Close active viewport"
+    );
+    assert_eq!(state, before);
 }
 
 #[test]

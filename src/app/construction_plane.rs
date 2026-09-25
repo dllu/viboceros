@@ -9,7 +9,7 @@ use viboceros_drafting::PointInput;
 #[derive(Clone, Debug)]
 pub(super) struct PlanePrompt {
     kind: PlanePromptKind,
-    viewport: usize,
+    pub(super) viewport: usize,
     frame: Frame3,
     pub(super) points: Vec<Point3>,
     previous: Option<Point3>,

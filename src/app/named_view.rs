@@ -62,7 +62,7 @@ fn views_in_grid_order(views: Vec<ThreeDmViewport>) -> Vec<ThreeDmViewport> {
         .collect()
 }
 
-fn default_viewport_positions(count: usize) -> Vec<[f64; 4]> {
+pub(super) fn default_viewport_positions(count: usize) -> Vec<[f64; 4]> {
     match count {
         0 | 4 => DEFAULT_VIEWPORT_POSITIONS.to_vec(),
         1 => vec![[0.0, 1.0, 0.0, 1.0]],

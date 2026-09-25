@@ -377,6 +377,10 @@ impl VibocerosApp {
                     self.split_active_viewport(command);
                     return;
                 }
+                if command == InterfaceCommand::CloseViewport {
+                    self.close_active_viewport();
+                    return;
+                }
                 if command == InterfaceCommand::ThreeView {
                     let grid = self.viewports[self.active_viewport].grid_settings();
                     self.viewports = Viewport::standard_views().into_iter().take(3).collect();

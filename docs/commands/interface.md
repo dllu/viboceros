@@ -30,6 +30,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `3View` | Set up Top, Perspective, and Front viewports in a three-panel layout. |
 | `4View` | Restore four viewports; preserve cameras when already in a four-view layout. |
 | `SplitViewportHorizontal` / `SplitViewportVertical` | Divide the active viewport into two equal parts, copying its camera, CPlane, display mode, and grid settings. |
+| `CloseViewport` | Close the active viewport and expand adjacent viewports to fill its space; the final viewport stays open. |
 | `ReadViewportsFromFile path.3dm` | Copy saved model views and their layout into the current document, converting view coordinates to its units. |
 | `SetActiveViewport name\|number` | Activate a displayed viewport by title or number. |
 | `SetMaximizedViewport name\|number` | Activate and maximize a displayed viewport by title or number. |
