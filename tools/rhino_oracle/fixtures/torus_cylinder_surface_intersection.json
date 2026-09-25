@@ -26,6 +26,18 @@
       "cylinder": {"center": [4.94, 0, 0], "axis": [1, 0, 0], "radius": 0.4, "height": 0.03}
     },
     {
+      "id": "centered_perpendicular_wide_loops",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [-6, 0, 0], "axis": [1, 0, 0], "radius": 2, "height": 12}
+    },
+    {
+      "id": "centered_perpendicular_wide_arcs",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [3, 0, 0], "axis": [1, 0, 0], "radius": 2, "height": 1}
+    },
+    {
       "id": "offset_turned_loops",
       "op": "torus_cylinder_surface_intersection",
       "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},

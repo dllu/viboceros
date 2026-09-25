@@ -42,8 +42,9 @@ pub(super) fn intersect(
             <= spatial_tolerance
             && offset_z.abs() <= spatial_tolerance
             && transverse.abs() <= spatial_tolerance
-            && cylinder_radius + 4.0 * spatial_tolerance
-                < minor_radius.min(major_radius - minor_radius)
+            && cylinder_radius + 4.0 * spatial_tolerance < major_radius - minor_radius
+            && ((cylinder_radius - minor_radius).abs() > 4.0 * spatial_tolerance
+                || cylinder_radius == minor_radius)
         {
             return perpendicular_centered::intersect(
                 (torus_frame, major_radius, minor_radius),
@@ -171,6 +172,67 @@ mod tests {
                         "cylinder residual {cylinder_residual}"
                     );
                 }
+            }
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_radius_regimes_have_four_sections() {
+        let torus = torus();
+        for radius in [0.999, 1.0, 1.001, 1.5, 2.5, 2.99] {
+            let cylinder = perpendicular_cylinder(radius, -6.0, 6.0);
+            for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+                let events =
+                    surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+                assert_eq!(events.len(), 4, "radius {radius}");
+                for event in events {
+                    let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                        panic!("perpendicular cylinder should give four curves")
+                    };
+                    assert_eq!(curve.degree(), 3);
+                    assert!(curve.is_closed().unwrap());
+                    let domain = curve.domain();
+                    for index in 0..=64 {
+                        let parameter = *domain.start()
+                            + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                        let location = curve.evaluate(parameter).unwrap();
+                        assert!(
+                            ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0)
+                                .abs()
+                                < 5e-9
+                        );
+                        assert!((location.y().hypot(location.z()) - radius).abs() < 5e-9);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_wide_cylinder_clips_at_both_rims() {
+        let events = surface_surface_intersection_events(
+            &torus(),
+            &perpendicular_cylinder(2.0, 3.0, 4.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(events.len(), 4);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("finite wide cylinder should give four arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for index in 0..=32 {
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * index as Real / 32.0;
+                let location = curve.evaluate(parameter).unwrap();
+                assert!(location.x() >= 3.0 - 5e-9 && location.x() <= 4.0 + 5e-9);
+                assert!(
+                    ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs()
+                        < 5e-9
+                );
+                assert!((location.y().hypot(location.z()) - 2.0).abs() < 5e-9);
             }
         }
     }

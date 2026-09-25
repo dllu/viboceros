@@ -1,4 +1,4 @@
-//! Four smooth branches where a narrow perpendicular cylinder crosses the torus center.
+//! Four branches where a perpendicular cylinder crosses the torus center.
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Real};
@@ -15,7 +15,15 @@ struct Section {
     cylinder_radius: Real,
     direction: [Real; 2],
     axial_side: Real,
-    radial_side: Real,
+    branch_side: Real,
+    regime: Regime,
+}
+
+#[derive(Clone, Copy)]
+enum Regime {
+    CylinderAngle,
+    Meridian,
+    Critical,
 }
 
 #[derive(Clone, Copy)]
@@ -41,8 +49,15 @@ pub(super) fn intersect(
     let low = start.min(end);
     let high = start.max(end);
     let mut events = Vec::new();
+    let regime = if cylinder_radius < minor {
+        Regime::CylinderAngle
+    } else if cylinder_radius > minor {
+        Regime::Meridian
+    } else {
+        Regime::Critical
+    };
     for axial_side in [1.0, -1.0] {
-        for radial_side in [1.0, -1.0] {
+        for branch_side in [1.0, -1.0] {
             let section = Section {
                 frame,
                 major,
@@ -50,11 +65,16 @@ pub(super) fn intersect(
                 cylinder_radius,
                 direction,
                 axial_side,
-                radial_side,
+                branch_side,
+                regime,
             };
-            let extrema = [section.sample(0.0).axial, section.sample(QUARTER).axial];
-            let branch_low = extrema[0].min(extrema[1]);
-            let branch_high = extrema[0].max(extrema[1]);
+            let extrema = [
+                section.sample(0.0).axial,
+                section.sample(QUARTER).axial,
+                section.sample(2.0 * QUARTER).axial,
+            ];
+            let branch_low = extrema.into_iter().fold(Real::INFINITY, Real::min);
+            let branch_high = extrema.into_iter().fold(Real::NEG_INFINITY, Real::max);
             if low > branch_high + fit_tolerance || high < branch_low - fit_tolerance {
                 continue;
             }
@@ -141,19 +161,66 @@ pub(super) fn intersect(
 impl Section {
     fn sample(self, angle: Real) -> Sample {
         let (sine, cosine) = angle.sin_cos();
-        let radius = self.cylinder_radius;
-        let lateral = radius * cosine;
-        let lateral_derivative = -radius * sine;
-        let height = radius * sine;
-        let height_derivative = radius * cosine;
-        let tube_radial = (self.minor * self.minor - height * height).sqrt();
-        let radial = self.major + self.radial_side * tube_radial;
-        let radial_derivative = -self.radial_side * height * height_derivative / tube_radial;
-        let axial_magnitude = ((radial - lateral.abs()) * (radial + lateral.abs())).sqrt();
-        let axial = self.axial_side * axial_magnitude;
-        let axial_derivative = self.axial_side
-            * (radial * radial_derivative - lateral * lateral_derivative)
-            / axial_magnitude;
+        let (lateral, height, lateral_derivative, height_derivative, axial, axial_derivative) =
+            match self.regime {
+                Regime::CylinderAngle => {
+                    let radius = self.cylinder_radius;
+                    let lateral = radius * cosine;
+                    let lateral_derivative = -radius * sine;
+                    let height = radius * sine;
+                    let height_derivative = radius * cosine;
+                    let tube_radial = (self.minor * self.minor - height * height).sqrt();
+                    let radial = self.major + self.branch_side * tube_radial;
+                    let radial_derivative =
+                        -self.branch_side * height * height_derivative / tube_radial;
+                    let axial_magnitude =
+                        ((radial - lateral.abs()) * (radial + lateral.abs())).sqrt();
+                    let axial = self.axial_side * axial_magnitude;
+                    let axial_derivative = self.axial_side
+                        * (radial * radial_derivative - lateral * lateral_derivative)
+                        / axial_magnitude;
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
+                Regime::Meridian | Regime::Critical => {
+                    let height = self.minor * sine;
+                    let height_derivative = self.minor * cosine;
+                    let (lateral, lateral_derivative) = if matches!(self.regime, Regime::Critical) {
+                        (
+                            self.branch_side * self.minor * cosine,
+                            -self.branch_side * height,
+                        )
+                    } else {
+                        let lateral_magnitude =
+                            (self.cylinder_radius * self.cylinder_radius - height * height).sqrt();
+                        (
+                            self.branch_side * lateral_magnitude,
+                            -self.branch_side * height * height_derivative / lateral_magnitude,
+                        )
+                    };
+                    let axial_magnitude = (self.major * self.major + self.minor * self.minor
+                        - self.cylinder_radius * self.cylinder_radius
+                        + 2.0 * self.major * self.minor * cosine)
+                        .sqrt();
+                    let axial = self.axial_side * axial_magnitude;
+                    let axial_derivative =
+                        -self.axial_side * self.major * self.minor * sine / axial_magnitude;
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
+            };
         let [ux, uy] = self.direction;
         Sample {
             position: [

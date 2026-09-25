@@ -372,6 +372,8 @@ mod tests {
             ("offset_two_loops", 2, 0, Some(3), true),
             ("centered_perpendicular_four_loops", 4, 0, Some(3), true),
             ("centered_perpendicular_finite_arcs", 4, 0, Some(3), false),
+            ("centered_perpendicular_wide_loops", 4, 0, Some(3), true),
+            ("centered_perpendicular_wide_arcs", 4, 0, Some(3), false),
             ("offset_turned_loops", 2, 0, Some(3), true),
             ("finite_rim_arcs", 2, 0, Some(3), false),
             ("critical_crossing", 2, 0, Some(3), true),
