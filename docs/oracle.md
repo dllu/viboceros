@@ -28,8 +28,14 @@ for trimmed and reversed ends, including rational controls. One
 [boundary diagnostic](../tools/rhino_oracle/fixtures/curve_match_average_position_boundary.json)
 retains a difference: Rhino trims a straight cubic to a roughly 1e-6-unit
 segment when its closest point is the far endpoint; native closest-point search
-returns the endpoint exactly. Average curvature matching of a multi-span
-reference with preserved far tangents remains unimplemented natively. The
+returns the endpoint exactly. The
+[average multi-span curvature fixture](../tools/rhino_oracle/fixtures/curve_match_average_multispan_curvature.json)
+adds 13 matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_multispan_curvature.json)
+for multi-span sources and references, rational weights, uneven knots, reversed
+ends, and preserved far tangents. Its
+[boundary fixture](../tools/rhino_oracle/fixtures/curve_match_average_multispan_curvature_boundary.json)
+retains two [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_multispan_curvature_boundary.json)
+that still need knot edits to preserve far curvature. The
 [multi-span tangency fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_tangency.json)
 adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_tangency.json)
 for cubic and quadratic two-span sources, opposite-end preservation, and

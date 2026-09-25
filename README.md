@@ -63,7 +63,7 @@ requested opposite end unchanged. Multi-span curvature matching does not yet
 preserve curvature at the opposite end.
 `AverageCurves=Yes` moves both curves for position, tangent, or curvature
 matching and keeps the change in one undo step. Average curvature matching can
-preserve the far position of a multi-span reference curve.
+preserve the far position or tangent of multi-span curves.
 Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development

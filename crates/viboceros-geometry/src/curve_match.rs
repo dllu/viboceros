@@ -19,6 +19,13 @@ struct MatchTarget {
     curvature: Option<Vector3>,
 }
 
+#[derive(Clone, Copy)]
+enum CurvatureControlRule {
+    SingleSpan,
+    OneSidedMultiSpan,
+    AverageMultiSpan,
+}
+
 /// Changes the selected end of one open curve to meet another with G0, G1, or
 /// G2 continuity. Multi-span position matching first trims toward the nearest
 /// location to the reference end. Degree elevation leaves a single-span
@@ -84,7 +91,11 @@ pub fn try_match_curve_end(
         continuity,
         preserve,
         source_single_span,
-        true,
+        if source_single_span {
+            CurvatureControlRule::SingleSpan
+        } else {
+            CurvatureControlRule::OneSidedMultiSpan
+        },
     )?;
     require_continuity(
         &matched,
@@ -164,7 +175,7 @@ pub fn try_average_match_curve_ends(
             continuity,
             preserve,
             first_nurbs.spans().count() == 1,
-            false,
+            CurvatureControlRule::SingleSpan,
         )?;
         let second_output = match_end_to_target(
             &second_nurbs,
@@ -177,7 +188,7 @@ pub fn try_average_match_curve_ends(
             continuity,
             preserve,
             second_nurbs.spans().count() == 1,
-            false,
+            CurvatureControlRule::SingleSpan,
         )?;
         require_continuity(
             &first_output,
@@ -206,14 +217,11 @@ pub fn try_average_match_curve_ends(
     let first_nurbs = first_curve.to_nurbs()?;
     let second_nurbs = second_curve.to_nurbs()?;
     if continuity == CurveBlendContinuity::Curvature
-        && second_nurbs.spans().count() > 1
-        && matches!(
-            preserve,
-            CurveMatchPreserveEnd::Tangency | CurveMatchPreserveEnd::Curvature
-        )
+        && preserve == CurveMatchPreserveEnd::Curvature
+        && (first_nurbs.spans().count() > 1 || second_nurbs.spans().count() > 1)
     {
         return Err(GeometryError::InvalidPolyCurve {
-            context: "average Match curvature with a preserved multi-span opposite end",
+            context: "average Match multi-span curvature with far curvature preservation needs knot edits",
         });
     }
     let curvature = if continuity == CurveBlendContinuity::Curvature {
@@ -237,8 +245,12 @@ pub fn try_average_match_curve_ends(
         },
         continuity,
         preserve,
-        true,
-        false,
+        first_nurbs.spans().count() == 1,
+        if first_nurbs.spans().count() == 1 {
+            CurvatureControlRule::SingleSpan
+        } else {
+            CurvatureControlRule::AverageMultiSpan
+        },
     )?;
     let second_tangent = if first_at_end == second_at_end {
         tangent.opposite()
@@ -256,7 +268,11 @@ pub fn try_average_match_curve_ends(
         continuity,
         preserve,
         second_nurbs.spans().count() == 1,
-        false,
+        if second_nurbs.spans().count() == 1 {
+            CurvatureControlRule::SingleSpan
+        } else {
+            CurvatureControlRule::AverageMultiSpan
+        },
     )?;
     require_continuity(
         &first_output,
@@ -296,7 +312,7 @@ fn match_end_to_target(
     continuity: CurveBlendContinuity,
     preserve: CurveMatchPreserveEnd,
     require_single_span: bool,
-    one_sided_match: bool,
+    curvature_rule: CurvatureControlRule,
 ) -> Result<NurbsCurve, GeometryError> {
     if require_single_span && original.spans().count() != 1 {
         return Err(GeometryError::InvalidPolyCurve {
@@ -365,19 +381,24 @@ fn match_end_to_target(
         if continuity == CurveBlendContinuity::Curvature {
             let degree = desired_degree as Real;
             let knot_ratio = endpoint_curvature_knot_ratio(&elevated, at_end)?;
-            let tangential_coefficient = if require_single_span || !one_sided_match {
-                2.0 * (degree * a * a - a) / ((degree - 1.0) * b)
-            } else if b == 1.0 {
-                // Rhino keeps the original second control's projection onto
-                // the endpoint handle when their weights are equal.
-                let first =
-                    endpoint.vector_to(elevated.control_points()[adjacent_index].point())?;
-                let second = endpoint.vector_to(elevated.control_points()[second_index].point())?;
-                second.dot(first)? / (handle * handle)
-            } else {
-                // For unequal endpoint/second weights Rhino instead chooses
-                // zero tangential second derivative at the new end.
+            let zero_tangential_coefficient = || {
                 a / b * (1.0 + knot_ratio + 2.0 * degree * (a - 1.0) * knot_ratio / (degree - 1.0))
+            };
+            let tangential_coefficient = match curvature_rule {
+                CurvatureControlRule::SingleSpan => {
+                    2.0 * (degree * a * a - a) / ((degree - 1.0) * b)
+                }
+                CurvatureControlRule::OneSidedMultiSpan if b == 1.0 => {
+                    // Rhino keeps the original second control's projection onto
+                    // the endpoint handle when their weights are equal.
+                    let first =
+                        endpoint.vector_to(elevated.control_points()[adjacent_index].point())?;
+                    let second =
+                        endpoint.vector_to(elevated.control_points()[second_index].point())?;
+                    second.dot(first)? / (handle * handle)
+                }
+                CurvatureControlRule::OneSidedMultiSpan
+                | CurvatureControlRule::AverageMultiSpan => zero_tangential_coefficient(),
             };
             let curvature_coefficient =
                 degree * a * a * handle * handle / ((degree - 1.0) * b) * knot_ratio;
