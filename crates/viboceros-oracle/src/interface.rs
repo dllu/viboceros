@@ -109,6 +109,7 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
         snap_to_meshes: fixture.snap_to_meshes.unwrap_or(false),
         smart_track: fixture.smart_track,
         active_viewport: fixture.active_viewport,
+        maximized_viewport: None,
         display_modes: modes,
     };
     let record = |state: &InterfaceState| {

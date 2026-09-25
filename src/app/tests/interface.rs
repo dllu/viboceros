@@ -32,6 +32,64 @@ fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     }
 }
 
+#[test]
+fn max_viewport_tracks_active_view_and_preserves_modeling_prompt() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    enter(&mut app, "MaxViewport");
+    assert_eq!(app.maximized_viewport, Some(0));
+    enter(&mut app, "NextViewport");
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.maximized_viewport, Some(1));
+    enter(&mut app, "4View");
+    assert_eq!(app.maximized_viewport, None);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(
+        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        cameras
+    );
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn double_clicking_viewport_title_requests_layout_toggle() {
+    let context = egui::Context::default();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let document = Document::default();
+    let mut click = |position: egui::Pos2| {
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(800.0, 600.0),
+                    )),
+                    events: [true, false]
+                        .map(|pressed| egui::Event::PointerButton {
+                            pos: position,
+                            button: egui::PointerButton::Primary,
+                            pressed,
+                            modifiers: egui::Modifiers::NONE,
+                        })
+                        .to_vec(),
+                    ..Default::default()
+                },
+                |ui| {
+                    output = viewport.show(ui, &document, ViewportInput::default(), &[], 0, true);
+                },
+            )
+            .drop_without_applying_deltas();
+        output
+    };
+    assert!(!click(egui::pos2(30.0, 12.0)).toggle_maximized);
+    assert!(click(egui::pos2(30.0, 12.0)).toggle_maximized);
+}
+
 fn zoom_window_frame(
     context: &egui::Context,
     app: &mut VibocerosApp,

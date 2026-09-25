@@ -162,6 +162,8 @@ fn open_restores_current_viewports_without_named_views() {
         show_axes: false,
         show_world_axes: true,
     });
+    enter(&mut source, "MaxViewport");
+    assert_eq!(source.maximized_viewport, Some(1));
     let expected = source.three_dm_viewports().unwrap();
     enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
     assert!(
@@ -183,6 +185,10 @@ fn open_restores_current_viewports_without_named_views() {
     assert_eq!(model.viewports[1].grid.snap_spacing, 0.25);
     assert_eq!(model.viewports[1].grid.minor_spacing, 2.5);
     assert!(model.viewports[1].active);
+    assert!(model.viewports[1].maximized);
+    let mut reordered = model.clone();
+    reordered.viewports.reverse();
+    viboceros_io::write_3dm_file(&path, &reordered).unwrap();
 
     let mut destination = test_app();
     enter(&mut destination, &format!("Open \"{}\"", path.display()));
@@ -197,6 +203,7 @@ fn open_restores_current_viewports_without_named_views() {
     assert_eq!(destination.viewports[0].display_mode, DisplayMode::Shaded);
     assert_eq!(destination.viewports[1].display_mode, DisplayMode::Ghosted);
     assert_eq!(destination.active_viewport, 1);
+    assert_eq!(destination.maximized_viewport, Some(1));
     assert_eq!(
         destination.viewports[1].grid_settings(),
         source.viewports[1].grid_settings()
@@ -222,6 +229,9 @@ fn open_restores_current_viewports_without_named_views() {
             assert!((actual - expected).abs() < 1.0e-6);
         }
     }
+    enter(&mut destination, "4View");
+    assert_eq!(destination.maximized_viewport, None);
+    assert_eq!(destination.active_viewport, 1);
     std::fs::remove_file(path).unwrap();
 }
 

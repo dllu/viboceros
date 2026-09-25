@@ -33,6 +33,35 @@ fn add_file_views(
     imported
 }
 
+fn views_in_grid_order(views: Vec<ThreeDmViewport>) -> Vec<ThreeDmViewport> {
+    if views.len() != 4 {
+        return views;
+    }
+    let mut slots = [None; 4];
+    for (source, view) in views.iter().enumerate() {
+        let [left, right, top, bottom] = view.position;
+        if !(0.0..=1.0).contains(&left)
+            || !(0.0..=1.0).contains(&right)
+            || !(0.0..=1.0).contains(&top)
+            || !(0.0..=1.0).contains(&bottom)
+            || left >= right
+            || top >= bottom
+        {
+            return views;
+        }
+        let column = usize::from((left + right) * 0.5 >= 0.5);
+        let row = usize::from((top + bottom) * 0.5 >= 0.5);
+        let slot = row * 2 + column;
+        if slots[slot].replace(source).is_some() {
+            return views;
+        }
+    }
+    slots
+        .into_iter()
+        .map(|source| views[source.unwrap()].clone())
+        .collect()
+}
+
 impl VibocerosApp {
     fn three_dm_views(&self) -> Result<Vec<ThreeDmNamedView>, viboceros_command::CommandError> {
         self.named_views
@@ -79,7 +108,7 @@ impl VibocerosApp {
                     },
                     active: index == self.active_viewport,
                     position: positions[index],
-                    maximized: false,
+                    maximized: self.maximized_viewport == Some(index),
                 })
             })
             .collect::<Result<Vec<_>, viboceros_command::CommandError>>()
@@ -97,6 +126,7 @@ impl VibocerosApp {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let (document, message, views, current_views) =
                     viboceros_command::open_3dm_with_views(path)?;
+                let current_views = views_in_grid_order(current_views);
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
                 self.document = document;
@@ -133,6 +163,10 @@ impl VibocerosApp {
                     .position(|view| view.active)
                     .filter(|index| *index < self.viewports.len())
                     .unwrap_or(0);
+                self.maximized_viewport = current_views
+                    .iter()
+                    .position(|view| view.maximized)
+                    .filter(|index| *index < self.viewports.len());
                 self.last_point = None;
                 self.sidebar = DocumentSidebar::default();
                 Ok(format!("{message}; opened {imported} named view(s)"))

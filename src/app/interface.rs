@@ -360,6 +360,7 @@ impl VibocerosApp {
             snap_to_meshes: self.snaps.mesh_edges,
             smart_track: self.smart_track,
             active_viewport: self.active_viewport,
+            maximized_viewport: self.maximized_viewport,
             display_modes: self.viewports.iter().map(|v| v.display_mode).collect(),
         }
     }
@@ -469,6 +470,9 @@ impl VibocerosApp {
                     });
                     if let Some(index) = eligible {
                         self.active_viewport = index;
+                        if self.maximized_viewport.is_some() {
+                            self.maximized_viewport = Some(index);
+                        }
                         self.push_log(format!(
                             "Active viewport: {} ({})",
                             index + 1,
@@ -858,6 +862,7 @@ impl VibocerosApp {
                 self.osnap = state.osnap;
                 self.snaps.mesh_edges = state.snap_to_meshes;
                 self.smart_track = state.smart_track;
+                self.maximized_viewport = state.maximized_viewport;
                 for (viewport, mode) in self.viewports.iter_mut().zip(state.display_modes) {
                     viewport.display_mode = mode;
                 }
@@ -977,6 +982,11 @@ impl VibocerosApp {
         self.handle_plane_shortcuts(ui);
         // These keys have no text-editing meaning. Text editors retain their
         // own undo history; document undo/redo is not intercepted here.
+        let max_view_modifiers = if cfg!(target_os = "macos") {
+            egui::Modifiers::COMMAND | egui::Modifiers::ALT
+        } else {
+            egui::Modifiers::COMMAND
+        };
         let shortcuts = [
             (
                 egui::Modifiers::COMMAND,
@@ -987,6 +997,11 @@ impl VibocerosApp {
                 egui::Modifiers::COMMAND | egui::Modifiers::SHIFT,
                 egui::Key::Tab,
                 InterfaceCommand::PrevViewport,
+            ),
+            (
+                max_view_modifiers,
+                egui::Key::M,
+                InterfaceCommand::MaxViewport,
             ),
             (
                 egui::Modifiers::NONE,

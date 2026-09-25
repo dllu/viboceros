@@ -563,7 +563,31 @@ fn state() -> InterfaceState {
         smart_track: false,
         display_modes: vec![DisplayMode::Wireframe; 4],
         active_viewport: 2,
+        maximized_viewport: None,
     }
+}
+
+#[test]
+fn viewport_layout_commands_toggle_without_changing_cameras() {
+    assert_eq!(
+        parse("MaxViewport"),
+        Some(Ok(InterfaceCommand::MaxViewport))
+    );
+    assert_eq!(parse("4View"), Some(Ok(InterfaceCommand::FourView)));
+    assert_eq!(
+        parse("MaxViewport extra"),
+        Some(Err(InterfaceError::Usage("MaxViewport")))
+    );
+    let mut state = state();
+    let modes = state.display_modes.clone();
+    state.apply(InterfaceCommand::MaxViewport).unwrap();
+    assert_eq!(state.maximized_viewport, Some(2));
+    state.apply(InterfaceCommand::MaxViewport).unwrap();
+    assert_eq!(state.maximized_viewport, None);
+    state.apply(InterfaceCommand::MaxViewport).unwrap();
+    state.apply(InterfaceCommand::FourView).unwrap();
+    assert_eq!(state.maximized_viewport, None);
+    assert_eq!(state.display_modes, modes);
 }
 
 #[test]

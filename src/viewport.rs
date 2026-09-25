@@ -332,6 +332,7 @@ pub struct ViewportOutput {
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
     pub activated: bool,
+    pub toggle_maximized: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -1213,6 +1214,10 @@ impl Viewport {
         );
 
         ViewportOutput {
+            toggle_maximized: response.double_clicked_by(PointerButton::Primary)
+                && response
+                    .interact_pointer_pos()
+                    .is_some_and(|pointer| pointer.y <= rect.top() + 28.0),
             zoom_window_result,
             zoom_window_cancelled: input.zoom_window
                 && response.clicked_by(PointerButton::Secondary),

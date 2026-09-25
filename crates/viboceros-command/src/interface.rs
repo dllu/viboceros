@@ -254,6 +254,8 @@ pub enum InterfaceCommand {
     PrevViewport,
     NextOrthoViewport,
     NextPerspectiveViewport,
+    MaxViewport,
+    FourView,
     Plan,
     SetViewWorld(WorldView),
     SetViewCPlane(WorldPlane),
@@ -280,7 +282,7 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 42] = [
+pub const COMMAND_NAMES: [&str; 44] = [
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -312,6 +314,8 @@ pub const COMMAND_NAMES: [&str; 42] = [
     "PrevViewport",
     "NextOrthoViewport",
     "NextPerspectiveViewport",
+    "MaxViewport",
+    "4View",
     "SetView",
     "Plan",
     "SelWindow",
@@ -325,7 +329,7 @@ pub const COMMAND_NAMES: [&str; 42] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Shortcuts: Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 4View; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -528,6 +532,22 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                 Ok(InterfaceCommand::RedoView)
             } else {
                 Err(InterfaceError::Usage("RedoView"))
+            }
+        } else if name.eq_ignore_ascii_case("MaxViewport") || name.eq_ignore_ascii_case("4View") {
+            if args.is_empty() {
+                Ok(if name.eq_ignore_ascii_case("MaxViewport") {
+                    InterfaceCommand::MaxViewport
+                } else {
+                    InterfaceCommand::FourView
+                })
+            } else {
+                Err(InterfaceError::Usage(
+                    if name.eq_ignore_ascii_case("MaxViewport") {
+                        "MaxViewport"
+                    } else {
+                        "4View"
+                    },
+                ))
             }
         } else if let Some(command) = [
             ("NextViewport", InterfaceCommand::NextViewport),
@@ -833,12 +853,17 @@ pub struct InterfaceState {
     pub smart_track: bool,
     pub display_modes: Vec<DisplayMode>,
     pub active_viewport: usize,
+    pub maximized_viewport: Option<usize>,
 }
 
 impl InterfaceState {
     /// Validate before mutation, including actions which do not use a viewport.
     pub fn apply(&mut self, command: InterfaceCommand) -> Result<String, InterfaceError> {
-        if self.active_viewport >= self.display_modes.len() {
+        if self.active_viewport >= self.display_modes.len()
+            || self
+                .maximized_viewport
+                .is_some_and(|index| index >= self.display_modes.len())
+        {
             return Err(InterfaceError::InvalidViewport);
         }
         let on_off = |value| if value { "On" } else { "Off" };
@@ -890,6 +915,21 @@ impl InterfaceState {
             InterfaceCommand::NextOrthoViewport => "Next orthographic viewport requested".into(),
             InterfaceCommand::NextPerspectiveViewport => {
                 "Next perspective viewport requested".into()
+            }
+            InterfaceCommand::MaxViewport => {
+                self.maximized_viewport = if self.maximized_viewport == Some(self.active_viewport) {
+                    None
+                } else {
+                    Some(self.active_viewport)
+                };
+                match self.maximized_viewport {
+                    Some(index) => format!("Maximized viewport {}", index + 1),
+                    None => "Restored four viewports".into(),
+                }
+            }
+            InterfaceCommand::FourView => {
+                self.maximized_viewport = None;
+                "Restored four viewports".into()
             }
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),
             InterfaceCommand::SetViewWorld(view) => format!(

@@ -218,6 +218,13 @@ standard view. `SetView CPlane <direction>` uses the active construction plane
 without changing its projection. See [view commands](commands/set-view.md).
 `NamedView Save name` and `NamedView Restore name` reuse a camera and
 construction plane in the active viewport; see [named views](commands/named-view.md).
+`MaxViewport` fills the workspace with the active viewport and toggles back to
+the four-view grid. Double-click a viewport title for the same action, or use
+Ctrl+M (Cmd+Alt+M on macOS). `4View`
+restores the grid without changing cameras or construction planes. When a view
+is maximized, viewport cycling switches the visible view. Save and Open retain
+the maximized view in 3DM files. See Rhino's
+[MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;

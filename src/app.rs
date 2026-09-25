@@ -1434,6 +1434,7 @@ pub struct VibocerosApp {
     viewports: [Viewport; 4],
     named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
     active_viewport: usize,
+    maximized_viewport: Option<usize>,
     osnap: bool,
     snaps: snapping::SnapControls,
     smart_track: bool,
@@ -1502,6 +1503,7 @@ impl VibocerosApp {
             viewports: Viewport::standard_views(),
             named_views: Default::default(),
             active_viewport: 0,
+            maximized_viewport: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -6532,6 +6534,7 @@ impl eframe::App for VibocerosApp {
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
+        let maximized_viewport = self.maximized_viewport;
         let zoom_window_pending = self.zoom_window_pending && !end_analysis_picking;
         let selection_window_override = (!end_analysis_picking)
             .then_some(self.selection_window_override)
@@ -6673,14 +6676,22 @@ impl eframe::App for VibocerosApp {
         egui::CentralPanel::default().show(ui, |ui| {
             ui.spacing_mut().item_spacing = egui::Vec2::splat(2.0);
             let available = ui.available_size();
-            let cell_size = egui::Vec2::new(
-                ((available.x - 2.0) * 0.5).max(1.0),
-                ((available.y - 2.0) * 0.5).max(1.0),
-            );
-            for row in 0..2 {
+            let (rows, columns, cell_size) = if maximized_viewport.is_some() {
+                (1, 1, available.max(egui::Vec2::splat(1.0)))
+            } else {
+                (
+                    2,
+                    2,
+                    egui::Vec2::new(
+                        ((available.x - 2.0) * 0.5).max(1.0),
+                        ((available.y - 2.0) * 0.5).max(1.0),
+                    ),
+                )
+            };
+            for row in 0..rows {
                 ui.horizontal(|ui| {
-                    for column in 0..2 {
-                        let index = row * 2 + column;
+                    for column in 0..columns {
+                        let index = maximized_viewport.unwrap_or(row * 2 + column);
                         ui.allocate_ui_with_layout(
                             cell_size,
                             egui::Layout::top_down(egui::Align::Min),
@@ -6839,6 +6850,15 @@ impl eframe::App for VibocerosApp {
             if output.activated {
                 self.active_viewport = index;
             }
+            if output.toggle_maximized {
+                self.active_viewport = index;
+                self.maximized_viewport = if self.maximized_viewport == Some(index) {
+                    None
+                } else {
+                    Some(index)
+                };
+                continue;
+            }
             if !handled_action && !menu_consumed {
                 handled_action = self.handle_viewport_action(output);
             }
@@ -6948,6 +6968,7 @@ mod tests {
             viewports: Viewport::standard_views(),
             named_views: Default::default(),
             active_viewport: 0,
+            maximized_viewport: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
