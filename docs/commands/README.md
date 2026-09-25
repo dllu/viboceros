@@ -330,6 +330,8 @@ Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
 Dir Mode=FlipU
+MatchCrvDir
+MatchCrvDir Reference=Rail
 Flip
 UnifyMeshNormals
 Weld 180

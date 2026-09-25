@@ -5991,6 +5991,14 @@ def _execute(operation, iterations, tolerance):
         return _three_dm_brep_interchange(operation, iterations)
     if kind == "curve_join_close":
         return _curve_join_close(operation, iterations, tolerance)
+    if kind == "curve_direction_match":
+        reference = _join_close_input(operation["reference"])
+        target = _join_close_input(operation["target"])
+        try:
+            return {"match": bool(Rhino.Geometry.Curve.DoDirectionsMatch(reference, target))}, 0
+        finally:
+            target.Dispose()
+            reference.Dispose()
     if kind == "polycurve_native":
         return _polycurve_native(operation, iterations, tolerance)
     if kind == "curve_native":

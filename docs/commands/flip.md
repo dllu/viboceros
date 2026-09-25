@@ -1,5 +1,12 @@
 # Flip
 
+`MatchCrvDir` uses the first selected curve as a reference and aligns the
+remaining selected curves with it. `MatchCrvDir Reference=name-or-id` uses an
+existing reference curve outside the target selection. It keeps each object's
+identity, attributes, and geometry type; only curves needing reversal change.
+The direction predicate is checked against 13 live RhinoCommon cases, including
+open curves, closed circles with different seams, arcs, and polylines.
+
 `Flip` (aliases `Reverse`, `Rev`) reverses selected curve directions, mesh face
 winding, and surface/B-rep face orientations. Invoke it on a
 selection or enter the command first and pick objects, then press Enter.

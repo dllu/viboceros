@@ -1,0 +1,84 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_direction_match",
+      "id": "parallel-near",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [0, 1, 0], "end": [10, 1, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "opposite-near",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [10, 1, 0], "end": [0, 1, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "parallel-far",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [100, 500, 0], "end": [110, 500, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "perpendicular",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [5, -5, 0], "end": [5, 5, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "diagonal-acute",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [0, 0, 0], "end": [4, 9, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "diagonal-obtuse",
+      "reference": {"type": "line", "start": [0, 0, 0], "end": [10, 0, 0]},
+      "target": {"type": "line", "start": [0, 0, 0], "end": [-4, 9, 0]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "circle-same",
+      "reference": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [1, 0, 0], "normal": [0, 0, 1]},
+      "target": {"type": "circle", "center": [20, 0, 0], "radius": 3, "x_axis": [1, 0, 0], "normal": [0, 0, 1]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "circle-opposite",
+      "reference": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [1, 0, 0], "normal": [0, 0, 1]},
+      "target": {"type": "circle", "center": [20, 0, 0], "radius": 3, "x_axis": [1, 0, 0], "normal": [0, 0, -1]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "circle-rotated-seam",
+      "reference": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [1, 0, 0], "normal": [0, 0, 1]},
+      "target": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [-1, 0, 0], "normal": [0, 0, 1]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "circle-rotated-seam-opposite",
+      "reference": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [1, 0, 0], "normal": [0, 0, 1]},
+      "target": {"type": "circle", "center": [0, 0, 0], "radius": 5, "x_axis": [-1, 0, 0], "normal": [0, 0, -1]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "arc-same",
+      "reference": {"type": "arc", "points": [[5, 0, 0], [0, 5, 0], [-5, 0, 0]]},
+      "target": {"type": "arc", "points": [[6, 1, 0], [1, 6, 0], [-4, 1, 0]]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "arc-opposite",
+      "reference": {"type": "arc", "points": [[5, 0, 0], [0, 5, 0], [-5, 0, 0]]},
+      "target": {"type": "arc", "points": [[-4, 1, 0], [1, 6, 0], [6, 1, 0]]}
+    },
+    {
+      "op": "curve_direction_match",
+      "id": "polyline-opposite",
+      "reference": {"type": "polyline", "vertices": [[0, 0, 0], [4, 0, 0], [4, 3, 0]]},
+      "target": {"type": "polyline", "vertices": [[5, 3, 0], [5, 0, 0], [1, 0, 0]]}
+    }
+  ]
+}

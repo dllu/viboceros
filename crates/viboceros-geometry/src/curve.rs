@@ -62,6 +62,74 @@ pub enum CurveRef<'a> {
 }
 
 impl CurveRef<'_> {
+    /// Whether two curves have the same approximate traversal direction.
+    ///
+    /// Open curves are paired by their natural ends. Closed curves use their
+    /// oriented area so a shifted seam does not change the result. Sampled
+    /// stations resolve remaining endpoint ties; exact ties retain direction.
+    pub fn directions_match(self, other: CurveRef<'_>) -> Result<bool, GeometryError> {
+        if self.is_closed()? && other.is_closed()? {
+            let a = self.oriented_area_vector()?;
+            let b = other.oriented_area_vector()?;
+            if let (Some(a), Some(b)) = (a, b) {
+                let alignment = a.dot(b)?;
+                if alignment != 0.0 {
+                    return Ok(alignment > 0.0);
+                }
+            }
+        }
+        let a0 = self.start_point()?;
+        let a1 = self.end_point()?;
+        let b0 = other.start_point()?;
+        let b1 = other.end_point()?;
+        let forward = a0.distance_to(b0)? * 0.5 + a1.distance_to(b1)? * 0.5;
+        let reverse = a0.distance_to(b1)? * 0.5 + a1.distance_to(b0)? * 0.5;
+        if forward < reverse {
+            return Ok(true);
+        }
+        if reverse < forward {
+            return Ok(false);
+        }
+        for fraction in [0.25, 0.5, 0.75] {
+            let point = self.evaluate(self.parameter_at(fraction)?)?;
+            let matching = other.evaluate(other.parameter_at(fraction)?)?;
+            let flipped = other.evaluate(other.parameter_at(1.0 - fraction)?)?;
+            let forward = point.distance_to(matching)?;
+            let reverse = point.distance_to(flipped)?;
+            if forward < reverse {
+                return Ok(true);
+            }
+            if reverse < forward {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
+    fn oriented_area_vector(self) -> Result<Option<Vector3>, GeometryError> {
+        match self {
+            Self::Circle(curve) => return Ok(Some(curve.normal()?.as_vector())),
+            Self::Ellipse(curve) => return Ok(Some(curve.normal()?.as_vector())),
+            Self::Arc(curve) if curve.is_closed() => {
+                return Ok(Some(curve.normal()?.as_vector()));
+            }
+            _ => {}
+        }
+        let origin = self.start_point()?;
+        let mut previous = origin;
+        let mut sum = [0.0; 3];
+        for index in 1..=32 {
+            let next = self.evaluate(self.parameter_at(index as Real / 32.0)?)?;
+            let cross = origin.vector_to(previous)?.cross(origin.vector_to(next)?)?;
+            for (total, component) in sum.iter_mut().zip(cross.to_array()) {
+                *total += component;
+            }
+            previous = next;
+        }
+        let vector = Vector3::try_from(sum)?;
+        Ok((vector.length()? > 0.0).then_some(vector))
+    }
+
     /// Computes the complete curve length with controlled numerical accuracy.
     ///
     /// Exact analytic and piecewise-linear representations use their direct

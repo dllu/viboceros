@@ -3,6 +3,39 @@
 #[cfg(test)]
 mod tests {
     #[test]
+    fn direction_match_fixture_agrees_with_live_rhino_observations() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_direction_match.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        let expected = [
+            ("parallel-near", true),
+            ("opposite-near", false),
+            ("parallel-far", true),
+            ("perpendicular", true),
+            ("diagonal-acute", true),
+            ("diagonal-obtuse", true),
+            ("circle-same", true),
+            ("circle-opposite", false),
+            ("circle-rotated-seam", true),
+            ("circle-rotated-seam-opposite", false),
+            ("arc-same", true),
+            ("arc-opposite", false),
+            ("polyline-opposite", false),
+        ];
+        assert_eq!(response.results.len(), expected.len());
+        for (id, matches) in expected {
+            let result = response
+                .results
+                .iter()
+                .find(|result| result.id == id)
+                .unwrap();
+            assert_eq!(result.value["match"], matches, "{id}");
+        }
+    }
+
+    #[test]
     fn permanent_join_close_fixture_executes_kernel_and_document_policies() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curve_join_close.json"

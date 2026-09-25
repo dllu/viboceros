@@ -623,6 +623,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveJoinCloseFixture,
     },
+    CurveDirectionMatch {
+        id: String,
+        reference: curve_join_close::CurveInput,
+        target: curve_join_close::CurveInput,
+    },
     PolycurveDocument {
         id: String,
         #[serde(flatten)]
@@ -1933,6 +1938,7 @@ impl Operation {
             | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
+            | Self::CurveDirectionMatch { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::TrimmedSurfaceIsocurves { id, .. }
@@ -2615,6 +2621,16 @@ fn execute(
         }
         Operation::CurveJoinClose { fixture, .. } => {
             curve_join_close::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurveDirectionMatch {
+            reference, target, ..
+        } => {
+            let reference = reference.geometry()?;
+            let target = target.geometry()?;
+            let (matches, elapsed) = measure(iterations, || {
+                reference.as_ref().directions_match(target.as_ref())
+            })?;
+            (json!({"match": matches}), elapsed)
         }
         Operation::PolycurveDocument { fixture, .. } => {
             polycurve_document::run(fixture, iterations, tolerance)?
