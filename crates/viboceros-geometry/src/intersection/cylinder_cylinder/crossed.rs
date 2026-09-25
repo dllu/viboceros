@@ -1,4 +1,4 @@
-//! Exact conic intersections of crossed, equal-radius orthogonal cylinders.
+//! Exact conic intersections of equal-radius cylinders with crossing axes.
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3, WeightedPoint3};
@@ -13,6 +13,12 @@ pub(super) fn intersect(
     let cross = first_axis.cross(second_axis)?;
     let cross_length = cross.length()?;
     let axis_dot = first_axis.dot(second_axis)?;
+    let axis_sum = combine_axes(first_axis, second_axis, 1.0)?;
+    let axis_difference = combine_axes(first_axis, second_axis, -1.0)?;
+    let sum_length = axis_sum.length()?;
+    let difference_length = axis_difference.length()?;
+    let cosine_half = 0.5 * sum_length;
+    let sine_half = 0.5 * difference_length;
     let radius = 0.5 * (first_radius + second_radius);
     let scale = first_radius
         .max(second_radius)
@@ -28,11 +34,14 @@ pub(super) fn intersect(
             .chain(second_frame.origin().to_array())
             .map(Real::abs)
             .fold(scale, Real::max);
-    if axis_dot.abs() * scale > spatial_tolerance.max(roundoff)
-        || (first_radius - second_radius).abs() > roundoff
-    {
+    if (first_radius - second_radius).abs() > roundoff {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "nonorthogonal or unequal-radius cylinder walls",
+            context: "unequal-radius crossed cylinder walls",
+        });
+    }
+    if cosine_half <= tolerance.angular() || sine_half <= tolerance.angular() {
+        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "nearly parallel crossed cylinder axes",
         });
     }
     let normal = cross.scaled(1.0 / cross_length)?;
@@ -56,30 +65,33 @@ pub(super) fn intersect(
         .translated(first_axis.scaled(first_at_crossing)?)?;
 
     let mut events = Vec::new();
-    for sign in [1.0, -1.0] {
-        let first_direction = if sign > 0.0 { 1.0 } else { -1.0 };
-        let cosine_limits = if sign > 0.0 {
-            (
-                -first_at_crossing / radius,
-                (first_height - first_at_crossing) / radius,
-            )
-        } else {
-            (
-                (first_at_crossing - first_height) / radius,
-                first_at_crossing / radius,
-            )
-        };
-        let lower = cosine_limits.0.max(-second_at_crossing / radius).max(-1.0);
-        let upper = cosine_limits
-            .1
-            .min((second_height - second_at_crossing) / radius)
-            .min(1.0);
-        if lower > upper + spatial_tolerance / radius {
+    // Equal-radius wall equations differ by a product of the two bisector
+    // coordinates, so each zero factor gives one exact ellipse.
+    for (bisector, semi_axis, first_slope, second_slope) in [
+        (
+            axis_sum,
+            radius / sine_half,
+            radius * cosine_half / sine_half,
+            radius * cosine_half / sine_half,
+        ),
+        (
+            axis_difference,
+            radius / cosine_half,
+            radius * sine_half / cosine_half,
+            -radius * sine_half / cosine_half,
+        ),
+    ] {
+        let bisector_length = bisector.length()?;
+        let cosine_axis = bisector.scaled(semi_axis / bisector_length)?;
+        let first_limits = cosine_limits(first_at_crossing, first_slope, first_height);
+        let second_limits = cosine_limits(second_at_crossing, second_slope, second_height);
+        let lower = first_limits.0.max(second_limits.0).max(-1.0);
+        let upper = first_limits.1.min(second_limits.1).min(1.0);
+        if lower > upper + spatial_tolerance / semi_axis {
             continue;
         }
-        let cosine_axis = combined_axis(first_axis, second_axis, first_direction, radius)?;
         let sine_axis = normal.scaled(radius)?;
-        if upper - lower <= spatial_tolerance / radius {
+        if upper - lower <= spatial_tolerance / semi_axis {
             let cosine = (lower + upper) * 0.5;
             if !(-1.0..=1.0).contains(&cosine) {
                 continue;
@@ -123,19 +135,18 @@ pub(super) fn intersect(
     Ok(events)
 }
 
-fn combined_axis(
-    first: Vector3,
-    second: Vector3,
-    sign: Real,
-    radius: Real,
-) -> Result<Vector3, GeometryError> {
+fn combine_axes(first: Vector3, second: Vector3, sign: Real) -> Result<Vector3, GeometryError> {
     let a = first.to_array();
     let b = second.to_array();
-    Vector3::try_new(
-        radius * (sign * a[0] + b[0]),
-        radius * (sign * a[1] + b[1]),
-        radius * (sign * a[2] + b[2]),
-    )
+    Vector3::try_new(a[0] + sign * b[0], a[1] + sign * b[1], a[2] + sign * b[2])
+}
+
+fn cosine_limits(center: Real, slope: Real, height: Real) -> (Real, Real) {
+    if slope > 0.0 {
+        (-center / slope, (height - center) / slope)
+    } else {
+        ((height - center) / slope, -center / slope)
+    }
 }
 
 fn ellipse_point(
@@ -370,6 +381,134 @@ mod tests {
                 for frame in [first_frame, second_frame] {
                     let local = frame.coordinates_of(location).unwrap();
                     assert!((local[0].hypot(local[1]) - 1.0).abs() < 3e-7);
+                }
+            }
+        }
+    }
+
+    fn oblique_pair(
+        angle: Real,
+        first_start: Real,
+        first_height: Real,
+        second_start: Real,
+        second_height: Real,
+    ) -> ((NurbsSurface, Frame3), (NurbsSurface, Frame3)) {
+        let (sine, cosine) = angle.sin_cos();
+        let first = cylinder(
+            point(0.0, 0.0, first_start),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            first_height,
+        );
+        let second = cylinder(
+            point(second_start * sine, 0.0, second_start * cosine),
+            Vector3::try_new(sine, 0.0, cosine).unwrap(),
+            second_height,
+        );
+        (first, second)
+    }
+
+    #[test]
+    fn oblique_crossed_cylinders_have_two_exact_ellipses() {
+        for angle in [
+            std::f64::consts::FRAC_PI_3,
+            2.0 * std::f64::consts::FRAC_PI_3,
+        ] {
+            let ((first, first_frame), (second, second_frame)) =
+                oblique_pair(angle, -3.0, 6.0, -3.0, 6.0);
+            for (left, right) in [(&first, &second), (&second, &first)] {
+                let events =
+                    surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+                assert_eq!(events.len(), 2);
+                let mut major_radii = Vec::new();
+                for event in events {
+                    let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                        panic!("oblique crossed walls must meet in ellipses")
+                    };
+                    assert_eq!(curve.degree(), 2);
+                    assert!(curve.is_rational());
+                    assert!(curve.is_closed().unwrap());
+                    major_radii.push(
+                        curve
+                            .evaluate(*curve.domain().start())
+                            .unwrap()
+                            .distance_to(point(0.0, 0.0, 0.0))
+                            .unwrap(),
+                    );
+                    let domain = curve.domain();
+                    for index in 0..=64 {
+                        let parameter = *domain.start()
+                            + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                        assert_on_both_walls(
+                            curve.evaluate(parameter).unwrap(),
+                            first_frame,
+                            second_frame,
+                        );
+                    }
+                }
+                major_radii.sort_by(Real::total_cmp);
+                assert!((major_radii[0] - 2.0 / 3.0_f64.sqrt()).abs() < 1e-12);
+                assert!((major_radii[1] - 2.0).abs() < 1e-12);
+            }
+        }
+    }
+
+    #[test]
+    fn oblique_crossed_cylinders_clip_at_both_finite_heights() {
+        let angle = std::f64::consts::FRAC_PI_3;
+        for (first_start, first_height, second_start, second_height) in
+            [(0.0, 3.0, -3.0, 6.0), (-3.0, 6.0, 0.0, 3.0)]
+        {
+            let ((first, first_frame), (second, second_frame)) = oblique_pair(
+                angle,
+                first_start,
+                first_height,
+                second_start,
+                second_height,
+            );
+            let events =
+                surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("finite oblique walls must meet in arcs")
+                };
+                assert!(!curve.is_closed().unwrap());
+                let domain = curve.domain();
+                for index in 0..=32 {
+                    let parameter = *domain.start()
+                        + (*domain.end() - *domain.start()) * (index as Real / 32.0);
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert_on_both_walls(location, first_frame, second_frame);
+                    let first_z = first_frame.coordinates_of(location).unwrap()[2];
+                    let second_z = second_frame.coordinates_of(location).unwrap()[2];
+                    assert!((-1e-12..=first_height + 1e-12).contains(&first_z));
+                    assert!((-1e-12..=second_height + 1e-12).contains(&second_z));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn oblique_crossed_cylinders_split_each_ellipse_into_two_arcs() {
+        let ((first, first_frame), (second, second_frame)) =
+            oblique_pair(std::f64::consts::FRAC_PI_3, -0.5, 1.0, -0.5, 1.0);
+        let events =
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 4);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("both finite walls must leave four conic arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for index in 0..=32 {
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 32.0);
+                let location = curve.evaluate(parameter).unwrap();
+                assert_on_both_walls(location, first_frame, second_frame);
+                for frame in [first_frame, second_frame] {
+                    let axial = frame.coordinates_of(location).unwrap()[2];
+                    assert!((-1e-12..=1.0 + 1e-12).contains(&axial));
                 }
             }
         }

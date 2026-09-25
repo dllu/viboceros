@@ -535,7 +535,7 @@ fn curve_brep_intersection_events_with_transform(
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,
 /// isolated rim points, or a shared rim circle.
-/// Equal-radius orthogonal cylinders with crossing axes intersect in exact
+/// Equal-radius cylinders with crossing axes intersect in exact
 /// rational ellipses clipped to their finite heights.
 /// Coaxial cone and cylinder walls meet in an exact circle, clipped to both
 /// finite surfaces.
@@ -583,7 +583,7 @@ pub fn surface_surface_intersection_events(
         );
     }
     if let (Some(first_data), Some(second_data)) = (first_cylinder, second_cylinder) {
-        return cylinder_cylinder::parallel_cylinder_intersection_events(
+        return cylinder_cylinder::cylinder_cylinder_intersection_events(
             first_data,
             second_data,
             tolerance,

@@ -199,8 +199,8 @@ Coaxial walls overlapping over an area produce no API events, as Rhino does.
 The [cylinder/cylinder fixture](../../tools/rhino_oracle/fixtures/cylinder_cylinder_surface_intersection.json)
 and [observations](../../tools/rhino_oracle/observations/cylinder_cylinder_surface_intersection.json)
 record these parallel cases.
-Equal-radius cylinder walls whose axes cross at right angles intersect in two
-exact rational ellipses. Both finite height ranges clip them to exact conic
+Equal-radius cylinder walls whose axes cross intersect in two exact rational
+ellipses, including oblique crossings. Both finite height ranges clip them to exact conic
 arcs or isolated rim points. Other nonparallel wall intersections remain
 unsupported.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
