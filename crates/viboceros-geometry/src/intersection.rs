@@ -576,7 +576,7 @@ fn curve_brep_intersection_events_with_transform(
 /// generators where their directional circles cross or touch.
 /// Canonical tori meet perpendicular or axis-containing planar patches in
 /// exact rational circles, clipped to the finite patch.
-/// Axis-parallel offset patches meet tori in fitted cubic loops or arcs.
+/// Axis-parallel offset and oblique patches meet tori in fitted cubic loops or arcs.
 /// Coaxial torus and finite cylinder walls meet in exact rational circles.
 /// Axis-centered spheres and canonical tori meet in exact rational circles.
 /// Coaxial canonical tori meet in exact rational circles.

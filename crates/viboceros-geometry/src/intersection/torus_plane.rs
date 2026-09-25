@@ -1,5 +1,6 @@
 //! Sections of a canonical torus and a finite planar patch.
 
+mod oblique;
 mod parallel_offset;
 
 use super::{SurfaceSurfaceIntersectionEvent, intersect_curve_with_planar_surface};
@@ -89,9 +90,16 @@ pub(super) fn intersect(
             distance_tolerance,
         );
     }
-    Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-        context: "oblique torus/plane section",
-    })
+    oblique::intersect(
+        frame,
+        major_radius,
+        minor_radius,
+        planar_surface,
+        plane,
+        signed_distance,
+        tolerance,
+        distance_tolerance,
+    )
 }
 
 #[cfg(test)]
