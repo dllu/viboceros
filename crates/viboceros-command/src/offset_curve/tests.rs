@@ -423,7 +423,20 @@ fn chamfer_option_joins_curved_nurbs_corner() {
     let Geometry::PolyCurve(sharp) = document.selected_objects().next().unwrap().geometry() else {
         panic!("sharp curved NURBS")
     };
-    assert_eq!(sharp.segments().len(), 2);
+    assert_eq!(sharp.segments().len(), 4);
+    let viboceros_geometry::CurveSegment3::Line(first_extension) = &sharp.segments()[1] else {
+        panic!("first sharp tangent extension")
+    };
+    let viboceros_geometry::CurveSegment3::Line(second_extension) = &sharp.segments()[2] else {
+        panic!("second sharp tangent extension")
+    };
+    assert!(
+        first_extension
+            .end()
+            .distance_to(second_extension.start())
+            .unwrap()
+            <= document.tolerance().absolute()
+    );
 }
 
 #[test]
