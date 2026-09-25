@@ -187,6 +187,15 @@ fn open_restores_current_viewports_without_named_views() {
     assert!(model.viewports[1].active);
     assert!(model.viewports[1].maximized);
     let mut reordered = model.clone();
+    let saved_positions = [
+        [0.0, 0.3, 0.0, 0.7],
+        [0.3, 1.0, 0.0, 0.4],
+        [0.0, 0.3, 0.7, 1.0],
+        [0.3, 1.0, 0.4, 1.0],
+    ];
+    for (view, position) in reordered.viewports.iter_mut().zip(saved_positions) {
+        view.position = position;
+    }
     reordered.viewports.reverse();
     viboceros_io::write_3dm_file(&path, &reordered).unwrap();
 
@@ -204,6 +213,7 @@ fn open_restores_current_viewports_without_named_views() {
     assert_eq!(destination.viewports[1].display_mode, DisplayMode::Ghosted);
     assert_eq!(destination.active_viewport, 1);
     assert_eq!(destination.maximized_viewport, Some(1));
+    assert_eq!(destination.viewport_positions, saved_positions);
     assert_eq!(
         destination.viewports[1].grid_settings(),
         source.viewports[1].grid_settings()
@@ -232,6 +242,28 @@ fn open_restores_current_viewports_without_named_views() {
     enter(&mut destination, "4View");
     assert_eq!(destination.maximized_viewport, None);
     assert_eq!(destination.active_viewport, 1);
+    let export = path.with_file_name(format!(
+        "viboceros-resaved-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    enter(
+        &mut destination,
+        &format!("Export3dm \"{}\"", export.display()),
+    );
+    let reexported = viboceros_io::read_3dm_file(&export, Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        reexported
+            .viewports
+            .iter()
+            .map(|view| view.position)
+            .collect::<Vec<_>>(),
+        saved_positions
+    );
+    std::fs::remove_file(export).unwrap();
     std::fs::remove_file(path).unwrap();
 }
 

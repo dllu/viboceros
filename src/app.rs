@@ -1424,6 +1424,35 @@ impl InteractiveCommand {
     }
 }
 
+const DEFAULT_VIEWPORT_POSITIONS: [[f64; 4]; 4] = [
+    [0.0, 0.5, 0.0, 0.5],
+    [0.5, 1.0, 0.0, 0.5],
+    [0.0, 0.5, 0.5, 1.0],
+    [0.5, 1.0, 0.5, 1.0],
+];
+
+fn viewport_rect(available: egui::Rect, position: [f64; 4]) -> egui::Rect {
+    let [left, right, top, bottom] = position;
+    let width = available.width();
+    let height = available.height();
+    let rect = egui::Rect::from_min_max(
+        egui::pos2(
+            available.left() + width * left as f32,
+            available.top() + height * top as f32,
+        ),
+        egui::pos2(
+            available.left() + width * right as f32,
+            available.top() + height * bottom as f32,
+        ),
+    );
+    rect.shrink(
+        1.0_f32
+            .min(rect.width() * 0.25)
+            .min(rect.height() * 0.25)
+            .max(0.0),
+    )
+}
+
 pub struct VibocerosApp {
     document: Document,
     document_path: Option<std::path::PathBuf>,
@@ -1435,6 +1464,7 @@ pub struct VibocerosApp {
     named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
     active_viewport: usize,
     maximized_viewport: Option<usize>,
+    viewport_positions: [[f64; 4]; 4],
     osnap: bool,
     snaps: snapping::SnapControls,
     smart_track: bool,
@@ -1504,6 +1534,7 @@ impl VibocerosApp {
             named_views: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
+            viewport_positions: DEFAULT_VIEWPORT_POSITIONS,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -6535,6 +6566,7 @@ impl eframe::App for VibocerosApp {
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
         let maximized_viewport = self.maximized_viewport;
+        let viewport_positions = self.viewport_positions;
         let zoom_window_pending = self.zoom_window_pending && !end_analysis_picking;
         let selection_window_override = (!end_analysis_picking)
             .then_some(self.selection_window_override)
@@ -6674,134 +6706,124 @@ impl eframe::App for VibocerosApp {
             .flatten();
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
-            ui.spacing_mut().item_spacing = egui::Vec2::splat(2.0);
-            let available = ui.available_size();
-            let (rows, columns, cell_size) = if maximized_viewport.is_some() {
-                (1, 1, available.max(egui::Vec2::splat(1.0)))
-            } else {
-                (
-                    2,
-                    2,
-                    egui::Vec2::new(
-                        ((available.x - 2.0) * 0.5).max(1.0),
-                        ((available.y - 2.0) * 0.5).max(1.0),
-                    ),
-                )
-            };
-            for row in 0..rows {
-                ui.horizontal(|ui| {
-                    for column in 0..columns {
-                        let index = maximized_viewport.unwrap_or(row * 2 + column);
-                        ui.allocate_ui_with_layout(
-                            cell_size,
-                            egui::Layout::top_down(egui::Align::Min),
-                            |ui| {
-                                viewport_outputs[index] = viewports[index].show(
-                                    ui,
-                                    document,
-                                    ViewportInput {
-                                        drafting,
-                                        point_filter,
-                                        point_constraint,
-                                        zoom_window: zoom_window_pending,
-                                        rect_selection_mode: selection_window_override,
-                                        circular_selection: match circular_selection {
-                                            Some(CircularSelectionState::PickCenter(_)) => {
-                                                Some(CircularSelectionInput::PickCenter)
-                                            }
-                                            Some(CircularSelectionState::PickRadius {
-                                                mode,
-                                                center,
-                                                viewport,
-                                            }) if viewport == index => {
-                                                Some(CircularSelectionInput::PickRadius {
-                                                    mode,
-                                                    center,
-                                                })
-                                            }
-                                            Some(CircularSelectionState::PickRadius { .. }) => {
-                                                Some(CircularSelectionInput::Waiting)
-                                            }
-                                            None => None,
-                                        },
-                                        fence_selection: match fence_selection {
-                                            Some(state) if state.curve_pick => None,
-                                            Some(state) if state.viewport.is_none() => {
-                                                Some(FenceSelectionInput::PickFirst)
-                                            }
-                                            Some(state) if state.viewport == Some(index) => {
-                                                Some(FenceSelectionInput::Continue(&state.points))
-                                            }
-                                            Some(_) => Some(FenceSelectionInput::Waiting),
-                                            None => None,
-                                        },
-                                        lasso_selection: match lasso_selection {
-                                            Some(state)
-                                                if state.viewport.is_none()
-                                                    || state.viewport == Some(index) =>
-                                            {
-                                                Some(LassoSelectionInput::Capture {
-                                                    points: &state.points,
-                                                    mode: state.mode,
-                                                })
-                                            }
-                                            Some(_) => Some(LassoSelectionInput::Waiting),
-                                            None => None,
-                                        },
-                                        zoom_target: match zoom_target {
-                                            Some(ZoomTargetState::PickTarget) => {
-                                                Some(ZoomTargetInput::PickTarget)
-                                            }
-                                            Some(ZoomTargetState::PickWindow {
-                                                target,
-                                                viewport,
-                                            }) if viewport == index => {
-                                                Some(ZoomTargetInput::PickWindow(target))
-                                            }
-                                            Some(ZoomTargetState::PickWindow { .. }) => {
-                                                Some(ZoomTargetInput::Waiting)
-                                            }
-                                            None => None,
-                                        },
-                                        object_filter: if end_analysis_picking || curve_region_pick
-                                        {
-                                            Some(viboceros_command::ObjectSelectionFilter::Curves)
-                                        } else if volume_object_pick {
-                                            Some(viboceros_command::ObjectSelectionFilter::Any)
-                                        } else {
-                                            object_filter
-                                        },
-                                        selection_preview: if end_analysis_picking
-                                            || curve_region_pick
-                                            || volume_object_pick
-                                        {
-                                            None
-                                        } else {
-                                            selection_preview
-                                        },
-                                        selection_preview_ids: &selection_preview_ids,
-                                        point_cloud_remove_target,
-                                        point_cloud_highlights: &point_cloud_highlights,
-                                        preview_curve: preview_curve.as_deref(),
-                                        edge_pick,
-                                        edge_highlights: &edge_highlights,
-                                        edge_endpoints,
-                                        edge_curve,
-                                        edge_parameters,
-                                        edge_distance_parameters,
-                                        end_markers: &end_markers,
-                                        current_end_marker,
-                                        end_marker_color,
-                                    },
-                                    curve_points,
-                                    index,
-                                    index == active_viewport,
-                                );
+            let available = ui.available_rect_before_wrap();
+            let indices = (0..viewports.len())
+                .filter(|index| *index != active_viewport)
+                .chain(std::iter::once(active_viewport));
+            for index in indices {
+                if maximized_viewport.is_none() || maximized_viewport == Some(index) {
+                    let position = if maximized_viewport.is_some() {
+                        [0.0, 1.0, 0.0, 1.0]
+                    } else {
+                        viewport_positions[index]
+                    };
+                    let rect = viewport_rect(available, position);
+                    let mut child = ui.new_child(
+                        egui::UiBuilder::new()
+                            .id_salt(index)
+                            .max_rect(rect)
+                            .layout(egui::Layout::top_down(egui::Align::Min)),
+                    );
+                    child.set_clip_rect(rect);
+                    viewport_outputs[index] = viewports[index].show(
+                        &mut child,
+                        document,
+                        ViewportInput {
+                            drafting,
+                            point_filter,
+                            point_constraint,
+                            zoom_window: zoom_window_pending,
+                            rect_selection_mode: selection_window_override,
+                            circular_selection: match circular_selection {
+                                Some(CircularSelectionState::PickCenter(_)) => {
+                                    Some(CircularSelectionInput::PickCenter)
+                                }
+                                Some(CircularSelectionState::PickRadius {
+                                    mode,
+                                    center,
+                                    viewport,
+                                }) if viewport == index => {
+                                    Some(CircularSelectionInput::PickRadius { mode, center })
+                                }
+                                Some(CircularSelectionState::PickRadius { .. }) => {
+                                    Some(CircularSelectionInput::Waiting)
+                                }
+                                None => None,
                             },
-                        );
-                    }
-                });
+                            fence_selection: match fence_selection {
+                                Some(state) if state.curve_pick => None,
+                                Some(state) if state.viewport.is_none() => {
+                                    Some(FenceSelectionInput::PickFirst)
+                                }
+                                Some(state) if state.viewport == Some(index) => {
+                                    Some(FenceSelectionInput::Continue(&state.points))
+                                }
+                                Some(_) => Some(FenceSelectionInput::Waiting),
+                                None => None,
+                            },
+                            lasso_selection: match lasso_selection {
+                                Some(state)
+                                    if state.viewport.is_none()
+                                        || state.viewport == Some(index) =>
+                                {
+                                    Some(LassoSelectionInput::Capture {
+                                        points: &state.points,
+                                        mode: state.mode,
+                                    })
+                                }
+                                Some(_) => Some(LassoSelectionInput::Waiting),
+                                None => None,
+                            },
+                            zoom_target: match zoom_target {
+                                Some(ZoomTargetState::PickTarget) => {
+                                    Some(ZoomTargetInput::PickTarget)
+                                }
+                                Some(ZoomTargetState::PickWindow { target, viewport })
+                                    if viewport == index =>
+                                {
+                                    Some(ZoomTargetInput::PickWindow(target))
+                                }
+                                Some(ZoomTargetState::PickWindow { .. }) => {
+                                    Some(ZoomTargetInput::Waiting)
+                                }
+                                None => None,
+                            },
+                            object_filter: if end_analysis_picking || curve_region_pick {
+                                Some(viboceros_command::ObjectSelectionFilter::Curves)
+                            } else if volume_object_pick {
+                                Some(viboceros_command::ObjectSelectionFilter::Any)
+                            } else {
+                                object_filter
+                            },
+                            selection_preview: if end_analysis_picking
+                                || curve_region_pick
+                                || volume_object_pick
+                            {
+                                None
+                            } else {
+                                selection_preview
+                            },
+                            selection_preview_ids: &selection_preview_ids,
+                            point_cloud_remove_target,
+                            point_cloud_highlights: &point_cloud_highlights,
+                            preview_curve: preview_curve.as_deref(),
+                            edge_pick,
+                            edge_highlights: &edge_highlights,
+                            edge_endpoints,
+                            edge_curve,
+                            edge_parameters,
+                            edge_distance_parameters,
+                            end_markers: &end_markers,
+                            current_end_marker,
+                            end_marker_color,
+                        },
+                        curve_points,
+                        index,
+                        index == active_viewport,
+                    );
+                }
             }
+            ui.advance_cursor_after_rect(available);
         });
         let menu_action = self.show_selection_menu(ui);
         let mut menu_consumed = menu_action.is_some();
@@ -6969,6 +6991,7 @@ mod tests {
             named_views: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
+            viewport_positions: DEFAULT_VIEWPORT_POSITIONS,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,

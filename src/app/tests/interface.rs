@@ -90,6 +90,42 @@ fn double_clicking_viewport_title_requests_layout_toggle() {
     assert!(click(egui::pos2(30.0, 12.0)).toggle_maximized);
 }
 
+#[test]
+fn normalized_viewport_position_sets_the_rendered_camera_port() {
+    let context = egui::Context::default();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let document = Document::default();
+    let mut expected = [0, 0];
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1000.0, 600.0),
+                )),
+                ..Default::default()
+            },
+            |ui| {
+                let rect = viewport_rect(ui.available_rect_before_wrap(), [0.0, 0.3, 0.0, 0.7]);
+                expected = [rect.width() as i32, rect.height() as i32];
+                let mut child = ui.new_child(egui::UiBuilder::new().id_salt(0).max_rect(rect));
+                child.set_clip_rect(rect);
+                viewport.show(
+                    &mut child,
+                    &document,
+                    ViewportInput::default(),
+                    &[],
+                    0,
+                    true,
+                );
+            },
+        )
+        .drop_without_applying_deltas();
+    let camera = Viewport::named_view_to_3dm(viewport.named_view_snapshot(), "Top".into()).unwrap();
+    assert_eq!(camera.screen_port, [0, expected[0], expected[1], 0]);
+    assert!(expected[0] < 400 && expected[1] < 500);
+}
+
 fn zoom_window_frame(
     context: &egui::Context,
     app: &mut VibocerosApp,

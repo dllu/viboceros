@@ -52,8 +52,9 @@ session `NamedView` list is included in `Import3dm` and `Export3dm`; Save and
 Open also preserve current model viewports, including their grid and snap settings
 and the active viewport. Unit-converted reads scale grid and snap spacing with
 the camera and construction plane. Open maps four saved window positions into
-the matching 2×2 slots; custom split sizes are not yet represented. The file's
-current layer is restored
+the matching 2×2 slots and renders their normalized rectangles, preserving
+unequal splits. Missing or invalid rectangles use the standard four-view grid.
+The file's current layer is restored
 by Open when it is visible and unlocked. Import keeps the destination's current
 layer.
 3DM round trips also keep user text attached to object attributes and user text

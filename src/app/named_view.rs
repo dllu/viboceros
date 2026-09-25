@@ -62,6 +62,23 @@ fn views_in_grid_order(views: Vec<ThreeDmViewport>) -> Vec<ThreeDmViewport> {
         .collect()
 }
 
+fn file_viewport_positions(views: &[ThreeDmViewport]) -> [[f64; 4]; 4] {
+    if views.len() != 4
+        || views.iter().any(|view| {
+            let [left, right, top, bottom] = view.position;
+            !(0.0..=1.0).contains(&left)
+                || !(0.0..=1.0).contains(&right)
+                || !(0.0..=1.0).contains(&top)
+                || !(0.0..=1.0).contains(&bottom)
+                || left >= right
+                || top >= bottom
+        })
+    {
+        return DEFAULT_VIEWPORT_POSITIONS;
+    }
+    std::array::from_fn(|index| views[index].position)
+}
+
 impl VibocerosApp {
     fn three_dm_views(&self) -> Result<Vec<ThreeDmNamedView>, viboceros_command::CommandError> {
         self.named_views
@@ -74,12 +91,6 @@ impl VibocerosApp {
     pub(super) fn three_dm_viewports(
         &self,
     ) -> Result<Vec<ThreeDmViewport>, viboceros_command::CommandError> {
-        let positions = [
-            [0.0, 0.5, 0.0, 0.5],
-            [0.5, 1.0, 0.0, 0.5],
-            [0.0, 0.5, 0.5, 1.0],
-            [0.5, 1.0, 0.5, 1.0],
-        ];
         self.viewports
             .iter()
             .enumerate()
@@ -107,7 +118,7 @@ impl VibocerosApp {
                         }
                     },
                     active: index == self.active_viewport,
-                    position: positions[index],
+                    position: self.viewport_positions[index],
                     maximized: self.maximized_viewport == Some(index),
                 })
             })
@@ -127,6 +138,7 @@ impl VibocerosApp {
                 let (document, message, views, current_views) =
                     viboceros_command::open_3dm_with_views(path)?;
                 let current_views = views_in_grid_order(current_views);
+                let viewport_positions = file_viewport_positions(&current_views);
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
                 self.document = document;
@@ -135,6 +147,7 @@ impl VibocerosApp {
                 );
                 self.named_views = named_views;
                 self.viewports = Viewport::standard_views();
+                self.viewport_positions = viewport_positions;
                 for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
                     if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
                         viewport.restore_named_view(snapshot);
