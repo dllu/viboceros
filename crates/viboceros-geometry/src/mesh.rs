@@ -20,6 +20,8 @@ mod edge_unweld_tests;
 mod edge_weld;
 mod ngon;
 mod normals;
+mod offset;
+pub use offset::MeshOffsetDirection;
 mod planar_cap;
 mod quadrangulate;
 mod radial;

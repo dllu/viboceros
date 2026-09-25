@@ -95,6 +95,21 @@ See its reference for selection paths, option memory, budgets, and n-gon limits.
 
 ## Mesh extraction and editing
 
+`OffsetMesh 2` copies selected meshes by moving each topological vertex along
+the average of its raw vertex normals. Coincident unwelded copies move together.
+`DirectionMethod=UserSelectedDirection` with
+`Direction=0,0,1` uses one specified vector instead. `AverageNormals=Yes`
+moves all vertices in their common average direction, falling back to the
+active construction plane normal when that average cancels. `FlipAll=Yes`
+reverses the side. `BothSides=Yes` creates two offset skins; `Solid=Yes` also
+includes the original skin for a one-sided offset and joins naked boundaries
+with quadrilateral walls. `AllowDisjoint=No` creates separate objects for
+disconnected results, while `AllowDisjoint=Yes` retains one mesh per source.
+`DeleteInput=Yes` removes the originals. Output keeps source attributes and
+groups, and the edit is undoable. Offsets that collapse faces or fail to form
+a closed shell in solid mode are rejected. Exact Rhino offset directions and
+mesh storage order still need live oracle comparison.
+
 `ExtractMeshEdges` creates fresh current-layer curves from selected polygon
 meshes. `ExtractBy=Unwelded` (the default) includes both naked edges and seams
 whose coincident endpoints use distinct raw mesh vertices; `ExtractBy=Naked`
