@@ -367,7 +367,7 @@ mod tests {
     }
 
     #[test]
-    fn python_oracle_reports_equal_parallel_offset_torus_sections() {
+    fn python_oracle_reports_parallel_offset_torus_sections() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json"
         ))
@@ -378,6 +378,8 @@ mod tests {
             ("coaxial_tangent_circle", vec![2]),
             ("equal_parallel_offset_four_loops", vec![3, 3, 3, 3]),
             ("equal_parallel_offset_meridian", vec![2, 3]),
+            ("unequal_major_parallel_four_loops", vec![3, 3, 3, 3]),
+            ("unequal_major_parallel_meridian", vec![2, 3]),
             ("disjoint", vec![]),
         ];
         assert_eq!(response.outcomes.len(), expected.len());

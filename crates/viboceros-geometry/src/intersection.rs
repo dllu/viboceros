@@ -583,6 +583,8 @@ fn curve_brep_intersection_events_with_transform(
 /// Axis-centered spheres and canonical tori meet in exact rational circles.
 /// Coaxial canonical tori meet in exact rational circles.
 /// Equal parallel offset tori meet in fitted symmetry-plane and elliptic sections.
+/// Unequal-major parallel offset tori with matching tube radii meet in fitted
+/// lifted hyperbolic and elliptic sections at the same axial level.
 /// Coaxial canonical tori and finite cone walls meet in exact rational circles.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
