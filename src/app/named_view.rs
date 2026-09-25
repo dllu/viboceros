@@ -1,7 +1,8 @@
 use super::*;
+use crate::viewport::GridSettings;
 use viboceros_command::named_view::NamedViews;
 use viboceros_command::named_view::{self, NamedViewAction};
-use viboceros_io::{ThreeDmDisplayMode, ThreeDmNamedView, ThreeDmViewport};
+use viboceros_io::{ThreeDmDisplayMode, ThreeDmGridSettings, ThreeDmNamedView, ThreeDmViewport};
 
 fn add_file_views(
     named_views: &mut NamedViews<NamedViewSnapshot>,
@@ -64,6 +65,19 @@ impl VibocerosApp {
                         DisplayMode::Shaded => ThreeDmDisplayMode::Shaded,
                         DisplayMode::Ghosted => ThreeDmDisplayMode::Ghosted,
                     },
+                    grid: {
+                        let grid = viewport.grid_settings();
+                        ThreeDmGridSettings {
+                            snap_spacing: grid.snap_spacing,
+                            minor_spacing: grid.minor_spacing,
+                            major_interval: grid.major_interval,
+                            line_count: grid.line_count,
+                            show_grid: grid.show_grid,
+                            show_axes: grid.show_axes,
+                            show_world_axes: grid.show_world_axes,
+                        }
+                    },
+                    active: index == self.active_viewport,
                     position: positions[index],
                     maximized: false,
                 })
@@ -101,8 +115,24 @@ impl VibocerosApp {
                         ThreeDmDisplayMode::Ghosted => DisplayMode::Ghosted,
                         ThreeDmDisplayMode::Other => viewport.display_mode,
                     };
+                    let grid = GridSettings {
+                        snap_spacing: source.grid.snap_spacing,
+                        minor_spacing: source.grid.minor_spacing,
+                        major_interval: source.grid.major_interval,
+                        line_count: source.grid.line_count,
+                        show_grid: source.grid.show_grid,
+                        show_axes: source.grid.show_axes,
+                        show_world_axes: source.grid.show_world_axes,
+                    };
+                    if grid.valid() {
+                        viewport.set_grid_settings(grid);
+                    }
                 }
-                self.active_viewport = 0;
+                self.active_viewport = current_views
+                    .iter()
+                    .position(|view| view.active)
+                    .filter(|index| *index < self.viewports.len())
+                    .unwrap_or(0);
                 self.last_point = None;
                 self.sidebar = DocumentSidebar::default();
                 Ok(format!("{message}; opened {imported} named view(s)"))

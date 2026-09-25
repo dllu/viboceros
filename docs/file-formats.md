@@ -49,7 +49,9 @@ The low-level `ThreeDmModel` reader and writer also retain named model views,
 including projection, camera, target, CPlane, and frustum. Unit-converted reads
 scale their positions and frustum distances along with model geometry. The GUI's
 session `NamedView` list is included in `Import3dm` and `Export3dm`; Save and
-Open also preserve current model viewports. The file's current layer is restored
+Open also preserve current model viewports, including their grid and snap settings
+and the active viewport. Unit-converted reads scale grid and snap spacing with
+the camera and construction plane. The file's current layer is restored
 by Open when it is visible and unlocked. Import keeps the destination's current
 layer.
 3DM round trips also keep user text attached to object attributes and user text

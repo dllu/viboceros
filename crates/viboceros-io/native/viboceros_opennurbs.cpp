@@ -1907,6 +1907,16 @@ extern "C" int32_t vibo_3dm_read(const char* path,
                                mode == ON_StandardDisplayModeId::Shaded ? 2 :
                                mode == ON_StandardDisplayModeId::Ghosted ? 3 : 0;
       view.data.maximized = static_cast<uint8_t>(source_view.m_position.m_bMaximized);
+      view.data.active = static_cast<uint8_t>(
+          source.m_settings.m_active_view_id != ON_nil_uuid &&
+          source.m_settings.m_active_view_id == source_view.m_vp.ViewportId());
+      view.data.show_grid = static_cast<uint8_t>(source_view.m_bShowConstructionGrid);
+      view.data.show_axes = static_cast<uint8_t>(source_view.m_bShowConstructionAxes);
+      view.data.show_world_axes = static_cast<uint8_t>(source_view.m_bShowWorldAxes);
+      view.data.snap_spacing = source_view.m_cplane.m_snap_spacing;
+      view.data.minor_spacing = source_view.m_cplane.m_grid_spacing;
+      view.data.major_interval = source_view.m_cplane.m_grid_thick_frequency;
+      view.data.line_count = source_view.m_cplane.m_grid_line_count;
       view.data.position[0] = source_view.m_position.m_wnd_left;
       view.data.position[1] = source_view.m_position.m_wnd_right;
       view.data.position[2] = source_view.m_position.m_wnd_top;
@@ -2285,6 +2295,13 @@ extern "C" int32_t vibo_3dm_write(
       view.m_position.m_wnd_top = source.position[2];
       view.m_position.m_wnd_bottom = source.position[3];
       view.m_position.m_bMaximized = source.maximized != 0;
+      view.m_cplane.m_snap_spacing = source.snap_spacing;
+      view.m_cplane.m_grid_spacing = source.minor_spacing;
+      view.m_cplane.m_grid_thick_frequency = source.major_interval;
+      view.m_cplane.m_grid_line_count = source.line_count;
+      view.m_bShowConstructionGrid = source.show_grid != 0;
+      view.m_bShowConstructionAxes = source.show_axes != 0;
+      view.m_bShowWorldAxes = source.show_world_axes != 0;
       ON_wString view_diagnostics;
       ON_TextLog view_log(view_diagnostics);
       if (!view.IsValid(&view_log)) {
@@ -2293,6 +2310,9 @@ extern "C" int32_t vibo_3dm_write(
         return 0;
       }
       model.m_settings.m_views.Append(view);
+      if (source.active != 0) {
+        model.m_settings.m_active_view_id = view.m_vp.ViewportId();
+      }
     }
 
     std::vector<int> layer_indices;

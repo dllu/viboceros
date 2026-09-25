@@ -78,7 +78,15 @@ typedef struct ViboCurrentView {
   ViboNamedView camera;
   uint8_t display_mode; // 0 other, 1 wireframe, 2 shaded, 3 ghosted
   uint8_t maximized;
+  uint8_t active;
+  uint8_t show_grid;
+  uint8_t show_axes;
+  uint8_t show_world_axes;
   double position[4]; // left, right, top, bottom
+  double snap_spacing;
+  double minor_spacing;
+  int32_t major_interval;
+  int32_t line_count;
 } ViboCurrentView;
 
 typedef struct ViboUserText {

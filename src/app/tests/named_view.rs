@@ -152,6 +152,16 @@ fn open_restores_current_viewports_without_named_views() {
     enter(&mut source, "SetView World Perspective");
     source.viewports[0].display_mode = DisplayMode::Shaded;
     source.viewports[1].display_mode = DisplayMode::Ghosted;
+    source.active_viewport = 1;
+    source.viewports[1].set_grid_settings(GridSettings {
+        snap_spacing: 0.25,
+        minor_spacing: 2.5,
+        major_interval: 8,
+        line_count: 23,
+        show_grid: false,
+        show_axes: false,
+        show_world_axes: true,
+    });
     let expected = source.three_dm_viewports().unwrap();
     enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
     assert!(
@@ -170,6 +180,9 @@ fn open_restores_current_viewports_without_named_views() {
         model.viewports[1].display_mode,
         viboceros_io::ThreeDmDisplayMode::Ghosted
     );
+    assert_eq!(model.viewports[1].grid.snap_spacing, 0.25);
+    assert_eq!(model.viewports[1].grid.minor_spacing, 2.5);
+    assert!(model.viewports[1].active);
 
     let mut destination = test_app();
     enter(&mut destination, &format!("Open \"{}\"", path.display()));
@@ -183,6 +196,11 @@ fn open_restores_current_viewports_without_named_views() {
     assert_eq!(destination.viewports[0].kind(), ViewKind::Perspective);
     assert_eq!(destination.viewports[0].display_mode, DisplayMode::Shaded);
     assert_eq!(destination.viewports[1].display_mode, DisplayMode::Ghosted);
+    assert_eq!(destination.active_viewport, 1);
+    assert_eq!(
+        destination.viewports[1].grid_settings(),
+        source.viewports[1].grid_settings()
+    );
     let actual = destination.three_dm_viewports().unwrap();
     for (actual, expected) in actual.iter().zip(expected.iter()) {
         assert_eq!(actual.camera.projection, expected.camera.projection);

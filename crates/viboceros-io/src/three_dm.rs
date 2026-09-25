@@ -74,11 +74,39 @@ pub enum ThreeDmDisplayMode {
     Ghosted = 3,
 }
 
+/// Construction grid and snap settings stored with a current model viewport.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ThreeDmGridSettings {
+    pub snap_spacing: f64,
+    pub minor_spacing: f64,
+    pub major_interval: u32,
+    pub line_count: u32,
+    pub show_grid: bool,
+    pub show_axes: bool,
+    pub show_world_axes: bool,
+}
+
+impl Default for ThreeDmGridSettings {
+    fn default() -> Self {
+        Self {
+            snap_spacing: 1.0,
+            minor_spacing: 1.0,
+            major_interval: 5,
+            line_count: 70,
+            show_grid: true,
+            show_axes: true,
+            show_world_axes: false,
+        }
+    }
+}
+
 /// A model-space viewport from the 3DM current-view table.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmViewport {
     pub camera: ThreeDmNamedView,
     pub display_mode: ThreeDmDisplayMode,
+    pub grid: ThreeDmGridSettings,
+    pub active: bool,
     /// Relative left, right, top, and bottom window coordinates.
     pub position: [f64; 4],
     pub maximized: bool,
@@ -279,6 +307,23 @@ pub fn read_3dm_file_in_units(
             )?;
             view.frustum = view.frustum.map(|coordinate| coordinate * scale);
         }
+        for viewport in &mut model.viewports {
+            let scale_spacing = |spacing: f64| {
+                if !spacing.is_finite() || spacing <= 0.0 {
+                    return Ok(spacing);
+                }
+                let converted = spacing * scale;
+                if converted.is_finite() && converted > 0.0 {
+                    Ok(converted)
+                } else {
+                    Err(ThreeDmError::InvalidModel(
+                        "viewport grid spacing is not representable in target units".into(),
+                    ))
+                }
+            };
+            viewport.grid.snap_spacing = scale_spacing(viewport.grid.snap_spacing)?;
+            viewport.grid.minor_spacing = scale_spacing(viewport.grid.minor_spacing)?;
+        }
     }
     model.units = target_units.clone();
     // Converted geometry joins a destination model with the caller's policy.
@@ -431,7 +476,15 @@ pub fn write_3dm_file(
             },
             display_mode: view.display_mode as u8,
             maximized: u8::from(view.maximized),
+            active: u8::from(view.active),
+            show_grid: u8::from(view.grid.show_grid),
+            show_axes: u8::from(view.grid.show_axes),
+            show_world_axes: u8::from(view.grid.show_world_axes),
             position: view.position,
+            snap_spacing: view.grid.snap_spacing,
+            minor_spacing: view.grid.minor_spacing,
+            major_interval: view.grid.major_interval as i32,
+            line_count: view.grid.line_count as i32,
         })
         .collect::<Vec<_>>();
 
@@ -737,6 +790,16 @@ fn decode_model(
         viewports.push(ThreeDmViewport {
             camera: decode_view(&raw.camera)?,
             display_mode,
+            grid: ThreeDmGridSettings {
+                snap_spacing: raw.snap_spacing,
+                minor_spacing: raw.minor_spacing,
+                major_interval: u32::try_from(raw.major_interval).unwrap_or(0),
+                line_count: u32::try_from(raw.line_count).unwrap_or(0),
+                show_grid: raw.show_grid != 0,
+                show_axes: raw.show_axes != 0,
+                show_world_axes: raw.show_world_axes != 0,
+            },
+            active: raw.active != 0,
             position: raw.position,
             maximized: raw.maximized != 0,
         });
@@ -1188,8 +1251,23 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
         }
         validate_view_camera(view, &format!("named view {index}"))?;
     }
+    let mut active_count = 0;
     for (index, viewport) in model.viewports.iter().enumerate() {
         validate_view_camera(&viewport.camera, &format!("viewport {index}"))?;
+        active_count += usize::from(viewport.active);
+        let grid = viewport.grid;
+        if !grid.snap_spacing.is_finite()
+            || grid.snap_spacing <= 0.0
+            || !grid.minor_spacing.is_finite()
+            || grid.minor_spacing <= 0.0
+            || grid.major_interval > i32::MAX as u32
+            || grid.line_count > i32::MAX as u32
+            || !(f64::from(grid.line_count) * grid.minor_spacing).is_finite()
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "viewport {index} has invalid grid settings"
+            )));
+        }
         let [left, right, top, bottom] = viewport.position;
         if !viewport.position.iter().all(|value| value.is_finite())
             || left >= right
@@ -1199,6 +1277,11 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
                 "viewport {index} has an invalid position"
             )));
         }
+    }
+    if active_count > 1 {
+        return Err(ThreeDmError::InvalidModel(
+            "more than one viewport is active".into(),
+        ));
     }
     for (index, object) in model.objects.iter().enumerate() {
         let mut user_text_keys = BTreeSet::new();
@@ -1637,7 +1720,15 @@ mod ffi {
         pub camera: ViboNamedView,
         pub display_mode: u8,
         pub maximized: u8,
+        pub active: u8,
+        pub show_grid: u8,
+        pub show_axes: u8,
+        pub show_world_axes: u8,
         pub position: [f64; 4],
+        pub snap_spacing: f64,
+        pub minor_spacing: f64,
+        pub major_interval: i32,
+        pub line_count: i32,
     }
 
     #[repr(C)]
@@ -3266,12 +3357,24 @@ mod tests {
         model.viewports.push(ThreeDmViewport {
             camera: model.named_views[0].clone(),
             display_mode: ThreeDmDisplayMode::Shaded,
+            grid: ThreeDmGridSettings {
+                snap_spacing: 2.5,
+                minor_spacing: 4.0,
+                major_interval: 3,
+                line_count: 41,
+                show_grid: false,
+                show_axes: true,
+                show_world_axes: true,
+            },
+            active: true,
             position: [0.0, 0.5, 0.0, 1.0],
             maximized: false,
         });
         model.viewports.push(ThreeDmViewport {
             camera: model.named_views[1].clone(),
             display_mode: ThreeDmDisplayMode::Ghosted,
+            grid: ThreeDmGridSettings::default(),
+            active: false,
             position: [0.5, 1.0, 0.0, 1.0],
             maximized: true,
         });
@@ -3279,6 +3382,9 @@ mod tests {
         let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
         assert_eq!(loaded.viewports.len(), 2);
         assert_eq!(loaded.viewports[0].display_mode, ThreeDmDisplayMode::Shaded);
+        assert_eq!(loaded.viewports[0].grid, model.viewports[0].grid);
+        assert!(loaded.viewports[0].active);
+        assert!(!loaded.viewports[1].active);
         assert_eq!(loaded.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
         assert_eq!(
             loaded.viewports[1].display_mode,
@@ -3324,6 +3430,8 @@ mod tests {
             [0.002, 0.003, 0.004]
         );
         assert_eq!(meters.viewports[0].camera.frustum[4], 0.001);
+        assert_eq!(meters.viewports[0].grid.snap_spacing, 0.0025);
+        assert_eq!(meters.viewports[0].grid.minor_spacing, 0.004);
         assert_eq!(meters.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
         fs::remove_file(path).unwrap();
     }
