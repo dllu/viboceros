@@ -148,8 +148,10 @@ extracts stored faces whose oriented polygon normal makes an angle in the
 inclusive range with the direction from the model toward the viewer. The app
 supplies its active viewport direction when `ViewDirection` is omitted;
 standalone command calls supply it explicitly. `MakeCopy=Yes` and
-`BorderOnly=Yes` follow the other face-filter commands. Exact command
-thresholds and defaults still require direct Rhino oracle comparison.
+`BorderOnly=Yes` follow the other face-filter commands. Rhino's older
+`StartAngleFromCameraDir`, `EndAngleFromCameraDir`, and `GetBorder` option
+names are accepted. Exact command thresholds and defaults still require direct
+Rhino oracle comparison.
 
 `ExtractConnectedMeshFaces Face=0 Angle=0 Compare=Less` extracts the region
 reachable from stored face 0 across topological edges. Each neighboring face

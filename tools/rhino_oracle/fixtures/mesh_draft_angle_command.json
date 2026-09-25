@@ -1,0 +1,39 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {"absolute": 1e-9, "relative": 1e-12, "angular": 1e-10},
+  "operations": [
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-defaults",
+      "view": "Top",
+      "mode": "defaults",
+      "vertices": [[0,0,0], [1,0,0], [0,1,0], [3,0,0], [4,0,0], [3,1,0], [6,0,0], [6,1,0], [6,0,1]],
+      "faces": [[0,1,2], [3,5,4], [6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-zero",
+      "view": "Top",
+      "mode": "zero",
+      "vertices": [[0,0,0], [1,0,0], [0,1,0], [3,0,0], [4,0,0], [3,1,0], [6,0,0], [6,1,0], [6,0,1]],
+      "faces": [[0,1,2], [3,5,4], [6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "bottom-zero",
+      "view": "Bottom",
+      "mode": "zero",
+      "vertices": [[0,0,0], [1,0,0], [0,1,0], [3,0,0], [4,0,0], [3,1,0], [6,0,0], [6,1,0], [6,0,1]],
+      "faces": [[0,1,2], [3,5,4], [6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-right-angle",
+      "view": "Top",
+      "mode": "right_angle",
+      "vertices": [[0,0,0], [1,0,0], [0,1,0], [3,0,0], [4,0,0], [3,1,0], [6,0,0], [6,1,0], [6,0,1]],
+      "faces": [[0,1,2], [3,5,4], [6,7,8]]
+    }
+  ]
+}

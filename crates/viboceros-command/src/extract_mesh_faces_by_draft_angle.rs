@@ -47,15 +47,23 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         let Some((key, value)) = argument.split_once('=') else {
             return Err(CommandError::Usage(USAGE));
         };
-        if key.eq_ignore_ascii_case("StartAngle") && start.is_none() {
+        if (key.eq_ignore_ascii_case("StartAngle")
+            || key.eq_ignore_ascii_case("StartAngleFromCameraDir"))
+            && start.is_none()
+        {
             start = Some(parse_angle(value)?);
-        } else if key.eq_ignore_ascii_case("EndAngle") && end.is_none() {
+        } else if (key.eq_ignore_ascii_case("EndAngle")
+            || key.eq_ignore_ascii_case("EndAngleFromCameraDir"))
+            && end.is_none()
+        {
             end = Some(parse_angle(value)?);
         } else if key.eq_ignore_ascii_case("ViewDirection") && viewward.is_none() {
             viewward = Some(parse_direction(value)?);
         } else if key.eq_ignore_ascii_case("MakeCopy") && make_copy.is_none() {
             make_copy = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
-        } else if key.eq_ignore_ascii_case("BorderOnly") && border_only.is_none() {
+        } else if (key.eq_ignore_ascii_case("BorderOnly") || key.eq_ignore_ascii_case("GetBorder"))
+            && border_only.is_none()
+        {
             border_only = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
         } else {
             return Err(CommandError::Usage(USAGE));
@@ -225,5 +233,24 @@ mod tests {
             Err(CommandError::UnsupportedExtractMeshFacesByDraftAngleGeometry)
         ));
         assert_eq!(document.objects().count(), 2);
+    }
+
+    #[test]
+    fn rhino_style_angle_and_border_option_names_are_accepted() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = selected_mesh(&mut document);
+        registry.execute(
+            &mut document,
+            "ExtractMeshFacesByDraftAngle StartAngleFromCameraDir=0 EndAngleFromCameraDir=0 ViewDirection=0,0,1 GetBorder=Yes",
+        ).unwrap();
+        assert!(matches!(
+            document.selected_objects().next().unwrap().geometry(),
+            Geometry::Polyline(_)
+        ));
+        let Geometry::Mesh(original) = document.object(source).unwrap().geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(original.face_count(), 3);
     }
 }
