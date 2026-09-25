@@ -143,6 +143,17 @@ A square therefore has ratio 2. Collinear triples count as infinite ratio.
 extraction commands. The triangle formula is an independent implementation;
 direct Rhino oracle comparison is still needed for exact threshold parity.
 
+`ExtractConnectedMeshFaces Face=0 Angle=0 Compare=Less` extracts the region
+reachable from stored face 0 across topological edges. Each neighboring face
+pair must have a normal angle less than or equal to `Angle`; `Compare=Greater`
+uses greater than or equal instead. The default is 0 degrees with `Less`, so
+connected coplanar faces are extracted. `Face` is a zero-based index on each
+selected mesh; the same seed index is used for every selected mesh. Unwelded
+vertices at identical positions count as connected. `MakeCopy=Yes` and
+`BorderOnly=Yes` preserve the source mesh and use the other extraction
+commands' attributes, groups, result selection, and undo behavior. Viewport
+subobject picking is still pending, so scripts must supply `Face`.
+
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,

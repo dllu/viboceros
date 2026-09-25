@@ -275,6 +275,7 @@ ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
 ExtractSubCrv Segments=0,2 Copy=Yes Join=No OutputLayer=Input
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
+ExtractConnectedMeshFaces Face=0 Angle=0 Compare=Less MakeCopy=Yes
 ExtractMeshFacesByArea LargerThan=0 SmallerThan=2 MakeCopy=Yes
 ExtractMeshFacesByAspectRatio AspectRatio=9 BorderOnly=Yes
 ExtractMeshFacesByEdgeLength EdgeLength=0.1 Select=Shorter BorderOnly=Yes

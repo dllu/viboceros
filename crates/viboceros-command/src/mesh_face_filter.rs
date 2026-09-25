@@ -1,4 +1,4 @@
-//! Shared document transaction for metric-based mesh face extraction.
+//! Shared document transaction for mesh face extraction by computed face set.
 
 use super::*;
 
@@ -26,6 +26,34 @@ pub(super) fn extract_filtered_mesh_faces(
     no_borders: CommandError,
     mut matches: impl FnMut(&TriangleMesh, usize) -> Result<bool, GeometryError>,
 ) -> Result<String, CommandError> {
+    extract_selected_mesh_faces(
+        document,
+        command,
+        output,
+        unsupported,
+        no_matches,
+        no_borders,
+        |mesh| {
+            let mut indices = Vec::new();
+            for index in 0..mesh.face_count() {
+                if matches(mesh, index)? {
+                    indices.push(index);
+                }
+            }
+            Ok(indices)
+        },
+    )
+}
+
+pub(super) fn extract_selected_mesh_faces(
+    document: &mut Document,
+    command: &'static str,
+    output: FilterOutputOptions,
+    unsupported: CommandError,
+    no_matches: CommandError,
+    no_borders: CommandError,
+    mut select: impl FnMut(&TriangleMesh) -> Result<Vec<usize>, GeometryError>,
+) -> Result<String, CommandError> {
     let tolerance = document.tolerance();
     let mut source_count = 0;
     let mut face_count = 0_usize;
@@ -36,12 +64,7 @@ pub(super) fn extract_filtered_mesh_faces(
         let Geometry::Mesh(mesh) = object.geometry() else {
             return Err(unsupported);
         };
-        let mut indices = Vec::new();
-        for index in 0..mesh.face_count() {
-            if matches(mesh, index)? {
-                indices.push(index);
-            }
-        }
+        let indices = select(mesh)?;
         if indices.is_empty() {
             continue;
         }

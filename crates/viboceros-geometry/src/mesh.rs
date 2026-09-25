@@ -8,6 +8,7 @@ mod area_tests;
 #[cfg(test)]
 mod compaction_tests;
 mod components;
+mod connected_faces;
 mod containment;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod edge_collapse;
