@@ -5,6 +5,7 @@ mod cone_plane;
 mod cylinder_cylinder;
 mod sphere_cone;
 mod sphere_cylinder_noncoaxial;
+mod sphere_cylinder_singular;
 mod sphere_cylinder_turning;
 
 use crate::{
@@ -528,7 +529,8 @@ fn curve_brep_intersection_events_with_transform(
 /// each other, coaxial cylinders and cones, and planar finite patches in exact
 /// rational circles or tangent points. Smooth noncoaxial sphere/cylinder
 /// branches are fitted as cubic curves within the modeling tolerance and
-/// clipped to the finite cylinder height.
+/// clipped to the finite cylinder height. Their singular crossing is an exact
+/// rational quartic, also clipped to the finite height.
 /// Planar sections of canonical cylinders produce exact circles, rational
 /// ellipses, or straight generatrices, clipped to finite source regions.
 /// Parallel canonical cylinder walls intersect in exact finite generatrices,

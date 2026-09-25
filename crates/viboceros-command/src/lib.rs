@@ -26762,6 +26762,54 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_singular_sphere_cylinder_curve() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let center = Point3::try_new(1.0, 0.0, 2.5).unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_sphere(frame.with_origin(center), 2.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(frame, 1.0, 0.0, 5.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let object = document.selected_objects().next().unwrap();
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("singular sphere/cylinder section must be a curve")
+        };
+        assert_eq!(curve.degree(), 4);
+        assert!(curve.is_rational());
+        assert!(curve.is_closed().unwrap());
+        assert!(
+            curve
+                .evaluate(1.0)
+                .unwrap()
+                .distance_to(curve.evaluate(3.0).unwrap())
+                .unwrap()
+                < 1e-12
+        );
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_sphere_sphere_section() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

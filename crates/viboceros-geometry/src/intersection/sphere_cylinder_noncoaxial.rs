@@ -55,9 +55,15 @@ pub(super) fn intersect(
         );
     }
     if minimum_radicand == 0.0 {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "sphere/cylinder branches cross at a radial singularity",
-        });
+        return super::sphere_cylinder_singular::intersect(
+            cylinder_frame,
+            cylinder_radius,
+            cylinder_height,
+            radial_axis,
+            center_z,
+            maximum_radicand.sqrt(),
+            tolerance,
+        );
     }
 
     let coordinate_scale = cylinder_frame

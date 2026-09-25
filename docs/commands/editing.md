@@ -171,7 +171,8 @@ at the isolated rim tangency. The native result retains the exact circles and
 point. Rhino splits the radial-turning loop into two open halves and misses the
 external radial tangent in the saved observation. The native result retains one
 closed loop and the exact tangent point. The exact singular case where two
-branches cross remains unsupported.
+branches cross is represented by an exact rational quartic figure-eight curve;
+finite cylinder rims trim it to exact subcurves or an isolated contact point.
 Canonical coaxial spheres and finite cone walls intersect in exact rational
 circles, including tangent circles and sections on the cone's base rim. A
 contact only at the singular apex produces no event. The
