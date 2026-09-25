@@ -128,6 +128,12 @@ creates boundary polylines and leaves the input mesh intact. The command
 stages all selected meshes before editing, preserves output attributes and
 group memberships, and rejects a selection containing non-mesh objects.
 
+`ExtractMeshFacesByEdgeLength EdgeLength=0.1 Select=Shorter` extracts faces
+with any boundary edge strictly shorter than the given length. `Select=Longer`
+uses the longest boundary edge and a strict greater-than test. Quad diagonals
+are excluded. It shares the area command's `MakeCopy` and `BorderOnly` behavior,
+atomic staging, attributes, groups, selection, and undo.
+
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,

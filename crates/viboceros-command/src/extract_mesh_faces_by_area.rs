@@ -12,15 +12,6 @@ struct Options {
     border_only: bool,
 }
 
-struct Plan {
-    source: ObjectId,
-    remainder: Option<TriangleMesh>,
-    extracted: TriangleMesh,
-    borders: Vec<Geometry>,
-    attributes: ObjectAttributes,
-    groups: Vec<GroupId>,
-}
-
 pub(super) struct ExtractMeshFacesByAreaCommand;
 
 impl Command for ExtractMeshFacesByAreaCommand {
@@ -30,108 +21,22 @@ impl Command for ExtractMeshFacesByAreaCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse(arguments)?;
-        let tolerance = document.tolerance();
-        let mut source_count = 0;
-        let mut face_count = 0_usize;
-        let mut output_count = 0_usize;
-        let mut plans = Vec::new();
-        for object in document.selected_objects() {
-            source_count += 1;
-            let Geometry::Mesh(mesh) = object.geometry() else {
-                return Err(CommandError::UnsupportedExtractMeshFacesByAreaGeometry);
-            };
-            let mut indices = Vec::new();
-            for index in 0..mesh.face_count() {
+        mesh_face_filter::extract_filtered_mesh_faces(
+            document,
+            "ExtractMeshFacesByArea",
+            mesh_face_filter::FilterOutputOptions {
+                make_copy: options.make_copy,
+                border_only: options.border_only,
+            },
+            CommandError::UnsupportedExtractMeshFacesByAreaGeometry,
+            CommandError::NoMeshFacesInAreaRange,
+            CommandError::NoMeshFaceAreaBorders,
+            |mesh, index| {
                 let area = mesh.face_area(index)?;
-                if options.larger_than.is_none_or(|minimum| area > minimum)
-                    && options.smaller_than.is_none_or(|maximum| area < maximum)
-                {
-                    indices.push(index);
-                }
-            }
-            if indices.is_empty() {
-                continue;
-            }
-            face_count = face_count
-                .checked_add(indices.len())
-                .ok_or_else(|| too_many_span_outputs("ExtractMeshFacesByArea"))?;
-            let (remainder, extracted) = mesh.extract_faces(&indices)?.into_parts();
-            let borders = if options.border_only {
-                extracted
-                    .boundary_polylines(tolerance)?
-                    .into_iter()
-                    .map(Geometry::Polyline)
-                    .collect::<Vec<_>>()
-            } else {
-                Vec::new()
-            };
-            output_count = output_count
-                .checked_add(if options.border_only {
-                    borders.len()
-                } else {
-                    1
-                })
-                .filter(|&count| count <= MAX_SPAN_OUTPUT_OBJECTS)
-                .ok_or_else(|| too_many_span_outputs("ExtractMeshFacesByArea"))?;
-            plans.push(Plan {
-                source: object.id(),
-                remainder,
-                extracted,
-                borders,
-                attributes: object.attributes().clone(),
-                groups: object.group_ids().to_vec(),
-            });
-        }
-        if source_count == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        if plans.is_empty() {
-            return Err(CommandError::NoMeshFacesInAreaRange);
-        }
-        if output_count == 0 {
-            return Err(CommandError::NoMeshFaceAreaBorders);
-        }
-        let mesh_count = plans.len();
-        if !options.border_only && !options.make_copy {
-            document.clear_selection();
-            document.replace_object_geometries(plans.iter().map(|plan| {
-                (
-                    plan.source,
-                    Geometry::Mesh(plan.remainder.as_ref().unwrap_or(&plan.extracted).clone()),
-                )
-            }))?;
-        }
-        let mut results = Vec::with_capacity(output_count);
-        for plan in plans {
-            if options.border_only {
-                for border in plan.borders {
-                    let id =
-                        document.add_geometry_with_attributes(border, plan.attributes.clone())?;
-                    document.set_object_group_memberships(id, plan.groups.clone())?;
-                    results.push(id);
-                }
-            } else if !options.make_copy && plan.remainder.is_none() {
-                results.push(plan.source);
-            } else {
-                let id = document.add_geometry_with_attributes(
-                    Geometry::Mesh(plan.extracted),
-                    plan.attributes,
-                )?;
-                document.set_object_group_memberships(id, plan.groups)?;
-                results.push(id);
-            }
-        }
-        document.select_command_results(results)?;
-        Ok(format!(
-            "Extracted {face_count} mesh face(s) from {mesh_count} mesh(es){}",
-            if options.border_only {
-                " as border curves"
-            } else if options.make_copy {
-                "; source faces copied"
-            } else {
-                "; source faces removed"
-            }
-        ))
+                Ok(options.larger_than.is_none_or(|minimum| area > minimum)
+                    && options.smaller_than.is_none_or(|maximum| area < maximum))
+            },
+        )
     }
 }
 

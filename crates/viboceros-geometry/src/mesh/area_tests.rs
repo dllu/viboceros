@@ -39,9 +39,21 @@ fn face_area_uses_the_stored_polygon_and_checks_indices() {
     .unwrap();
     assert_eq!(mesh.face_area(0).unwrap(), 4.0);
     assert_eq!(mesh.face_area(1).unwrap(), 1.0);
+    assert_eq!(mesh.face_edge_length_range(0).unwrap(), (2.0, 2.0));
+    assert_eq!(
+        mesh.face_edge_length_range(1).unwrap(),
+        (1.0, 5.0f64.sqrt())
+    );
     assert_eq!(mesh.area().unwrap(), 5.0);
     assert_eq!(
         mesh.face_area(2),
+        Err(GeometryError::MeshFaceIndexOutOfRange {
+            face: 2,
+            face_count: 2
+        })
+    );
+    assert_eq!(
+        mesh.face_edge_length_range(2),
         Err(GeometryError::MeshFaceIndexOutOfRange {
             face: 2,
             face_count: 2

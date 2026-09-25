@@ -3903,6 +3903,31 @@ impl TriangleMesh {
         Ok(area)
     }
 
+    /// Shortest and longest boundary edges of a stored mesh face. The
+    /// triangulation diagonal of a quad is deliberately excluded.
+    pub fn face_edge_length_range(&self, face_index: usize) -> Result<(Real, Real), GeometryError> {
+        let vertices = self
+            .faces
+            .get(face_index)
+            .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+                face: face_index,
+                face_count: self.faces.len(),
+            })?
+            .indices();
+        let mut shortest = Real::INFINITY;
+        let mut longest: Real = 0.0;
+        for (&start, &end) in vertices
+            .iter()
+            .zip(vertices.iter().cycle().skip(1))
+            .take(vertices.len())
+        {
+            let length = self.vertices[start as usize].distance_to(self.vertices[end as usize])?;
+            shortest = shortest.min(length);
+            longest = longest.max(length);
+        }
+        Ok((shortest, longest))
+    }
+
     /// Computes oriented mesh volume. Outward winding is positive and
     /// reversing every face negates the result. A bounding-box-center base
     /// point and normalized coordinates keep large translations from

@@ -276,6 +276,7 @@ ExtractSubCrv Segments=0,2 Copy=Yes Join=No OutputLayer=Input
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
 ExtractMeshFacesByArea LargerThan=0 SmallerThan=2 MakeCopy=Yes
+ExtractMeshFacesByEdgeLength EdgeLength=0.1 Select=Shorter BorderOnly=Yes
 DeleteFaces Faces=2,0
 TriangulateMesh
 QuadrangulateMesh Planarity=1 Rectangularity=2
