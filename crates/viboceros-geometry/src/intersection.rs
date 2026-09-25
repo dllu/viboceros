@@ -544,8 +544,8 @@ fn curve_brep_intersection_events_with_transform(
 /// Larger axis separation joins the branches into one closed cubic loop; finite
 /// heights clip the loop to arcs or isolated rim contacts.
 /// At the internal axis tangency, one nodal cubic curve traverses both lobes.
-/// Coaxial cone and cylinder walls meet in an exact circle, clipped to both
-/// finite surfaces.
+/// Coaxial cone and cylinder walls meet in an exact circle. Parallel offset
+/// axes produce tolerance-bounded cubic curves, clipped to both finite rims.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -597,14 +597,14 @@ pub fn surface_surface_intersection_events(
         );
     }
     if let (Some(cone_data), Some(cylinder_data)) = (first_cone, second_cylinder) {
-        return cone_cylinder::coaxial_cone_cylinder_intersection_events(
+        return cone_cylinder::cone_cylinder_intersection_events(
             cone_data,
             cylinder_data,
             tolerance,
         );
     }
     if let (Some(cone_data), Some(cylinder_data)) = (second_cone, first_cylinder) {
-        return cone_cylinder::coaxial_cone_cylinder_intersection_events(
+        return cone_cylinder::cone_cylinder_intersection_events(
             cone_data,
             cylinder_data,
             tolerance,

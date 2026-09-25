@@ -1,9 +1,11 @@
-//! Exact circular sections of finite coaxial cone and cylinder walls.
+//! Intersections of finite canonical cone and cylinder walls.
+
+mod parallel_offset;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Real, Tolerance};
 
-pub(super) fn coaxial_cone_cylinder_intersection_events(
+pub(super) fn cone_cylinder_intersection_events(
     (cone_frame, cone_radius, signed_cone_height): (Frame3, Real, Real),
     (cylinder_frame, cylinder_radius, cylinder_height): (Frame3, Real, Real),
     tolerance: Tolerance,
@@ -19,7 +21,14 @@ pub(super) fn coaxial_cone_cylinder_intersection_events(
     let cone_axis = cone_frame.z_axis().as_vector();
     let cylinder_axis = cylinder_frame.z_axis().as_vector();
     let axis_drift = cone_axis.cross(cylinder_axis)?.length()? * cylinder_height;
-    if axis_drift > (tolerance.angular() * cylinder_height).max(coordinate_roundoff) {
+    let spatial_tolerance = tolerance.absolute().max(
+        tolerance.relative()
+            * cone_radius
+                .max(cylinder_radius)
+                .max(signed_cone_height.abs())
+                .max(cylinder_height),
+    );
+    if axis_drift > spatial_tolerance.max(coordinate_roundoff) {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nonparallel cone and cylinder walls",
         });
@@ -52,9 +61,13 @@ pub(super) fn coaxial_cone_cylinder_intersection_events(
         return Ok(Vec::new());
     }
     if radial_offset > coaxial_tolerance {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "noncoaxial cone and cylinder walls",
-        });
+        return parallel_offset::intersect(
+            (cone_frame, cone_radius, signed_cone_height),
+            (cylinder_radius, cylinder_height),
+            (radial_x, radial_y, cylinder_start, axis_dot),
+            tolerance,
+            coordinate_roundoff,
+        );
     }
     if cylinder_radius > cone_radius {
         return Ok(Vec::new());
@@ -178,13 +191,6 @@ mod tests {
                     .is_empty()
             );
         }
-        let offset =
-            NurbsSurface::try_cylinder(frame().with_origin(point(0.5, 0.0, 0.0)), 1.5, 0.0, 4.0)
-                .unwrap();
-        assert!(matches!(
-            surface_surface_intersection_events(&cone, &offset, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
     }
 
     #[test]
