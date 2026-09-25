@@ -535,6 +535,7 @@ fn curve_brep_intersection_events_with_transform(
 /// the sphere strictly contains the cone apex, clipped at the cone base.
 /// Spheres outside the apex can form two separate cubic loops, each clipped
 /// to arcs or isolated base-rim contacts.
+/// At their internal tangency, one nodal cubic curve traverses both loops.
 /// Offset spheres outside the apex with two radial turns produce two fitted
 /// open branches, likewise clipped at the base.
 /// At their external tangency the two branches reduce to one exact point.

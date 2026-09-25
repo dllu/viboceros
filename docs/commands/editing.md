@@ -184,10 +184,12 @@ the native result retains the exact circles. When a noncoaxial sphere strictly
 contains the cone apex, its intersection with the cone is a fitted cubic loop,
 an arc clipped at the cone base, or an isolated base-rim contact. Spheres
 outside the apex can produce two separate fitted cubic loops; the cone base
-clips either loop to an arc or isolated rim contact. When the two axial branches
-meet at radial turns, they produce two fitted open curves, clipped at the base
-or reduced to one tangent point. This
-includes the saved noncoaxial fixture; its two native branch lengths agree
+clips either loop to an arc or isolated rim contact. At internal tangency the
+two loops become one nodal cubic curve, passing twice through their contact;
+the cone base can retain a closed lobe, an arc, or an isolated rim point.
+When the two axial branches meet at radial turns, they produce two fitted open
+curves, clipped at the base or reduced to one tangent point. The saved
+noncoaxial fixture covers this case; its two native branch lengths agree
 with Rhino within 2×10⁻⁶. Rhino also reports redundant seam points there.
 An external tangency creates one point, clipped to the finite cone height.
 Other noncoaxial sphere/cone sections remain unsupported.
