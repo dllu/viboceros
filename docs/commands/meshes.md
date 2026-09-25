@@ -314,6 +314,16 @@ and an alignment that would degenerate any face is rejected before document
 mutation. Raw face indices, colors, n-gons, object identities, attributes,
 groups, selection, and undo are preserved.
 
+`MatchMeshEdge DistanceToAdjust=0.05` first aligns close naked vertices, then
+splits naked edges near an unmatched naked vertex and moves that vertex to the
+new edge point. `AverageVertexesToAdjust=Yes` moves both the old vertex and new
+split point to their midpoint. `RatchetMode=Yes` uses four increasing distance
+passes. `PickEdges=0,2` uses those initial naked topology edge indices on each
+selected mesh; `PickEdges=0:0,1:2` selects edge 0 on the first selected mesh
+and edge 2 on the second.
+`Join=Yes` joins touching output meshes; the default keeps input objects
+separate. Invalid resulting faces are rejected before document mutation.
+
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
 edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a

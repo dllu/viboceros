@@ -44,12 +44,35 @@ pub fn align_mesh_vertices(
     selection: &MeshAlignSelection,
     tolerance: Tolerance,
 ) -> Result<Vec<(TriangleMesh, usize)>, GeometryError> {
+    align_mesh_vertices_impl(meshes, distance, average, Some(selection), None, tolerance)
+}
+
+pub(super) fn align_mesh_vertices_with_masks(
+    meshes: &[&TriangleMesh],
+    distance: Real,
+    average: bool,
+    masks: &[Vec<bool>],
+    tolerance: Tolerance,
+) -> Result<Vec<(TriangleMesh, usize)>, GeometryError> {
+    debug_assert_eq!(meshes.len(), masks.len());
+    align_mesh_vertices_impl(meshes, distance, average, None, Some(masks), tolerance)
+}
+
+fn align_mesh_vertices_impl(
+    meshes: &[&TriangleMesh],
+    distance: Real,
+    average: bool,
+    selection: Option<&MeshAlignSelection>,
+    masks: Option<&[Vec<bool>]>,
+    tolerance: Tolerance,
+) -> Result<Vec<(TriangleMesh, usize)>, GeometryError> {
     if !distance.is_finite() || distance <= 0. {
         return Err(GeometryError::InvalidTolerance);
     }
     let sources = meshes
         .iter()
-        .map(|mesh| prepare_source(mesh, selection))
+        .enumerate()
+        .map(|(index, mesh)| prepare_source(mesh, selection, masks.map(|masks| &masks[index][..])))
         .collect::<Result<Vec<_>, _>>()?;
     let mut candidates = Vec::new();
     for (mesh, source) in sources.iter().enumerate() {
@@ -239,35 +262,45 @@ fn nearest_kd_neighbor(
 
 fn prepare_source(
     mesh: &TriangleMesh,
-    selection: &MeshAlignSelection,
+    selection: Option<&MeshAlignSelection>,
+    raw_mask: Option<&[bool]>,
 ) -> Result<Source, GeometryError> {
     let data = mesh.topology_data();
     let count = data.topological_vertex_count;
     let mut selected = vec![false; count];
-    match selection {
-        MeshAlignSelection::AllNaked => selected.fill(true),
-        MeshAlignSelection::Vertices(indices) => {
-            for &vertex in indices {
-                if vertex >= count {
-                    return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
-                        vertex,
-                        vertex_count: count,
-                    });
-                }
-                selected[vertex] = true;
+    if let Some(raw_mask) = raw_mask {
+        debug_assert_eq!(raw_mask.len(), mesh.vertices.len());
+        for (raw, &enabled) in raw_mask.iter().enumerate() {
+            if enabled {
+                selected[data.topological_vertices[raw]] = true;
             }
         }
-        MeshAlignSelection::NakedEdges(indices) => {
-            for &edge in indices {
-                let Some((&(a, b), incidence)) = data.edges.iter().nth(edge) else {
-                    return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
-                        edge,
-                        edge_count: data.edges.len(),
-                    });
-                };
-                if incidence.count == 1 {
-                    selected[a] = true;
-                    selected[b] = true;
+    } else {
+        match selection.expect("either a selection or raw masks are provided") {
+            MeshAlignSelection::AllNaked => selected.fill(true),
+            MeshAlignSelection::Vertices(indices) => {
+                for &vertex in indices {
+                    if vertex >= count {
+                        return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
+                            vertex,
+                            vertex_count: count,
+                        });
+                    }
+                    selected[vertex] = true;
+                }
+            }
+            MeshAlignSelection::NakedEdges(indices) => {
+                for &edge in indices {
+                    let Some((&(a, b), incidence)) = data.edges.iter().nth(edge) else {
+                        return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                            edge,
+                            edge_count: data.edges.len(),
+                        });
+                    };
+                    if incidence.count == 1 {
+                        selected[a] = true;
+                        selected[b] = true;
+                    }
                 }
             }
         }

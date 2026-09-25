@@ -4,7 +4,9 @@ pub use alignment::{MeshAlignSelection, align_mesh_vertices};
 mod aspect_ratio;
 mod join;
 mod mass_triangles;
+mod match_edges;
 pub use join::{MeshJoinComponent, MeshJoinOptions, join_meshes};
+pub use match_edges::{MeshEdgeMatchOptions, MeshEdgeMatchResult, MeshEdgePick, match_mesh_edges};
 #[cfg(test)]
 mod area_tests;
 #[cfg(test)]

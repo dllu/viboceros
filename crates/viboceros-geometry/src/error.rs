@@ -679,6 +679,9 @@ pub enum GeometryError {
     #[error("mesh topology vertex index {vertex} is outside the vertex count {vertex_count}")]
     MeshTopologyVertexIndexOutOfRange { vertex: usize, vertex_count: usize },
 
+    #[error("selected mesh index {mesh} is outside the mesh count {mesh_count}")]
+    MeshSelectionIndexOutOfRange { mesh: usize, mesh_count: usize },
+
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
 
