@@ -1,4 +1,6 @@
-//! Exact conic intersections of equal-radius cylinders with crossing axes.
+//! Intersections of finite cylinders with crossing axes.
+
+mod unequal;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3, WeightedPoint3};
@@ -34,11 +36,7 @@ pub(super) fn intersect(
             .chain(second_frame.origin().to_array())
             .map(Real::abs)
             .fold(scale, Real::max);
-    if (first_radius - second_radius).abs() > roundoff {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "unequal-radius crossed cylinder walls",
-        });
-    }
+    let equal_radii = (first_radius - second_radius).abs() <= roundoff;
     if cosine_half <= tolerance.angular() || sine_half <= tolerance.angular() {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nearly parallel crossed cylinder axes",
@@ -63,6 +61,26 @@ pub(super) fn intersect(
     let crossing = first_frame
         .origin()
         .translated(first_axis.scaled(first_at_crossing)?)?;
+    if !equal_radii {
+        if axis_dot.abs() * scale > spatial_tolerance.max(roundoff) {
+            return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "oblique unequal-radius crossed cylinder walls",
+            });
+        }
+        return unequal::intersect(
+            (first_axis, first_radius, first_height, first_at_crossing),
+            (
+                second_axis,
+                second_radius,
+                second_height,
+                second_at_crossing,
+            ),
+            normal,
+            crossing,
+            tolerance,
+            roundoff,
+        );
+    }
 
     let mut events = Vec::new();
     // Equal-radius wall equations differ by a product of the two bisector

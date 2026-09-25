@@ -201,8 +201,10 @@ and [observations](../../tools/rhino_oracle/observations/cylinder_cylinder_surfa
 record these parallel cases.
 Equal-radius cylinder walls whose axes cross intersect in two exact rational
 ellipses, including oblique crossings. Both finite height ranges clip them to exact conic
-arcs or isolated rim points. Other nonparallel wall intersections remain
-unsupported.
+arcs or isolated rim points. Unequal-radius perpendicular walls with crossing
+axes produce two cubic curves fitted within the modeling tolerance, clipped to
+the finite heights and retaining isolated rim contacts. Unequal-radius oblique
+crossings and skew-axis wall intersections remain unsupported.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
 when the cylinder radius occurs within both finite height ranges. Opposed
 surface axes yield two exact semicircles, matching Rhino's event structure.
