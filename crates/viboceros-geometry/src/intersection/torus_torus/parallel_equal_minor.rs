@@ -33,6 +33,7 @@ struct Section {
 enum Branch {
     Full { side: Real },
     SumVertical { side: Real },
+    SumEllipseTurned { start: Real, end: Real },
     Turned { start: Real, end: Real },
     CriticalDifference,
     CriticalSum,
@@ -135,7 +136,31 @@ pub(super) fn intersect(
             axis,
             Family::Sum,
         );
-        if half_major_difference.abs() + half_offset < minor - critical {
+        let inner_critical = (minor - half_major_difference.abs()).abs();
+        if inner_critical > critical && (half_offset - inner_critical).abs() <= critical {
+            if half_major_difference.abs() > minor {
+                let axial = half_major_difference.signum() * first_major - minor;
+                let contact = frame.point_at([axial * axis[0], axial * axis[1], 0.0])?;
+                events.push(SurfaceSurfaceIntersectionEvent::Point(contact));
+            } else {
+                section.append_inner_critical_curves(&mut events, fit_tolerance)?;
+            }
+        } else if half_offset < minor
+            && (half_major_difference.abs() - minor).abs() < half_offset - critical
+        {
+            let root_value = half_major_difference - half_major_difference.signum() * minor;
+            let angle = (root_value / half_offset).acos();
+            let (start, end) = if half_major_difference > 0.0 {
+                (TURN - angle, TURN + angle)
+            } else {
+                (angle, TURN - angle)
+            };
+            events.push(SurfaceSurfaceIntersectionEvent::Curve(fit(
+                section,
+                Branch::SumEllipseTurned { start, end },
+                fit_tolerance,
+            )?));
+        } else if half_major_difference.abs() + half_offset < minor - critical {
             for side in [1.0, -1.0] {
                 events.push(SurfaceSurfaceIntersectionEvent::Curve(fit(
                     section,
@@ -341,7 +366,40 @@ impl Section {
         Ok(())
     }
 
+    fn append_inner_critical_curves(
+        self,
+        events: &mut Vec<SurfaceSurfaceIntersectionEvent>,
+        fit_tolerance: Real,
+    ) -> Result<(), GeometryError> {
+        debug_assert!(matches!(self.family, Family::Sum));
+        let other_root = if self.half_major_difference > 0.0 {
+            self.half_offset - self.half_major_difference
+        } else {
+            -self.half_offset - self.half_major_difference
+        };
+        let angle = (other_root / self.minor).acos();
+        let intervals = if self.half_major_difference > 0.0 {
+            [
+                (angle, std::f64::consts::PI),
+                (std::f64::consts::PI, TURN - angle),
+            ]
+        } else {
+            [(0.0, angle), (TURN - angle, TURN)]
+        };
+        for (start, end) in intervals {
+            events.push(SurfaceSurfaceIntersectionEvent::Curve(fit(
+                self,
+                Branch::Turned { start, end },
+                fit_tolerance,
+            )?));
+        }
+        Ok(())
+    }
+
     fn sample(self, branch: Branch, parameter: Real) -> Sample {
+        if let Branch::SumEllipseTurned { start, end } = branch {
+            return self.sample_sum_ellipse_turned(start, end, parameter);
+        }
         if let Branch::SumVertical { side } = branch {
             let (sine, cosine) = parameter.sin_cos();
             let transverse = ((self.average_major - self.half_offset)
@@ -441,6 +499,7 @@ impl Section {
         let (angle, side, angle_derivative, root) = match branch {
             Branch::Full { side } => (parameter, side, 1.0, None),
             Branch::SumVertical { .. } => unreachable!(),
+            Branch::SumEllipseTurned { .. } => unreachable!(),
             Branch::Turned { start, end } => {
                 let middle = 0.5 * (start + end);
                 let half = 0.5 * (end - start);
@@ -547,6 +606,100 @@ impl Section {
                 longitudinal_derivative.mul_add(ux, -lateral_derivative * uy),
                 longitudinal_derivative.mul_add(uy, lateral_derivative * ux),
                 self.minor * angle.cos() * angle_derivative,
+            ],
+        }
+    }
+
+    fn sample_sum_ellipse_turned(self, start: Real, end: Real, parameter: Real) -> Sample {
+        let middle = 0.5 * (start + end);
+        let half = 0.5 * (end - start);
+        let (angle, side, angle_derivative, root) = if parameter <= std::f64::consts::PI {
+            let angle = if parameter == 0.0 {
+                start
+            } else if parameter == std::f64::consts::PI {
+                end
+            } else {
+                middle - half * parameter.cos()
+            };
+            let from_start = 2.0 * half * (0.5 * parameter).sin().powi(2);
+            let from_end = 2.0 * half * (0.5 * parameter).cos().powi(2);
+            let root = if from_start <= from_end && from_start < 1.0e-4 {
+                Some((start, from_start))
+            } else if from_end < 1.0e-4 {
+                Some((end, -from_end))
+            } else {
+                None
+            };
+            (angle, 1.0, half * parameter.sin(), root)
+        } else {
+            let back = parameter - std::f64::consts::PI;
+            let angle = if parameter == TURN {
+                start
+            } else {
+                middle + half * back.cos()
+            };
+            let from_end = 2.0 * half * (0.5 * back).sin().powi(2);
+            let from_start = 2.0 * half * (0.5 * back).cos().powi(2);
+            let root = if from_end <= from_start && from_end < 1.0e-4 {
+                Some((end, -from_end))
+            } else if from_start < 1.0e-4 {
+                Some((start, from_start))
+            } else {
+                None
+            };
+            (angle, -1.0, -half * back.sin(), root)
+        };
+        let (sine, cosine) = angle.sin_cos();
+        let transverse = ((self.average_major - self.half_offset)
+            * (self.average_major + self.half_offset))
+            .sqrt();
+        let meridian = self.half_offset * cosine - self.half_major_difference;
+        let radical = if let Some((at, delta)) = root {
+            let meridian_at_root =
+                (self.half_offset * at.cos() - self.half_major_difference).signum() * self.minor;
+            let change = -2.0 * self.half_offset * (at + 0.5 * delta).sin() * (0.5 * delta).sin();
+            -change * (2.0 * meridian_at_root + change)
+        } else {
+            (self.minor - meridian) * (self.minor + meridian)
+        }
+        .max(0.0);
+        let height = radical.sqrt();
+        let longitudinal = self.half_offset + self.average_major * cosine;
+        let lateral = transverse * sine;
+        let longitudinal_derivative = -self.average_major * sine * angle_derivative;
+        let lateral_derivative = transverse * cosine * angle_derivative;
+        let height_derivative =
+            if parameter == 0.0 || parameter == std::f64::consts::PI || parameter == TURN {
+                let endpoint = if parameter == std::f64::consts::PI {
+                    end
+                } else {
+                    start
+                };
+                let meridian_at_root =
+                    (self.half_offset * endpoint.cos() - self.half_major_difference).signum()
+                        * self.minor;
+                let radial_derivative = 2.0 * meridian_at_root * self.half_offset * endpoint.sin();
+                if parameter == std::f64::consts::PI {
+                    -(-radial_derivative * half * 0.5).max(0.0).sqrt()
+                } else {
+                    (radial_derivative * half * 0.5).max(0.0).sqrt()
+                }
+            } else if height > 0.0 {
+                side * meridian * self.half_offset * sine * angle_derivative / height
+            } else {
+                0.0
+            };
+        let [ux, uy] = self.axis;
+        Sample {
+            position: [
+                longitudinal.mul_add(ux, -lateral * uy),
+                longitudinal.mul_add(uy, lateral * ux),
+                side * height,
+            ],
+            derivative: [
+                longitudinal_derivative.mul_add(ux, -lateral_derivative * uy),
+                longitudinal_derivative.mul_add(uy, lateral_derivative * ux),
+                height_derivative,
             ],
         }
     }
@@ -718,6 +871,7 @@ mod tests {
             (0.4, 2),
             (0.5, 3),
             (1.0, 4),
+            (1.5, 4),
             (2.5, 3),
             (3.0, 4),
             (6.5, 3),
@@ -740,6 +894,33 @@ mod tests {
                             .unwrap_or_else(|error| panic!("offset={offset}: {error:?}"));
                     assert_eq!(events.len(), expected, "offset={offset}");
                     check_residuals(&events, offset, 4.5);
+                    if offset == 1.5 {
+                        let contact = point(5.0, 0.0, 0.0);
+                        let touching = events
+                            .iter()
+                            .filter(|event| match event {
+                                SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                                    let domain = curve.domain();
+                                    [
+                                        *domain.start(),
+                                        0.5 * (*domain.start() + *domain.end()),
+                                        *domain.end(),
+                                    ]
+                                    .into_iter()
+                                    .any(|parameter| {
+                                        curve
+                                            .evaluate(parameter)
+                                            .unwrap()
+                                            .distance_to(contact)
+                                            .unwrap()
+                                            < 5e-9
+                                    })
+                                }
+                                SurfaceSurfaceIntersectionEvent::Point(_) => false,
+                            })
+                            .count();
+                        assert_eq!(touching, 2);
+                    }
                 }
             }
         }
@@ -811,6 +992,8 @@ mod tests {
     fn unequal_ring_radii_keep_near_critical_topology() {
         let first = NurbsSurface::try_torus(frame(point(0.0, 0.0, 0.0)), 4.0, 1.0).unwrap();
         for (half_offset, expected) in [
+            (0.75 - 1.0e-12, 4),
+            (0.75 + 1.0e-12, 3),
             (1.25 - 1.0e-12, 3),
             (1.25 + 1.0e-12, 4),
             (3.25 - 1.0e-12, 4),
@@ -834,6 +1017,56 @@ mod tests {
                 .unwrap_or_else(|error| panic!("offset={offset}: {error:?}"));
             assert_eq!(events.len(), 2, "offset={offset}");
             check_residuals(&events, offset, 4.5);
+        }
+    }
+
+    #[test]
+    fn unequal_ring_radii_inner_contact_is_one_point() {
+        let first = NurbsSurface::try_torus(frame(point(0.0, 0.0, 0.0)), 7.0, 1.0).unwrap();
+        for offset in [0.5, 1.0 - 2.0e-12, 1.0, 1.0 + 2.0e-12, 1.5] {
+            let second = NurbsSurface::try_torus(frame(point(offset, 0.0, 0.0)), 4.0, 1.0).unwrap();
+            for (left, right) in [(&first, &second), (&second, &first)] {
+                let events = surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap_or_else(|error| panic!("offset={offset}: {error:?}"));
+                if offset == 1.0 {
+                    let [SurfaceSurfaceIntersectionEvent::Point(contact)] = events.as_slice()
+                    else {
+                        panic!("inner tangency should be one point")
+                    };
+                    assert!(contact.distance_to(point(6.0, 0.0, 0.0)).unwrap() < 5e-9);
+                } else if offset < 1.0 {
+                    assert!(events.is_empty());
+                } else {
+                    assert_eq!(events.len(), 1);
+                    assert!(matches!(
+                        events[0],
+                        SurfaceSurfaceIntersectionEvent::Curve(_)
+                    ));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn unequal_ring_radii_resolve_near_coaxial_tangent_circle() {
+        let first = NurbsSurface::try_torus(frame(point(0.0, 0.0, 0.0)), 4.0, 1.0).unwrap();
+        for offset in [1.0e-4, 1.0e-6, 1.0e-8] {
+            let second = NurbsSurface::try_torus(frame(point(offset, 0.0, 0.0)), 6.0, 1.0).unwrap();
+            for (left, right) in [(&first, &second), (&second, &first)] {
+                let events = surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap_or_else(|error| panic!("offset={offset}: {error:?}"));
+                assert_eq!(events.len(), 1, "offset={offset}");
+                check_residuals(&events, offset, 6.0);
+            }
+        }
+        let offset = 1.0e-4;
+        for second_major in [5.99998, 6.00002] {
+            let second =
+                NurbsSurface::try_torus(frame(point(offset, 0.0, 0.0)), second_major, 1.0).unwrap();
+            let events =
+                surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 1);
+            check_residuals(&events, offset, second_major);
         }
     }
 }

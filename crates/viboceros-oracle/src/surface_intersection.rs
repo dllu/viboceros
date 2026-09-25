@@ -374,16 +374,20 @@ mod tests {
         .unwrap();
         let response = run_request_audit(&request).unwrap();
         let expected = [
-            ("coaxial_two_circles", vec![2, 2]),
-            ("coaxial_tangent_circle", vec![2]),
-            ("equal_parallel_offset_four_loops", vec![3, 3, 3, 3]),
-            ("equal_parallel_offset_meridian", vec![2, 3]),
-            ("unequal_major_parallel_four_loops", vec![3, 3, 3, 3]),
-            ("unequal_major_parallel_meridian", vec![2, 3]),
-            ("disjoint", vec![]),
+            ("coaxial_two_circles", vec![2, 2], 0),
+            ("coaxial_tangent_circle", vec![2], 0),
+            ("equal_parallel_offset_four_loops", vec![3, 3, 3, 3], 0),
+            ("equal_parallel_offset_meridian", vec![2, 3], 0),
+            ("unequal_major_parallel_four_loops", vec![3, 3, 3, 3], 0),
+            ("unequal_major_inner_pinch", vec![3, 3, 3, 3], 0),
+            ("unequal_major_inner_contact", vec![], 1),
+            ("unequal_major_near_coaxial_tangent", vec![3], 0),
+            ("unequal_major_parallel_meridian", vec![2, 3], 0),
+            ("disjoint", vec![], 0),
         ];
         assert_eq!(response.outcomes.len(), expected.len());
-        for (outcome, (id, expected_degrees)) in response.outcomes.iter().zip(expected) {
+        for (outcome, (id, expected_degrees, point_count)) in response.outcomes.iter().zip(expected)
+        {
             let OperationOutcome::Success { result } = outcome else {
                 panic!("torus/torus oracle fixture {id} must succeed")
             };
@@ -396,7 +400,10 @@ mod tests {
                 .collect::<Vec<_>>();
             degrees.sort_unstable();
             assert_eq!(degrees, expected_degrees, "{id}");
-            assert!(result.value["points"].as_array().unwrap().is_empty());
+            assert_eq!(
+                result.value["points"].as_array().unwrap().len(),
+                point_count
+            );
         }
     }
 }

@@ -288,9 +288,8 @@ tangent circles. Equal tori with parallel offset axes intersect along a
 symmetry-plane section and an elliptic section. Tori with equal tube radii,
 unequal major radii, and parallel offset axes at the same axial level intersect
 along lifted hyperbolic and elliptic sections. These produce fitted cubic loops,
-exact meridian circles at conic collapse, or isolated contacts. Some critical
-elliptic sections where loops pinch remain unsupported. Coincident
-tori, unequal tube radii with offset axes, axial offsets, and axes with
+pinched loops, exact meridian circles at conic collapse, or isolated contacts.
+Coincident tori, unequal tube radii with offset axes, axial offsets, and axes with
 different directions remain unsupported. The
 [torus/torus oracle fixture](../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json)
 covers coaxial circles, parallel offsets, tangency, and disjoint cases.
