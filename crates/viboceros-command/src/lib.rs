@@ -27208,6 +27208,58 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_nodal_skew_cylinder_curve() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let first_frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, -4.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            Point3::try_new(-4.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(first_frame, 1.0, 0.0, 8.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(second_frame, 2.0, 0.0, 8.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let mut selected = document.selected_objects();
+        let Geometry::NurbsCurve(curve) = selected.next().unwrap().geometry() else {
+            panic!("internal skew tangency should create a curve")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert!(
+            curve
+                .evaluate(0.0)
+                .unwrap()
+                .distance_to(curve.evaluate(std::f64::consts::TAU).unwrap())
+                .unwrap()
+                < 1e-9
+        );
+        assert!(selected.next().is_none());
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_two_cylinder_plane_generatrices() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

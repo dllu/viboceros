@@ -630,16 +630,6 @@ mod tests {
     }
 
     #[test]
-    fn skew_cylinders_at_internal_branch_tangency_remain_unsupported() {
-        let ((first, _), (second, _)) =
-            cylinders_with_miss(std::f64::consts::FRAC_PI_3, 1.0, -4.0, 8.0, -4.0, 8.0);
-        assert!(matches!(
-            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
-    }
-
-    #[test]
     fn oblique_unequal_cylinders_make_two_closed_curves() {
         for angle in [
             std::f64::consts::FRAC_PI_3,

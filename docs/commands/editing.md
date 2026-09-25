@@ -210,8 +210,9 @@ their walls produce two separate fitted cubic curves; finite heights clip the
 curves to arcs or isolated rim contacts. When the axis separation lies between
 the radius difference and the radius sum, the walls produce one connected
 fitted cubic loop, likewise clipped to finite heights. External tangency
-produces an isolated point. Internal tangency at exactly the radius difference
-remains unsupported.
+produces an isolated point. At internal tangency, the fitted cubic curve makes
+two turns through one crossing point; finite heights can leave arcs or isolated
+rim contacts.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
 when the cylinder radius occurs within both finite height ranges. Opposed
 surface axes yield two exact semicircles, matching Rhino's event structure.

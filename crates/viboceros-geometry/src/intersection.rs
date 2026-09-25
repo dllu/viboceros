@@ -543,6 +543,7 @@ fn curve_brep_intersection_events_with_transform(
 /// produce two separate tolerance-bounded cubic branches, clipped to both heights.
 /// Larger axis separation joins the branches into one closed cubic loop; finite
 /// heights clip the loop to arcs or isolated rim contacts.
+/// At the internal axis tangency, one nodal cubic curve traverses both lobes.
 /// Coaxial cone and cylinder walls meet in an exact circle, clipped to both
 /// finite surfaces.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,

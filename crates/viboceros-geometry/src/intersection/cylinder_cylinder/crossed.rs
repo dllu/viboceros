@@ -1,6 +1,7 @@
 //! Intersections of finite cylinders with nonparallel crossing or skew axes.
 
 mod joined;
+mod pinched;
 mod separated;
 mod skew_clip;
 mod unequal;
@@ -90,6 +91,12 @@ pub(super) fn intersect(
             > first_radius.min(second_radius) + axis_miss.abs() + radial_roundoff
         {
             return separated::intersect(first, second, axis_miss, tolerance, roundoff);
+        }
+        if (first_radius.max(second_radius) - first_radius.min(second_radius) - axis_miss.abs())
+            .abs()
+            <= radial_roundoff
+        {
+            return pinched::intersect(first, second, axis_miss, tolerance, roundoff);
         }
         return joined::intersect(first, second, axis_miss, tolerance, roundoff);
     }
