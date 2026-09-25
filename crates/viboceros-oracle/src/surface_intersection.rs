@@ -361,7 +361,7 @@ mod tests {
     }
 
     #[test]
-    fn python_oracle_reports_parallel_offset_torus_cylinder_topology() {
+    fn python_oracle_reports_torus_cylinder_topology() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json"
         ))
@@ -370,6 +370,8 @@ mod tests {
         let expected = [
             ("coaxial_two_circles", 2, 0, Some(2), true),
             ("offset_two_loops", 2, 0, Some(3), true),
+            ("centered_perpendicular_four_loops", 4, 0, Some(3), true),
+            ("centered_perpendicular_finite_arcs", 4, 0, Some(3), false),
             ("offset_turned_loops", 2, 0, Some(3), true),
             ("finite_rim_arcs", 2, 0, Some(3), false),
             ("critical_crossing", 2, 0, Some(3), true),

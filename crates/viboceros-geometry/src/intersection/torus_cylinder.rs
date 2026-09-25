@@ -1,6 +1,7 @@
 //! Exact coaxial circles and fitted parallel offset torus/cylinder sections.
 
 mod offset_parallel;
+mod perpendicular_centered;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Real, Tolerance};
@@ -32,6 +33,25 @@ pub(super) fn intersect(
     let axis_drift = torus_axis.cross(cylinder_axis)?.length()?
         * (major_radius + minor_radius).max(cylinder_height);
     if axis_drift > spatial_tolerance {
+        let [offset_x, offset_y, offset_z] = torus_frame.coordinates_of(cylinder_frame.origin())?;
+        let direction_x = cylinder_axis.dot(torus_frame.x_axis().as_vector())?;
+        let direction_y = cylinder_axis.dot(torus_frame.y_axis().as_vector())?;
+        let transverse = direction_x.mul_add(-offset_y, direction_y * offset_x);
+        if torus_axis.dot(cylinder_axis)?.abs()
+            * (major_radius + minor_radius).max(cylinder_height.abs())
+            <= spatial_tolerance
+            && offset_z.abs() <= spatial_tolerance
+            && transverse.abs() <= spatial_tolerance
+            && cylinder_radius + 4.0 * spatial_tolerance
+                < minor_radius.min(major_radius - minor_radius)
+        {
+            return perpendicular_centered::intersect(
+                (torus_frame, major_radius, minor_radius),
+                (cylinder_radius, cylinder_height),
+                (offset_x, offset_y, direction_x, direction_y),
+                spatial_tolerance,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nonparallel torus/cylinder axes",
         });
@@ -111,6 +131,140 @@ mod tests {
 
     fn cylinder(radius: Real, low: Real, high: Real) -> NurbsSurface {
         NurbsSurface::try_cylinder(frame(), radius, low, high).unwrap()
+    }
+
+    fn perpendicular_cylinder(radius: Real, low: Real, high: Real) -> NurbsSurface {
+        let axis = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        NurbsSurface::try_cylinder(axis, radius, low, high).unwrap()
+    }
+
+    #[test]
+    fn centered_perpendicular_narrow_cylinder_has_four_full_sections() {
+        let torus = torus();
+        let cylinder = perpendicular_cylinder(0.4, -6.0, 6.0);
+        for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 4);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("narrow perpendicular cylinder should give four loops")
+                };
+                assert_eq!(curve.degree(), 3);
+                assert!(curve.is_closed().unwrap());
+                let domain = curve.domain();
+                for index in 0..=64 {
+                    let parameter = *domain.start()
+                        + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                    let location = curve.evaluate(parameter).unwrap();
+                    let torus_residual =
+                        ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs();
+                    let cylinder_residual = (location.y().hypot(location.z()) - 0.4).abs();
+                    assert!(torus_residual < 5e-9, "torus residual {torus_residual}");
+                    assert!(
+                        cylinder_residual < 5e-9,
+                        "cylinder residual {cylinder_residual}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_narrow_cylinder_clips_at_both_rims() {
+        let torus = torus();
+        let finite = perpendicular_cylinder(0.4, 4.94, 4.97);
+        let events =
+            surface_surface_intersection_events(&torus, &finite, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 4);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("finite perpendicular cylinder should give arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for index in 0..=32 {
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 32.0);
+                let location = curve.evaluate(parameter).unwrap();
+                assert!(location.x() >= 4.94 - 5e-9 && location.x() <= 4.97 + 5e-9);
+                assert!(
+                    ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs()
+                        < 5e-9
+                );
+                assert!((location.y().hypot(location.z()) - 0.4).abs() < 5e-9);
+            }
+        }
+        assert!(
+            surface_surface_intersection_events(
+                &torus,
+                &perpendicular_cylinder(0.4, -1.0, 1.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+    }
+
+    #[test]
+    fn centered_perpendicular_narrow_cylinder_returns_isolated_rim_contacts() {
+        let outer_maximum = (25.0_f64 - 0.4_f64 * 0.4).sqrt();
+        let events = surface_surface_intersection_events(
+            &torus(),
+            &perpendicular_cylinder(0.4, outer_maximum, 6.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(events.len(), 2);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Point(location) = event else {
+                panic!("tangent finite rim should leave an isolated contact")
+            };
+            assert!((location.x() - outer_maximum).abs() < 5e-9);
+            assert!((location.y().abs() - 0.4).abs() < 5e-9);
+            assert!(location.z().abs() < 5e-9);
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_narrow_cylinder_handles_distant_rotated_frames() {
+        let rotated = Frame3::try_from_normal(
+            point(1.0e8, -1.0e8, 1.0e8),
+            Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder_frame = Frame3::try_from_normal(
+            rotated.point_at([-6.0, 0.0, 0.0]).unwrap(),
+            rotated.x_axis().as_vector(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let torus = NurbsSurface::try_torus(rotated, 4.0, 1.0).unwrap();
+        let cylinder = NurbsSurface::try_cylinder(cylinder_frame, 0.4, 0.0, 12.0).unwrap();
+        let events =
+            surface_surface_intersection_events(&torus, &cylinder, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 4);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("rotated perpendicular cylinder should give loops")
+            };
+            for index in 0..=32 {
+                let domain = curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * index as Real / 32.0;
+                let local = rotated
+                    .coordinates_of(curve.evaluate(parameter).unwrap())
+                    .unwrap();
+                assert!(((local[0].hypot(local[1]) - 4.0).hypot(local[2]) - 1.0).abs() < 4e-7);
+                assert!((local[1].hypot(local[2]) - 0.4).abs() < 4e-7);
+            }
+        }
     }
 
     #[test]

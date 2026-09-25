@@ -27204,6 +27204,54 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_centered_perpendicular_torus_cylinder_loops() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let torus_frame = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let cylinder_frame = Frame3::try_from_normal(
+            Point3::try_new(-6.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_torus(torus_frame, 4.0, 1.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_cylinder(cylinder_frame, 0.4, 0.0, 12.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 4 intersection object(s) from 1 object pair(s)"
+        );
+        let curves = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(curves.len(), 4);
+        for object in curves {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("perpendicular torus and cylinder should create curves")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_axis_centered_torus_sphere_circles() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

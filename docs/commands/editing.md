@@ -276,7 +276,9 @@ covers perpendicular, axis, oblique, finite-patch, and disjoint cuts. Coaxial to
 cylinder walls meet in one or two exact rational circles, including tangent
 sections and circles on cylinder rims. Parallel offset cylinder axes produce
 fitted cubic loops, finite rim-clipped arcs, or isolated contact points.
-Critical sections retain their single, pinched, and crossing loops. Nonparallel
+Critical sections retain their single, pinched, and crossing loops. Narrow
+cylinders whose perpendicular axes cross the torus center produce four cubic
+loops, finite rim arcs, or isolated rim contacts. Other nonparallel
 torus/cylinder axes remain unsupported. The
 [torus/cylinder oracle fixture](../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json)
 covers exact circles, offset loops, finite arcs, crossings, and contacts.
