@@ -289,8 +289,11 @@ symmetry-plane section and an elliptic section. Tori with equal tube radii,
 unequal major radii, and parallel offset axes at the same axial level intersect
 along lifted hyperbolic and elliptic sections. These produce fitted cubic loops,
 pinched loops, exact meridian circles at conic collapse, or isolated contacts.
-Coincident tori, unequal tube radii with offset axes, axial offsets, and axes with
-different directions remain unsupported. The
+Equal tori with a common center and different axis directions intersect in two
+planar sections, also returned as fitted cubic loops. Coincident tori, unequal
+tube radii with offset axes, axial offsets, and other intersecting nonparallel
+pairs remain unsupported. Separated surface control hulls return no intersection
+events. The
 [torus/torus oracle fixture](../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json)
 covers coaxial circles, parallel offsets, tangency, and disjoint cases.
 Coaxial tori and finite cone walls intersect in up to two exact rational

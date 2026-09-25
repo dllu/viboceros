@@ -585,18 +585,32 @@ fn curve_brep_intersection_events_with_transform(
 /// Equal parallel offset tori meet in fitted symmetry-plane and elliptic sections.
 /// Unequal-major parallel offset tori with matching tube radii meet in fitted
 /// lifted hyperbolic and elliptic sections at the same axial level.
+/// Equal centered tori with crossed axes meet in two fitted planar sections.
 /// Coaxial canonical tori and finite cone walls meet in exact rational circles.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
-/// Parallel disjoint planes return no
-/// events. Other non-planar and more general coincident inputs are reported
-/// explicitly until their intersection-curve paths are implemented.
+/// Surfaces with separated same-sign rational control-point hulls return no
+/// events. Other intersecting non-planar and more general coincident inputs
+/// are reported explicitly until their intersection-curve paths are implemented.
 pub fn surface_surface_intersection_events(
     first: &NurbsSurface,
     second: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    // Same-sign rational weights keep each surface inside its Euclidean
+    // control-point hull. This safely rejects separated pairs before the
+    // analytic dispatch, including pairs whose nonplanar solver is unfinished.
+    if weights_have_common_sign(first.control_points().iter().map(|point| point.weight()))
+        && weights_have_common_sign(second.control_points().iter().map(|point| point.weight()))
+        && !bounding_boxes_overlap(
+            first.control_point_bounds(),
+            second.control_point_bounds(),
+            surface_surface_distance_tolerance(first, second, tolerance) * 2.0,
+        )
+    {
+        return Ok(Vec::new());
+    }
     let first_cone = first.canonical_cone(tolerance)?;
     let second_cone = second.canonical_cone(tolerance)?;
     if let (Some(first_data), Some(second_data)) = (first_cone, second_cone) {
@@ -3700,6 +3714,33 @@ mod tests {
         ])
         .and_then(|surface| surface.try_reparameterized(x_start..=x_end, -5.0..=5.0))
         .unwrap()
+    }
+
+    #[test]
+    fn control_hull_bounds_reject_separated_nonplanar_surfaces() {
+        let warped = |offset: Real| {
+            NurbsSurface::try_bilinear([
+                point(offset, 0.0, 0.0),
+                point(offset + 2.0, 0.0, 0.0),
+                point(offset + 2.0, 2.0, 1.0),
+                point(offset, 2.0, 0.0),
+            ])
+            .unwrap()
+        };
+        let first = warped(0.0);
+        let separated = warped(20.0);
+        for (left, right) in [(&first, &separated), (&separated, &first)] {
+            assert!(
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
+        let overlapping = warped(0.5);
+        assert!(matches!(
+            surface_surface_intersection_events(&first, &overlapping, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
+        ));
     }
 
     #[test]

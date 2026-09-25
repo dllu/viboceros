@@ -1,5 +1,6 @@
-//! Coaxial circles and matching-tube parallel offset ring-torus intersections.
+//! Coaxial circles, matching-tube parallel offsets, and equal centered crossed tori.
 
+mod crossed_equal;
 mod parallel_equal;
 mod parallel_equal_minor;
 
@@ -26,6 +27,16 @@ pub(super) fn intersect(
     let first_axis = first_frame.z_axis().as_vector();
     let second_axis = second_frame.z_axis().as_vector();
     if first_axis.cross(second_axis)?.length()? * shape_scale > spatial_tolerance {
+        if first_frame.origin().distance_to(second_frame.origin())? <= spatial_tolerance
+            && (first_major - second_major).abs() <= spatial_tolerance
+            && (first_minor - second_minor).abs() <= spatial_tolerance
+        {
+            return crossed_equal::intersect(
+                (first_frame, first_major, first_minor),
+                second_frame,
+                tolerance,
+            );
+        }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "nonparallel torus axes",
         });
@@ -199,6 +210,23 @@ mod tests {
                 .len(),
             4
         );
+    }
+
+    #[test]
+    fn separated_tori_with_different_axes_have_no_events() {
+        let first = torus(4.0, 1.0, 0.0);
+        let second_frame = frame(
+            point(20.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        );
+        let second = NurbsSurface::try_torus(second_frame, 4.0, 1.0).unwrap();
+        for (left, right) in [(&first, &second), (&second, &first)] {
+            assert!(
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
     }
 
     #[test]

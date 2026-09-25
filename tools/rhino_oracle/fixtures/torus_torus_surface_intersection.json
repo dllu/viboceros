@@ -20,6 +20,18 @@
       "other_torus": {"center": [0.5, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1}
     },
     {
+      "id": "equal_centered_perpendicular_axes",
+      "op": "torus_torus_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "other_torus": {"center": [0, 0, 0], "axis": [1, 0, 0], "major_radius": 4, "minor_radius": 1}
+    },
+    {
+      "id": "equal_centered_oblique_axes",
+      "op": "torus_torus_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "other_torus": {"center": [0, 0, 0], "axis": [1, 0, 1], "major_radius": 4, "minor_radius": 1}
+    },
+    {
       "id": "equal_parallel_offset_meridian",
       "op": "torus_torus_surface_intersection",
       "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},

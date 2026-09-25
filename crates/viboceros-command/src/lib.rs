@@ -27327,6 +27327,54 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_equal_centered_crossed_torus_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let first_frame = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_torus(first_frame, 4.0, 1.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_torus(second_frame, 4.0, 1.0).unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 4 intersection object(s) from 1 object pair(s)"
+        );
+        let curves = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(curves.len(), 4);
+        for object in curves {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("crossed tori should create curves")
+            };
+            assert_eq!(curve.degree(), 3);
+            assert!(curve.is_closed().unwrap());
+        }
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_unequal_major_parallel_torus_curves() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

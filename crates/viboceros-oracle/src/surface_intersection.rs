@@ -377,6 +377,8 @@ mod tests {
             ("coaxial_two_circles", vec![2, 2], 0),
             ("coaxial_tangent_circle", vec![2], 0),
             ("equal_parallel_offset_four_loops", vec![3, 3, 3, 3], 0),
+            ("equal_centered_perpendicular_axes", vec![3, 3, 3, 3], 0),
+            ("equal_centered_oblique_axes", vec![3, 3, 3, 3], 0),
             ("equal_parallel_offset_meridian", vec![2, 3], 0),
             ("unequal_major_parallel_four_loops", vec![3, 3, 3, 3], 0),
             ("unequal_major_inner_pinch", vec![3, 3, 3, 3], 0),
