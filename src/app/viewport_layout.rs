@@ -3,6 +3,14 @@
 use super::*;
 use viboceros_command::interface::InterfaceCommand;
 
+#[derive(Clone, Copy)]
+enum ViewportTabAction {
+    Select(usize),
+    Maximize(usize),
+    Close(usize),
+    New,
+}
+
 fn split_rect(position: [f64; 4], horizontal: bool) -> Option<([f64; 4], [f64; 4])> {
     let [left, right, top, bottom] = position;
     if horizontal {
@@ -172,6 +180,99 @@ fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]
 }
 
 impl VibocerosApp {
+    pub(super) fn activate_model_viewport(&mut self, index: usize) {
+        if index >= self.viewports.len() {
+            return;
+        }
+        self.active_viewport = index;
+        if self.maximized_viewport.is_some() {
+            self.maximized_viewport = Some(index);
+        }
+    }
+
+    pub(super) fn show_viewport_tabs(&mut self, root: &mut egui::Ui) {
+        if !self.viewport_tabs_visible {
+            return;
+        }
+        let mut action = None;
+        egui::Panel::bottom("viewport_tabs").show(root, |ui| {
+            ui.horizontal(|ui| {
+                ui.label("Model views");
+                if ui.button("+").on_hover_text("New viewport").clicked() {
+                    action = Some(ViewportTabAction::New);
+                }
+                ui.separator();
+                egui::ScrollArea::horizontal()
+                    .id_salt("model_viewport_tabs")
+                    .show(ui, |ui| {
+                        ui.horizontal(|ui| {
+                            for (index, viewport) in self.viewports.iter().enumerate() {
+                                let response = ui.selectable_label(
+                                    self.active_viewport == index,
+                                    format!("{} {}", index + 1, viewport.view_label()),
+                                );
+                                if response.clicked() {
+                                    action = Some(ViewportTabAction::Select(index));
+                                }
+                                if response.double_clicked() {
+                                    action = Some(ViewportTabAction::Maximize(index));
+                                }
+                                response.context_menu(|ui| {
+                                    if ui.button("Activate").clicked() {
+                                        action = Some(ViewportTabAction::Select(index));
+                                        ui.close();
+                                    }
+                                    if ui
+                                        .button(if self.maximized_viewport == Some(index) {
+                                            "Restore layout"
+                                        } else {
+                                            "Maximize"
+                                        })
+                                        .clicked()
+                                    {
+                                        action = Some(ViewportTabAction::Maximize(index));
+                                        ui.close();
+                                    }
+                                    if ui
+                                        .add_enabled(
+                                            self.viewports.len() > 1,
+                                            egui::Button::new("Close viewport"),
+                                        )
+                                        .clicked()
+                                    {
+                                        action = Some(ViewportTabAction::Close(index));
+                                        ui.close();
+                                    }
+                                });
+                            }
+                        });
+                    });
+            });
+        });
+        if let Some(action) = action {
+            self.apply_viewport_tab_action(action);
+        }
+    }
+
+    fn apply_viewport_tab_action(&mut self, action: ViewportTabAction) {
+        match action {
+            ViewportTabAction::Select(index) => self.activate_model_viewport(index),
+            ViewportTabAction::Maximize(index) => {
+                let restore = self.maximized_viewport == Some(index);
+                self.activate_model_viewport(index);
+                if !restore {
+                    self.maximized_viewport = None;
+                }
+                self.apply_interface_command(InterfaceCommand::MaxViewport);
+            }
+            ViewportTabAction::Close(index) => {
+                self.activate_model_viewport(index);
+                self.close_active_viewport();
+            }
+            ViewportTabAction::New => self.new_viewport(),
+        }
+    }
+
     pub(super) fn new_viewport(&mut self) {
         let source_index = self.active_viewport;
         let source = &self.viewports[source_index];
@@ -325,5 +426,43 @@ impl VibocerosApp {
             "Closed viewport {closed_title}; {} viewport(s) remain",
             self.viewports.len()
         ));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tabs_can_reactivate_covered_views_with_duplicate_titles() {
+        let mut app = super::super::tests::test_app();
+        app.apply_viewport_tab_action(ViewportTabAction::New);
+        app.apply_viewport_tab_action(ViewportTabAction::New);
+        assert_eq!(app.viewports[0].view_label(), "Top");
+        assert_eq!(app.viewports[4].view_label(), "Top");
+        assert_eq!(app.viewports[5].view_label(), "Top");
+        assert_eq!(app.active_viewport, 5);
+        app.apply_viewport_tab_action(ViewportTabAction::Select(4));
+        assert_eq!(app.active_viewport, 4);
+        app.apply_viewport_tab_action(ViewportTabAction::Select(0));
+        assert_eq!(app.active_viewport, 0);
+        assert_eq!(app.viewports.len(), 6);
+    }
+
+    #[test]
+    fn tabs_switch_maximized_view_and_close_selected_view() {
+        let mut app = super::super::tests::test_app();
+        app.apply_viewport_tab_action(ViewportTabAction::Maximize(0));
+        assert_eq!(app.maximized_viewport, Some(0));
+        app.apply_viewport_tab_action(ViewportTabAction::Select(2));
+        assert_eq!(app.maximized_viewport, Some(2));
+        app.apply_viewport_tab_action(ViewportTabAction::Maximize(1));
+        assert_eq!(app.maximized_viewport, Some(1));
+        app.apply_viewport_tab_action(ViewportTabAction::Maximize(1));
+        assert_eq!(app.maximized_viewport, None);
+        app.apply_viewport_tab_action(ViewportTabAction::Close(1));
+        assert_eq!(app.viewports.len(), 3);
+        assert!(app.active_viewport < app.viewports.len());
+        assert_eq!(app.maximized_viewport, None);
     }
 }

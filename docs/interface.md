@@ -61,6 +61,12 @@ The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Ortho, Planar, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
 a modeling prompt is unfinished.
+The model-view tab strip sits above the command line and lists every viewport
+with its number and title. Click a tab to activate its view, including one
+covered by an overlapping viewport; double-click to maximize or restore it.
+The tab menu can activate, maximize, restore, or close a view, and `+` opens a
+new overlapping Top view. `ViewportTabs Show|Hide|Toggle` controls visibility;
+this setting persists between sessions.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
 empty layers; it reports object counts and combines edits into one undo step.
 Scroll inside the pane to reach lower layers, new-layer controls, and groups in

@@ -8,6 +8,18 @@ use crate::viewport::ZoomExtentsBorders;
 const ZOOM_SCALE_KEY: &str = "viboceros.view.zoom_scale.v1";
 const PARALLEL_BORDER_KEY: &str = "viboceros.view.zoom_extents_parallel_border.v1";
 const PERSPECTIVE_BORDER_KEY: &str = "viboceros.view.zoom_extents_perspective_border.v1";
+const VIEWPORT_TABS_KEY: &str = "viboceros.view.viewport_tabs_visible.v1";
+
+pub(super) fn load_viewport_tabs_visible(storage: Option<&dyn eframe::Storage>) -> bool {
+    storage
+        .and_then(|storage| storage.get_string(VIEWPORT_TABS_KEY))
+        .and_then(|value| value.parse::<bool>().ok())
+        .unwrap_or(true)
+}
+
+pub(super) fn save_viewport_tabs_visible(storage: &mut dyn eframe::Storage, visible: bool) {
+    storage.set_string(VIEWPORT_TABS_KEY, visible.to_string());
+}
 
 fn load_positive_scale(storage: Option<&dyn eframe::Storage>, key: &str, default: f64) -> f64 {
     storage
@@ -115,5 +127,17 @@ mod tests {
         );
         storage.set_string(PERSPECTIVE_BORDER_KEY, "0".into());
         assert_eq!(load_zoom_extents_borders(Some(&storage)), default);
+    }
+
+    #[test]
+    fn viewport_tabs_visibility_round_trips_and_ignores_invalid_storage() {
+        let mut storage = MemoryStorage::default();
+        assert!(load_viewport_tabs_visible(Some(&storage)));
+        let mut app = super::super::tests::test_app();
+        app.viewport_tabs_visible = false;
+        eframe::App::save(&mut app, &mut storage);
+        assert!(!load_viewport_tabs_visible(Some(&storage)));
+        storage.set_string(VIEWPORT_TABS_KEY, "invalid".into());
+        assert!(load_viewport_tabs_visible(Some(&storage)));
     }
 }

@@ -1472,6 +1472,7 @@ pub struct VibocerosApp {
     active_viewport: usize,
     maximized_viewport: Option<usize>,
     viewport_positions: Vec<[f64; 4]>,
+    viewport_tabs_visible: bool,
     osnap: bool,
     snaps: snapping::SnapControls,
     smart_track: bool,
@@ -1530,6 +1531,8 @@ impl VibocerosApp {
         }
         let zoom_scale = preferences::load_zoom_scale(creation_context.storage);
         let zoom_extents_borders = preferences::load_zoom_extents_borders(creation_context.storage);
+        let viewport_tabs_visible =
+            preferences::load_viewport_tabs_visible(creation_context.storage);
         Self {
             command_line,
             document: Document::default(),
@@ -1542,6 +1545,7 @@ impl VibocerosApp {
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
+            viewport_tabs_visible,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -6462,6 +6466,7 @@ impl eframe::App for VibocerosApp {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         preferences::save_zoom_scale(storage, self.zoom_scale);
         preferences::save_zoom_extents_borders(storage, self.zoom_extents_borders);
+        preferences::save_viewport_tabs_visible(storage, self.viewport_tabs_visible);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
@@ -6532,6 +6537,7 @@ impl eframe::App for VibocerosApp {
         self.show_grid_settings(ui);
         self.show_layers(ui);
         self.show_command_line(ui);
+        self.show_viewport_tabs(ui);
         let end_analysis_picking = self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
@@ -7002,6 +7008,7 @@ mod tests {
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
+            viewport_tabs_visible: true,
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,

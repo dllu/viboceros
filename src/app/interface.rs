@@ -385,6 +385,18 @@ impl VibocerosApp {
                     self.close_active_viewport();
                     return;
                 }
+                if let InterfaceCommand::ViewportTabs(action) = command {
+                    self.viewport_tabs_visible = action.apply(self.viewport_tabs_visible);
+                    self.push_log(format!(
+                        "Viewport tabs: {}",
+                        if self.viewport_tabs_visible {
+                            "shown"
+                        } else {
+                            "hidden"
+                        }
+                    ));
+                    return;
+                }
                 if command == InterfaceCommand::ThreeView {
                     let grid = self.viewports[self.active_viewport].grid_settings();
                     self.viewports = Viewport::standard_views().into_iter().take(3).collect();

@@ -33,6 +33,32 @@ fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
 }
 
 #[test]
+fn viewport_tabs_command_controls_visibility_without_interrupting_modeling() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    assert!(app.viewport_tabs_visible);
+    enter(&mut app, "ViewportTabs Hide");
+    assert!(!app.viewport_tabs_visible);
+    enter(&mut app, "ViewportTabs Show");
+    assert!(app.viewport_tabs_visible);
+    enter(&mut app, "ViewportTabs");
+    assert!(!app.viewport_tabs_visible);
+    enter(&mut app, "ViewportTabs bogus");
+    assert!(!app.viewport_tabs_visible);
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .contains("Usage: ViewportTabs")
+    );
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
 fn max_viewport_tracks_active_view_and_preserves_modeling_prompt() {
     let mut app = test_app();
     enter(&mut app, "Line");
