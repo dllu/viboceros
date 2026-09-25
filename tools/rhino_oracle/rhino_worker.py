@@ -4082,6 +4082,7 @@ def _viewport_arrangement_probe(operation):
     """Record public model-view state after bounded native layout commands."""
     commands = operation.get("commands")
     allowed = ("NewViewport", "CloseViewport", "3View", "4View",
+               "4View Projection FirstAngle", "4View Projection ThirdAngle",
                "SplitViewportHorizontal", "SplitViewportVertical")
     if not isinstance(commands, list) or not 1 <= len(commands) <= 12:
         raise ValueError("expected 1 to 12 viewport arrangement commands")
@@ -4134,7 +4135,12 @@ def _viewport_arrangement_probe(operation):
     states = [record()]
     for command in commands:
         _record_progress("viewport arrangement: " + command)
-        if not _run_surface_script("_" + command, True):
+        script = {
+            "4View": "_4View _Enter",
+            "4View Projection FirstAngle": "_4View _Projection=_FirstAngle _Enter",
+            "4View Projection ThirdAngle": "_4View _Projection=_ThirdAngle _Enter",
+        }.get(command, "_" + command)
+        if not _run_surface_script(script, True):
             raise ValueError("viewport arrangement failed: " + command)
         states.append(record())
     return {"commands": commands, "states": states}, 0

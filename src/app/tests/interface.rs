@@ -156,6 +156,60 @@ fn three_view_layout_has_three_renderable_viewports_and_preserves_input() {
 }
 
 #[test]
+fn four_view_projection_options_restore_rhino_arrangements_and_active_perspective() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+    let grid = app.viewports[2].grid_settings();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "4View Projection=FirstAngle");
+    assert_eq!(
+        app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+        [
+            ViewKind::Front,
+            ViewKind::Left,
+            ViewKind::Top,
+            ViewKind::Perspective
+        ]
+    );
+    assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS);
+    assert_eq!(app.active_viewport, 3);
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.grid_settings() == grid)
+    );
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.display_mode == DisplayMode::Wireframe)
+    );
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "4View");
+    assert_eq!(app.viewports[1].kind(), ViewKind::Left);
+    enter(&mut app, "_-4View _Projection _ThirdAngle");
+    assert_eq!(
+        app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+        [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right
+        ]
+    );
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "4View Projection=Invalid");
+    assert_eq!(app.viewports[3].kind(), ViewKind::Right);
+    assert!(app.command_log.back().unwrap().contains("Usage: 4View"));
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
 fn split_viewport_commands_partition_the_active_view_and_keep_model_input() {
     let mut app = test_app();
     app.viewports[0].display_mode = DisplayMode::Ghosted;

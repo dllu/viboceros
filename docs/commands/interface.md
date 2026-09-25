@@ -29,6 +29,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
 | `3View` | Set up Top, Perspective, and Front viewports in a three-panel layout. |
 | `4View` | Restore four viewports; preserve cameras when already in a four-view layout. |
+| `4View Projection=FirstAngle\|ThirdAngle` | Reset the four standard views to the selected projection arrangement. |
 | `SplitViewportHorizontal` / `SplitViewportVertical` | Divide the active viewport into two equal parts, copying its camera, CPlane, display mode, and grid settings. |
 | `NewViewport` | Create a centered overlapping Top model viewport in Wireframe, copying the active view's grid settings. |
 | `CloseViewport` | Close the active viewport; retain views already covering its space or expand adjacent tiled views. The final viewport stays open. |

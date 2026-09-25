@@ -92,6 +92,29 @@ impl ViewportTabAlignment {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FourViewProjection {
+    FirstAngle,
+    ThirdAngle,
+}
+
+impl FourViewProjection {
+    pub const ALL: [Self; 2] = [Self::FirstAngle, Self::ThirdAngle];
+
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::FirstAngle => "FirstAngle",
+            Self::ThirdAngle => "ThirdAngle",
+        }
+    }
+
+    pub fn parse(input: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|projection| keyword(input, projection.label()))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewportTarget {
     Active,
     All,
@@ -289,6 +312,7 @@ pub enum InterfaceCommand {
     MaxViewport,
     ThreeView,
     FourView,
+    FourViewProjection(FourViewProjection),
     NewViewport,
     SplitViewportHorizontal,
     SplitViewportVertical,
@@ -374,7 +398,7 @@ pub const COMMAND_NAMES: [&str; 50] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View [Projection=FirstAngle|ThirdAngle]; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -612,6 +636,25 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
                     "ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]",
                 )),
             }
+        } else if name.eq_ignore_ascii_case("4View") && !args.is_empty() {
+            let projection = match args.as_slice() {
+                [option, value] if keyword(option, "Projection") => {
+                    FourViewProjection::parse(value)
+                }
+                [option] => option.split_once('=').and_then(|(key, value)| {
+                    if keyword(key, "Projection") {
+                        FourViewProjection::parse(value)
+                    } else {
+                        None
+                    }
+                }),
+                _ => None,
+            };
+            projection
+                .map(InterfaceCommand::FourViewProjection)
+                .ok_or(InterfaceError::Usage(
+                    "4View Projection=FirstAngle|ThirdAngle",
+                ))
         } else if name.eq_ignore_ascii_case("MaxViewport")
             || name.eq_ignore_ascii_case("3View")
             || name.eq_ignore_ascii_case("4View")
@@ -1046,6 +1089,15 @@ impl InterfaceState {
                     self.display_modes = vec![DisplayMode::Wireframe; 4];
                 }
                 "Restored four viewports".into()
+            }
+            InterfaceCommand::FourViewProjection(projection) => {
+                self.maximized_viewport = None;
+                self.active_viewport = match projection {
+                    FourViewProjection::FirstAngle => 3,
+                    FourViewProjection::ThirdAngle => 1,
+                };
+                self.display_modes = vec![DisplayMode::Wireframe; 4];
+                format!("Restored {} four-view projection", projection.label())
             }
             InterfaceCommand::SplitViewportHorizontal => {
                 "Split active viewport horizontally".into()

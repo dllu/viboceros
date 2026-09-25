@@ -49,6 +49,17 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(value["states"][1]["views"][1]["bounds"], [400, 0, 800, 600])
             self.assertEqual(value["states"][1]["views"][1]["camera_direction"], [0., 0., -1.])
             run.assert_called_once_with("_NewViewport", True)
+        with patch.object(self.worker, "_record_progress"), patch.object(
+            self.worker, "_run_surface_script", return_value=True
+        ) as run:
+            self.worker._viewport_arrangement_probe({
+                "commands": ["4View Projection FirstAngle",
+                             "4View Projection ThirdAngle", "4View"]})
+            self.assertEqual(run.call_args_list, [
+                unittest.mock.call("_4View _Projection=_FirstAngle _Enter", True),
+                unittest.mock.call("_4View _Projection=_ThirdAngle _Enter", True),
+                unittest.mock.call("_4View _Enter", True),
+            ])
         with patch.object(self.worker, "_run_surface_script") as run:
             for commands in ([], ["Exit"], ["NewViewport"] * 13):
                 with self.subTest(commands=commands):

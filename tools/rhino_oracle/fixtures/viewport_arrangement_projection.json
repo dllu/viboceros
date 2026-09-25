@@ -1,0 +1,25 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-projection-options",
+      "commands": [
+        "4View Projection FirstAngle",
+        "4View Projection ThirdAngle",
+        "4View Projection FirstAngle",
+        "4View"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "front-active-projection-options",
+      "active_name": "Front",
+      "commands": [
+        "4View Projection ThirdAngle",
+        "4View Projection FirstAngle"
+      ]
+    }
+  ]
+}

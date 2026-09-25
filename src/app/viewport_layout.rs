@@ -1,7 +1,7 @@
 //! Docked viewport layout operations.
 
 use super::*;
-use viboceros_command::interface::{InterfaceCommand, ViewportTabAlignment};
+use viboceros_command::interface::{FourViewProjection, InterfaceCommand, ViewportTabAlignment};
 
 #[derive(Clone, Copy)]
 enum ViewportTabAction {
@@ -189,6 +189,40 @@ fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]
 }
 
 impl VibocerosApp {
+    pub(super) fn restore_four_view_projection(&mut self, projection: FourViewProjection) {
+        let kinds = match projection {
+            FourViewProjection::FirstAngle => [
+                ViewKind::Front,
+                ViewKind::Left,
+                ViewKind::Top,
+                ViewKind::Perspective,
+            ],
+            FourViewProjection::ThirdAngle => [
+                ViewKind::Top,
+                ViewKind::Perspective,
+                ViewKind::Front,
+                ViewKind::Right,
+            ],
+        };
+        let source = &self.viewports[self.active_viewport];
+        let viewports = kinds
+            .into_iter()
+            .map(|kind| Viewport::new_for_layout(source, kind))
+            .collect();
+        self.viewports = viewports;
+        self.viewport_positions = DEFAULT_VIEWPORT_POSITIONS.to_vec();
+        self.active_viewport = match projection {
+            FourViewProjection::FirstAngle => 3,
+            FourViewProjection::ThirdAngle => 1,
+        };
+        self.maximized_viewport = None;
+        self.viewport_tab_rename = None;
+        self.push_log(format!(
+            "Restored {} four-view projection",
+            projection.label()
+        ));
+    }
+
     pub(super) fn activate_model_viewport(&mut self, index: usize) {
         if index >= self.viewports.len() {
             return;

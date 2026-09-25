@@ -235,6 +235,10 @@ and construction planes when the current layout already has four views. When a
 view is maximized, viewport cycling switches the visible view. Save and Open retain
 the maximized view in 3DM files. See Rhino's
 [MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
+`4View Projection=FirstAngle` resets to Front and Left above Top and Perspective;
+`4View Projection=ThirdAngle` resets to Top and Perspective above Front and Right.
+Both choices activate Perspective. These arrangements were checked against
+[Rhino 8 observations](viewport-arrangement-projection-rhino-reference.json).
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active
 rectangle into equal parts and copy its camera, CPlane, display mode, and grid
 settings to the new viewport. The new viewport gets a distinct title, and both

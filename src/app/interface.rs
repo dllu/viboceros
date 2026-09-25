@@ -417,6 +417,10 @@ impl VibocerosApp {
                     self.push_log(message);
                     return;
                 }
+                if let InterfaceCommand::FourViewProjection(projection) = command {
+                    self.restore_four_view_projection(projection);
+                    return;
+                }
                 if command == InterfaceCommand::FourView && self.viewports.len() != 4 {
                     self.viewport_tab_rename = None;
                     let grid = self.viewports[self.active_viewport].grid_settings();
