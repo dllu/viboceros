@@ -67,6 +67,25 @@ pub struct ThreeDmNamedView {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(u8)]
+pub enum ThreeDmDisplayMode {
+    Other = 0,
+    Wireframe = 1,
+    Shaded = 2,
+    Ghosted = 3,
+}
+
+/// A model-space viewport from the 3DM current-view table.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmViewport {
+    pub camera: ThreeDmNamedView,
+    pub display_mode: ThreeDmDisplayMode,
+    /// Relative left, right, top, and bottom window coordinates.
+    pub position: [f64; 4],
+    pub maximized: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
 pub enum ThreeDmColorSource {
     Layer = 0,
     Object = 1,
@@ -131,6 +150,7 @@ pub struct ThreeDmModel {
     pub layers: Vec<ThreeDmLayer>,
     pub groups: Vec<ThreeDmGroup>,
     pub named_views: Vec<ThreeDmNamedView>,
+    pub viewports: Vec<ThreeDmViewport>,
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
 }
@@ -147,6 +167,7 @@ impl ThreeDmModel {
             layers,
             groups,
             named_views: Vec::new(),
+            viewports: Vec::new(),
             objects,
             unsupported_object_count: 0,
         }
@@ -235,7 +256,12 @@ pub fn read_3dm_file_in_units(
             object.geometry =
                 crate::three_dm_units::transform_geometry(&object.geometry, transform, tolerance)?;
         }
-        for view in &mut model.named_views {
+        for view in model.named_views.iter_mut().chain(
+            model
+                .viewports
+                .iter_mut()
+                .map(|viewport| &mut viewport.camera),
+        ) {
             let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
                 Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
             };
@@ -363,6 +389,45 @@ pub fn write_3dm_file(
             cplane_y: view.construction_plane.y_axis().as_vector().to_array(),
             frustum: view.frustum,
             screen_port: view.screen_port,
+        })
+        .collect::<Vec<_>>();
+    let current_view_names = model
+        .viewports
+        .iter()
+        .map(|view| c_string(&view.camera.name, "viewport name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let current_views = model
+        .viewports
+        .iter()
+        .zip(&current_view_names)
+        .map(|(view, name)| ffi::ViboCurrentView {
+            camera: ffi::ViboNamedView {
+                name: name.as_ptr(),
+                projection: view.camera.projection as u8,
+                has_target: u8::from(view.camera.target.is_some()),
+                camera_location: view.camera.camera_location.to_array(),
+                camera_direction: view.camera.camera_direction.to_array(),
+                camera_up: view.camera.camera_up.to_array(),
+                target: view.camera.target.map_or([0.0; 3], Point3::to_array),
+                cplane_origin: view.camera.construction_plane.origin().to_array(),
+                cplane_x: view
+                    .camera
+                    .construction_plane
+                    .x_axis()
+                    .as_vector()
+                    .to_array(),
+                cplane_y: view
+                    .camera
+                    .construction_plane
+                    .y_axis()
+                    .as_vector()
+                    .to_array(),
+                frustum: view.camera.frustum,
+                screen_port: view.camera.screen_port,
+            },
+            display_mode: view.display_mode as u8,
+            maximized: u8::from(view.maximized),
+            position: view.position,
         })
         .collect::<Vec<_>>();
 
@@ -494,6 +559,8 @@ pub fn write_3dm_file(
             groups.len(),
             pointer_or_null(&named_views),
             named_views.len(),
+            pointer_or_null(&current_views),
+            current_views.len(),
             pointer_or_null(&objects),
             objects.len(),
             error.as_mut_ptr(),
@@ -640,33 +707,26 @@ fn decode_model(
         if unsafe { ffi::vibo_3dm_named_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
             return Err(ThreeDmError::MalformedBridge("invalid named view record"));
         }
-        let projection = match raw.projection {
-            1 => ThreeDmProjection::Parallel,
-            2 => ThreeDmProjection::Perspective,
-            _ => {
-                return Err(ThreeDmError::MalformedBridge(
-                    "invalid named view projection",
-                ));
-            }
+        named_views.push(decode_view(&raw)?);
+    }
+    let current_view_count = unsafe { ffi::vibo_3dm_current_view_count(handle.0.as_ptr()) };
+    let mut viewports = Vec::with_capacity(current_view_count);
+    for index in 0..current_view_count {
+        let mut raw = ffi::ViboCurrentView::default();
+        if unsafe { ffi::vibo_3dm_current_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid current view record"));
+        }
+        let display_mode = match raw.display_mode {
+            1 => ThreeDmDisplayMode::Wireframe,
+            2 => ThreeDmDisplayMode::Shaded,
+            3 => ThreeDmDisplayMode::Ghosted,
+            _ => ThreeDmDisplayMode::Other,
         };
-        let construction_plane = Frame3::try_from_directions(
-            Point3::try_from(raw.cplane_origin)?,
-            Vector3::try_from(raw.cplane_x)?,
-            Vector3::try_from(raw.cplane_y)?,
-            Tolerance::NUMERICAL_VALIDATION,
-        )?;
-        named_views.push(ThreeDmNamedView {
-            name: c_text(raw.name)?,
-            projection,
-            camera_location: Point3::try_from(raw.camera_location)?,
-            camera_direction: Vector3::try_from(raw.camera_direction)?,
-            camera_up: Vector3::try_from(raw.camera_up)?,
-            target: (raw.has_target != 0)
-                .then(|| Point3::try_from(raw.target))
-                .transpose()?,
-            construction_plane,
-            frustum: raw.frustum,
-            screen_port: raw.screen_port,
+        viewports.push(ThreeDmViewport {
+            camera: decode_view(&raw.camera)?,
+            display_mode,
+            position: raw.position,
+            maximized: raw.maximized != 0,
         });
     }
 
@@ -695,8 +755,35 @@ fn decode_model(
         layers,
         groups,
         named_views,
+        viewports,
         objects,
         unsupported_object_count: unsupported,
+    })
+}
+
+fn decode_view(raw: &ffi::ViboNamedView) -> Result<ThreeDmNamedView, ThreeDmError> {
+    let projection = match raw.projection {
+        1 => ThreeDmProjection::Parallel,
+        2 => ThreeDmProjection::Perspective,
+        _ => return Err(ThreeDmError::MalformedBridge("invalid view projection")),
+    };
+    Ok(ThreeDmNamedView {
+        name: c_text(raw.name)?,
+        projection,
+        camera_location: Point3::try_from(raw.camera_location)?,
+        camera_direction: Vector3::try_from(raw.camera_direction)?,
+        camera_up: Vector3::try_from(raw.camera_up)?,
+        target: (raw.has_target != 0)
+            .then(|| Point3::try_from(raw.target))
+            .transpose()?,
+        construction_plane: Frame3::try_from_directions(
+            Point3::try_from(raw.cplane_origin)?,
+            Vector3::try_from(raw.cplane_x)?,
+            Vector3::try_from(raw.cplane_y)?,
+            Tolerance::NUMERICAL_VALIDATION,
+        )?,
+        frustum: raw.frustum,
+        screen_port: raw.screen_port,
     })
 }
 
@@ -1078,27 +1165,17 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
                 "named view {index} has an empty or duplicate name"
             )));
         }
-        if view
-            .camera_direction
-            .cross(view.camera_up)?
-            .normalized_nonzero()
-            .is_err()
-        {
-            return Err(ThreeDmError::InvalidModel(format!(
-                "named view {index} has a degenerate camera orientation"
-            )));
-        }
-        let [left, right, bottom, top, near, far] = view.frustum;
-        if !view.frustum.iter().all(|value| value.is_finite())
+        validate_view_camera(view, &format!("named view {index}"))?;
+    }
+    for (index, viewport) in model.viewports.iter().enumerate() {
+        validate_view_camera(&viewport.camera, &format!("viewport {index}"))?;
+        let [left, right, top, bottom] = viewport.position;
+        if !viewport.position.iter().all(|value| value.is_finite())
             || left >= right
-            || bottom >= top
-            || near <= 0.0
-            || near >= far
-            || view.screen_port[0] == view.screen_port[1]
-            || view.screen_port[2] == view.screen_port[3]
+            || top >= bottom
         {
             return Err(ThreeDmError::InvalidModel(format!(
-                "named view {index} has an invalid frustum"
+                "viewport {index} has an invalid position"
             )));
         }
     }
@@ -1143,6 +1220,33 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
                 object.wire_density
             )));
         }
+    }
+    Ok(())
+}
+
+fn validate_view_camera(view: &ThreeDmNamedView, description: &str) -> Result<(), ThreeDmError> {
+    if view
+        .camera_direction
+        .cross(view.camera_up)?
+        .normalized_nonzero()
+        .is_err()
+    {
+        return Err(ThreeDmError::InvalidModel(format!(
+            "{description} has a degenerate camera orientation"
+        )));
+    }
+    let [left, right, bottom, top, near, far] = view.frustum;
+    if !view.frustum.iter().all(|value| value.is_finite())
+        || left >= right
+        || bottom >= top
+        || near <= 0.0
+        || near >= far
+        || view.screen_port[0] == view.screen_port[1]
+        || view.screen_port[2] == view.screen_port[3]
+    {
+        return Err(ThreeDmError::InvalidModel(format!(
+            "{description} has an invalid frustum"
+        )));
     }
     Ok(())
 }
@@ -1507,6 +1611,15 @@ mod ffi {
     }
 
     #[repr(C)]
+    #[derive(Clone, Copy, Default)]
+    pub struct ViboCurrentView {
+        pub camera: ViboNamedView,
+        pub display_mode: u8,
+        pub maximized: u8,
+        pub position: [f64; 4],
+    }
+
+    #[repr(C)]
     pub struct ViboUserText {
         pub key: *const c_char,
         pub value: *const c_char,
@@ -1585,6 +1698,12 @@ mod ffi {
             index: usize,
             view: *mut ViboNamedView,
         ) -> c_int;
+        pub fn vibo_3dm_current_view_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_current_view(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            view: *mut ViboCurrentView,
+        ) -> c_int;
         pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_object(
@@ -1634,6 +1753,8 @@ mod ffi {
             group_count: usize,
             named_views: *const ViboNamedView,
             named_view_count: usize,
+            current_views: *const ViboCurrentView,
+            current_view_count: usize,
             objects: *const ViboWriteObject,
             object_count: usize,
             error: *mut c_char,
@@ -3119,8 +3240,28 @@ mod tests {
             frustum: [-4.0, 4.0, -3.0, 3.0, 0.1, 1000.0],
             screen_port: [0, 1024, 768, 0],
         });
+        model.viewports.push(ThreeDmViewport {
+            camera: model.named_views[0].clone(),
+            display_mode: ThreeDmDisplayMode::Shaded,
+            position: [0.0, 0.5, 0.0, 1.0],
+            maximized: false,
+        });
+        model.viewports.push(ThreeDmViewport {
+            camera: model.named_views[1].clone(),
+            display_mode: ThreeDmDisplayMode::Ghosted,
+            position: [0.5, 1.0, 0.0, 1.0],
+            maximized: true,
+        });
         write_3dm_file(&path, &model).unwrap();
         let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.viewports.len(), 2);
+        assert_eq!(loaded.viewports[0].display_mode, ThreeDmDisplayMode::Shaded);
+        assert_eq!(loaded.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
+        assert_eq!(
+            loaded.viewports[1].display_mode,
+            ThreeDmDisplayMode::Ghosted
+        );
+        assert!(loaded.viewports[1].maximized);
         assert_eq!(loaded.named_views.len(), 2);
         let view = &loaded.named_views[0];
         assert_eq!(view.name, "Camera A");
@@ -3150,6 +3291,17 @@ mod tests {
             [0.002, 0.003, 0.004]
         );
         assert_eq!(scaled.frustum[4], 0.001);
+        assert_eq!(meters.viewports[0].camera.camera_location.z(), 0.01);
+        assert_eq!(
+            meters.viewports[0]
+                .camera
+                .construction_plane
+                .origin()
+                .to_array(),
+            [0.002, 0.003, 0.004]
+        );
+        assert_eq!(meters.viewports[0].camera.frustum[4], 0.001);
+        assert_eq!(meters.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
         fs::remove_file(path).unwrap();
     }
 

@@ -37,6 +37,11 @@ struct BridgeNamedView {
   ViboNamedView data{};
 };
 
+struct BridgeCurrentView {
+  std::string name;
+  ViboCurrentView data{};
+};
+
 struct BridgeObject {
   int32_t object_type = 0;
   int32_t source_layer_index = 0;
@@ -72,6 +77,70 @@ std::string utf8(const ON_wString& value) {
   const ON_String converted(value);
   const char* text = static_cast<const char*>(converted);
   return text == nullptr ? std::string() : std::string(text);
+}
+
+bool read_view_camera(const ON_3dmView& source_view, ViboNamedView& record) {
+  if (!source_view.m_vp.IsValid() || !source_view.m_cplane.m_plane.IsValid()) {
+    return false;
+  }
+  record.projection = static_cast<uint8_t>(source_view.m_vp.Projection());
+  if (record.projection != 1 && record.projection != 2) {
+    return false;
+  }
+  const auto fill3 = [](double (&destination)[3], const auto& value) {
+    destination[0] = value.x;
+    destination[1] = value.y;
+    destination[2] = value.z;
+  };
+  fill3(record.camera_location, source_view.m_vp.CameraLocation());
+  fill3(record.camera_direction, source_view.m_vp.CameraDirection());
+  fill3(record.camera_up, source_view.m_vp.CameraUp());
+  const ON_3dPoint target = source_view.TargetPoint();
+  record.has_target = static_cast<uint8_t>(target.IsValid());
+  if (record.has_target) {
+    fill3(record.target, target);
+  }
+  const ON_Plane& plane = source_view.m_cplane.m_plane;
+  fill3(record.cplane_origin, plane.origin);
+  fill3(record.cplane_x, plane.xaxis);
+  fill3(record.cplane_y, plane.yaxis);
+  return source_view.m_vp.GetFrustum(&record.frustum[0], &record.frustum[1],
+                                    &record.frustum[2], &record.frustum[3],
+                                    &record.frustum[4], &record.frustum[5]) &&
+         source_view.m_vp.GetScreenPort(&record.screen_port[0], &record.screen_port[1],
+                                        &record.screen_port[2], &record.screen_port[3]);
+}
+
+bool write_view_camera(ON_3dmView& view, const ViboNamedView& source) {
+  if (source.name == nullptr || source.name[0] == '\0' ||
+      (source.projection != 1 && source.projection != 2)) {
+    return false;
+  }
+  view.m_name = ON_wString(source.name);
+  ON_UUID viewport_id;
+  ON_CreateUuid(viewport_id);
+  if (!view.m_vp.SetViewportId(viewport_id) ||
+      !view.m_vp.SetProjection(static_cast<ON::view_projection>(source.projection)) ||
+      !view.m_vp.SetCameraLocation(ON_3dPoint(source.camera_location))) {
+    return false;
+  }
+  // A valid final frame can pass through an invalid intermediate frame when
+  // changing from the default camera orientation (for example, Front view).
+  view.m_vp.SetCameraDirection(ON_3dVector(source.camera_direction));
+  view.m_vp.SetCameraUp(ON_3dVector(source.camera_up));
+  if (!view.m_vp.IsValidCamera() ||
+      !view.m_vp.SetScreenPort(source.screen_port[0], source.screen_port[1],
+                               source.screen_port[2], source.screen_port[3]) ||
+      !view.m_vp.SetFrustum(source.frustum[0], source.frustum[1],
+                            source.frustum[2], source.frustum[3],
+                            source.frustum[4], source.frustum[5]) ||
+      (source.has_target && !view.SetTargetPoint(ON_3dPoint(source.target)))) {
+    return false;
+  }
+  view.m_cplane.m_plane = ON_Plane(ON_3dPoint(source.cplane_origin),
+                                  ON_3dVector(source.cplane_x),
+                                  ON_3dVector(source.cplane_y));
+  return view.m_cplane.m_plane.IsValid();
 }
 
 void read_user_text(const ON_Object& source,
@@ -1736,6 +1805,7 @@ struct ViboThreeDmModel {
   std::vector<BridgeLayer> layers;
   std::vector<BridgeGroup> groups;
   std::vector<BridgeNamedView> named_views;
+  std::vector<BridgeCurrentView> current_views;
   std::vector<BridgeObject> objects;
   size_t unsupported_object_count = 0;
 };
@@ -1804,50 +1874,37 @@ extern "C" int32_t vibo_3dm_read(const char* path,
 
     for (int index = 0; index < source.m_settings.m_named_views.Count(); ++index) {
       const ON_3dmView& source_view = source.m_settings.m_named_views[index];
-      if (source_view.m_name.IsEmpty() ||
-          !source_view.m_vp.IsValid() ||
-          !source_view.m_cplane.m_plane.IsValid()) {
+      if (source_view.m_name.IsEmpty()) {
         continue;
       }
       BridgeNamedView view;
       view.name = utf8(source_view.m_name);
-      ViboNamedView& record = view.data;
-      record.projection = static_cast<uint8_t>(source_view.m_vp.Projection());
-      if (record.projection != 1 && record.projection != 2) {
-        continue;
-      }
-      const auto fill3 = [](double (&destination)[3], const auto& value) {
-        destination[0] = value.x;
-        destination[1] = value.y;
-        destination[2] = value.z;
-      };
-      fill3(record.camera_location, source_view.m_vp.CameraLocation());
-      fill3(record.camera_direction, source_view.m_vp.CameraDirection());
-      fill3(record.camera_up, source_view.m_vp.CameraUp());
-      const ON_3dPoint target = source_view.TargetPoint();
-      record.has_target = static_cast<uint8_t>(target.IsValid());
-      if (record.has_target) {
-        fill3(record.target, target);
-      }
-      const ON_Plane& plane = source_view.m_cplane.m_plane;
-      fill3(record.cplane_origin, plane.origin);
-      fill3(record.cplane_x, plane.xaxis);
-      fill3(record.cplane_y, plane.yaxis);
-      if (!source_view.m_vp.GetFrustum(&record.frustum[0],
-                                       &record.frustum[1],
-                                       &record.frustum[2],
-                                       &record.frustum[3],
-                                       &record.frustum[4],
-                                       &record.frustum[5])) {
-        continue;
-      }
-      if (!source_view.m_vp.GetScreenPort(&record.screen_port[0],
-                                          &record.screen_port[1],
-                                          &record.screen_port[2],
-                                          &record.screen_port[3])) {
+      if (!read_view_camera(source_view, view.data)) {
         continue;
       }
       decoded->named_views.push_back(std::move(view));
+    }
+
+    for (int index = 0; index < source.m_settings.m_views.Count(); ++index) {
+      const ON_3dmView& source_view = source.m_settings.m_views[index];
+      if (source_view.m_view_type != ON::model_view_type) {
+        continue;
+      }
+      BridgeCurrentView view;
+      view.name = source_view.m_name.IsEmpty() ? "Viewport" : utf8(source_view.m_name);
+      if (!read_view_camera(source_view, view.data.camera)) {
+        continue;
+      }
+      const ON_UUID mode = source_view.m_display_mode_id;
+      view.data.display_mode = mode == ON_StandardDisplayModeId::Wireframe ? 1 :
+                               mode == ON_StandardDisplayModeId::Shaded ? 2 :
+                               mode == ON_StandardDisplayModeId::Ghosted ? 3 : 0;
+      view.data.maximized = static_cast<uint8_t>(source_view.m_position.m_bMaximized);
+      view.data.position[0] = source_view.m_position.m_wnd_left;
+      view.data.position[1] = source_view.m_position.m_wnd_right;
+      view.data.position[2] = source_view.m_position.m_wnd_top;
+      view.data.position[3] = source_view.m_position.m_wnd_bottom;
+      decoded->current_views.push_back(std::move(view));
     }
 
     ONX_ModelComponentIterator object_iterator(
@@ -2001,6 +2058,21 @@ extern "C" int32_t vibo_3dm_named_view(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" size_t vibo_3dm_current_view_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->current_views.size();
+}
+
+extern "C" int32_t vibo_3dm_current_view(const ViboThreeDmModel* model,
+                                           size_t index, ViboCurrentView* view) {
+  if (model == nullptr || index >= model->current_views.size() || view == nullptr) {
+    return 0;
+  }
+  const BridgeCurrentView& source = model->current_views[index];
+  *view = source.data;
+  view->camera.name = source.name.c_str();
+  return 1;
+}
+
 extern "C" size_t vibo_3dm_object_count(const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->objects.size();
 }
@@ -2120,12 +2192,14 @@ extern "C" int32_t vibo_3dm_write(
     double angle_tolerance, const ViboWriteLayer* layers, size_t layer_count,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboNamedView* named_views, size_t named_view_count,
+    const ViboCurrentView* current_views, size_t current_view_count,
     const ViboWriteObject* objects, size_t object_count, char* error,
     size_t error_capacity) {
   if (path == nullptr || path[0] == '\0' ||
       (layer_count != 0 && layers == nullptr) ||
       (group_count != 0 && groups == nullptr) ||
       (named_view_count != 0 && named_views == nullptr) ||
+      (current_view_count != 0 && current_views == nullptr) ||
       (object_count != 0 && objects == nullptr)) {
     set_error(error, error_capacity, "path and input arrays are required");
     return 0;
@@ -2164,39 +2238,46 @@ extern "C" int32_t vibo_3dm_write(
 
     for (size_t index = 0; index < named_view_count; ++index) {
       const ViboNamedView& source = named_views[index];
-      if (source.name == nullptr || source.name[0] == '\0' ||
-          (source.projection != 1 && source.projection != 2)) {
-        set_error(error, error_capacity, "invalid named view name or projection");
-        return 0;
-      }
       ON_3dmView view;
-      view.m_name = ON_wString(source.name);
-      ON_CreateUuid(view.m_named_view_id);
-      if (!view.m_vp.SetViewportId(view.m_named_view_id) ||
-          !view.m_vp.SetProjection(static_cast<ON::view_projection>(source.projection)) ||
-          !view.m_vp.SetCameraLocation(ON_3dPoint(source.camera_location)) ||
-          !view.m_vp.SetCameraDirection(ON_3dVector(source.camera_direction)) ||
-          !view.m_vp.SetCameraUp(ON_3dVector(source.camera_up)) ||
-          !view.m_vp.SetScreenPort(source.screen_port[0], source.screen_port[1],
-                                    source.screen_port[2], source.screen_port[3]) ||
-          !view.m_vp.SetFrustum(source.frustum[0], source.frustum[1],
-                                source.frustum[2], source.frustum[3],
-                                source.frustum[4], source.frustum[5]) ||
-          (source.has_target && !view.SetTargetPoint(ON_3dPoint(source.target)))) {
+      if (!write_view_camera(view, source)) {
         set_error(error, error_capacity, "invalid named view camera or frustum");
         return 0;
       }
-      view.m_cplane.m_plane = ON_Plane(ON_3dPoint(source.cplane_origin),
-                                      ON_3dVector(source.cplane_x),
-                                      ON_3dVector(source.cplane_y));
+      view.m_named_view_id = view.m_vp.ViewportId();
       ON_wString view_diagnostics;
       ON_TextLog view_log(view_diagnostics);
-      if (!view.m_cplane.m_plane.IsValid() || !view.IsValid(&view_log)) {
+      if (!view.IsValid(&view_log)) {
         set_error(error, error_capacity,
                   "invalid named view: " + utf8(view_diagnostics));
         return 0;
       }
       model.m_settings.m_named_views.Append(view);
+    }
+
+    for (size_t index = 0; index < current_view_count; ++index) {
+      const ViboCurrentView& source = current_views[index];
+      ON_3dmView view;
+      if (!write_view_camera(view, source.camera)) {
+        set_error(error, error_capacity, "invalid current viewport camera " + std::to_string(index));
+        return 0;
+      }
+      view.m_view_type = ON::model_view_type;
+      view.m_display_mode_id = source.display_mode == 2 ? ON_StandardDisplayModeId::Shaded :
+                               source.display_mode == 3 ? ON_StandardDisplayModeId::Ghosted :
+                               ON_StandardDisplayModeId::Wireframe;
+      view.m_position.m_wnd_left = source.position[0];
+      view.m_position.m_wnd_right = source.position[1];
+      view.m_position.m_wnd_top = source.position[2];
+      view.m_position.m_wnd_bottom = source.position[3];
+      view.m_position.m_bMaximized = source.maximized != 0;
+      ON_wString view_diagnostics;
+      ON_TextLog view_log(view_diagnostics);
+      if (!view.IsValid(&view_log)) {
+        set_error(error, error_capacity,
+                  "invalid current viewport: " + utf8(view_diagnostics));
+        return 0;
+      }
+      model.m_settings.m_views.Append(view);
     }
 
     std::vector<int> layer_indices;

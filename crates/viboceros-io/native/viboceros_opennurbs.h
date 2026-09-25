@@ -74,6 +74,13 @@ typedef struct ViboNamedView {
   int32_t screen_port[4]; // left, right, bottom, top
 } ViboNamedView;
 
+typedef struct ViboCurrentView {
+  ViboNamedView camera;
+  uint8_t display_mode; // 0 other, 1 wireframe, 2 shaded, 3 ghosted
+  uint8_t maximized;
+  double position[4]; // left, right, top, bottom
+} ViboCurrentView;
+
 typedef struct ViboUserText {
   const char* key;
   const char* value;
@@ -130,6 +137,9 @@ int32_t vibo_3dm_group(const ViboThreeDmModel* model, size_t index,
 size_t vibo_3dm_named_view_count(const ViboThreeDmModel* model);
 int32_t vibo_3dm_named_view(const ViboThreeDmModel* model, size_t index,
                             ViboNamedView* view);
+size_t vibo_3dm_current_view_count(const ViboThreeDmModel* model);
+int32_t vibo_3dm_current_view(const ViboThreeDmModel* model, size_t index,
+                              ViboCurrentView* view);
 
 size_t vibo_3dm_object_count(const ViboThreeDmModel* model);
 size_t vibo_3dm_unsupported_object_count(const ViboThreeDmModel* model);
@@ -157,7 +167,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        const ViboWriteLayer* layers,
                        size_t layer_count, const ViboWriteGroup* groups,
                        size_t group_count, const ViboNamedView* named_views,
-                       size_t named_view_count, const ViboWriteObject* objects,
+                       size_t named_view_count, const ViboCurrentView* current_views,
+                       size_t current_view_count, const ViboWriteObject* objects,
                        size_t object_count, char* error,
                        size_t error_capacity);
 

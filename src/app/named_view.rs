@@ -1,7 +1,7 @@
 use super::*;
 use viboceros_command::named_view::NamedViews;
 use viboceros_command::named_view::{self, NamedViewAction};
-use viboceros_io::ThreeDmNamedView;
+use viboceros_io::{ThreeDmDisplayMode, ThreeDmNamedView, ThreeDmViewport};
 
 fn add_file_views(
     named_views: &mut NamedViews<NamedViewSnapshot>,
@@ -41,6 +41,36 @@ impl VibocerosApp {
             .map_err(Into::into)
     }
 
+    pub(super) fn three_dm_viewports(
+        &self,
+    ) -> Result<Vec<ThreeDmViewport>, viboceros_command::CommandError> {
+        let positions = [
+            [0.0, 0.5, 0.0, 0.5],
+            [0.5, 1.0, 0.0, 0.5],
+            [0.0, 0.5, 0.5, 1.0],
+            [0.5, 1.0, 0.5, 1.0],
+        ];
+        self.viewports
+            .iter()
+            .enumerate()
+            .map(|(index, viewport)| {
+                Ok(ThreeDmViewport {
+                    camera: Viewport::named_view_to_3dm(
+                        viewport.named_view_snapshot(),
+                        viewport.view_label().to_owned(),
+                    )?,
+                    display_mode: match viewport.display_mode {
+                        DisplayMode::Wireframe => ThreeDmDisplayMode::Wireframe,
+                        DisplayMode::Shaded => ThreeDmDisplayMode::Shaded,
+                        DisplayMode::Ghosted => ThreeDmDisplayMode::Ghosted,
+                    },
+                    position: positions[index],
+                    maximized: false,
+                })
+            })
+            .collect::<Result<Vec<_>, viboceros_command::CommandError>>()
+    }
+
     pub(super) fn try_run_3dm_command(
         &mut self,
         input: &str,
@@ -51,8 +81,8 @@ impl VibocerosApp {
         if name.eq_ignore_ascii_case("Open3dm") || name.eq_ignore_ascii_case("Open") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
-                let (document, message, views) =
-                    viboceros_command::open_3dm_with_named_views(path)?;
+                let (document, message, views, current_views) =
+                    viboceros_command::open_3dm_with_views(path)?;
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
                 self.document = document;
@@ -61,6 +91,17 @@ impl VibocerosApp {
                 );
                 self.named_views = named_views;
                 self.viewports = Viewport::standard_views();
+                for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
+                    if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
+                        viewport.restore_named_view(snapshot);
+                    }
+                    viewport.display_mode = match source.display_mode {
+                        ThreeDmDisplayMode::Wireframe => DisplayMode::Wireframe,
+                        ThreeDmDisplayMode::Shaded => DisplayMode::Shaded,
+                        ThreeDmDisplayMode::Ghosted => DisplayMode::Ghosted,
+                        ThreeDmDisplayMode::Other => viewport.display_mode,
+                    };
+                }
                 self.active_viewport = 0;
                 self.last_point = None;
                 self.sidebar = DocumentSidebar::default();
@@ -80,8 +121,13 @@ impl VibocerosApp {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let views = self.three_dm_views()?;
-                let message =
-                    viboceros_command::export_3dm_with_named_views(&self.document, path, &views)?;
+                let current_views = self.three_dm_viewports()?;
+                let message = viboceros_command::export_3dm_with_viewports(
+                    &self.document,
+                    path,
+                    &views,
+                    &current_views,
+                )?;
                 Ok(format!("{message}; exported {} named view(s)", views.len()))
             })());
         }
@@ -104,10 +150,12 @@ impl VibocerosApp {
                     "SaveAs UTF-8 path.3dm",
                 ))?;
                 let views = self.three_dm_views()?;
-                let message = viboceros_command::save_3dm_with_named_views(
+                let current_views = self.three_dm_viewports()?;
+                let message = viboceros_command::save_3dm_with_viewports(
                     &self.document,
                     path_text,
                     &views,
+                    &current_views,
                 )?;
                 self.document_path = Some(std::fs::canonicalize(&path).unwrap_or(path));
                 Ok(format!("{message}; saved {} named view(s)", views.len()))

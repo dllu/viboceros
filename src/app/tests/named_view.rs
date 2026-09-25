@@ -139,6 +139,75 @@ fn named_views_round_trip_through_app_3dm_commands() {
 }
 
 #[test]
+fn open_restores_current_viewports_without_named_views() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-current-views-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "SetView World Perspective");
+    source.viewports[0].display_mode = DisplayMode::Shaded;
+    source.viewports[1].display_mode = DisplayMode::Ghosted;
+    let expected = source.three_dm_viewports().unwrap();
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    assert!(
+        source.command_log.back().unwrap().starts_with("Saved"),
+        "{:?}",
+        source.command_log.back()
+    );
+    let model = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert!(model.named_views.is_empty());
+    assert_eq!(model.viewports.len(), 4);
+    assert_eq!(
+        model.viewports[0].display_mode,
+        viboceros_io::ThreeDmDisplayMode::Shaded
+    );
+    assert_eq!(
+        model.viewports[1].display_mode,
+        viboceros_io::ThreeDmDisplayMode::Ghosted
+    );
+
+    let mut destination = test_app();
+    enter(&mut destination, &format!("Open \"{}\"", path.display()));
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .contains("opened 0 named view(s)")
+    );
+    assert_eq!(destination.viewports[0].kind(), ViewKind::Perspective);
+    assert_eq!(destination.viewports[0].display_mode, DisplayMode::Shaded);
+    assert_eq!(destination.viewports[1].display_mode, DisplayMode::Ghosted);
+    let actual = destination.three_dm_viewports().unwrap();
+    for (actual, expected) in actual.iter().zip(expected.iter()) {
+        assert_eq!(actual.camera.projection, expected.camera.projection);
+        for (actual, expected) in actual
+            .camera
+            .camera_location
+            .to_array()
+            .into_iter()
+            .zip(expected.camera.camera_location.to_array())
+        {
+            assert!((actual - expected).abs() < 1.0e-6);
+        }
+        for (actual, expected) in actual
+            .camera
+            .frustum
+            .into_iter()
+            .zip(expected.camera.frustum)
+        {
+            assert!((actual - expected).abs() < 1.0e-6);
+        }
+    }
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn open_3dm_replaces_session_document_and_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-open-view-{}-{}.3dm",

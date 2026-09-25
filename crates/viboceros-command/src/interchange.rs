@@ -10,7 +10,8 @@ use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectC
 use viboceros_geometry::{GeometryError, Tolerance, TriangleMesh};
 use viboceros_io::{
     StlFormat, ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
-    ThreeDmNamedView, ThreeDmObject, read_stl_file, save_3dm_file, write_3dm_file, write_stl_file,
+    ThreeDmNamedView, ThreeDmObject, ThreeDmViewport, read_stl_file, save_3dm_file, write_3dm_file,
+    write_stl_file,
 };
 
 pub(super) const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -307,13 +308,34 @@ pub fn parse_3dm_path(input: &str) -> Result<&str, CommandError> {
 pub fn open_3dm_with_named_views(
     path: &str,
 ) -> Result<(Document, String, Vec<ThreeDmNamedView>), CommandError> {
+    let (document, message, named_views, _) = open_3dm_with_views(path)?;
+    Ok((document, message, named_views))
+}
+
+pub fn open_3dm_with_views(
+    path: &str,
+) -> Result<
+    (
+        Document,
+        String,
+        Vec<ThreeDmNamedView>,
+        Vec<ThreeDmViewport>,
+    ),
+    CommandError,
+> {
     let mut model = viboceros_io::read_3dm_file_with_model_tolerance(path)?;
     let views = std::mem::take(&mut model.named_views);
+    let viewports = std::mem::take(&mut model.viewports);
     let mut document = Document::with_units(model.tolerance, model.units.clone())
         .map_err(viboceros_document::DocumentError::from)?;
     let message = import_3dm_model(&mut document, path, model, true)?;
     document.clear_history()?;
-    Ok((document, message.replacen("Imported", "Opened", 1), views))
+    Ok((
+        document,
+        message.replacen("Imported", "Opened", 1),
+        views,
+        viewports,
+    ))
 }
 
 pub fn import_3dm_with_named_views(
@@ -489,13 +511,31 @@ pub fn export_3dm_with_named_views(
     path: &str,
     views: &[ThreeDmNamedView],
 ) -> Result<String, CommandError> {
-    write_document_3dm(document, path, views, false)
+    export_3dm_with_viewports(document, path, views, &[])
+}
+
+pub fn export_3dm_with_viewports(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+    viewports: &[ThreeDmViewport],
+) -> Result<String, CommandError> {
+    write_document_3dm(document, path, views, viewports, false)
 }
 
 pub fn save_3dm_with_named_views(
     document: &Document,
     path: &str,
     views: &[ThreeDmNamedView],
+) -> Result<String, CommandError> {
+    save_3dm_with_viewports(document, path, views, &[])
+}
+
+pub fn save_3dm_with_viewports(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+    viewports: &[ThreeDmViewport],
 ) -> Result<String, CommandError> {
     if !std::path::Path::new(path)
         .extension()
@@ -504,17 +544,19 @@ pub fn save_3dm_with_named_views(
     {
         return Err(CommandError::Usage("SaveAs path.3dm"));
     }
-    write_document_3dm(document, path, views, true)
+    write_document_3dm(document, path, views, viewports, true)
 }
 
 fn write_document_3dm(
     document: &Document,
     path: &str,
     views: &[ThreeDmNamedView],
+    viewports: &[ThreeDmViewport],
     backup: bool,
 ) -> Result<String, CommandError> {
     let mut model = document_3dm_model(document)?;
     model.named_views = views.to_vec();
+    model.viewports = viewports.to_vec();
     let group_count = model.groups.len();
     let layer_count = model.layers.len();
     let report = if backup {
