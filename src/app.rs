@@ -349,6 +349,10 @@ enum InteractiveCommand {
     Arc {
         points: [Option<Point3>; 2],
     },
+    ArcCenter {
+        center: Option<Point3>,
+        start: Option<Point3>,
+    },
     Ellipse {
         center: Option<Point3>,
         first_axis: Option<Point3>,
@@ -605,6 +609,7 @@ impl InteractiveCommand {
             Self::Pipe { .. } => "Pipe",
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
+            Self::ArcCenter { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
@@ -839,6 +844,15 @@ impl InteractiveCommand {
                 [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
                 [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
             },
+            Self::ArcCenter { center: None, .. } => {
+                "Arc Center: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::ArcCenter { start: None, .. } => {
+                "Arc Center: pick the start point in the viewport (Esc to cancel)"
+            }
+            Self::ArcCenter { .. } => {
+                "Arc Center: enter the sweep angle in degrees (Esc to cancel)"
+            }
             Self::Ellipse { center: None, .. } => {
                 "Ellipse: pick the center in the viewport (Esc to cancel)"
             }
@@ -1313,6 +1327,7 @@ impl InteractiveCommand {
                 points: [None, _, _],
             }
             | Self::Arc { points: [None, _] }
+            | Self::ArcCenter { center: None, .. }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
             | Self::Curve { .. }
@@ -1464,6 +1479,13 @@ impl InteractiveCommand {
             | Self::CircleThreePoint {
                 points: [Some(point), None],
             } => Some(point),
+            Self::ArcCenter {
+                center: Some(center),
+                start: None,
+            } => Some(center),
+            Self::ArcCenter {
+                start: Some(start), ..
+            } => Some(start),
             Self::CircleThreePointRadius { second, .. } => Some(second),
             Self::SrfPt {
                 corners: [_, _, Some(corner)],
@@ -1836,6 +1858,7 @@ impl VibocerosApp {
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_circle(&input)
+            || self.try_continue_arc(&input)
             || self.try_continue_evaluate_uv(&input)
             || self.try_continue_align(&input)
         {
@@ -1873,6 +1896,48 @@ impl VibocerosApp {
         self.execute_command(&input);
     }
 
+    fn try_continue_arc(&mut self, input: &str) -> bool {
+        if self.plane_prompt.is_some() || self.object_prompt.is_some() {
+            return false;
+        }
+        if self.active_command == Some(InteractiveCommand::Arc { points: [None; 2] })
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Center")
+        {
+            let command = InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        let Some(InteractiveCommand::ArcCenter {
+            center: Some(center),
+            start: Some(start),
+        }) = self.active_command
+        else {
+            return false;
+        };
+        let Ok(angle) = input.trim().parse::<f64>() else {
+            return false;
+        };
+        if !(angle.is_finite() && angle != 0.0 && angle.abs() <= 360.0) {
+            self.push_log("Error: arc angle must be nonzero and within 360 degrees".into());
+            return true;
+        }
+        self.active_command = None;
+        self.execute_command(&format!(
+            "Arc Center {} {} {angle}",
+            format_model_point(center),
+            format_model_point(start)
+        ));
+        true
+    }
+
     fn execute_command(&mut self, input: &str) {
         self.try_execute_command(input);
     }
@@ -1888,6 +1953,7 @@ impl VibocerosApp {
             || self.try_continue_length(input)
             || self.try_continue_angle(input)
             || self.try_continue_circle(input)
+            || self.try_continue_arc(input)
             || self.try_continue_evaluate_uv(input)
             || self.try_continue_align(input)
         {
@@ -3724,6 +3790,16 @@ impl VibocerosApp {
                 radius: None,
                 mode: CircleSizeMode::Radius,
             }
+        } else if matches!(normalized.as_str(), "arc" | "a")
+            && arguments.len() == 1
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Center")
+        {
+            InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -4495,6 +4571,41 @@ impl VibocerosApp {
                         cap_style
                     ));
                 }
+            }
+            InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+            } => {
+                let command = InteractiveCommand::ArcCenter {
+                    center: Some(point),
+                    start: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcCenter {
+                center: Some(center),
+                start: None,
+            } => {
+                if !center
+                    .distance_to(point)
+                    .is_ok_and(|radius| radius > self.document.tolerance().absolute())
+                {
+                    self.push_log("Error: arc start must differ from center".into());
+                    return false;
+                }
+                let command = InteractiveCommand::ArcCenter {
+                    center: Some(center),
+                    start: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcCenter { .. } => {
+                self.push_log("Enter an arc sweep angle in degrees".into());
+                return false;
             }
             InteractiveCommand::Arc { mut points } => {
                 let point_count = points.iter().flatten().count();
@@ -7737,6 +7848,49 @@ mod tests {
             Geometry::Arc(_)
         ));
         assert_eq!(app.document.undo_label(), Some("Arc"));
+    }
+
+    #[test]
+    fn interactive_arc_center_angle_accepts_option_and_reprompts_on_bad_input() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Arc"));
+        assert!(app.try_continue_arc("Center"));
+        let center = point(1.0, 2.0, 3.0);
+        let start = point(5.0, 2.0, 3.0);
+        assert!(app.accept_drafting_point(center));
+        assert!(!app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("0"));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: Some(_),
+                start: Some(_)
+            })
+        ));
+        assert!(app.try_continue_arc("90"));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Arc(arc) if (arc.sweep_radians().to_degrees() - 90.0).abs() < 1e-12
+        ));
+        assert_eq!(app.document.undo_label(), Some("Arc"));
+
+        assert!(app.try_start_interactive_command("Arc _Center"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: None,
+                start: None
+            })
+        );
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("-90"));
+        let Geometry::Arc(arc) = app.document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected arc");
+        };
+        assert!(arc.point_at(1.0).unwrap().y() < center.y());
     }
 
     #[test]

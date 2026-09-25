@@ -13,6 +13,13 @@ through 11, and lowers the degree when too few controls are supplied.
 `Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
 
 Circle, Polygon, and Rectangle use the active [construction plane](../construction-planes.md).
+`Arc Center center start angle-degrees` creates a circular arc from the center
+and start point, sweeping about the active construction-plane normal. Enter
+`Arc Center` to pick the center and start, then type the angle; `Center` is also
+available at Arc's first prompt. Negative angles sweep in the opposite
+direction, and 360° produces a full arc. Five [live Rhino records](../arc-center-angle-rhino-reference.json)
+cover both cases, a quarter arc, a 270° arc, and an oriented construction plane. Sampled
+curves and domains match within `1e-10`.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

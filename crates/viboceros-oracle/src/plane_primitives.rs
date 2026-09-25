@@ -80,6 +80,15 @@ mod tests {
     }
 
     #[test]
+    fn arc_center_angle_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_center_angle.json"),
+            include_str!("../../../docs/arc-center-angle-rhino-reference.json"),
+            5,
+        );
+    }
+
+    #[test]
     fn three_point_circle_radius_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
@@ -202,6 +211,7 @@ pub(super) fn run(
         "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
         "Circle3PointRadius" if f.value.is_some() => ("Circle 3Point", 3),
         "Circle3PointRadiusPick" if f.value.is_none() => ("Circle 3Point", 3),
+        "ArcCenterAngle" if f.value.is_some() => ("Arc Center", 2),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),

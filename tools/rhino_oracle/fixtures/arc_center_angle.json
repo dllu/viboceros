@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-quarter-angle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterAngle",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": 90
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-major-angle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterAngle",
+      "points": [[-2, 1, 0], [1, 1, 0]],
+      "value": 270
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-oriented-angle",
+      "origin": [1, 2, 3],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "primitive": "ArcCenterAngle",
+      "points": [[2, 3, 4], [2, 3, 7]],
+      "value": 135
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-full-angle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterAngle",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": 360
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-negative-angle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterAngle",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": -90
+    }
+  ]
+}
