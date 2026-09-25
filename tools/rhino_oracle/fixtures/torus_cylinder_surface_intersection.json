@@ -1,0 +1,47 @@
+{
+  "protocol_version": 1,
+  "operations": [
+    {
+      "id": "coaxial_two_circles",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [0, 0, -2], "axis": [0, 0, 1], "radius": 4.6, "height": 4}
+    },
+    {
+      "id": "offset_two_loops",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [0.5, 0, -2], "axis": [0, 0, 1], "radius": 4, "height": 4}
+    },
+    {
+      "id": "offset_turned_loops",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [2, 0, -2], "axis": [0, 0, 1], "radius": 4, "height": 4}
+    },
+    {
+      "id": "finite_rim_arcs",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [0.5, 0, 0.4], "axis": [0, 0, 1], "radius": 4, "height": 0.5}
+    },
+    {
+      "id": "critical_crossing",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [1, 0, -2], "axis": [0, 0, 1], "radius": 4, "height": 4}
+    },
+    {
+      "id": "isolated_tangent",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [7, 0, -2], "axis": [0, 0, 1], "radius": 2, "height": 4}
+    },
+    {
+      "id": "disjoint",
+      "op": "torus_cylinder_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "cylinder": {"center": [0.5, 0, -2], "axis": [0, 0, 1], "radius": 1, "height": 4}
+    }
+  ]
+}

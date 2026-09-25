@@ -42,6 +42,8 @@ pub struct TorusSpec {
 pub struct PlaneSpec {
     origin: [f64; 3],
     normal: [f64; 3],
+    #[serde(default)]
+    axes: Option<[[f64; 3]; 2]>,
     x_domain: [f64; 2],
     y_domain: [f64; 2],
 }
@@ -92,11 +94,17 @@ impl TorusSpec {
 
 impl PlaneSpec {
     fn surface(&self, tolerance: Tolerance) -> Result<NurbsSurface, GeometryError> {
-        let frame = Frame3::try_from_normal(
-            Point3::try_from(self.origin)?,
-            Vector3::try_from(self.normal)?,
-            tolerance,
-        )?;
+        let origin = Point3::try_from(self.origin)?;
+        let frame = if let Some([x_axis, y_axis]) = self.axes {
+            Frame3::try_from_directions(
+                origin,
+                Vector3::try_from(x_axis)?,
+                Vector3::try_from(y_axis)?,
+                tolerance,
+            )?
+        } else {
+            Frame3::try_from_normal(origin, Vector3::try_from(self.normal)?, tolerance)?
+        };
         let [x0, x1] = self.x_domain;
         let [y0, y1] = self.y_domain;
         NurbsSurface::try_bilinear([
@@ -131,6 +139,18 @@ pub(super) fn run(
         Operation::TorusSphereSurfaceIntersection { torus, sphere, .. } => {
             (torus.surface(tolerance)?, sphere.surface(tolerance)?)
         }
+        Operation::TorusPlaneSurfaceIntersection { torus, plane, .. } => {
+            (torus.surface(tolerance)?, plane.surface(tolerance)?)
+        }
+        Operation::TorusCylinderSurfaceIntersection {
+            torus, cylinder, ..
+        } => (torus.surface(tolerance)?, cylinder.surface(tolerance)?),
+        Operation::TorusConeSurfaceIntersection { torus, cone, .. } => {
+            (torus.surface(tolerance)?, cone.surface(tolerance)?)
+        }
+        Operation::TorusTorusSurfaceIntersection {
+            torus, other_torus, ..
+        } => (torus.surface(tolerance)?, other_torus.surface(tolerance)?),
         Operation::CylinderPlaneSurfaceIntersection {
             cylinder, plane, ..
         } => (cylinder.surface(tolerance)?, plane.surface(tolerance)?),
@@ -204,6 +224,18 @@ mod tests {
             ),
             include_str!(
                 "../../../tools/rhino_oracle/fixtures/torus_sphere_surface_intersection.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/torus_plane_surface_intersection.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/torus_cone_surface_intersection.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json"
             ),
             include_str!(
                 "../../../tools/rhino_oracle/fixtures/cylinder_plane_surface_intersection.json"
@@ -292,6 +324,44 @@ mod tests {
             for curve in curves {
                 assert_eq!(curve["degree"], degree.unwrap());
                 assert_eq!(curve["closed"], true);
+            }
+        }
+    }
+
+    #[test]
+    fn python_oracle_reports_parallel_offset_torus_cylinder_topology() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json"
+        ))
+        .unwrap();
+        let response = run_request_audit(&request).unwrap();
+        let expected = [
+            ("coaxial_two_circles", 2, 0, Some(2), true),
+            ("offset_two_loops", 2, 0, Some(3), true),
+            ("offset_turned_loops", 2, 0, Some(3), true),
+            ("finite_rim_arcs", 2, 0, Some(3), false),
+            ("critical_crossing", 2, 0, Some(3), true),
+            ("isolated_tangent", 0, 1, None, false),
+            ("disjoint", 0, 0, None, false),
+        ];
+        assert_eq!(response.outcomes.len(), expected.len());
+        for (outcome, (id, curve_count, point_count, degree, closed)) in
+            response.outcomes.iter().zip(expected)
+        {
+            let OperationOutcome::Success { result } = outcome else {
+                panic!("torus/cylinder oracle fixture {id} must succeed")
+            };
+            assert_eq!(result.id, id);
+            let curves = result.value["curves"].as_array().unwrap();
+            assert_eq!(curves.len(), curve_count, "{id}");
+            assert_eq!(
+                result.value["points"].as_array().unwrap().len(),
+                point_count,
+                "{id}"
+            );
+            for curve in curves {
+                assert_eq!(curve["degree"], degree.unwrap());
+                assert_eq!(curve["closed"], closed);
             }
         }
     }

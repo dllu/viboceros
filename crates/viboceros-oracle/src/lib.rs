@@ -263,6 +263,26 @@ pub enum Operation {
         torus: surface_intersection::TorusSpec,
         sphere: surface_intersection::SphereSpec,
     },
+    TorusPlaneSurfaceIntersection {
+        id: String,
+        torus: surface_intersection::TorusSpec,
+        plane: surface_intersection::PlaneSpec,
+    },
+    TorusCylinderSurfaceIntersection {
+        id: String,
+        torus: surface_intersection::TorusSpec,
+        cylinder: surface_intersection::CylinderSpec,
+    },
+    TorusConeSurfaceIntersection {
+        id: String,
+        torus: surface_intersection::TorusSpec,
+        cone: surface_intersection::ConeSpec,
+    },
+    TorusTorusSurfaceIntersection {
+        id: String,
+        torus: surface_intersection::TorusSpec,
+        other_torus: surface_intersection::TorusSpec,
+    },
     CylinderPlaneSurfaceIntersection {
         id: String,
         cylinder: surface_intersection::CylinderSpec,
@@ -1844,6 +1864,10 @@ impl Operation {
             | Self::SphereCylinderSurfaceIntersection { id, .. }
             | Self::SphereConeSurfaceIntersection { id, .. }
             | Self::TorusSphereSurfaceIntersection { id, .. }
+            | Self::TorusPlaneSurfaceIntersection { id, .. }
+            | Self::TorusCylinderSurfaceIntersection { id, .. }
+            | Self::TorusConeSurfaceIntersection { id, .. }
+            | Self::TorusTorusSurfaceIntersection { id, .. }
             | Self::CylinderPlaneSurfaceIntersection { id, .. }
             | Self::CylinderCylinderSurfaceIntersection { id, .. }
             | Self::ConePlaneSurfaceIntersection { id, .. }
@@ -2278,6 +2302,10 @@ fn execute(
         | Operation::SphereCylinderSurfaceIntersection { .. }
         | Operation::SphereConeSurfaceIntersection { .. }
         | Operation::TorusSphereSurfaceIntersection { .. }
+        | Operation::TorusPlaneSurfaceIntersection { .. }
+        | Operation::TorusCylinderSurfaceIntersection { .. }
+        | Operation::TorusConeSurfaceIntersection { .. }
+        | Operation::TorusTorusSurfaceIntersection { .. }
         | Operation::CylinderPlaneSurfaceIntersection { .. }
         | Operation::CylinderCylinderSurfaceIntersection { .. }
         | Operation::ConePlaneSurfaceIntersection { .. }

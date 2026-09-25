@@ -268,22 +268,30 @@ the inner tangent plane produces two pinched loops meeting at one point.
 Nearby offsets retain their distinct one-loop or two-loop topology. Oblique
 planes produce one or two cubic loops fitted to the modeling tolerance, with
 finite patches clipping them to arcs. Critical oblique cuts retain crossing
-loops, while isolated oblique tangencies return points. Coaxial torus and finite
+loops, while isolated oblique tangencies return points. The
+[torus/plane oracle fixture](../../tools/rhino_oracle/fixtures/torus_plane_surface_intersection.json)
+covers perpendicular, axis, oblique, finite-patch, and disjoint cuts. Coaxial torus and finite
 cylinder walls meet in one or two exact rational circles, including tangent
 sections and circles on cylinder rims. Parallel offset cylinder axes produce
 fitted cubic loops, finite rim-clipped arcs, or isolated contact points.
 Critical sections retain their single, pinched, and crossing loops. Nonparallel
-torus/cylinder axes remain unsupported.
+torus/cylinder axes remain unsupported. The
+[torus/cylinder oracle fixture](../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json)
+covers exact circles, offset loops, finite arcs, crossings, and contacts.
 Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles. Offset spheres produce fitted cubic loops
 or isolated tangent points. The
 [torus/sphere oracle fixture](../../tools/rhino_oracle/fixtures/torus_sphere_surface_intersection.json)
 covers axial, offset, tangent, contained-meridian, and disjoint cases.
 Coaxial tori likewise intersect in one or two exact rational circles, including
-tangent circles. Coincident and noncoaxial tori remain unsupported.
+tangent circles. Coincident and noncoaxial tori remain unsupported. The
+[torus/torus oracle fixture](../../tools/rhino_oracle/fixtures/torus_torus_surface_intersection.json)
+covers coaxial circles, tangency, and disjoint cases.
 Coaxial tori and finite cone walls intersect in up to two exact rational
 circles, clipped to the cone height. Tangent circles and cone rims are included;
 offset and nonparallel torus/cone axes remain unsupported.
+The [torus/cone oracle fixture](../../tools/rhino_oracle/fixtures/torus_cone_surface_intersection.json)
+covers finite coaxial circles and disjoint cases.
 
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
