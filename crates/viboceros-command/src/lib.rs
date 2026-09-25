@@ -27023,6 +27023,56 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_oblique_torus_plane_tangent_point() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let point = |x, y| Point3::try_new(x, y, 0.75_f64.mul_add(x, 4.25)).unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_torus(frame, 4.0, 1.0).unwrap(),
+                ))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_bilinear([
+                        point(-6.0, -6.0),
+                        point(6.0, -6.0),
+                        point(6.0, 6.0),
+                        point(-6.0, 6.0),
+                    ])
+                    .unwrap(),
+                ))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let mut selected = document.selected_objects();
+        let Geometry::Point(contact) = selected.next().unwrap().geometry() else {
+            panic!("oblique torus/plane tangency should create a point")
+        };
+        assert!(
+            contact
+                .distance_to(Point3::try_new(-4.6, 0.0, 0.8).unwrap())
+                .unwrap()
+                < 5e-9
+        );
+        assert!(selected.next().is_none());
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_exact_coaxial_torus_cylinder_circles() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

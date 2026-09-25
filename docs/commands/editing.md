@@ -267,10 +267,11 @@ cubic loops fitted to the modeling tolerance and clipped to the finite patch;
 the inner tangent plane produces two pinched loops meeting at one point.
 Nearby offsets retain their distinct one-loop or two-loop topology. Oblique
 planes produce one or two cubic loops fitted to the modeling tolerance, with
-finite patches clipping them to arcs. Singular oblique tangencies remain
-unsupported. Coaxial torus and finite cylinder walls meet
-in one or two exact rational circles, including tangent sections and circles
-on cylinder rims. Offset and nonparallel torus/cylinder axes remain unsupported.
+finite patches clipping them to arcs. Critical oblique cuts retain crossing
+loops, while isolated oblique tangencies return points. Coaxial torus and finite
+cylinder walls meet in one or two exact rational circles, including tangent
+sections and circles on cylinder rims. Offset and nonparallel torus/cylinder
+axes remain unsupported.
 Spheres centered on a torus axis intersect it in one or two exact rational
 circles, including tangent circles; spheres with offset centers remain unsupported.
 Coaxial tori likewise intersect in one or two exact rational circles, including
