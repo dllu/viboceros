@@ -286,6 +286,24 @@ mod tests {
     }
 
     #[test]
+    fn skew_cylinders_with_disjoint_finite_bounds_have_no_intersection() {
+        let first = cylinder(point(0.0, 0.0, 0.0), z_axis(), 1.0, 1.0);
+        let second = cylinder(
+            point(0.5, 0.0, 10.0),
+            Vector3::try_new(0.0, 1.0, 1.0).unwrap(),
+            1.0,
+            1.0,
+        );
+        for (left, right) in [(&first, &second), (&second, &first)] {
+            assert!(
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
+    }
+
+    #[test]
     fn parallel_cylinder_intersection_works_far_from_origin_with_rotated_axis() {
         let frame = Frame3::try_from_normal(
             point(1.0e8, -1.0e8, 1.0e8),

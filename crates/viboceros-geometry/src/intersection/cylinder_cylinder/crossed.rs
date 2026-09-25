@@ -49,6 +49,13 @@ pub(super) fn intersect(
     if axis_miss.abs() > first_radius + second_radius + spatial_tolerance.max(roundoff) {
         return Ok(Vec::new());
     }
+    if finite_cylinder_bounds_are_disjoint(
+        (first_frame, first_radius, first_height),
+        (second_frame, second_radius, second_height),
+        spatial_tolerance.max(roundoff),
+    )? {
+        return Ok(Vec::new());
+    }
     if axis_miss.abs() > spatial_tolerance.max(roundoff) {
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "skew cylinder axes",
@@ -161,6 +168,34 @@ pub(super) fn intersect(
         }
     }
     Ok(events)
+}
+
+fn finite_cylinder_bounds_are_disjoint(
+    (first_frame, first_radius, first_height): (Frame3, Real, Real),
+    (second_frame, second_radius, second_height): (Frame3, Real, Real),
+    tolerance: Real,
+) -> Result<bool, GeometryError> {
+    let bounds =
+        |frame: Frame3, radius: Real, height: Real| -> Result<[(Real, Real); 3], GeometryError> {
+            let start = frame.origin().to_array();
+            let end = frame
+                .origin()
+                .translated(frame.z_axis().as_vector().scaled(height)?)?
+                .to_array();
+            let axis = frame.z_axis().as_vector().to_array();
+            Ok(std::array::from_fn(|index| {
+                let radial = radius * (1.0 - axis[index] * axis[index]).max(0.0).sqrt();
+                (
+                    start[index].min(end[index]) - radial,
+                    start[index].max(end[index]) + radial,
+                )
+            }))
+        };
+    let first = bounds(first_frame, first_radius, first_height)?;
+    let second = bounds(second_frame, second_radius, second_height)?;
+    Ok((0..3).any(|index| {
+        first[index].1 + tolerance < second[index].0 || second[index].1 + tolerance < first[index].0
+    }))
 }
 
 fn combine_axes(first: Vector3, second: Vector3, sign: Real) -> Result<Vector3, GeometryError> {
