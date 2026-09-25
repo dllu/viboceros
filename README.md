@@ -57,9 +57,10 @@ Select two open curves, then use `Match Continuity=Tangency PreserveOtherEnd=Pos
 to edit the first curve at the nearest pair of ends. `Pick1=` and `Pick2=` choose
 other ends; single-span curves currently support position, tangent, and curvature
 matching.
-Multi-span curves also support position matching with endpoint trimming and
-tangent matching when they have enough controls to keep the requested opposite
-end unchanged.
+Multi-span curves also support position matching with endpoint trimming, and
+tangent or curvature matching when they have enough controls to keep the
+requested opposite end unchanged. Multi-span curvature matching does not yet
+preserve curvature at the opposite end.
 `AverageCurves=Yes` moves both curves for position, tangent, or curvature
 matching and keeps the change in one undo step. Average curvature matching can
 preserve the far position of a multi-span reference curve.

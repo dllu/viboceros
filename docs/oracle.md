@@ -28,8 +28,8 @@ for trimmed and reversed ends, including rational controls. One
 [boundary diagnostic](../tools/rhino_oracle/fixtures/curve_match_average_position_boundary.json)
 retains a difference: Rhino trims a straight cubic to a roughly 1e-6-unit
 segment when its closest point is the far endpoint; native closest-point search
-returns the endpoint exactly. Multi-span reference curvature matching with
-preserved far tangents remains unimplemented natively. The
+returns the endpoint exactly. Average curvature matching of a multi-span
+reference with preserved far tangents remains unimplemented natively. The
 [multi-span tangency fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_tangency.json)
 adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_tangency.json)
 for cubic and quadratic two-span sources, opposite-end preservation, and
@@ -38,8 +38,19 @@ reversed picks. The
 adds seven matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_position.json).
 A more precise NURBS closest-point stopping rule resolves the interior trim
 parameter at the default model tolerance. The
+[multi-span curvature fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_curvature.json)
+adds three matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_curvature.json)
+for preserved opposite-end options None, Position, and Tangency. Its
+[extended fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_curvature_extended.json)
+adds 15 matching [observations](../tools/rhino_oracle/observations/curve_match_multispan_curvature_extended.json)
+for uneven knots, rational weights, and reversed selected ends. The
+[uneven rational boundary case](../tools/rhino_oracle/fixtures/curve_match_multispan_curvature_boundary.json)
+retains one mismatch in the tangential second-control coordinate when the
+second control and endpoint weights are equal; its
+[Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_curvature_boundary.json)
+keeps the difference reproducible. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-retains a two-span curvature example for later implementation.
+remains as historical evidence for the now-supported two-span curvature case.
 
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded

@@ -1,4 +1,4 @@
-//! End matching for a single NURBS span, retaining its rational weights.
+//! End matching for open NURBS curves, retaining their rational weights.
 
 use crate::{
     Curve3, CurveBlendContinuity, CurveRef, GeometryError, NurbsCurve, ParameterSide, Point3, Real,
@@ -63,9 +63,12 @@ pub fn try_match_curve_end(
         original
     };
     let source_single_span = original.spans().count() == 1;
-    if !source_single_span && continuity == CurveBlendContinuity::Curvature {
+    if !source_single_span
+        && continuity == CurveBlendContinuity::Curvature
+        && preserve == CurveMatchPreserveEnd::Curvature
+    {
         return Err(GeometryError::InvalidPolyCurve {
-            context: "Match multi-span curvature currently needs knot edits",
+            context: "Match multi-span curvature with far curvature preservation needs knot edits",
         });
     }
     let matched = match_end_to_target(
@@ -81,6 +84,7 @@ pub fn try_match_curve_end(
         continuity,
         preserve,
         source_single_span,
+        true,
     )?;
     require_continuity(
         &matched,
@@ -160,6 +164,7 @@ pub fn try_average_match_curve_ends(
             continuity,
             preserve,
             first_nurbs.spans().count() == 1,
+            false,
         )?;
         let second_output = match_end_to_target(
             &second_nurbs,
@@ -172,6 +177,7 @@ pub fn try_average_match_curve_ends(
             continuity,
             preserve,
             second_nurbs.spans().count() == 1,
+            false,
         )?;
         require_continuity(
             &first_output,
@@ -232,6 +238,7 @@ pub fn try_average_match_curve_ends(
         continuity,
         preserve,
         true,
+        false,
     )?;
     let second_tangent = if first_at_end == second_at_end {
         tangent.opposite()
@@ -249,6 +256,7 @@ pub fn try_average_match_curve_ends(
         continuity,
         preserve,
         second_nurbs.spans().count() == 1,
+        false,
     )?;
     require_continuity(
         &first_output,
@@ -288,6 +296,7 @@ fn match_end_to_target(
     continuity: CurveBlendContinuity,
     preserve: CurveMatchPreserveEnd,
     require_single_span: bool,
+    one_sided_match: bool,
 ) -> Result<NurbsCurve, GeometryError> {
     if require_single_span && original.spans().count() != 1 {
         return Err(GeometryError::InvalidPolyCurve {
@@ -310,6 +319,11 @@ fn match_end_to_target(
     } else {
         original.degree()
     };
+    if continuity == CurveBlendContinuity::Curvature && desired_degree < 2 {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match curvature requires at least a quadratic source span",
+        });
+    }
     let elevated = original.try_change_degree(desired_degree, false)?;
     let mut controls = elevated.control_points().to_vec();
     let last = controls.len() - 1;
@@ -350,8 +364,23 @@ fn match_end_to_target(
             WeightedPoint3::try_new(adjacent, controls[adjacent_index].weight())?;
         if continuity == CurveBlendContinuity::Curvature {
             let degree = desired_degree as Real;
-            let tangential_coefficient = 2.0 * (degree * a * a - a) / ((degree - 1.0) * b);
-            let curvature_coefficient = degree * a * a * handle * handle / ((degree - 1.0) * b);
+            let knot_ratio = endpoint_curvature_knot_ratio(&elevated, at_end)?;
+            let tangential_coefficient = if require_single_span || !one_sided_match {
+                2.0 * (degree * a * a - a) / ((degree - 1.0) * b)
+            } else if b == 1.0 {
+                // Rhino keeps the original second control's projection onto
+                // the endpoint handle when their weights are equal.
+                let first =
+                    endpoint.vector_to(elevated.control_points()[adjacent_index].point())?;
+                let second = endpoint.vector_to(elevated.control_points()[second_index].point())?;
+                second.dot(first)? / (handle * handle)
+            } else {
+                // For unequal endpoint/second weights Rhino instead chooses
+                // zero tangential second derivative at the new end.
+                a / b * (1.0 + knot_ratio + 2.0 * degree * (a - 1.0) * knot_ratio / (degree - 1.0))
+            };
+            let curvature_coefficient =
+                degree * a * a * handle * handle / ((degree - 1.0) * b) * knot_ratio;
             let curvature = target.curvature.ok_or(GeometryError::Degenerate {
                 context: "Match target curvature",
             })?;
@@ -366,6 +395,31 @@ fn match_end_to_target(
     let matched =
         NurbsCurve::try_new_rational(desired_degree, controls, elevated.knots().to_vec())?;
     Ok(matched)
+}
+
+/// Ratio of the second and first endpoint derivative knot denominators.
+/// A single Bézier span has ratio one; a nonuniform B-spline can have a
+/// different second-derivative scale at the same endpoint handle length.
+fn endpoint_curvature_knot_ratio(curve: &NurbsCurve, at_end: bool) -> Result<Real, GeometryError> {
+    let knots = curve.knots();
+    let degree = curve.degree();
+    let (first, second) = if at_end {
+        let end = *curve.domain().end();
+        (
+            end - knots[knots.len() - degree - 2],
+            end - knots[knots.len() - degree - 3],
+        )
+    } else {
+        let start = *curve.domain().start();
+        (knots[degree + 1] - start, knots[degree + 2] - start)
+    };
+    let ratio = second / first;
+    if !ratio.is_finite() || ratio <= 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "Match endpoint knot interval",
+        });
+    }
+    Ok(ratio)
 }
 
 fn require_continuity(
