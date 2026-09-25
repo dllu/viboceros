@@ -1,5 +1,6 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
+mod bilinear_plane;
 mod cone_cone;
 mod cone_cylinder;
 mod cone_plane;
@@ -528,7 +529,9 @@ fn curve_brep_intersection_events_with_transform(
 /// Intersects two finite NURBS surfaces.
 ///
 /// The current exact path handles transverse planar surfaces, including
-/// multiple clipped components and isolated boundary contacts, plus
+/// multiple clipped components and isolated boundary contacts. Nonplanar
+/// rational bilinear patches with weights of one sign meet finite planes in exact rational conics,
+/// plane-contained rulings, or isolated points. The path also handles
 /// coincident nonsingular convex four-sided bilinear patches with weights of
 /// one sign, plus certified affine and projective patches of any degree. Coincident
 /// patches return their area-overlap perimeter or shared edge; a lone shared
@@ -765,18 +768,27 @@ pub fn surface_surface_intersection_events(
     {
         return torus_plane::intersect(torus, first, plane, tolerance);
     }
-    let first_plane =
-        first
-            .plane(tolerance)?
-            .ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "non-planar surfaces",
-            })?;
+    let first_plane = first.plane(tolerance)?;
+    let second_plane = second.plane(tolerance)?;
+    if let Some(plane) = first_plane
+        && second_plane.is_none()
+        && is_four_sided_bilinear_patch(second)
+    {
+        return bilinear_plane::intersect(second, first, plane, tolerance);
+    }
+    if let Some(plane) = second_plane
+        && first_plane.is_none()
+        && is_four_sided_bilinear_patch(first)
+    {
+        return bilinear_plane::intersect(first, second, plane, tolerance);
+    }
+    let first_plane = first_plane.ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+        context: "non-planar surfaces",
+    })?;
     let second_plane =
-        second
-            .plane(tolerance)?
-            .ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "non-planar surfaces",
-            })?;
+        second_plane.ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "non-planar surfaces",
+        })?;
     let distance_tolerance = surface_surface_distance_tolerance(first, second, tolerance);
     let direction_vector = first_plane
         .normal()
@@ -3967,6 +3979,174 @@ mod tests {
         ])
         .and_then(|surface| surface.try_reparameterized(x_start..=x_end, y_start..=y_end))
         .unwrap()
+    }
+
+    #[test]
+    fn nonplanar_bilinear_plane_intersection_preserves_two_exact_conics() {
+        let saddle = NurbsSurface::try_bilinear([
+            point(-1.0, -1.0, 1.0),
+            point(1.0, -1.0, -1.0),
+            point(1.0, 1.0, 1.0),
+            point(-1.0, 1.0, -1.0),
+        ])
+        .unwrap();
+        let plane = horizontal_rectangle(-2.0, 2.0, -2.0, 2.0, 0.25);
+        let events =
+            surface_surface_intersection_events(&saddle, &plane, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2, "{events:#?}");
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("expected a conic branch")
+            };
+            assert_eq!(curve.degree(), 2);
+            for step in 0..=20 {
+                let parameter = (*curve.domain().start() * (20 - step) as Real
+                    + *curve.domain().end() * step as Real)
+                    / 20.0;
+                let point = curve.evaluate(parameter).unwrap();
+                assert!((point.z() - 0.25).abs() < 1e-12, "{point:?}");
+                assert!((point.x() * point.y() - 0.25).abs() < 1e-12, "{point:?}");
+                assert!(point.x().abs() <= 1.0 + 1e-12 && point.y().abs() <= 1.0 + 1e-12);
+            }
+        }
+        let quadrant = horizontal_rectangle(0.0, 2.0, 0.0, 2.0, 0.25);
+        let clipped =
+            surface_surface_intersection_events(&quadrant, &saddle, Tolerance::DEFAULT).unwrap();
+        assert_eq!(clipped.len(), 1, "{clipped:#?}");
+        let SurfaceSurfaceIntersectionEvent::Curve(curve) = &clipped[0] else {
+            panic!("expected one clipped conic")
+        };
+        for step in 0..=20 {
+            let parameter = (*curve.domain().start() * (20 - step) as Real
+                + *curve.domain().end() * step as Real)
+                / 20.0;
+            let point = curve.evaluate(parameter).unwrap();
+            assert!(point.x() >= -1e-12 && point.y() >= -1e-12);
+            assert!((point.x() * point.y() - 0.25).abs() < 1e-12);
+        }
+        let plane = horizontal_rectangle(-2.0, 2.0, -2.0, 2.0, 0.25);
+        let [_, north] = Brep::try_split_rectangular_surface_face_v(
+            plane,
+            -2.0..=2.0,
+            -2.0..=2.0,
+            0.0,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let trimmed =
+            surface_brep_intersection_events(&saddle, &north, Tolerance::DEFAULT).unwrap();
+        let [SurfaceBrepIntersectionEvent::Curve(arc)] = trimmed.as_slice() else {
+            panic!("expected one conic branch on the trimmed plane: {trimmed:#?}")
+        };
+        assert_eq!(arc.degree(), 2);
+        let midpoint = (*arc.domain().start() + *arc.domain().end()) * 0.5;
+        let point = arc.evaluate(midpoint).unwrap();
+        assert!(point.x() > 0.0 && point.y() > 0.0);
+        assert!((point.x() * point.y() - 0.25).abs() < 1e-12);
+    }
+
+    #[test]
+    fn rational_bilinear_plane_intersection_and_corner_contacts() {
+        let corners = [
+            point(-1.0, -1.0, 1.0),
+            point(1.0, -1.0, -1.0),
+            point(-1.0, 1.0, -1.0),
+            point(1.0, 1.0, 1.0),
+        ];
+        let weighted = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            corners
+                .into_iter()
+                .zip([1.0, 2.0, 3.0, 1.5])
+                .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+                .collect(),
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let plane = horizontal_rectangle(-2.0, 2.0, -2.0, 2.0, 0.25);
+        let events =
+            surface_surface_intersection_events(&weighted, &plane, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2, "{events:#?}");
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("expected a rational conic")
+            };
+            assert_eq!(curve.degree(), 2);
+            for step in 0..=8 {
+                let parameter = (*curve.domain().start() * (8 - step) as Real
+                    + *curve.domain().end() * step as Real)
+                    / 8.0;
+                let point = curve.evaluate(parameter).unwrap();
+                let (u, v) = weighted
+                    .closest_parameters(point, Tolerance::DEFAULT)
+                    .unwrap();
+                assert!(point.distance_to(weighted.evaluate(u, v).unwrap()).unwrap() < 1e-10);
+                assert!((point.z() - 0.25).abs() < 1e-12);
+            }
+        }
+
+        let tangent_plane = horizontal_rectangle(-2.0, 2.0, -2.0, 2.0, 1.0);
+        let points =
+            surface_surface_intersection_events(&weighted, &tangent_plane, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(points.len(), 2, "{points:#?}");
+        assert!(
+            points
+                .iter()
+                .all(|event| matches!(event, SurfaceSurfaceIntersectionEvent::Point(_)))
+        );
+    }
+
+    #[test]
+    fn bilinear_saddle_plane_through_center_keeps_both_rulings() {
+        let saddle = NurbsSurface::try_bilinear([
+            point(-1.0, -1.0, 1.0),
+            point(1.0, -1.0, -1.0),
+            point(1.0, 1.0, 1.0),
+            point(-1.0, 1.0, -1.0),
+        ])
+        .unwrap();
+        let plane = horizontal_rectangle(-2.0, 2.0, -2.0, 2.0, 0.0);
+        let events =
+            surface_surface_intersection_events(&saddle, &plane, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2, "{events:#?}");
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("expected an exact ruling")
+            };
+            assert_eq!(curve.degree(), 1);
+            let endpoints = [*curve.domain().start(), *curve.domain().end()]
+                .map(|parameter| curve.evaluate(parameter).unwrap());
+            assert!(endpoints.iter().all(|point| point.z().abs() < 1e-12));
+            assert!(
+                endpoints.iter().all(|point| point.x().abs() < 1e-12)
+                    || endpoints.iter().all(|point| point.y().abs() < 1e-12)
+            );
+        }
+        let tilted = NurbsSurface::try_bilinear([
+            point(-2.0, -2.0, -2.0),
+            point(2.0, -2.0, 2.0),
+            point(2.0, 2.0, 2.0),
+            point(-2.0, 2.0, -2.0),
+        ])
+        .unwrap();
+        let tilted_events =
+            surface_surface_intersection_events(&tilted, &saddle, Tolerance::DEFAULT).unwrap();
+        assert_eq!(tilted_events.len(), 2, "{tilted_events:#?}");
+        for event in tilted_events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("expected a center or boundary ruling")
+            };
+            let midpoint = (*curve.domain().start() + *curve.domain().end()) * 0.5;
+            let point = curve.evaluate(midpoint).unwrap();
+            assert!((point.z() - point.x()).abs() < 1e-12);
+            assert!(point.x().abs() < 1e-12 || (point.y() - 1.0).abs() < 1e-12);
+        }
     }
 
     #[test]

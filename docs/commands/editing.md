@@ -149,15 +149,17 @@ current-layer point objects, while finite shared intervals create exact NURBS
 subcurves. Curve/B-rep contacts are clipped against exact face trim regions and
 deduplicated across shared edges and vertices. Transverse planar surface pairs
 produce exact, arc-length-parameterized lines clipped to both finite patches;
-selection order determines their orientation as in Rhino. Coincident
-nonsingular convex bilinear patches with weights of one sign and certified
-affine or projective patches of any degree produce an exact shared edge or
-closed overlap perimeter, including Rhino's distinct edge orientation and
-loop-domain rules. Supported surface/B-rep and B-rep/B-rep intersections are
-clipped to exact face trim regions when needed, deduplicated at shared edges and
-vertices, and joined into maximal components. This includes curved surfaces
-against trimmed planar and spherical faces. Coincident faces are currently
-limited to untrimmed natural domains and one area-overlap face pair.
+selection order determines their orientation as in Rhino. Nonplanar rational
+bilinear patches with weights of one sign intersect finite planes in exact
+conics, straight rulings, or isolated corner points, clipped to the plane patch.
+Coincident nonsingular convex bilinear patches with weights of one sign, along
+with certified affine or projective patches of any degree, produce an exact
+shared edge or closed overlap perimeter, including Rhino's distinct edge
+orientation and loop-domain rules. Supported surface/B-rep and B-rep/B-rep
+intersections are clipped to exact face trim regions when needed, deduplicated
+at shared edges and vertices, and joined into maximal components. Curved
+surfaces against trimmed planar and spherical faces are included. Coincident
+faces are limited to untrimmed natural domains and one area-overlap face pair.
 Canonical spherical surfaces and planar surface patches intersect in exact
 rational circles or circular arcs clipped to the finite patch. Exact tangency
 creates a point. Rhino's surface intersection API can instead return tiny

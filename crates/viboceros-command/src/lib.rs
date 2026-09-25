@@ -27332,6 +27332,55 @@ mod tests {
     }
 
     #[test]
+    fn intersect_creates_both_exact_saddle_plane_branches() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let saddle = NurbsSurface::try_bilinear([
+            point(-1.0, -1.0, 1.0),
+            point(1.0, -1.0, -1.0),
+            point(1.0, 1.0, 1.0),
+            point(-1.0, 1.0, -1.0),
+        ])
+        .unwrap();
+        let plane = NurbsSurface::try_bilinear([
+            point(-2.0, -2.0, 0.25),
+            point(2.0, -2.0, 0.25),
+            point(2.0, 2.0, 0.25),
+            point(-2.0, 2.0, 0.25),
+        ])
+        .unwrap();
+        let ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(saddle))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(plane))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let output = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(output.len(), 2);
+        assert!(ids.iter().all(|id| !document.is_selected(*id)));
+        for object in output {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("saddle intersection must create a NURBS conic")
+            };
+            assert_eq!(curve.degree(), 2);
+            let midpoint = (*curve.domain().start() + *curve.domain().end()) * 0.5;
+            let point = curve.evaluate(midpoint).unwrap();
+            assert!((point.x() * point.y() - 0.25).abs() < 1e-12);
+            assert!((point.z() - 0.25).abs() < 1e-12);
+        }
+    }
+
+    #[test]
     fn intersect_outputs_exact_cone_cylinder_section() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

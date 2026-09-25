@@ -1034,6 +1034,23 @@ The [trimmed planar face fixture](../tools/rhino_oracle/fixtures/curved_surface_
 checks the opposite arrangement: a cylindrical surface against either half
 of a split planar B-rep face. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/curved_surface_trimmed_plane_intersect_command.json)
 match the complete native NURBS definitions within `1e-10`.
+The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
+adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
+two plane-contained rulings, two isolated corner contacts, and rationally
+weighted conics. The [saved Rhino results](../tools/rhino_oracle/observations/bilinear_plane_intersect_command.json)
+fit cubics to the conics, while the native kernel keeps exact rational
+quadratics. The [locus audit](../tools/rhino_oracle/audit_bilinear_plane_sections.py)
+checks the resulting geometry independently of curve degree and parameterization.
+Its maximum sampled surface deviation is `2.63e-6` for Rhino's fitted curves
+and below `7e-16` for the native exact curves. The straight rulings and corner
+points have the same locus; only the corner-point case matches full output
+definitions at the default `1e-10` comparison tolerance.
+
+```sh
+python3 -m tools.rhino_oracle.audit_bilinear_plane_sections \
+  tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json \
+  tools/rhino_oracle/observations/bilinear_plane_intersect_command.json
+```
 
 ```sh
 python3 tools/rhino_oracle/audit_cylinder_sections.py \
