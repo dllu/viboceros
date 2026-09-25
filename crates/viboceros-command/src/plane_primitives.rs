@@ -27,41 +27,76 @@ impl Command for CircleCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let plane = context.construction_plane;
-        let (center, consumed) = parse_point(arguments)?;
-        let remaining = &arguments[consumed..];
-        let normal = plane.z_axis();
-        let circle = if remaining.len() == 1 && !remaining[0].contains(',') {
-            let radius = parse_finite_real(remaining[0])?;
-            Circle3::try_from_frame(center, radius, plane.x_axis(), normal, document.tolerance())?
-        } else {
-            let (point_on_circle, point_consumed) = parse_point(remaining)?;
+        let circle = if arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "2Point"))
+        {
+            let arguments = &arguments[1..];
+            let (first, first_count) = parse_point(arguments)?;
+            let (second, second_count) = parse_point(&arguments[first_count..])?;
             require_consumed(
-                remaining,
-                point_consumed,
-                "Circle center radius | center point-on-circle",
+                arguments,
+                first_count + second_count,
+                "Circle 2Point diameter_start diameter_end",
             )?;
-            let delta = center.vector_to(point_on_circle)?;
-            let frame = Frame3::try_from_x_and_normal(
-                center,
-                delta,
-                normal.as_vector(),
-                document.tolerance(),
-            )
-            .or_else(|_| {
-                Frame3::try_from_directions(
+            Circle3::try_from_diameter_on_plane(first, second, plane, document.tolerance())?
+        } else if arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "3Point"))
+        {
+            let arguments = &arguments[1..];
+            let (first, first_count) = parse_point(arguments)?;
+            let (second, second_count) = parse_point(&arguments[first_count..])?;
+            let (third, third_count) = parse_point(&arguments[first_count + second_count..])?;
+            require_consumed(
+                arguments,
+                first_count + second_count + third_count,
+                "Circle 3Point first second third",
+            )?;
+            Circle3::try_from_three_points(first, second, third, document.tolerance())?
+        } else {
+            let (center, consumed) = parse_point(arguments)?;
+            let remaining = &arguments[consumed..];
+            let normal = plane.z_axis();
+            if remaining.len() == 1 && !remaining[0].contains(',') {
+                let radius = parse_finite_real(remaining[0])?;
+                Circle3::try_from_frame(
+                    center,
+                    radius,
+                    plane.x_axis(),
+                    normal,
+                    document.tolerance(),
+                )?
+            } else {
+                let (point_on_circle, point_consumed) = parse_point(remaining)?;
+                require_consumed(
+                    remaining,
+                    point_consumed,
+                    "Circle center radius | center point-on-circle",
+                )?;
+                let delta = center.vector_to(point_on_circle)?;
+                let frame = Frame3::try_from_x_and_normal(
                     center,
                     delta,
-                    plane.y_axis().as_vector(),
+                    normal.as_vector(),
                     document.tolerance(),
                 )
-            })?;
-            Circle3::try_from_frame(
-                center,
-                delta.length()?,
-                frame.x_axis(),
-                frame.z_axis(),
-                document.tolerance(),
-            )?
+                .or_else(|_| {
+                    Frame3::try_from_directions(
+                        center,
+                        delta,
+                        plane.y_axis().as_vector(),
+                        document.tolerance(),
+                    )
+                })?;
+                Circle3::try_from_frame(
+                    center,
+                    delta.length()?,
+                    frame.x_axis(),
+                    frame.z_axis(),
+                    document.tolerance(),
+                )?
+            }
         };
         let radius = circle.radius();
         let id = document.add_geometry(Geometry::Circle(circle))?;

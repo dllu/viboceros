@@ -1288,6 +1288,8 @@ class RhinoWorkerTests(unittest.TestCase):
         operation = {"points": [[1,2,3],[4,5,6]], "value": None}
         with patch.object(self.worker, "_command_point", side_effect=lambda p: ",".join(str(x) for x in p)):
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle")), "_Circle w1,2,3 w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle2Point")), "_Circle _2Point w1,2,3 w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle3Point", points=[[1,2,3],[4,5,6],[7,8,9]])), "_Circle _3Point w1,2,3 w4,5,6 w7,8,9")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Polygon")), "_Polygon _NumSides=5 _Mode=_Inscribed w1,2,3 w4,5,6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="MeshBox", value=-4)), "_MeshBox _XCount=2 _YCount=3 _ZCount=2 w1,2,3 w4,5,6 -4")
         for invalid in [dict(operation, primitive="Delete"), dict(operation, primitive="Circle _Delete"),

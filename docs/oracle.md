@@ -531,6 +531,15 @@ not a passing Rhino reference at `1e-12`.
 command results on construction planes. Complete boundary geometry is checked
 independently of Box/MeshBox layout; ten raw layout probes remain in
 `plane_primitives_representation.json`. See [comparison details](construction-planes.md).
+The [two-point circle fixture](../tools/rhino_oracle/fixtures/circle_two_point.json)
+checks six actual `_Circle _2Point` results against
+[Rhino 8 observations](circle-two-point-rhino-reference.json), including
+reversed diameter endpoints, oblique diameter, and tilted CPlane.
+The [three-point circle fixture](../tools/rhino_oracle/fixtures/circle_three_point.json)
+checks four actual `_Circle _3Point` results against
+[Rhino 8 observations](circle-three-point-rhino-reference.json), including
+reversed point order and off-CPlane geometry. Complete sampled curve records
+and domains agree within `1e-10`; command execution is untimed.
 
 `plane_transforms.json` checks 140 actual transform commands using four affinely
 independent point witnesses per operation, including copied/original identity

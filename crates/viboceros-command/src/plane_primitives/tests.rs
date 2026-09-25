@@ -46,6 +46,79 @@ fn plane_primitives_use_context_axes_without_reinterpreting_world_points() {
 }
 
 #[test]
+fn three_point_circle_uses_pick_order_and_rejects_degenerate_input_atomically() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle _3Point 4,0,0 0,4,0 -4,0,0")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().next().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert!(
+        circle
+            .center()
+            .is_near(point(0.0, 0.0, 0.0), Tolerance::DEFAULT)
+    );
+    assert!((circle.radius() - 4.0).abs() < 1e-12);
+    assert_eq!(
+        circle.normal().unwrap().as_vector().to_array(),
+        [0.0, 0.0, 1.0]
+    );
+    assert!(
+        circle
+            .point_at_angle(0.0)
+            .unwrap()
+            .is_near(point(4.0, 0.0, 0.0), Tolerance::DEFAULT)
+    );
+    let before = format!("{document:?}");
+    for command in [
+        "Circle 3Point 0,0,0 0,0,0 1,0,0",
+        "Circle 3Point 0,0,0 1,0,0 2,0,0",
+        "Circle 3Point 1,0,0 0,1,0",
+        "Circle 3Point 1,0,0 0,1,0 -1,0,0 extra",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().len(), 0);
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().len(), 1);
+}
+
+#[test]
+fn two_point_circle_uses_cplane_seam_and_rejects_normal_diameter() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle _2Point -4,0,0 4,0,0")
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().next().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert_eq!(circle.center(), point(0.0, 0.0, 0.0));
+    assert_eq!(circle.radius(), 4.0);
+    assert_eq!(circle.point_at_angle(0.0).unwrap(), point(4.0, 0.0, 0.0));
+    let before = format!("{document:?}");
+    for command in [
+        "Circle 2Point 0,0,0 0,0,0",
+        "Circle 2Point 0,0,1 0,0,5",
+        "Circle 2Point 0,0,0",
+        "Circle 2Point 0,0,0 4,0,0 extra",
+    ] {
+        assert!(
+            registry.execute(&mut document, command).is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn rectangle_normalizes_corner_order_on_a_translated_oblique_plane() {
     let registry = CommandRegistry::with_builtins();
     let context = context();

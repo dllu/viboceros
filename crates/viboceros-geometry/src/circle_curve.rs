@@ -3,7 +3,8 @@
 use crate::circular::CircleFrame3;
 use crate::parameter::{check_interval, map_parameter};
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
+    UnitVector3, Vector3,
 };
 use std::ops::RangeInclusive;
 
@@ -45,6 +46,62 @@ impl Circle3 {
             normal,
             tolerance,
         )?)
+    }
+    /// Constructs a circle through three noncollinear points in pick order.
+    pub fn try_from_three_points(
+        first: Point3,
+        second: Point3,
+        third: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let arc = crate::CircularArc3::try_from_three_points(first, second, third, tolerance)?;
+        Self::try_from_frame(
+            arc.center(),
+            arc.radius(),
+            arc.x_axis(),
+            arc.normal()?,
+            tolerance,
+        )
+    }
+    /// Constructs a diameter circle, orienting its plane as close as possible
+    /// to the supplied construction plane. The diameter cannot be normal to it.
+    pub fn try_from_diameter_on_plane(
+        first: Point3,
+        second: Point3,
+        construction_plane: Frame3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let center = first.midpoint(second)?;
+        let radius_vector = center.vector_to(first)?;
+        let radius = radius_vector.length()?;
+        let diameter_axis = radius_vector.normalized(tolerance)?;
+        let up = construction_plane.z_axis().as_vector();
+        let up_projection = up.dot(diameter_axis.as_vector())?;
+        let projected_normal = Vector3::try_new(
+            (-up_projection).mul_add(diameter_axis.x(), up.x()),
+            (-up_projection).mul_add(diameter_axis.y(), up.y()),
+            (-up_projection).mul_add(diameter_axis.z(), up.z()),
+        )?;
+        let normal = projected_normal.normalized(tolerance)?;
+        let x = construction_plane.x_axis().as_vector();
+        let x_projection = x.dot(normal.as_vector())?;
+        let x_axis = Vector3::try_new(
+            (-x_projection).mul_add(normal.x(), x.x()),
+            (-x_projection).mul_add(normal.y(), x.y()),
+            (-x_projection).mul_add(normal.z(), x.z()),
+        )?
+        .normalized(tolerance)
+        .or_else(|_| {
+            let y = construction_plane.y_axis().as_vector();
+            let y_projection = y.dot(normal.as_vector())?;
+            Vector3::try_new(
+                (-y_projection).mul_add(normal.x(), y.x()),
+                (-y_projection).mul_add(normal.y(), y.y()),
+                (-y_projection).mul_add(normal.z(), y.z()),
+            )?
+            .normalized(tolerance)
+        })?;
+        Self::try_from_frame(center, radius, x_axis, normal, tolerance)
     }
     pub fn try_from_frame(
         center: Point3,

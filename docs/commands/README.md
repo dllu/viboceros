@@ -67,6 +67,8 @@ PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1
 ReducePointCloud Percent=25
 Line 0,0,0 10,5,0
 Circle 0,0,0 5
+Circle 2Point -4,0,0 4,0,0
+Circle 3Point 4,0,0 0,4,0 -4,0,0
 Arc 5,0,0 0,5,0 -5,0,0
 Ellipse 0,0 6,0 0,3
 Polyline 0,0 4,0 4,3 7,3

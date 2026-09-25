@@ -1,0 +1,42 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-xy",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3Point",
+      "points": [[4, 0, 0], [0, 4, 0], [-4, 0, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-reversed",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3Point",
+      "points": [[4, 0, 0], [0, -4, 0], [-4, 0, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-tilted-cplane",
+      "origin": [10, 20, 30],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "primitive": "Circle3Point",
+      "points": [[10, 24, 30], [10, 20, 34], [10, 16, 30]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-three-point-off-cplane",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle3Point",
+      "points": [[1, 0, 0], [0, 1, 1], [-1, 0, 0]]
+    }
+  ]
+}

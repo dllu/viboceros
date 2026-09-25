@@ -4,6 +4,39 @@ use viboceros_command::CommandContext;
 
 #[cfg(test)]
 mod tests {
+    fn assert_circle_records_match(request_text: &str, reference_text: &str, count: usize) {
+        fn assert_close(actual: &serde_json::Value, expected: &serde_json::Value) {
+            match (actual, expected) {
+                (serde_json::Value::Number(a), serde_json::Value::Number(b)) => {
+                    assert!((a.as_f64().unwrap() - b.as_f64().unwrap()).abs() < 1e-10);
+                }
+                (serde_json::Value::Array(a), serde_json::Value::Array(b)) => {
+                    assert_eq!(a.len(), b.len());
+                    for (actual, expected) in a.iter().zip(b) {
+                        assert_close(actual, expected);
+                    }
+                }
+                (serde_json::Value::Object(a), serde_json::Value::Object(b)) => {
+                    assert_eq!(a.len(), b.len());
+                    for (key, actual) in a {
+                        assert_close(actual, &b[key]);
+                    }
+                }
+                _ => assert_eq!(actual, expected),
+            }
+        }
+        let request: crate::ProbeRequest = serde_json::from_str(request_text).unwrap();
+        let native = crate::run_request(&request).unwrap();
+        let rhino: serde_json::Value = serde_json::from_str(reference_text).unwrap();
+        assert_eq!(native.results.len(), count);
+        let expected = rhino["results"].as_array().unwrap();
+        assert_eq!(native.results.len(), expected.len());
+        for (actual, expected) in native.results.iter().zip(expected) {
+            assert_eq!(actual.id, expected["id"]);
+            assert_close(&actual.value, &expected["value"]);
+        }
+    }
+
     #[test]
     fn plane_primitive_fixture_checks_every_command_on_oriented_frames() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
@@ -36,6 +69,24 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn three_point_circle_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point.json"),
+            include_str!("../../../docs/circle-three-point-rhino-reference.json"),
+            4,
+        );
+    }
+
+    #[test]
+    fn two_point_circle_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_two_point.json"),
+            include_str!("../../../docs/circle-two-point-rhino-reference.json"),
+            6,
+        );
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -62,6 +113,8 @@ pub(super) fn run(
     )?;
     let (prefix, expected) = match f.primitive.as_str() {
         "Circle" => ("Circle", if f.value.is_some() { 1 } else { 2 }),
+        "Circle2Point" if f.value.is_none() => ("Circle 2Point", 2),
+        "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),

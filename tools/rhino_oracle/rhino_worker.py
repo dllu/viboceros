@@ -3386,6 +3386,10 @@ def _plane_primitive_script(operation):
     value = operation.get("value")
     if primitive in ("Circle", "Polygon"):
         expected = 1 if value is not None else 2
+    elif primitive == "Circle2Point" and value is None:
+        expected = 2
+    elif primitive == "Circle3Point" and value is None:
+        expected = 3
     elif primitive in ("Box", "MeshBox"):
         expected = 2 if value is not None else 3
     elif primitive in ("Rectangle", "MeshPlane") and value is None:
@@ -3394,7 +3398,8 @@ def _plane_primitive_script(operation):
         raise ValueError("unsupported plane primitive")
     if len(points) != expected:
         raise ValueError("incorrect primitive arguments")
-    script = "_" + primitive + " "
+    script = {"Circle2Point": "_Circle _2Point ",
+              "Circle3Point": "_Circle _3Point "}.get(primitive, "_" + primitive + " ")
     if primitive == "Polygon":
         script += "_NumSides=5 _Mode=_Inscribed "
     if primitive == "MeshPlane":

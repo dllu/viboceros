@@ -1,0 +1,60 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-xy",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle2Point",
+      "points": [[4, 0, 0], [-4, 0, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-reversed",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle2Point",
+      "points": [[-4, 0, 0], [4, 0, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-y-axis",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle2Point",
+      "points": [[0, 4, 0], [0, -4, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-diagonal",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle2Point",
+      "points": [[3, 4, 0], [-3, -4, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-oblique-diameter",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "Circle2Point",
+      "points": [[2, 0, 1], [-2, 0, 3]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-two-point-tilted-cplane",
+      "origin": [10, 20, 30],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "primitive": "Circle2Point",
+      "points": [[10, 24, 30], [10, 16, 30]]
+    }
+  ]
+}

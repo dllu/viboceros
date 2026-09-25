@@ -15,6 +15,18 @@ through 11, and lowers the degree when too few controls are supplied.
 Circle, Polygon, and Rectangle use the active [construction plane](../construction-planes.md).
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
+`Circle 2Point first second` uses the two world points as opposite ends of a
+diameter. The active CPlane fixes its orientation and positive-X seam; a
+diameter normal to the CPlane is invalid. Enter `Circle 2Point` to pick both
+ends, or choose `2Point` at Circle's first prompt. Six
+[live Rhino command records](../circle-two-point-rhino-reference.json) match
+the native sampled curves and domains within `1e-10`.
+`Circle 3Point first second third` passes through three noncollinear world
+points, including points off the CPlane. Pick order sets the circle direction
+and the first point is its seam. Enter `Circle 3Point` to pick all three points,
+or choose `3Point` at Circle's first prompt. A collinear final pick leaves the
+prompt open for correction. The [four live Rhino command records](../circle-three-point-rhino-reference.json)
+match the native circle samples and domains within `1e-10`.
 
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.

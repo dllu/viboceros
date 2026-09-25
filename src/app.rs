@@ -132,6 +132,7 @@ mod command_line;
 use command_line::command_completions;
 mod align;
 mod angle;
+mod circle;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -293,6 +294,12 @@ enum InteractiveCommand {
     },
     Circle {
         center: Option<Point3>,
+    },
+    CircleTwoPoint {
+        first: Option<Point3>,
+    },
+    CircleThreePoint {
+        points: [Option<Point3>; 2],
     },
     Sphere {
         center: Option<Point3>,
@@ -565,6 +572,8 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
+            Self::CircleTwoPoint { .. } => "Circle",
+            Self::CircleThreePoint { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
@@ -709,11 +718,24 @@ impl InteractiveCommand {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
             Self::Circle { center: None } => {
-                "Circle: pick the center in the viewport (Esc to cancel)"
+                "Circle: pick the center or enter 2Point/3Point (Esc to cancel)"
             }
             Self::Circle { center: Some(_) } => {
                 "Circle: pick a point on the circle in the viewport (Esc to cancel)"
             }
+            Self::CircleTwoPoint { first: None } => {
+                "Circle 2Point: pick the first diameter end (Esc cancels)"
+            }
+            Self::CircleTwoPoint { first: Some(_) } => {
+                "Circle 2Point: pick the second diameter end (Esc cancels)"
+            }
+            Self::CircleThreePoint { points: [None, _] } => {
+                "Circle 3Point: pick the first point (Esc cancels)"
+            }
+            Self::CircleThreePoint {
+                points: [Some(_), None],
+            } => "Circle 3Point: pick the second point (Esc cancels)",
+            Self::CircleThreePoint { .. } => "Circle 3Point: pick the third point (Esc cancels)",
             Self::Sphere { center: None } => {
                 "Sphere: pick the center in the viewport (Esc to cancel)"
             }
@@ -1228,6 +1250,8 @@ impl InteractiveCommand {
             | Self::Line { start: None }
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
+            | Self::CircleTwoPoint { first: None }
+            | Self::CircleThreePoint { points: [None, _] }
             | Self::Sphere { center: None }
             | Self::SelVolumeSphere { center: None, .. }
             | Self::SelVolumePipe { .. }
@@ -1311,6 +1335,7 @@ impl InteractiveCommand {
             | Self::LengthSubCrv { start, .. }
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
+            | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
             | Self::Rectangle { first: start }
@@ -1365,6 +1390,12 @@ impl InteractiveCommand {
                 points: [_, Some(point)],
             }
             | Self::Arc {
+                points: [Some(point), None],
+            }
+            | Self::CircleThreePoint {
+                points: [_, Some(point)],
+            }
+            | Self::CircleThreePoint {
                 points: [Some(point), None],
             } => Some(point),
             Self::SrfPt {
@@ -1737,6 +1768,7 @@ impl VibocerosApp {
             || self.try_continue_radius(&input)
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
+            || self.try_continue_circle(&input)
             || self.try_continue_evaluate_uv(&input)
             || self.try_continue_align(&input)
         {
@@ -1788,6 +1820,7 @@ impl VibocerosApp {
             || self.try_continue_radius(input)
             || self.try_continue_length(input)
             || self.try_continue_angle(input)
+            || self.try_continue_circle(input)
             || self.try_continue_evaluate_uv(input)
             || self.try_continue_align(input)
         {
@@ -1938,6 +1971,14 @@ impl VibocerosApp {
                 return false;
             };
             command
+        } else if matches!(normalized.as_str(), "circle" | "c")
+            && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("2Point"))
+        {
+            InteractiveCommand::CircleTwoPoint { first: None }
+        } else if matches!(normalized.as_str(), "circle" | "c")
+            && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("3Point"))
+        {
+            InteractiveCommand::CircleThreePoint { points: [None; 2] }
         } else if normalized == "pointgrid" {
             let Ok(options) = viboceros_command::PointGridOptions::parse(&arguments) else {
                 return false;
@@ -3900,6 +3941,64 @@ impl VibocerosApp {
                     format_model_point(center),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::CircleTwoPoint { first: None } => {
+                let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };
+                self.active_command = Some(next);
+                self.push_log(next.prompt().to_owned());
+            }
+            InteractiveCommand::CircleTwoPoint { first: Some(first) } => {
+                if let Err(error) = viboceros_geometry::Circle3::try_from_diameter_on_plane(
+                    first,
+                    point,
+                    plane,
+                    self.document.tolerance(),
+                ) {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Circle 2Point {} {}",
+                    format_model_point(first),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::CircleThreePoint { mut points } => {
+                let index = points.iter().position(Option::is_none).unwrap_or(2);
+                if index == 1
+                    && !points[0]
+                        .unwrap()
+                        .distance_to(point)
+                        .is_ok_and(|distance| distance > self.document.tolerance().absolute())
+                {
+                    self.push_log("Error: circle points must differ".into());
+                    return false;
+                }
+                if index < 2 {
+                    points[index] = Some(point);
+                    let next = InteractiveCommand::CircleThreePoint { points };
+                    self.active_command = Some(next);
+                    self.push_log(next.prompt().to_owned());
+                } else {
+                    let [first, second] = points.map(Option::unwrap);
+                    if let Err(error) = viboceros_geometry::Circle3::try_from_three_points(
+                        first,
+                        second,
+                        point,
+                        self.document.tolerance(),
+                    ) {
+                        self.push_log(format!("Error: {error}"));
+                        return false;
+                    }
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "Circle 3Point {} {} {}",
+                        format_model_point(first),
+                        format_model_point(second),
+                        format_model_point(point)
+                    ));
+                }
             }
             InteractiveCommand::Sphere { center: None } => {
                 let command = InteractiveCommand::Sphere {
@@ -7414,6 +7513,70 @@ mod tests {
             Geometry::Arc(_)
         ));
         assert_eq!(app.document.undo_label(), Some("Arc"));
+    }
+
+    #[test]
+    fn interactive_three_point_circle_retains_invalid_final_pick() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Circle _3Point"));
+        assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
+        assert!(app.accept_drafting_point(point(0.0, 4.0, 0.0)));
+        assert!(!app.accept_drafting_point(point(-4.0, 8.0, 0.0)));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::CircleThreePoint {
+                points: [Some(_), Some(_)]
+            })
+        ));
+        assert!(app.accept_drafting_point(point(-4.0, 0.0, 0.0)));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Circle(circle) if circle.center().is_near(point(0.0, 0.0, 0.0), Tolerance::DEFAULT)
+                && (circle.radius() - 4.0).abs() < 1e-12
+        ));
+        assert_eq!(app.document.undo_label(), Some("Circle"));
+
+        assert!(app.try_start_interactive_command("Circle"));
+        app.command_input = "3Point".into();
+        app.run_command();
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::CircleThreePoint { points: [None; 2] })
+        );
+        app.cancel_interactive_command(false);
+        assert_eq!(app.document.objects().len(), 1);
+    }
+
+    #[test]
+    fn interactive_two_point_circle_uses_diameter_and_retries_invalid_second_pick() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Circle 2Point"));
+        assert!(app.accept_drafting_point(point(-4.0, 0.0, 0.0)));
+        assert!(!app.accept_drafting_point(point(-4.0, 0.0, 0.0)));
+        assert!(!app.accept_drafting_point(point(-4.0, 0.0, 4.0)));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::CircleTwoPoint { first: Some(_) })
+        ));
+        assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Circle(circle) if circle.center() == point(0.0, 0.0, 0.0)
+                && circle.radius() == 4.0
+                && circle.point_at_angle(0.0).unwrap() == point(4.0, 0.0, 0.0)
+        ));
+
+        assert!(app.try_start_interactive_command("Circle"));
+        app.command_input = "2Point".into();
+        app.run_command();
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::CircleTwoPoint { first: None })
+        );
+        app.cancel_interactive_command(false);
+        assert_eq!(app.document.objects().len(), 1);
     }
 
     #[test]
