@@ -430,12 +430,17 @@ fn import_3dm_model(
     let imported_group_count = imported_groups.len();
 
     if reuse_default_layer && !imported_layers.is_empty() {
-        if let Some(id) = model
-            .layers
-            .iter()
-            .zip(&imported_layers)
-            .find_map(|(layer, id)| (layer.visible && !layer.locked).then_some(*id))
-        {
+        let preferred = model
+            .current_layer_index
+            .and_then(|index| model.layers.get(index).zip(imported_layers.get(index)))
+            .and_then(|(layer, id)| (layer.visible && !layer.locked).then_some(*id));
+        if let Some(id) = preferred.or_else(|| {
+            model
+                .layers
+                .iter()
+                .zip(&imported_layers)
+                .find_map(|(layer, id)| (layer.visible && !layer.locked).then_some(*id))
+        }) {
             document.set_current_layer(id)?;
         } else {
             // The editor requires an editable current layer. Keep source
@@ -644,6 +649,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         })
         .collect::<Result<_, CommandError>>()?;
     let mut model = ThreeDmModel::new(layers, groups, objects);
+    model.current_layer_index = Some(layer_indices[&document.current_layer_id()]);
     model.units = document.units().clone();
     model.tolerance = document.tolerance();
     Ok(model)

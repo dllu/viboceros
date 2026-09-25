@@ -1803,6 +1803,7 @@ struct ViboThreeDmModel {
   double meters_per_unit = 1.0;
   std::string unit_name;
   std::vector<BridgeLayer> layers;
+  int32_t current_layer_index = -1;
   std::vector<BridgeGroup> groups;
   std::vector<BridgeNamedView> named_views;
   std::vector<BridgeCurrentView> current_views;
@@ -1849,6 +1850,8 @@ extern "C" int32_t vibo_3dm_read(const char* path,
     }
     ONX_ModelComponentIterator layer_iterator(
         source, ON_ModelComponent::Type::Layer);
+    const ON_UUID current_layer_id = source.m_settings.CurrentLayerId();
+    const int current_v5_layer_index = source.m_settings.CurrentLayerIndex();
     for (const ON_Layer* layer =
              ON_Layer::Cast(layer_iterator.FirstComponent());
          layer != nullptr;
@@ -1861,6 +1864,10 @@ extern "C" int32_t vibo_3dm_read(const char* path,
            static_cast<uint8_t>(color.Blue()),
            static_cast<uint8_t>(layer->IsVisible()),
            static_cast<uint8_t>(layer->IsLocked())});
+      if ((current_layer_id != ON_nil_uuid && layer->Id() == current_layer_id) ||
+          (current_layer_id == ON_nil_uuid && layer->Index() == current_v5_layer_index)) {
+        decoded->current_layer_index = layer->Index();
+      }
     }
 
     ONX_ModelComponentIterator group_iterator(
@@ -2003,6 +2010,10 @@ extern "C" void vibo_3dm_free(ViboThreeDmModel* model) { delete model; }
 
 extern "C" size_t vibo_3dm_layer_count(const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->layers.size();
+}
+
+extern "C" int32_t vibo_3dm_current_layer_index(const ViboThreeDmModel* model) {
+  return model == nullptr ? -1 : model->current_layer_index;
 }
 
 extern "C" int32_t vibo_3dm_layer(
@@ -2190,6 +2201,7 @@ extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
     double angle_tolerance, const ViboWriteLayer* layers, size_t layer_count,
+    int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboNamedView* named_views, size_t named_view_count,
     const ViboCurrentView* current_views, size_t current_view_count,
@@ -2197,6 +2209,9 @@ extern "C" int32_t vibo_3dm_write(
     size_t error_capacity) {
   if (path == nullptr || path[0] == '\0' ||
       (layer_count != 0 && layers == nullptr) ||
+      current_layer_index < -1 ||
+      (current_layer_index >= 0 &&
+       static_cast<size_t>(current_layer_index) >= layer_count) ||
       (group_count != 0 && groups == nullptr) ||
       (named_view_count != 0 && named_views == nullptr) ||
       (current_view_count != 0 && current_views == nullptr) ||
@@ -2316,6 +2331,16 @@ extern "C" int32_t vibo_3dm_write(
         }
         layer_indices.push_back(added->Index());
       }
+    }
+
+    if (current_layer_index >= 0) {
+      const ON_Layer* current_layer = ON_Layer::FromModelComponentRef(
+          model.LayerFromIndex(layer_indices[current_layer_index]), nullptr);
+      if (current_layer == nullptr) {
+        set_error(error, error_capacity, "3DM current layer is missing");
+        return 0;
+      }
+      model.m_settings.SetCurrentLayerId(current_layer->Id());
     }
 
     std::vector<int> group_indices;

@@ -126,6 +126,7 @@ int32_t vibo_3dm_units(const ViboThreeDmModel* model, uint32_t* unit_system,
                       double* meters_per_unit, const char** name);
 
 size_t vibo_3dm_layer_count(const ViboThreeDmModel* model);
+int32_t vibo_3dm_current_layer_index(const ViboThreeDmModel* model);
 int32_t vibo_3dm_layer(const ViboThreeDmModel* model, size_t index,
                        int32_t* source_index, const char** name, uint8_t* red,
                        uint8_t* green, uint8_t* blue, uint8_t* visible,
@@ -165,7 +166,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double absolute_tolerance, double relative_tolerance,
                        double angle_tolerance,
                        const ViboWriteLayer* layers,
-                       size_t layer_count, const ViboWriteGroup* groups,
+                       size_t layer_count, int32_t current_layer_index,
+                       const ViboWriteGroup* groups,
                        size_t group_count, const ViboNamedView* named_views,
                        size_t named_view_count, const ViboCurrentView* current_views,
                        size_t current_view_count, const ViboWriteObject* objects,

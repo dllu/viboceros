@@ -156,7 +156,7 @@ fn open_3dm_replaces_document_and_preserves_file_policy_and_layer_order() {
 fn open_3dm_keeps_restricted_file_layers_and_adds_an_editable_layer() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("restricted.3dm");
-    let model = ThreeDmModel::new(
+    let mut model = ThreeDmModel::new(
         vec![ThreeDmLayer {
             name: "Archive".into(),
             color: [9, 8, 7],
@@ -166,6 +166,7 @@ fn open_3dm_keeps_restricted_file_layers_and_adds_an_editable_layer() {
         Vec::new(),
         Vec::new(),
     );
+    model.current_layer_index = Some(0);
     write_3dm_file(&path, &model).unwrap();
     let (document, _, _) = open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
     let archive = document.layer_by_name("Archive").unwrap();
@@ -175,6 +176,43 @@ fn open_3dm_keeps_restricted_file_layers_and_adds_an_editable_layer() {
     let current = document.layer(document.current_layer_id()).unwrap();
     assert!(current.is_visible() && !current.is_locked());
     assert!(!document.can_undo());
+}
+
+#[test]
+fn current_layer_survives_3dm_open_while_import_keeps_destination_layer() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("active layer.3dm");
+    let mut source = Document::default();
+    let first = source.current_layer_id();
+    source.rename_layer(first, "First").unwrap();
+    let second = source.add_layer("Second", ColorRgb::new(5, 6, 7)).unwrap();
+    source.set_current_layer(second).unwrap();
+    registry
+        .execute(&mut source, &format!("SaveAs \"{}\"", path.display()))
+        .unwrap();
+    let file = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(file.current_layer_index, Some(1));
+
+    let (mut opened, _, _) = open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
+    assert_eq!(
+        opened.layer(opened.current_layer_id()).unwrap().name(),
+        "Second"
+    );
+    let new_object = opened
+        .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+        .unwrap();
+    assert_eq!(
+        opened.object(new_object).unwrap().attributes().layer_id(),
+        opened.current_layer_id()
+    );
+
+    let mut imported = Document::default();
+    let destination_layer = imported.current_layer_id();
+    registry
+        .execute(&mut imported, &format!("Import3dm \"{}\"", path.display()))
+        .unwrap();
+    assert_eq!(imported.current_layer_id(), destination_layer);
 }
 
 #[test]

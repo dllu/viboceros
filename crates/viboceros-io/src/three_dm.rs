@@ -148,6 +148,8 @@ pub struct ThreeDmModel {
     /// File metadata only; assigning units does not rescale coordinates.
     pub units: LengthUnitSystem,
     pub layers: Vec<ThreeDmLayer>,
+    /// Index into `layers` for the active model layer, when available.
+    pub current_layer_index: Option<usize>,
     pub groups: Vec<ThreeDmGroup>,
     pub named_views: Vec<ThreeDmNamedView>,
     pub viewports: Vec<ThreeDmViewport>,
@@ -161,10 +163,12 @@ impl ThreeDmModel {
         groups: Vec<ThreeDmGroup>,
         objects: Vec<ThreeDmObject>,
     ) -> Self {
+        let current_layer_index = (!layers.is_empty()).then_some(0);
         Self {
             units: LengthUnitSystem::default(),
             tolerance: Tolerance::DEFAULT,
             layers,
+            current_layer_index,
             groups,
             named_views: Vec::new(),
             viewports: Vec::new(),
@@ -541,6 +545,10 @@ pub fn write_3dm_file(
         )
         .collect::<Vec<_>>();
 
+    let current_layer_index = model.current_layer_index.map_or(Ok(-1), |index| {
+        i32::try_from(index)
+            .map_err(|_| ThreeDmError::InvalidModel("current layer index exceeds 3DM range".into()))
+    })?;
     let mut error = [0 as c_char; ERROR_CAPACITY];
     // SAFETY: all pointers reference immutable vectors and C strings retained
     // for the duration of this synchronous call. The bridge catches exceptions.
@@ -555,6 +563,7 @@ pub fn write_3dm_file(
             model.tolerance.angular(),
             pointer_or_null(&layers),
             layers.len(),
+            current_layer_index,
             pointer_or_null(&groups),
             groups.len(),
             pointer_or_null(&named_views),
@@ -634,6 +643,8 @@ fn decode_model(
     let stored_tolerance = model_tolerance(handle)?;
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
+    let source_current_layer_index =
+        unsafe { ffi::vibo_3dm_current_layer_index(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));
     let mut layer_positions = BTreeMap::new();
     for index in 0..layer_count {
@@ -676,6 +687,7 @@ fn decode_model(
             locked: false,
         });
     }
+    let current_layer_index = layer_positions.get(&source_current_layer_index).copied();
 
     // SAFETY: the handle owns a live bridge model.
     let group_count = unsafe { ffi::vibo_3dm_group_count(handle.0.as_ptr()) };
@@ -753,6 +765,7 @@ fn decode_model(
         tolerance: stored_tolerance,
         units,
         layers,
+        current_layer_index,
         groups,
         named_views,
         viewports,
@@ -1134,6 +1147,14 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
     if model.layers.is_empty() && !model.objects.is_empty() {
         return Err(ThreeDmError::InvalidModel(
             "objects require at least one layer".to_owned(),
+        ));
+    }
+    if model
+        .current_layer_index
+        .is_some_and(|index| index >= model.layers.len())
+    {
+        return Err(ThreeDmError::InvalidModel(
+            "current layer references a missing layer".into(),
         ));
     }
     for (index, layer) in model.layers.iter().enumerate() {
@@ -1674,6 +1695,7 @@ mod ffi {
             name: *mut *const c_char,
         ) -> c_int;
         pub fn vibo_3dm_layer_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_current_layer_index(model: *const ViboThreeDmModel) -> i32;
         pub fn vibo_3dm_layer(
             model: *const ViboThreeDmModel,
             index: usize,
@@ -1749,6 +1771,7 @@ mod ffi {
             angle_tolerance: f64,
             layers: *const ViboWriteLayer,
             layer_count: usize,
+            current_layer_index: i32,
             groups: *const ViboWriteGroup,
             group_count: usize,
             named_views: *const ViboNamedView,
