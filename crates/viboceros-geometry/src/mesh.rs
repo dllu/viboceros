@@ -17,6 +17,7 @@ mod edge_weld;
 mod ngon;
 mod normals;
 mod planar_cap;
+mod quadrangulate;
 mod radial;
 use radial::{
     ordered_vertex_face_components, radial_vertex_face_walk, radially_sorted_vertex_edges,

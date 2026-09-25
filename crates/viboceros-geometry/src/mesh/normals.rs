@@ -26,7 +26,7 @@ impl TriangleMesh {
         self.normal_for_face(MeshFace::Triangle(triangle))
     }
 
-    fn normal_for_face(&self, face: MeshFace) -> Result<UnitVector3, GeometryError> {
+    pub(super) fn normal_for_face(&self, face: MeshFace) -> Result<UnitVector3, GeometryError> {
         let (first, second) = match face {
             MeshFace::Triangle([a, b, c]) => ([a, b], [a, c]),
             MeshFace::Quad([a, b, c, d]) => ([a, c], [b, d]),

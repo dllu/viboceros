@@ -125,6 +125,15 @@ diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,
 object identity, attributes, groups, and selection remain unchanged.
 
+`QuadrangulateMesh Planarity=1 Rectangularity=2` merges consistently oriented
+triangle pairs that share raw vertex indices. `Planarity` is the maximum angle
+between face normals in degrees; `Rectangularity` bounds the ratio of the two
+prospective quad diagonal lengths. The local defaults are 1 degree and 2.
+The candidate must also form a convex, nondegenerate quad. Pairing favors the
+most balanced diagonals, then the smallest normal angle, with stable face-index
+tie breaking. Unwelded seams and n-gon boundaries remain intact; vertex colors,
+object identity, attributes, groups, selection, and undo are preserved.
+
 `SwapMeshEdge` replaces a welded interior edge shared by exactly two
 consistently oriented triangle faces with their opposite diagonal. Use
 `Edge=1` for the deterministic exact-location topology index, or omit it to

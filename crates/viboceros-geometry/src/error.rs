@@ -123,6 +123,11 @@ pub enum GeometryError {
     #[error("mesh vertex colors must match the vertex count")]
     InvalidMeshVertexColorCount,
 
+    #[error(
+        "mesh quadrangulation requires finite planarity in [0, 180] degrees and rectangularity >= 1"
+    )]
+    InvalidMeshQuadrangulationOptions,
+
     #[error("the linear system is singular at the requested tolerance")]
     SingularSystem,
 

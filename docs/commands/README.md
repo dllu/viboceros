@@ -277,6 +277,7 @@ ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
 DeleteFaces Faces=2,0
 TriangulateMesh
+QuadrangulateMesh Planarity=1 Rectangularity=2
 SwapMeshEdge Edge=1
 CollapseMeshEdge Edge=1
 SplitMeshEdge Edge=1 Parameter=0.25
