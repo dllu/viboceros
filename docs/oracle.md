@@ -545,6 +545,18 @@ compares five signed-length `_Arc _Center` commands against
 [live Rhino 8 results](arc-center-length-rhino-reference.json), including a
 rotated construction plane and both signs of length beyond one circumference.
 Native curve samples and domains agree within `1e-10`.
+The [Arc Center endpoint fixture](../tools/rhino_oracle/fixtures/arc_center_endpoint.json)
+automates eight actual Rhino viewport clicks at Point osnaps with a public
+`_Arc _Center` prompt and compares their complete sampled curves and domains
+to explicitly directed native arcs within `1e-10`, including a construction
+plane with its normal reversed. The
+[single south pick](../tools/rhino_oracle/fixtures/arc_center_endpoint_south_alone.json)
+produces a clockwise 90° arc, while the same pick after another operation in
+the batch produces a counterclockwise 270° arc. Their
+[batch](arc-center-endpoint-rhino-reference.json) and
+[single-pick](arc-center-endpoint-south-alone-rhino-reference.json) records
+show that interaction history affects the sweep; cursor travel appears to be
+the deciding factor.
 The [three-point circle fixture](../tools/rhino_oracle/fixtures/circle_three_point.json)
 checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including

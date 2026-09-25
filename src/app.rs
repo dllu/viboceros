@@ -352,6 +352,7 @@ enum InteractiveCommand {
     ArcCenter {
         center: Option<Point3>,
         start: Option<Point3>,
+        clockwise: bool,
     },
     ArcCenterLength {
         center: Point3,
@@ -855,7 +856,9 @@ impl InteractiveCommand {
             Self::ArcCenter { start: None, .. } => {
                 "Arc Center: pick the start point in the viewport (Esc to cancel)"
             }
-            Self::ArcCenter { .. } => "Arc Center: enter an angle or choose Length (Esc to cancel)",
+            Self::ArcCenter { .. } => {
+                "Arc Center: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
+            }
             Self::ArcCenterLength { .. } => {
                 "Arc Center Length: enter a signed arc length (Esc to cancel)"
             }
@@ -1488,6 +1491,7 @@ impl InteractiveCommand {
             Self::ArcCenter {
                 center: Some(center),
                 start: None,
+                ..
             } => Some(center),
             Self::ArcCenter {
                 start: Some(start), ..
@@ -1916,6 +1920,7 @@ impl VibocerosApp {
             let command = InteractiveCommand::ArcCenter {
                 center: None,
                 start: None,
+                clockwise: true,
             };
             self.active_command = Some(command);
             self.command_input.clear();
@@ -1926,11 +1931,43 @@ impl VibocerosApp {
             Some(InteractiveCommand::ArcCenter {
                 center: Some(center),
                 start: Some(start),
+                ..
             }) => (center, start, false),
             Some(InteractiveCommand::ArcCenterLength { center, start }) => (center, start, true),
             _ => return false,
         };
         let input = input.trim();
+        let direction_value = input
+            .split_once('=')
+            .or_else(|| input.split_once(' '))
+            .filter(|(name, _)| {
+                name.trim_start_matches('_')
+                    .eq_ignore_ascii_case("Direction")
+            })
+            .map(|(_, value)| value.trim().trim_start_matches('_'));
+        if !is_length && let Some(direction) = direction_value {
+            let clockwise = if direction.eq_ignore_ascii_case("Clockwise")
+                || direction.eq_ignore_ascii_case("CW")
+            {
+                true
+            } else if direction.eq_ignore_ascii_case("Counterclockwise")
+                || direction.eq_ignore_ascii_case("CCW")
+            {
+                false
+            } else {
+                self.push_log("Error: direction must be Clockwise or Counterclockwise".into());
+                return true;
+            };
+            let command = InteractiveCommand::ArcCenter {
+                center: Some(center),
+                start: Some(start),
+                clockwise,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
         if !is_length && input.trim_start_matches('_').eq_ignore_ascii_case("Length") {
             let command = InteractiveCommand::ArcCenterLength { center, start };
             self.active_command = Some(command);
@@ -3836,6 +3873,7 @@ impl VibocerosApp {
             InteractiveCommand::ArcCenter {
                 center: None,
                 start: None,
+                clockwise: true,
             }
         } else {
             if !arguments.is_empty() {
@@ -4612,10 +4650,12 @@ impl VibocerosApp {
             InteractiveCommand::ArcCenter {
                 center: None,
                 start: None,
+                clockwise,
             } => {
                 let command = InteractiveCommand::ArcCenter {
                     center: Some(point),
                     start: None,
+                    clockwise,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Center: {}", format_model_point(point)));
@@ -4624,6 +4664,7 @@ impl VibocerosApp {
             InteractiveCommand::ArcCenter {
                 center: Some(center),
                 start: None,
+                clockwise,
             } => {
                 if !center
                     .distance_to(point)
@@ -4635,13 +4676,46 @@ impl VibocerosApp {
                 let command = InteractiveCommand::ArcCenter {
                     center: Some(center),
                     start: Some(point),
+                    clockwise,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Start: {}", format_model_point(point)));
                 self.push_log(command.prompt().to_owned());
             }
+            InteractiveCommand::ArcCenter {
+                center: Some(center),
+                start: Some(start),
+                clockwise,
+            } => {
+                if let Err(error) = CircularArc3::try_from_center_start_end_on_plane(
+                    center,
+                    start,
+                    point,
+                    if clockwise {
+                        plane.z_axis().opposite()
+                    } else {
+                        plane.z_axis()
+                    },
+                    self.document.tolerance(),
+                ) {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Arc Center {} {} End={} Direction={}",
+                    format_model_point(center),
+                    format_model_point(start),
+                    format_model_point(point),
+                    if clockwise {
+                        "Clockwise"
+                    } else {
+                        "Counterclockwise"
+                    }
+                ));
+            }
             InteractiveCommand::ArcCenter { .. } => {
-                self.push_log("Enter an arc sweep angle or choose Length".into());
+                self.push_log("Pick an endpoint, enter an angle, or choose Length".into());
                 return false;
             }
             InteractiveCommand::ArcCenterLength { .. } => {
@@ -7906,7 +7980,8 @@ mod tests {
             app.active_command,
             Some(InteractiveCommand::ArcCenter {
                 center: Some(_),
-                start: Some(_)
+                start: Some(_),
+                ..
             })
         ));
         assert!(app.try_continue_arc("90"));
@@ -7922,7 +7997,8 @@ mod tests {
             app.active_command,
             Some(InteractiveCommand::ArcCenter {
                 center: None,
-                start: None
+                start: None,
+                clockwise: true
             })
         );
         assert!(app.accept_drafting_point(center));
@@ -7979,6 +8055,53 @@ mod tests {
             panic!("expected full arc")
         };
         assert!((full.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+    }
+
+    #[test]
+    fn interactive_arc_center_endpoint_pick_uses_the_cplane_and_reprompts() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Arc Center"));
+        let center = point(1.0, 2.0, 3.0);
+        let start = point(5.0, 2.0, 3.0);
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(!app.accept_drafting_point(center));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: Some(_),
+                start: Some(_),
+                ..
+            })
+        ));
+        assert!(app.accept_drafting_point(point(1.0, 10.0, 3.0)));
+        let Geometry::Arc(arc) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected arc")
+        };
+        assert!((arc.sweep_radians().to_degrees() - 270.0).abs() < 1e-12);
+        assert!(
+            arc.end()
+                .unwrap()
+                .is_near(point(1.0, 6.0, 3.0), Tolerance::DEFAULT)
+        );
+        assert_eq!(app.document.undo_label(), Some("Arc"));
+
+        assert!(app.try_start_interactive_command("Arc Center"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(start));
+        assert!(app.try_continue_arc("Direction=Counterclockwise"));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                clockwise: false,
+                ..
+            })
+        ));
+        assert!(app.accept_drafting_point(point(1.0, 6.0, 3.0)));
+        let Geometry::Arc(short) = app.document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected counterclockwise arc")
+        };
+        assert!((short.sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
     }
 
     #[test]

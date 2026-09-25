@@ -229,10 +229,13 @@ class OracleClient:
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             from .point_snap_input import PointSnapPicker
             interaction = PointSnapPicker(request)
-        if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):
-            from .angle_cursor_probe import validate_request
+        if any(op.get("op") == "angle_cursor_diagnostic" or
+               (op.get("op") == "plane_primitive" and op.get("primitive") == "ArcCenterEndpoint")
+               for op in request.get("operations", [])):
             from .group_picking import IdlePicker
-            validate_request(request)
+            if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):
+                from .angle_cursor_probe import validate_request
+                validate_request(request)
             class AnglePicker(IdlePicker):
                 def send_input(self, name, x, y, window):
                     # The worker announces the target before RunScript reaches _Pause.

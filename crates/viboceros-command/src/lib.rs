@@ -1354,8 +1354,69 @@ impl Command for ArcCommand {
             let (center, center_count) = parse_point(arguments)?;
             let (start, start_count) = parse_point(&arguments[center_count..])?;
             let remaining = &arguments[center_count + start_count..];
+            let (remaining, endpoint_direction) = if let Some((name, value)) =
+                remaining.last().and_then(|token| token.split_once('='))
+                && option_name_eq(name, "Direction")
+            {
+                let direction = if option_name_eq(value, "Clockwise") || option_name_eq(value, "CW")
+                {
+                    Some(true)
+                } else if option_name_eq(value, "Counterclockwise") || option_name_eq(value, "CCW")
+                {
+                    Some(false)
+                } else {
+                    return Err(CommandError::Usage(ARC_CENTER_USAGE));
+                };
+                (&remaining[..remaining.len() - 1], direction)
+            } else {
+                (remaining, None)
+            };
             let radial = center.vector_to(start)?;
             let radius = radial.length()?;
+            let endpoint_tokens = match remaining {
+                [single] if single.contains(',') && !single.contains('=') => Some(remaining),
+                [name, rest @ ..] if option_name_eq(name, "End") => Some(rest),
+                [_, _, _] => Some(remaining),
+                _ => None,
+            };
+            let inline_endpoint = match remaining {
+                [single] => single
+                    .split_once('=')
+                    .filter(|(name, _)| option_name_eq(name, "End"))
+                    .map(|(_, value)| value),
+                _ => None,
+            };
+            let endpoint = if let Some(value) = inline_endpoint {
+                let (end, consumed) = parse_point(&[value])?;
+                require_consumed(&[value], consumed, ARC_CENTER_USAGE)?;
+                Some(end)
+            } else if let Some(tokens) = endpoint_tokens {
+                let (end, consumed) = parse_point(tokens)?;
+                require_consumed(tokens, consumed, ARC_CENTER_USAGE)?;
+                Some(end)
+            } else {
+                None
+            };
+            if let Some(end) = endpoint {
+                let normal = if endpoint_direction.unwrap_or(true) {
+                    context.construction_plane.z_axis().opposite()
+                } else {
+                    context.construction_plane.z_axis()
+                };
+                let arc = CircularArc3::try_from_center_start_end_on_plane(
+                    center,
+                    start,
+                    end,
+                    normal,
+                    document.tolerance(),
+                )?;
+                let sweep_degrees = arc.sweep_radians().to_degrees();
+                let id = document.add_geometry(Geometry::Arc(arc))?;
+                return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
+            }
+            if endpoint_direction.is_some() {
+                return Err(CommandError::Usage(ARC_CENTER_USAGE));
+            }
             let (value, is_length) = match remaining {
                 [single] if let Some((name, value)) = single.split_once('=') => {
                     if !option_name_eq(name, "Length") {
@@ -1407,7 +1468,7 @@ impl Command for ArcCommand {
     }
 }
 
-const ARC_CENTER_USAGE: &str = "Arc Center center start angle-degrees | Length=arc-length";
+const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
 
 struct EllipseCommand;
 
@@ -18223,6 +18284,47 @@ mod tests {
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
             assert_eq!(document.objects().len(), 4);
+        }
+    }
+
+    #[test]
+    fn arc_center_endpoint_constrains_radius_and_supports_both_sweep_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Arc Center 1,2,3 5,2,3 End=1,6,3")
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Arc Center 1,2,3 5,2,3 End=1,10,3 Direction=Counterclockwise",
+            )
+            .unwrap();
+        let arcs = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 2);
+        assert!((arcs[0].sweep_radians().to_degrees() - 270.0).abs() < 1e-12);
+        assert!((arcs[1].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+        assert!(arcs[0].point_at(0.25).unwrap().y() < 2.0);
+        assert!(arcs[1].point_at(0.25).unwrap().y() > 2.0);
+        for arc in arcs {
+            assert!(arc.end().unwrap().is_near(
+                Point3::try_new(1.0, 6.0, 3.0).unwrap(),
+                document.tolerance()
+            ));
+        }
+        for input in [
+            "Arc Center 1,2,3 5,2,3 End=1,2,3",
+            "Arc Center 1,2,3 5,2,3 End=1,6,3 Direction=Sideways",
+            "Arc Center 1,2,3 5,2,3 90 Direction=Clockwise",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 2);
         }
     }
 

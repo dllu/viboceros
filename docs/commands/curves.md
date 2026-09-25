@@ -27,6 +27,16 @@ beyond one circumference produce a full arc. Five
 [live Rhino length records](../arc-center-length-rhino-reference.json) cover
 positive and negative lengths, both full-arc cap directions, and a rotated
 construction plane, with sampled curves and domains matching within `1e-10`.
+`Arc Center center start End=point` uses the endpoint's direction and keeps
+the start radius. The viewport prompt also accepts an endpoint pick. Choose
+`Direction=Counterclockwise` at that prompt to reverse the default. Use
+`Direction=Clockwise` or `Direction=Counterclockwise` to choose the sweep in
+a command string; the current viewport picker defaults to clockwise. Rhino
+can choose either sweep for the same endpoint depending on interaction history,
+as the [batch](../arc-center-endpoint-rhino-reference.json) and
+[single-pick](../arc-center-endpoint-south-alone-rhino-reference.json) records
+show. Their sampled arcs and domains match the explicitly directed native
+commands within `1e-10`.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

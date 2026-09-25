@@ -3406,6 +3406,8 @@ def _plane_primitive_script(operation):
         expected = 3
     elif primitive in ("ArcCenterAngle", "ArcCenterLength") and value is not None:
         expected = 2
+    elif primitive == "ArcCenterEndpoint" and value is None:
+        expected = 3
     elif primitive in ("Box", "MeshBox"):
         expected = 2 if value is not None else 3
     elif primitive in ("Rectangle", "MeshPlane") and value is None:
@@ -3420,6 +3422,7 @@ def _plane_primitive_script(operation):
               "Circle3PointRadiusPick": "_Circle _3Point ",
               "ArcCenterAngle": "_Arc _Center ",
               "ArcCenterLength": "_Arc _Center ",
+              "ArcCenterEndpoint": "_Arc _Center ",
               "CircleVertical": "_Circle _Vertical ",
               "CircleOrientation": "_Circle ",
               "CircleOrientationPick": "_Circle ",
@@ -3449,6 +3452,11 @@ def _plane_primitive_script(operation):
         if primitive == "ArcCenterLength":
             script += " _Length"
         script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcCenterEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Pause"
         return script
     if primitive == "Circle3PointRadius":
         script += "w" + _command_point(points[0])
@@ -3866,8 +3874,18 @@ class _PointInputCommandFailed(ValueError):
 
 def _in_construction_plane(operation, script, record):
     document = Rhino.RhinoDoc.ActiveDoc
-    viewport = document.Views.ActiveView.ActiveViewport
+    view = document.Views.ActiveView
+    viewport = view.ActiveViewport
     original_plane = viewport.ConstructionPlane()
+    endpoint_click = operation.get("primitive") == "ArcCenterEndpoint"
+    original_projection = Rhino.DocObjects.ViewportInfo(viewport) if endpoint_click else None
+    original_name = viewport.Name if endpoint_click else None
+    original_target = viewport.CameraTarget if endpoint_click else None
+    aid = Rhino.ApplicationSettings.ModelAidSettings if endpoint_click else None
+    track = Rhino.ApplicationSettings.SmartTrackSettings if endpoint_click else None
+    original_aid = aid.GetCurrentState() if endpoint_click else None
+    original_track = track.GetCurrentState() if endpoint_click else None
+    marker_id = None
     unit_name = operation.get("model_units")
     if unit_name is not None and unit_name not in ("Millimeters", "Meters", "Inches"):
         raise ValueError("unsupported point-input model units")
@@ -3884,8 +3902,34 @@ def _in_construction_plane(operation, script, record):
     try:
         if unit_name is not None:
             document.AdjustModelUnitSystem(getattr(Rhino.UnitSystem, unit_name), False)
+        if endpoint_click:
+            if not viewport.SetProjection(Rhino.Display.DefinedViewportProjection.Top, "Arc endpoint", False):
+                raise ValueError("could not set arc endpoint Top projection")
+            coords = operation["points"]
+            lo = [min(p[i] for p in coords) - 6.0 for i in range(3)]
+            hi = [max(p[i] for p in coords) + 6.0 for i in range(3)]
+            if not viewport.ZoomBoundingBox(Rhino.Geometry.BoundingBox(_point(lo), _point(hi))):
+                raise ValueError("could not fit arc endpoint view")
+            aid.GridSnap = aid.Ortho = aid.Planar = False
+            aid.Osnap = True
+            aid.OsnapModes = Rhino.ApplicationSettings.OsnapModes.Point
+            aid.OnlySnapToSelected = False
+            aid.OsnapPickboxRadius = 16
+            track.UseSmartTrack = False
+            marker_id = document.Objects.AddPoint(_point(coords[2]))
+            if marker_id == System.Guid.Empty:
+                raise ValueError("could not add arc endpoint snap marker")
+            before.add(marker_id)
         viewport.SetConstructionPlane(plane)
         document.Objects.UnselectAll()
+        if endpoint_click:
+            document.Views.Redraw()
+            pixel = viewport.WorldToClient(_point(operation["points"][2]))
+            x, y = int(pixel.X), int(pixel.Y)
+            if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
+                raise ValueError("arc endpoint outside owned viewport")
+            screen = view.ClientToScreen(System.Drawing.Point(x, y))
+            _record_progress("PICK @arc:%s %d %d" % (operation["id"], screen.X, screen.Y))
         if not _run_surface_script(script, True):
             raise _PointInputCommandFailed("point-input command failed")
         outputs = [obj for obj in objects() if obj.Id not in before]
@@ -3902,6 +3946,14 @@ def _in_construction_plane(operation, script, record):
         for obj in objects():
             if obj.Id not in before:
                 document.Objects.Delete(obj.Id, True)
+        if marker_id is not None:
+            document.Objects.Delete(marker_id, True)
+        if endpoint_click:
+            viewport.SetViewProjection(original_projection, False)
+            viewport.SetCameraTarget(original_target, False)
+            viewport.Name = original_name
+            aid.UpdateFromState(original_aid)
+            track.UpdateFromState(original_track)
         viewport.SetConstructionPlane(original_plane)
         if unit_name is not None:
             document.AdjustModelUnitSystem(original_units, False)

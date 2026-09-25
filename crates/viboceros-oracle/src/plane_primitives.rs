@@ -98,6 +98,22 @@ mod tests {
     }
 
     #[test]
+    fn arc_center_endpoint_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_center_endpoint.json"),
+            include_str!("../../../docs/arc-center-endpoint-rhino-reference.json"),
+            8,
+        );
+        assert_circle_records_match(
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/arc_center_endpoint_south_alone.json"
+            ),
+            include_str!("../../../docs/arc-center-endpoint-south-alone-rhino-reference.json"),
+            1,
+        );
+    }
+
+    #[test]
     fn three_point_circle_radius_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
@@ -183,6 +199,8 @@ pub struct PlanePrimitiveFixture {
     pub points: Vec<[f64; 3]>,
     pub value: Option<f64>,
     #[serde(default)]
+    pub direction: Option<String>,
+    #[serde(default)]
     pub raw_representation: bool,
 }
 
@@ -222,6 +240,7 @@ pub(super) fn run(
         "Circle3PointRadiusPick" if f.value.is_none() => ("Circle 3Point", 3),
         "ArcCenterAngle" if f.value.is_some() => ("Arc Center", 2),
         "ArcCenterLength" if f.value.is_some() => ("Arc Center", 2),
+        "ArcCenterEndpoint" if f.value.is_none() => ("Arc Center", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -229,6 +248,7 @@ pub(super) fn run(
     };
     if f.points.len() != expected
         || (matches!(f.primitive.as_str(), "Rectangle" | "MeshPlane") && f.value.is_some())
+        || (f.direction.is_some() && f.primitive != "ArcCenterEndpoint")
     {
         return Err(ProbeError::FixtureInvariant(
             "incorrect primitive arguments",
@@ -308,6 +328,14 @@ pub(super) fn run(
         } else {
             command.push_str(&format!(" {value}"));
         }
+    }
+    if let Some(direction) = &f.direction {
+        if !matches!(direction.as_str(), "Clockwise" | "Counterclockwise") {
+            return Err(ProbeError::FixtureInvariant(
+                "invalid arc endpoint direction",
+            ));
+        }
+        command.push_str(&format!(" Direction={direction}"));
     }
     if f.primitive == "MeshPlane" {
         command.push_str(" XCount=2 YCount=3");

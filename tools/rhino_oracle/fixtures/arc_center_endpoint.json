@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-north",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 6, 3]],
+      "direction": "Clockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-south",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, -2, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-west",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [-3, 2, 3]],
+      "direction": "Clockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-outside-radius",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 10, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-inside-north",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 4, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-inside-south",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 0, 3]],
+      "direction": "Counterclockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-outside-south",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, -6, 3]],
+      "direction": "Clockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-center-endpoint-reversed-plane",
+      "origin": [0, 0, 0],
+      "x_axis": [0, 1, 0],
+      "y_axis": [1, 0, 0],
+      "primitive": "ArcCenterEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 6, 3]],
+      "direction": "Clockwise"
+    }
+  ]
+}

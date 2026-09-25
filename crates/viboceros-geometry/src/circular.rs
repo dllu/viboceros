@@ -244,6 +244,39 @@ pub struct CircularArc3 {
 }
 
 impl CircularArc3 {
+    /// Constructs an arc from a center, start point, and endpoint direction.
+    /// The endpoint is projected into the circle plane, and the positive sweep
+    /// follows `normal`. A return to the start direction makes a full arc.
+    pub fn try_from_center_start_end_on_plane(
+        center: Point3,
+        start: Point3,
+        end: Point3,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let radial = center.vector_to(start)?;
+        let circle = crate::Circle3::try_from_frame(
+            center,
+            radial.length()?,
+            radial.normalized(tolerance)?,
+            normal,
+            tolerance,
+        )?;
+        let endpoint = center.vector_to(end)?;
+        let x = endpoint.dot(circle.x_axis().as_vector())?;
+        let y = endpoint.dot(circle.y_axis().as_vector())?;
+        if x.hypot(y) <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "arc endpoint direction",
+            });
+        }
+        let mut sweep = y.atan2(x);
+        if sweep <= 0.0 {
+            sweep += TAU;
+        }
+        Self::try_from_circle_sweep(circle, sweep)
+    }
+
     /// Constructs the unique oriented arc from `start` through `through` to
     /// `end`. Collinear or tolerance-coincident inputs are rejected.
     pub fn try_from_three_points(
@@ -933,6 +966,52 @@ mod tests {
                     .is_near(arc.point_at(1.0 - normalized).unwrap(), Tolerance::DEFAULT)
             );
         }
+    }
+
+    #[test]
+    fn center_start_end_follows_the_chosen_plane_normal() {
+        let center = point(1.0, 2.0, 3.0);
+        let start = point(5.0, 2.0, 3.0);
+        let clockwise = z_axis().opposite();
+        let long = CircularArc3::try_from_center_start_end_on_plane(
+            center,
+            start,
+            point(1.0, 6.0, 3.0),
+            clockwise,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((long.sweep_radians() - 3.0 * FRAC_PI_2).abs() < 1e-12);
+        assert!(
+            long.end()
+                .unwrap()
+                .is_near(point(1.0, 6.0, 3.0), Tolerance::DEFAULT)
+        );
+        let short = CircularArc3::try_from_center_start_end_on_plane(
+            center,
+            start,
+            point(1.0, -6.0, 10.0),
+            clockwise,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((short.sweep_radians() - FRAC_PI_2).abs() < 1e-12);
+        assert!(
+            short
+                .end()
+                .unwrap()
+                .is_near(point(1.0, -2.0, 3.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            CircularArc3::try_from_center_start_end_on_plane(
+                center,
+                start,
+                center,
+                clockwise,
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
     }
 
     #[test]
