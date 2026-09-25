@@ -80,6 +80,7 @@ impl Command for ExportStlCommand {
 }
 
 pub(super) struct ImportThreeDmCommand;
+pub(super) struct OpenThreeDmCommand;
 
 pub(super) struct ImportStepCommand;
 
@@ -262,7 +263,35 @@ impl Command for ImportThreeDmCommand {
         let path = arguments.join(" ");
         let model =
             viboceros_io::read_3dm_file_in_units(&path, document.units(), document.tolerance())?;
-        import_3dm_model(document, &path, model)
+        import_3dm_model(document, &path, model, false)
+    }
+}
+
+impl Command for OpenThreeDmCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
+    fn name(&self) -> &'static str {
+        "Open3dm"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Open"]
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("Open3dm path"));
+        }
+        let path = arguments.join(" ");
+        let (opened, message, _) = open_3dm_with_named_views(&path)?;
+        *document = opened;
+        Ok(message)
     }
 }
 
@@ -270,7 +299,21 @@ pub fn parse_3dm_path(input: &str) -> Result<&str, CommandError> {
     paths::parse(input, false)?
         .into_iter()
         .next()
-        .ok_or(CommandError::Usage("Import3dm/Export3dm path"))
+        .ok_or(CommandError::Usage("Open3dm/Import3dm/Export3dm path"))
+}
+
+/// Loads a 3DM as a fresh document. The caller swaps it into the session only
+/// after all geometry and metadata have been decoded successfully.
+pub fn open_3dm_with_named_views(
+    path: &str,
+) -> Result<(Document, String, Vec<ThreeDmNamedView>), CommandError> {
+    let mut model = viboceros_io::read_3dm_file_with_model_tolerance(path)?;
+    let views = std::mem::take(&mut model.named_views);
+    let mut document = Document::with_units(model.tolerance, model.units.clone())
+        .map_err(viboceros_document::DocumentError::from)?;
+    let message = import_3dm_model(&mut document, path, model, true)?;
+    document.clear_history()?;
+    Ok((document, message.replacen("Imported", "Opened", 1), views))
 }
 
 pub fn import_3dm_with_named_views(
@@ -281,7 +324,7 @@ pub fn import_3dm_with_named_views(
         viboceros_io::read_3dm_file_in_units(path, document.units(), document.tolerance())?;
     let views = std::mem::take(&mut model.named_views);
     let message = super::run_command_transaction(document, "Import3dm", |document| {
-        import_3dm_model(document, path, model)
+        import_3dm_model(document, path, model, false)
     })?;
     Ok((message, views))
 }
@@ -290,6 +333,7 @@ fn import_3dm_model(
     document: &mut Document,
     path: &str,
     model: ThreeDmModel,
+    reuse_default_layer: bool,
 ) -> Result<String, CommandError> {
     let unsupported = model.unsupported_object_count();
     let layer_count = model.layers.len();
@@ -297,16 +341,24 @@ fn import_3dm_model(
 
     let mut imported_layers = Vec::with_capacity(layer_count);
     let mut layer_names = ImportNames::new(
-        document.layers().map(|layer| layer.name()),
+        document
+            .layers()
+            .filter(|_| !reuse_default_layer)
+            .map(|layer| layer.name()),
         true,
         "Imported Layer",
     );
-    for layer in &model.layers {
+    for (index, layer) in model.layers.iter().enumerate() {
         let name = layer_names.allocate(&layer.name);
-        let id = document.add_layer(
-            name,
-            ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]),
-        )?;
+        let color = ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]);
+        let id = if reuse_default_layer && index == 0 {
+            let id = document.current_layer_id();
+            document.rename_layer(id, name)?;
+            document.set_layer_color(id, color)?;
+            id
+        } else {
+            document.add_layer(name, color)?
+        };
         imported_layers.push(id);
     }
 
@@ -355,6 +407,22 @@ fn import_3dm_model(
     }
     let imported_group_count = imported_groups.len();
 
+    if reuse_default_layer && !imported_layers.is_empty() {
+        if let Some(id) = model
+            .layers
+            .iter()
+            .zip(&imported_layers)
+            .find_map(|(layer, id)| (layer.visible && !layer.locked).then_some(*id))
+        {
+            document.set_current_layer(id)?;
+        } else {
+            // The editor requires an editable current layer. Keep source
+            // states intact and add one when every file layer is restricted.
+            let name = layer_names.allocate("Working Layer");
+            let id = document.add_layer(name, ColorRgb::BLACK)?;
+            document.set_current_layer(id)?;
+        }
+    }
     for (source, id) in model.layers.iter().zip(imported_layers) {
         document.set_layer_visibility(id, source.visible)?;
         document.set_layer_locked(id, source.locked)?;

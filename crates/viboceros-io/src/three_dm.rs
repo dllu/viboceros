@@ -199,6 +199,17 @@ pub fn read_3dm_file(
     decode_model(&handle, tolerance, units, 1.0)
 }
 
+/// Reads a file using its stored model tolerance for B-rep topology matching.
+/// Use this when opening the file as a new document.
+pub fn read_3dm_file_with_model_tolerance(
+    path: impl AsRef<Path>,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let units = decode_units(&handle)?;
+    let tolerance = model_tolerance(&handle)?;
+    decode_model(&handle, tolerance, units, 1.0)
+}
+
 /// Reads coordinates into target units. The supplied tolerance is expressed
 /// in target units; B-rep topology matching uses a converted source tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
@@ -522,12 +533,7 @@ fn decode_units(handle: &ModelHandle) -> Result<LengthUnitSystem, ThreeDmError> 
     crate::three_dm_units::decode(unit_system, meters_per_unit, name)
 }
 
-fn decode_model(
-    handle: &ModelHandle,
-    tolerance: Tolerance,
-    units: LengthUnitSystem,
-    coordinate_scale: f64,
-) -> Result<ThreeDmModel, ThreeDmError> {
+fn model_tolerance(handle: &ModelHandle) -> Result<Tolerance, ThreeDmError> {
     let mut absolute = 0.0;
     let mut relative = 0.0;
     let mut angle = 0.0;
@@ -538,8 +544,17 @@ fn decode_model(
     {
         return Err(ThreeDmError::MalformedBridge("invalid tolerance metadata"));
     }
-    let stored_tolerance = Tolerance::try_new(absolute, relative, angle)
-        .map_err(|_| ThreeDmError::InvalidModel("invalid model tolerance metadata".into()))?;
+    Tolerance::try_new(absolute, relative, angle)
+        .map_err(|_| ThreeDmError::InvalidModel("invalid model tolerance metadata".into()))
+}
+
+fn decode_model(
+    handle: &ModelHandle,
+    tolerance: Tolerance,
+    units: LengthUnitSystem,
+    coordinate_scale: f64,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let stored_tolerance = model_tolerance(handle)?;
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let mut layers = Vec::with_capacity(layer_count.max(1));

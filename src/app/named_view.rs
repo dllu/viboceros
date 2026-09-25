@@ -1,5 +1,36 @@
 use super::*;
+use viboceros_command::named_view::NamedViews;
 use viboceros_command::named_view::{self, NamedViewAction};
+use viboceros_io::ThreeDmNamedView;
+
+fn add_file_views(
+    named_views: &mut NamedViews<NamedViewSnapshot>,
+    views: Vec<ThreeDmNamedView>,
+) -> usize {
+    let mut imported = 0;
+    for source in views {
+        let Ok(snapshot) = Viewport::named_view_from_3dm(&source) else {
+            continue;
+        };
+        let base = source.name.replace('|', " ").trim().to_owned();
+        let base = if base.is_empty() {
+            "Imported View"
+        } else {
+            &base
+        };
+        let mut candidate = base.to_owned();
+        for index in 2.. {
+            if named_views.get(&candidate).is_err() {
+                break;
+            }
+            candidate = format!("{base} ({index})");
+        }
+        if named_views.save(candidate, snapshot).is_ok() {
+            imported += 1;
+        }
+    }
+    imported
+}
 
 impl VibocerosApp {
     pub(super) fn try_run_3dm_command(
@@ -9,33 +40,28 @@ impl VibocerosApp {
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let name = input[..end].trim_start_matches(['_', '-']);
         let tail = &input[end..];
+        if name.eq_ignore_ascii_case("Open3dm") || name.eq_ignore_ascii_case("Open") {
+            return Some((|| {
+                let path = viboceros_command::parse_3dm_path(tail)?;
+                let (document, message, views) =
+                    viboceros_command::open_3dm_with_named_views(path)?;
+                let mut named_views = NamedViews::default();
+                let imported = add_file_views(&mut named_views, views);
+                self.document = document;
+                self.named_views = named_views;
+                self.viewports = Viewport::standard_views();
+                self.active_viewport = 0;
+                self.last_point = None;
+                self.sidebar = DocumentSidebar::default();
+                Ok(format!("{message}; opened {imported} named view(s)"))
+            })());
+        }
         if name.eq_ignore_ascii_case("Import3dm") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let (message, views) =
                     viboceros_command::import_3dm_with_named_views(&mut self.document, path)?;
-                let mut imported = 0;
-                for source in views {
-                    let Ok(snapshot) = Viewport::named_view_from_3dm(&source) else {
-                        continue;
-                    };
-                    let base = source.name.replace('|', " ").trim().to_owned();
-                    let base = if base.is_empty() {
-                        "Imported View"
-                    } else {
-                        &base
-                    };
-                    let mut candidate = base.to_owned();
-                    for index in 2.. {
-                        if self.named_views.get(&candidate).is_err() {
-                            break;
-                        }
-                        candidate = format!("{base} ({index})");
-                    }
-                    if self.named_views.save(candidate, snapshot).is_ok() {
-                        imported += 1;
-                    }
-                }
+                let imported = add_file_views(&mut self.named_views, views);
                 Ok(format!("{message}; imported {imported} named view(s)"))
             })());
         }

@@ -4,6 +4,121 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn open_3dm_replaces_document_and_preserves_file_policy_and_layer_order() {
+    use viboceros_document::ObjectAttributes;
+    use viboceros_geometry::{Brep, Frame3, LengthUnitSystem, Vector3};
+
+    let registry = CommandRegistry::with_builtins();
+    let tolerance = Tolerance::try_new(0.002, 1.0e-12, 1.0e-10).unwrap();
+    let mut source = Document::with_units(tolerance, LengthUnitSystem::Inches).unwrap();
+    let hidden = source.current_layer_id();
+    source.rename_layer(hidden, "Hidden").unwrap();
+    source
+        .set_layer_color(hidden, ColorRgb::new(10, 20, 30))
+        .unwrap();
+    let work = source.add_layer("Work", ColorRgb::new(40, 50, 60)).unwrap();
+    source.set_current_layer(work).unwrap();
+    source.set_layer_visibility(hidden, false).unwrap();
+    let id = source
+        .add_geometry_with_attributes(
+            Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()),
+            ObjectAttributes::on_layer(work).with_name("Pin"),
+        )
+        .unwrap();
+    let group = source.add_empty_group(Some("Parts".into())).unwrap();
+    source.set_object_group_memberships(id, [group]).unwrap();
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    source
+        .add_geometry_with_attributes(
+            Geometry::Brep(Brep::try_box(frame, [[0.0, 2.0]; 3], tolerance).unwrap()),
+            ObjectAttributes::on_layer(work).with_name("Box"),
+        )
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("opened model.3dm");
+    registry
+        .execute(&mut source, &format!("Export3dm \"{}\"", path.display()))
+        .unwrap();
+
+    let mut destination = Document::default();
+    destination
+        .add_geometry(Geometry::Point(Point3::try_new(99.0, 0.0, 0.0).unwrap()))
+        .unwrap();
+    registry
+        .execute(&mut destination, &format!("Open3dm \"{}\"", path.display()))
+        .unwrap();
+    assert_eq!(destination.units(), &LengthUnitSystem::Inches);
+    assert_eq!(destination.tolerance(), tolerance);
+    assert_eq!(
+        destination
+            .layers()
+            .map(|layer| layer.name())
+            .collect::<Vec<_>>(),
+        vec!["Hidden", "Work"]
+    );
+    assert!(!destination.layer_by_name("Hidden").unwrap().is_visible());
+    assert_eq!(
+        destination
+            .layer(destination.current_layer_id())
+            .unwrap()
+            .name(),
+        "Work"
+    );
+    assert_eq!(destination.objects().len(), 2);
+    assert_eq!(
+        destination.objects().next().unwrap().attributes().name(),
+        Some("Pin")
+    );
+    assert!(
+        destination
+            .objects()
+            .any(|object| matches!(object.geometry(), Geometry::Brep(_)))
+    );
+    assert_eq!(destination.groups().len(), 1);
+    assert!(!destination.can_undo());
+    assert!(!destination.can_redo());
+
+    let before = format!("{destination:?}");
+    assert!(
+        registry
+            .execute(&mut destination, "Open3dm /missing/model.3dm")
+            .is_err()
+    );
+    assert_eq!(format!("{destination:?}"), before);
+}
+
+#[test]
+fn open_3dm_keeps_restricted_file_layers_and_adds_an_editable_layer() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("restricted.3dm");
+    let model = ThreeDmModel::new(
+        vec![ThreeDmLayer {
+            name: "Archive".into(),
+            color: [9, 8, 7],
+            visible: false,
+            locked: true,
+        }],
+        Vec::new(),
+        Vec::new(),
+    );
+    write_3dm_file(&path, &model).unwrap();
+    let (document, _, _) = open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
+    let archive = document.layer_by_name("Archive").unwrap();
+    assert!(!archive.is_visible());
+    assert!(archive.is_locked());
+    assert_eq!(document.layers().len(), 2);
+    let current = document.layer(document.current_layer_id()).unwrap();
+    assert!(current.is_visible() && !current.is_locked());
+    assert!(!document.can_undo());
+}
+
+#[test]
 fn attribute_user_text_survives_export_and_import_commands() {
     let registry = CommandRegistry::with_builtins();
     let mut source = Document::default();

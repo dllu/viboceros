@@ -535,6 +535,14 @@ impl Document {
         !self.history.undo.is_empty()
     }
 
+    /// Discards construction edits after a new document has been loaded.
+    pub fn clear_history(&mut self) -> Result<(), DocumentError> {
+        self.ensure_no_transaction()?;
+        self.history = History::default();
+        self.last_changed_objects.clear();
+        Ok(())
+    }
+
     pub fn can_redo(&self) -> bool {
         !self.history.redo.is_empty()
     }

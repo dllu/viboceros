@@ -6,7 +6,8 @@ interface, four viewports, snapping, layers, groups, and undo/redo.
 Attribute and geometry user text can be edited with commands and retained in 3DM
 files; attribute text can also be searched. `NamedView Save`, `NamedView Restore`,
 and `NamedView List` manage camera views, which `Export3dm` and `Import3dm`
-preserve with their construction planes.
+preserve with their construction planes. `Open3dm path` (or `Open path`) replaces the current
+document with a 3DM file; `Import3dm path` merges it into the current document.
 
 This is an early implementation. It supports analytic and NURBS geometry,
 trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL

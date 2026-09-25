@@ -137,3 +137,52 @@ fn named_views_round_trip_through_app_3dm_commands() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn open_3dm_replaces_session_document_and_named_views() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-open-view-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "Point 1,2,3");
+    enter(&mut source, "SetView World Perspective");
+    enter(&mut source, "NamedView Save File camera");
+    enter(&mut source, &format!("Export3dm \"{}\"", path.display()));
+
+    let mut destination = test_app();
+    enter(&mut destination, "Point 99,0,0");
+    enter(&mut destination, "NamedView Save Old camera");
+    enter(&mut destination, &format!("Open \"{}\"", path.display()));
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .contains("opened 1 named view(s)")
+    );
+    assert_eq!(destination.document.objects().len(), 1);
+    assert_eq!(
+        destination.named_views.names().collect::<Vec<_>>(),
+        vec!["File camera"]
+    );
+    assert!(!destination.document.can_undo());
+    assert!(destination.last_point.is_none());
+    enter(&mut destination, "NamedView Restore File camera");
+    assert_eq!(destination.viewports[0].kind(), ViewKind::Perspective);
+    enter(&mut destination, "Open3dm /missing/model.3dm");
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .starts_with("Error:")
+    );
+    assert_eq!(destination.document.objects().len(), 1);
+    assert!(destination.named_views.get("File camera").is_ok());
+    std::fs::remove_file(path).unwrap();
+}
