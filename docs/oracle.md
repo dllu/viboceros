@@ -1005,8 +1005,24 @@ heights. Full cylinder sections now use Rhino's signed `2π` domain and winding.
 The [closed cylinder fixture](../tools/rhino_oracle/fixtures/cylinder_brep_intersect_command.json)
 and [saved observations](../tools/rhino_oracle/observations/cylinder_brep_intersect_command.json)
 also probe a full-domain curved wall inside a three-face solid. Rhino gives its
-closed section a `4π` domain. Trimmed curved faces and open curved components
-still need curve clipping and joining.
+closed circular section a `4π` domain. The
+[steep and oblique section fixture](../tools/rhino_oracle/fixtures/curved_cylinder_brep_intersect_command.json)
+has three more [saved Rhino results](../tools/rhino_oracle/observations/curved_cylinder_brep_intersect_command.json).
+The kernel joins exact rational wall arcs to cap segments for a steep cut and
+keeps an untrimmed oblique cut as an exact rational ellipse. Rhino's Intersect
+command returns fitted cubic curves for these cuts, with sampled boundary
+deviation up to `3.5e-6`; the native curves' sampled deviation is below `1e-14`.
+The [section geometry audit](../tools/rhino_oracle/audit_cylinder_sections.py)
+checks planarity, solid boundary, bounds, and closure independent of curve
+degree and parameterization. Full NURBS definitions differ in these cases.
+Trimmed curved faces still need exact face clipping.
+
+```sh
+python3 tools/rhino_oracle/audit_cylinder_sections.py \
+  tools/rhino_oracle/fixtures/curved_cylinder_brep_intersect_command.json \
+  tools/rhino_oracle/observations/curved_cylinder_brep_intersect_command.json \
+  --max-error 5e-6
+```
 
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):

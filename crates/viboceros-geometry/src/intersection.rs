@@ -16,9 +16,9 @@ mod torus_sphere;
 mod torus_torus;
 
 use crate::{
-    AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
-    NurbsSurface, Plane, Point3, Polyline3, Real, Tolerance, UnitVector3, WeightedPoint3,
-    intersect_three_planes, join_polylines,
+    AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, Curve3, CurveJoinOptions,
+    CurveJoinStyle, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3, Polyline3, Real,
+    Tolerance, UnitVector3, WeightedPoint3, intersect_three_planes, join_curves, join_polylines,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -1164,7 +1164,7 @@ fn intersect_curve_with_planar_surface(
 /// multi-face path handles planar surfaces against planar faces and curved
 /// faces covering their full natural domains. Face-level curves are clipped against
 /// exact trim regions when needed, deduplicated across shared topology, and
-/// joined into maximal linear components. A coincident face must cover its
+/// joined into maximal connected components. A coincident face must cover its
 /// underlying surface's complete natural domain; other coincident trim regions are
 /// rejected explicitly until planar region Boolean intersection is available.
 pub fn surface_brep_intersection_events(
@@ -1251,15 +1251,8 @@ pub fn surface_brep_intersection_events(
         }
     }
 
-    let (curves, points) = finalize_linear_brep_intersection_geometry(
-        points,
-        curves,
-        tolerance,
-        distance_tolerance,
-        GeometryError::UnsupportedSurfaceBrepIntersection {
-            context: "joining non-linear face intersection curves",
-        },
-    )?;
+    let (curves, points) =
+        finalize_brep_intersection_geometry(points, curves, tolerance, distance_tolerance)?;
 
     Ok(curves
         .into_iter()
@@ -1274,7 +1267,7 @@ pub fn surface_brep_intersection_events(
 /// multi-face path handles planar faces and curved faces covering their full
 /// natural domains.
 /// Face-pair results are clipped against trim regions when needed;
-/// then shared-topology duplicates are removed and linear pieces are joined
+/// then shared-topology duplicates are removed and connected pieces are joined
 /// into maximal components. Coincident pairs currently require both faces to
 /// cover their complete natural surface domains, with at most one coincident
 /// area-overlap pair per B-rep pair.
@@ -1444,15 +1437,8 @@ pub fn brep_brep_intersection_events(
         }
     }
 
-    let (curves, points) = finalize_linear_brep_intersection_geometry(
-        points,
-        curves,
-        tolerance,
-        distance_tolerance,
-        GeometryError::UnsupportedBrepBrepIntersection {
-            context: "joining non-linear face intersection curves",
-        },
-    )?;
+    let (curves, points) =
+        finalize_brep_intersection_geometry(points, curves, tolerance, distance_tolerance)?;
     Ok(curves
         .into_iter()
         .map(BrepBrepIntersectionEvent::Curve)
@@ -1486,7 +1472,22 @@ fn capped_cylinder_section_domain(
         || curve.degree() != 2
         || !curve.is_rational()
         || !curve.is_closed()?
-        || face.surface().canonical_cylinder(tolerance)?.is_none()
+    {
+        return Ok(curve);
+    }
+    let Some((frame, _, _)) = face.surface().canonical_cylinder(tolerance)? else {
+        return Ok(curve);
+    };
+    let axis = frame.z_axis().as_vector();
+    let axial_positions = curve
+        .control_points()
+        .iter()
+        .map(|control| frame.origin().vector_to(control.point())?.dot(axis))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let first_position = axial_positions[0];
+    if axial_positions
+        .iter()
+        .any(|&position| (position - first_position).abs() > tolerance.absolute() * 2.0)
     {
         return Ok(curve);
     }
@@ -1504,15 +1505,15 @@ fn capped_cylinder_section_domain(
     curve.try_reparameterized(start..=start + 2.0 * span)
 }
 
-fn finalize_linear_brep_intersection_geometry(
+fn finalize_brep_intersection_geometry(
     points: Vec<Point3>,
     curves: Vec<NurbsCurve>,
     tolerance: Tolerance,
     distance_tolerance: Real,
-    non_linear_error: GeometryError,
 ) -> Result<(Vec<NurbsCurve>, Vec<Point3>), GeometryError> {
     let mut linear_curves = Vec::new();
     let mut closed_curved = Vec::new();
+    let mut open_curved = Vec::new();
     for curve in curves {
         if curve.degree() == 1 && !curve.is_rational() {
             linear_curves.push(curve);
@@ -1521,15 +1522,40 @@ fn finalize_linear_brep_intersection_geometry(
                 closed_curved.push(curve);
             }
         } else {
-            return Err(non_linear_error);
+            if !open_curved.contains(&curve) && !open_curved.contains(&curve.reversed()?) {
+                open_curved.push(curve);
+            }
         }
     }
-    let mut curves = join_brep_linear_curves(
-        linear_curves,
-        tolerance,
-        distance_tolerance,
-        non_linear_error,
-    )?;
+    let linear_curves = join_brep_linear_curves(linear_curves, tolerance, distance_tolerance)?;
+    let mut curves = Vec::new();
+    if open_curved.is_empty() {
+        curves.extend(linear_curves);
+    } else {
+        let mut open = Vec::new();
+        for curve in linear_curves {
+            if curve.is_closed()? {
+                curves.push(curve);
+            } else {
+                open.push(Curve3::NurbsCurve(curve));
+            }
+        }
+        open.extend(open_curved.into_iter().map(Curve3::NurbsCurve));
+        curves.extend(
+            join_curves(
+                &open,
+                CurveJoinOptions {
+                    tolerance: distance_tolerance,
+                    preserve_direction: false,
+                    style: CurveJoinStyle::Batch,
+                },
+                tolerance,
+            )?
+            .into_iter()
+            .map(|component| component.curve().as_ref().to_nurbs())
+            .collect::<Result<Vec<_>, _>>()?,
+        );
+    }
     curves.extend(closed_curved);
     let mut isolated_points = Vec::with_capacity(points.len());
     for point in points {
@@ -1636,14 +1662,12 @@ fn join_brep_linear_curves(
     curves: Vec<NurbsCurve>,
     tolerance: Tolerance,
     distance_tolerance: Real,
-    non_linear_error: GeometryError,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
-    if curves
-        .iter()
-        .any(|curve| curve.degree() != 1 || curve.is_rational())
-    {
-        return Err(non_linear_error);
-    }
+    debug_assert!(
+        curves
+            .iter()
+            .all(|curve| curve.degree() == 1 && !curve.is_rational())
+    );
 
     let mut closed = Vec::new();
     let mut closed_segments = Vec::new();
@@ -3933,6 +3957,81 @@ mod tests {
         assert_eq!(
             brep_brep_intersection_events(&plane_brep, &cylinder, Tolerance::DEFAULT).unwrap(),
             vec![BrepBrepIntersectionEvent::Curve(section.clone())]
+        );
+    }
+
+    #[test]
+    fn steep_plane_section_of_closed_cylinder_joins_curved_wall_and_caps() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = Brep::try_cylinder(frame, 2.0, 0.0, 4.0, Tolerance::DEFAULT).unwrap();
+        let plane = NurbsSurface::try_bilinear([
+            point(-3.0, -3.0, -4.0),
+            point(3.0, -3.0, 8.0),
+            point(3.0, 3.0, 8.0),
+            point(-3.0, 3.0, -4.0),
+        ])
+        .unwrap();
+        let section =
+            surface_brep_intersection_events(&plane, &cylinder, Tolerance::DEFAULT).unwrap();
+        assert_eq!(section.len(), 1, "{section:#?}");
+        let SurfaceBrepIntersectionEvent::Curve(curve) = &section[0] else {
+            panic!("expected one section curve")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert_eq!(curve.degree(), 2);
+        for fraction in 0..=32 {
+            let domain = curve.domain();
+            let parameter = (*domain.start()
+                + fraction as Real / 32.0 * (*domain.end() - *domain.start()))
+            .min(*domain.end());
+            let sample = curve.evaluate(parameter).unwrap();
+            assert!((sample.z() - (2.0 * sample.x() + 2.0)).abs() < 1e-8);
+            let radius = sample.x().hypot(sample.y());
+            assert!(radius <= 2.0 + 1e-8);
+            assert!(sample.z() >= -1e-8 && sample.z() <= 4.0 + 1e-8);
+            if sample.z() > 1e-8 && sample.z() < 4.0 - 1e-8 {
+                assert!((radius - 2.0).abs() < 1e-8);
+            }
+        }
+        let plane_brep = Brep::try_surface_face(plane, Tolerance::DEFAULT).unwrap();
+        let brep_section =
+            brep_brep_intersection_events(&plane_brep, &cylinder, Tolerance::DEFAULT).unwrap();
+        assert_eq!(brep_section.len(), 1, "{brep_section:#?}");
+    }
+
+    #[test]
+    fn oblique_closed_cylinder_section_keeps_ellipse_parameterization() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = Brep::try_cylinder(frame, 2.0, 0.0, 4.0, Tolerance::DEFAULT).unwrap();
+        let plane = NurbsSurface::try_bilinear([
+            point(-3.0, -3.0, 0.5),
+            point(3.0, -3.0, 3.5),
+            point(3.0, 3.0, 3.5),
+            point(-3.0, 3.0, 0.5),
+        ])
+        .unwrap();
+        let expected = surface_surface_intersection_events(
+            &plane,
+            cylinder.faces()[0].surface(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(expected)] = expected.as_slice() else {
+            panic!("expected one ellipse")
+        };
+        assert_eq!(
+            surface_brep_intersection_events(&plane, &cylinder, Tolerance::DEFAULT).unwrap(),
+            vec![SurfaceBrepIntersectionEvent::Curve(expected.clone())]
         );
     }
 
