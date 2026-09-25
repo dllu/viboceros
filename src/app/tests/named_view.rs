@@ -572,6 +572,40 @@ fn open_accepts_more_than_four_saved_model_viewports() {
 }
 
 #[test]
+fn split_viewport_layout_round_trips_through_3dm() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-split-viewport-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "SplitViewportVertical");
+    let expected_positions = source.viewport_positions.clone();
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    let saved = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.viewports.len(), 5);
+    assert_eq!(saved.viewports[4].camera.name, "Top (2)");
+    assert_eq!(
+        saved
+            .viewports
+            .iter()
+            .map(|view| view.position)
+            .collect::<Vec<_>>(),
+        expected_positions
+    );
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports.len(), 5);
+    assert_eq!(opened.viewport_positions, expected_positions);
+    assert_eq!(opened.viewports[4].view_label(), "Top (2)");
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn open_3dm_replaces_session_document_and_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-open-view-{}-{}.3dm",

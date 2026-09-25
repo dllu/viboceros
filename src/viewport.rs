@@ -595,6 +595,17 @@ impl Viewport {
         })
     }
 
+    pub(crate) fn duplicate_for_layout(&self, title: &str) -> Self {
+        let mut duplicate = Self::new(self.kind);
+        duplicate.display_cache = std::rc::Rc::clone(&self.display_cache);
+        duplicate.plane = ConstructionPlaneState::new(self.construction_plane());
+        duplicate.restore_camera(self.camera_snapshot());
+        duplicate.display_mode = self.display_mode;
+        duplicate.grid = self.grid;
+        duplicate.set_view_title(title);
+        duplicate
+    }
+
     /// The preset menu resets the plane explicitly. CPlane edits never change
     /// camera projection, navigation, or geometry display.
     pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {

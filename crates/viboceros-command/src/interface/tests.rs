@@ -604,6 +604,25 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
     state.apply(InterfaceCommand::FourView).unwrap();
     assert_eq!(state.display_modes.len(), 4);
     assert_eq!(state.maximized_viewport, None);
+    for (input, command) in [
+        (
+            "SplitViewportHorizontal",
+            InterfaceCommand::SplitViewportHorizontal,
+        ),
+        (
+            "'_SplitViewportVertical",
+            InterfaceCommand::SplitViewportVertical,
+        ),
+    ] {
+        assert_eq!(parse(input), Some(Ok(command)));
+        let before = state.clone();
+        state.apply(command).unwrap();
+        assert_eq!(state, before);
+    }
+    assert_eq!(
+        parse("SplitViewportVertical extra"),
+        Some(Err(InterfaceError::Usage("SplitViewportVertical")))
+    );
 }
 
 #[test]

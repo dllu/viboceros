@@ -226,6 +226,11 @@ and construction planes when the current layout already has four views. When a
 view is maximized, viewport cycling switches the visible view. Save and Open retain
 the maximized view in 3DM files. See Rhino's
 [MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
+`SplitViewportHorizontal` and `SplitViewportVertical` divide the active
+rectangle into equal parts and copy its camera, CPlane, display mode, and grid
+settings to the new viewport. The new viewport gets a distinct title, and both
+rectangles are saved in 3DM. See Rhino's
+[viewport arrangement commands](https://docs.mcneel.com/rhino/8/help/en-us/commands/viewport_arrangement.htm).
 `ReadViewportsFromFile path.3dm` copies a model's viewport layout and views
 from another model, including display and grid settings. It converts view
 coordinates to the current document's units and keeps its objects and named

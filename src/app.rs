@@ -155,6 +155,7 @@ mod preferences;
 mod radius;
 mod snapping;
 mod toolbar;
+mod viewport_layout;
 mod zoom_target;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 

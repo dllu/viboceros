@@ -101,6 +101,52 @@ fn three_view_layout_has_three_renderable_viewports_and_preserves_input() {
 }
 
 #[test]
+fn split_viewport_commands_partition_the_active_view_and_keep_model_input() {
+    let mut app = test_app();
+    app.viewports[0].display_mode = DisplayMode::Ghosted;
+    enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    let camera = app.viewports[0].camera_snapshot();
+    let plane = app.viewports[0].construction_plane();
+    let grid = app.viewports[0].grid_settings();
+    enter(&mut app, "SplitViewportVertical");
+    assert_eq!(app.viewports.len(), 5);
+    assert_eq!(app.viewport_positions[0], [0.0, 0.25, 0.0, 0.5]);
+    assert_eq!(app.viewport_positions[4], [0.25, 0.5, 0.0, 0.5]);
+    assert_eq!(app.viewports[4].camera_snapshot(), camera);
+    assert_eq!(app.viewports[4].construction_plane(), plane);
+    assert_eq!(app.viewports[4].grid_settings(), grid);
+    assert_eq!(app.viewports[4].display_mode, DisplayMode::Ghosted);
+    assert_eq!(app.viewports[4].view_label(), "Top (2)");
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "SetActiveViewport Top (2)");
+    assert_eq!(app.active_viewport, 4);
+    enter(&mut app, "SplitViewportHorizontal");
+    assert_eq!(app.viewports.len(), 6);
+    assert_eq!(app.viewport_positions[4], [0.25, 0.5, 0.0, 0.25]);
+    assert_eq!(app.viewport_positions[5], [0.25, 0.5, 0.25, 0.5]);
+    assert_eq!(app.viewports[5].view_label(), "Top (3)");
+    assert_eq!(app.active_viewport, 4);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn split_viewport_rejects_an_unrepresentable_midpoint_atomically() {
+    let mut app = test_app();
+    app.viewport_positions[0] = [0.0, f64::from_bits(1), 0.0, 0.5];
+    let positions = app.viewport_positions.clone();
+    enter(&mut app, "SplitViewportVertical");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.viewports.len(), 4);
+    assert_eq!(app.viewport_positions, positions);
+    assert_eq!(app.active_viewport, 0);
+}
+
+#[test]
 fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() {
     let mut app = test_app();
     enter(&mut app, "Line");

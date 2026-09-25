@@ -14,6 +14,7 @@ working viewport cameras, titles, construction planes, display modes, and grid
 settings. Open restores the views, layout, active viewport, maximized state,
 and active layer. `ReadViewportsFromFile path.3dm` copies views and layout into
 the current document. `3View`, `4View`, and `MaxViewport` change the layout;
+`SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
 selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both
 also accept a viewport number.
