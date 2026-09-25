@@ -875,15 +875,19 @@ impl InteractiveCommand {
                 }
             },
             Self::Arc { points } => match points {
-                [None, _] => "Arc: pick the start point in the viewport (Esc to cancel)",
-                [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
-                [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
+                [None, _] => "Arc StartPoint ThroughPoint: pick the start point (Esc to cancel)",
+                [Some(_), None] => {
+                    "Arc StartPoint ThroughPoint: pick a point on the arc (Esc to cancel)"
+                }
+                [Some(_), Some(_)] => {
+                    "Arc StartPoint ThroughPoint: pick the endpoint (Esc to cancel)"
+                }
             },
             Self::ArcStartPoint { start: None, .. } => {
                 "Arc StartPoint: pick the start point (Esc to cancel)"
             }
             Self::ArcStartPoint { end: None, .. } => {
-                "Arc StartPoint: pick the endpoint or choose Direction (Esc to cancel)"
+                "Arc StartPoint: pick the endpoint or choose Direction/ThroughPoint/Center (Esc to cancel)"
             }
             Self::ArcStartPoint { .. } => "Arc StartPoint: pick a point on the arc (Esc to cancel)",
             Self::ArcStartDirection { start: None, .. } => {
@@ -906,7 +910,7 @@ impl InteractiveCommand {
                 "Arc StartPoint Center Length: enter a signed arc length (Esc to cancel)"
             }
             Self::ArcCenter { center: None, .. } => {
-                "Arc Center: pick the center in the viewport (Esc to cancel)"
+                "Arc: pick the center or choose StartPoint (Esc to cancel)"
             }
             Self::ArcCenter { start: None, .. } => {
                 "Arc Center: pick the start point or choose Midpoint (Esc to cancel)"
@@ -2017,11 +2021,17 @@ impl VibocerosApp {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
             return false;
         }
-        if self.active_command == Some(InteractiveCommand::Arc { points: [None; 2] })
-            && input
-                .trim()
-                .trim_start_matches('_')
-                .eq_ignore_ascii_case("Center")
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+                ..
+            })
+        ) && input
+            .trim()
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("Center")
         {
             let command = InteractiveCommand::ArcCenter {
                 center: None,
@@ -2033,11 +2043,17 @@ impl VibocerosApp {
             self.push_log(command.prompt().to_owned());
             return true;
         }
-        if self.active_command == Some(InteractiveCommand::Arc { points: [None; 2] })
-            && input
-                .trim()
-                .trim_start_matches('_')
-                .eq_ignore_ascii_case("StartPoint")
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+                ..
+            })
+        ) && input
+            .trim()
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("StartPoint")
         {
             let command = InteractiveCommand::ArcStartPoint {
                 start: None,
@@ -2060,6 +2076,23 @@ impl VibocerosApp {
             let command = InteractiveCommand::ArcStartDirection {
                 start: Some(start),
                 tangent: None,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        if let Some(InteractiveCommand::ArcStartPoint {
+            start: Some(start),
+            end: None,
+        }) = self.active_command
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("ThroughPoint")
+        {
+            let command = InteractiveCommand::Arc {
+                points: [Some(start), None],
             };
             self.active_command = Some(command);
             self.command_input.clear();
@@ -4139,6 +4172,16 @@ impl VibocerosApp {
                 .eq_ignore_ascii_case("StartPoint")
             && arguments[1]
                 .trim_start_matches('_')
+                .eq_ignore_ascii_case("ThroughPoint")
+        {
+            InteractiveCommand::Arc { points: [None; 2] }
+        } else if matches!(normalized.as_str(), "arc" | "a")
+            && arguments.len() == 2
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("StartPoint")
+            && arguments[1]
+                .trim_start_matches('_')
                 .eq_ignore_ascii_case("Center")
         {
             InteractiveCommand::ArcStartCenter {
@@ -4171,7 +4214,11 @@ impl VibocerosApp {
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
-                "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
+                "arc" | "a" => InteractiveCommand::ArcCenter {
+                    center: None,
+                    start: None,
+                    clockwise: true,
+                },
                 "ellipse" | "ell" => InteractiveCommand::Ellipse {
                     center: None,
                     first_axis: None,
@@ -5294,7 +5341,7 @@ impl VibocerosApp {
                     }
                     self.active_command = None;
                     self.execute_command(&format!(
-                        "Arc {} {} {}",
+                        "Arc StartPoint {} ThroughPoint {} {}",
                         format_model_point(start),
                         format_model_point(through),
                         format_model_point(point)
@@ -8485,7 +8532,7 @@ mod tests {
         ));
         assert_eq!(app.document.undo_label(), Some("Circle"));
 
-        assert!(app.try_start_interactive_command("A"));
+        assert!(app.try_start_interactive_command("Arc StartPoint ThroughPoint"));
         app.accept_drafting_point(point(5.0, 0.0, 0.0));
         app.accept_drafting_point(point(6.0, 0.0, 0.0));
         app.accept_drafting_point(point(7.0, 0.0, 0.0));
@@ -8509,6 +8556,14 @@ mod tests {
     fn interactive_arc_center_angle_accepts_option_and_reprompts_on_bad_input() {
         let mut app = test_app();
         assert!(app.try_start_interactive_command("Arc"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+                clockwise: true
+            })
+        );
         assert!(app.try_continue_arc("Center"));
         let center = point(1.0, 2.0, 3.0);
         let start = point(5.0, 2.0, 3.0);
@@ -8557,6 +8612,30 @@ mod tests {
             panic!("expected full arc")
         };
         assert!((full.sweep_radians() - std::f64::consts::TAU).abs() < 1e-12);
+    }
+
+    #[test]
+    fn bare_arc_picks_center_first_and_start_point_can_choose_through_point() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("A"));
+        assert!(app.accept_drafting_point(point(1.0, 2.0, 3.0)));
+        assert!(app.accept_drafting_point(point(5.0, 2.0, 3.0)));
+        assert!(app.accept_drafting_point(point(1.0, 6.0, 3.0)));
+        let Geometry::Arc(arc) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected center-first arc")
+        };
+        assert!((arc.sweep_radians().to_degrees() - 270.0).abs() < 1e-12);
+
+        assert!(app.try_start_interactive_command("Arc"));
+        assert!(app.try_continue_arc("StartPoint"));
+        assert!(app.accept_drafting_point(point(5.0, 0.0, 0.0)));
+        assert!(app.try_continue_arc("ThroughPoint"));
+        assert!(app.accept_drafting_point(point(0.0, 5.0, 0.0)));
+        assert!(app.accept_drafting_point(point(-5.0, 0.0, 0.0)));
+        let Geometry::Arc(through) = app.document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected through-point arc")
+        };
+        assert!((through.sweep_radians().to_degrees() - 180.0).abs() < 1e-12);
     }
 
     #[test]

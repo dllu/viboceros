@@ -540,6 +540,13 @@ compares six actual `_Arc _Center` commands with
 [Rhino 8 sampled curves](arc-center-angle-rhino-reference.json), including a
 major arc, capped sweep, negative sweep, and rotated construction plane. Native
 samples and domains agree within `1e-10`.
+The [bare Arc fixture](../tools/rhino_oracle/fixtures/arc_default.json) confirms
+Rhino's center-first default through three typed angles and two actual endpoint
+clicks. The [StartPoint ThroughPoint fixture](../tools/rhino_oracle/fixtures/arc_start_through_point.json)
+checks the explicit three-point path, including a major and tilted arc.
+[Default](arc-default-rhino-reference.json) and
+[through-point](arc-start-through-point-rhino-reference.json) sampled curves and
+domains match native results within `1e-10` when endpoint sweep is explicit.
 The [Arc Center Length fixture](../tools/rhino_oracle/fixtures/arc_center_length.json)
 compares five signed-length `_Arc _Center` commands against
 [live Rhino 8 results](arc-center-length-rhino-reference.json), including a

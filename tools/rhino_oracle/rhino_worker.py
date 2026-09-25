@@ -3410,9 +3410,13 @@ def _plane_primitive_script(operation):
         expected = 2
     elif primitive in ("ArcMidpointAngle", "ArcMidpointLength") and value is not None:
         expected = 2
+    elif primitive == "ArcDefaultAngle" and value is not None:
+        expected = 2
     elif primitive == "ArcMidpointEndpoint" and value is None:
         expected = 3
-    elif primitive in ("ArcCenterEndpoint", "ArcStartCenterEndpoint") and value is None:
+    elif primitive in ("ArcCenterEndpoint", "ArcStartCenterEndpoint", "ArcDefaultEndpoint") and value is None:
+        expected = 3
+    elif primitive == "ArcStartThroughPoint" and value is None:
         expected = 3
     elif primitive == "ArcStartDirection" and value is None:
         expected = 3
@@ -3437,6 +3441,9 @@ def _plane_primitive_script(operation):
               "ArcMidpointAngle": "_Arc _Center ",
               "ArcMidpointLength": "_Arc _Center ",
               "ArcMidpointEndpoint": "_Arc _Center ",
+              "ArcDefaultAngle": "_Arc ",
+              "ArcDefaultEndpoint": "_Arc ",
+              "ArcStartThroughPoint": "_Arc _StartPoint ",
               "ArcStartDirection": "_Arc _StartPoint ",
               "CircleVertical": "_Circle _Vertical ",
               "CircleOrientation": "_Circle ",
@@ -3467,6 +3474,21 @@ def _plane_primitive_script(operation):
         if primitive == "ArcCenterLength":
             script += " _Length"
         script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcDefaultAngle":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcDefaultEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Pause"
+        return script
+    if primitive == "ArcStartThroughPoint":
+        script += "w" + _command_point(points[0])
+        script += " _ThroughPoint w" + _command_point(points[1])
+        script += " w" + _command_point(points[2])
         return script
     if primitive in ("ArcStartCenterAngle", "ArcStartCenterLength"):
         script += "w" + _command_point(points[0])
@@ -3921,7 +3943,7 @@ def _in_construction_plane(operation, script, record):
     view = document.Views.ActiveView
     viewport = view.ActiveViewport
     original_plane = viewport.ConstructionPlane()
-    endpoint_click = operation.get("primitive") in ("ArcCenterEndpoint", "ArcStartCenterEndpoint", "ArcMidpointEndpoint")
+    endpoint_click = operation.get("primitive") in ("ArcCenterEndpoint", "ArcStartCenterEndpoint", "ArcMidpointEndpoint", "ArcDefaultEndpoint")
     original_projection = Rhino.DocObjects.ViewportInfo(viewport) if endpoint_click else None
     original_name = viewport.Name if endpoint_click else None
     original_target = viewport.CameraTarget if endpoint_click else None

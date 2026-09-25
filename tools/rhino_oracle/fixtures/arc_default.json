@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "arc-default-quarter",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcDefaultAngle",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": 90
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-default-negative",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcDefaultAngle",
+      "points": [[1, 2, 3], [5, 2, 3]],
+      "value": -90
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-default-oriented",
+      "origin": [1, 2, 3],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "primitive": "ArcDefaultAngle",
+      "points": [[2, 3, 4], [2, 3, 7]],
+      "value": 135
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-default-north-end",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcDefaultEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 6, 3]],
+      "direction": "Clockwise"
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-default-outside-end",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcDefaultEndpoint",
+      "points": [[1, 2, 3], [5, 2, 3], [1, 10, 3]],
+      "direction": "Counterclockwise"
+    }
+  ]
+}

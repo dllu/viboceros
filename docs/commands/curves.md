@@ -13,6 +13,12 @@ through 11, and lowers the degree when too few controls are supplied.
 `Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
 
 Circle, Polygon, and Rectangle use the active [construction plane](../construction-planes.md).
+Bare `Arc` starts with the center, then the start point, then an endpoint or
+angle. `Arc center start angle-degrees` and `Arc center start End=point` are
+the corresponding direct command forms. Choose `StartPoint` at the first
+viewport prompt to pick a start before the endpoint. The
+[five live default Arc records](../arc-default-rhino-reference.json) match
+sampled curves and domains within `1e-10` when endpoint direction is explicit.
 `Arc Center center start angle-degrees` creates a circular arc from the center
 and start point, sweeping about the active construction-plane normal. Enter
 `Arc Center` to pick the center and start, then type the angle; `Center` is also
@@ -49,6 +55,10 @@ boundaries and both endpoint branches. Native sampled curves and domains
 match within `1e-10` when endpoint direction is specified.
 `Arc StartPoint start end through` places the endpoint before the point on the
 arc. Choose `StartPoint` at Arc's first prompt for the same viewport sequence.
+Choose `ThroughPoint` after the start pick to place the through point before
+the endpoint, or enter `Arc StartPoint start ThroughPoint through end`. Three
+[live Rhino through-point records](../arc-start-through-point-rhino-reference.json)
+cover a semicircle, a major arc, and a tilted arc within `1e-10`.
 At the second prompt, choose `Direction` instead of picking the endpoint to
 specify a tangent direction point, then pick the endpoint. The direct command
 form is `Arc StartPoint start Direction=tangent-point end`. The tangent and

@@ -69,7 +69,7 @@ Line 0,0,0 10,5,0
 Circle 0,0,0 5
 Circle 2Point -4,0,0 4,0,0
 Circle 3Point 4,0,0 0,4,0 -4,0,0
-Arc 5,0,0 0,5,0 -5,0,0
+Arc StartPoint 5,0,0 ThroughPoint 0,5,0 -5,0,0
 Ellipse 0,0 6,0 0,3
 Polyline 0,0 4,0 4,3 7,3
 Rectangle 0,0 8,5

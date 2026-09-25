@@ -141,6 +141,20 @@ mod tests {
     }
 
     #[test]
+    fn bare_arc_and_start_through_point_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_default.json"),
+            include_str!("../../../docs/arc-default-rhino-reference.json"),
+            5,
+        );
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_start_through_point.json"),
+            include_str!("../../../docs/arc-start-through-point-rhino-reference.json"),
+            3,
+        );
+    }
+
+    #[test]
     fn three_point_circle_radius_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
@@ -275,6 +289,9 @@ pub(super) fn run(
         "ArcStartCenterEndpoint" if f.value.is_none() => ("Arc StartPoint", 3),
         "ArcMidpointAngle" | "ArcMidpointLength" if f.value.is_some() => ("Arc Center", 2),
         "ArcMidpointEndpoint" if f.value.is_none() => ("Arc Center", 3),
+        "ArcDefaultAngle" if f.value.is_some() => ("Arc", 2),
+        "ArcDefaultEndpoint" if f.value.is_none() => ("Arc", 3),
+        "ArcStartThroughPoint" if f.value.is_none() => ("Arc StartPoint", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -285,7 +302,10 @@ pub(super) fn run(
         || (f.direction.is_some()
             && !matches!(
                 f.primitive.as_str(),
-                "ArcCenterEndpoint" | "ArcStartCenterEndpoint" | "ArcMidpointEndpoint"
+                "ArcCenterEndpoint"
+                    | "ArcStartCenterEndpoint"
+                    | "ArcMidpointEndpoint"
+                    | "ArcDefaultEndpoint"
             ))
     {
         return Err(ProbeError::FixtureInvariant(
@@ -320,6 +340,8 @@ pub(super) fn run(
         }
         if index == 1 && f.primitive == "ArcStartDirection" {
             command.push_str(&format!(" Direction={},{},{}", p[0], p[1], p[2]));
+        } else if index == 1 && f.primitive == "ArcStartThroughPoint" {
+            command.push_str(&format!(" ThroughPoint {},{},{}", p[0], p[1], p[2]));
         } else if index == 1 && f.primitive.starts_with("ArcStartCenter") {
             command.push_str(&format!(" Center={},{},{}", p[0], p[1], p[2]));
         } else if index == 1 && f.primitive.starts_with("ArcMidpoint") {
@@ -327,7 +349,7 @@ pub(super) fn run(
         } else if index == 2
             && matches!(
                 f.primitive.as_str(),
-                "ArcStartCenterEndpoint" | "ArcMidpointEndpoint"
+                "ArcStartCenterEndpoint" | "ArcMidpointEndpoint" | "ArcDefaultEndpoint"
             )
         {
             command.push_str(&format!(" End={},{},{}", p[0], p[1], p[2]));

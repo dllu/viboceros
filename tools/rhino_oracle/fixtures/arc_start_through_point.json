@@ -1,0 +1,33 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-through-semicircle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartThroughPoint",
+      "points": [[5, 0, 0], [0, 5, 0], [-5, 0, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-through-major",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartThroughPoint",
+      "points": [[5, 0, 0], [0, -5, 0], [0, 5, 0]]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "arc-start-through-tilted",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "primitive": "ArcStartThroughPoint",
+      "points": [[0, 0, 0], [1, 1, 1], [2, 0, 0]]
+    }
+  ]
+}

@@ -1373,6 +1373,19 @@ impl Command for ArcCommand {
                 reordered.extend_from_slice(&remaining[1 + used..]);
                 return self.run_in_context(document, &reordered, context);
             }
+            if remaining
+                .first()
+                .is_some_and(|token| option_name_eq(token, "ThroughPoint"))
+            {
+                let (through, used) = parse_point(&remaining[1..])?;
+                let (end, end_used) = parse_point(&remaining[1 + used..])?;
+                require_consumed(&remaining[1..], used + end_used, ARC_START_USAGE)?;
+                let arc =
+                    CircularArc3::try_from_three_points(start, through, end, document.tolerance())?;
+                let sweep_degrees = arc.sweep_radians().to_degrees();
+                let id = document.add_geometry(Geometry::Arc(arc))?;
+                return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
+            }
             let arc = if let Some((name, value)) =
                 remaining.first().and_then(|token| token.split_once('='))
                 && option_name_eq(name, "Direction")
@@ -1520,23 +1533,15 @@ impl Command for ArcCommand {
             let id = document.add_geometry(Geometry::Arc(arc))?;
             return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
         }
-        let (start, start_consumed) = parse_point(arguments)?;
-        let (through, through_consumed) = parse_point(&arguments[start_consumed..])?;
-        let (end, end_consumed) = parse_point(&arguments[start_consumed + through_consumed..])?;
-        require_consumed(
-            arguments,
-            start_consumed + through_consumed + end_consumed,
-            "Arc start point-on-arc end",
-        )?;
-        let arc = CircularArc3::try_from_three_points(start, through, end, document.tolerance())?;
-        let sweep_degrees = arc.sweep_radians().to_degrees();
-        let id = document.add_geometry(Geometry::Arc(arc))?;
-        Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
+        let mut centered = Vec::with_capacity(arguments.len() + 1);
+        centered.push("Center");
+        centered.extend_from_slice(arguments);
+        self.run_in_context(document, &centered, context)
     }
 }
 
 const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
-const ARC_START_USAGE: &str = "Arc StartPoint start end through | start Direction=tangent-point end | start Center=center angle|Length=distance|End=point";
+const ARC_START_USAGE: &str = "Arc StartPoint start end through | start ThroughPoint through end | start Direction=tangent-point end | start Center=center angle|Length=distance|End=point";
 const ARC_MIDPOINT_USAGE: &str = "Arc Center center Midpoint midpoint end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
 
 fn run_arc_midpoint(
@@ -18328,7 +18333,10 @@ mod tests {
         let mut document = Document::default();
         registry.execute(&mut document, "Circle 1,2,3 5").unwrap();
         registry
-            .execute(&mut document, "Arc 1,0,0 0,-1,0 -1,0,0")
+            .execute(
+                &mut document,
+                "Arc StartPoint 1,0,0 ThroughPoint 0,-1,0 -1,0,0",
+            )
             .unwrap();
 
         let mut objects = document.objects();
@@ -18354,7 +18362,11 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 1);
 
-        assert!(registry.execute(&mut document, "Arc 0,0 1,0 2,0").is_err());
+        assert!(
+            registry
+                .execute(&mut document, "Arc StartPoint 0,0 ThroughPoint 1,0 2,0")
+                .is_err()
+        );
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Circle"));
     }
@@ -45102,7 +45114,10 @@ mod tests {
         registry.execute(&mut source, "Line 0,0,0 4,0,0").unwrap();
         registry.execute(&mut source, "Circle 6,0,0 2").unwrap();
         registry
-            .execute(&mut source, "Arc 9,0,0 10,1,0 11,0,0")
+            .execute(
+                &mut source,
+                "Arc StartPoint 9,0,0 ThroughPoint 10,1,0 11,0,0",
+            )
             .unwrap();
         registry
             .execute(&mut source, "Ellipse 15,0,0 18,0,0 16,2,0")
