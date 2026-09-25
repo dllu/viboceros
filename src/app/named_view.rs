@@ -87,6 +87,7 @@ impl VibocerosApp {
         for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
             if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
                 viewport.restore_named_view(snapshot);
+                viewport.set_view_title(&source.camera.name);
             }
             viewport.display_mode = match source.display_mode {
                 ThreeDmDisplayMode::Wireframe => DisplayMode::Wireframe,
@@ -308,9 +309,14 @@ impl VibocerosApp {
                 Ok(format!("Updated named view '{name}'"))
             }
             NamedViewAction::Restore(name) => {
-                let snapshot = *self.named_views.get(&name)?;
+                let (saved_name, snapshot) = self.named_views.get_entry(&name)?;
+                let saved_name = saved_name.to_owned();
+                let snapshot = *snapshot;
                 self.viewports[self.active_viewport].restore_named_view(snapshot);
-                Ok(format!("Restored named view '{name}' in active viewport"))
+                self.viewports[self.active_viewport].set_view_title(&saved_name);
+                Ok(format!(
+                    "Restored named view '{saved_name}' in active viewport"
+                ))
             }
             NamedViewAction::Delete(name) => {
                 self.named_views.delete(&name)?;

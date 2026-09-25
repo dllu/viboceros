@@ -46,7 +46,11 @@ impl VibocerosApp {
                 let mut preset_picked = false;
                 egui::ComboBox::from_id_salt("view_kind")
                     .width(95.0)
-                    .selected_text(viewport.view_label())
+                    .selected_text(format!(
+                        "{}{}",
+                        viewport.view_label(),
+                        if viewport.title_modified() { "*" } else { "" }
+                    ))
                     .show_ui(ui, |ui| {
                         for choice in [
                             ViewKind::Top,

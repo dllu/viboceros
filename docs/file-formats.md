@@ -50,7 +50,9 @@ including projection, camera, target, CPlane, and frustum. Unit-converted reads
 scale their positions and frustum distances along with model geometry. The GUI's
 session `NamedView` list is included in `Import3dm` and `Export3dm`; Save and
 Open also preserve current model viewports, including their grid and snap settings
-and the active viewport. Unit-converted reads scale grid and snap spacing with
+and the active viewport. Saved viewport titles are displayed and used by
+`SetActiveViewport` and `SetMaximizedViewport` after Open or
+`ReadViewportsFromFile`. Unit-converted reads scale grid and snap spacing with
 the camera and construction plane. Open maps four saved window positions into
 the matching 2×2 slots and renders their normalized rectangles, preserving
 unequal splits. Missing or invalid rectangles use the standard four-view grid.

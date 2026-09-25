@@ -128,8 +128,12 @@ impl<S> NamedViews<S> {
     }
 
     pub fn get(&self, name: &str) -> Result<&S, NamedViewError> {
+        self.get_entry(name).map(|(_, snapshot)| snapshot)
+    }
+
+    pub fn get_entry(&self, name: &str) -> Result<(&str, &S), NamedViewError> {
         self.index(name)
-            .map(|i| &self.entries[i].snapshot)
+            .map(|i| (self.entries[i].name.as_str(), &self.entries[i].snapshot))
             .ok_or_else(|| NamedViewError::Missing(name.to_owned()))
     }
 

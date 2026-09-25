@@ -20,13 +20,16 @@ fn named_view_restores_camera_projection_and_cplane_in_another_viewport() {
     let other_before = app.viewports[1].camera_snapshot();
     app.active_viewport = 1;
     app.viewports[1].display_mode = DisplayMode::Ghosted;
-    enter(&mut app, "NamedView Restore Upper left");
+    enter(&mut app, "NamedView Restore upper LEFT");
     assert_eq!(app.viewports[1].named_view_snapshot(), saved);
+    assert_eq!(app.viewports[1].view_label(), "Upper left");
+    assert!(!app.viewports[1].title_modified());
     assert_eq!(app.viewports[1].display_mode, DisplayMode::Ghosted);
     assert_eq!(app.viewports[0].named_view_snapshot(), saved);
     assert_eq!(app.document.undo_label(), None);
     assert!(app.viewports[1].undo_view());
     assert_eq!(app.viewports[1].camera_snapshot(), other_before);
+    assert!(app.viewports[1].title_modified());
 }
 
 #[test]
@@ -392,6 +395,69 @@ fn read_viewports_from_file_preserves_document_and_converts_units() {
     assert_eq!(destination.three_dm_viewports().unwrap(), views_before);
     std::fs::remove_file(empty_path).unwrap();
     std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn file_viewport_titles_survive_open_read_and_export() {
+    let directory = std::env::temp_dir().join(format!(
+        "viboceros-viewport-titles-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let input = directory.join("input.3dm");
+    let output = directory.join("output.3dm");
+    let mut source = test_app();
+    enter(&mut source, &format!("Export3dm \"{}\"", input.display()));
+    let mut model = viboceros_io::read_3dm_file(&input, Tolerance::DEFAULT).unwrap();
+    let titles = [
+        "Studio",
+        "Oblique Review",
+        "North Elevation",
+        "South Detail",
+    ];
+    for (viewport, title) in model.viewports.iter_mut().zip(titles) {
+        viewport.camera.name = title.to_owned();
+    }
+    viboceros_io::write_3dm_file(&input, &model).unwrap();
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", input.display()));
+    assert_eq!(
+        opened.viewports.each_ref().map(Viewport::view_label),
+        titles
+    );
+    enter(&mut opened, "SetActiveViewport \"north elevation\"");
+    assert_eq!(opened.active_viewport, 2);
+    enter(&mut opened, &format!("Export3dm \"{}\"", output.display()));
+    let exported = viboceros_io::read_3dm_file(&output, Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        exported
+            .viewports
+            .iter()
+            .map(|viewport| viewport.camera.name.as_str())
+            .collect::<Vec<_>>(),
+        titles
+    );
+
+    let mut read = test_app();
+    enter(
+        &mut read,
+        &format!("ReadViewportsFromFile \"{}\"", input.display()),
+    );
+    assert_eq!(read.viewports.each_ref().map(Viewport::view_label), titles);
+    enter(&mut read, "SetMaximizedViewport South Detail");
+    assert_eq!(read.active_viewport, 3);
+    assert_eq!(read.maximized_viewport, Some(3));
+    assert!(!read.viewports[3].title_modified());
+    enter(&mut read, "SetView World Top");
+    assert_eq!(read.viewports[3].view_label(), "South Detail");
+    assert!(read.viewports[3].title_modified());
+
+    std::fs::remove_dir_all(directory).unwrap();
 }
 
 #[test]

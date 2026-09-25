@@ -371,6 +371,8 @@ pub struct Viewport {
     #[cfg(test)]
     edge_snap_queries: std::cell::Cell<usize>,
     kind: ViewKind,
+    title: Option<String>,
+    title_reference: Option<(CameraSnapshot, Frame3)>,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
@@ -410,6 +412,8 @@ impl Viewport {
             #[cfg(test)]
             edge_snap_queries: Default::default(),
             kind,
+            title: None,
+            title_reference: None,
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
             cplane_direction: None,
@@ -554,7 +558,10 @@ impl Viewport {
         self.kind
     }
 
-    pub(crate) fn view_label(&self) -> &'static str {
+    pub(crate) fn view_label(&self) -> &str {
+        if let Some(title) = &self.title {
+            return title;
+        }
         match (self.kind, self.cplane_direction) {
             (ViewKind::Plan, Some(WorldPlane::Top)) => "CPlane Top",
             (ViewKind::Plan, Some(WorldPlane::Bottom)) => "CPlane Bottom",
@@ -570,6 +577,22 @@ impl Viewport {
             (ViewKind::Perspective, Some(WorldPlane::Left)) => "CPlane Left (Perspective)",
             _ => self.kind.label(),
         }
+    }
+
+    pub(crate) fn set_view_title(&mut self, title: &str) {
+        if title.trim().is_empty() {
+            self.title = None;
+            self.title_reference = None;
+        } else {
+            self.title = Some(title.to_owned());
+            self.title_reference = Some((self.camera_snapshot(), self.construction_plane()));
+        }
+    }
+
+    pub(crate) fn title_modified(&self) -> bool {
+        self.title_reference.is_some_and(|(camera, plane)| {
+            camera != self.camera_snapshot() || plane != self.construction_plane()
+        })
     }
 
     /// The preset menu resets the plane explicitly. CPlane edits never change
@@ -1203,8 +1226,9 @@ impl Viewport {
             rect.left_top() + Vec2::new(10.0, 8.0),
             Align2::LEFT_TOP,
             format!(
-                "{} · {} · {} object(s) · {} selected",
+                "{}{} · {} · {} object(s) · {} selected",
                 self.view_label(),
+                if self.title_modified() { "*" } else { "" },
                 self.display_mode.label(),
                 document.objects().len(),
                 document.selected_object_count(),

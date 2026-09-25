@@ -10,7 +10,7 @@ preserve with their construction planes. `Open3dm path` (or `Open path`) replace
 the current document; `Import3dm path` merges a 3DM into it.
 `SaveAs path.3dm` names the current file; `Save` writes later changes to it and
 keeps the previous version as a `.3dmbak` file. Save and export preserve the four
-working viewport cameras, construction planes, display modes, and grid settings;
+working viewport cameras, titles, construction planes, display modes, and grid settings;
 Open restores them, their saved layout, the active viewport, its maximized state,
 and the active layer.
 `ReadViewportsFromFile path.3dm` loads the four saved model views and layout
