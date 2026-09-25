@@ -26,8 +26,12 @@ retains a difference: Rhino trims a straight cubic to a roughly 1e-6-unit
 segment when its closest point is the far endpoint; native closest-point search
 returns the endpoint exactly. Multi-span reference curvature matching with
 preserved far tangents remains unimplemented natively. The
+[multi-span tangency fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_tangency.json)
+adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_tangency.json)
+for cubic and quadratic two-span sources, opposite-end preservation, and
+reversed picks. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-retains two-span examples for later implementation.
+retains two-span position and curvature examples for later implementation.
 
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded

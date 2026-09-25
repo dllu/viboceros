@@ -389,4 +389,67 @@ mod tests {
             ));
         }
     }
+
+    #[test]
+    fn multispan_tangency_edits_selected_controls_without_changing_knots() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = NurbsCurve::try_new(
+            3,
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [2.0, 1.0, 0.0],
+                [3.0, 1.0, 0.0],
+                [4.0, 0.0, 0.0],
+            ]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let knots = source.knots().to_vec();
+        let source_id = document.add_geometry(Geometry::NurbsCurve(source)).unwrap();
+        let reference_id = document
+            .add_geometry(Geometry::Arc(
+                CircularArc3::try_from_three_points(
+                    Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 2.0, 0.0).unwrap(),
+                    Point3::try_new(6.0, 1.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, reference_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Match Continuity=Tangency PreserveOtherEnd=Curvature Pick1=0,0,0 Pick2=4,1,0",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(matched) = document.object(source_id).unwrap().geometry() else {
+            panic!("matched curve is NURBS");
+        };
+        assert_eq!(matched.knots(), knots);
+        assert_eq!(
+            matched.control_points()[0].point().to_array(),
+            [4.0, 1.0, 0.0]
+        );
+        assert!((matched.control_points()[1].point().x() - 4.0).abs() < 1e-12);
+        assert_eq!(
+            matched.control_points()[4].point().to_array(),
+            [4.0, 0.0, 0.0]
+        );
+        document.undo().unwrap();
+        let Geometry::NurbsCurve(restored) = document.object(source_id).unwrap().geometry() else {
+            panic!("restored curve is NURBS");
+        };
+        assert_eq!(
+            restored.control_points()[0].point().to_array(),
+            [0.0, 0.0, 0.0]
+        );
+    }
 }

@@ -57,8 +57,15 @@ pub fn try_match_curve_end(
     }
     // Two selected starts (or two selected ends) must point in opposite
     // natural directions at the join; unlike ends point the same way.
+    let original = source.as_ref().to_nurbs()?;
+    let source_single_span = original.spans().count() == 1;
+    if !source_single_span && continuity != CurveBlendContinuity::Tangency {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match multi-span source currently supports tangency",
+        });
+    }
     let matched = match_end_to_target(
-        &source.as_ref().to_nurbs()?,
+        &original,
         source_at_end,
         MatchTarget {
             point: sample.point(),
@@ -69,7 +76,7 @@ pub fn try_match_curve_end(
         },
         continuity,
         preserve,
-        true,
+        source_single_span,
     )?;
     require_continuity(
         &matched,
@@ -285,6 +292,13 @@ fn match_end_to_target(
     }
     let matched_controls = continuity_control_count(continuity);
     let preserved_controls = preserve_control_count(preserve);
+    if !require_single_span
+        && original.control_points().len() < matched_controls + preserved_controls
+    {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match requires more controls to preserve the opposite end",
+        });
+    }
     let desired_degree = if require_single_span {
         original
             .degree()
@@ -358,6 +372,71 @@ fn require_continuity(
     continuity: CurveBlendContinuity,
     tolerance: Tolerance,
 ) -> Result<(), GeometryError> {
+    let matched_endpoint = if matched_at_end {
+        CurveRef::NurbsCurve(matched).end_point()?
+    } else {
+        CurveRef::NurbsCurve(matched).start_point()?
+    };
+    let reference_endpoint = if reference_at_end {
+        reference.end_point()?
+    } else {
+        reference.start_point()?
+    };
+    if matched_endpoint.distance_to(reference_endpoint)? > tolerance.absolute() {
+        return Err(GeometryError::Degenerate {
+            context: "Match continuity could not be reached",
+        });
+    }
+    if continuity == CurveBlendContinuity::Position {
+        return Ok(());
+    }
+    let matched_parameter = if matched_at_end {
+        *matched.domain().end()
+    } else {
+        *matched.domain().start()
+    };
+    let reference_parameter = if reference_at_end {
+        *reference.domain().end()
+    } else {
+        *reference.domain().start()
+    };
+    let matched_tangent = CurveRef::NurbsCurve(matched)
+        .evaluate_with_tangent_on_side(
+            matched_parameter,
+            if matched_at_end {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            },
+        )?
+        .tangent();
+    let reference_tangent = reference
+        .evaluate_with_tangent_on_side(
+            reference_parameter,
+            if reference_at_end {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            },
+        )?
+        .tangent();
+    let reference_direction = if matched_at_end == reference_at_end {
+        reference_tangent.opposite()
+    } else {
+        reference_tangent
+    };
+    if matched_tangent
+        .as_vector()
+        .angle_to(reference_direction.as_vector())?
+        > tolerance.angular()
+    {
+        return Err(GeometryError::Degenerate {
+            context: "Match continuity could not be reached",
+        });
+    }
+    if continuity == CurveBlendContinuity::Tangency {
+        return Ok(());
+    }
     let report = crate::curve_end_continuity(
         CurveRef::NurbsCurve(matched),
         matched_at_end,
@@ -365,17 +444,7 @@ fn require_continuity(
         reference_at_end,
         tolerance,
     )?;
-    let achieved = match continuity {
-        CurveBlendContinuity::Position => report.gap <= tolerance.absolute(),
-        CurveBlendContinuity::Tangency => matches!(
-            report.level,
-            crate::CurveContinuityLevel::Tangency | crate::CurveContinuityLevel::CurvatureOrHigher
-        ),
-        CurveBlendContinuity::Curvature => {
-            report.level == crate::CurveContinuityLevel::CurvatureOrHigher
-        }
-    };
-    if !achieved {
+    if report.level != crate::CurveContinuityLevel::CurvatureOrHigher {
         return Err(GeometryError::Degenerate {
             context: "Match continuity could not be reached",
         });

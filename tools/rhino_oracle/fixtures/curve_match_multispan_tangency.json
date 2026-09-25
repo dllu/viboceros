@@ -1,0 +1,812 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-none",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-reverse-10",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature",
+      "reverse_first": true,
+      "reverse_second": false
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-reverse-01",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature",
+      "reverse_first": false,
+      "reverse_second": true
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-tangency-reverse-11",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature",
+      "reverse_first": true,
+      "reverse_second": true
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-quadratic-tangency-none",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-quadratic-tangency-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "two-span-quadratic-tangency-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Tangency"
+    }
+  ]
+}
