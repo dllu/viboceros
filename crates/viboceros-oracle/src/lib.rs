@@ -1293,6 +1293,20 @@ pub enum Operation {
         #[serde(default)]
         canonicalize_linear_curves: bool,
     },
+    CylinderBrepIntersectCommand {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        cylinder_center: [f64; 3],
+        cylinder_axis: [f64; 3],
+        cylinder_radius: f64,
+        cylinder_height: f64,
+        #[serde(default)]
+        surface_as_brep: bool,
+        #[serde(default)]
+        brep_first: bool,
+        #[serde(default)]
+        canonicalize_closed_curves: bool,
+    },
     BrepBrepIntersectCommand {
         id: String,
         first_box_min: [f64; 3],
@@ -2084,6 +2098,7 @@ impl Operation {
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepFaceIntersectCommand { id, .. }
+            | Self::CylinderBrepIntersectCommand { id, .. }
             | Self::BrepBrepIntersectCommand { id, .. }
             | Self::BrepFaceBrepFaceIntersectCommand { id, .. }
             | Self::SurfaceSurfaceIntersectCommand { id, .. }
@@ -4712,6 +4727,51 @@ fn execute(
                     canonical_linear_intersection_curve_value,
                 )?
             } else if *canonicalize_closed_curves {
+                intersect_command_with_curve_serializer(
+                    iterations,
+                    &inputs,
+                    tolerance,
+                    canonical_closed_intersection_curve_value,
+                )?
+            } else {
+                intersect_command(iterations, &inputs, tolerance)?
+            }
+        }
+        Operation::CylinderBrepIntersectCommand {
+            surface,
+            cylinder_center,
+            cylinder_axis,
+            cylinder_radius,
+            cylinder_height,
+            surface_as_brep,
+            brep_first,
+            canonicalize_closed_curves,
+            ..
+        } => {
+            let frame = Frame3::try_from_normal(
+                Point3::try_new(cylinder_center[0], cylinder_center[1], cylinder_center[2])?,
+                Vector3::try_new(cylinder_axis[0], cylinder_axis[1], cylinder_axis[2])?,
+                tolerance,
+            )?;
+            let cylinder = Geometry::Brep(Brep::try_cylinder(
+                frame,
+                *cylinder_radius,
+                0.0,
+                *cylinder_height,
+                tolerance,
+            )?);
+            let surface = nurbs_surface_from_definition(surface)?;
+            let surface = if *surface_as_brep {
+                Geometry::Brep(Brep::try_surface_face(surface, tolerance)?)
+            } else {
+                Geometry::NurbsSurface(surface)
+            };
+            let inputs = if *brep_first {
+                [cylinder, surface]
+            } else {
+                [surface, cylinder]
+            };
+            if *canonicalize_closed_curves {
                 intersect_command_with_curve_serializer(
                     iterations,
                     &inputs,

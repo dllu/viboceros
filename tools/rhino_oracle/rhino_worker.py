@@ -12512,15 +12512,36 @@ def _execute(operation, iterations, tolerance):
             for surface in surfaces:
                 surface.Dispose()
 
-    if kind in ("surface_brep_intersect_command", "surface_brep_face_intersect_command"):
+    if kind in (
+        "surface_brep_intersect_command",
+        "surface_brep_face_intersect_command",
+        "cylinder_brep_intersect_command",
+    ):
         document = Rhino.RhinoDoc.ActiveDoc
         surface = _nurbs_surface_from_definition(operation["surface"])
+        surface_input = None
         if kind == "surface_brep_face_intersect_command":
             brep_surface = _nurbs_surface_from_definition(operation["brep_surface"])
             try:
                 brep = Rhino.Geometry.Brep.CreateFromSurface(brep_surface)
             finally:
                 brep_surface.Dispose()
+        elif kind == "cylinder_brep_intersect_command":
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(operation["cylinder_center"]),
+                _vector(operation["cylinder_axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(operation["cylinder_radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(operation["cylinder_height"], "cylinder height"),
+            )
+            brep = cylinder.ToBrep(True, True)
+            if operation.get("surface_as_brep", False):
+                surface_input = Rhino.Geometry.Brep.CreateFromSurface(surface)
         else:
             box_min = _point(operation["box_min"])
             box_max = _point(operation["box_max"])
@@ -12541,7 +12562,10 @@ def _execute(operation, iterations, tolerance):
                 attributes.Name = "Viboceros Intersect Source"
                 attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
                 attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
-                surface_id = document.Objects.AddSurface(surface, attributes)
+                if surface_input is None:
+                    surface_id = document.Objects.AddSurface(surface, attributes)
+                else:
+                    surface_id = document.Objects.AddBrep(surface_input, attributes)
                 brep_id = document.Objects.AddBrep(brep, attributes)
                 if surface_id == System.Guid.Empty or brep_id == System.Guid.Empty:
                     raise ValueError("could not add surface/B-rep Intersect inputs")
@@ -12637,6 +12661,8 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, intersect_surface_brep_command)
         finally:
             surface.Dispose()
+            if surface_input is not None:
+                surface_input.Dispose()
             brep.Dispose()
 
     if kind in ("brep_brep_intersect_command", "brep_face_brep_face_intersect_command"):

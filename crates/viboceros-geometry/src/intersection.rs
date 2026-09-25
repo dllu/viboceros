@@ -1161,8 +1161,8 @@ fn intersect_curve_with_planar_surface(
 /// Intersects a finite NURBS surface with the trimmed faces of a B-rep.
 ///
 /// Single full-domain curved faces use the exact surface/surface path. The
-/// multi-face path handles planar surfaces against B-reps whose underlying
-/// face surfaces are planar. Face-level curves are clipped against
+/// multi-face path handles planar surfaces against planar faces and curved
+/// faces covering their full natural domains. Face-level curves are clipped against
 /// exact trim regions when needed, deduplicated across shared topology, and
 /// joined into maximal linear components. A coincident face must cover its
 /// underlying surface's complete natural domain; other coincident trim regions are
@@ -1201,18 +1201,20 @@ pub fn surface_brep_intersection_events(
     let mut curves = Vec::new();
 
     for face in brep.faces() {
-        let face_plane = face.surface().plane(tolerance)?.ok_or(
-            GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "non-planar surfaces",
-            },
-        )?;
-        let coincident =
-            planes_are_coincident(surface_plane, face_plane, tolerance, distance_tolerance)?;
+        let face_plane = face.surface().plane(tolerance)?;
+        let full_domain = crate::brep::face_covers_full_surface_domain(face, tolerance)?;
+        if face_plane.is_none() && !full_domain {
+            return Err(GeometryError::UnsupportedSurfaceBrepIntersection {
+                context: "trimmed non-planar face surfaces",
+            });
+        }
+        let coincident = if let Some(face_plane) = face_plane {
+            planes_are_coincident(surface_plane, face_plane, tolerance, distance_tolerance)?
+        } else {
+            false
+        };
         let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
-        if coincident
-            && !face_events.is_empty()
-            && !crate::brep::face_covers_full_surface_domain(face, tolerance)?
-        {
+        if coincident && !face_events.is_empty() && !full_domain {
             return Err(GeometryError::UnsupportedSurfaceBrepIntersection {
                 context: "coincident trimmed face regions",
             });
@@ -1221,17 +1223,21 @@ pub fn surface_brep_intersection_events(
         for event in face_events {
             match event {
                 SurfaceSurfaceIntersectionEvent::Point(point) => {
-                    if point_on_brep_face(point, face, tolerance, distance_tolerance)? {
+                    if full_domain
+                        || point_on_brep_face(point, face, tolerance, distance_tolerance)?
+                    {
                         push_unique_brep_point(&mut points, point, distance_tolerance);
                     }
                 }
                 SurfaceSurfaceIntersectionEvent::Curve(curve) => {
-                    if coincident {
+                    if coincident || (face_plane.is_none() && full_domain) {
                         // The face covers its natural domain, already used by
                         // the surface pair intersection. Clipping the same
                         // perimeter again can shift endpoint parameters by
                         // a few ulps on elevated edge curves.
-                        curves.push(curve);
+                        curves.push(capped_cylinder_section_domain(
+                            curve, brep, face, tolerance,
+                        )?);
                         continue;
                     }
                     let (face_points, face_curves) =
@@ -1265,7 +1271,8 @@ pub fn surface_brep_intersection_events(
 /// Intersects the trimmed faces of two B-reps.
 ///
 /// Single full-domain curved faces use the exact surface/surface path. The
-/// multi-face path handles B-reps whose underlying face surfaces are planar.
+/// multi-face path handles planar faces and curved faces covering their full
+/// natural domains.
 /// Face-pair results are clipped against trim regions when needed;
 /// then shared-topology duplicates are removed and linear pieces are joined
 /// into maximal components. Coincident pairs currently require both faces to
@@ -1304,28 +1311,40 @@ pub fn brep_brep_intersection_events(
     let mut coincident_area_pairs = 0_usize;
 
     for first_face in first.faces() {
-        let first_plane = first_face.surface().plane(tolerance)?.ok_or(
-            GeometryError::UnsupportedBrepBrepIntersection {
-                context: "non-planar face surfaces",
-            },
-        )?;
+        let first_plane = first_face.surface().plane(tolerance)?;
+        let first_full = crate::brep::face_covers_full_surface_domain(first_face, tolerance)?;
+        if first_plane.is_none() && !first_full {
+            return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                context: "trimmed non-planar face surfaces",
+            });
+        }
         for second_face in second.faces() {
-            let second_plane = second_face.surface().plane(tolerance)?.ok_or(
-                GeometryError::UnsupportedBrepBrepIntersection {
-                    context: "non-planar face surfaces",
-                },
-            )?;
+            let second_plane = second_face.surface().plane(tolerance)?;
+            let second_full = crate::brep::face_covers_full_surface_domain(second_face, tolerance)?;
+            if second_plane.is_none() && !second_full {
+                return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                    context: "trimmed non-planar face surfaces",
+                });
+            }
             let face_events = surface_surface_intersection_events(
                 first_face.surface(),
                 second_face.surface(),
                 tolerance,
             )?;
-            let coincident = !face_events.is_empty()
-                && planes_are_coincident(first_plane, second_plane, tolerance, distance_tolerance)?;
+            let coincident =
+                if let (Some(first_plane), Some(second_plane)) = (first_plane, second_plane) {
+                    !face_events.is_empty()
+                        && planes_are_coincident(
+                            first_plane,
+                            second_plane,
+                            tolerance,
+                            distance_tolerance,
+                        )?
+                } else {
+                    false
+                };
             if coincident {
-                if !crate::brep::face_covers_full_surface_domain(first_face, tolerance)?
-                    || !crate::brep::face_covers_full_surface_domain(second_face, tolerance)?
-                {
+                if !first_full || !second_full {
                     return Err(GeometryError::UnsupportedBrepBrepIntersection {
                         context: "coincident trimmed face regions",
                     });
@@ -1352,13 +1371,20 @@ pub fn brep_brep_intersection_events(
             for event in face_events {
                 match event {
                     SurfaceSurfaceIntersectionEvent::Point(point) => {
-                        if point_on_brep_face(point, first_face, tolerance, distance_tolerance)?
-                            && point_on_brep_face(
+                        if (first_full
+                            || point_on_brep_face(
                                 point,
-                                second_face,
+                                first_face,
                                 tolerance,
                                 distance_tolerance,
-                            )?
+                            )?)
+                            && (second_full
+                                || point_on_brep_face(
+                                    point,
+                                    second_face,
+                                    tolerance,
+                                    distance_tolerance,
+                                )?)
                         {
                             push_unique_brep_point(&mut points, point, distance_tolerance);
                         }
@@ -1368,13 +1394,17 @@ pub fn brep_brep_intersection_events(
                             curves.push(curve);
                             continue;
                         }
-                        let (second_points, second_curves) = clip_curve_to_brep_face(
-                            &curve,
-                            second,
-                            second_face,
-                            tolerance,
-                            distance_tolerance,
-                        )?;
+                        let (second_points, second_curves) = if second_full {
+                            (Vec::new(), vec![curve])
+                        } else {
+                            clip_curve_to_brep_face(
+                                &curve,
+                                second,
+                                second_face,
+                                tolerance,
+                                distance_tolerance,
+                            )?
+                        };
                         for point in second_points {
                             if point_on_brep_face(point, first_face, tolerance, distance_tolerance)?
                             {
@@ -1382,17 +1412,31 @@ pub fn brep_brep_intersection_events(
                             }
                         }
                         for second_curve in second_curves {
-                            let (first_points, first_curves) = clip_curve_to_brep_face(
-                                &second_curve,
-                                first,
-                                first_face,
-                                tolerance,
-                                distance_tolerance,
-                            )?;
+                            let (first_points, first_curves) = if first_full {
+                                (Vec::new(), vec![second_curve])
+                            } else {
+                                clip_curve_to_brep_face(
+                                    &second_curve,
+                                    first,
+                                    first_face,
+                                    tolerance,
+                                    distance_tolerance,
+                                )?
+                            };
                             for point in first_points {
                                 push_unique_brep_point(&mut points, point, distance_tolerance);
                             }
-                            curves.extend(first_curves);
+                            for curve in first_curves {
+                                let curve = capped_cylinder_section_domain(
+                                    curve, first, first_face, tolerance,
+                                )?;
+                                curves.push(capped_cylinder_section_domain(
+                                    curve,
+                                    second,
+                                    second_face,
+                                    tolerance,
+                                )?);
+                            }
                         }
                     }
                 }
@@ -1430,6 +1474,36 @@ fn planes_are_coincident(
         && first.signed_distance_to(second.origin())?.abs() <= distance_tolerance * 2.0)
 }
 
+/// Rhino's Intersect command parameterizes a circular cut from a capped
+/// cylinder over two turns, while a standalone cylinder face uses one turn.
+fn capped_cylinder_section_domain(
+    curve: NurbsCurve,
+    brep: &Brep,
+    face: &BrepFace,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    if brep.faces().len() != 3
+        || curve.degree() != 2
+        || !curve.is_rational()
+        || !curve.is_closed()?
+        || face.surface().canonical_cylinder(tolerance)?.is_none()
+    {
+        return Ok(curve);
+    }
+    for other in brep.faces() {
+        if !std::ptr::eq(other, face) && other.surface().plane(tolerance)?.is_none() {
+            return Ok(curve);
+        }
+    }
+    let domain = curve.domain();
+    let start = *domain.start();
+    let span = *domain.end() - start;
+    if (span - std::f64::consts::TAU).abs() > tolerance.angular() * 10.0 {
+        return Ok(curve);
+    }
+    curve.try_reparameterized(start..=start + 2.0 * span)
+}
+
 fn finalize_linear_brep_intersection_geometry(
     points: Vec<Point3>,
     curves: Vec<NurbsCurve>,
@@ -1437,8 +1511,26 @@ fn finalize_linear_brep_intersection_geometry(
     distance_tolerance: Real,
     non_linear_error: GeometryError,
 ) -> Result<(Vec<NurbsCurve>, Vec<Point3>), GeometryError> {
-    let mut curves =
-        join_brep_linear_curves(curves, tolerance, distance_tolerance, non_linear_error)?;
+    let mut linear_curves = Vec::new();
+    let mut closed_curved = Vec::new();
+    for curve in curves {
+        if curve.degree() == 1 && !curve.is_rational() {
+            linear_curves.push(curve);
+        } else if curve.is_closed()? {
+            if !closed_curved.contains(&curve) {
+                closed_curved.push(curve);
+            }
+        } else {
+            return Err(non_linear_error);
+        }
+    }
+    let mut curves = join_brep_linear_curves(
+        linear_curves,
+        tolerance,
+        distance_tolerance,
+        non_linear_error,
+    )?;
+    curves.extend(closed_curved);
     let mut isolated_points = Vec::with_capacity(points.len());
     for point in points {
         let mut lies_on_curve = false;
@@ -3804,6 +3896,43 @@ mod tests {
         assert_eq!(
             brep_brep_intersection_events(&cylinder_brep, &plane_brep, Tolerance::DEFAULT).unwrap(),
             vec![BrepBrepIntersectionEvent::Curve(expected_brep.clone())]
+        );
+    }
+
+    #[test]
+    fn plane_sections_of_closed_cylinder_use_the_curved_wall_face() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = Brep::try_cylinder(frame, 2.0, 0.0, 4.0, Tolerance::DEFAULT).unwrap();
+        assert!(
+            crate::brep::face_covers_full_surface_domain(&cylinder.faces()[0], Tolerance::DEFAULT)
+                .unwrap()
+        );
+        let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        let expected = surface_surface_intersection_events(
+            &plane,
+            cylinder.faces()[0].surface(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(section)] = expected.as_slice() else {
+            panic!("expected one circle from the cylinder wall");
+        };
+        let section = section
+            .try_reparameterized(0.0..=2.0 * std::f64::consts::TAU)
+            .unwrap();
+        assert_eq!(
+            surface_brep_intersection_events(&plane, &cylinder, Tolerance::DEFAULT).unwrap(),
+            vec![SurfaceBrepIntersectionEvent::Curve(section.clone())]
+        );
+        let plane_brep = Brep::try_surface_face(plane, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            brep_brep_intersection_events(&plane_brep, &cylinder, Tolerance::DEFAULT).unwrap(),
+            vec![BrepBrepIntersectionEvent::Curve(section.clone())]
         );
     }
 

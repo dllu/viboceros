@@ -1002,9 +1002,11 @@ Rhino chooses branch directions from input order. The
 adds fourteen matching [Rhino observations](../tools/rhino_oracle/observations/curved_brep_face_circle_intersect_command.json)
 for surface order, reversed selection, plane normals, rotated axes, and section
 heights. Full cylinder sections now use Rhino's signed `2π` domain and winding.
-Curved B-rep intersection currently
-requires one full-domain face; trimmed and multi-face curved B-reps still need
-curve clipping and component joining.
+The [closed cylinder fixture](../tools/rhino_oracle/fixtures/cylinder_brep_intersect_command.json)
+and [saved observations](../tools/rhino_oracle/observations/cylinder_brep_intersect_command.json)
+also probe a full-domain curved wall inside a three-face solid. Rhino gives its
+closed section a `4π` domain. Trimmed curved faces and open curved components
+still need curve clipping and joining.
 
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
