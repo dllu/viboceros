@@ -259,6 +259,12 @@ point. Cones with different axis directions and a shared apex intersect in
 zero, one, or two exact finite generators. Other nonparallel cone pairs remain
 unsupported.
 
+Canonical ring tori intersect planes perpendicular to their axes in two exact
+rational circles, or one tangent circle at the tube's top or bottom. Planes
+containing the axis cut two exact tube circles. Finite planar patches clip
+these circles to arcs or points; other torus/plane orientations remain
+unsupported.
+
 Canonical cones intersect planar patches in exact circles, rational elliptical,
 parabolic, and hyperbolic arcs, or straight generators. A plane touching only the
 singular apex produces no result, matching Rhino. The two coincident tangent

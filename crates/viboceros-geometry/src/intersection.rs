@@ -8,6 +8,7 @@ mod sphere_cone;
 mod sphere_cylinder_noncoaxial;
 mod sphere_cylinder_singular;
 mod sphere_cylinder_turning;
+mod torus_plane;
 
 use crate::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, GeometryError, NurbsCurve,
@@ -569,6 +570,8 @@ fn curve_brep_intersection_events_with_transform(
 /// to both finite height ranges.
 /// Cones with different axis directions and a shared apex meet in exact finite
 /// generators where their directional circles cross or touch.
+/// Canonical tori meet perpendicular or axis-containing planar patches in
+/// exact rational circles, clipped to the finite patch.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
 /// plus generators for planes through the apex. The singular apex alone has no
 /// intersection event, following Rhino's surface/surface result.
@@ -698,6 +701,16 @@ pub fn surface_surface_intersection_events(
         && let Some(plane) = first.plane(tolerance)?
     {
         return sphere_planar_surface_intersection_events(center, radius, first, plane, tolerance);
+    }
+    if let Some(torus) = first.canonical_torus(tolerance)?
+        && let Some(plane) = second.plane(tolerance)?
+    {
+        return torus_plane::intersect(torus, second, plane, tolerance);
+    }
+    if let Some(torus) = second.canonical_torus(tolerance)?
+        && let Some(plane) = first.plane(tolerance)?
+    {
+        return torus_plane::intersect(torus, first, plane, tolerance);
     }
     let first_plane =
         first

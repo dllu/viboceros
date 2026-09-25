@@ -53,10 +53,16 @@ impl NurbsSurface {
             return Ok(None);
         }
         let expected_base_weight = candidate.control_points[0].weight();
-        let allowed_position = tolerance
+        let coordinate_scale = center
+            .to_array()
+            .into_iter()
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        let allowed_position = (tolerance
             .absolute()
             .max(tolerance.relative() * (major_radius + minor_radius))
-            * 4.0;
+            * 4.0)
+            .max(8.0 * Real::EPSILON * coordinate_scale);
         for (actual, expected) in self.control_points.iter().zip(&candidate.control_points) {
             if actual.point().distance_to(expected.point())? > allowed_position
                 || ((actual.weight() / base_weight) - (expected.weight() / expected_base_weight))
