@@ -1,6 +1,7 @@
 //! Finite intersections of a canonical cone and a sphere.
 
 mod noncoaxial_inside_apex;
+mod noncoaxial_on_apex;
 mod noncoaxial_pinched;
 mod noncoaxial_turning;
 mod noncoaxial_two_loops;
@@ -44,6 +45,15 @@ pub(super) fn sphere_cone_intersection_events(
         let apex_distance = radial_offset.hypot(axial_center);
         if apex_distance < sphere_radius - coaxial_tolerance {
             return noncoaxial_inside_apex::intersect(
+                sphere_center,
+                sphere_radius,
+                (cone_frame, cone_radius, signed_height),
+                tolerance,
+                coordinate_roundoff,
+            );
+        }
+        if (apex_distance - sphere_radius).abs() <= coaxial_tolerance {
+            return noncoaxial_on_apex::intersect(
                 sphere_center,
                 sphere_radius,
                 (cone_frame, cone_radius, signed_height),
