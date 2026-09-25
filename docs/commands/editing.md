@@ -268,7 +268,9 @@ the inner tangent plane produces two pinched loops meeting at one point.
 Nearby offsets retain their distinct one-loop or two-loop topology. Oblique
 planes produce one or two cubic loops fitted to the modeling tolerance, with
 finite patches clipping them to arcs. Critical oblique cuts retain crossing
-loops, while isolated oblique tangencies return points. The
+loops, while isolated oblique tangencies return points. Shallow tilted cuts
+near an axis-containing plane retain stable full meridian loops, including
+finite-patch clipping. The
 [torus/plane oracle fixture](../../tools/rhino_oracle/fixtures/torus_plane_surface_intersection.json)
 covers perpendicular, axis, oblique, finite-patch, and disjoint cuts. Coaxial torus and finite
 cylinder walls meet in one or two exact rational circles, including tangent

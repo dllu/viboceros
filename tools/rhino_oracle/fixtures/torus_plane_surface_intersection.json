@@ -20,6 +20,18 @@
       "plane": {"origin": [0, 0, 0], "normal": [0, 1, 0], "x_domain": [-6, 6], "y_domain": [-6, 6]}
     },
     {
+      "id": "shallow_tilted_meridian_loops",
+      "op": "torus_plane_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "plane": {"origin": [0.3, 0, 0], "normal": [1, 0, 0.00001], "axes": [[0, 1, 0], [-0.00001, 0, 1]], "x_domain": [-6, 6], "y_domain": [-2, 2]}
+    },
+    {
+      "id": "shallow_tilted_meridian_half_patch",
+      "op": "torus_plane_surface_intersection",
+      "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},
+      "plane": {"origin": [0.3, 0, 0], "normal": [1, 0, 0.00001], "axes": [[0, 1, 0], [-0.00001, 0, 1]], "x_domain": [0, 6], "y_domain": [-2, 2]}
+    },
+    {
       "id": "oblique_two_loops",
       "op": "torus_plane_surface_intersection",
       "torus": {"center": [0, 0, 0], "axis": [0, 0, 1], "major_radius": 4, "minor_radius": 1},

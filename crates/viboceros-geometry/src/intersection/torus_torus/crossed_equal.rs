@@ -5,8 +5,6 @@
 //! radial distances, hence (p·n₁)² = (p·n₂)². Both planes p·(n₁±n₂) = 0
 //! must be intersected with the first torus.
 
-mod near_axis;
-
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsSurface, Plane, Real, Tolerance, Vector3};
 
@@ -18,16 +16,6 @@ pub(super) fn intersect(
     let first_axis = frame.z_axis().as_vector().to_array();
     let second_axis = second_frame.z_axis().as_vector().to_array();
     let span = 2.0 * (major + minor);
-    let coordinate_scale = frame
-        .origin()
-        .to_array()
-        .into_iter()
-        .map(Real::abs)
-        .fold(0.0, Real::max);
-    let fit_tolerance = tolerance
-        .absolute()
-        .max(tolerance.relative() * (major + minor))
-        .max(8.0 * Real::EPSILON * coordinate_scale);
     let mut events = Vec::new();
     for sign in [1.0, -1.0] {
         let normal = Vector3::try_new(
@@ -36,20 +24,6 @@ pub(super) fn intersect(
             first_axis[2] + sign * second_axis[2],
         )?;
         let plane_frame = Frame3::try_from_normal(frame.origin(), normal, tolerance)?;
-        let unit_normal = plane_frame.z_axis().as_vector();
-        let horizontal_x = unit_normal.dot(frame.x_axis().as_vector())?;
-        let horizontal_y = unit_normal.dot(frame.y_axis().as_vector())?;
-        let vertical = unit_normal.dot(frame.z_axis().as_vector())?;
-        let horizontal = horizontal_x.hypot(horizontal_y);
-        if horizontal > 0.0 && vertical.abs() * minor < 0.5 * (major - minor) * horizontal {
-            events.extend(near_axis::intersect(
-                (frame, major, minor),
-                [horizontal_x / horizontal, horizontal_y / horizontal],
-                vertical / horizontal,
-                fit_tolerance,
-            )?);
-            continue;
-        }
         let corner = |x: Real, y: Real| plane_frame.point_at([x, y, 0.0]);
         let patch = NurbsSurface::try_bilinear([
             corner(-span, -span)?,

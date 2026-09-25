@@ -329,6 +329,38 @@ mod tests {
     }
 
     #[test]
+    fn python_oracle_reports_shallow_tilted_torus_plane_sections() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/torus_plane_surface_intersection.json"
+        ))
+        .unwrap();
+        let response = run_request_audit(&request).unwrap();
+        for (id, count) in [
+            ("shallow_tilted_meridian_loops", 2),
+            ("shallow_tilted_meridian_half_patch", 1),
+        ] {
+            let outcome = response
+                .outcomes
+                .iter()
+                .find(|outcome| match outcome {
+                    OperationOutcome::Success { result } => result.id == id,
+                    OperationOutcome::Failure { id: failed_id, .. } => failed_id == id,
+                })
+                .unwrap();
+            let OperationOutcome::Success { result } = outcome else {
+                panic!("shallow tilted torus/plane fixture {id} must succeed")
+            };
+            let curves = result.value["curves"].as_array().unwrap();
+            assert_eq!(curves.len(), count, "{id}");
+            assert!(result.value["points"].as_array().unwrap().is_empty());
+            for curve in curves {
+                assert_eq!(curve["degree"], 3);
+                assert_eq!(curve["closed"], true);
+            }
+        }
+    }
+
+    #[test]
     fn python_oracle_reports_parallel_offset_torus_cylinder_topology() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json"

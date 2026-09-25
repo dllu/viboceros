@@ -1,6 +1,6 @@
-//! Stable full meridian loops for a centered plane close to the torus axis.
+//! Stable full meridian loops for a plane close to the torus axis.
 
-use super::SurfaceSurfaceIntersectionEvent;
+use super::super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Real};
 
 const TURN: Real = std::f64::consts::TAU;
@@ -13,6 +13,7 @@ struct Section {
     minor: Real,
     horizontal_axis: [Real; 2],
     axial_slope: Real,
+    radial_offset: Real,
 }
 
 #[derive(Clone, Copy)]
@@ -25,6 +26,7 @@ pub(super) fn intersect(
     (frame, major, minor): (Frame3, Real, Real),
     horizontal_axis: [Real; 2],
     axial_slope: Real,
+    radial_offset: Real,
     fit_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let section = Section {
@@ -33,6 +35,7 @@ pub(super) fn intersect(
         minor,
         horizontal_axis,
         axial_slope,
+        radial_offset,
     };
     [1.0, -1.0]
         .into_iter()
@@ -47,7 +50,7 @@ impl Section {
         let radial_derivative = -self.minor * sine;
         let height = self.minor * sine;
         let height_derivative = self.minor * cosine;
-        let along = -self.axial_slope * height;
+        let along = -self.axial_slope.mul_add(height, self.radial_offset);
         let along_derivative = -self.axial_slope * height_derivative;
         let transverse = ((radial - along.abs()) * (radial + along.abs())).sqrt();
         let lateral = side * transverse;

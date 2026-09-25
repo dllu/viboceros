@@ -1,5 +1,6 @@
 //! Sections of a canonical torus and a finite planar patch.
 
+mod near_axis;
 mod parallel_offset;
 
 use super::torus_meridian as oblique;
@@ -78,6 +79,34 @@ pub(super) fn intersect(
             )?);
         }
         return Ok(events);
+    }
+    if axial_dot.abs() > angular_tolerance {
+        let horizontal_x = normal.dot(frame.x_axis().as_vector())?;
+        let horizontal_y = normal.dot(frame.y_axis().as_vector())?;
+        let horizontal = horizontal_x.hypot(horizontal_y);
+        if horizontal > 0.0
+            && axial_dot.abs() * minor_radius + signed_distance.abs()
+                < 0.5 * (major_radius - minor_radius) * horizontal
+        {
+            let loops = near_axis::intersect(
+                (frame, major_radius, minor_radius),
+                [horizontal_x / horizontal, horizontal_y / horizontal],
+                axial_dot / horizontal,
+                signed_distance / horizontal,
+                distance_tolerance,
+            )?;
+            let mut clipped = Vec::new();
+            for event in loops {
+                if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event {
+                    clipped.extend(intersect_curve_with_planar_surface(
+                        &curve,
+                        planar_surface,
+                        tolerance,
+                    )?);
+                }
+            }
+            return Ok(clipped);
+        }
     }
     if axial_dot.abs() <= angular_tolerance {
         return parallel_offset::intersect(
@@ -233,6 +262,53 @@ mod tests {
                 assert_on_torus(location);
             }
         }
+    }
+
+    #[test]
+    fn shallow_tilted_meridian_planes_keep_full_and_clipped_sections() {
+        let torus = torus();
+        let tilt = 1.0e-5;
+        let patch = |offset: Real, y_low: Real| {
+            let at = |y: Real, z: Real| point(offset - tilt * z, y, z);
+            NurbsSurface::try_bilinear([
+                at(y_low, -2.0),
+                at(6.0, -2.0),
+                at(6.0, 2.0),
+                at(y_low, 2.0),
+            ])
+            .unwrap()
+        };
+        for offset in [0.0, 0.3] {
+            let plane = patch(offset, -6.0);
+            for (left, right) in [(&torus, &plane), (&plane, &torus)] {
+                let events = surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                    .unwrap_or_else(|error| panic!("offset={offset}: {error:?}"));
+                assert_eq!(events.len(), 2);
+                for event in events {
+                    let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                        panic!("shallow tilted plane should produce curves")
+                    };
+                    assert_eq!(curve.degree(), 3);
+                    assert!(curve.is_closed().unwrap());
+                    let domain = curve.domain();
+                    for index in 0..=64 {
+                        let parameter = *domain.start()
+                            + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                        let location = curve.evaluate(parameter).unwrap();
+                        assert_on_torus(location);
+                        assert!((location.x() + tilt * location.z() - offset).abs() < 5e-9);
+                    }
+                }
+            }
+        }
+        let clipped =
+            surface_surface_intersection_events(&torus, &patch(0.0, 0.0), Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(clipped.len(), 1);
+        assert!(matches!(
+            clipped[0],
+            SurfaceSurfaceIntersectionEvent::Curve(_)
+        ));
     }
 
     #[test]
