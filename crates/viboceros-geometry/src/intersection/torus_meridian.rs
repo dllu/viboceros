@@ -1,4 +1,4 @@
-//! Fitted intersections of a ring torus with an oblique finite planar patch.
+//! Cubic intersections of a ring torus with angular meridian lines.
 
 use super::{SurfaceSurfaceIntersectionEvent, intersect_curve_with_planar_surface};
 use crate::{Frame3, GeometryError, NurbsCurve, NurbsSurface, Plane, Real, Tolerance};
@@ -7,14 +7,15 @@ const TURN: Real = std::f64::consts::TAU;
 const MAX_SEGMENTS: usize = 4096;
 
 #[derive(Clone, Copy)]
-struct Section {
-    frame: Frame3,
-    major: Real,
-    minor: Real,
-    horizontal: Real,
-    vertical: Real,
-    constant: Real,
-    radial_axis: [Real; 2],
+pub(super) struct Section {
+    pub(super) frame: Frame3,
+    pub(super) major: Real,
+    pub(super) minor: Real,
+    pub(super) radial_base: Real,
+    pub(super) radial_cosine: Real,
+    pub(super) axial_coefficient: Real,
+    pub(super) line_constant: Real,
+    pub(super) radial_axis: [Real; 2],
 }
 
 #[derive(Clone, Copy)]
@@ -58,21 +59,50 @@ pub(super) fn intersect(
         frame,
         major,
         minor,
-        horizontal,
-        vertical,
-        constant: -signed_distance,
+        radial_base: 0.0,
+        radial_cosine: horizontal,
+        axial_coefficient: vertical,
+        line_constant: -signed_distance,
         radial_axis: [horizontal_x / horizontal, horizontal_y / horizontal],
     };
+    let events = intersect_meridian(section, fit_tolerance)?;
+    let mut clipped = Vec::new();
+    for event in events {
+        match event {
+            SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                clipped.extend(intersect_curve_with_planar_surface(
+                    &curve,
+                    planar_surface,
+                    tolerance,
+                )?);
+            }
+            SurfaceSurfaceIntersectionEvent::Point(point) => {
+                let (u, v) = planar_surface.closest_parameters(point, tolerance)?;
+                if planar_surface.evaluate(u, v)?.distance_to(point)? <= fit_tolerance {
+                    clipped.push(SurfaceSurfaceIntersectionEvent::Point(point));
+                }
+            }
+        }
+    }
+    Ok(clipped)
+}
+
+pub(super) fn intersect_meridian(
+    section: Section,
+    fit_tolerance: Real,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let major = section.major;
+    let minor = section.minor;
     let unconstrained_vertex = section.vertex();
     let vertex = unconstrained_vertex.clamp(-1.0, 1.0);
     let maximum = section.discriminant(vertex);
     if maximum < 0.0 {
-        let a = section.horizontal * vertex;
-        let q = a.mul_add(a, section.vertical * section.vertical);
-        let delta = section.constant - section.major * a;
+        let a = section.radial_cosine.mul_add(vertex, section.radial_base);
+        let q = a.mul_add(a, section.axial_coefficient * section.axial_coefficient);
+        let delta = section.line_constant - section.major * a;
         let miss = delta.abs() / q.sqrt() - section.minor;
         if miss <= fit_tolerance {
-            return tangent_points(section, vertex, planar_surface, tolerance, fit_tolerance);
+            return tangent_points(section, vertex);
         }
         return Ok(Vec::new());
     }
@@ -93,17 +123,13 @@ pub(super) fn intersect(
         let mut events = Vec::new();
         for sign in [1.0, -1.0] {
             let curve = fit(section, Branch::Crossing { sign }, fit_tolerance)?;
-            events.extend(intersect_curve_with_planar_surface(
-                &curve,
-                planar_surface,
-                tolerance,
-            )?);
+            events.push(SurfaceSurfaceIntersectionEvent::Curve(curve));
         }
         return Ok(events);
     }
     if singular_positive {
         if unconstrained_vertex >= 1.0 {
-            return tangent_points(section, 1.0, planar_surface, tolerance, fit_tolerance);
+            return tangent_points(section, 1.0);
         }
         let angle = minimum_cosine.acos();
         return fit_branches(
@@ -120,14 +146,12 @@ pub(super) fn intersect(
                     critical: Some(1.0),
                 },
             ],
-            planar_surface,
-            tolerance,
             fit_tolerance,
         );
     }
     if singular_negative {
         if unconstrained_vertex <= -1.0 {
-            return tangent_points(section, -1.0, planar_surface, tolerance, fit_tolerance);
+            return tangent_points(section, -1.0);
         }
         let angle = maximum_cosine.acos();
         return fit_branches(
@@ -144,14 +168,15 @@ pub(super) fn intersect(
                     critical: Some(-1.0),
                 },
             ],
-            planar_surface,
-            tolerance,
             fit_tolerance,
         );
     }
-    let radial_scale = (section.horizontal * vertex).hypot(section.vertical);
+    let radial_scale = section
+        .radial_cosine
+        .mul_add(vertex, section.radial_base)
+        .hypot(section.axial_coefficient);
     if maximum <= fit_tolerance * fit_tolerance * radial_scale * radial_scale {
-        return tangent_points(section, vertex, planar_surface, tolerance, fit_tolerance);
+        return tangent_points(section, vertex);
     }
     let branches = if minimum_cosine <= -1.0 && maximum_cosine >= 1.0 {
         vec![Branch::Full { sign: 1.0 }, Branch::Full { sign: -1.0 }]
@@ -185,24 +210,18 @@ pub(super) fn intersect(
             },
         ]
     };
-    fit_branches(section, branches, planar_surface, tolerance, fit_tolerance)
+    fit_branches(section, branches, fit_tolerance)
 }
 
 fn fit_branches(
     section: Section,
     branches: impl IntoIterator<Item = Branch>,
-    planar_surface: &NurbsSurface,
-    tolerance: Tolerance,
     fit_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let mut events = Vec::new();
     for branch in branches {
         let curve = fit(section, branch, fit_tolerance)?;
-        events.extend(intersect_curve_with_planar_surface(
-            &curve,
-            planar_surface,
-            tolerance,
-        )?);
+        events.push(SurfaceSurfaceIntersectionEvent::Curve(curve));
     }
     Ok(events)
 }
@@ -210,9 +229,6 @@ fn fit_branches(
 fn tangent_points(
     section: Section,
     cosine: Real,
-    planar_surface: &NurbsSurface,
-    tolerance: Tolerance,
-    fit_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let angle = cosine.acos();
     let angles: &[Real] = if angle.abs() <= 32.0 * Real::EPSILON
@@ -228,10 +244,7 @@ fn tangent_points(
             .sample_at_angle(angle, 1.0, 0.0, Some(0.0), None)
             .position;
         let point = section.frame.point_at(local)?;
-        let (u, v) = planar_surface.closest_parameters(point, tolerance)?;
-        if planar_surface.evaluate(u, v)?.distance_to(point)? <= fit_tolerance {
-            events.push(SurfaceSurfaceIntersectionEvent::Point(point));
-        }
+        events.push(SurfaceSurfaceIntersectionEvent::Point(point));
     }
     Ok(events)
 }
@@ -254,14 +267,15 @@ fn bisect_discriminant(section: Section, mut low: Real, mut high: Real) -> Real 
 
 impl Section {
     fn vertex(self) -> Real {
-        self.constant * self.major
-            / (self.horizontal * (self.major - self.minor) * (self.major + self.minor))
+        let radius_difference = (self.major - self.minor) * (self.major + self.minor);
+        (self.line_constant * self.major / radius_difference - self.radial_base)
+            / self.radial_cosine
     }
 
     fn discriminant(self, cosine: Real) -> Real {
-        let a = self.horizontal * cosine;
-        let q = a.mul_add(a, self.vertical * self.vertical);
-        let delta = self.constant - self.major * a;
+        let a = self.radial_cosine.mul_add(cosine, self.radial_base);
+        let q = a.mul_add(a, self.axial_coefficient * self.axial_coefficient);
+        let delta = self.line_constant - self.major * a;
         self.minor * self.minor * q - delta * delta
     }
 
@@ -312,27 +326,28 @@ impl Section {
 
     fn sample_crossing(self, angle: Real, sign: Real) -> Sample {
         let (sine, cosine) = angle.sin_cos();
-        let a = self.horizontal * cosine;
-        let a_derivative = -self.horizontal * sine;
-        let q = a.mul_add(a, self.vertical * self.vertical);
+        let a = self.radial_cosine.mul_add(cosine, self.radial_base);
+        let a_derivative = -self.radial_cosine * sine;
+        let q = a.mul_add(a, self.axial_coefficient * self.axial_coefficient);
         let q_derivative = 2.0 * a * a_derivative;
-        let delta = self.constant - self.major * a;
+        let delta = self.line_constant - self.major * a;
         let delta_derivative = -self.major * a_derivative;
-        let coefficient =
-            self.horizontal * ((self.major - self.minor) * (self.major + self.minor)).sqrt();
+        let coefficient = self.radial_cosine.abs()
+            * ((self.major - self.minor) * (self.major + self.minor)).sqrt();
         let signed_factor = sign * coefficient * sine / q;
         let signed_factor_derivative =
             sign * coefficient * (cosine / q - sine * q_derivative / (q * q));
         let foot_radial = self.major + a * delta / q;
-        let foot_height = self.vertical * delta / q;
+        let foot_height = self.axial_coefficient * delta / q;
         let foot_radial_derivative = ((a_derivative * delta + a * delta_derivative) * q
             - a * delta * q_derivative)
             / (q * q);
         let foot_height_derivative =
-            self.vertical * (delta_derivative * q - delta * q_derivative) / (q * q);
-        let radial = foot_radial - self.vertical * signed_factor;
+            self.axial_coefficient * (delta_derivative * q - delta * q_derivative) / (q * q);
+        let radial = foot_radial - self.axial_coefficient * signed_factor;
         let height = foot_height + a * signed_factor;
-        let radial_derivative = foot_radial_derivative - self.vertical * signed_factor_derivative;
+        let radial_derivative =
+            foot_radial_derivative - self.axial_coefficient * signed_factor_derivative;
         let height_derivative =
             foot_height_derivative + a_derivative * signed_factor + a * signed_factor_derivative;
         let [ux, uy] = self.radial_axis;
@@ -352,10 +367,10 @@ impl Section {
 
     fn endpoint_factor_derivative(self, angle: Real, half: Real, direction: Real) -> Real {
         let (sine, cosine) = angle.sin_cos();
-        let a = self.horizontal * cosine;
-        let a_derivative = -self.horizontal * sine;
-        let q = a.mul_add(a, self.vertical * self.vertical);
-        let delta = self.constant - self.major * a;
+        let a = self.radial_cosine.mul_add(cosine, self.radial_base);
+        let a_derivative = -self.radial_cosine * sine;
+        let q = a.mul_add(a, self.axial_coefficient * self.axial_coefficient);
+        let delta = self.line_constant - self.major * a;
         let discriminant_derivative =
             2.0 * a_derivative * (self.minor * self.minor * a + self.major * delta);
         direction * (discriminant_derivative.abs() * half * 0.5).sqrt() / q
@@ -370,21 +385,25 @@ impl Section {
         critical: Option<Real>,
     ) -> Sample {
         let (sine, cosine) = angle.sin_cos();
-        let a = self.horizontal * cosine;
-        let a_derivative = -self.horizontal * sine;
-        let q = a.mul_add(a, self.vertical * self.vertical);
+        let a = self.radial_cosine.mul_add(cosine, self.radial_base);
+        let a_derivative = -self.radial_cosine * sine;
+        let q = a.mul_add(a, self.axial_coefficient * self.axial_coefficient);
         let q_derivative = 2.0 * a * a_derivative;
-        let delta = self.constant - self.major * a;
+        let delta = self.line_constant - self.major * a;
         let delta_derivative = -self.major * a_derivative;
         let discriminant_derivative =
             2.0 * a_derivative * (self.minor * self.minor * a + self.major * delta);
         let (root, root_angle_derivative) = if let Some(critical_cosine) = critical {
-            let k = self.horizontal
-                * self.horizontal
+            let k = self.radial_cosine
+                * self.radial_cosine
                 * (self.major - self.minor)
                 * (self.major + self.minor);
-            let other_cosine =
-                2.0 * self.constant * self.major * self.horizontal / k - critical_cosine;
+            let radius_difference = (self.major - self.minor) * (self.major + self.minor);
+            let other_cosine = 2.0
+                * self.radial_cosine
+                * (self.line_constant * self.major - radius_difference * self.radial_base)
+                / k
+                - critical_cosine;
             let (half_sine, half_cosine) = (0.5 * angle).sin_cos();
             let scale = (2.0 * k).sqrt();
             if critical_cosine > 0.0 {
@@ -426,16 +445,16 @@ impl Section {
             angle_derivative * (root_angle_derivative / q - root * q_derivative / (q * q))
         });
         let foot_radial = self.major + a * delta / q;
-        let foot_height = self.vertical * delta / q;
+        let foot_height = self.axial_coefficient * delta / q;
         let foot_radial_derivative = ((a_derivative * delta + a * delta_derivative) * q
             - a * delta * q_derivative)
             / (q * q);
         let foot_height_derivative =
-            self.vertical * (delta_derivative * q - delta * q_derivative) / (q * q);
-        let radial = foot_radial - sign * self.vertical * root_factor;
+            self.axial_coefficient * (delta_derivative * q - delta * q_derivative) / (q * q);
+        let radial = foot_radial - sign * self.axial_coefficient * root_factor;
         let height = foot_height + sign * a * root_factor;
-        let radial_derivative =
-            foot_radial_derivative * angle_derivative - sign * self.vertical * factor_derivative;
+        let radial_derivative = foot_radial_derivative * angle_derivative
+            - sign * self.axial_coefficient * factor_derivative;
         let height_derivative = foot_height_derivative * angle_derivative
             + sign * (a_derivative * angle_derivative * root_factor + a * factor_derivative);
         let [ux, uy] = self.radial_axis;

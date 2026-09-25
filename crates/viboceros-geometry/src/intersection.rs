@@ -10,6 +10,7 @@ mod sphere_cylinder_singular;
 mod sphere_cylinder_turning;
 mod torus_cone;
 mod torus_cylinder;
+mod torus_meridian;
 mod torus_plane;
 mod torus_sphere;
 mod torus_torus;

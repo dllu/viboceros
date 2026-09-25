@@ -1,7 +1,8 @@
 //! Sections of a canonical torus and a finite planar patch.
 
-mod oblique;
 mod parallel_offset;
+
+use super::torus_meridian as oblique;
 
 use super::{SurfaceSurfaceIntersectionEvent, intersect_curve_with_planar_surface};
 use crate::{Circle3, Frame3, GeometryError, NurbsSurface, Plane, Real, Tolerance};
