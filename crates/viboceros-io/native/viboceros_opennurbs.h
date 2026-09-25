@@ -59,6 +59,21 @@ typedef struct ViboWriteGroup {
   const char* name;
 } ViboWriteGroup;
 
+typedef struct ViboNamedView {
+  const char* name;
+  uint8_t projection; // 1 parallel, 2 perspective
+  uint8_t has_target;
+  double camera_location[3];
+  double camera_direction[3];
+  double camera_up[3];
+  double target[3];
+  double cplane_origin[3];
+  double cplane_x[3];
+  double cplane_y[3];
+  double frustum[6]; // left, right, bottom, top, near, far
+  int32_t screen_port[4]; // left, right, bottom, top
+} ViboNamedView;
+
 typedef struct ViboUserText {
   const char* key;
   const char* value;
@@ -112,6 +127,9 @@ int32_t vibo_3dm_layer(const ViboThreeDmModel* model, size_t index,
 size_t vibo_3dm_group_count(const ViboThreeDmModel* model);
 int32_t vibo_3dm_group(const ViboThreeDmModel* model, size_t index,
                        int32_t* source_index, const char** name);
+size_t vibo_3dm_named_view_count(const ViboThreeDmModel* model);
+int32_t vibo_3dm_named_view(const ViboThreeDmModel* model, size_t index,
+                            ViboNamedView* view);
 
 size_t vibo_3dm_object_count(const ViboThreeDmModel* model);
 size_t vibo_3dm_unsupported_object_count(const ViboThreeDmModel* model);
@@ -138,7 +156,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        double angle_tolerance,
                        const ViboWriteLayer* layers,
                        size_t layer_count, const ViboWriteGroup* groups,
-                       size_t group_count, const ViboWriteObject* objects,
+                       size_t group_count, const ViboNamedView* named_views,
+                       size_t named_view_count, const ViboWriteObject* objects,
                        size_t object_count, char* error,
                        size_t error_capacity);
 

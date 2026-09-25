@@ -14,6 +14,8 @@ name. `Rename Front detail | Entrance` and `Duplicate Front detail | Entrance`
 use `|` to separate two names, so spaces are allowed in either name. Names are
 matched without regard to case and keep the spelling you enter.
 
-The current registry lives in the application session. 3DM named-view
-import/export, a thumbnails panel, and floating viewport restore remain to be
-implemented. See [Rhino's NamedView command](https://docs.mcneel.com/rhino/8/help/en-us/commands/namedview.htm).
+The current registry lives in the application session. The lower-level 3DM
+reader/writer retains named views, but `Import3dm` and `Export3dm` do not yet
+connect that file table to this session registry. A thumbnails panel and
+floating viewport restore also remain to be implemented. See
+[Rhino's NamedView command](https://docs.mcneel.com/rhino/8/help/en-us/commands/namedview.htm).

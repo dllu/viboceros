@@ -7,8 +7,8 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    Brep, CircularArc3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3,
-    PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
+    Brep, CircularArc3, Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface,
+    Point3, PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, Vector3, WeightedPoint3,
 };
 
 use crate::LengthUnitSystem;
@@ -40,6 +40,29 @@ pub struct ThreeDmLayer {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmGroup {
     pub name: String,
+}
+
+/// Camera and construction plane saved in a 3DM named-view table.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ThreeDmProjection {
+    Parallel = 1,
+    Perspective = 2,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmNamedView {
+    pub name: String,
+    pub projection: ThreeDmProjection,
+    pub camera_location: Point3,
+    pub camera_direction: Vector3,
+    pub camera_up: Vector3,
+    pub target: Option<Point3>,
+    pub construction_plane: Frame3,
+    /// Left, right, bottom, top, near, and far, in model units.
+    pub frustum: [f64; 6],
+    /// Left, right, bottom, and top device coordinates.
+    pub screen_port: [i32; 4],
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -107,6 +130,7 @@ pub struct ThreeDmModel {
     pub units: LengthUnitSystem,
     pub layers: Vec<ThreeDmLayer>,
     pub groups: Vec<ThreeDmGroup>,
+    pub named_views: Vec<ThreeDmNamedView>,
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
 }
@@ -122,6 +146,7 @@ impl ThreeDmModel {
             tolerance: Tolerance::DEFAULT,
             layers,
             groups,
+            named_views: Vec::new(),
             objects,
             unsupported_object_count: 0,
         }
@@ -198,6 +223,20 @@ pub fn read_3dm_file_in_units(
         for object in &mut model.objects {
             object.geometry =
                 crate::three_dm_units::transform_geometry(&object.geometry, transform, tolerance)?;
+        }
+        for view in &mut model.named_views {
+            let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
+                Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
+            };
+            view.camera_location = scaled_point(view.camera_location)?;
+            view.target = view.target.map(scaled_point).transpose()?;
+            view.construction_plane = Frame3::try_from_directions(
+                scaled_point(view.construction_plane.origin())?,
+                view.construction_plane.x_axis().as_vector(),
+                view.construction_plane.y_axis().as_vector(),
+                Tolerance::NUMERICAL_VALIDATION,
+            )?;
+            view.frustum = view.frustum.map(|coordinate| coordinate * scale);
         }
     }
     model.units = target_units.clone();
@@ -288,6 +327,31 @@ pub fn write_3dm_file(
         .iter()
         .map(|name| ffi::ViboWriteGroup {
             name: name.as_ptr(),
+        })
+        .collect::<Vec<_>>();
+
+    let named_view_names = model
+        .named_views
+        .iter()
+        .map(|view| c_string(&view.name, "named view name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let named_views = model
+        .named_views
+        .iter()
+        .zip(&named_view_names)
+        .map(|(view, name)| ffi::ViboNamedView {
+            name: name.as_ptr(),
+            projection: view.projection as u8,
+            has_target: u8::from(view.target.is_some()),
+            camera_location: view.camera_location.to_array(),
+            camera_direction: view.camera_direction.to_array(),
+            camera_up: view.camera_up.to_array(),
+            target: view.target.map_or([0.0; 3], Point3::to_array),
+            cplane_origin: view.construction_plane.origin().to_array(),
+            cplane_x: view.construction_plane.x_axis().as_vector().to_array(),
+            cplane_y: view.construction_plane.y_axis().as_vector().to_array(),
+            frustum: view.frustum,
+            screen_port: view.screen_port,
         })
         .collect::<Vec<_>>();
 
@@ -417,6 +481,8 @@ pub fn write_3dm_file(
             layers.len(),
             pointer_or_null(&groups),
             groups.len(),
+            pointer_or_null(&named_views),
+            named_views.len(),
             pointer_or_null(&objects),
             objects.len(),
             error.as_mut_ptr(),
@@ -541,6 +607,45 @@ fn decode_model(
     }
 
     // SAFETY: the handle owns a live bridge model.
+    let named_view_count = unsafe { ffi::vibo_3dm_named_view_count(handle.0.as_ptr()) };
+    let mut named_views = Vec::with_capacity(named_view_count);
+    for index in 0..named_view_count {
+        let mut raw = ffi::ViboNamedView::default();
+        // SAFETY: the handle is live, the index is in range, and output is writable.
+        if unsafe { ffi::vibo_3dm_named_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid named view record"));
+        }
+        let projection = match raw.projection {
+            1 => ThreeDmProjection::Parallel,
+            2 => ThreeDmProjection::Perspective,
+            _ => {
+                return Err(ThreeDmError::MalformedBridge(
+                    "invalid named view projection",
+                ));
+            }
+        };
+        let construction_plane = Frame3::try_from_directions(
+            Point3::try_from(raw.cplane_origin)?,
+            Vector3::try_from(raw.cplane_x)?,
+            Vector3::try_from(raw.cplane_y)?,
+            Tolerance::NUMERICAL_VALIDATION,
+        )?;
+        named_views.push(ThreeDmNamedView {
+            name: c_text(raw.name)?,
+            projection,
+            camera_location: Point3::try_from(raw.camera_location)?,
+            camera_direction: Vector3::try_from(raw.camera_direction)?,
+            camera_up: Vector3::try_from(raw.camera_up)?,
+            target: (raw.has_target != 0)
+                .then(|| Point3::try_from(raw.target))
+                .transpose()?,
+            construction_plane,
+            frustum: raw.frustum,
+            screen_port: raw.screen_port,
+        });
+    }
+
+    // SAFETY: the handle owns a live bridge model.
     let object_count = unsafe { ffi::vibo_3dm_object_count(handle.0.as_ptr()) };
     let mut objects = Vec::with_capacity(object_count);
     // SAFETY: the handle owns a live bridge model.
@@ -564,6 +669,7 @@ fn decode_model(
         units,
         layers,
         groups,
+        named_views,
         objects,
         unsupported_object_count: unsupported,
     })
@@ -939,6 +1045,38 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
             )));
         }
     }
+    let mut named_view_names = BTreeSet::new();
+    for (index, view) in model.named_views.iter().enumerate() {
+        let name = view.name.trim();
+        if name.is_empty() || !named_view_names.insert(name.to_lowercase()) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named view {index} has an empty or duplicate name"
+            )));
+        }
+        if view
+            .camera_direction
+            .cross(view.camera_up)?
+            .normalized_nonzero()
+            .is_err()
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named view {index} has a degenerate camera orientation"
+            )));
+        }
+        let [left, right, bottom, top, near, far] = view.frustum;
+        if !view.frustum.iter().all(|value| value.is_finite())
+            || left >= right
+            || bottom >= top
+            || near <= 0.0
+            || near >= far
+            || view.screen_port[0] == view.screen_port[1]
+            || view.screen_port[2] == view.screen_port[3]
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named view {index} has an invalid frustum"
+            )));
+        }
+    }
     for (index, object) in model.objects.iter().enumerate() {
         let mut user_text_keys = BTreeSet::new();
         for (location, text) in [
@@ -1308,6 +1446,42 @@ mod ffi {
     }
 
     #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct ViboNamedView {
+        pub name: *const c_char,
+        pub projection: u8,
+        pub has_target: u8,
+        pub camera_location: [f64; 3],
+        pub camera_direction: [f64; 3],
+        pub camera_up: [f64; 3],
+        pub target: [f64; 3],
+        pub cplane_origin: [f64; 3],
+        pub cplane_x: [f64; 3],
+        pub cplane_y: [f64; 3],
+        pub frustum: [f64; 6],
+        pub screen_port: [i32; 4],
+    }
+
+    impl Default for ViboNamedView {
+        fn default() -> Self {
+            Self {
+                name: std::ptr::null(),
+                projection: 0,
+                has_target: 0,
+                camera_location: [0.0; 3],
+                camera_direction: [0.0; 3],
+                camera_up: [0.0; 3],
+                target: [0.0; 3],
+                cplane_origin: [0.0; 3],
+                cplane_x: [0.0; 3],
+                cplane_y: [0.0; 3],
+                frustum: [0.0; 6],
+                screen_port: [0; 4],
+            }
+        }
+    }
+
+    #[repr(C)]
     pub struct ViboUserText {
         pub key: *const c_char,
         pub value: *const c_char,
@@ -1380,6 +1554,12 @@ mod ffi {
             source_index: *mut i32,
             name: *mut *const c_char,
         ) -> c_int;
+        pub fn vibo_3dm_named_view_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_named_view(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            view: *mut ViboNamedView,
+        ) -> c_int;
         pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_object(
@@ -1427,6 +1607,8 @@ mod ffi {
             layer_count: usize,
             groups: *const ViboWriteGroup,
             group_count: usize,
+            named_views: *const ViboNamedView,
+            named_view_count: usize,
             objects: *const ViboWriteObject,
             object_count: usize,
             error: *mut c_char,
@@ -2876,6 +3058,74 @@ mod tests {
                 "{fixture} produced invalid topology"
             );
         }
+    }
+
+    #[test]
+    fn named_views_round_trip_through_3dm_and_scale_with_units() {
+        let path = temporary_path("named-views.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        model.units = LengthUnitSystem::Millimeters;
+        let plane = Frame3::try_from_directions(
+            Point3::try_new(2.0, 3.0, 4.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        model.named_views.push(ThreeDmNamedView {
+            name: "Camera A".into(),
+            projection: ThreeDmProjection::Perspective,
+            camera_location: Point3::try_new(0.0, 0.0, 10.0).unwrap(),
+            camera_direction: Vector3::try_new(0.0, 0.0, -1.0).unwrap(),
+            camera_up: Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            target: Some(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+            construction_plane: plane,
+            frustum: [-1.0, 1.0, -0.75, 0.75, 1.0, 100.0],
+            screen_port: [0, 1280, 800, 0],
+        });
+        model.named_views.push(ThreeDmNamedView {
+            name: "Ortho B".into(),
+            projection: ThreeDmProjection::Parallel,
+            camera_location: Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            camera_direction: Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            camera_up: Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            target: None,
+            construction_plane: plane,
+            frustum: [-4.0, 4.0, -3.0, 3.0, 0.1, 1000.0],
+            screen_port: [0, 1024, 768, 0],
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.named_views.len(), 2);
+        let view = &loaded.named_views[0];
+        assert_eq!(view.name, "Camera A");
+        assert_eq!(view.projection, ThreeDmProjection::Perspective);
+        assert_eq!(view.camera_location, model.named_views[0].camera_location);
+        assert_eq!(view.target, model.named_views[0].target);
+        assert_eq!(view.construction_plane, plane);
+        assert_eq!(view.frustum, model.named_views[0].frustum);
+        assert_eq!(view.screen_port, model.named_views[0].screen_port);
+        assert_eq!(loaded.named_views[1].name, "Ortho B");
+        assert_eq!(
+            loaded.named_views[1].projection,
+            ThreeDmProjection::Parallel
+        );
+        assert_eq!(loaded.named_views[1].target, None);
+        assert_eq!(loaded.named_views[1].frustum, model.named_views[1].frustum);
+        assert_eq!(
+            loaded.named_views[1].screen_port,
+            model.named_views[1].screen_port
+        );
+        let meters =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, Tolerance::DEFAULT).unwrap();
+        let scaled = &meters.named_views[0];
+        assert_eq!(scaled.camera_location.z(), 0.01);
+        assert_eq!(
+            scaled.construction_plane.origin().to_array(),
+            [0.002, 0.003, 0.004]
+        );
+        assert_eq!(scaled.frustum[4], 0.001);
+        fs::remove_file(path).unwrap();
     }
 
     fn temporary_path(suffix: &str) -> std::path::PathBuf {
