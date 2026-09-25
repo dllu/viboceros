@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_command::interface::{self, InterfaceCommand, SwitchAction};
+use viboceros_command::interface::{self, InterfaceCommand, SwitchAction, ViewportTabAlignment};
 
 fn enter(app: &mut VibocerosApp, command: &str) {
     app.command_input = command.into();
@@ -54,6 +54,35 @@ fn viewport_tabs_command_controls_visibility_without_interrupting_modeling() {
             .contains("Usage: ViewportTabs")
     );
     assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn viewport_tabs_align_command_places_all_four_edges_without_changing_modeling_state() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    for (command, expected) in [
+        ("ViewportTabs Align=Top", ViewportTabAlignment::Top),
+        ("_-ViewportTabs _Align=_Left", ViewportTabAlignment::Left),
+        ("ViewportTabs Align Right", ViewportTabAlignment::Right),
+        ("ViewportTabs Align=Bottom", ViewportTabAlignment::Bottom),
+    ] {
+        enter(&mut app, command);
+        assert_eq!(app.viewport_tab_alignment, expected);
+        assert!(app.viewport_tabs_visible);
+        assert_eq!(app.active_command, pending);
+    }
+    enter(&mut app, "ViewportTabs Align=Diagonal");
+    assert_eq!(app.viewport_tab_alignment, ViewportTabAlignment::Bottom);
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .contains("Usage: ViewportTabs")
+    );
     enter(&mut app, "1,0,0");
     assert_eq!(app.document.objects().count(), 1);
 }

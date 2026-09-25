@@ -21,6 +21,7 @@ The model-view tabs below the workspace select views, including views covered by
 overlapping windows. Double-click a tab to rename it; right-click for view
 actions, or use the mouse wheel over the tabs to cycle views.
 `ViewportTabs Show|Hide|Toggle` controls the tab strip.
+`ViewportTabs Align=Bottom|Top|Left|Right` moves it to a window edge.
 `-ViewportProperties Title="name"` names the active view for selection and saving.
 `Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
 selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both

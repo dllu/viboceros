@@ -1,6 +1,6 @@
 //! Application settings stored by eframe, separate from model undo history.
 
-use viboceros_command::interface::ZoomScale;
+use viboceros_command::interface::{ViewportTabAlignment, ZoomScale};
 
 use super::DEFAULT_ZOOM_SCALE;
 use crate::viewport::ZoomExtentsBorders;
@@ -9,6 +9,23 @@ const ZOOM_SCALE_KEY: &str = "viboceros.view.zoom_scale.v1";
 const PARALLEL_BORDER_KEY: &str = "viboceros.view.zoom_extents_parallel_border.v1";
 const PERSPECTIVE_BORDER_KEY: &str = "viboceros.view.zoom_extents_perspective_border.v1";
 const VIEWPORT_TABS_KEY: &str = "viboceros.view.viewport_tabs_visible.v1";
+const VIEWPORT_TAB_ALIGNMENT_KEY: &str = "viboceros.view.viewport_tab_alignment.v1";
+
+pub(super) fn load_viewport_tab_alignment(
+    storage: Option<&dyn eframe::Storage>,
+) -> ViewportTabAlignment {
+    storage
+        .and_then(|storage| storage.get_string(VIEWPORT_TAB_ALIGNMENT_KEY))
+        .and_then(|value| ViewportTabAlignment::parse(&value))
+        .unwrap_or_default()
+}
+
+pub(super) fn save_viewport_tab_alignment(
+    storage: &mut dyn eframe::Storage,
+    alignment: ViewportTabAlignment,
+) {
+    storage.set_string(VIEWPORT_TAB_ALIGNMENT_KEY, alignment.label().to_owned());
+}
 
 pub(super) fn load_viewport_tabs_visible(storage: Option<&dyn eframe::Storage>) -> bool {
     storage
@@ -139,5 +156,26 @@ mod tests {
         assert!(!load_viewport_tabs_visible(Some(&storage)));
         storage.set_string(VIEWPORT_TABS_KEY, "invalid".into());
         assert!(load_viewport_tabs_visible(Some(&storage)));
+    }
+
+    #[test]
+    fn viewport_tab_alignment_round_trips_and_ignores_invalid_storage() {
+        let mut storage = MemoryStorage::default();
+        assert_eq!(
+            load_viewport_tab_alignment(Some(&storage)),
+            ViewportTabAlignment::Bottom
+        );
+        let mut app = super::super::tests::test_app();
+        app.viewport_tab_alignment = ViewportTabAlignment::Left;
+        eframe::App::save(&mut app, &mut storage);
+        assert_eq!(
+            load_viewport_tab_alignment(Some(&storage)),
+            ViewportTabAlignment::Left
+        );
+        storage.set_string(VIEWPORT_TAB_ALIGNMENT_KEY, "Diagonal".into());
+        assert_eq!(
+            load_viewport_tab_alignment(Some(&storage)),
+            ViewportTabAlignment::Bottom
+        );
     }
 }

@@ -68,6 +68,8 @@ The tab menu can activate, rename, maximize, restore, or close a view, and `+` o
 new overlapping Top view. `ViewportTabs Show|Hide|Toggle` controls visibility;
 this setting persists between sessions. The mouse wheel cycles views while the
 pointer is over the tab strip; wheel input over a viewport continues to zoom it.
+`ViewportTabs Align=Bottom|Top|Left|Right` moves the strip to the corresponding
+edge. The tab menu offers the same positions, and alignment persists between sessions.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
 empty layers; it reports object counts and combines edits into one undo step.
 Scroll inside the pane to reach lower layers, new-layer controls, and groups in

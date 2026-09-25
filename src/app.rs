@@ -1473,6 +1473,7 @@ pub struct VibocerosApp {
     maximized_viewport: Option<usize>,
     viewport_positions: Vec<[f64; 4]>,
     viewport_tabs_visible: bool,
+    viewport_tab_alignment: viboceros_command::interface::ViewportTabAlignment,
     viewport_tab_rename: Option<viewport_layout::ViewportTabRename>,
     osnap: bool,
     snaps: snapping::SnapControls,
@@ -1534,6 +1535,8 @@ impl VibocerosApp {
         let zoom_extents_borders = preferences::load_zoom_extents_borders(creation_context.storage);
         let viewport_tabs_visible =
             preferences::load_viewport_tabs_visible(creation_context.storage);
+        let viewport_tab_alignment =
+            preferences::load_viewport_tab_alignment(creation_context.storage);
         Self {
             command_line,
             document: Document::default(),
@@ -1547,6 +1550,7 @@ impl VibocerosApp {
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             viewport_tabs_visible,
+            viewport_tab_alignment,
             viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
@@ -6469,6 +6473,7 @@ impl eframe::App for VibocerosApp {
         preferences::save_zoom_scale(storage, self.zoom_scale);
         preferences::save_zoom_extents_borders(storage, self.zoom_extents_borders);
         preferences::save_viewport_tabs_visible(storage, self.viewport_tabs_visible);
+        preferences::save_viewport_tab_alignment(storage, self.viewport_tab_alignment);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
@@ -6541,7 +6546,7 @@ impl eframe::App for VibocerosApp {
         self.show_grid_settings(ui);
         self.show_layers(ui);
         self.show_command_line(ui);
-        self.show_viewport_tabs(ui);
+        let _ = self.show_viewport_tabs(ui);
         let end_analysis_picking = self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
@@ -7013,6 +7018,7 @@ mod tests {
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             viewport_tabs_visible: true,
+            viewport_tab_alignment: Default::default(),
             viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),

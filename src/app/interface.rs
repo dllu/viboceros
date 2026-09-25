@@ -400,6 +400,10 @@ impl VibocerosApp {
                     ));
                     return;
                 }
+                if let InterfaceCommand::ViewportTabsAlign(alignment) = command {
+                    self.set_viewport_tab_alignment(alignment);
+                    return;
+                }
                 if command == InterfaceCommand::ThreeView {
                     self.viewport_tab_rename = None;
                     let grid = self.viewports[self.active_viewport].grid_settings();

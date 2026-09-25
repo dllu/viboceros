@@ -1,12 +1,13 @@
 //! Docked viewport layout operations.
 
 use super::*;
-use viboceros_command::interface::InterfaceCommand;
+use viboceros_command::interface::{InterfaceCommand, ViewportTabAlignment};
 
 #[derive(Clone, Copy)]
 enum ViewportTabAction {
     Select(usize),
     Cycle(bool),
+    Align(ViewportTabAlignment),
     Rename(usize),
     Maximize(usize),
     Close(usize),
@@ -198,68 +199,33 @@ impl VibocerosApp {
         }
     }
 
-    pub(super) fn show_viewport_tabs(&mut self, root: &mut egui::Ui) {
+    pub(super) fn set_viewport_tab_alignment(&mut self, alignment: ViewportTabAlignment) {
+        self.viewport_tab_alignment = alignment;
+        self.push_log(format!("Viewport tabs aligned {}", alignment.label()));
+    }
+
+    pub(super) fn show_viewport_tabs(&mut self, root: &mut egui::Ui) -> Option<egui::Rect> {
         if !self.viewport_tabs_visible {
-            return;
+            return None;
         }
         let mut action = None;
-        let panel = egui::Panel::bottom("viewport_tabs").show(root, |ui| {
-            ui.horizontal(|ui| {
-                ui.label("Model views");
-                if ui.button("+").on_hover_text("New viewport").clicked() {
-                    action = Some(ViewportTabAction::New);
-                }
-                ui.separator();
-                egui::ScrollArea::horizontal()
-                    .id_salt("model_viewport_tabs")
-                    .show(ui, |ui| {
-                        ui.horizontal(|ui| {
-                            for (index, viewport) in self.viewports.iter().enumerate() {
-                                let response = ui.selectable_label(
-                                    self.active_viewport == index,
-                                    format!("{} {}", index + 1, viewport.view_label()),
-                                );
-                                if response.clicked() {
-                                    action = Some(ViewportTabAction::Select(index));
-                                }
-                                if response.double_clicked() {
-                                    action = Some(ViewportTabAction::Rename(index));
-                                }
-                                response.context_menu(|ui| {
-                                    if ui.button("Activate").clicked() {
-                                        action = Some(ViewportTabAction::Select(index));
-                                        ui.close();
-                                    }
-                                    if ui.button("Rename").clicked() {
-                                        action = Some(ViewportTabAction::Rename(index));
-                                        ui.close();
-                                    }
-                                    if ui
-                                        .button(if self.maximized_viewport == Some(index) {
-                                            "Restore layout"
-                                        } else {
-                                            "Maximize"
-                                        })
-                                        .clicked()
-                                    {
-                                        action = Some(ViewportTabAction::Maximize(index));
-                                        ui.close();
-                                    }
-                                    if ui
-                                        .add_enabled(
-                                            self.viewports.len() > 1,
-                                            egui::Button::new("Close viewport"),
-                                        )
-                                        .clicked()
-                                    {
-                                        action = Some(ViewportTabAction::Close(index));
-                                        ui.close();
-                                    }
-                                });
-                            }
-                        });
-                    });
-            });
+        let alignment = self.viewport_tab_alignment;
+        let panel = match alignment {
+            ViewportTabAlignment::Bottom => egui::Panel::bottom("viewport_tabs_bottom"),
+            ViewportTabAlignment::Top => egui::Panel::top("viewport_tabs_top"),
+            ViewportTabAlignment::Left => {
+                egui::Panel::left("viewport_tabs_left").default_size(160.0)
+            }
+            ViewportTabAlignment::Right => {
+                egui::Panel::right("viewport_tabs_right").default_size(160.0)
+            }
+        }
+        .show(root, |ui| {
+            if alignment.is_vertical() {
+                ui.vertical(|ui| self.viewport_tabs_content(ui, &mut action, true));
+            } else {
+                ui.horizontal(|ui| self.viewport_tabs_content(ui, &mut action, false));
+            }
         });
         if action.is_none()
             && root
@@ -286,6 +252,91 @@ impl VibocerosApp {
             self.apply_viewport_tab_action(action);
         }
         self.show_viewport_tab_rename(root.ctx());
+        Some(panel.response.rect)
+    }
+
+    fn viewport_tabs_content(
+        &self,
+        ui: &mut egui::Ui,
+        action: &mut Option<ViewportTabAction>,
+        vertical: bool,
+    ) {
+        ui.label("Model views");
+        if ui.button("+").on_hover_text("New viewport").clicked() {
+            *action = Some(ViewportTabAction::New);
+        }
+        ui.separator();
+        let scroll = if vertical {
+            egui::ScrollArea::vertical()
+        } else {
+            egui::ScrollArea::horizontal()
+        };
+        scroll.id_salt("model_viewport_tabs").show(ui, |ui| {
+            let layout = if vertical {
+                egui::Layout::top_down(egui::Align::Min)
+            } else {
+                egui::Layout::left_to_right(egui::Align::Center)
+            };
+            ui.with_layout(layout, |ui| {
+                for (index, viewport) in self.viewports.iter().enumerate() {
+                    let response = ui.selectable_label(
+                        self.active_viewport == index,
+                        format!("{} {}", index + 1, viewport.view_label()),
+                    );
+                    if response.clicked() {
+                        *action = Some(ViewportTabAction::Select(index));
+                    }
+                    if response.double_clicked() {
+                        *action = Some(ViewportTabAction::Rename(index));
+                    }
+                    response.context_menu(|ui| {
+                        if ui.button("Activate").clicked() {
+                            *action = Some(ViewportTabAction::Select(index));
+                            ui.close();
+                        }
+                        if ui.button("Rename").clicked() {
+                            *action = Some(ViewportTabAction::Rename(index));
+                            ui.close();
+                        }
+                        if ui
+                            .button(if self.maximized_viewport == Some(index) {
+                                "Restore layout"
+                            } else {
+                                "Maximize"
+                            })
+                            .clicked()
+                        {
+                            *action = Some(ViewportTabAction::Maximize(index));
+                            ui.close();
+                        }
+                        if ui
+                            .add_enabled(
+                                self.viewports.len() > 1,
+                                egui::Button::new("Close viewport"),
+                            )
+                            .clicked()
+                        {
+                            *action = Some(ViewportTabAction::Close(index));
+                            ui.close();
+                        }
+                        ui.menu_button("Tab position", |ui| {
+                            for alignment in ViewportTabAlignment::ALL {
+                                if ui
+                                    .selectable_label(
+                                        self.viewport_tab_alignment == alignment,
+                                        alignment.label(),
+                                    )
+                                    .clicked()
+                                {
+                                    *action = Some(ViewportTabAction::Align(alignment));
+                                    ui.close();
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        });
     }
 
     fn show_viewport_tab_rename(&mut self, context: &egui::Context) {
@@ -348,6 +399,7 @@ impl VibocerosApp {
             } else {
                 InterfaceCommand::PrevViewport
             }),
+            ViewportTabAction::Align(alignment) => self.set_viewport_tab_alignment(alignment),
             ViewportTabAction::Rename(index) => {
                 if let Some(viewport) = self.viewports.get(index) {
                     self.viewport_tab_rename = Some(ViewportTabRename {
@@ -607,7 +659,9 @@ mod tests {
                         ],
                         ..Default::default()
                     },
-                    |ui| app.show_viewport_tabs(ui),
+                    |ui| {
+                        let _ = app.show_viewport_tabs(ui);
+                    },
                 )
                 .drop_without_applying_deltas();
         };
@@ -619,5 +673,45 @@ mod tests {
         frame(&mut app, egui::pos2(100.0, 580.0), 40.0);
         assert_eq!(app.active_viewport, 0);
         assert_eq!(app.maximized_viewport, Some(0));
+        app.viewport_tab_alignment = ViewportTabAlignment::Left;
+        frame(&mut app, egui::pos2(80.0, 300.0), -40.0);
+        assert_eq!(app.active_viewport, 1);
+        app.viewport_tab_alignment = ViewportTabAlignment::Right;
+        frame(&mut app, egui::pos2(720.0, 300.0), -40.0);
+        assert_eq!(app.active_viewport, 2);
+        app.viewport_tab_alignment = ViewportTabAlignment::Top;
+        frame(&mut app, egui::pos2(100.0, 10.0), 40.0);
+        assert_eq!(app.active_viewport, 1);
+        assert_eq!(app.maximized_viewport, Some(1));
+    }
+
+    #[test]
+    fn tab_panel_uses_the_requested_window_edge() {
+        let mut app = super::super::tests::test_app();
+        let context = egui::Context::default();
+        let mut rectangles = Vec::new();
+        for alignment in ViewportTabAlignment::ALL {
+            app.viewport_tab_alignment = alignment;
+            let mut rect = None;
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(800.0, 600.0),
+                        )),
+                        ..Default::default()
+                    },
+                    |ui| rect = app.show_viewport_tabs(ui),
+                )
+                .drop_without_applying_deltas();
+            rectangles.push(rect.unwrap());
+        }
+        assert!(rectangles[0].center().y > 300.0);
+        assert!(rectangles[1].center().y < 300.0);
+        assert!(rectangles[2].center().x < 400.0, "{rectangles:?}");
+        assert!(rectangles[3].center().x > 400.0);
+        assert!(rectangles[2].height() > rectangles[2].width());
+        assert!(rectangles[3].height() > rectangles[3].width());
     }
 }
