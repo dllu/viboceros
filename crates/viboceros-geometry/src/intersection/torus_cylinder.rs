@@ -82,6 +82,8 @@ pub(super) fn intersect(
                 || (cylinder_radius == major_radius - minor_radius
                     && cylinder_radius > minor_radius + 4.0 * spatial_tolerance)
                 || (cylinder_radius > major_radius - minor_radius + 4.0 * spatial_tolerance
+                    && cylinder_radius + 4.0 * spatial_tolerance < minor_radius)
+                || (cylinder_radius == major_radius - minor_radius
                     && cylinder_radius + 4.0 * spatial_tolerance < minor_radius))
         {
             return perpendicular_centered::intersect(
@@ -535,6 +537,61 @@ mod tests {
                 assert!((location.y().hypot(location.z()) - 0.75).abs() < 5e-9);
             }
         }
+    }
+
+    #[test]
+    fn fat_ring_inner_rim_cylinder_has_crossing_curves_and_clipped_arcs() {
+        let torus = NurbsSurface::try_torus(frame(), 1.5, 1.0).unwrap();
+        let cylinder = perpendicular_cylinder(0.5, -3.0, 3.0);
+        for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 4);
+            let [
+                _,
+                _,
+                SurfaceSurfaceIntersectionEvent::Curve(inner_positive),
+                SurfaceSurfaceIntersectionEvent::Curve(inner_negative),
+            ] = events.as_slice()
+            else {
+                panic!("critical inner branches should be the final two curves")
+            };
+            for fraction in [0.0, 0.5] {
+                let domain = inner_positive.domain();
+                let parameter = *domain.start() + (*domain.end() - *domain.start()) * fraction;
+                let first = inner_positive.evaluate(parameter).unwrap();
+                let second = inner_negative.evaluate(parameter).unwrap();
+                assert!(first.distance_to(second).unwrap() < 5e-9);
+            }
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("inner-rim contact should retain crossing curves")
+                };
+                assert!(curve.is_closed().unwrap());
+                for index in 0..=64 {
+                    let domain = curve.domain();
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert!(
+                        ((location.x().hypot(location.y()) - 1.5).hypot(location.z()) - 1.0).abs()
+                            < 5e-9
+                    );
+                    assert!((location.y().hypot(location.z()) - 0.5).abs() < 5e-9);
+                }
+            }
+        }
+        let arcs = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(0.5, 0.2, 0.5),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arcs.len(), 4);
+        assert!(arcs.iter().all(|event| matches!(
+            event,
+            SurfaceSurfaceIntersectionEvent::Curve(curve) if !curve.is_closed().unwrap()
+        )));
     }
 
     #[test]

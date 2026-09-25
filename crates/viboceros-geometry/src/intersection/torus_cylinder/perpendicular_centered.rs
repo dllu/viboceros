@@ -24,6 +24,7 @@ enum Regime {
     Meridian,
     Critical,
     InnerCritical,
+    FatInnerCritical,
     Turned {
         limit: Real,
     },
@@ -67,24 +68,30 @@ pub(super) fn intersect(
         regime,
     };
     let mut sections = Vec::with_capacity(4);
-    if cylinder_radius > major - minor && cylinder_radius < minor {
-        let root =
-            (major * major + minor * minor - cylinder_radius * cylinder_radius) / (2.0 * major);
-        let sine = (((minor - root) * (minor + root)).max(0.0)).sqrt() / cylinder_radius;
-        let half_width = std::f64::consts::FRAC_PI_2 - sine.clamp(0.0, 1.0).asin();
+    if cylinder_radius >= major - minor && cylinder_radius < minor {
         for axial_side in [1.0, -1.0] {
             sections.push(section(axial_side, 1.0, Regime::CylinderAngle));
         }
-        for upper in [1.0, -1.0] {
-            sections.push(section(
-                1.0,
-                -1.0,
-                Regime::FatInnerTurned {
-                    half_width,
-                    root,
-                    upper,
-                },
-            ));
+        if cylinder_radius == major - minor {
+            for axial_side in [1.0, -1.0] {
+                sections.push(section(axial_side, -1.0, Regime::FatInnerCritical));
+            }
+        } else {
+            let root =
+                (major * major + minor * minor - cylinder_radius * cylinder_radius) / (2.0 * major);
+            let sine = (((minor - root) * (minor + root)).max(0.0)).sqrt() / cylinder_radius;
+            let half_width = std::f64::consts::FRAC_PI_2 - sine.clamp(0.0, 1.0).asin();
+            for upper in [1.0, -1.0] {
+                sections.push(section(
+                    1.0,
+                    -1.0,
+                    Regime::FatInnerTurned {
+                        half_width,
+                        root,
+                        upper,
+                    },
+                ));
+            }
         }
     } else {
         let regime = if cylinder_radius == major - minor {
@@ -289,6 +296,28 @@ impl Section {
                     let amplitude = 2.0 * (self.major * self.minor).sqrt();
                     let axial = amplitude * (0.5 * angle).cos();
                     let axial_derivative = -0.5 * amplitude * (0.5 * angle).sin();
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
+                Regime::FatInnerCritical => {
+                    let lateral = self.cylinder_radius * cosine;
+                    let lateral_derivative = -self.cylinder_radius * sine;
+                    let height = self.cylinder_radius * sine;
+                    let height_derivative = self.cylinder_radius * cosine;
+                    let tube_radial = (self.minor * self.minor - height * height).sqrt();
+                    let factor = self.cylinder_radius
+                        * (2.0 * self.major / (self.minor + tube_radial)).sqrt();
+                    let factor_derivative = factor * height * height_derivative
+                        / (2.0 * tube_radial * (self.minor + tube_radial));
+                    let axial = self.axial_side * factor * sine;
+                    let axial_derivative =
+                        self.axial_side * factor_derivative.mul_add(sine, factor * cosine);
                     (
                         lateral,
                         height,
