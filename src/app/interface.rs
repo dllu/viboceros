@@ -369,6 +369,30 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::ThreeView {
+                    let grid = self.viewports[self.active_viewport].grid_settings();
+                    self.viewports = Viewport::standard_views().into_iter().take(3).collect();
+                    for viewport in &mut self.viewports {
+                        viewport.set_grid_settings(grid);
+                    }
+                    self.viewport_positions = THREE_VIEWPORT_POSITIONS.to_vec();
+                    self.active_viewport = 0;
+                    self.maximized_viewport = None;
+                    self.push_log(message);
+                    return;
+                }
+                if command == InterfaceCommand::FourView && self.viewports.len() != 4 {
+                    let grid = self.viewports[self.active_viewport].grid_settings();
+                    self.viewports = Viewport::standard_views().into();
+                    for viewport in &mut self.viewports {
+                        viewport.set_grid_settings(grid);
+                    }
+                    self.viewport_positions = DEFAULT_VIEWPORT_POSITIONS.to_vec();
+                    self.active_viewport = 0;
+                    self.maximized_viewport = None;
+                    self.push_log(message);
+                    return;
+                }
                 if command == InterfaceCommand::ShowEnds {
                     let sources = self
                         .document
@@ -961,8 +985,8 @@ impl VibocerosApp {
                     self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
-                    self.push_log("ReadViewportsFromFile path.3dm: copy four saved model viewports and their layout from a 3DM file".into());
-                    self.push_log("SetActiveViewport name|1..4; SetMaximizedViewport name|1..4: select a displayed viewport".into());
+                    self.push_log("ReadViewportsFromFile path.3dm: copy saved model viewports and their layout from a 3DM file".into());
+                    self.push_log("SetActiveViewport name|number; SetMaximizedViewport name|number: select a displayed viewport".into());
                     self.command_input.clear();
                 }
                 _ => self.push_log("Usage: Help [UI]".into()),
@@ -1003,9 +1027,9 @@ impl VibocerosApp {
                     argument
                 };
             let usage = if maximize {
-                "SetMaximizedViewport name|1..4"
+                "SetMaximizedViewport name|number"
             } else {
-                "SetActiveViewport name|1..4"
+                "SetActiveViewport name|number"
             };
             if argument.is_empty() {
                 return Err(format!("Usage: {usage}"));

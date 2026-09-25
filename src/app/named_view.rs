@@ -62,8 +62,33 @@ fn views_in_grid_order(views: Vec<ThreeDmViewport>) -> Vec<ThreeDmViewport> {
         .collect()
 }
 
-fn file_viewport_positions(views: &[ThreeDmViewport]) -> [[f64; 4]; 4] {
-    if views.len() != 4
+fn default_viewport_positions(count: usize) -> Vec<[f64; 4]> {
+    match count {
+        0 | 4 => DEFAULT_VIEWPORT_POSITIONS.to_vec(),
+        1 => vec![[0.0, 1.0, 0.0, 1.0]],
+        2 => vec![[0.0, 0.5, 0.0, 1.0], [0.5, 1.0, 0.0, 1.0]],
+        3 => THREE_VIEWPORT_POSITIONS.to_vec(),
+        _ => {
+            let columns = (count as f64).sqrt().ceil() as usize;
+            let rows = count.div_ceil(columns);
+            (0..count)
+                .map(|index| {
+                    let column = index % columns;
+                    let row = index / columns;
+                    [
+                        column as f64 / columns as f64,
+                        (column + 1) as f64 / columns as f64,
+                        row as f64 / rows as f64,
+                        (row + 1) as f64 / rows as f64,
+                    ]
+                })
+                .collect()
+        }
+    }
+}
+
+fn file_viewport_positions(views: &[ThreeDmViewport]) -> Vec<[f64; 4]> {
+    if views.is_empty()
         || views.iter().any(|view| {
             let [left, right, top, bottom] = view.position;
             !(0.0..=1.0).contains(&left)
@@ -74,16 +99,20 @@ fn file_viewport_positions(views: &[ThreeDmViewport]) -> [[f64; 4]; 4] {
                 || top >= bottom
         })
     {
-        return DEFAULT_VIEWPORT_POSITIONS;
+        return default_viewport_positions(views.len());
     }
-    std::array::from_fn(|index| views[index].position)
+    views.iter().map(|view| view.position).collect()
 }
 
 impl VibocerosApp {
     fn restore_file_viewports(&mut self, current_views: Vec<ThreeDmViewport>) {
         let current_views = views_in_grid_order(current_views);
         self.viewport_positions = file_viewport_positions(&current_views);
-        self.viewports = Viewport::standard_views();
+        self.viewports = Viewport::standard_views().into();
+        if !current_views.is_empty() {
+            self.viewports
+                .resize_with(current_views.len(), || Viewport::new(ViewKind::Perspective));
+        }
         for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
             if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
                 viewport.restore_named_view(snapshot);
@@ -131,12 +160,8 @@ impl VibocerosApp {
                 .map_err(|_| "Usage: ReadViewportsFromFile path.3dm".to_owned())?;
             let views = viboceros_io::read_3dm_viewports_file_in_units(path, self.document.units())
                 .map_err(|error| error.to_string())?;
-            if views.len() != self.viewports.len() {
-                return Err(format!(
-                    "Expected {} model viewports in 3DM file; found {}",
-                    self.viewports.len(),
-                    views.len()
-                ));
+            if views.is_empty() {
+                return Err("No model viewports in 3DM file".to_owned());
             }
             for (index, view) in views.iter().enumerate() {
                 Viewport::named_view_from_3dm(&view.camera)

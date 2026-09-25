@@ -574,6 +574,11 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
         Some(Ok(InterfaceCommand::MaxViewport))
     );
     assert_eq!(parse("4View"), Some(Ok(InterfaceCommand::FourView)));
+    assert_eq!(parse("3View"), Some(Ok(InterfaceCommand::ThreeView)));
+    assert_eq!(
+        parse("3View extra"),
+        Some(Err(InterfaceError::Usage("3View")))
+    );
     assert_eq!(
         parse("MaxViewport extra"),
         Some(Err(InterfaceError::Usage("MaxViewport")))
@@ -588,6 +593,17 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
     state.apply(InterfaceCommand::FourView).unwrap();
     assert_eq!(state.maximized_viewport, None);
     assert_eq!(state.display_modes, modes);
+    state.apply(InterfaceCommand::ThreeView).unwrap();
+    assert_eq!(state.active_viewport, 0);
+    assert_eq!(state.display_modes.len(), 3);
+    state.apply(InterfaceCommand::MaxViewport).unwrap();
+    assert_eq!(
+        state.apply(InterfaceCommand::MaxViewport).unwrap(),
+        "Restored 3 viewports"
+    );
+    state.apply(InterfaceCommand::FourView).unwrap();
+    assert_eq!(state.display_modes.len(), 4);
+    assert_eq!(state.maximized_viewport, None);
 }
 
 #[test]

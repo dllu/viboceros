@@ -295,7 +295,7 @@ fn read_viewports_from_file_preserves_document_and_converts_units() {
     });
     source.active_viewport = 2;
     enter(&mut source, "MaxViewport");
-    source.viewport_positions = [
+    source.viewport_positions = vec![
         [0.0, 0.3, 0.0, 0.7],
         [0.3, 1.0, 0.0, 0.4],
         [0.0, 0.3, 0.7, 1.0],
@@ -391,7 +391,13 @@ fn read_viewports_from_file_preserves_document_and_converts_units() {
         &mut destination,
         &format!("ReadViewportsFromFile \"{}\"", empty_path.display()),
     );
-    assert!(destination.command_log.back().unwrap().contains("found 0"));
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .contains("No model viewports")
+    );
     assert_eq!(destination.three_dm_viewports().unwrap(), views_before);
     std::fs::remove_file(empty_path).unwrap();
     std::fs::remove_file(path).unwrap();
@@ -427,8 +433,12 @@ fn file_viewport_titles_survive_open_read_and_export() {
     let mut opened = test_app();
     enter(&mut opened, &format!("Open \"{}\"", input.display()));
     assert_eq!(
-        opened.viewports.each_ref().map(Viewport::view_label),
-        titles
+        opened
+            .viewports
+            .iter()
+            .map(Viewport::view_label)
+            .collect::<Vec<_>>(),
+        titles.to_vec()
     );
     enter(&mut opened, "SetActiveViewport \"north elevation\"");
     assert_eq!(opened.active_viewport, 2);
@@ -448,7 +458,13 @@ fn file_viewport_titles_survive_open_read_and_export() {
         &mut read,
         &format!("ReadViewportsFromFile \"{}\"", input.display()),
     );
-    assert_eq!(read.viewports.each_ref().map(Viewport::view_label), titles);
+    assert_eq!(
+        read.viewports
+            .iter()
+            .map(Viewport::view_label)
+            .collect::<Vec<_>>(),
+        titles.to_vec()
+    );
     enter(&mut read, "SetMaximizedViewport South Detail");
     assert_eq!(read.active_viewport, 3);
     assert_eq!(read.maximized_viewport, Some(3));
@@ -458,6 +474,101 @@ fn file_viewport_titles_survive_open_read_and_export() {
     assert!(read.viewports[3].title_modified());
 
     std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn three_view_layout_round_trips_and_read_viewports_changes_count() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-three-view-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "3View");
+    source.viewports[2].display_mode = DisplayMode::Shaded;
+    source.active_viewport = 2;
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    let model = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(model.viewports.len(), 3);
+    assert_eq!(
+        model
+            .viewports
+            .iter()
+            .map(|view| view.position)
+            .collect::<Vec<_>>(),
+        THREE_VIEWPORT_POSITIONS.to_vec()
+    );
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports.len(), 3);
+    assert_eq!(opened.viewport_positions, THREE_VIEWPORT_POSITIONS.to_vec());
+    assert_eq!(opened.active_viewport, 2);
+    assert_eq!(opened.viewports[2].display_mode, DisplayMode::Shaded);
+
+    let mut read = test_app();
+    enter(
+        &mut read,
+        &format!("ReadViewportsFromFile \"{}\"", path.display()),
+    );
+    assert_eq!(read.viewports.len(), 3);
+    assert_eq!(read.viewport_positions, THREE_VIEWPORT_POSITIONS.to_vec());
+    assert!(read.document_path.is_none());
+    enter(&mut read, "4View");
+    assert_eq!(read.viewports.len(), 4);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn open_accepts_more_than_four_saved_model_viewports() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-five-view-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, &format!("Export3dm \"{}\"", path.display()));
+    let mut model = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    let mut extra = model.viewports[1].clone();
+    extra.camera.name = "Detail Five".into();
+    extra.active = false;
+    extra.maximized = false;
+    model.viewports.push(extra);
+    let positions = [
+        [0.0, 1.0 / 3.0, 0.0, 0.5],
+        [1.0 / 3.0, 2.0 / 3.0, 0.0, 0.5],
+        [2.0 / 3.0, 1.0, 0.0, 0.5],
+        [0.0, 0.5, 0.5, 1.0],
+        [0.5, 1.0, 0.5, 1.0],
+    ];
+    for (view, position) in model.viewports.iter_mut().zip(positions) {
+        view.position = position;
+    }
+    viboceros_io::write_3dm_file(&path, &model).unwrap();
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports.len(), 5);
+    assert_eq!(opened.viewport_positions, positions.to_vec());
+    assert_eq!(opened.viewports[4].view_label(), "Detail Five");
+    enter(&mut opened, "SetMaximizedViewport Detail Five");
+    assert_eq!(opened.active_viewport, 4);
+    assert_eq!(opened.maximized_viewport, Some(4));
+    assert_eq!(opened.three_dm_viewports().unwrap().len(), 5);
+    let mut read = test_app();
+    enter(
+        &mut read,
+        &format!("ReadViewportsFromFile \"{}\"", path.display()),
+    );
+    assert_eq!(read.viewports.len(), 5);
+    assert_eq!(read.viewport_positions, positions.to_vec());
+    std::fs::remove_file(path).unwrap();
 }
 
 #[test]

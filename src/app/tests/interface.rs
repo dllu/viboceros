@@ -38,7 +38,11 @@ fn max_viewport_tracks_active_view_and_preserves_modeling_prompt() {
     enter(&mut app, "Line");
     enter(&mut app, "0,0,0");
     let pending = app.active_command;
-    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     enter(&mut app, "MaxViewport");
     assert_eq!(app.maximized_viewport, Some(0));
     enter(&mut app, "NextViewport");
@@ -48,9 +52,50 @@ fn max_viewport_tracks_active_view_and_preserves_modeling_prompt() {
     assert_eq!(app.maximized_viewport, None);
     assert_eq!(app.active_command, pending);
     assert_eq!(
-        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
         cameras
     );
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn three_view_layout_has_three_renderable_viewports_and_preserves_input() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    enter(&mut app, "Grid SnapSpacing=0.25 MinorLineSpacing=2.5");
+    let grid = app.viewports[1].grid_settings();
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "3View");
+    assert_eq!(app.viewports.len(), 3);
+    assert_eq!(
+        app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+        vec![ViewKind::Top, ViewKind::Perspective, ViewKind::Front]
+    );
+    assert_eq!(app.viewport_positions, THREE_VIEWPORT_POSITIONS.to_vec());
+    assert!(
+        app.viewports
+            .iter()
+            .all(|viewport| viewport.grid_settings() == grid)
+    );
+    assert_eq!(app.active_viewport, 0);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "NextViewport");
+    assert_eq!(app.active_viewport, 1);
+    enter(&mut app, "MaxViewport");
+    assert_eq!(app.maximized_viewport, Some(1));
+    enter(&mut app, "MaxViewport");
+    assert_eq!(app.maximized_viewport, None);
+    assert_eq!(app.command_log.back().unwrap(), "Restored 3 viewports");
+    enter(&mut app, "4View");
+    assert_eq!(app.viewports.len(), 4);
+    assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS.to_vec());
+    assert_eq!(app.active_command, pending);
     enter(&mut app, "1,0,0");
     assert_eq!(app.document.objects().count(), 1);
 }
@@ -61,7 +106,11 @@ fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() 
     enter(&mut app, "Line");
     enter(&mut app, "0,0,0");
     let pending = app.active_command;
-    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     enter(&mut app, "SetActiveViewport front");
     assert_eq!(app.active_viewport, 2);
     assert_eq!(app.maximized_viewport, None);
@@ -84,7 +133,10 @@ fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() 
     assert_eq!(app.maximized_viewport, Some(0));
     assert_eq!(app.active_command, pending);
     assert_eq!(
-        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
         cameras
     );
     enter(&mut app, "1,0,0");
@@ -262,6 +314,16 @@ fn selection_capture_frame(
     events: Vec<egui::Event>,
 ) -> ViewportOutput {
     let mut output = ViewportOutput::default();
+    let object_filter = if app
+        .fence_selection
+        .as_ref()
+        .is_some_and(|state| state.curve_pick)
+        || app.boundary_selection.is_some()
+    {
+        Some(viboceros_command::ObjectSelectionFilter::Curves)
+    } else {
+        app.viewport_object_filter()
+    };
     context
         .run_ui(
             egui::RawInput {
@@ -277,16 +339,7 @@ fn selection_capture_frame(
                     ui,
                     &app.document,
                     ViewportInput {
-                        object_filter: if app
-                            .fence_selection
-                            .as_ref()
-                            .is_some_and(|state| state.curve_pick)
-                            || app.boundary_selection.is_some()
-                        {
-                            Some(viboceros_command::ObjectSelectionFilter::Curves)
-                        } else {
-                            app.viewport_object_filter()
-                        },
+                        object_filter,
                         rect_selection_mode: app.selection_window_override,
                         circular_selection: match app.circular_selection {
                             Some(CircularSelectionState::PickCenter(_)) => {
@@ -1571,8 +1624,9 @@ fn view_history_is_per_viewport_and_independent_of_model_history() {
     layout_viewports(&context, &mut app);
     let original = app
         .viewports
-        .each_ref()
-        .map(|viewport| viewport.camera_snapshot());
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     let pending = app.active_command;
     let redo = app.document.redo_label().map(str::to_owned);
     let objects = app.document.objects().cloned().collect::<Vec<_>>();
@@ -1613,7 +1667,11 @@ fn zoom_factor_prompt_retries_invalid_values_and_preserves_model_input() {
     let pending = app.active_command;
     let redo = app.document.redo_label().map(str::to_owned);
     let objects = app.document.objects().cloned().collect::<Vec<_>>();
-    let before = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let before = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
 
     enter(&mut app, "Zoom Factor");
     assert_eq!(app.zoom_factor_pending, Some(0));
@@ -1659,7 +1717,11 @@ fn viewport_navigation_cycles_by_projection_without_changing_cameras_or_model() 
     for command in ["Point 1,2,3", "Point 4,5,6", "Undo", "Line", "0"] {
         enter(&mut app, command);
     }
-    let cameras = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     let pending = app.active_command;
     let redo = app.document.redo_label().map(str::to_owned);
     let objects = app.document.objects().cloned().collect::<Vec<_>>();
@@ -1675,7 +1737,10 @@ fn viewport_navigation_cycles_by_projection_without_changing_cameras_or_model() 
         assert_eq!(app.active_viewport, expected, "{command}");
     }
     assert_eq!(
-        app.viewports.each_ref().map(Viewport::camera_snapshot),
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
         cameras
     );
     assert_eq!(app.active_command, pending);
@@ -1708,7 +1773,11 @@ fn zoom_ends_preserves_modeling_input_selection_and_document_history() {
     }
     let context = egui::Context::default();
     layout_viewports(&context, &mut app);
-    let before = app.viewports.each_ref().map(Viewport::camera_snapshot);
+    let before = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     let pending = app.active_command;
     let selected = app.document.selected_object_ids().collect::<Vec<_>>();
     let objects = app.document.objects().cloned().collect::<Vec<_>>();
@@ -2063,13 +2132,20 @@ fn grid_command_updates_views_atomically_without_touching_model_history() {
             |view| view.grid_settings().minor_spacing == 2.0 && !view.grid_settings().show_grid
         )
     );
-    let before = app.viewports.each_ref().map(Viewport::grid_settings);
+    let before = app
+        .viewports
+        .iter()
+        .map(Viewport::grid_settings)
+        .collect::<Vec<_>>();
     enter(
         &mut app,
         "Grid MinorLineSpacing=1e308 GridLineCount=100000 ApplyTo=AllViewports",
     );
     assert_eq!(
-        app.viewports.each_ref().map(Viewport::grid_settings),
+        app.viewports
+            .iter()
+            .map(Viewport::grid_settings)
+            .collect::<Vec<_>>(),
         before
     );
     assert_eq!(
@@ -2179,9 +2255,17 @@ fn zoom_all_records_one_independent_view_step_per_viewport() {
     let context = egui::Context::default();
     layout_viewports(&context, &mut app);
     let undo = app.document.undo_label().map(str::to_owned);
-    let before = app.viewports.each_ref().map(|view| view.camera_snapshot());
+    let before = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     enter(&mut app, "ZEA");
-    let after = app.viewports.each_ref().map(|view| view.camera_snapshot());
+    let after = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
     for index in 0..4 {
         assert_ne!(after[index], before[index]);
         app.active_viewport = index;

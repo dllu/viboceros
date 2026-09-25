@@ -200,7 +200,7 @@ orientation stays unchanged during panning; construction planes stay unchanged
 during all navigation.
 `Zoom Extents` (or `ZE`) fits visible objects in the active viewport;
 `Zoom Selected` (or `ZS`) fits only the visible selection. Add `All` before the
-option, or use `ZEA`/`ZSA`, to fit all four viewports together. See
+option, or use `ZEA`/`ZSA`, to fit all current viewports together. See
 [zoom behavior and limits](commands/zoom.md).
 
 `Zoom` or `Zoom Window` lets you drag a rectangle in any viewport to enlarge
@@ -219,21 +219,22 @@ without changing its projection. See [view commands](commands/set-view.md).
 `NamedView Save name` and `NamedView Restore name` reuse a camera and
 construction plane in the active viewport; see [named views](commands/named-view.md).
 `MaxViewport` fills the workspace with the active viewport and toggles back to
-the four-view grid. Double-click a viewport title for the same action, or use
-Ctrl+M (Cmd+Alt+M on macOS). `4View`
-restores the grid without changing cameras or construction planes. When a view
-is maximized, viewport cycling switches the visible view. Save and Open retain
+the current layout. Double-click a viewport title for the same action, or use
+Ctrl+M (Cmd+Alt+M on macOS). `3View` creates Top, Perspective, and Front views
+in a three-panel layout. `4View` restores the four-view grid; it retains cameras
+and construction planes when the current layout already has four views. When a
+view is maximized, viewport cycling switches the visible view. Save and Open retain
 the maximized view in 3DM files. See Rhino's
 [MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
-`ReadViewportsFromFile path.3dm` copies a four-viewport layout and its views
+`ReadViewportsFromFile path.3dm` copies a model's viewport layout and views
 from another model, including display and grid settings. It converts view
 coordinates to the current document's units and keeps its objects and named
 views. See Rhino's
 [ReadViewportsFromFile](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
 `SetActiveViewport name` selects a displayed viewport by its title;
 `SetMaximizedViewport name` selects and maximizes it. Both accept a number from
-1 to 4 when titles repeat. Switching the active viewport while one is maximized
-shows the newly selected viewport. See Rhino's
+1 through the current viewport count when titles repeat. Switching the active
+viewport while one is maximized shows the newly selected viewport. See Rhino's
 [SetActiveViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/setactiveviewport.htm)
 and [SetMaximizedViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/setmaximizedviewport.htm).
 

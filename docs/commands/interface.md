@@ -21,15 +21,17 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom In` / `Zoom Out` | Take one step of the View zoom scale factor about the active viewport center. |
 | `Options View Zoom ScaleFactor=<number>` | Set the application zoom step; the View options menu exposes the same setting. |
 | `SetZoomExtentsBorder [ParallelView=<number>] [PerspectiveView=<number>]` | Set or query the independent Zoom Extents fitting borders. |
-| `Zoom All Extents` / `ZEA` | Fit all four views, applying only after every fit succeeds. |
-| `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all four views with the same all-or-nothing policy. |
+| `Zoom All Extents` / `ZEA` | Fit all views, applying only after every fit succeeds. |
+| `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all views with the same all-or-nothing policy. |
 | `UndoView` / `RedoView` | Step backward or forward through camera changes in the active viewport, separately from model undo. |
 | `SetView World Top\|Bottom\|Front\|Back\|Right\|Left\|Perspective` | Reset the active viewport to a [standard world view](set-view.md). |
 | `SetView CPlane Top\|Bottom\|Front\|Back\|Right\|Left` | Align the camera to a standard direction of the active CPlane while keeping projection and CPlane; [details](set-view.md). |
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
-| `ReadViewportsFromFile path.3dm` | Copy four saved model views and their layout into the current document, converting view coordinates to its units. |
-| `SetActiveViewport name\|1..4` | Activate a displayed viewport by title or number. |
-| `SetMaximizedViewport name\|1..4` | Activate and maximize a displayed viewport by title or number. |
+| `3View` | Set up Top, Perspective, and Front viewports in a three-panel layout. |
+| `4View` | Restore four viewports; preserve cameras when already in a four-view layout. |
+| `ReadViewportsFromFile path.3dm` | Copy saved model views and their layout into the current document, converting view coordinates to its units. |
+| `SetActiveViewport name\|number` | Activate a displayed viewport by title or number. |
+| `SetMaximizedViewport name\|number` | Activate and maximize a displayed viewport by title or number. |
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
@@ -41,7 +43,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
 | `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid/Int wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |
-| `SetDisplayMode [Viewport=Active\|All] Mode=Wireframe\|Shaded\|Ghosted` | Change the active viewport (default) or all four viewports. |
+| `SetDisplayMode [Viewport=Active\|All] Mode=Wireframe\|Shaded\|Ghosted` | Change the active viewport (default) or all viewports. |
 
 Names/options are case-insensitive, with optional Rhino-style underscore prefixes.
 Commands accept a leading hyphen and optional transparent-command apostrophe.

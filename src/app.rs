@@ -1431,6 +1431,12 @@ const DEFAULT_VIEWPORT_POSITIONS: [[f64; 4]; 4] = [
     [0.5, 1.0, 0.5, 1.0],
 ];
 
+const THREE_VIEWPORT_POSITIONS: [[f64; 4]; 3] = [
+    [0.0, 0.5, 0.0, 1.0],
+    [0.5, 1.0, 0.0, 0.5],
+    [0.5, 1.0, 0.5, 1.0],
+];
+
 fn viewport_rect(available: egui::Rect, position: [f64; 4]) -> egui::Rect {
     let [left, right, top, bottom] = position;
     let width = available.width();
@@ -1460,11 +1466,11 @@ pub struct VibocerosApp {
     command_input: String,
     command_log: VecDeque<String>,
     command_line: command_line::CommandLineState,
-    viewports: [Viewport; 4],
+    viewports: Vec<Viewport>,
     named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
     active_viewport: usize,
     maximized_viewport: Option<usize>,
-    viewport_positions: [[f64; 4]; 4],
+    viewport_positions: Vec<[f64; 4]>,
     osnap: bool,
     snaps: snapping::SnapControls,
     smart_track: bool,
@@ -1530,11 +1536,11 @@ impl VibocerosApp {
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log,
-            viewports: Viewport::standard_views(),
+            viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
-            viewport_positions: DEFAULT_VIEWPORT_POSITIONS,
+            viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -6563,11 +6569,11 @@ impl eframe::App for VibocerosApp {
                 self.active_command.and_then(InteractiveCommand::reference)
             },
         };
-        let mut viewport_outputs: [ViewportOutput; 4] =
-            std::array::from_fn(|_| ViewportOutput::default());
+        let mut viewport_outputs = (0..self.viewports.len())
+            .map(|_| ViewportOutput::default())
+            .collect::<Vec<_>>();
         let active_viewport = self.active_viewport;
         let maximized_viewport = self.maximized_viewport;
-        let viewport_positions = self.viewport_positions;
         let zoom_window_pending = self.zoom_window_pending && !end_analysis_picking;
         let selection_window_override = (!end_analysis_picking)
             .then_some(self.selection_window_override)
@@ -6705,6 +6711,7 @@ impl eframe::App for VibocerosApp {
             .is_none()
             .then_some(self.point_constraint)
             .flatten();
+        let viewport_positions = &self.viewport_positions;
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -6988,11 +6995,11 @@ mod tests {
             command_input: String::new(),
             command_log: VecDeque::new(),
             command_line: Default::default(),
-            viewports: Viewport::standard_views(),
+            viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
-            viewport_positions: DEFAULT_VIEWPORT_POSITIONS,
+            viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
             osnap: true,
             snaps: snapping::SnapControls::default(),
             smart_track: true,
@@ -7110,8 +7117,8 @@ mod tests {
     fn default_layout_has_three_parallel_views_and_one_perspective_view() {
         let app = test_app();
         assert_eq!(
-            app.viewports.map(|viewport| viewport.kind()),
-            [
+            app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+            vec![
                 ViewKind::Top,
                 ViewKind::Perspective,
                 ViewKind::Front,

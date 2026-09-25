@@ -2,28 +2,27 @@
 
 An open-source CAD application in Rust, working toward a clean reimplementation
 of Rhinoceros 3D. It has a modular geometry kernel, a command-driven egui/wgpu
-interface, four viewports, snapping, layers, groups, and undo/redo.
+interface, multiple viewports, snapping, layers, groups, and undo/redo.
 Attribute and geometry user text can be edited with commands and retained in 3DM
 files; attribute text can also be searched. `NamedView Save`, `NamedView Restore`,
 and `NamedView List` manage camera views, which `Export3dm` and `Import3dm`
 preserve with their construction planes. `Open3dm path` (or `Open path`) replaces
 the current document; `Import3dm path` merges a 3DM into it.
 `SaveAs path.3dm` names the current file; `Save` writes later changes to it and
-keeps the previous version as a `.3dmbak` file. Save and export preserve the four
-working viewport cameras, titles, construction planes, display modes, and grid settings;
-Open restores them, their saved layout, the active viewport, its maximized state,
-and the active layer.
-`ReadViewportsFromFile path.3dm` loads the four saved model views and layout
-into the current document. `MaxViewport` and `4View` switch the workspace layout. `Export3dm`
-leaves the current file name unchanged.
-`SetActiveViewport name` selects a displayed viewport; `SetMaximizedViewport name`
-selects and maximizes it. Both accept a viewport number from 1 to 4.
+keeps the previous version as a `.3dmbak` file. Save and export preserve the
+working viewport cameras, titles, construction planes, display modes, and grid
+settings. Open restores the views, layout, active viewport, maximized state,
+and active layer. `ReadViewportsFromFile path.3dm` copies views and layout into
+the current document. `3View`, `4View`, and `MaxViewport` change the layout;
+`Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
+selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both
+also accept a viewport number.
 
 This is an early implementation. It supports analytic and NURBS geometry,
 trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL
 interchange are available; STEP imports meshes or supported native planar and
-NURBS B-reps and exports faceted shells or supported native B-reps. Full Rhino compatibility
-is still in progress.
+NURBS B-reps and exports faceted shells or supported native B-reps. Full Rhino
+compatibility is still in progress.
 
 ## Build and run
 
