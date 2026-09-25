@@ -1,6 +1,6 @@
 //! Application settings stored by eframe, separate from model undo history.
 
-use viboceros_command::interface::{ViewportTabAlignment, ZoomScale};
+use viboceros_command::interface::{FourViewProjection, ViewportTabAlignment, ZoomScale};
 
 use super::DEFAULT_ZOOM_SCALE;
 use crate::viewport::ZoomExtentsBorders;
@@ -10,6 +10,23 @@ const PARALLEL_BORDER_KEY: &str = "viboceros.view.zoom_extents_parallel_border.v
 const PERSPECTIVE_BORDER_KEY: &str = "viboceros.view.zoom_extents_perspective_border.v1";
 const VIEWPORT_TABS_KEY: &str = "viboceros.view.viewport_tabs_visible.v1";
 const VIEWPORT_TAB_ALIGNMENT_KEY: &str = "viboceros.view.viewport_tab_alignment.v1";
+const FOUR_VIEW_PROJECTION_KEY: &str = "viboceros.view.four_view_projection.v1";
+
+pub(super) fn load_four_view_projection(
+    storage: Option<&dyn eframe::Storage>,
+) -> FourViewProjection {
+    storage
+        .and_then(|storage| storage.get_string(FOUR_VIEW_PROJECTION_KEY))
+        .and_then(|value| FourViewProjection::parse(&value))
+        .unwrap_or_default()
+}
+
+pub(super) fn save_four_view_projection(
+    storage: &mut dyn eframe::Storage,
+    projection: FourViewProjection,
+) {
+    storage.set_string(FOUR_VIEW_PROJECTION_KEY, projection.label().to_owned());
+}
 
 pub(super) fn load_viewport_tab_alignment(
     storage: Option<&dyn eframe::Storage>,
@@ -176,6 +193,27 @@ mod tests {
         assert_eq!(
             load_viewport_tab_alignment(Some(&storage)),
             ViewportTabAlignment::Bottom
+        );
+    }
+
+    #[test]
+    fn four_view_projection_round_trips_and_ignores_invalid_storage() {
+        let mut storage = MemoryStorage::default();
+        assert_eq!(
+            load_four_view_projection(Some(&storage)),
+            FourViewProjection::ThirdAngle
+        );
+        let mut app = super::super::tests::test_app();
+        app.four_view_projection = FourViewProjection::FirstAngle;
+        eframe::App::save(&mut app, &mut storage);
+        assert_eq!(
+            load_four_view_projection(Some(&storage)),
+            FourViewProjection::FirstAngle
+        );
+        storage.set_string(FOUR_VIEW_PROJECTION_KEY, "invalid".into());
+        assert_eq!(
+            load_four_view_projection(Some(&storage)),
+            FourViewProjection::ThirdAngle
         );
     }
 }

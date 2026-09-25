@@ -4081,9 +4081,10 @@ def _interface_commands(operation):
 def _viewport_arrangement_probe(operation):
     """Record public model-view state after bounded native layout commands."""
     commands = operation.get("commands")
-    allowed = ("NewViewport", "CloseViewport", "3View", "4View",
+    allowed = ("NewViewport", "CloseViewport", "3View", "4View", "MaxViewport",
                "4View Projection FirstAngle", "4View Projection ThirdAngle",
-               "SplitViewportHorizontal", "SplitViewportVertical")
+               "SplitViewportHorizontal", "SplitViewportVertical",
+               "SetView World Bottom")
     if not isinstance(commands, list) or not 1 <= len(commands) <= 12:
         raise ValueError("expected 1 to 12 viewport arrangement commands")
     if any(command not in allowed for command in commands):
@@ -4106,6 +4107,10 @@ def _viewport_arrangement_probe(operation):
         if mode is None:
             raise ValueError("source display mode unavailable")
         document.Views.ActiveView.ActiveViewport.DisplayMode = mode
+    shift = operation.get("camera_target_shift")
+    if shift is not None:
+        viewport = document.Views.ActiveView.ActiveViewport
+        viewport.SetCameraTarget(viewport.CameraTarget + _vector(shift), True)
 
     def rectangle(value):
         return [int(value.Left), int(value.Top), int(value.Right), int(value.Bottom)]
@@ -4139,6 +4144,7 @@ def _viewport_arrangement_probe(operation):
             "4View": "_4View _Enter",
             "4View Projection FirstAngle": "_4View _Projection=_FirstAngle _Enter",
             "4View Projection ThirdAngle": "_4View _Projection=_ThirdAngle _Enter",
+            "SetView World Bottom": "_SetView _World _Bottom",
         }.get(command, "_" + command)
         if not _run_surface_script(script, True):
             raise ValueError("viewport arrangement failed: " + command)

@@ -28,7 +28,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `SetView CPlane Top\|Bottom\|Front\|Back\|Right\|Left` | Align the camera to a standard direction of the active CPlane while keeping projection and CPlane; [details](set-view.md). |
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
 | `3View` | Set up Top, Perspective, and Front viewports in a three-panel layout. |
-| `4View` | Restore four viewports; preserve cameras when already in a four-view layout. |
+| `4View` | Restore the selected standard projection layout, cameras, and CPlanes; activate Perspective. |
 | `4View Projection=FirstAngle\|ThirdAngle` | Reset the four standard views to the selected projection arrangement. |
 | `SplitViewportHorizontal` / `SplitViewportVertical` | Divide the active viewport into two equal parts, copying its camera, CPlane, display mode, and grid settings. |
 | `NewViewport` | Create a centered overlapping Top model viewport in Wireframe, copying the active view's grid settings. |

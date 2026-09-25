@@ -15,6 +15,7 @@ settings. Open restores the views, layout, active viewport, maximized state,
 and active layer. `ReadViewportsFromFile path.3dm` copies views and layout into
 the current document. `3View`, `4View`, and `MaxViewport` change the layout;
 `4View Projection=FirstAngle|ThirdAngle` restores either standard arrangement.
+Plain `4View` restores the most recently selected projection and resets its views.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `NewViewport` opens a centered Top view over the model viewport area.
 `CloseViewport` removes the active view, preserving covered layouts or filling tiled gaps.

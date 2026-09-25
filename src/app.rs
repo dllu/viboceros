@@ -1472,6 +1472,7 @@ pub struct VibocerosApp {
     active_viewport: usize,
     maximized_viewport: Option<usize>,
     viewport_positions: Vec<[f64; 4]>,
+    four_view_projection: viboceros_command::interface::FourViewProjection,
     viewport_tabs_visible: bool,
     viewport_tab_alignment: viboceros_command::interface::ViewportTabAlignment,
     viewport_tab_rename: Option<viewport_layout::ViewportTabRename>,
@@ -1537,6 +1538,7 @@ impl VibocerosApp {
             preferences::load_viewport_tabs_visible(creation_context.storage);
         let viewport_tab_alignment =
             preferences::load_viewport_tab_alignment(creation_context.storage);
+        let four_view_projection = preferences::load_four_view_projection(creation_context.storage);
         Self {
             command_line,
             document: Document::default(),
@@ -1549,6 +1551,7 @@ impl VibocerosApp {
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
+            four_view_projection,
             viewport_tabs_visible,
             viewport_tab_alignment,
             viewport_tab_rename: None,
@@ -6474,6 +6477,7 @@ impl eframe::App for VibocerosApp {
         preferences::save_zoom_extents_borders(storage, self.zoom_extents_borders);
         preferences::save_viewport_tabs_visible(storage, self.viewport_tabs_visible);
         preferences::save_viewport_tab_alignment(storage, self.viewport_tab_alignment);
+        preferences::save_four_view_projection(storage, self.four_view_projection);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
@@ -7017,6 +7021,7 @@ mod tests {
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
+            four_view_projection: Default::default(),
             viewport_tabs_visible: true,
             viewport_tab_alignment: Default::default(),
             viewport_tab_rename: None,

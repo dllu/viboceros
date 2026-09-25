@@ -210,6 +210,74 @@ fn four_view_projection_options_restore_rhino_arrangements_and_active_perspectiv
 }
 
 #[test]
+fn plain_four_view_resets_changed_cameras_and_remembers_projection_choice() {
+    let mut app = test_app();
+    app.active_viewport = 0;
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "SetView World Bottom");
+    assert_eq!(app.viewports[0].kind(), ViewKind::Bottom);
+    enter(&mut app, "4View");
+    assert_eq!(
+        app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+        [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right
+        ]
+    );
+    assert_eq!(app.active_viewport, 1);
+    assert_eq!(app.active_command, pending);
+
+    enter(&mut app, "4View Projection=FirstAngle");
+    enter(&mut app, "3View");
+    enter(&mut app, "SplitViewportVertical");
+    assert_eq!(app.viewports.len(), 4);
+    assert_ne!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS);
+    enter(&mut app, "4View");
+    assert_eq!(
+        app.viewports.iter().map(Viewport::kind).collect::<Vec<_>>(),
+        [
+            ViewKind::Front,
+            ViewKind::Left,
+            ViewKind::Top,
+            ViewKind::Perspective
+        ]
+    );
+    assert_eq!(app.viewport_positions, DEFAULT_VIEWPORT_POSITIONS);
+    assert_eq!(app.active_viewport, 3);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn four_view_keeps_display_modes_only_for_views_that_survive_the_projection() {
+    let mut app = test_app();
+    app.viewports[1].display_mode = DisplayMode::Shaded;
+    app.viewports[3].display_mode = DisplayMode::Ghosted;
+    enter(&mut app, "4View");
+    assert_eq!(app.viewports[1].display_mode, DisplayMode::Shaded);
+    assert_eq!(app.viewports[3].display_mode, DisplayMode::Ghosted);
+    enter(&mut app, "4View Projection=FirstAngle");
+    assert_eq!(app.viewports[3].display_mode, DisplayMode::Shaded);
+    assert_eq!(app.viewports[1].kind(), ViewKind::Left);
+    assert_eq!(app.viewports[1].display_mode, DisplayMode::Wireframe);
+    enter(&mut app, "4View Projection=ThirdAngle");
+    assert_eq!(app.viewports[1].display_mode, DisplayMode::Shaded);
+    assert_eq!(app.viewports[3].display_mode, DisplayMode::Wireframe);
+    app.viewports[0].display_mode = DisplayMode::Shaded;
+    app.active_viewport = 0;
+    enter(&mut app, "SetView World Bottom");
+    enter(&mut app, "4View");
+    assert_eq!(app.viewports[0].kind(), ViewKind::Top);
+    assert_eq!(app.viewports[0].display_mode, DisplayMode::Wireframe);
+    assert_eq!(app.viewports[1].display_mode, DisplayMode::Shaded);
+}
+
+#[test]
 fn split_viewport_commands_partition_the_active_view_and_keep_model_input() {
     let mut app = test_app();
     app.viewports[0].display_mode = DisplayMode::Ghosted;

@@ -110,6 +110,7 @@ pub(super) fn run(fixture: &InterfaceFixture) -> Result<(Value, u64), ProbeError
         smart_track: fixture.smart_track,
         active_viewport: fixture.active_viewport,
         maximized_viewport: None,
+        four_view_projection: Default::default(),
         display_modes: modes,
     };
     let record = |state: &InterfaceState| {

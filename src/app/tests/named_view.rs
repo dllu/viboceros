@@ -242,7 +242,7 @@ fn open_restores_current_viewports_without_named_views() {
             assert!((actual - expected).abs() < 1.0e-6);
         }
     }
-    enter(&mut destination, "4View");
+    enter(&mut destination, "MaxViewport");
     assert_eq!(destination.maximized_viewport, None);
     assert_eq!(destination.active_viewport, 1);
     let export = path.with_file_name(format!(

@@ -1,0 +1,60 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "repeat-four-view-after-splitting-three-view",
+      "commands": [
+        "3View",
+        "SplitViewportVertical",
+        "4View",
+        "4View"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "repeat-four-view-after-changing-top-camera",
+      "active_name": "Top",
+      "source_display_mode": "Shaded",
+      "commands": [
+        "SetView World Bottom",
+        "4View",
+        "4View"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-maximizing-top",
+      "active_name": "Top",
+      "commands": [
+        "MaxViewport",
+        "4View"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "repeat-four-view-after-moving-perspective-camera",
+      "active_name": "Perspective",
+      "camera_target_shift": [10, 0, 0],
+      "commands": [
+        "4View",
+        "4View"
+      ]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "four-view-after-shading-perspective",
+      "active_name": "Perspective",
+      "source_display_mode": "Shaded",
+      "commands": ["4View", "4View Projection FirstAngle", "4View Projection ThirdAngle"]
+    },
+    {
+      "op": "viewport_arrangement_probe",
+      "id": "first-angle-after-shading-right",
+      "active_name": "Right",
+      "source_display_mode": "Shaded",
+      "commands": ["4View Projection FirstAngle", "4View Projection ThirdAngle"]
+    }
+  ]
+}

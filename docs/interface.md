@@ -230,8 +230,9 @@ construction plane in the active viewport; see [named views](commands/named-view
 `MaxViewport` fills the workspace with the active viewport and toggles back to
 the current layout. Double-click a viewport title for the same action, or use
 Ctrl+M (Cmd+Alt+M on macOS). `3View` creates Top, Perspective, and Front views
-in a three-panel layout. `4View` restores the four-view grid; it retains cameras
-and construction planes when the current layout already has four views. When a
+in a three-panel layout. `4View` restores the four-view grid, standard cameras,
+and construction planes for the most recently selected projection, even when
+four views are already open. It activates Perspective. When a
 view is maximized, viewport cycling switches the visible view. Save and Open retain
 the maximized view in 3DM files. See Rhino's
 [MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
@@ -239,6 +240,10 @@ the maximized view in 3DM files. See Rhino's
 `4View Projection=ThirdAngle` resets to Top and Perspective above Front and Right.
 Both choices activate Perspective. These arrangements were checked against
 [Rhino 8 observations](viewport-arrangement-projection-rhino-reference.json).
+The plain command's camera reset and active view were checked with
+[repeated-command observations](viewport-arrangement-fourview-repeat-rhino-reference.json).
+Surviving views keep their display mode; a view created in place of a different
+projection starts in Wireframe.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active
 rectangle into equal parts and copy its camera, CPlane, display mode, and grid
 settings to the new viewport. The new viewport gets a distinct title, and both

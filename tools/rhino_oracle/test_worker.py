@@ -60,6 +60,9 @@ class RhinoWorkerTests(unittest.TestCase):
                 unittest.mock.call("_4View _Projection=_ThirdAngle _Enter", True),
                 unittest.mock.call("_4View _Enter", True),
             ])
+            run.reset_mock()
+            self.worker._viewport_arrangement_probe({"commands": ["SetView World Bottom"]})
+            run.assert_called_once_with("_SetView _World _Bottom", True)
         with patch.object(self.worker, "_run_surface_script") as run:
             for commands in ([], ["Exit"], ["NewViewport"] * 13):
                 with self.subTest(commands=commands):

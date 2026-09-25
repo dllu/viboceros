@@ -26,6 +26,12 @@ The [4View projection run](viewport-arrangement-projection-rhino-reference.json)
 checks both first- and third-angle layouts, their camera directions and active
 Perspective view, and a Front-active reset. The worker sends Rhino's command-line
 option as `Projection=<angle>` followed by Enter.
+The [repeated 4View run](viewport-arrangement-fourview-repeat-rhino-reference.json)
+checks a split four-view arrangement, a changed Top camera, a maximized Top
+view, and a shifted Perspective camera. In these cases the first plain `4View`
+call restored standard views and activated Perspective. Shaded Perspective
+survived either projection arrangement, while Right-to-Left and Bottom-to-Top
+replacements started in Wireframe.
 
 The [orientation audit](orientation-audit.md) separates public document insertion
 and replacement from actual `Flip` command behavior, retaining full definitions

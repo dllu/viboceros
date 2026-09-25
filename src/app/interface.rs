@@ -361,6 +361,7 @@ impl VibocerosApp {
             smart_track: self.smart_track,
             active_viewport: self.active_viewport,
             maximized_viewport: self.maximized_viewport,
+            four_view_projection: self.four_view_projection,
             display_modes: self.viewports.iter().map(|v| v.display_mode).collect(),
         }
     }
@@ -421,17 +422,8 @@ impl VibocerosApp {
                     self.restore_four_view_projection(projection);
                     return;
                 }
-                if command == InterfaceCommand::FourView && self.viewports.len() != 4 {
-                    self.viewport_tab_rename = None;
-                    let grid = self.viewports[self.active_viewport].grid_settings();
-                    self.viewports = Viewport::standard_views().into();
-                    for viewport in &mut self.viewports {
-                        viewport.set_grid_settings(grid);
-                    }
-                    self.viewport_positions = DEFAULT_VIEWPORT_POSITIONS.to_vec();
-                    self.active_viewport = 0;
-                    self.maximized_viewport = None;
-                    self.push_log(message);
+                if command == InterfaceCommand::FourView {
+                    self.restore_four_view_projection(self.four_view_projection);
                     return;
                 }
                 if command == InterfaceCommand::ShowEnds {

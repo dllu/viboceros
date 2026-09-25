@@ -564,6 +564,7 @@ fn state() -> InterfaceState {
         display_modes: vec![DisplayMode::Wireframe; 4],
         active_viewport: 2,
         maximized_viewport: None,
+        four_view_projection: FourViewProjection::ThirdAngle,
     }
 }
 
@@ -642,6 +643,28 @@ fn viewport_layout_commands_toggle_without_changing_cameras() {
         "Close active viewport"
     );
     assert_eq!(state, before);
+}
+
+#[test]
+fn four_view_remembers_explicit_projection_and_resets_the_active_view() {
+    assert_eq!(
+        parse("_-4View _Projection=_FirstAngle"),
+        Some(Ok(InterfaceCommand::FourViewProjection(
+            FourViewProjection::FirstAngle
+        )))
+    );
+    let mut state = state();
+    state
+        .apply(InterfaceCommand::FourViewProjection(
+            FourViewProjection::FirstAngle,
+        ))
+        .unwrap();
+    assert_eq!(state.four_view_projection, FourViewProjection::FirstAngle);
+    assert_eq!(state.active_viewport, 3);
+    state.active_viewport = 0;
+    state.apply(InterfaceCommand::FourView).unwrap();
+    assert_eq!(state.active_viewport, 3);
+    assert_eq!(state.display_modes.len(), 4);
 }
 
 #[test]

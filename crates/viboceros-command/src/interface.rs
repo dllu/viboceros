@@ -91,9 +91,10 @@ impl ViewportTabAlignment {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum FourViewProjection {
     FirstAngle,
+    #[default]
     ThirdAngle,
 }
 
@@ -1003,6 +1004,7 @@ pub struct InterfaceState {
     pub display_modes: Vec<DisplayMode>,
     pub active_viewport: usize,
     pub maximized_viewport: Option<usize>,
+    pub four_view_projection: FourViewProjection,
 }
 
 impl InterfaceState {
@@ -1084,13 +1086,15 @@ impl InterfaceState {
             }
             InterfaceCommand::FourView => {
                 self.maximized_viewport = None;
-                if self.display_modes.len() != 4 {
-                    self.active_viewport = 0;
-                    self.display_modes = vec![DisplayMode::Wireframe; 4];
-                }
+                self.active_viewport = match self.four_view_projection {
+                    FourViewProjection::FirstAngle => 3,
+                    FourViewProjection::ThirdAngle => 1,
+                };
+                self.display_modes = vec![DisplayMode::Wireframe; 4];
                 "Restored four viewports".into()
             }
             InterfaceCommand::FourViewProjection(projection) => {
+                self.four_view_projection = projection;
                 self.maximized_viewport = None;
                 self.active_viewport = match projection {
                     FourViewProjection::FirstAngle => 3,

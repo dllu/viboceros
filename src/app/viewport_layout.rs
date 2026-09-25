@@ -190,6 +190,7 @@ fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]
 
 impl VibocerosApp {
     pub(super) fn restore_four_view_projection(&mut self, projection: FourViewProjection) {
+        self.four_view_projection = projection;
         let kinds = match projection {
             FourViewProjection::FirstAngle => [
                 ViewKind::Front,
@@ -207,7 +208,13 @@ impl VibocerosApp {
         let source = &self.viewports[self.active_viewport];
         let viewports = kinds
             .into_iter()
-            .map(|kind| Viewport::new_for_layout(source, kind))
+            .map(|kind| {
+                let mut viewport = Viewport::new_for_layout(source, kind);
+                if let Some(previous) = self.viewports.iter().find(|view| view.kind() == kind) {
+                    viewport.display_mode = previous.display_mode;
+                }
+                viewport
+            })
             .collect();
         self.viewports = viewports;
         self.viewport_positions = DEFAULT_VIEWPORT_POSITIONS.to_vec();
