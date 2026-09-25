@@ -1,0 +1,53 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "collinear-lines",
+      "value": {
+        "angle_degrees": 0.0,
+        "curvature_delta": 0.0,
+        "gap": 0.0
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-parameterization",
+      "value": {
+        "angle_degrees": 0.0,
+        "curvature_delta": 0.0,
+        "gap": 0.0
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "right-angle-kink",
+      "value": {
+        "angle_degrees": 90.0,
+        "curvature_delta": 0.0,
+        "gap": 0.0
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "disconnected",
+      "value": {
+        "angle_degrees": 0.0,
+        "curvature_delta": 0.0,
+        "gap": 0.10000000000000009
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-bend",
+      "value": {
+        "angle_degrees": 2.5444437451708144e-14,
+        "curvature_delta": 2.0000000000000004,
+        "gap": 0.0
+      }
+    }
+  ]
+}

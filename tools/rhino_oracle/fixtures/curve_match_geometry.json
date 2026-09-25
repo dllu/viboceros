@@ -1,0 +1,1974 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-position-none",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-position-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-position-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-position-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-tangency-none",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-tangency-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-tangency-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-tangency-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-curvature-none",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-curvature-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-curvature-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-curvature-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-reverse-1-0",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Position",
+      "reverse_first": true,
+      "reverse_second": false
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-reverse-0-1",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Position",
+      "reverse_first": false,
+      "reverse_second": true
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "cubic-reverse-1-1",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Position",
+      "reverse_first": true,
+      "reverse_second": true
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-position",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-tangency",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-curvature",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Position"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-position-none",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-position-tangency",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-position-curvature",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-tangency-none",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-tangency-tangency",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-tangency-curvature",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-curvature-none",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-curvature-tangency",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Tangency"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "line-curvature-curvature",
+      "first": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "quadratic-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "quadratic-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "quadratic-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "rational-position",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Position",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "rational-tangency",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Tangency",
+      "preserve_other_end": "Curvature"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "rational-curvature",
+      "first": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "Curvature"
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+//! Match the selected end of the first curve to the second curve.
+use super::*;
+use viboceros_geometry::{
+    CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef, try_match_curve_end,
+};
+
+const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature]";
+
+pub(super) struct MatchCurveCommand;
+
+struct MatchOptions {
+    picks: [Option<Point3>; 2],
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+}
+
+impl Command for MatchCurveCommand {
+    fn name(&self) -> &'static str {
+        "Match"
+    }
+
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        parse_options(arguments)?;
+        Ok(Some(ObjectSelectionPrompt {
+            command: self.name(),
+            filter: ObjectSelectionFilter::Curves,
+            options: vec![],
+            menus: vec![],
+            choices: vec![],
+            workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
+        }))
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_options(arguments)?;
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        let [source_id, reference_id] = selected.as_slice() else {
+            return Err(CommandError::MatchRequiresTwoOpenCurves);
+        };
+        let source = document
+            .object(*source_id)
+            .and_then(|object| object.geometry().curve_ref())
+            .map(CurveRef::to_owned)
+            .ok_or(CommandError::MatchRequiresTwoOpenCurves)?;
+        let reference = document
+            .object(*reference_id)
+            .and_then(|object| object.geometry().curve_ref())
+            .map(CurveRef::to_owned)
+            .ok_or(CommandError::MatchRequiresTwoOpenCurves)?;
+        if source.as_ref().is_closed()? || reference.as_ref().is_closed()? {
+            return Err(CommandError::MatchRequiresTwoOpenCurves);
+        }
+        let (default_source, default_reference) = fillet::nearest_ends(&source, &reference)?;
+        let source_end = pick_end(
+            source.as_ref(),
+            options.picks[0].unwrap_or(default_source),
+            document.tolerance(),
+        )?;
+        let reference_end = pick_end(
+            reference.as_ref(),
+            options.picks[1].unwrap_or(default_reference),
+            document.tolerance(),
+        )?;
+        let matched = try_match_curve_end(
+            &source,
+            source_end,
+            &reference,
+            reference_end,
+            options.continuity,
+            options.preserve,
+            document.tolerance(),
+        )?;
+        document.replace_object_geometries([(*source_id, Geometry::NurbsCurve(matched))])?;
+        Ok("Matched curve end".to_owned())
+    }
+}
+
+fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
+    let mut picks = [None, None];
+    let mut continuity = None;
+    let mut preserve = None;
+    for argument in arguments {
+        let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        if option_name_eq(name, "Pick1") || option_name_eq(name, "Pick2") {
+            let index = if option_name_eq(name, "Pick1") { 0 } else { 1 };
+            let (point, consumed) = parse_point(&[value])?;
+            if consumed != 1 || picks[index].replace(point).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+        } else if option_name_eq(name, "Continuity") {
+            let value = match value.to_ascii_lowercase().as_str() {
+                "position" => CurveBlendContinuity::Position,
+                "tangency" => CurveBlendContinuity::Tangency,
+                "curvature" => CurveBlendContinuity::Curvature,
+                _ => return Err(CommandError::Usage(USAGE)),
+            };
+            if continuity.replace(value).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+        } else if option_name_eq(name, "PreserveOtherEnd") {
+            let value = match value.to_ascii_lowercase().as_str() {
+                "none" => CurveMatchPreserveEnd::None,
+                "position" => CurveMatchPreserveEnd::Position,
+                "tangency" => CurveMatchPreserveEnd::Tangency,
+                "curvature" => CurveMatchPreserveEnd::Curvature,
+                _ => return Err(CommandError::Usage(USAGE)),
+            };
+            if preserve.replace(value).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+        } else {
+            return Err(CommandError::Usage(USAGE));
+        }
+    }
+    Ok(MatchOptions {
+        picks,
+        continuity: continuity.unwrap_or(CurveBlendContinuity::Tangency),
+        preserve: preserve.unwrap_or(CurveMatchPreserveEnd::Position),
+    })
+}
+
+fn pick_end(curve: CurveRef<'_>, pick: Point3, tolerance: Tolerance) -> Result<bool, CommandError> {
+    let start_distance = pick.distance_to(curve.start_point()?)?;
+    let end_distance = pick.distance_to(curve.end_point()?)?;
+    if (start_distance - end_distance).abs() <= tolerance.absolute() {
+        return Err(CommandError::Usage(USAGE));
+    }
+    Ok(end_distance < start_distance)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use viboceros_geometry::{CurveContinuityLevel, curve_end_continuity};
+
+    #[test]
+    fn match_replaces_first_selected_curve_and_undo_restores_it() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,0,0").unwrap();
+        registry.execute(&mut document, "Line 4,1,0 4,3,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids.clone(), SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Match Continuity=Tangency PreserveOtherEnd=Position"
+                )
+                .unwrap(),
+            "Matched curve end"
+        );
+        let source = document
+            .object(ids[0])
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        let reference = document
+            .object(ids[1])
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        assert_eq!(
+            curve_end_continuity(source, true, reference, false, document.tolerance())
+                .unwrap()
+                .level,
+            CurveContinuityLevel::Tangency
+        );
+        assert_eq!(source.start_point().unwrap().to_array(), [0.0, 0.0, 0.0]);
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(ids[0]).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+    }
+
+    #[test]
+    fn invalid_options_and_selection_leave_document_unchanged() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,0,0").unwrap();
+        let id = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        assert!(registry.execute(&mut document, "Match").is_err());
+        assert!(
+            registry
+                .execute(&mut document, "Match Continuity=Bad")
+                .is_err()
+        );
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+    }
+}

@@ -5,6 +5,15 @@
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 
+The [Match fixture](../tools/rhino_oracle/fixtures/curve_match_geometry.json)
+contains 33 live Rhino `CreateMatchCurve` cases for single-span line, polynomial,
+and rational curves across end orientation, continuity, and preserved opposite
+end options. Replay against its [saved observation](../tools/rhino_oracle/observations/curve_match_geometry.json)
+with `python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/curve_match_geometry.json --observations tools/rhino_oracle/observations/curve_match_geometry.json`.
+All 33 outputs agree within the default 1e-10 absolute tolerance. The
+[additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
+retains two-span and average-curves examples for later implementation.
+
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded
 sequence of `NewViewport`, `CloseViewport`, `3View`, `4View`, and viewport split

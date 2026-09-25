@@ -53,6 +53,10 @@ such as `Line 0,0,0 10,5,0`, or enter `Line` to pick points in a viewport.
 `Circle Vertical 1,2,3 5,2,3` draws a circle perpendicular to the construction
 plane; enter a radius before the direction point to fix its size.
 `Circle Orientation 1,2,3 1,3,3 4` chooses a plane normal from the second point.
+Select two open curves, then use `Match Continuity=Tangency PreserveOtherEnd=Position`
+to edit the first curve at the nearest pair of ends. `Pick1=` and `Pick2=` choose
+other ends; single-span curves currently support position, tangent, and curvature
+matching.
 Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development

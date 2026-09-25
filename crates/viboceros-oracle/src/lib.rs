@@ -635,6 +635,17 @@ pub enum Operation {
         first_at_end: bool,
         second_at_end: bool,
     },
+    CurveMatchGeometry {
+        id: String,
+        first: curve_join_close::CurveInput,
+        second: curve_join_close::CurveInput,
+        #[serde(default)]
+        reverse_first: bool,
+        #[serde(default)]
+        reverse_second: bool,
+        continuity: String,
+        preserve_other_end: String,
+    },
     PolycurveDocument {
         id: String,
         #[serde(flatten)]
@@ -1947,6 +1958,7 @@ impl Operation {
             | Self::CurveJoinClose { id, .. }
             | Self::CurveDirectionMatch { id, .. }
             | Self::CurveEndContinuity { id, .. }
+            | Self::CurveMatchGeometry { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::TrimmedSurfaceIsocurves { id, .. }
@@ -2113,6 +2125,8 @@ pub struct OperationResult {
 
 #[derive(Debug, Error)]
 pub enum ProbeError {
+    #[error("invalid Match option: {0}")]
+    InvalidMatchOption(&'static str),
     #[error(transparent)]
     Io(#[from] std::io::Error),
 
@@ -2664,6 +2678,53 @@ fn execute(
                     "angle_degrees": report.tangent_angle_radians.to_degrees(),
                     "curvature_delta": report.curvature_vector_difference,
                 }),
+                elapsed,
+            )
+        }
+        Operation::CurveMatchGeometry {
+            first,
+            second,
+            reverse_first,
+            reverse_second,
+            continuity,
+            preserve_other_end,
+            ..
+        } => {
+            let first = first.geometry()?;
+            let second = second.geometry()?;
+            let continuity = match continuity.as_str() {
+                "Position" => viboceros_geometry::CurveBlendContinuity::Position,
+                "Tangency" => viboceros_geometry::CurveBlendContinuity::Tangency,
+                "Curvature" => viboceros_geometry::CurveBlendContinuity::Curvature,
+                _ => return Err(ProbeError::InvalidMatchOption("continuity")),
+            };
+            let preserve = match preserve_other_end.as_str() {
+                "None" => viboceros_geometry::CurveMatchPreserveEnd::None,
+                "Position" => viboceros_geometry::CurveMatchPreserveEnd::Position,
+                "Tangency" => viboceros_geometry::CurveMatchPreserveEnd::Tangency,
+                "Curvature" => viboceros_geometry::CurveMatchPreserveEnd::Curvature,
+                _ => return Err(ProbeError::InvalidMatchOption("preserve_other_end")),
+            };
+            let (matched, elapsed) = measure(iterations, || {
+                viboceros_geometry::try_match_curve_end(
+                    &first,
+                    *reverse_first,
+                    &second,
+                    *reverse_second,
+                    continuity,
+                    preserve,
+                    tolerance,
+                )
+            })?;
+            let samples = (0..=16)
+                .map(|index| {
+                    matched
+                        .evaluate(matched.parameter_at(index as f64 / 16.0)?)
+                        .map(Point3::to_array)
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            (
+                json!({"outputs": [{"definition": nurbs_curve_definition_value(&matched), "samples": samples}]}),
                 elapsed,
             )
         }

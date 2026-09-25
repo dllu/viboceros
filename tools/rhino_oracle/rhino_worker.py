@@ -6028,6 +6028,31 @@ def _execute(operation, iterations, tolerance):
         finally:
             second.Dispose()
             first.Dispose()
+    if kind == "curve_match_geometry":
+        first = _join_close_input(operation["first"])
+        second = _join_close_input(operation["second"])
+        try:
+            continuity = getattr(Rhino.Geometry.BlendContinuity,
+                                 operation.get("continuity", "Tangency"))
+            preserve = getattr(Rhino.Geometry.PreserveEnd,
+                               operation.get("preserve_other_end", "None"))
+            outputs = Rhino.Geometry.Curve.CreateMatchCurve(
+                first, bool(operation.get("reverse_first", False)), continuity,
+                second, bool(operation.get("reverse_second", False)), preserve,
+                bool(operation.get("average", False)))
+            if outputs is None:
+                outputs = []
+            try:
+                return {"outputs": [{"definition": _nurbs_curve_definition(curve),
+                                     "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 16.0)))
+                                                 for i in range(17)]}
+                                    for curve in outputs]}, 0
+            finally:
+                for curve in outputs:
+                    curve.Dispose()
+        finally:
+            second.Dispose()
+            first.Dispose()
     if kind == "polycurve_native":
         return _polycurve_native(operation, iterations, tolerance)
     if kind == "curve_native":
