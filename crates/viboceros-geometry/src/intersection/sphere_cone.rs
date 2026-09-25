@@ -1,6 +1,7 @@
 //! Finite intersections of a canonical cone and a sphere.
 
 mod noncoaxial_inside_apex;
+mod noncoaxial_turning;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Circle3, Frame3, GeometryError, Point3, Real, Tolerance};
@@ -47,6 +48,38 @@ pub(super) fn sphere_cone_intersection_events(
                 tolerance,
                 coordinate_roundoff,
             );
+        }
+        if apex_distance > sphere_radius + coaxial_tolerance {
+            let slope = cone_radius / height;
+            let quadratic = slope.mul_add(slope, 1.0);
+            let constant = (apex_distance - sphere_radius) * (apex_distance + sphere_radius);
+            let highest_linear = axial_center + slope * radial_offset;
+            if highest_linear <= 0.0 {
+                return Ok(Vec::new());
+            }
+            let maximum_discriminant = highest_linear * highest_linear - quadratic * constant;
+            if maximum_discriminant < 0.0 {
+                return Ok(Vec::new());
+            }
+            let lowest_linear = axial_center - slope * radial_offset;
+            let opposite_discriminant = lowest_linear * lowest_linear - quadratic * constant;
+            let scale = highest_linear
+                .abs()
+                .max(lowest_linear.abs())
+                .max(sphere_radius)
+                .max(cone_radius);
+            let discriminant_roundoff = 64.0 * Real::EPSILON * scale * scale;
+            if maximum_discriminant > discriminant_roundoff
+                && opposite_discriminant < -discriminant_roundoff
+            {
+                return noncoaxial_turning::intersect(
+                    sphere_center,
+                    sphere_radius,
+                    (cone_frame, cone_radius, signed_height),
+                    tolerance,
+                    coordinate_roundoff,
+                );
+            }
         }
         return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
             context: "noncoaxial sphere and cone",
@@ -190,14 +223,6 @@ mod tests {
                 .is_empty()
             );
         }
-        assert!(matches!(
-            surface_surface_intersection_events(
-                &sphere(point(0.5, 0.0, 2.0), 1.5),
-                &cone,
-                Tolerance::DEFAULT,
-            ),
-            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
-        ));
     }
 
     #[test]

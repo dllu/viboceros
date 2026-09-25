@@ -182,9 +182,12 @@ record these cases. Rhino's surface API missed the exact tangent circle and
 reported redundant seam points alongside transverse circles in this fixture;
 the native result retains the exact circles. When a noncoaxial sphere strictly
 contains the cone apex, its intersection with the cone is a fitted cubic loop,
-an arc clipped at the cone base, or an isolated base-rim contact. Other
-noncoaxial sphere/cone sections, including the saved fixture case, remain
-unsupported.
+an arc clipped at the cone base, or an isolated base-rim contact. Spheres
+outside the apex whose two axial branches meet at radial turns produce two
+fitted open curves, clipped at the base or reduced to one tangent point. This
+includes the saved noncoaxial fixture; its two native branch lengths agree
+with Rhino within 2×10⁻⁶. Rhino also reports redundant seam points there.
+Other noncoaxial sphere/cone sections remain unsupported.
 Canonical cylinders intersect perpendicular planar patches in exact circles
 and parallel patches in straight generatrices. Oblique sections are exact
 rational ellipses clipped to both finite surfaces. Rhino returns cubic fitted
