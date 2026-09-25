@@ -120,6 +120,14 @@ object. SubD input awaits a native SubD geometry type.
 Mesh extraction and deletion preserve n-gon overlays in any result containing
 every member face of the n-gon. A partial face group has no retained overlay.
 
+`ExtractMeshFacesByArea SmallerThan=2` extracts stored triangle and quad faces
+whose unsigned areas are strictly below the limit. `LargerThan=area` can be
+used alone or together with `SmallerThan=area`; `MinArea` and `MaxArea` are
+accepted aliases. `MakeCopy=Yes` retains the input faces. `BorderOnly=Yes`
+creates boundary polylines and leaves the input mesh intact. The command
+stages all selected meshes before editing, preserves output attributes and
+group memberships, and rejects a selection containing non-mesh objects.
+
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,

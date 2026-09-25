@@ -17,6 +17,36 @@ fn area_can_fit_when_the_cross_product_does_not() {
     let side = 2.0f64.powi(512);
     let mesh = triangle([side, 0., 0.], [0., side, 0.]);
     assert_eq!(mesh.area().unwrap(), 2.0f64.powi(1023));
+    assert_eq!(mesh.face_area(0).unwrap(), mesh.area().unwrap());
+}
+
+#[test]
+fn face_area_uses_the_stored_polygon_and_checks_indices() {
+    let mesh = TriangleMesh::try_new_faces(
+        vec![
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [3.0, 0.0, 0.0],
+        ]
+        .into_iter()
+        .map(|point| Point3::try_from(point).unwrap())
+        .collect(),
+        vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Triangle([1, 4, 2])],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(mesh.face_area(0).unwrap(), 4.0);
+    assert_eq!(mesh.face_area(1).unwrap(), 1.0);
+    assert_eq!(mesh.area().unwrap(), 5.0);
+    assert_eq!(
+        mesh.face_area(2),
+        Err(GeometryError::MeshFaceIndexOutOfRange {
+            face: 2,
+            face_count: 2
+        })
+    );
 }
 
 #[test]

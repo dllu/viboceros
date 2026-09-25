@@ -3871,6 +3871,38 @@ impl TriangleMesh {
         Ok(area)
     }
 
+    /// Unsigned area of one stored triangle or quadrilateral face. Quads use
+    /// the same shorter-diagonal split as whole-mesh mass properties.
+    pub fn face_area(&self, face_index: usize) -> Result<Real, GeometryError> {
+        let face = *self
+            .faces
+            .get(face_index)
+            .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+                face: face_index,
+                face_count: self.faces.len(),
+            })?;
+        let triangles = match face {
+            MeshFace::Triangle(triangle) => [Some(triangle), None],
+            MeshFace::Quad(quad) => mass_triangles::split(&self.vertices, quad).map(Some),
+        };
+        let mut sum: Real = 0.0;
+        let mut correction = 0.0;
+        for triangle in triangles.into_iter().flatten() {
+            let [a, b, c] = triangle.map(|vertex| self.vertices[vertex as usize]);
+            let area = a.vector_to(b)?.half_cross_length(a.vector_to(c)?)?;
+            let next = sum + area;
+            if sum.abs() >= area.abs() {
+                correction += (sum - next) + area;
+            } else {
+                correction += (area - next) + sum;
+            }
+            sum = next;
+        }
+        let area = sum + correction;
+        require_finite([area], "mesh face area")?;
+        Ok(area)
+    }
+
     /// Computes oriented mesh volume. Outward winding is positive and
     /// reversing every face negates the result. A bounding-box-center base
     /// point and normalized coordinates keep large translations from
