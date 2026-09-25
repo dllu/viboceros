@@ -303,6 +303,17 @@ replacement results, avoiding an extra copy of every mesh, curve, or surface
 before the geometry operation. All results are still staged before document
 mutation; the document retains its normal undo/redo states.
 
+`AlignVertices DistanceToAdjust=0.05 AverageVertexesToAdjust=Yes` aligns
+nearby naked mesh vertices across all selected meshes. Distances must be
+strictly below the threshold. The default is the document absolute tolerance;
+without averaging, the earlier mesh/topology vertex anchors each pair.
+`Vertices=0,2` restricts movable topology vertices, and `NakedEdges=0,2`
+restricts them to vertices on those naked topology edges. Unselected naked
+vertices can anchor selected ones. Vertices sharing a face are never paired,
+and an alignment that would degenerate any face is rejected before document
+mutation. Raw face indices, colors, n-gons, object identities, attributes,
+groups, selection, and undo are preserved.
+
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
 edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a

@@ -1,4 +1,6 @@
+mod alignment;
 mod append;
+pub use alignment::{MeshAlignSelection, align_mesh_vertices};
 mod aspect_ratio;
 mod join;
 mod mass_triangles;
