@@ -121,6 +121,12 @@ impl<S> NamedViews<S> {
         self.entries.iter().map(|entry| entry.name.as_str())
     }
 
+    pub fn entries(&self) -> impl Iterator<Item = (&str, &S)> {
+        self.entries
+            .iter()
+            .map(|entry| (entry.name.as_str(), &entry.snapshot))
+    }
+
     pub fn get(&self, name: &str) -> Result<&S, NamedViewError> {
         self.index(name)
             .map(|i| &self.entries[i].snapshot)

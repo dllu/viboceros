@@ -71,3 +71,69 @@ fn named_view_commands_leave_a_partial_modeling_prompt_and_redo_intact() {
     assert!(app.active_command.is_none());
     assert_eq!(app.document.objects().len(), 1);
 }
+
+#[test]
+fn named_views_round_trip_through_app_3dm_commands() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-named-views-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let path_text = path.display().to_string();
+    let mut source = test_app();
+    enter(&mut source, "SetView World Perspective");
+    enter(&mut source, "CPlane World Front");
+    enter(&mut source, "NamedView Save Camera A");
+    let saved = source.viewports[0].named_view_snapshot();
+    enter(&mut source, &format!("Export3dm \"{path_text}\""));
+    assert!(
+        source
+            .command_log
+            .back()
+            .unwrap()
+            .contains("exported 1 named view(s)")
+    );
+    let model = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(model.named_views.len(), 1);
+    assert_eq!(model.named_views[0].name, "Camera A");
+    assert_eq!(
+        model.named_views[0].construction_plane,
+        source.viewports[0].construction_plane()
+    );
+
+    let mut destination = test_app();
+    enter(&mut destination, "NamedView Save Camera A");
+    enter(&mut destination, &format!("Import3dm \"{path_text}\""));
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .contains("imported 1 named view(s)")
+    );
+    assert!(destination.named_views.get("Camera A (2)").is_ok());
+    enter(&mut destination, "NamedView Restore Camera A (2)");
+    let actual = Viewport::named_view_to_3dm(
+        destination.viewports[0].named_view_snapshot(),
+        "Camera A".to_owned(),
+    )
+    .unwrap();
+    let expected = Viewport::named_view_to_3dm(saved, "Camera A".to_owned()).unwrap();
+    assert_eq!(actual.construction_plane, expected.construction_plane);
+    assert_eq!(actual.projection, expected.projection);
+    for (actual, expected) in actual
+        .camera_location
+        .to_array()
+        .into_iter()
+        .zip(expected.camera_location.to_array())
+    {
+        assert!((actual - expected).abs() < 1.0e-8);
+    }
+    for (actual, expected) in actual.frustum.into_iter().zip(expected.frustum) {
+        assert!((actual - expected).abs() < 1.0e-8);
+    }
+    std::fs::remove_file(path).unwrap();
+}

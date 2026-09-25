@@ -61,6 +61,7 @@ viboceros-command.workspace = true
 viboceros-document.workspace = true
 viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
+viboceros-io.workspace = true
 
 [dev-dependencies]
 pollster = "1.0.1"

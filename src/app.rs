@@ -1768,11 +1768,14 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.push_log(format!("> {command_input}"));
         let previous_unit_scale = self.document.units().meters_per_unit();
-        match self.commands.execute_in_context(
-            &mut self.document,
-            &command_input,
-            viboceros_command::CommandContext { construction_plane },
-        ) {
+        let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
+            self.commands.execute_in_context(
+                &mut self.document,
+                &command_input,
+                viboceros_command::CommandContext { construction_plane },
+            )
+        });
+        match result {
             Ok(message) => {
                 self.push_log(message);
                 if self.document.units().meters_per_unit() != previous_unit_scale {

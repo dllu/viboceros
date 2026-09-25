@@ -10,6 +10,7 @@ mod layout_units;
 pub use align::{AlignmentMode, AlignmentOptions};
 mod curve_options;
 mod interchange;
+pub use interchange::{export_3dm_with_named_views, import_3dm_with_named_views, parse_3dm_path};
 mod interpolation_options;
 use interpolation_options::parse_interp_curve_arguments;
 pub use interpolation_options::{
@@ -1251,11 +1252,11 @@ impl CommandRegistry {
     }
 }
 
-fn run_command_transaction(
+fn run_command_transaction<T>(
     document: &mut Document,
     name: &'static str,
-    run: impl FnOnce(&mut Document) -> Result<String, CommandError>,
-) -> Result<String, CommandError> {
+    run: impl FnOnce(&mut Document) -> Result<T, CommandError>,
+) -> Result<T, CommandError> {
     document.begin_transaction(name)?;
     match run(document) {
         Ok(message) => {

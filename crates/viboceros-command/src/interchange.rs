@@ -10,7 +10,7 @@ use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectC
 use viboceros_geometry::{GeometryError, Tolerance, TriangleMesh};
 use viboceros_io::{
     StlFormat, ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
-    ThreeDmObject, read_stl_file, write_3dm_file, write_stl_file,
+    ThreeDmNamedView, ThreeDmObject, read_stl_file, write_3dm_file, write_stl_file,
 };
 
 pub(super) const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -262,79 +262,107 @@ impl Command for ImportThreeDmCommand {
         let path = arguments.join(" ");
         let model =
             viboceros_io::read_3dm_file_in_units(&path, document.units(), document.tolerance())?;
-        let unsupported = model.unsupported_object_count();
-        let layer_count = model.layers.len();
-        let object_count = model.objects.len();
-
-        let mut imported_layers = Vec::with_capacity(layer_count);
-        let mut layer_names = ImportNames::new(
-            document.layers().map(|layer| layer.name()),
-            true,
-            "Imported Layer",
-        );
-        for layer in &model.layers {
-            let name = layer_names.allocate(&layer.name);
-            let id = document.add_layer(
-                name,
-                ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]),
-            )?;
-            imported_layers.push(id);
-        }
-
-        let mut imported_objects = Vec::with_capacity(object_count);
-        for object in model.objects {
-            let layer_id = imported_layers[object.layer_index];
-            let mut attributes = ObjectAttributes::on_layer(layer_id)
-                .with_object_color(ColorRgb::new(
-                    object.object_color[0],
-                    object.object_color[1],
-                    object.object_color[2],
-                ))
-                .with_color_source(document_color_source_from_3dm(object.color_source))
-                .with_visibility(object.visible)
-                .with_locked(object.locked)
-                .try_with_wire_density(object.wire_density)?;
-            if let Some(name) = object.name {
-                attributes = attributes.with_name(name);
-            }
-            for (key, value) in object.user_text {
-                attributes = attributes.try_with_user_text(key, value)?;
-            }
-            let id = document.add_geometry_with_metadata(
-                document_geometry_from_3dm(object.geometry),
-                attributes,
-                object.geometry_user_text,
-            )?;
-            imported_objects.push((id, object.group_indices));
-        }
-
-        let mut imported_groups = Vec::with_capacity(model.groups.len());
-        let mut group_names = ImportNames::new(
-            document.groups().filter_map(|group| group.name()),
-            false,
-            "Imported Group",
-        );
-        for group in &model.groups {
-            let name = group_names.allocate(&group.name);
-            imported_groups.push(document.add_empty_group(Some(name))?);
-        }
-        for (id, memberships) in imported_objects {
-            document.set_object_group_memberships(
-                id,
-                memberships.iter().map(|index| imported_groups[*index]),
-            )?;
-        }
-        let imported_group_count = imported_groups.len();
-
-        for (source, id) in model.layers.iter().zip(imported_layers) {
-            document.set_layer_visibility(id, source.visible)?;
-            document.set_layer_locked(id, source.locked)?;
-        }
-
-        Ok(format!(
-            "Imported {object_count} objects in {imported_group_count} groups on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
-        ))
+        import_3dm_model(document, &path, model)
     }
+}
+
+pub fn parse_3dm_path(input: &str) -> Result<&str, CommandError> {
+    paths::parse(input, false)?
+        .into_iter()
+        .next()
+        .ok_or(CommandError::Usage("Import3dm/Export3dm path"))
+}
+
+pub fn import_3dm_with_named_views(
+    document: &mut Document,
+    path: &str,
+) -> Result<(String, Vec<ThreeDmNamedView>), CommandError> {
+    let mut model =
+        viboceros_io::read_3dm_file_in_units(path, document.units(), document.tolerance())?;
+    let views = std::mem::take(&mut model.named_views);
+    let message = super::run_command_transaction(document, "Import3dm", |document| {
+        import_3dm_model(document, path, model)
+    })?;
+    Ok((message, views))
+}
+
+fn import_3dm_model(
+    document: &mut Document,
+    path: &str,
+    model: ThreeDmModel,
+) -> Result<String, CommandError> {
+    let unsupported = model.unsupported_object_count();
+    let layer_count = model.layers.len();
+    let object_count = model.objects.len();
+
+    let mut imported_layers = Vec::with_capacity(layer_count);
+    let mut layer_names = ImportNames::new(
+        document.layers().map(|layer| layer.name()),
+        true,
+        "Imported Layer",
+    );
+    for layer in &model.layers {
+        let name = layer_names.allocate(&layer.name);
+        let id = document.add_layer(
+            name,
+            ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]),
+        )?;
+        imported_layers.push(id);
+    }
+
+    let mut imported_objects = Vec::with_capacity(object_count);
+    for object in model.objects {
+        let layer_id = imported_layers[object.layer_index];
+        let mut attributes = ObjectAttributes::on_layer(layer_id)
+            .with_object_color(ColorRgb::new(
+                object.object_color[0],
+                object.object_color[1],
+                object.object_color[2],
+            ))
+            .with_color_source(document_color_source_from_3dm(object.color_source))
+            .with_visibility(object.visible)
+            .with_locked(object.locked)
+            .try_with_wire_density(object.wire_density)?;
+        if let Some(name) = object.name {
+            attributes = attributes.with_name(name);
+        }
+        for (key, value) in object.user_text {
+            attributes = attributes.try_with_user_text(key, value)?;
+        }
+        let id = document.add_geometry_with_metadata(
+            document_geometry_from_3dm(object.geometry),
+            attributes,
+            object.geometry_user_text,
+        )?;
+        imported_objects.push((id, object.group_indices));
+    }
+
+    let mut imported_groups = Vec::with_capacity(model.groups.len());
+    let mut group_names = ImportNames::new(
+        document.groups().filter_map(|group| group.name()),
+        false,
+        "Imported Group",
+    );
+    for group in &model.groups {
+        let name = group_names.allocate(&group.name);
+        imported_groups.push(document.add_empty_group(Some(name))?);
+    }
+    for (id, memberships) in imported_objects {
+        document.set_object_group_memberships(
+            id,
+            memberships.iter().map(|index| imported_groups[*index]),
+        )?;
+    }
+    let imported_group_count = imported_groups.len();
+
+    for (source, id) in model.layers.iter().zip(imported_layers) {
+        document.set_layer_visibility(id, source.visible)?;
+        document.set_layer_locked(id, source.locked)?;
+    }
+
+    Ok(format!(
+        "Imported {object_count} objects in {imported_group_count} groups on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
+    ))
 }
 
 pub(super) struct ExportThreeDmCommand;
@@ -357,22 +385,31 @@ impl Command for ExportThreeDmCommand {
             return Err(CommandError::Usage("Export3dm path"));
         }
         let path = arguments.join(" ");
-        let model = document_3dm_model(document)?;
-        let group_count = model.groups.len();
-        let layer_count = model.layers.len();
-        let report = write_3dm_file(&path, &model)?;
-        let object_count = report.written_object_count;
-        let mut message = format!(
-            "Exported {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'"
-        );
-        if report.adapted_curve_count != 0 {
-            message.push_str(&format!(
-                "; adapted {} curve objects from {} source objects",
-                report.adapted_curve_count, report.source_object_count
-            ));
-        }
-        Ok(message)
+        export_3dm_with_named_views(document, &path, &[])
     }
+}
+
+pub fn export_3dm_with_named_views(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+) -> Result<String, CommandError> {
+    let mut model = document_3dm_model(document)?;
+    model.named_views = views.to_vec();
+    let group_count = model.groups.len();
+    let layer_count = model.layers.len();
+    let report = write_3dm_file(path, &model)?;
+    let object_count = report.written_object_count;
+    let mut message = format!(
+        "Exported {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'"
+    );
+    if report.adapted_curve_count != 0 {
+        message.push_str(&format!(
+            "; adapted {} curve objects from {} source objects",
+            report.adapted_curve_count, report.source_object_count
+        ));
+    }
+    Ok(message)
 }
 
 pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError> {

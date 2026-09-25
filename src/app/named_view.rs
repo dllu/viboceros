@@ -2,6 +2,59 @@ use super::*;
 use viboceros_command::named_view::{self, NamedViewAction};
 
 impl VibocerosApp {
+    pub(super) fn try_run_3dm_command(
+        &mut self,
+        input: &str,
+    ) -> Option<Result<String, viboceros_command::CommandError>> {
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        let name = input[..end].trim_start_matches(['_', '-']);
+        let tail = &input[end..];
+        if name.eq_ignore_ascii_case("Import3dm") {
+            return Some((|| {
+                let path = viboceros_command::parse_3dm_path(tail)?;
+                let (message, views) =
+                    viboceros_command::import_3dm_with_named_views(&mut self.document, path)?;
+                let mut imported = 0;
+                for source in views {
+                    let Ok(snapshot) = Viewport::named_view_from_3dm(&source) else {
+                        continue;
+                    };
+                    let base = source.name.replace('|', " ").trim().to_owned();
+                    let base = if base.is_empty() {
+                        "Imported View"
+                    } else {
+                        &base
+                    };
+                    let mut candidate = base.to_owned();
+                    for index in 2.. {
+                        if self.named_views.get(&candidate).is_err() {
+                            break;
+                        }
+                        candidate = format!("{base} ({index})");
+                    }
+                    if self.named_views.save(candidate, snapshot).is_ok() {
+                        imported += 1;
+                    }
+                }
+                Ok(format!("{message}; imported {imported} named view(s)"))
+            })());
+        }
+        if name.eq_ignore_ascii_case("Export3dm") {
+            return Some((|| {
+                let path = viboceros_command::parse_3dm_path(tail)?;
+                let views = self
+                    .named_views
+                    .entries()
+                    .map(|(name, saved)| Viewport::named_view_to_3dm(*saved, name.to_owned()))
+                    .collect::<Result<Vec<_>, _>>()?;
+                let message =
+                    viboceros_command::export_3dm_with_named_views(&self.document, path, &views)?;
+                Ok(format!("{message}; exported {} named view(s)", views.len()))
+            })());
+        }
+        None
+    }
+
     pub(super) fn try_run_named_view_command(&mut self, input: &str) -> bool {
         let Some(parsed) = named_view::parse(input) else {
             return false;

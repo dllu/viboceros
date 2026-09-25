@@ -26,6 +26,7 @@ const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod drafting;
+mod named_view;
 #[cfg(test)]
 use drafting::clip_drafting_line;
 #[cfg(test)]
@@ -114,6 +115,8 @@ pub(crate) struct CameraSnapshot {
     orbit_yaw: Real,
     orbit_pitch: Real,
     perspective_camera_distance: Real,
+    perspective_fov_radians: Real,
+    perspective_lens_shift: [Real; 2],
     pub(crate) target: NaVector3<Real>,
 }
 
@@ -121,6 +124,7 @@ pub(crate) struct CameraSnapshot {
 pub(crate) struct NamedViewSnapshot {
     camera: CameraSnapshot,
     plane: Frame3,
+    port_size: [i32; 2],
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -377,6 +381,8 @@ pub struct Viewport {
     orbit_yaw: Real,
     orbit_pitch: Real,
     perspective_camera_distance: Real,
+    perspective_fov_radians: Real,
+    perspective_lens_shift: [Real; 2],
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
@@ -414,6 +420,8 @@ impl Viewport {
             orbit_yaw: -std::f64::consts::FRAC_PI_4,
             orbit_pitch: std::f64::consts::FRAC_PI_6,
             perspective_camera_distance: DEFAULT_PERSPECTIVE_CAMERA_DISTANCE,
+            perspective_fov_radians: PERSPECTIVE_VERTICAL_FOV_RADIANS,
+            perspective_lens_shift: [0.0; 2],
             target: NaVector3::zeros(),
             last_rect: None,
             selection_drag_start: None,
@@ -436,6 +444,8 @@ impl Viewport {
             orbit_yaw: self.orbit_yaw,
             orbit_pitch: self.orbit_pitch,
             perspective_camera_distance: self.perspective_camera_distance,
+            perspective_fov_radians: self.perspective_fov_radians,
+            perspective_lens_shift: self.perspective_lens_shift,
             target: self.target,
         }
     }
@@ -444,6 +454,7 @@ impl Viewport {
         NamedViewSnapshot {
             camera: self.camera_snapshot(),
             plane: self.construction_plane(),
+            port_size: self.named_view_port_size(),
         }
     }
 
@@ -484,6 +495,8 @@ impl Viewport {
         self.orbit_yaw = camera.orbit_yaw;
         self.orbit_pitch = camera.orbit_pitch;
         self.perspective_camera_distance = camera.perspective_camera_distance;
+        self.perspective_fov_radians = camera.perspective_fov_radians;
+        self.perspective_lens_shift = camera.perspective_lens_shift;
         self.target = camera.target;
     }
 
@@ -578,6 +591,8 @@ impl Viewport {
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = 40.0;
         self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
+        self.perspective_fov_radians = PERSPECTIVE_VERTICAL_FOV_RADIANS;
+        self.perspective_lens_shift = [0.0; 2];
         self.orbit_yaw = -std::f64::consts::FRAC_PI_4;
         self.orbit_pitch = std::f64::consts::FRAC_PI_6;
         if kind.is_parallel() {

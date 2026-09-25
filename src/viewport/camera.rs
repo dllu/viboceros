@@ -430,6 +430,10 @@ impl Viewport {
     pub(super) fn world_origin(&self, rect: Rect) -> Pos2 {
         if self.kind == ViewKind::Perspective {
             rect.center()
+                + egui::vec2(
+                    (-self.perspective_lens_shift[0] * Real::from(rect.width()) * 0.5) as f32,
+                    (self.perspective_lens_shift[1] * Real::from(rect.height()) * 0.5) as f32,
+                )
         } else {
             rect.center() + self.pan
         }
@@ -599,7 +603,7 @@ impl Viewport {
 
     pub(super) fn perspective_focal_length_pixels(&self, rect: Rect) -> Real {
         let viewport_height = Real::from(rect.height().max(1.0));
-        viewport_height / (2.0 * (PERSPECTIVE_VERTICAL_FOV_RADIANS / 2.0).tan())
+        viewport_height / (2.0 * (self.perspective_fov_radians / 2.0).tan())
     }
 
     pub(super) fn pixels_per_model_unit_at_origin(&self, rect: Rect) -> f32 {
@@ -663,8 +667,9 @@ impl Viewport {
             );
             let focal = self.perspective_focal_length_pixels(rect);
             let (right, up, _) = self.perspective_basis();
-            let horizontal = (Real::from(center.x) - Real::from(viewport_center.x)) / focal;
-            let vertical = (Real::from(viewport_center.y) - Real::from(center.y)) / focal;
+            let principal_point = self.world_origin(rect);
+            let horizontal = (Real::from(center.x) - Real::from(principal_point.x)) / focal;
+            let vertical = (Real::from(principal_point.y) - Real::from(center.y)) / focal;
             let target = self.target + (right * horizontal + up * vertical) * old_distance;
             if !target.iter().all(|value| value.is_finite()) {
                 return Err("zoom exceeds the model-coordinate range");
@@ -806,8 +811,9 @@ impl Viewport {
             let focal = self.perspective_focal_length_pixels(rect);
             let (right, up, _) = self.perspective_basis();
             let travel = old_distance - new_distance;
-            let horizontal = (Real::from(pointer.x) - Real::from(rect.center().x)) / focal;
-            let vertical = (Real::from(rect.center().y) - Real::from(pointer.y)) / focal;
+            let principal_point = self.world_origin(rect);
+            let horizontal = (Real::from(pointer.x) - Real::from(principal_point.x)) / focal;
+            let vertical = (Real::from(principal_point.y) - Real::from(pointer.y)) / focal;
             let target = self.target + (right * horizontal + up * vertical) * travel;
             if !target.iter().all(|value| value.is_finite()) {
                 return Err("zoom exceeds the model-coordinate range");
@@ -886,11 +892,11 @@ impl Viewport {
                 let projection = NaMatrix4::new(
                     2.0 * focal_length / width,
                     0.0,
-                    offset_x,
+                    offset_x - self.perspective_lens_shift[0],
                     0.0,
                     0.0,
                     2.0 * focal_length / height,
-                    offset_y,
+                    offset_y - self.perspective_lens_shift[1],
                     0.0,
                     0.0,
                     0.0,
