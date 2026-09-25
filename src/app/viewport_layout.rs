@@ -6,6 +6,7 @@ use viboceros_command::interface::InterfaceCommand;
 #[derive(Clone, Copy)]
 enum ViewportTabAction {
     Select(usize),
+    Cycle(bool),
     Rename(usize),
     Maximize(usize),
     Close(usize),
@@ -202,7 +203,7 @@ impl VibocerosApp {
             return;
         }
         let mut action = None;
-        egui::Panel::bottom("viewport_tabs").show(root, |ui| {
+        let panel = egui::Panel::bottom("viewport_tabs").show(root, |ui| {
             ui.horizontal(|ui| {
                 ui.label("Model views");
                 if ui.button("+").on_hover_text("New viewport").clicked() {
@@ -260,6 +261,27 @@ impl VibocerosApp {
                     });
             });
         });
+        if action.is_none()
+            && root
+                .ctx()
+                .pointer_hover_pos()
+                .is_some_and(|pointer| panel.response.rect.contains(pointer))
+        {
+            let scroll = root.input(|input| {
+                input
+                    .raw
+                    .events
+                    .iter()
+                    .filter_map(|event| match event {
+                        egui::Event::MouseWheel { delta, .. } => Some(delta.y),
+                        _ => None,
+                    })
+                    .sum::<f32>()
+            });
+            if scroll != 0.0 {
+                action = Some(ViewportTabAction::Cycle(scroll < 0.0));
+            }
+        }
         if let Some(action) = action {
             self.apply_viewport_tab_action(action);
         }
@@ -321,6 +343,11 @@ impl VibocerosApp {
     fn apply_viewport_tab_action(&mut self, action: ViewportTabAction) {
         match action {
             ViewportTabAction::Select(index) => self.activate_model_viewport(index),
+            ViewportTabAction::Cycle(next) => self.apply_interface_command(if next {
+                InterfaceCommand::NextViewport
+            } else {
+                InterfaceCommand::PrevViewport
+            }),
             ViewportTabAction::Rename(index) => {
                 if let Some(viewport) = self.viewports.get(index) {
                     self.viewport_tab_rename = Some(ViewportTabRename {
@@ -555,5 +582,42 @@ mod tests {
         app.commit_viewport_tab_rename();
         assert_eq!(app.viewports[3].view_label(), "Detail");
         assert_eq!(app.viewports[0].view_label(), "Perspective");
+    }
+
+    #[test]
+    fn wheel_over_tabs_cycles_views_without_stealing_viewport_scroll() {
+        let mut app = super::super::tests::test_app();
+        let context = egui::Context::default();
+        let frame = |app: &mut VibocerosApp, pointer: egui::Pos2, delta: f32| {
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(800.0, 600.0),
+                        )),
+                        events: vec![
+                            egui::Event::PointerMoved(pointer),
+                            egui::Event::MouseWheel {
+                                unit: egui::MouseWheelUnit::Point,
+                                delta: egui::vec2(0.0, delta),
+                                phase: egui::TouchPhase::Move,
+                                modifiers: Default::default(),
+                            },
+                        ],
+                        ..Default::default()
+                    },
+                    |ui| app.show_viewport_tabs(ui),
+                )
+                .drop_without_applying_deltas();
+        };
+        frame(&mut app, egui::pos2(100.0, 100.0), -40.0);
+        assert_eq!(app.active_viewport, 0);
+        frame(&mut app, egui::pos2(100.0, 580.0), -40.0);
+        assert_eq!(app.active_viewport, 1);
+        app.maximized_viewport = Some(1);
+        frame(&mut app, egui::pos2(100.0, 580.0), 40.0);
+        assert_eq!(app.active_viewport, 0);
+        assert_eq!(app.maximized_viewport, Some(0));
     }
 }

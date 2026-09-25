@@ -66,7 +66,8 @@ with its number and title. Click a tab to activate its view, including one
 covered by an overlapping viewport; double-click to rename it.
 The tab menu can activate, rename, maximize, restore, or close a view, and `+` opens a
 new overlapping Top view. `ViewportTabs Show|Hide|Toggle` controls visibility;
-this setting persists between sessions.
+this setting persists between sessions. The mouse wheel cycles views while the
+pointer is over the tab strip; wheel input over a viewport continues to zoom it.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
 empty layers; it reports object counts and combines edits into one undo step.
 Scroll inside the pane to reach lower layers, new-layer controls, and groups in

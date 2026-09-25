@@ -19,7 +19,8 @@ the current document. `3View`, `4View`, and `MaxViewport` change the layout;
 `CloseViewport` removes the active view, preserving covered layouts or filling tiled gaps.
 The model-view tabs below the workspace select views, including views covered by
 overlapping windows. Double-click a tab to rename it; right-click for view
-actions. `ViewportTabs Show|Hide|Toggle` controls the tab strip.
+actions, or use the mouse wheel over the tabs to cycle views.
+`ViewportTabs Show|Hide|Toggle` controls the tab strip.
 `-ViewportProperties Title="name"` names the active view for selection and saving.
 `Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
 selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both
