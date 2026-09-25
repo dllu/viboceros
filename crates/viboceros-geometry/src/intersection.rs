@@ -580,6 +580,8 @@ fn curve_brep_intersection_events_with_transform(
 /// Axis-parallel offset and oblique patches meet tori in fitted cubic loops or arcs.
 /// Coaxial torus and finite cylinder walls meet in exact rational circles.
 /// Parallel offset cylinder walls meet tori in fitted cubic loops, arcs, or points.
+/// Centered perpendicular cylinder walls meet tori in fitted cubic loops,
+/// finite arcs, or isolated contacts across their supported radius ranges.
 /// Axis-centered spheres and canonical tori meet in exact rational circles.
 /// Coaxial canonical tori meet in exact rational circles.
 /// Equal parallel offset tori meet in fitted symmetry-plane and elliptic sections.

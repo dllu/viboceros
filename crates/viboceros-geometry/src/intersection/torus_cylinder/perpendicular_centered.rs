@@ -4,7 +4,6 @@ use super::SurfaceSurfaceIntersectionEvent;
 use crate::{Frame3, GeometryError, NurbsCurve, Real};
 
 const TURN: Real = std::f64::consts::TAU;
-const QUARTER: Real = std::f64::consts::FRAC_PI_2;
 const MAX_SEGMENTS: usize = 4096;
 
 #[derive(Clone, Copy)]
@@ -24,6 +23,8 @@ enum Regime {
     CylinderAngle,
     Meridian,
     Critical,
+    InnerCritical,
+    Turned { limit: Real },
 }
 
 #[derive(Clone, Copy)]
@@ -49,14 +50,27 @@ pub(super) fn intersect(
     let low = start.min(end);
     let high = start.max(end);
     let mut events = Vec::new();
-    let regime = if cylinder_radius < minor {
+    let regime = if cylinder_radius == major - minor {
+        Regime::InnerCritical
+    } else if cylinder_radius > major - minor {
+        let cosine = (cylinder_radius * cylinder_radius - major * major - minor * minor)
+            / (2.0 * major * minor);
+        Regime::Turned {
+            limit: cosine.clamp(-1.0, 1.0).acos(),
+        }
+    } else if cylinder_radius < minor {
         Regime::CylinderAngle
     } else if cylinder_radius > minor {
         Regime::Meridian
     } else {
         Regime::Critical
     };
-    for axial_side in [1.0, -1.0] {
+    let axial_sides: &[Real] = if matches!(regime, Regime::Turned { .. } | Regime::InnerCritical) {
+        &[1.0]
+    } else {
+        &[1.0, -1.0]
+    };
+    for &axial_side in axial_sides {
         for branch_side in [1.0, -1.0] {
             let section = Section {
                 frame,
@@ -68,20 +82,23 @@ pub(super) fn intersect(
                 branch_side,
                 regime,
             };
+            let period = section.period();
+            let quarter = period / 4.0;
             let extrema = [
                 section.sample(0.0).axial,
-                section.sample(QUARTER).axial,
-                section.sample(2.0 * QUARTER).axial,
+                section.sample(quarter).axial,
+                section.sample(2.0 * quarter).axial,
+                section.sample(3.0 * quarter).axial,
             ];
             let branch_low = extrema.into_iter().fold(Real::INFINITY, Real::min);
             let branch_high = extrema.into_iter().fold(Real::NEG_INFINITY, Real::max);
             if low > branch_high + fit_tolerance || high < branch_low - fit_tolerance {
                 continue;
             }
-            let mut cuts = vec![0.0, QUARTER, 2.0 * QUARTER, 3.0 * QUARTER, TURN];
+            let mut cuts = vec![0.0, quarter, 2.0 * quarter, 3.0 * quarter, period];
             for quarter in 0..4 {
-                let a = quarter as Real * QUARTER;
-                let b = (quarter + 1) as Real * QUARTER;
+                let a = quarter as Real * period / 4.0;
+                let b = (quarter + 1) as Real * period / 4.0;
                 let at_a = section.sample(a).axial;
                 let at_b = section.sample(b).axial;
                 for rim in [low, high] {
@@ -120,18 +137,18 @@ pub(super) fn intersect(
             }
             if intervals.len() > 1
                 && intervals[0].0 == 0.0
-                && intervals.last().is_some_and(|last| last.1 == TURN)
+                && intervals.last().is_some_and(|last| last.1 == period)
             {
                 let first = intervals.remove(0);
                 let last = intervals.pop().expect("at least two intervals");
-                intervals.insert(0, (last.0 - TURN, first.1));
+                intervals.insert(0, (last.0 - period, first.1));
             }
             for &angle in &cuts {
                 let axial = section.sample(angle).axial;
                 let on_rim =
                     (axial - low).abs() <= fit_tolerance || (axial - high).abs() <= fit_tolerance;
                 let on_curve = intervals.iter().any(|&(a, b)| {
-                    [-TURN, 0.0, TURN]
+                    [-period, 0.0, period]
                         .into_iter()
                         .any(|shift| angle + shift >= a && angle + shift <= b)
                 });
@@ -159,6 +176,14 @@ pub(super) fn intersect(
 }
 
 impl Section {
+    fn period(self) -> Real {
+        if matches!(self.regime, Regime::InnerCritical) {
+            2.0 * TURN
+        } else {
+            TURN
+        }
+    }
+
     fn sample(self, angle: Real) -> Sample {
         let (sine, cosine) = angle.sin_cos();
         let (lateral, height, lateral_derivative, height_derivative, axial, axial_derivative) =
@@ -220,6 +245,58 @@ impl Section {
                         axial_derivative,
                     )
                 }
+                Regime::InnerCritical => {
+                    let height = self.minor * sine;
+                    let height_derivative = self.minor * cosine;
+                    let lateral_magnitude =
+                        (self.cylinder_radius * self.cylinder_radius - height * height).sqrt();
+                    let lateral = self.branch_side * lateral_magnitude;
+                    let lateral_derivative =
+                        -self.branch_side * height * height_derivative / lateral_magnitude;
+                    let amplitude = 2.0 * (self.major * self.minor).sqrt();
+                    let axial = amplitude * (0.5 * angle).cos();
+                    let axial_derivative = -0.5 * amplitude * (0.5 * angle).sin();
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
+                Regime::Turned { limit } => {
+                    let meridian = limit * cosine;
+                    let meridian_derivative = -limit * sine;
+                    let (meridian_sine, meridian_cosine) = meridian.sin_cos();
+                    let height = self.minor * meridian_sine;
+                    let height_derivative = self.minor * meridian_cosine * meridian_derivative;
+                    let lateral_magnitude =
+                        (self.cylinder_radius * self.cylinder_radius - height * height).sqrt();
+                    let lateral = self.branch_side * lateral_magnitude;
+                    let lateral_derivative =
+                        -self.branch_side * height * height_derivative / lateral_magnitude;
+                    // The sinc form keeps the joined branch smooth at both axial turnarounds.
+                    let a = 0.5 * limit * (1.0 + cosine);
+                    let b = 0.5 * limit * (1.0 - cosine);
+                    let axial = (self.major * self.minor).sqrt()
+                        * limit
+                        * sine
+                        * (sinc(a) * sinc(b)).sqrt();
+                    let axial_derivative = if sine.abs() <= 1.0e-8 {
+                        cosine * (self.major * self.minor * limit * limit.sin()).sqrt()
+                    } else {
+                        -self.major * self.minor * meridian_sine * meridian_derivative / axial
+                    };
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
             };
         let [ux, uy] = self.direction;
         Sample {
@@ -235,6 +312,15 @@ impl Section {
             ],
             axial,
         }
+    }
+}
+
+fn sinc(value: Real) -> Real {
+    if value.abs() < 1.0e-4 {
+        let square = value * value;
+        1.0 - square / 6.0 + square * square / 120.0
+    } else {
+        value.sin() / value
     }
 }
 
@@ -257,7 +343,7 @@ fn fit(
         )?;
     }
     let first = section.frame.point_at(section.sample(start).position)?;
-    let closed = (end - start - TURN).abs() <= 64.0 * Real::EPSILON;
+    let closed = (end - start - section.period()).abs() <= 64.0 * Real::EPSILON;
     let mut controls = Vec::with_capacity(3 * segments.len() + 1);
     let mut knots = Vec::with_capacity(3 * segments.len() + 5);
     controls.push(first);

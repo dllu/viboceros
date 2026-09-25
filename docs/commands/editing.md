@@ -279,8 +279,11 @@ fitted cubic loops, finite rim-clipped arcs, or isolated contact points.
 Critical sections retain their single, pinched, and crossing loops. Cylinders
 whose perpendicular axes cross the torus center and whose radii fit inside
 the torus's inner rim produce four cubic loops, finite rim arcs, or isolated
-rim contacts. The tube-radius case retains crossing curves. Other nonparallel
-torus/cylinder axes remain unsupported. The
+rim contacts. The tube-radius case retains crossing curves. At the inner rim
+radius, two crossing loops with a doubled period join the four-loop and two-loop
+regimes. Larger centered perpendicular cylinders produce two turning loops
+and finite arcs up to the outer tangent radius, which gives two contact points.
+Other nonparallel torus/cylinder axes remain unsupported. The
 [torus/cylinder oracle fixture](../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json)
 covers exact circles, offset loops, finite arcs, crossings, and contacts.
 Spheres centered on a torus axis intersect it in one or two exact rational

@@ -25,26 +25,62 @@ pub(super) fn intersect(
             tolerance.relative()
                 * (major_radius + minor_radius)
                     .max(cylinder_radius)
-                    .max(cylinder_height),
+                    .max(cylinder_height.abs()),
         )
         .max(coordinate_roundoff);
     let torus_axis = torus_frame.z_axis().as_vector();
     let cylinder_axis = cylinder_frame.z_axis().as_vector();
     let axis_drift = torus_axis.cross(cylinder_axis)?.length()?
-        * (major_radius + minor_radius).max(cylinder_height);
+        * (major_radius + minor_radius).max(cylinder_height.abs());
     if axis_drift > spatial_tolerance {
         let [offset_x, offset_y, offset_z] = torus_frame.coordinates_of(cylinder_frame.origin())?;
         let direction_x = cylinder_axis.dot(torus_frame.x_axis().as_vector())?;
         let direction_y = cylinder_axis.dot(torus_frame.y_axis().as_vector())?;
         let transverse = direction_x.mul_add(-offset_y, direction_y * offset_x);
-        if torus_axis.dot(cylinder_axis)?.abs()
+        let centered_perpendicular = torus_axis.dot(cylinder_axis)?.abs()
             * (major_radius + minor_radius).max(cylinder_height.abs())
             <= spatial_tolerance
             && offset_z.abs() <= spatial_tolerance
-            && transverse.abs() <= spatial_tolerance
-            && cylinder_radius + 4.0 * spatial_tolerance < major_radius - minor_radius
-            && ((cylinder_radius - minor_radius).abs() > 4.0 * spatial_tolerance
-                || cylinder_radius == minor_radius)
+            && transverse.abs() <= spatial_tolerance;
+        if centered_perpendicular {
+            let outer_radius = major_radius + minor_radius;
+            if cylinder_radius > outer_radius + spatial_tolerance {
+                return Ok(Vec::new());
+            }
+            if (cylinder_radius - outer_radius).abs() <= spatial_tolerance {
+                let direction_length = direction_x.hypot(direction_y);
+                let direction = [
+                    direction_x / direction_length,
+                    direction_y / direction_length,
+                ];
+                let start = offset_x.mul_add(direction[0], offset_y * direction[1]);
+                let end = start + cylinder_height * direction_length;
+                if start.min(end) > spatial_tolerance || start.max(end) < -spatial_tolerance {
+                    return Ok(Vec::new());
+                }
+                return [1.0, -1.0]
+                    .into_iter()
+                    .map(|side| {
+                        torus_frame
+                            .point_at([
+                                -side * outer_radius * direction[1],
+                                side * outer_radius * direction[0],
+                                0.0,
+                            ])
+                            .map(SurfaceSurfaceIntersectionEvent::Point)
+                    })
+                    .collect();
+            }
+        }
+        if centered_perpendicular
+            && ((cylinder_radius + 4.0 * spatial_tolerance < major_radius - minor_radius
+                && ((cylinder_radius - minor_radius).abs() > 4.0 * spatial_tolerance
+                    || cylinder_radius == minor_radius))
+                || (cylinder_radius > (major_radius - minor_radius) + 4.0 * spatial_tolerance
+                    && cylinder_radius + 4.0 * spatial_tolerance < major_radius + minor_radius
+                    && cylinder_radius > minor_radius + 4.0 * spatial_tolerance)
+                || (cylinder_radius == major_radius - minor_radius
+                    && cylinder_radius > minor_radius + 4.0 * spatial_tolerance))
         {
             return perpendicular_centered::intersect(
                 (torus_frame, major_radius, minor_radius),
@@ -235,6 +271,189 @@ mod tests {
                 assert!((location.y().hypot(location.z()) - 2.0).abs() < 5e-9);
             }
         }
+    }
+
+    #[test]
+    fn centered_perpendicular_turning_sections_form_two_loops() {
+        let torus = torus();
+        for radius in [3.0001, 3.1, 4.0, 4.9, 4.9999] {
+            let cylinder = perpendicular_cylinder(radius, -6.0, 6.0);
+            for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+                let events =
+                    surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+                assert_eq!(events.len(), 2, "radius {radius}");
+                for event in events {
+                    let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                        panic!("perpendicular turning section should be a loop")
+                    };
+                    assert_eq!(curve.degree(), 3);
+                    assert!(curve.is_closed().unwrap());
+                    let domain = curve.domain();
+                    for index in 0..=64 {
+                        let parameter = *domain.start()
+                            + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                        let location = curve.evaluate(parameter).unwrap();
+                        assert!(
+                            ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0)
+                                .abs()
+                                < 5e-9
+                        );
+                        assert!((location.y().hypot(location.z()) - radius).abs() < 5e-9);
+                    }
+                }
+            }
+        }
+        let reversed_axis = Frame3::try_from_normal(
+            point(6.0, 0.0, 0.0),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let reversed = NurbsSurface::try_cylinder(reversed_axis, 4.0, 0.0, 12.0).unwrap();
+        let reversed_events =
+            surface_surface_intersection_events(&torus, &reversed, Tolerance::DEFAULT).unwrap();
+        assert_eq!(reversed_events.len(), 2);
+        assert!(reversed_events.iter().all(|event| matches!(
+            event,
+            SurfaceSurfaceIntersectionEvent::Curve(curve) if curve.is_closed().unwrap()
+        )));
+    }
+
+    #[test]
+    fn centered_perpendicular_inner_rim_has_two_crossing_loops() {
+        let torus = torus();
+        let cylinder = perpendicular_cylinder(3.0, -6.0, 6.0);
+        for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("critical inner rim should give crossing loops")
+                };
+                assert_eq!(curve.degree(), 3);
+                assert!(curve.is_closed().unwrap());
+                let domain = curve.domain();
+                for index in 0..=128 {
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * index as Real / 128.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert!(
+                        ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs()
+                            < 5e-9
+                    );
+                    assert!((location.y().hypot(location.z()) - 3.0).abs() < 5e-9);
+                }
+                let first_crossing = curve
+                    .evaluate(*domain.start() + 0.25 * (*domain.end() - *domain.start()))
+                    .unwrap();
+                let second_crossing = curve
+                    .evaluate(*domain.start() + 0.75 * (*domain.end() - *domain.start()))
+                    .unwrap();
+                assert!(first_crossing.distance_to(second_crossing).unwrap() < 5e-9);
+            }
+        }
+        let arcs = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(3.0, 1.0, 2.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arcs.len(), 4);
+        for event in arcs {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("critical inner rim clipping should produce arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            for index in 0..=32 {
+                let domain = curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * index as Real / 32.0;
+                let location = curve.evaluate(parameter).unwrap();
+                assert!(location.x() >= 1.0 - 5e-9 && location.x() <= 2.0 + 5e-9);
+                assert!(
+                    ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs()
+                        < 5e-9
+                );
+                assert!((location.y().hypot(location.z()) - 3.0).abs() < 5e-9);
+            }
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_turning_sections_clip_to_arcs_and_points() {
+        let torus = torus();
+        let arcs = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(4.0, 1.0, 2.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arcs.len(), 4);
+        for event in arcs {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("finite turning section should produce arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            for index in 0..=32 {
+                let domain = curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * index as Real / 32.0;
+                let location = curve.evaluate(parameter).unwrap();
+                assert!(location.x() >= 1.0 - 5e-9 && location.x() <= 2.0 + 5e-9);
+                assert!(
+                    ((location.x().hypot(location.y()) - 4.0).hypot(location.z()) - 1.0).abs()
+                        < 5e-9
+                );
+                assert!((location.y().hypot(location.z()) - 4.0).abs() < 5e-9);
+            }
+        }
+        let points = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(4.0, 3.0, 6.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(points.len(), 2);
+        for event in points {
+            let SurfaceSurfaceIntersectionEvent::Point(location) = event else {
+                panic!("turning section tangent rim should produce points")
+            };
+            assert!((location.x() - 3.0).abs() < 5e-9);
+            assert!((location.y().abs() - 4.0).abs() < 5e-9);
+            assert!(location.z().abs() < 5e-9);
+        }
+    }
+
+    #[test]
+    fn centered_perpendicular_outer_tangency_and_disjoint_cylinders() {
+        let torus = torus();
+        for (low, high, expected) in [(-6.0, 6.0, 2), (0.0, 6.0, 2), (1.0, 6.0, 0)] {
+            let events = surface_surface_intersection_events(
+                &torus,
+                &perpendicular_cylinder(5.0, low, high),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(events.len(), expected);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Point(location) = event else {
+                    panic!("outer tangency should give points")
+                };
+                assert!(location.x().abs() < 5e-9);
+                assert!((location.y().abs() - 5.0).abs() < 5e-9);
+                assert!(location.z().abs() < 5e-9);
+            }
+        }
+        assert!(
+            surface_surface_intersection_events(
+                &torus,
+                &perpendicular_cylinder(6.0, -6.0, 6.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
     }
 
     #[test]
