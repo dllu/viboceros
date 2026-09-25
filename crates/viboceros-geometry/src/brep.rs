@@ -431,10 +431,29 @@ impl BrepFace {
         let frame = self.local_parameter_frame()?;
         let [u, v] = [u - frame.origin[0], v - frame.origin[1]];
         let intervals = trimmed_isocurve_intervals(&frame.face, 0, v, tolerance)?;
-        let epsilon = trim_parameter_epsilon([*u_domain.start(), *u_domain.end()], tolerance);
-        Ok(intervals
+        let u_epsilon = trim_parameter_epsilon([*u_domain.start(), *u_domain.end()], tolerance);
+        if intervals
             .iter()
-            .any(|interval| parameter_interval_contains(*interval, u, epsilon)))
+            .any(|interval| parameter_interval_contains(*interval, u, u_epsilon))
+        {
+            return Ok(true);
+        }
+
+        // A scan line can touch a trim loop at a single vertex, leaving no
+        // positive-length inside interval. Boundary vertices still belong to
+        // the face, including a curved cut where it meets a surface seam.
+        let v_epsilon = trim_parameter_epsilon([*v_domain.start(), *v_domain.end()], tolerance);
+        for trim in frame.face.loops.iter().flat_map(|boundary| &boundary.trims) {
+            for endpoint in [*trim.curve.domain().start(), *trim.curve.domain().end()] {
+                let point = trim.curve.evaluate(endpoint)?;
+                if (point.x() - u).abs() <= u_epsilon.max(trim.tolerance[0])
+                    && (point.y() - v).abs() <= v_epsilon.max(trim.tolerance[1])
+                {
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
     }
 
     /// Returns the exact U/V bounds when the outer trim is one

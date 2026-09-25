@@ -1016,7 +1016,9 @@ The [section geometry audit](../tools/rhino_oracle/audit_cylinder_sections.py)
 checks planarity, solid boundary, bounds, and closure independent of curve
 degree and parameterization. Full NURBS definitions differ in these cases.
 The B-rep intersection path also clips sections against curved face trim loops.
-Height and angular isocurve trims on cylinder walls have exact kernel tests;
+Height and angular isocurve trims on cylinder walls have exact kernel tests.
+An exact non-isocurve split test covers a tilted ellipse trim, transverse
+quarter-circle sections, and a single-point contact at the cut endpoint;
 general curved trim loops still need broader oracle coverage.
 The [trimmed wall Intersect fixture](../tools/rhino_oracle/fixtures/trimmed_cylinder_face_intersect_command.json)
 compares four [Rhino observations](../tools/rhino_oracle/observations/trimmed_cylinder_face_intersect_command.json)

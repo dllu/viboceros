@@ -2931,9 +2931,22 @@ fn curve_brep_face_overlaps(
             } else {
                 edge.curve()
             };
-            for intersection in curve.intersections_with_curve(edge_curve, tolerance)? {
-                let parameter =
-                    snap_parameter_to_interval(intersection.first_parameter(), start, end);
+            let edge_parameters = if let Some(contacts) = certifiable_axis_planar_edge_contacts(
+                curve,
+                edge_curve,
+                tolerance,
+                distance_tolerance,
+            )? {
+                contacts
+            } else {
+                curve
+                    .intersections_with_curve(edge_curve, tolerance)?
+                    .into_iter()
+                    .map(|intersection| intersection.first_parameter())
+                    .collect()
+            };
+            for edge_parameter in edge_parameters {
+                let parameter = snap_parameter_to_interval(edge_parameter, start, end);
                 if parameter_inside_interval(parameter, start, end) {
                     breakpoints.push(parameter);
                 }
@@ -2991,6 +3004,91 @@ fn curve_brep_face_overlaps(
         }
     }
     Ok(result)
+}
+
+/// A positive-weight trim whose controls are strictly on one side of an
+/// axis-aligned section plane can only meet that plane at clamped endpoints.
+/// Certifying those contacts avoids the general curve/curve subdivision at
+/// grazing seams, where both control hulls touch at one parameter endpoint.
+fn certifiable_axis_planar_edge_contacts(
+    curve: &NurbsCurve,
+    edge: &NurbsCurve,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<Vec<Real>>, GeometryError> {
+    if curve
+        .control_points()
+        .iter()
+        .any(|point| point.weight() <= 0.0)
+        || edge
+            .control_points()
+            .iter()
+            .any(|point| point.weight() <= 0.0)
+    {
+        return Ok(None);
+    }
+    let coordinates = |point: Point3, axis: usize| point.to_array()[axis];
+    let Some((axis, plane_coordinate)) = (0..3).find_map(|axis| {
+        let first = coordinates(curve.control_points()[0].point(), axis);
+        curve
+            .control_points()
+            .iter()
+            .all(|point| coordinates(point.point(), axis) == first)
+            .then_some((axis, first))
+    }) else {
+        return Ok(None);
+    };
+    let distances = edge
+        .control_points()
+        .iter()
+        .map(|point| coordinates(point.point(), axis) - plane_coordinate)
+        .collect::<Vec<_>>();
+    let safe = distance_tolerance * 2.0;
+    let nonzero = distances
+        .iter()
+        .copied()
+        .filter(|distance| distance.abs() > safe)
+        .collect::<Vec<_>>();
+    if nonzero.is_empty() {
+        return Ok(None);
+    }
+    let sign = nonzero[0].signum();
+    if distances
+        .iter()
+        .any(|distance| *distance != 0.0 && distance.signum() != sign)
+        || distances
+            .iter()
+            .any(|distance| distance.abs() > distance_tolerance && distance.abs() <= safe)
+    {
+        return Ok(None);
+    }
+    let near = distances
+        .iter()
+        .map(|distance| distance.abs() <= distance_tolerance)
+        .collect::<Vec<_>>();
+    let prefix = near.iter().take_while(|&&value| value).count();
+    let suffix = near.iter().rev().take_while(|&&value| value).count();
+    if prefix > edge.degree()
+        || suffix > edge.degree()
+        || near.iter().filter(|&&value| value).count() != prefix + suffix
+    {
+        return Ok(None);
+    }
+    let mut contacts = Vec::new();
+    for endpoint in [
+        (prefix > 0).then_some(*edge.domain().start()),
+        (suffix > 0).then_some(*edge.domain().end()),
+    ]
+    .into_iter()
+    .flatten()
+    {
+        let point = edge.evaluate(endpoint)?;
+        let parameter = curve.closest_parameter(point, tolerance)?;
+        if curve.evaluate(parameter)?.distance_to(point)? <= safe {
+            contacts.push(parameter);
+        }
+    }
+    Ok(Some(contacts))
 }
 
 fn snap_parameter_to_interval(parameter: Real, start: Real, end: Real) -> Real {
@@ -4112,6 +4210,65 @@ mod tests {
                 brep_brep_intersection_events(&plane_brep, brep, Tolerance::DEFAULT).unwrap();
             assert_eq!(brep_events.len(), 1, "{brep_events:#?}");
         }
+    }
+
+    #[test]
+    fn curved_trim_on_cylinder_wall_clips_a_transverse_section() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let wall = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let oblique = NurbsSurface::try_bilinear([
+            point(-3.0, -3.0, 0.5),
+            point(3.0, -3.0, 3.5),
+            point(3.0, 3.0, 3.5),
+            point(-3.0, 3.0, 0.5),
+        ])
+        .unwrap();
+        let events =
+            surface_surface_intersection_events(&oblique, &wall, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(ellipse)] = events.as_slice() else {
+            panic!("expected an exact tilted cylindrical section")
+        };
+        let cutter = ellipse.try_trimmed(0.0..=std::f64::consts::TAU).unwrap();
+        let [south, north] = Brep::try_split_rectangular_surface_face_west_east(
+            wall.clone(),
+            0.0..=std::f64::consts::PI,
+            wall.domain_v(),
+            [3.0, 1.0],
+            cutter,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        for brep in [&south, &north] {
+            let results =
+                surface_brep_intersection_events(&plane, brep, Tolerance::DEFAULT).unwrap();
+            assert_eq!(results.len(), 1, "{results:#?}");
+            let SurfaceBrepIntersectionEvent::Curve(arc) = &results[0] else {
+                panic!("expected one circular arc")
+            };
+            assert!(!arc.is_closed().unwrap());
+            assert!((arc.length(Tolerance::DEFAULT).unwrap() - std::f64::consts::PI).abs() < 1e-7);
+            let plane_brep = Brep::try_surface_face(plane.clone(), Tolerance::DEFAULT).unwrap();
+            assert_eq!(
+                brep_brep_intersection_events(&plane_brep, brep, Tolerance::DEFAULT)
+                    .unwrap()
+                    .len(),
+                1
+            );
+        }
+        let endpoint_plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 3.0);
+        let endpoint =
+            surface_brep_intersection_events(&endpoint_plane, &south, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            endpoint,
+            vec![SurfaceBrepIntersectionEvent::Point(point(2.0, 0.0, 3.0))]
+        );
     }
 
     #[test]
