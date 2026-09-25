@@ -286,8 +286,8 @@ and finite arcs up to the outer tangent radius, which gives two contact points.
 The same centered-axis construction also handles thick-tube ring tori when the
 cylinder radius lies between the inner rim and tube radius, with separate outer
 and inner loops and finite rim clipping. At the inner rim radius, the inner
-curves cross. Other nonparallel torus/cylinder axes
-remain unsupported. The
+curves cross. At the tube radius, two turning loops cross. Other nonparallel
+torus/cylinder axes remain unsupported. The
 [torus/cylinder oracle fixture](../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json)
 covers exact circles, offset loops, finite arcs, crossings, and contacts.
 Spheres centered on a torus axis intersect it in one or two exact rational

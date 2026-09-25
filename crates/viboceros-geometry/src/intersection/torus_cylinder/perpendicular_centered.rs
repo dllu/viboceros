@@ -381,11 +381,19 @@ impl Section {
                     let (meridian_sine, meridian_cosine) = meridian.sin_cos();
                     let height = self.minor * meridian_sine;
                     let height_derivative = self.minor * meridian_cosine * meridian_derivative;
-                    let lateral_magnitude =
-                        (self.cylinder_radius * self.cylinder_radius - height * height).sqrt();
-                    let lateral = self.branch_side * lateral_magnitude;
-                    let lateral_derivative =
-                        -self.branch_side * height * height_derivative / lateral_magnitude;
+                    let (lateral, lateral_derivative) = if self.cylinder_radius == self.minor {
+                        (
+                            self.branch_side * self.minor * meridian_cosine,
+                            -self.branch_side * self.minor * meridian_sine * meridian_derivative,
+                        )
+                    } else {
+                        let lateral_magnitude =
+                            (self.cylinder_radius * self.cylinder_radius - height * height).sqrt();
+                        (
+                            self.branch_side * lateral_magnitude,
+                            -self.branch_side * height * height_derivative / lateral_magnitude,
+                        )
+                    };
                     // The sinc form keeps the joined branch smooth at both axial turnarounds.
                     let a = 0.5 * limit * (1.0 + cosine);
                     let b = 0.5 * limit * (1.0 - cosine);

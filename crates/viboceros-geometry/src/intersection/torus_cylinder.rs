@@ -84,7 +84,9 @@ pub(super) fn intersect(
                 || (cylinder_radius > major_radius - minor_radius + 4.0 * spatial_tolerance
                     && cylinder_radius + 4.0 * spatial_tolerance < minor_radius)
                 || (cylinder_radius == major_radius - minor_radius
-                    && cylinder_radius + 4.0 * spatial_tolerance < minor_radius))
+                    && cylinder_radius + 4.0 * spatial_tolerance < minor_radius)
+                || (cylinder_radius == minor_radius
+                    && cylinder_radius > major_radius - minor_radius + 4.0 * spatial_tolerance))
         {
             return perpendicular_centered::intersect(
                 (torus_frame, major_radius, minor_radius),
@@ -584,6 +586,62 @@ mod tests {
         let arcs = surface_surface_intersection_events(
             &torus,
             &perpendicular_cylinder(0.5, 0.2, 0.5),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arcs.len(), 4);
+        assert!(arcs.iter().all(|event| matches!(
+            event,
+            SurfaceSurfaceIntersectionEvent::Curve(curve) if !curve.is_closed().unwrap()
+        )));
+    }
+
+    #[test]
+    fn fat_ring_tube_radius_cylinder_has_two_crossing_turning_loops() {
+        let torus = NurbsSurface::try_torus(frame(), 1.5, 1.0).unwrap();
+        let cylinder = perpendicular_cylinder(1.0, -3.0, 3.0);
+        for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            let [
+                SurfaceSurfaceIntersectionEvent::Curve(first),
+                SurfaceSurfaceIntersectionEvent::Curve(second),
+            ] = events.as_slice()
+            else {
+                panic!("tube-radius section should contain two curves")
+            };
+            let limit = (-0.75_f64).acos();
+            let crossing_parameter = (std::f64::consts::FRAC_PI_2 / limit).acos();
+            assert!(
+                first
+                    .evaluate(crossing_parameter)
+                    .unwrap()
+                    .distance_to(second.evaluate(crossing_parameter).unwrap())
+                    .unwrap()
+                    < 5e-9
+            );
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("tube-radius section should retain two crossing loops")
+                };
+                assert!(curve.is_closed().unwrap());
+                for index in 0..=64 {
+                    let domain = curve.domain();
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert!(
+                        ((location.x().hypot(location.y()) - 1.5).hypot(location.z()) - 1.0).abs()
+                            < 5e-9
+                    );
+                    assert!((location.y().hypot(location.z()) - 1.0).abs() < 5e-9);
+                }
+            }
+        }
+        let arcs = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(1.0, 0.5, 1.0),
             Tolerance::DEFAULT,
         )
         .unwrap();
