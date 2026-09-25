@@ -4743,7 +4743,6 @@ fn execute(
         Operation::BrepFaceBrepFaceIntersectCommand {
             first,
             second,
-            reverse_selection,
             canonicalize_closed_curves,
             canonicalize_linear_curves,
             ..
@@ -4756,11 +4755,9 @@ fn execute(
                 nurbs_surface_from_definition(second)?,
                 tolerance,
             )?);
-            let inputs = if *reverse_selection {
-                [second, first]
-            } else {
-                [first, second]
-            };
+            // Rhino traverses these pairs in document insertion order even
+            // when the two existing objects are selected in reverse order.
+            let inputs = [first, second];
             if *canonicalize_linear_curves {
                 intersect_command_with_curve_serializer(
                     iterations,

@@ -1,0 +1,1632 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 125991821,
+      "id": "circle-surface-plane-brep-cylinder",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 107856750,
+      "id": "circle-brep-cylinder-brep-plane",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 116134644,
+      "id": "circle-surface-plane-brep-cylinder-brep-first",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 99494934,
+      "id": "circle-surface-cylinder-brep-plane",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 99769592,
+      "id": "circle-surface-cylinder-brep-plane-brep-first",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 104324341,
+      "id": "circle-brep-cylinder-brep-plane-reverse",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 99929810,
+      "id": "circle-brep-plane-brep-cylinder",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 99693298,
+      "id": "circle-surface-plane-z1-brep-cylinder",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 110794067,
+      "id": "circle-flipped-plane-surface-brep-cylinder",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 102798462,
+      "id": "circle-cylinder-surface-brep-flipped-plane",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 117286682,
+      "id": "surface-plane-cylinder-circle",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 117263794,
+      "id": "surface-cylinder-plane-circle",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 115364075,
+      "id": "rotated-surface-plane-cylinder-circle",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    -2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    -2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    -2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 189781189,
+      "id": "rotated-surface-cylinder-plane-circle",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    -2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    -2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    -2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                -6.283185307179586,
+                -0.0
+              ],
+              "knots": [
+                -6.283185307179586,
+                -6.283185307179586,
+                -6.283185307179586,
+                -4.71238898038469,
+                -4.71238898038469,
+                -3.141592653589793,
+                -3.141592653589793,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -0.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

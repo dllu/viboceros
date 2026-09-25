@@ -998,9 +998,11 @@ compares three live cylinder/plane surface-B-rep and B-rep/B-rep commands. All
 three [saved observations](../tools/rhino_oracle/observations/curved_brep_face_intersect_command.json)
 match after canonicalizing the direction of straight intersection curves;
 Rhino chooses branch directions from input order. The
-[circle boundary fixture](../tools/rhino_oracle/fixtures/curved_brep_face_intersect_boundary.json)
-retains two [raw observations](../tools/rhino_oracle/observations/curved_brep_face_intersect_boundary.json)
-with different circle domains and winding. Curved B-rep intersection currently
+[circle section fixture](../tools/rhino_oracle/fixtures/curved_brep_face_circle_intersect_command.json)
+adds fourteen matching [Rhino observations](../tools/rhino_oracle/observations/curved_brep_face_circle_intersect_command.json)
+for surface order, reversed selection, plane normals, rotated axes, and section
+heights. Full cylinder sections now use Rhino's signed `2π` domain and winding.
+Curved B-rep intersection currently
 requires one full-domain face; trimmed and multi-face curved B-reps still need
 curve clipping and component joining.
 
@@ -1153,6 +1155,10 @@ tools/rhino_oracle/run_headless.sh compare \
 python3 -m tools.rhino_oracle replay \
   tools/rhino_oracle/fixtures/curved_brep_face_intersect_command.json \
   --observations tools/rhino_oracle/observations/curved_brep_face_intersect_command.json
+
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/curved_brep_face_circle_intersect_command.json \
+  --observations tools/rhino_oracle/observations/curved_brep_face_circle_intersect_command.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_trim_command.json \

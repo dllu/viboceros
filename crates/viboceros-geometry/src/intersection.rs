@@ -638,14 +638,14 @@ pub fn surface_surface_intersection_events(
         && let Some(plane) = second.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
-            first, frame, radius, height, second, plane, tolerance,
+            first, frame, radius, height, second, plane, true, tolerance,
         );
     }
     if let Some((frame, radius, height)) = second_cylinder
         && let Some(plane) = first.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
-            second, frame, radius, height, first, plane, tolerance,
+            second, frame, radius, height, first, plane, false, tolerance,
         );
     }
     if let (Some(first_data), Some(second_data)) = (first_cylinder, second_cylinder) {
@@ -1029,6 +1029,7 @@ fn cylinder_planar_surface_intersection_events(
     height: Real,
     planar_surface: &NurbsSurface,
     plane: Plane,
+    cylinder_first: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let axis = frame.z_axis().as_vector();
@@ -1042,8 +1043,27 @@ fn cylinder_planar_surface_intersection_events(
             return Ok(Vec::new());
         }
         let center = frame.point_at([0.0, 0.0, axial_position.clamp(0.0, height)])?;
-        let circle = Circle3::try_new(center, radius, plane.normal(), tolerance)?.to_nurbs()?;
-        return intersect_curve_with_planar_surface(&circle, planar_surface, tolerance);
+        let section_normal = if cylinder_first {
+            plane.normal().opposite()
+        } else {
+            plane.normal()
+        };
+        let circle = Circle3::try_new(center, radius, section_normal, tolerance)?.to_nurbs()?;
+        let mut events = intersect_curve_with_planar_surface(&circle, planar_surface, tolerance)?;
+        let positive_domain = section_normal.as_vector().dot(frame.z_axis().as_vector())? > 0.0;
+        let domain = if positive_domain {
+            0.0..=std::f64::consts::TAU
+        } else {
+            -std::f64::consts::TAU..=0.0
+        };
+        for event in &mut events {
+            if let SurfaceSurfaceIntersectionEvent::Curve(section) = event
+                && section.is_closed()?
+            {
+                *section = section.try_reparameterized(domain.clone())?;
+            }
+        }
+        return Ok(events);
     }
     if axial_dot.abs() > tolerance.angular() {
         let circle =
@@ -3761,19 +3781,54 @@ mod tests {
         let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
         let cylinder_brep = Brep::try_surface_face(cylinder.clone(), Tolerance::DEFAULT).unwrap();
         let plane_brep = Brep::try_surface_face(plane.clone(), Tolerance::DEFAULT).unwrap();
-        let expected_events =
-            surface_surface_intersection_events(&cylinder, &plane, Tolerance::DEFAULT).unwrap();
-        let [SurfaceSurfaceIntersectionEvent::Curve(expected)] = expected_events.as_slice() else {
+        let expected_surface_events =
+            surface_surface_intersection_events(&plane, &cylinder, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(expected_surface)] =
+            expected_surface_events.as_slice()
+        else {
             panic!("expected one cylinder section");
         };
         assert_eq!(
             surface_brep_intersection_events(&plane, &cylinder_brep, Tolerance::DEFAULT).unwrap(),
-            vec![SurfaceBrepIntersectionEvent::Curve(expected.clone())]
+            vec![SurfaceBrepIntersectionEvent::Curve(
+                expected_surface.clone()
+            )]
         );
+        let expected_brep_events =
+            surface_surface_intersection_events(&cylinder, &plane, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(expected_brep)] =
+            expected_brep_events.as_slice()
+        else {
+            panic!("expected one cylinder section");
+        };
         assert_eq!(
             brep_brep_intersection_events(&cylinder_brep, &plane_brep, Tolerance::DEFAULT).unwrap(),
-            vec![BrepBrepIntersectionEvent::Curve(expected.clone())]
+            vec![BrepBrepIntersectionEvent::Curve(expected_brep.clone())]
         );
+    }
+
+    #[test]
+    fn cylinder_plane_circle_domain_and_winding_follow_surface_order() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        for (first, second, domain, first_y) in [
+            (&plane, &cylinder, 0.0..=std::f64::consts::TAU, 2.0),
+            (&cylinder, &plane, -std::f64::consts::TAU..=0.0, -2.0),
+        ] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(circle)] = events.as_slice() else {
+                panic!("expected one circular section");
+            };
+            assert_eq!(circle.domain(), domain);
+            assert!((circle.control_points()[1].point().y() - first_y).abs() < 1e-12);
+        }
     }
 
     fn vertical_surface(x_start: Real, x_end: Real) -> NurbsSurface {
