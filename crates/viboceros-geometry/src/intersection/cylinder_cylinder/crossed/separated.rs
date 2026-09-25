@@ -1,8 +1,10 @@
-//! Smooth, tolerance-bounded curves of oblique crossed unequal cylinder walls.
+//! Smooth, tolerance-bounded cylinder intersections with separated square-root branches.
 //!
 //! In the frame of the smaller cylinder, the larger wall leaves a positive
 //! square root at every angle. Its two signs are separate closed branches.
-//! Finite-height cuts reduce to quadratic equations in the angle's cosine.
+//! Finite-height cuts reduce to quadratic or quartic equations.
+
+mod skew_clip;
 
 use super::SurfaceSurfaceIntersectionEvent;
 use crate::{GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3};
@@ -20,6 +22,7 @@ struct Basis {
     small: Real,
     big: Real,
     minimum: Real,
+    miss: Real,
 }
 
 #[derive(Clone, Copy)]
@@ -36,36 +39,59 @@ struct AngularClip {
 }
 
 pub(super) fn intersect(
-    (first_axis, first_radius, first_height, first_at_crossing): (Vector3, Real, Real, Real),
-    (second_axis, second_radius, second_height, second_at_crossing): (Vector3, Real, Real, Real),
-    crossing: Point3,
+    (first_axis, first_radius, first_height, first_at_crossing, first_closest): (
+        Vector3,
+        Real,
+        Real,
+        Real,
+        Point3,
+    ),
+    (second_axis, second_radius, second_height, second_at_crossing, second_closest): (
+        Vector3,
+        Real,
+        Real,
+        Real,
+        Point3,
+    ),
+    miss: Real,
     tolerance: Tolerance,
     coordinate_roundoff: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
-    let (small_axis, small, small_height, small_center, big_axis, big, big_height, big_center) =
-        if first_radius < second_radius {
-            (
-                first_axis,
-                first_radius,
-                first_height,
-                first_at_crossing,
-                second_axis,
-                second_radius,
-                second_height,
-                second_at_crossing,
-            )
-        } else {
-            (
-                second_axis,
-                second_radius,
-                second_height,
-                second_at_crossing,
-                first_axis,
-                first_radius,
-                first_height,
-                first_at_crossing,
-            )
-        };
+    let (
+        small_axis,
+        small,
+        small_height,
+        small_center,
+        small_closest,
+        big_axis,
+        big,
+        big_height,
+        big_center,
+    ) = if first_radius < second_radius {
+        (
+            first_axis,
+            first_radius,
+            first_height,
+            first_at_crossing,
+            first_closest,
+            second_axis,
+            second_radius,
+            second_height,
+            second_at_crossing,
+        )
+    } else {
+        (
+            second_axis,
+            second_radius,
+            second_height,
+            second_at_crossing,
+            second_closest,
+            first_axis,
+            first_radius,
+            first_height,
+            first_at_crossing,
+        )
+    };
     let cosine = small_axis.dot(big_axis)?;
     let cross = small_axis.cross(big_axis)?;
     let sine = cross.length()?;
@@ -81,8 +107,15 @@ pub(super) fn intersect(
         (big_vector[1] - cosine * small_vector[1]) / sine,
         (big_vector[2] - cosine * small_vector[2]) / sine,
     )?;
+    let radial_reach = miss.abs() + small;
+    let minimum = (big - radial_reach) * (big + radial_reach);
+    if minimum <= 0.0 {
+        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "skew cylinder square-root branches meet",
+        });
+    }
     let basis = Basis {
-        crossing,
+        crossing: small_closest,
         small_axis,
         plane_axis,
         normal: cross.scaled(1.0 / sine)?,
@@ -90,7 +123,8 @@ pub(super) fn intersect(
         sine,
         small,
         big,
-        minimum: (big - small) * (big + small),
+        minimum,
+        miss,
     };
     let clip = Clip {
         small_center,
@@ -148,8 +182,8 @@ pub(super) fn intersect(
 
 impl Basis {
     fn root(self, angle: Real) -> Real {
-        let sine = angle.sin();
-        ((self.big - self.small * sine.abs()) * (self.big + self.small * sine.abs())).sqrt()
+        let radial = (self.small * angle.sin() - self.miss).abs();
+        ((self.big - radial) * (self.big + radial)).sqrt()
     }
 
     fn axials(self, sign: Real, angle: Real) -> (Real, Real) {
@@ -170,7 +204,7 @@ impl Basis {
         let x = (self.cosine * y - w) / self.sine;
         let y_tangent = -self.small * sine;
         let z_tangent = self.small * cosine;
-        let w_tangent = -sign * self.small * self.small * sine * cosine / root;
+        let w_tangent = -sign * (z - self.miss) * z_tangent / root;
         let x_tangent = (self.cosine * y_tangent - w_tangent) / self.sine;
         let point = self
             .crossing
@@ -190,13 +224,20 @@ impl Basis {
 }
 
 fn fourth_derivative_bound(basis: Basis) -> Real {
-    let b = 0.5 * basis.small * basis.small;
+    let r2 = basis.small * basis.small;
+    let cross_term = 2.0 * basis.small * basis.miss.abs();
+    let first = r2 + cross_term;
+    let second = 2.0 * r2 + cross_term;
+    let third = 4.0 * r2 + cross_term;
+    let fourth = 8.0 * r2 + cross_term;
     let root = basis.minimum.sqrt();
     let root3 = basis.minimum * root;
     let root5 = basis.minimum * root3;
     let root7 = basis.minimum * root5;
-    let root_bound =
-        8.0 * b / root + 28.0 * b * b / root3 + 36.0 * b * b * b / root5 + 15.0 * b.powi(4) / root7;
+    let root_bound = fourth / (2.0 * root)
+        + (first * third + 0.75 * second * second) / root3
+        + 2.25 * first * first * second / root5
+        + 0.9375 * first.powi(4) / root7;
     basis.small + (basis.cosine.abs() * basis.small + root_bound) / basis.sine
 }
 
@@ -226,15 +267,27 @@ fn active_intervals(
         (big_coefficients, clip.big_center, clip.big_height, false),
     ] {
         for boundary in [0.0, height] {
-            add_boundary_angles(
-                &mut angles,
-                basis,
-                sign,
-                coefficients,
-                boundary - center,
-                small_axial,
-                fit_tolerance,
-            )?;
+            if basis.miss == 0.0 {
+                add_boundary_angles(
+                    &mut angles,
+                    basis,
+                    sign,
+                    coefficients,
+                    boundary - center,
+                    small_axial,
+                    fit_tolerance,
+                )?;
+            } else {
+                skew_clip::add_boundary_angles(
+                    &mut angles,
+                    basis,
+                    sign,
+                    coefficients,
+                    boundary - center,
+                    small_axial,
+                    fit_tolerance,
+                )?;
+            }
         }
     }
     angles.sort_by(Real::total_cmp);
@@ -374,7 +427,11 @@ fn fit_branch(
     let mut previous_point = first_point;
     let mut previous_angle = start;
     for segment in 1..=segments {
-        let angle = start + (end - start) * (segment as Real / segments as Real);
+        let angle = if segment == segments {
+            end
+        } else {
+            start + (end - start) * (segment as Real / segments as Real)
+        };
         let (mut point, tangent) = basis.sample(sign, angle)?;
         if closed && segment == segments {
             point = first_point;
@@ -408,6 +465,24 @@ mod tests {
         second_start: Real,
         second_height: Real,
     ) -> ((NurbsSurface, Frame3), (NurbsSurface, Frame3)) {
+        cylinders_with_miss(
+            angle,
+            0.0,
+            first_start,
+            first_height,
+            second_start,
+            second_height,
+        )
+    }
+
+    fn cylinders_with_miss(
+        angle: Real,
+        miss: Real,
+        first_start: Real,
+        first_height: Real,
+        second_start: Real,
+        second_height: Real,
+    ) -> ((NurbsSurface, Frame3), (NurbsSurface, Frame3)) {
         let (sine, cosine) = angle.sin_cos();
         let first_frame = Frame3::try_from_normal(
             point(0.0, 0.0, first_start),
@@ -416,7 +491,7 @@ mod tests {
         )
         .unwrap();
         let second_frame = Frame3::try_from_normal(
-            point(second_start * sine, 0.0, second_start * cosine),
+            point(second_start * sine, miss, second_start * cosine),
             Vector3::try_new(sine, 0.0, cosine).unwrap(),
             Tolerance::DEFAULT,
         )
@@ -438,6 +513,135 @@ mod tests {
             let local = frame.coordinates_of(location).unwrap();
             assert!((local[0].hypot(local[1]) - radius).abs() < 2e-9);
         }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_make_two_closed_curves() {
+        for angle in [
+            std::f64::consts::FRAC_PI_2,
+            std::f64::consts::FRAC_PI_3,
+            2.0 * std::f64::consts::FRAC_PI_3,
+        ] {
+            for miss in [-0.5, 0.5] {
+                let ((first, first_frame), (second, second_frame)) =
+                    cylinders_with_miss(angle, miss, -4.0, 8.0, -4.0, 8.0);
+                for (left, right) in [(&first, &second), (&second, &first)] {
+                    let events =
+                        surface_surface_intersection_events(left, right, Tolerance::DEFAULT)
+                            .unwrap();
+                    assert_eq!(events.len(), 2);
+                    for event in events {
+                        let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                            panic!("separated skew walls must meet in two curves")
+                        };
+                        assert_eq!(curve.degree(), 3);
+                        assert!(curve.is_closed().unwrap());
+                        let domain = curve.domain();
+                        for index in 0..=64 {
+                            let parameter = *domain.start()
+                                + (*domain.end() - *domain.start()) * (index as Real / 64.0);
+                            assert_on_walls(
+                                curve.evaluate(parameter).unwrap(),
+                                first_frame,
+                                second_frame,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_clip_at_big_cylinder_rims() {
+        let ((first, first_frame), (second, second_frame)) =
+            cylinders_with_miss(std::f64::consts::FRAC_PI_3, 0.5, -4.0, 8.0, 0.0, 1.0);
+        let events =
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 3);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("skew cylinder rim cuts must make arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for index in 0..=32 {
+                let parameter = if index == 32 {
+                    *domain.end()
+                } else {
+                    *domain.start() + (*domain.end() - *domain.start()) * (index as Real / 32.0)
+                };
+                let location = curve.evaluate(parameter).unwrap();
+                assert_on_walls(location, first_frame, second_frame);
+                let axial = second_frame.coordinates_of(location).unwrap()[2];
+                assert!((-1e-9..=1.0 + 1e-9).contains(&axial));
+            }
+            for parameter in [*domain.start(), *domain.end()] {
+                let axial = second_frame
+                    .coordinates_of(curve.evaluate(parameter).unwrap())
+                    .unwrap()[2];
+                assert!(axial.abs() < 1e-9 || (axial - 1.0).abs() < 1e-9);
+            }
+        }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_clip_with_negative_axis_miss() {
+        let ((first, first_frame), (second, second_frame)) =
+            cylinders_with_miss(std::f64::consts::FRAC_PI_3, -0.5, -4.0, 8.0, 0.0, 1.0);
+        let events =
+            surface_surface_intersection_events(&second, &first, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 3);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("negative skew offset must clip into arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            let domain = curve.domain();
+            for parameter in [*domain.start(), *domain.end()] {
+                let location = curve.evaluate(parameter).unwrap();
+                assert_on_walls(location, first_frame, second_frame);
+                let axial = second_frame.coordinates_of(location).unwrap()[2];
+                assert!(axial.abs() < 1e-9 || (axial - 1.0).abs() < 1e-9);
+            }
+        }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_keep_two_interior_rim_contacts() {
+        let ((first, first_frame), (second, second_frame)) =
+            cylinders_with_miss(std::f64::consts::FRAC_PI_2, 0.5, -3.0, 1.0, -4.0, 8.0);
+        let events =
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2);
+        for event in events {
+            let SurfaceSurfaceIntersectionEvent::Point(location) = event else {
+                panic!("the small cylinder's upper rim must touch in two points")
+            };
+            assert_on_walls(location, first_frame, second_frame);
+            assert!((location.z() + 2.0).abs() < 1e-9);
+        }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_discard_rim_contacts_outside_other_height() {
+        let ((first, _), (second, _)) =
+            cylinders_with_miss(std::f64::consts::FRAC_PI_2, 0.5, -3.0, 1.0, 0.0, 0.4);
+        assert!(
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn skew_cylinders_with_joining_square_root_branches_remain_unsupported() {
+        let ((first, _), (second, _)) =
+            cylinders_with_miss(std::f64::consts::FRAC_PI_3, 1.5, -4.0, 8.0, -4.0, 8.0);
+        assert!(matches!(
+            surface_surface_intersection_events(&first, &second, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
+        ));
     }
 
     #[test]
@@ -652,6 +856,73 @@ mod tests {
                 for (frame, radius) in [(first_frame, 1.0), (second_frame, 2.0)] {
                     let local = frame.coordinates_of(location).unwrap();
                     assert!((local[0].hypot(local[1]) - radius).abs() < 3e-7);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn skew_separated_cylinders_work_far_from_origin_in_rotated_frames() {
+        let crossing = point(1.0e8, -1.0e8, 1.0e8);
+        let base = Frame3::try_from_normal(
+            crossing,
+            Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (sine, cosine) = std::f64::consts::FRAC_PI_3.sin_cos();
+        let first_axis = base.z_axis().as_vector();
+        let transverse = base.x_axis().as_vector();
+        let second_axis = Vector3::try_new(
+            cosine * first_axis.x() + sine * transverse.x(),
+            cosine * first_axis.y() + sine * transverse.y(),
+            cosine * first_axis.z() + sine * transverse.z(),
+        )
+        .unwrap();
+        let normal = first_axis
+            .cross(second_axis)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap()
+            .as_vector();
+        let first_frame = Frame3::try_from_normal(
+            crossing
+                .translated(first_axis.scaled(-4.0).unwrap())
+                .unwrap(),
+            first_axis,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let second_frame = Frame3::try_from_normal(
+            crossing
+                .translated(normal.scaled(0.5).unwrap())
+                .unwrap()
+                .translated(second_axis.scaled(-4.0).unwrap())
+                .unwrap(),
+            second_axis,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let first = NurbsSurface::try_cylinder(first_frame, 1.0, 0.0, 8.0).unwrap();
+        let second = NurbsSurface::try_cylinder(second_frame, 2.0, 0.0, 8.0).unwrap();
+        for (left, right) in [(&first, &second), (&second, &first)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 2);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("translated skew walls must meet in curves")
+                };
+                assert!(curve.is_closed().unwrap());
+                let domain = curve.domain();
+                for index in 0..=32 {
+                    let parameter = *domain.start()
+                        + (*domain.end() - *domain.start()) * (index as Real / 32.0);
+                    let location = curve.evaluate(parameter).unwrap();
+                    for (frame, radius) in [(first_frame, 1.0), (second_frame, 2.0)] {
+                        let local = frame.coordinates_of(location).unwrap();
+                        assert!((local[0].hypot(local[1]) - radius).abs() < 3e-7);
+                    }
                 }
             }
         }

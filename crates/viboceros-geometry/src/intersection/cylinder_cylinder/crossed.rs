@@ -1,6 +1,6 @@
-//! Intersections of finite cylinders with crossing axes.
+//! Intersections of finite cylinders with nonparallel crossing or skew axes.
 
-mod oblique_unequal;
+mod separated;
 mod unequal;
 
 use super::SurfaceSurfaceIntersectionEvent;
@@ -56,11 +56,6 @@ pub(super) fn intersect(
     )? {
         return Ok(Vec::new());
     }
-    if axis_miss.abs() > spatial_tolerance.max(roundoff) {
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "skew cylinder axes",
-        });
-    }
     let first_projection = displacement.dot(first_axis)?;
     let second_projection = displacement.dot(second_axis)?;
     let denominator = 1.0 - axis_dot * axis_dot;
@@ -69,17 +64,48 @@ pub(super) fn intersect(
     let crossing = first_frame
         .origin()
         .translated(first_axis.scaled(first_at_crossing)?)?;
+    if axis_miss.abs() > spatial_tolerance.max(roundoff) {
+        let second_closest = second_frame
+            .origin()
+            .translated(second_axis.scaled(second_at_crossing)?)?;
+        return separated::intersect(
+            (
+                first_axis,
+                first_radius,
+                first_height,
+                first_at_crossing,
+                crossing,
+            ),
+            (
+                second_axis,
+                second_radius,
+                second_height,
+                second_at_crossing,
+                second_closest,
+            ),
+            axis_miss,
+            tolerance,
+            roundoff,
+        );
+    }
     if !equal_radii {
         if axis_dot.abs() * scale > spatial_tolerance.max(roundoff) {
-            return oblique_unequal::intersect(
-                (first_axis, first_radius, first_height, first_at_crossing),
+            return separated::intersect(
+                (
+                    first_axis,
+                    first_radius,
+                    first_height,
+                    first_at_crossing,
+                    crossing,
+                ),
                 (
                     second_axis,
                     second_radius,
                     second_height,
                     second_at_crossing,
+                    crossing,
                 ),
-                crossing,
+                0.0,
                 tolerance,
                 roundoff,
             );

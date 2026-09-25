@@ -204,8 +204,11 @@ ellipses, including oblique crossings. Both finite height ranges clip them to ex
 arcs or isolated rim points. Unequal-radius walls with crossing axes produce
 two cubic curves fitted within the modeling tolerance, including oblique
 crossings. Finite heights clip them to arcs and retain isolated rim contacts.
-Skew-axis cylinders with disjoint finite wall bounds report no intersection;
-overlapping skew-axis wall intersections remain unsupported.
+Skew-axis cylinders with disjoint finite wall bounds report no intersection.
+When the larger radius exceeds the smaller radius plus the axis separation,
+their walls produce two separate fitted cubic curves; finite heights clip the
+curves to arcs or isolated rim contacts. Other overlapping skew-axis wall
+intersections remain unsupported.
 Coaxial canonical cone and cylinder walls meet in one exact rational circle
 when the cylinder radius occurs within both finite height ranges. Opposed
 surface axes yield two exact semicircles, matching Rhino's event structure.

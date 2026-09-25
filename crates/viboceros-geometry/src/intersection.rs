@@ -539,6 +539,8 @@ fn curve_brep_intersection_events_with_transform(
 /// rational ellipses clipped to their finite heights.
 /// Unequal-radius cylinders with crossing axes intersect in tolerance-bounded
 /// cubic curves, also clipped to their finite heights.
+/// Skew axes with one cylinder wall strictly inside the other's radial reach
+/// produce two separate tolerance-bounded cubic branches, clipped to both heights.
 /// Coaxial cone and cylinder walls meet in an exact circle, clipped to both
 /// finite surfaces.
 /// Canonical cones produce exact circular, elliptical, parabolic, and hyperbolic sections,
