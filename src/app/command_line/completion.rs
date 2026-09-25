@@ -85,6 +85,7 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
             "ReadViewportsFromFile",
             "SetActiveViewport",
             "SetMaximizedViewport",
+            "ViewportProperties",
             "Help",
         ])
         .filter_map(|name| score(&query, &name.to_ascii_lowercase()).map(|score| (score, name)))

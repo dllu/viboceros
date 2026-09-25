@@ -4078,6 +4078,50 @@ def _interface_commands(operation):
                 mesh_snap_settings_probe.set_enabled(original_mesh, globals())
 
 
+def _viewport_arrangement_probe(operation):
+    """Record public model-view state after bounded native layout commands."""
+    commands = operation.get("commands")
+    allowed = ("NewViewport", "CloseViewport", "3View", "4View",
+               "SplitViewportHorizontal", "SplitViewportVertical")
+    if not isinstance(commands, list) or not 1 <= len(commands) <= 12:
+        raise ValueError("expected 1 to 12 viewport arrangement commands")
+    if any(command not in allowed for command in commands):
+        raise ValueError("unsupported viewport arrangement command")
+    document = Rhino.RhinoDoc.ActiveDoc
+
+    def rectangle(value):
+        return [int(value.Left), int(value.Top), int(value.Right), int(value.Bottom)]
+
+    def record():
+        views = list(document.Views.GetViewList(True, False))
+        active = document.Views.ActiveView
+        return {
+            "active_viewport": next(
+                (i for i, view in enumerate(views)
+                 if view.ActiveViewportID == active.ActiveViewportID), None),
+            "views": [{
+                "name": view.ActiveViewport.Name,
+                "bounds": rectangle(view.Bounds),
+                "screen_rectangle": rectangle(view.ScreenRectangle),
+                "floating": bool(view.Floating),
+                "maximized": bool(view.Maximized),
+                "perspective": bool(view.ActiveViewport.IsPerspectiveProjection),
+                "camera_location": _xyz(view.ActiveViewport.CameraLocation),
+                "camera_target": _xyz(view.ActiveViewport.CameraTarget),
+                "camera_direction": _xyz(view.ActiveViewport.CameraDirection),
+                "camera_up": _xyz(view.ActiveViewport.CameraUp),
+            } for view in views],
+        }
+
+    states = [record()]
+    for command in commands:
+        _record_progress("viewport arrangement: " + command)
+        if not _run_surface_script("_" + command, True):
+            raise ValueError("viewport arrangement failed: " + command)
+        states.append(record())
+    return {"commands": commands, "states": states}, 0
+
+
 def _construction_plane_script(step):
     kind = step["kind"]
     def point(value):
@@ -5597,6 +5641,8 @@ def _execute(operation, iterations, tolerance):
         return _construction_plane(operation)
     if kind == "interface_commands":
         return _interface_commands(operation)
+    if kind == "viewport_arrangement_probe":
+        return _viewport_arrangement_probe(operation)
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

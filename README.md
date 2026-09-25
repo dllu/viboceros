@@ -16,6 +16,7 @@ and active layer. `ReadViewportsFromFile path.3dm` copies views and layout into
 the current document. `3View`, `4View`, and `MaxViewport` change the layout;
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `CloseViewport` removes the active view and fills its space with neighboring views.
+`-ViewportProperties Title="name"` names the active view for selection and saving.
 `Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
 selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both
 also accept a viewport number.

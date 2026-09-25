@@ -123,6 +123,48 @@ fn positions_after_close(positions: &[[f64; 4]], removed: usize) -> Vec<[f64; 4]
 }
 
 impl VibocerosApp {
+    pub(super) fn try_run_viewport_properties_command(&mut self, input: &str) -> bool {
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        let command = input[..end].trim_start_matches(['\'', '_', '-']);
+        if !command.eq_ignore_ascii_case("ViewportProperties") {
+            return false;
+        }
+        self.push_log(format!("> {input}"));
+        let result = (|| {
+            let tail = input[end..].trim();
+            let option_end = tail
+                .find(|character: char| character.is_whitespace() || character == '=')
+                .unwrap_or(tail.len());
+            let option = tail[..option_end].trim_start_matches('_');
+            if !option.eq_ignore_ascii_case("Title") {
+                return Err("Usage: -ViewportProperties Title name".to_owned());
+            }
+            let raw = tail[option_end..].trim_start();
+            let raw = raw.strip_prefix('=').unwrap_or(raw).trim();
+            let title = if raw.starts_with('"') && raw.ends_with('"') && raw.len() >= 2 {
+                &raw[1..raw.len() - 1]
+            } else if raw.contains('"') {
+                return Err("Usage: -ViewportProperties Title name".to_owned());
+            } else {
+                raw
+            };
+            let title = title.trim();
+            if title.is_empty() || title.chars().any(char::is_control) {
+                return Err("Viewport title must contain printable text".to_owned());
+            }
+            self.viewports[self.active_viewport].set_view_title(title);
+            Ok(format!("Viewport title: {title}"))
+        })();
+        match result {
+            Ok(message) => {
+                self.push_log(message);
+                self.command_input.clear();
+            }
+            Err(message) => self.push_log(format!("Error: {message}")),
+        }
+        true
+    }
+
     pub(super) fn split_active_viewport(&mut self, command: InterfaceCommand) {
         let horizontal = command == InterfaceCommand::SplitViewportHorizontal;
         let index = self.active_viewport;

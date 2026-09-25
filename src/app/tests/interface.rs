@@ -241,6 +241,26 @@ fn close_viewport_retiles_when_saved_positions_have_no_adjacent_strip() {
 }
 
 #[test]
+fn viewport_properties_title_names_the_active_view_without_losing_model_input() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    enter(&mut app, "Line");
+    enter(&mut app, "0,0,0");
+    let pending = app.active_command;
+    enter(&mut app, "-_ViewportProperties _Title=\"South Elevation\"");
+    assert_eq!(app.viewports[2].view_label(), "South Elevation");
+    assert_eq!(app.active_command, pending);
+    app.active_viewport = 0;
+    enter(&mut app, "SetActiveViewport South Elevation");
+    assert_eq!(app.active_viewport, 2);
+    enter(&mut app, "-ViewportProperties Title=\"\"");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.viewports[2].view_label(), "South Elevation");
+    enter(&mut app, "1,0,0");
+    assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
 fn named_viewport_commands_select_existing_titles_and_preserve_modeling_input() {
     let mut app = test_app();
     enter(&mut app, "Line");

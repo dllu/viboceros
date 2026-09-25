@@ -235,6 +235,10 @@ rectangles are saved in 3DM. See Rhino's
 if the saved layout has no neighboring strip that can fill it, the remaining
 views use a regular layout. The last viewport remains open. See Rhino's
 [CloseViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
+`-ViewportProperties Title="name"` sets the active viewport title. The title
+is saved in 3DM and can be used by `SetActiveViewport` and
+`SetMaximizedViewport`. This currently covers Rhino's command-line Title
+option; see [ViewportProperties](https://docs.mcneel.com/rhino/8/help/en-us/commands/viewportproperties.htm).
 `ReadViewportsFromFile path.3dm` copies a model's viewport layout and views
 from another model, including display and grid settings. It converts view
 coordinates to the current document's units and keeps its objects and named

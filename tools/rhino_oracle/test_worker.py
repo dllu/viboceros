@@ -11,6 +11,50 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_viewport_arrangement_probe_records_public_views_and_bounds_commands(self):
+        rectangle = lambda a, b, c, d: SimpleNamespace(Left=a, Top=b, Right=c, Bottom=d)
+        point = lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)
+
+        def view(name, number, bounds):
+            viewport = SimpleNamespace(
+                Name=name, IsPerspectiveProjection=False,
+                CameraLocation=point(0, 0, 10), CameraTarget=point(0, 0, 0),
+                CameraDirection=point(0, 0, -1), CameraUp=point(0, 1, 0))
+            return SimpleNamespace(
+                ActiveViewportID=number, ActiveViewport=viewport,
+                Bounds=bounds, ScreenRectangle=bounds, Floating=False, Maximized=False)
+
+        first = view("Top", 1, rectangle(0, 0, 800, 600))
+        second = view("Top (2)", 2, rectangle(400, 0, 800, 600))
+        views = [first]
+        collection = SimpleNamespace(
+            GetViewList=lambda model, layouts: list(views), ActiveView=first)
+        self.worker.Rhino.RhinoDoc.ActiveDoc.Views = collection
+
+        def execute(script, verify):
+            self.assertEqual((script, verify), ("_NewViewport", True))
+            views.append(second)
+            collection.ActiveView = second
+            return True
+
+        with patch.object(self.worker, "_record_progress"), patch.object(
+            self.worker, "_run_surface_script", side_effect=execute
+        ) as run:
+            value, elapsed = self.worker._viewport_arrangement_probe(
+                {"commands": ["NewViewport"]})
+            self.assertEqual(elapsed, 0)
+            self.assertEqual([len(state["views"]) for state in value["states"]], [1, 2])
+            self.assertEqual(value["states"][1]["active_viewport"], 1)
+            self.assertEqual(value["states"][1]["views"][1]["bounds"], [400, 0, 800, 600])
+            self.assertEqual(value["states"][1]["views"][1]["camera_direction"], [0., 0., -1.])
+            run.assert_called_once_with("_NewViewport", True)
+        with patch.object(self.worker, "_run_surface_script") as run:
+            for commands in ([], ["Exit"], ["NewViewport"] * 13):
+                with self.subTest(commands=commands):
+                    with self.assertRaises(ValueError):
+                        self.worker._viewport_arrangement_probe({"commands": commands})
+            run.assert_not_called()
+
     def test_solid_orientation_reads_uninserted_geometry_and_disposes_its_file(self):
         class Brep:
             IsValid = True

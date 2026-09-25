@@ -5,6 +5,15 @@
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 
+The `viewport_arrangement_probe` operation records model viewport bounds,
+titles, cameras, projection, floating state, and active view after a bounded
+sequence of `NewViewport`, `CloseViewport`, `3View`, `4View`, and viewport split
+commands. Run its [fixture](../tools/rhino_oracle/fixtures/viewport_arrangement.json)
+with `tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_arrangement.json --timeout 300`.
+It uses public [RhinoView properties](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Properties_T_Rhino_Display_RhinoView.htm).
+Two attempts on 2026-09-25 exited during Rhino's .NET startup
+under Wine before the worker ran, so the probe has no saved observation yet.
+
 The [orientation audit](orientation-audit.md) separates public document insertion
 and replacement from actual `Flip` command behavior, retaining full definitions
 and selection states. This diagnostic is not an identical-source native replay.

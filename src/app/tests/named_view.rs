@@ -637,6 +637,30 @@ fn closed_viewport_layout_round_trips_through_3dm() {
 }
 
 #[test]
+fn viewport_properties_title_round_trips_through_3dm() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-viewport-title-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    source.active_viewport = 2;
+    enter(&mut source, "-ViewportProperties Title=\"South Elevation\"");
+    enter(&mut source, &format!("SaveAs \"{}\"", path.display()));
+    let saved = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.viewports[2].camera.name, "South Elevation");
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    assert_eq!(opened.viewports[2].view_label(), "South Elevation");
+    assert_eq!(opened.active_viewport, 2);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn open_3dm_replaces_session_document_and_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-open-view-{}-{}.3dm",
