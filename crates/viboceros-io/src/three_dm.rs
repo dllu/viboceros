@@ -263,6 +263,29 @@ pub fn read_3dm_file_with_model_tolerance(
     decode_model(&handle, tolerance, units, 1.0)
 }
 
+/// Reads saved model viewports without decoding objects, layers, or named views.
+pub fn read_3dm_viewports_file(
+    path: impl AsRef<Path>,
+) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    decode_viewports(&handle)
+}
+
+/// Reads saved viewports in the destination document's length units.
+pub fn read_3dm_viewports_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut viewports = decode_viewports(&handle)?;
+    for viewport in &mut viewports {
+        scale_view(&mut viewport.camera, scale)?;
+        scale_viewport_grid(viewport, scale)?;
+    }
+    Ok(viewports)
+}
+
 /// Reads coordinates into target units. The supplied tolerance is expressed
 /// in target units; B-rep topology matching uses a converted source tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
@@ -294,35 +317,10 @@ pub fn read_3dm_file_in_units(
                 .iter_mut()
                 .map(|viewport| &mut viewport.camera),
         ) {
-            let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
-                Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
-            };
-            view.camera_location = scaled_point(view.camera_location)?;
-            view.target = view.target.map(scaled_point).transpose()?;
-            view.construction_plane = Frame3::try_from_directions(
-                scaled_point(view.construction_plane.origin())?,
-                view.construction_plane.x_axis().as_vector(),
-                view.construction_plane.y_axis().as_vector(),
-                Tolerance::NUMERICAL_VALIDATION,
-            )?;
-            view.frustum = view.frustum.map(|coordinate| coordinate * scale);
+            scale_view(view, scale)?;
         }
         for viewport in &mut model.viewports {
-            let scale_spacing = |spacing: f64| {
-                if !spacing.is_finite() || spacing <= 0.0 {
-                    return Ok(spacing);
-                }
-                let converted = spacing * scale;
-                if converted.is_finite() && converted > 0.0 {
-                    Ok(converted)
-                } else {
-                    Err(ThreeDmError::InvalidModel(
-                        "viewport grid spacing is not representable in target units".into(),
-                    ))
-                }
-            };
-            viewport.grid.snap_spacing = scale_spacing(viewport.grid.snap_spacing)?;
-            viewport.grid.minor_spacing = scale_spacing(viewport.grid.minor_spacing)?;
+            scale_viewport_grid(viewport, scale)?;
         }
     }
     model.units = target_units.clone();
@@ -330,6 +328,47 @@ pub fn read_3dm_file_in_units(
     // Raw reads preserve the archive's numeric tolerance metadata instead.
     model.tolerance = tolerance;
     Ok(model)
+}
+
+fn scale_view(view: &mut ThreeDmNamedView, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
+        Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
+    };
+    view.camera_location = scaled_point(view.camera_location)?;
+    view.target = view.target.map(scaled_point).transpose()?;
+    view.construction_plane = Frame3::try_from_directions(
+        scaled_point(view.construction_plane.origin())?,
+        view.construction_plane.x_axis().as_vector(),
+        view.construction_plane.y_axis().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )?;
+    view.frustum = view.frustum.map(|coordinate| coordinate * scale);
+    Ok(())
+}
+
+fn scale_viewport_grid(viewport: &mut ThreeDmViewport, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    let scale_spacing = |spacing: f64| {
+        if !spacing.is_finite() || spacing <= 0.0 {
+            return Ok(spacing);
+        }
+        let converted = spacing * scale;
+        if converted.is_finite() && converted > 0.0 {
+            Ok(converted)
+        } else {
+            Err(ThreeDmError::InvalidModel(
+                "viewport grid spacing is not representable in target units".into(),
+            ))
+        }
+    };
+    viewport.grid.snap_spacing = scale_spacing(viewport.grid.snap_spacing)?;
+    viewport.grid.minor_spacing = scale_spacing(viewport.grid.minor_spacing)?;
+    Ok(())
 }
 
 fn read_handle(path: &Path) -> Result<ModelHandle, ThreeDmError> {
@@ -774,36 +813,7 @@ fn decode_model(
         }
         named_views.push(decode_view(&raw)?);
     }
-    let current_view_count = unsafe { ffi::vibo_3dm_current_view_count(handle.0.as_ptr()) };
-    let mut viewports = Vec::with_capacity(current_view_count);
-    for index in 0..current_view_count {
-        let mut raw = ffi::ViboCurrentView::default();
-        if unsafe { ffi::vibo_3dm_current_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
-            return Err(ThreeDmError::MalformedBridge("invalid current view record"));
-        }
-        let display_mode = match raw.display_mode {
-            1 => ThreeDmDisplayMode::Wireframe,
-            2 => ThreeDmDisplayMode::Shaded,
-            3 => ThreeDmDisplayMode::Ghosted,
-            _ => ThreeDmDisplayMode::Other,
-        };
-        viewports.push(ThreeDmViewport {
-            camera: decode_view(&raw.camera)?,
-            display_mode,
-            grid: ThreeDmGridSettings {
-                snap_spacing: raw.snap_spacing,
-                minor_spacing: raw.minor_spacing,
-                major_interval: u32::try_from(raw.major_interval).unwrap_or(0),
-                line_count: u32::try_from(raw.line_count).unwrap_or(0),
-                show_grid: raw.show_grid != 0,
-                show_axes: raw.show_axes != 0,
-                show_world_axes: raw.show_world_axes != 0,
-            },
-            active: raw.active != 0,
-            position: raw.position,
-            maximized: raw.maximized != 0,
-        });
-    }
+    let viewports = decode_viewports(handle)?;
 
     // SAFETY: the handle owns a live bridge model.
     let object_count = unsafe { ffi::vibo_3dm_object_count(handle.0.as_ptr()) };
@@ -835,6 +845,42 @@ fn decode_model(
         objects,
         unsupported_object_count: unsupported,
     })
+}
+
+fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let current_view_count = unsafe { ffi::vibo_3dm_current_view_count(handle.0.as_ptr()) };
+    let mut viewports = Vec::with_capacity(current_view_count);
+    for index in 0..current_view_count {
+        let mut raw = ffi::ViboCurrentView::default();
+        if unsafe { ffi::vibo_3dm_current_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid current view record"));
+        }
+        let display_mode = match raw.display_mode {
+            1 => ThreeDmDisplayMode::Wireframe,
+            2 => ThreeDmDisplayMode::Shaded,
+            3 => ThreeDmDisplayMode::Ghosted,
+            _ => ThreeDmDisplayMode::Other,
+        };
+        viewports.push(ThreeDmViewport {
+            camera: decode_view(&raw.camera)?,
+            display_mode,
+            grid: ThreeDmGridSettings {
+                snap_spacing: raw.snap_spacing,
+                minor_spacing: raw.minor_spacing,
+                major_interval: u32::try_from(raw.major_interval).unwrap_or(0),
+                line_count: u32::try_from(raw.line_count).unwrap_or(0),
+                show_grid: raw.show_grid != 0,
+                show_axes: raw.show_axes != 0,
+                show_world_axes: raw.show_world_axes != 0,
+            },
+            active: raw.active != 0,
+            position: raw.position,
+            maximized: raw.maximized != 0,
+        });
+    }
+
+    Ok(viewports)
 }
 
 fn decode_view(raw: &ffi::ViboNamedView) -> Result<ThreeDmNamedView, ThreeDmError> {

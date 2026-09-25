@@ -56,6 +56,7 @@ impl VibocerosApp {
         let explicit_command = self.commands.recognizes(command_name)
             || command_name.eq_ignore_ascii_case("CPlane")
             || command_name.eq_ignore_ascii_case("NamedView")
+            || command_name.eq_ignore_ascii_case("ReadViewportsFromFile")
             || viboceros_command::interface::COMMAND_NAMES
                 .iter()
                 .any(|n| n.eq_ignore_ascii_case(command_name));

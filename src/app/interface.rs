@@ -947,6 +947,7 @@ impl VibocerosApp {
                     names.extend(interface::COMMAND_NAMES);
                     names.push("CPlane");
                     names.push("NamedView");
+                    names.push("ReadViewportsFromFile");
                     names.sort_unstable();
                     names.dedup();
                     self.push_log(format!("Commands: {}", names.join(", ")));
@@ -958,6 +959,7 @@ impl VibocerosApp {
                     self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
+                    self.push_log("ReadViewportsFromFile path.3dm: copy four saved model viewports and their layout from a 3DM file".into());
                     self.command_input.clear();
                 }
                 _ => self.push_log("Usage: Help [UI]".into()),

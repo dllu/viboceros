@@ -225,6 +225,11 @@ restores the grid without changing cameras or construction planes. When a view
 is maximized, viewport cycling switches the visible view. Save and Open retain
 the maximized view in 3DM files. See Rhino's
 [MaxViewport](https://docs.mcneel.com/rhino/8/help/en-us/commands/maxviewport.htm).
+`ReadViewportsFromFile path.3dm` copies a four-viewport layout and its views
+from another model, including display and grid settings. It converts view
+coordinates to the current document's units and keeps its objects and named
+views. See Rhino's
+[ReadViewportsFromFile](https://docs.mcneel.com/rhino/8/help/en-us/commands/new_viewport_arrangements.htm).
 
 `MeshToNURB` also supports [command-first object picking](object-selection.md).
 During that prompt, clicks and selection windows add only selectable meshes;

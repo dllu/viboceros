@@ -13,7 +13,8 @@ keeps the previous version as a `.3dmbak` file. Save and export preserve the fou
 working viewport cameras, construction planes, display modes, and grid settings;
 Open restores them, their saved layout, the active viewport, its maximized state,
 and the active layer.
-`MaxViewport` and `4View` switch the workspace layout. `Export3dm`
+`ReadViewportsFromFile path.3dm` loads the four saved model views and layout
+into the current document. `MaxViewport` and `4View` switch the workspace layout. `Export3dm`
 leaves the current file name unchanged.
 
 This is an early implementation. It supports analytic and NURBS geometry,

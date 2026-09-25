@@ -79,7 +79,7 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
         .command_names()
         .into_iter()
         .chain(viboceros_command::interface::COMMAND_NAMES)
-        .chain(["CPlane", "NamedView", "Help"])
+        .chain(["CPlane", "NamedView", "ReadViewportsFromFile", "Help"])
         .filter_map(|name| score(&query, &name.to_ascii_lowercase()).map(|score| (score, name)))
         .collect::<Vec<_>>();
     names.sort_unstable();
@@ -161,7 +161,8 @@ fn path_argument(input: &str) -> Option<(&str, &str)> {
         .to_ascii_lowercase();
     if !matches!(
         command.as_str(),
-        "import3dm"
+        "readviewportsfromfile"
+            | "import3dm"
             | "export3dm"
             | "importstl"
             | "exportstl"
@@ -289,6 +290,10 @@ mod tests {
     #[test]
     fn fuzzy_ranking_and_tab_cycle_preserve_the_original_query() {
         let commands = CommandRegistry::with_builtins();
+        assert_eq!(
+            command_completions(&commands, "readviewport")[0],
+            "ReadViewportsFromFile"
+        );
         assert_eq!(command_completions(&commands, "mshsph")[0], "MeshSphere");
         assert_eq!(command_completions(&commands, "circel")[0], "Circle");
         assert_eq!(
@@ -320,6 +325,7 @@ mod tests {
         assert_eq!(files.len(), 1);
         assert!(files[0].replacement.ends_with("模型.3dm\""));
         for command in [
+            "ReadViewportsFromFile",
             "ExportStl Binary",
             "ExportStl Ascii",
             "ImportStep Native=Yes",

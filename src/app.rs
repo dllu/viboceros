@@ -1679,6 +1679,7 @@ impl VibocerosApp {
         if !input.is_empty()
             && (self.try_run_plane_command(&input)
                 || self.try_run_named_view_command(&input)
+                || self.try_run_read_viewports_command(&input)
                 || self.try_run_interface_command(&input))
         {
             return;

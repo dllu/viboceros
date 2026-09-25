@@ -54,6 +54,10 @@ and the active viewport. Unit-converted reads scale grid and snap spacing with
 the camera and construction plane. Open maps four saved window positions into
 the matching 2×2 slots and renders their normalized rectangles, preserving
 unequal splits. Missing or invalid rectangles use the standard four-view grid.
+`ReadViewportsFromFile path.3dm` reads only the four saved model viewports,
+converting camera positions, frustum distances, and grid spacing into the
+current document's units. It leaves objects, layers, named views, and the
+current file path in place. Files with a different viewport count are rejected.
 The file's current layer is restored
 by Open when it is visible and unlocked. Import keeps the destination's current
 layer.

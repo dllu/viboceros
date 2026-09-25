@@ -268,6 +268,133 @@ fn open_restores_current_viewports_without_named_views() {
 }
 
 #[test]
+fn read_viewports_from_file_preserves_document_and_converts_units() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-read-views-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "Units Meters Scale=No");
+    enter(&mut source, "SetView World Perspective");
+    source.viewports[0].display_mode = DisplayMode::Ghosted;
+    source.viewports[0].set_grid_settings(GridSettings {
+        snap_spacing: 0.25,
+        minor_spacing: 2.5,
+        major_interval: 8,
+        line_count: 23,
+        show_grid: false,
+        show_axes: false,
+        show_world_axes: true,
+    });
+    source.active_viewport = 2;
+    enter(&mut source, "MaxViewport");
+    source.viewport_positions = [
+        [0.0, 0.3, 0.0, 0.7],
+        [0.3, 1.0, 0.0, 0.4],
+        [0.0, 0.3, 0.7, 1.0],
+        [0.3, 1.0, 0.4, 1.0],
+    ];
+    enter(&mut source, &format!("Export3dm \"{}\"", path.display()));
+    assert!(source.command_log.back().unwrap().starts_with("Exported"));
+    let expected = viboceros_io::read_3dm_viewports_file_in_units(
+        &path,
+        &viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
+    assert_eq!(expected.len(), 4);
+    assert_eq!(expected[0].grid.snap_spacing, 250.0);
+
+    let mut destination = test_app();
+    enter(&mut destination, "Point 9,8,7");
+    enter(&mut destination, "NamedView Save Existing view");
+    enter(&mut destination, "Line");
+    enter(&mut destination, "0");
+    let pending = destination.active_command;
+    let path_before = destination.document_path.clone();
+    enter(
+        &mut destination,
+        &format!("ReadViewportsFromFile \"{}\"", path.display()),
+    );
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .starts_with("Read 4")
+    );
+    assert_eq!(destination.document_path, path_before);
+    assert_eq!(destination.document.objects().len(), 1);
+    assert!(destination.named_views.get("Existing view").is_ok());
+    assert_eq!(destination.active_command, pending);
+    assert!(destination.document.can_undo());
+    assert_eq!(destination.viewports[0].kind(), ViewKind::Perspective);
+    assert_eq!(destination.viewports[0].display_mode, DisplayMode::Ghosted);
+    assert_eq!(destination.viewports[0].grid_settings().snap_spacing, 250.0);
+    assert_eq!(destination.active_viewport, 2);
+    assert_eq!(destination.maximized_viewport, Some(2));
+    assert_eq!(destination.viewport_positions, source.viewport_positions);
+    let actual = destination.three_dm_viewports().unwrap();
+    for (index, (actual, expected)) in actual.iter().zip(expected.iter()).enumerate() {
+        assert_eq!(actual.camera.projection, expected.camera.projection);
+        for (actual, expected) in actual
+            .camera
+            .target
+            .unwrap()
+            .to_array()
+            .into_iter()
+            .zip(expected.camera.target.unwrap().to_array())
+        {
+            assert!((actual - expected).abs() < 1.0e-4, "viewport {index}");
+        }
+        if index == 0 {
+            for (actual, expected) in actual
+                .camera
+                .camera_location
+                .to_array()
+                .into_iter()
+                .zip(expected.camera.camera_location.to_array())
+            {
+                assert!((actual - expected).abs() < 1.0e-4);
+            }
+        }
+    }
+
+    let views_before = destination.three_dm_viewports().unwrap();
+    enter(&mut destination, "ReadViewportsFromFile /missing/model.3dm");
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .starts_with("Error:")
+    );
+    assert_eq!(destination.three_dm_viewports().unwrap(), views_before);
+    let empty_path = path.with_file_name(format!(
+        "viboceros-no-views-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut empty_model = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    empty_model.viewports.clear();
+    viboceros_io::write_3dm_file(&empty_path, &empty_model).unwrap();
+    enter(
+        &mut destination,
+        &format!("ReadViewportsFromFile \"{}\"", empty_path.display()),
+    );
+    assert!(destination.command_log.back().unwrap().contains("found 0"));
+    assert_eq!(destination.three_dm_viewports().unwrap(), views_before);
+    std::fs::remove_file(empty_path).unwrap();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn open_3dm_replaces_session_document_and_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-open-view-{}-{}.3dm",

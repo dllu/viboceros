@@ -28,5 +28,6 @@ pub use three_dm::{
     ThreeDmColorSource, ThreeDmDisplayMode, ThreeDmError, ThreeDmGeometry, ThreeDmGridSettings,
     ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmNamedView, ThreeDmObject, ThreeDmProjection,
     ThreeDmViewport, ThreeDmWriteReport, read_3dm_file, read_3dm_file_in_units,
-    read_3dm_file_with_model_tolerance, save_3dm_file, write_3dm_file,
+    read_3dm_file_with_model_tolerance, read_3dm_viewports_file, read_3dm_viewports_file_in_units,
+    save_3dm_file, write_3dm_file,
 };

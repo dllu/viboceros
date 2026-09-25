@@ -80,6 +80,83 @@ fn file_viewport_positions(views: &[ThreeDmViewport]) -> [[f64; 4]; 4] {
 }
 
 impl VibocerosApp {
+    fn restore_file_viewports(&mut self, current_views: Vec<ThreeDmViewport>) {
+        let current_views = views_in_grid_order(current_views);
+        self.viewport_positions = file_viewport_positions(&current_views);
+        self.viewports = Viewport::standard_views();
+        for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
+            if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
+                viewport.restore_named_view(snapshot);
+            }
+            viewport.display_mode = match source.display_mode {
+                ThreeDmDisplayMode::Wireframe => DisplayMode::Wireframe,
+                ThreeDmDisplayMode::Shaded => DisplayMode::Shaded,
+                ThreeDmDisplayMode::Ghosted => DisplayMode::Ghosted,
+                ThreeDmDisplayMode::Other => viewport.display_mode,
+            };
+            let grid = GridSettings {
+                snap_spacing: source.grid.snap_spacing,
+                minor_spacing: source.grid.minor_spacing,
+                major_interval: source.grid.major_interval,
+                line_count: source.grid.line_count,
+                show_grid: source.grid.show_grid,
+                show_axes: source.grid.show_axes,
+                show_world_axes: source.grid.show_world_axes,
+            };
+            if grid.valid() {
+                viewport.set_grid_settings(grid);
+            }
+        }
+        self.active_viewport = current_views
+            .iter()
+            .position(|view| view.active)
+            .filter(|index| *index < self.viewports.len())
+            .unwrap_or(0);
+        self.maximized_viewport = current_views
+            .iter()
+            .position(|view| view.maximized)
+            .filter(|index| *index < self.viewports.len());
+    }
+
+    pub(super) fn try_run_read_viewports_command(&mut self, input: &str) -> bool {
+        let end = input.find(char::is_whitespace).unwrap_or(input.len());
+        let name = input[..end].trim_start_matches(['_', '-']);
+        if !name.eq_ignore_ascii_case("ReadViewportsFromFile") {
+            return false;
+        }
+        self.push_log(format!("> {input}"));
+        let result = (|| {
+            let path = viboceros_command::parse_3dm_path(&input[end..])
+                .map_err(|_| "Usage: ReadViewportsFromFile path.3dm".to_owned())?;
+            let views = viboceros_io::read_3dm_viewports_file_in_units(path, self.document.units())
+                .map_err(|error| error.to_string())?;
+            if views.len() != self.viewports.len() {
+                return Err(format!(
+                    "Expected {} model viewports in 3DM file; found {}",
+                    self.viewports.len(),
+                    views.len()
+                ));
+            }
+            for (index, view) in views.iter().enumerate() {
+                Viewport::named_view_from_3dm(&view.camera)
+                    .map_err(|error| format!("Invalid viewport {}: {error}", index + 1))?;
+            }
+            self.restore_file_viewports(views);
+            Ok(format!(
+                "Read {} viewports from {path}",
+                self.viewports.len()
+            ))
+        })();
+        match result {
+            Ok(message) => {
+                self.push_log(message);
+                self.command_input.clear();
+            }
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        true
+    }
+
     fn three_dm_views(&self) -> Result<Vec<ThreeDmNamedView>, viboceros_command::CommandError> {
         self.named_views
             .entries()
@@ -137,8 +214,6 @@ impl VibocerosApp {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let (document, message, views, current_views) =
                     viboceros_command::open_3dm_with_views(path)?;
-                let current_views = views_in_grid_order(current_views);
-                let viewport_positions = file_viewport_positions(&current_views);
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
                 self.document = document;
@@ -146,40 +221,7 @@ impl VibocerosApp {
                     std::fs::canonicalize(path).unwrap_or_else(|_| std::path::PathBuf::from(path)),
                 );
                 self.named_views = named_views;
-                self.viewports = Viewport::standard_views();
-                self.viewport_positions = viewport_positions;
-                for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
-                    if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
-                        viewport.restore_named_view(snapshot);
-                    }
-                    viewport.display_mode = match source.display_mode {
-                        ThreeDmDisplayMode::Wireframe => DisplayMode::Wireframe,
-                        ThreeDmDisplayMode::Shaded => DisplayMode::Shaded,
-                        ThreeDmDisplayMode::Ghosted => DisplayMode::Ghosted,
-                        ThreeDmDisplayMode::Other => viewport.display_mode,
-                    };
-                    let grid = GridSettings {
-                        snap_spacing: source.grid.snap_spacing,
-                        minor_spacing: source.grid.minor_spacing,
-                        major_interval: source.grid.major_interval,
-                        line_count: source.grid.line_count,
-                        show_grid: source.grid.show_grid,
-                        show_axes: source.grid.show_axes,
-                        show_world_axes: source.grid.show_world_axes,
-                    };
-                    if grid.valid() {
-                        viewport.set_grid_settings(grid);
-                    }
-                }
-                self.active_viewport = current_views
-                    .iter()
-                    .position(|view| view.active)
-                    .filter(|index| *index < self.viewports.len())
-                    .unwrap_or(0);
-                self.maximized_viewport = current_views
-                    .iter()
-                    .position(|view| view.maximized)
-                    .filter(|index| *index < self.viewports.len());
+                self.restore_file_viewports(current_views);
                 self.last_point = None;
                 self.sidebar = DocumentSidebar::default();
                 Ok(format!("{message}; opened {imported} named view(s)"))
