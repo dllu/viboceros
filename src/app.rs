@@ -349,6 +349,14 @@ enum InteractiveCommand {
     Arc {
         points: [Option<Point3>; 2],
     },
+    ArcStartPoint {
+        start: Option<Point3>,
+        end: Option<Point3>,
+    },
+    ArcStartDirection {
+        start: Option<Point3>,
+        tangent: Option<Point3>,
+    },
     ArcCenter {
         center: Option<Point3>,
         start: Option<Point3>,
@@ -614,6 +622,7 @@ impl InteractiveCommand {
             Self::Pipe { .. } => "Pipe",
             Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
+            Self::ArcStartPoint { .. } | Self::ArcStartDirection { .. } => "Arc",
             Self::ArcCenter { .. } => "Arc",
             Self::ArcCenterLength { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
@@ -850,6 +859,20 @@ impl InteractiveCommand {
                 [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
                 [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
             },
+            Self::ArcStartPoint { start: None, .. } => {
+                "Arc StartPoint: pick the start point (Esc to cancel)"
+            }
+            Self::ArcStartPoint { end: None, .. } => {
+                "Arc StartPoint: pick the endpoint or choose Direction (Esc to cancel)"
+            }
+            Self::ArcStartPoint { .. } => "Arc StartPoint: pick a point on the arc (Esc to cancel)",
+            Self::ArcStartDirection { start: None, .. } => {
+                "Arc Direction: pick the start point (Esc to cancel)"
+            }
+            Self::ArcStartDirection { tangent: None, .. } => {
+                "Arc Direction: pick a tangent direction point (Esc to cancel)"
+            }
+            Self::ArcStartDirection { .. } => "Arc Direction: pick the endpoint (Esc to cancel)",
             Self::ArcCenter { center: None, .. } => {
                 "Arc Center: pick the center in the viewport (Esc to cancel)"
             }
@@ -1336,6 +1359,8 @@ impl InteractiveCommand {
                 points: [None, _, _],
             }
             | Self::Arc { points: [None, _] }
+            | Self::ArcStartPoint { start: None, .. }
+            | Self::ArcStartDirection { start: None, .. }
             | Self::ArcCenter { center: None, .. }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
@@ -1481,6 +1506,21 @@ impl InteractiveCommand {
             }
             | Self::Arc {
                 points: [Some(point), None],
+            }
+            | Self::ArcStartPoint {
+                end: Some(point), ..
+            }
+            | Self::ArcStartPoint {
+                start: Some(point),
+                end: None,
+            }
+            | Self::ArcStartDirection {
+                tangent: Some(point),
+                ..
+            }
+            | Self::ArcStartDirection {
+                start: Some(point),
+                tangent: None,
             }
             | Self::CircleThreePoint {
                 points: [_, Some(point)],
@@ -1921,6 +1961,39 @@ impl VibocerosApp {
                 center: None,
                 start: None,
                 clockwise: true,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        if self.active_command == Some(InteractiveCommand::Arc { points: [None; 2] })
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("StartPoint")
+        {
+            let command = InteractiveCommand::ArcStartPoint {
+                start: None,
+                end: None,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        if let Some(InteractiveCommand::ArcStartPoint {
+            start: Some(start),
+            end: None,
+        }) = self.active_command
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Direction")
+        {
+            let command = InteractiveCommand::ArcStartDirection {
+                start: Some(start),
+                tangent: None,
             };
             self.active_command = Some(command);
             self.command_input.clear();
@@ -3875,6 +3948,29 @@ impl VibocerosApp {
                 start: None,
                 clockwise: true,
             }
+        } else if matches!(normalized.as_str(), "arc" | "a")
+            && arguments.len() == 1
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("StartPoint")
+        {
+            InteractiveCommand::ArcStartPoint {
+                start: None,
+                end: None,
+            }
+        } else if matches!(normalized.as_str(), "arc" | "a")
+            && arguments.len() == 2
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("StartPoint")
+            && arguments[1]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Direction")
+        {
+            InteractiveCommand::ArcStartDirection {
+                start: None,
+                tangent: None,
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -4720,6 +4816,116 @@ impl VibocerosApp {
             }
             InteractiveCommand::ArcCenterLength { .. } => {
                 self.push_log("Enter a signed arc length".into());
+                return false;
+            }
+            InteractiveCommand::ArcStartPoint {
+                start: None,
+                end: None,
+            } => {
+                let command = InteractiveCommand::ArcStartPoint {
+                    start: Some(point),
+                    end: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcStartPoint {
+                start: Some(start),
+                end: None,
+            } => {
+                if point.is_near(start, self.document.tolerance()) {
+                    self.push_log("Error: arc endpoints must differ".into());
+                    return false;
+                }
+                let command = InteractiveCommand::ArcStartPoint {
+                    start: Some(start),
+                    end: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("End: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcStartPoint {
+                start: Some(start),
+                end: Some(end),
+            } => {
+                if let Err(error) = CircularArc3::try_from_three_points(
+                    start,
+                    point,
+                    end,
+                    self.document.tolerance(),
+                ) {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Arc StartPoint {} {} {}",
+                    format_model_point(start),
+                    format_model_point(end),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::ArcStartDirection {
+                start: None,
+                tangent: None,
+            } => {
+                let command = InteractiveCommand::ArcStartDirection {
+                    start: Some(point),
+                    tangent: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcStartDirection {
+                start: Some(start),
+                tangent: None,
+            } => {
+                if point.is_near(start, self.document.tolerance()) {
+                    self.push_log("Error: arc tangent direction must be nonzero".into());
+                    return false;
+                }
+                let command = InteractiveCommand::ArcStartDirection {
+                    start: Some(start),
+                    tangent: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Tangent direction: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcStartDirection {
+                start: Some(start),
+                tangent: Some(direction),
+            } => {
+                let tangent = start
+                    .vector_to(direction)
+                    .and_then(|vector| vector.normalized(self.document.tolerance()));
+                let result = tangent.and_then(|tangent| {
+                    CircularArc3::try_from_start_tangent_end(
+                        start,
+                        tangent,
+                        point,
+                        self.document.tolerance(),
+                    )
+                });
+                if let Err(error) = result {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Arc StartPoint {} Direction={} {}",
+                    format_model_point(start),
+                    format_model_point(direction),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::ArcStartPoint { .. }
+            | InteractiveCommand::ArcStartDirection { .. } => {
+                self.push_log("Error: arc point state is inconsistent".into());
+                self.active_command = None;
                 return false;
             }
             InteractiveCommand::Arc { mut points } => {
@@ -8102,6 +8308,36 @@ mod tests {
             panic!("expected counterclockwise arc")
         };
         assert!((short.sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn interactive_arc_start_point_direction_retains_invalid_end_pick() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Arc StartPoint"));
+        assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+        assert!(app.try_continue_arc("Direction"));
+        assert!(!app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+        assert!(app.accept_drafting_point(point(1.0, 0.0, 0.0)));
+        assert!(!app.accept_drafting_point(point(2.0, 0.0, 0.0)));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::ArcStartDirection {
+                start: Some(_),
+                tangent: Some(_)
+            })
+        ));
+        assert!(app.accept_drafting_point(point(2.0, 2.0, 0.0)));
+        let Geometry::Arc(arc) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected arc")
+        };
+        assert!((arc.sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+        assert_eq!(app.document.undo_label(), Some("Arc"));
+
+        assert!(app.try_start_interactive_command("Arc StartPoint"));
+        assert!(app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+        assert!(app.accept_drafting_point(point(2.0, 2.0, 0.0)));
+        assert!(app.accept_drafting_point(point(1.0, 0.0, 0.0)));
+        assert_eq!(app.document.objects().len(), 2);
     }
 
     #[test]

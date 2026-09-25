@@ -1295,6 +1295,7 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="ArcCenterAngle", value=90)), "_Arc _Center w1,2,3 w4,5,6 90")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="ArcCenterLength", value=6)), "_Arc _Center w1,2,3 w4,5,6 _Length 6")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="ArcCenterEndpoint", points=[[1,2,3],[4,5,6],[7,8,9]])), "_Arc _Center w1,2,3 w4,5,6 _Pause")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="ArcStartDirection", points=[[1,2,3],[4,5,6],[7,8,9]])), "_Arc _StartPoint w1,2,3 _Direction w4,5,6 w7,8,9")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleDiameter", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Diameter 8")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleCircumference", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Circumference 8")
             self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="CircleArea", points=[[1,2,3]], value=8)), "_Circle w1,2,3 _Area 8")

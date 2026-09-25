@@ -37,6 +37,15 @@ as the [batch](../arc-center-endpoint-rhino-reference.json) and
 [single-pick](../arc-center-endpoint-south-alone-rhino-reference.json) records
 show. Their sampled arcs and domains match the explicitly directed native
 commands within `1e-10`.
+`Arc StartPoint start end through` places the endpoint before the point on the
+arc. Choose `StartPoint` at Arc's first prompt for the same viewport sequence.
+At the second prompt, choose `Direction` instead of picking the endpoint to
+specify a tangent direction point, then pick the endpoint. The direct command
+form is `Arc StartPoint start Direction=tangent-point end`. The tangent and
+endpoint determine the arc plane, including when the endpoint is off the
+construction plane. Five [live Rhino direction records](../arc-start-direction-rhino-reference.json)
+cover both turn directions, a major arc, and tilted planes; sampled curves and
+domains match within `1e-10`.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

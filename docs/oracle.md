@@ -557,6 +557,11 @@ the batch produces a counterclockwise 270° arc. Their
 [single-pick](arc-center-endpoint-south-alone-rhino-reference.json) records
 show that interaction history affects the sweep; cursor travel appears to be
 the deciding factor.
+The [Arc StartPoint Direction fixture](../tools/rhino_oracle/fixtures/arc_start_direction.json)
+compares five typed Rhino direction constructions with
+[live sampled curves](arc-start-direction-rhino-reference.json): both turn
+directions, a major arc, an oriented construction plane, and an off-plane
+endpoint. Native samples and domains agree within `1e-10`.
 The [three-point circle fixture](../tools/rhino_oracle/fixtures/circle_three_point.json)
 checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including

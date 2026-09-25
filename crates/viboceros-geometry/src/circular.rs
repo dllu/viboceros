@@ -244,6 +244,49 @@ pub struct CircularArc3 {
 }
 
 impl CircularArc3 {
+    /// Constructs the arc from a start point, its tangent direction, and an
+    /// endpoint. The tangent and endpoint define the arc plane even when it
+    /// differs from the active construction plane.
+    pub fn try_from_start_tangent_end(
+        start: Point3,
+        tangent: UnitVector3,
+        end: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let chord = start.vector_to(end)?;
+        let chord_length = chord.length()?;
+        if chord_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "circular arc",
+            });
+        }
+        let along = chord.dot(tangent.as_vector())?;
+        let perpendicular = Vector3::try_new(
+            chord.x() - tangent.x() * along,
+            chord.y() - tangent.y() * along,
+            chord.z() - tangent.z() * along,
+        )?;
+        let height = perpendicular.length()?;
+        if height <= tolerance.angular() * chord_length {
+            return Err(GeometryError::Degenerate {
+                context: "arc tangent and endpoint",
+            });
+        }
+        let radius = (0.5 * chord_length) * (chord_length / height);
+        require_finite([radius], "arc radius")?;
+        let center = start.translated(
+            perpendicular
+                .normalized(tolerance)?
+                .as_vector()
+                .scaled(radius)?,
+        )?;
+        let normal = tangent
+            .as_vector()
+            .cross(perpendicular)?
+            .normalized(tolerance)?;
+        Self::try_from_center_start_end_on_plane(center, start, end, normal, tolerance)
+    }
+
     /// Constructs an arc from a center, start point, and endpoint direction.
     /// The endpoint is projected into the circle plane, and the positive sweep
     /// follows `normal`. A return to the start direction makes a full arc.
@@ -1012,6 +1055,35 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn start_tangent_end_follows_tangent_and_supports_major_and_tilted_arcs() {
+        let start = point(0.0, 0.0, 0.0);
+        let tangent = Vector3::try_new(1.0, 0.0, 0.0)
+            .unwrap()
+            .normalized(Tolerance::DEFAULT)
+            .unwrap();
+        for (end, expected_sweep) in [
+            (point(2.0, 2.0, 0.0), std::f64::consts::FRAC_PI_2),
+            (point(2.0, -2.0, 0.0), std::f64::consts::FRAC_PI_2),
+            (point(-2.0, 2.0, 0.0), 3.0 * std::f64::consts::FRAC_PI_2),
+            (point(2.0, 2.0, 3.0), 2.1287033667627924),
+        ] {
+            let arc =
+                CircularArc3::try_from_start_tangent_end(start, tangent, end, Tolerance::DEFAULT)
+                    .unwrap();
+            assert!((arc.sweep_radians() - expected_sweep).abs() < 1e-12);
+            assert!(arc.start().unwrap().is_near(start, Tolerance::DEFAULT));
+            assert!(arc.end().unwrap().is_near(end, Tolerance::DEFAULT));
+            assert!(arc.y_axis().as_vector().dot(tangent.as_vector()).unwrap() > 1.0 - 1e-12);
+        }
+        for end in [start, point(2.0, 0.0, 0.0)] {
+            assert!(
+                CircularArc3::try_from_start_tangent_end(start, tangent, end, Tolerance::DEFAULT,)
+                    .is_err()
+            );
+        }
     }
 
     #[test]

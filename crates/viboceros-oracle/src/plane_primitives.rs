@@ -114,6 +114,15 @@ mod tests {
     }
 
     #[test]
+    fn arc_start_direction_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_start_direction.json"),
+            include_str!("../../../docs/arc-start-direction-rhino-reference.json"),
+            5,
+        );
+    }
+
+    #[test]
     fn three_point_circle_radius_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
@@ -241,6 +250,7 @@ pub(super) fn run(
         "ArcCenterAngle" if f.value.is_some() => ("Arc Center", 2),
         "ArcCenterLength" if f.value.is_some() => ("Arc Center", 2),
         "ArcCenterEndpoint" if f.value.is_none() => ("Arc Center", 3),
+        "ArcStartDirection" if f.value.is_none() => ("Arc StartPoint", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -280,7 +290,9 @@ pub(super) fn run(
             }
             command.push_str(&format!(" {value}"));
         }
-        if index == 2
+        if index == 1 && f.primitive == "ArcStartDirection" {
+            command.push_str(&format!(" Direction={},{},{}", p[0], p[1], p[2]));
+        } else if index == 2
             && matches!(
                 f.primitive.as_str(),
                 "CircleOrientationCircumferencePick" | "CircleOrientationAreaPick"

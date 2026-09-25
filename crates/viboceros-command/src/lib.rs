@@ -1348,6 +1348,45 @@ impl Command for ArcCommand {
     ) -> Result<String, CommandError> {
         if arguments
             .first()
+            .is_some_and(|option| option_name_eq(option, "StartPoint"))
+        {
+            let (start, count) = parse_point(&arguments[1..])?;
+            let remaining = &arguments[1 + count..];
+            let arc = if let Some((name, value)) =
+                remaining.first().and_then(|token| token.split_once('='))
+                && option_name_eq(name, "Direction")
+            {
+                let (direction, used) = parse_point(&[value])?;
+                require_consumed(&[value], used, ARC_START_USAGE)?;
+                let (end, used) = parse_point(&remaining[1..])?;
+                require_consumed(&remaining[1..], used, ARC_START_USAGE)?;
+                let tangent = start
+                    .vector_to(direction)?
+                    .normalized(document.tolerance())?;
+                CircularArc3::try_from_start_tangent_end(start, tangent, end, document.tolerance())?
+            } else if remaining
+                .first()
+                .is_some_and(|token| option_name_eq(token, "Direction"))
+            {
+                let (direction, used) = parse_point(&remaining[1..])?;
+                let (end, end_used) = parse_point(&remaining[1 + used..])?;
+                require_consumed(&remaining[1..], used + end_used, ARC_START_USAGE)?;
+                let tangent = start
+                    .vector_to(direction)?
+                    .normalized(document.tolerance())?;
+                CircularArc3::try_from_start_tangent_end(start, tangent, end, document.tolerance())?
+            } else {
+                let (end, used) = parse_point(remaining)?;
+                let (through, through_used) = parse_point(&remaining[used..])?;
+                require_consumed(remaining, used + through_used, ARC_START_USAGE)?;
+                CircularArc3::try_from_three_points(start, through, end, document.tolerance())?
+            };
+            let sweep_degrees = arc.sweep_radians().to_degrees();
+            let id = document.add_geometry(Geometry::Arc(arc))?;
+            return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
+        }
+        if arguments
+            .first()
             .is_some_and(|option| option_name_eq(option, "Center"))
         {
             let arguments = &arguments[1..];
@@ -1469,6 +1508,8 @@ impl Command for ArcCommand {
 }
 
 const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
+const ARC_START_USAGE: &str =
+    "Arc StartPoint start end through | start Direction=tangent-point end";
 
 struct EllipseCommand;
 
@@ -18325,6 +18366,44 @@ mod tests {
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
             assert_eq!(document.objects().len(), 2);
+        }
+    }
+
+    #[test]
+    fn arc_start_point_direction_uses_tangent_and_endpoint_in_three_dimensions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for input in [
+            "Arc StartPoint 0,0,0 Direction=1,0,0 2,2,0",
+            "Arc StartPoint 0,0,0 Direction 1,0,0 -2,2,0",
+            "Arc StartPoint 0,0,0 Direction=1,0,0 2,2,3",
+            "Arc StartPoint 0,0,0 2,2,0 1,0,0",
+        ] {
+            registry.execute(&mut document, input).unwrap();
+        }
+        let arcs = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 4);
+        assert!((arcs[0].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+        assert!((arcs[1].sweep_radians().to_degrees() - 270.0).abs() < 1e-12);
+        assert!(
+            arcs[2]
+                .end()
+                .unwrap()
+                .is_near(Point3::try_new(2.0, 2.0, 3.0).unwrap(), Tolerance::DEFAULT)
+        );
+        for input in [
+            "Arc StartPoint 0,0,0 Direction=0,0,0 2,2,0",
+            "Arc StartPoint 0,0,0 Direction=1,0,0 2,0,0",
+            "Arc StartPoint 0,0,0 Direction=1,0,0 0,0,0",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 4);
         }
     }
 
