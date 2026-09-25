@@ -54,6 +54,24 @@ fn real_to_gpu(value: Real) -> Option<f32> {
 }
 
 impl Viewport {
+    /// Direction from the model toward the camera for face-angle commands.
+    pub(crate) fn viewward_direction(&self) -> Vector3 {
+        match self.kind {
+            ViewKind::Perspective => {
+                let (_, _, forward) = self.perspective_basis();
+                Vector3::try_new(-forward.x, -forward.y, -forward.z)
+                    .expect("perspective camera direction is finite")
+            }
+            ViewKind::Plan => self.plan_frame.z_axis().as_vector(),
+            kind => {
+                let (axis, sign) = kind.parallel_axes().expect("orthographic view").forward;
+                let mut direction = [0.0; 3];
+                direction[axis] = -sign;
+                Vector3::try_from(direction).expect("orthographic camera direction is finite")
+            }
+        }
+    }
+
     pub(super) fn point_cloud_projection(
         &self,
     ) -> Option<viboceros_geometry::PointCloudProjection> {

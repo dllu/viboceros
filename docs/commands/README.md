@@ -280,6 +280,7 @@ ExtractMeshPart Face=0 ExtractToNonManifoldEdges=Yes MakeCopy=Yes
 ExtractMeshPart Faces=0,2 JoinOutput=No
 ExtractMeshFacesByArea LargerThan=0 SmallerThan=2 MakeCopy=Yes
 ExtractMeshFacesByAspectRatio AspectRatio=9 BorderOnly=Yes
+ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=45 ViewDirection=0,0,1 MakeCopy=Yes
 ExtractMeshFacesByEdgeLength EdgeLength=0.1 Select=Shorter BorderOnly=Yes
 DeleteFaces Faces=2,0
 TriangulateMesh

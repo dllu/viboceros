@@ -1743,12 +1743,29 @@ impl VibocerosApp {
         } else {
             active_plane
         };
+        let draft_angle_command = input.split_whitespace().next().is_some_and(|name| {
+            name.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("ExtractMeshFacesByDraftAngle")
+        });
+        let has_view_direction = input.split_whitespace().skip(1).any(|argument| {
+            argument
+                .split_once('=')
+                .is_some_and(|(key, _)| key.eq_ignore_ascii_case("ViewDirection"))
+        });
+        let command_input = if draft_angle_command && !has_view_direction {
+            let [x, y, z] = self.viewports[self.active_viewport]
+                .viewward_direction()
+                .to_array();
+            std::borrow::Cow::Owned(format!("{input} ViewDirection={x},{y},{z}"))
+        } else {
+            std::borrow::Cow::Borrowed(input)
+        };
         self.cancel_interactive_command(false);
-        self.push_log(format!("> {input}"));
+        self.push_log(format!("> {command_input}"));
         let previous_unit_scale = self.document.units().meters_per_unit();
         match self.commands.execute_in_context(
             &mut self.document,
-            input,
+            &command_input,
             viboceros_command::CommandContext { construction_plane },
         ) {
             Ok(message) => {
@@ -6886,6 +6903,7 @@ mod tests {
     mod distance;
     mod distribute;
     mod domain;
+    mod draft_angle;
     mod evaluate_point;
     mod evaluate_uv;
     mod group_prompt;
