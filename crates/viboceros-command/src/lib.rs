@@ -1412,6 +1412,13 @@ impl Command for ArcCommand {
         {
             let arguments = &arguments[1..];
             let (center, center_count) = parse_point(arguments)?;
+            let after_center = &arguments[center_count..];
+            if after_center
+                .first()
+                .is_some_and(|option| option_name_eq(option, "Midpoint"))
+            {
+                return run_arc_midpoint(document, center, &after_center[1..], context);
+            }
             let (start, start_count) = parse_point(&arguments[center_count..])?;
             let remaining = &arguments[center_count + start_count..];
             let (remaining, endpoint_direction) = if let Some((name, value)) =
@@ -1530,6 +1537,114 @@ impl Command for ArcCommand {
 
 const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
 const ARC_START_USAGE: &str = "Arc StartPoint start end through | start Direction=tangent-point end | start Center=center angle|Length=distance|End=point";
+const ARC_MIDPOINT_USAGE: &str = "Arc Center center Midpoint midpoint end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
+
+fn run_arc_midpoint(
+    document: &mut Document,
+    center: Point3,
+    arguments: &[&str],
+    context: CommandContext,
+) -> Result<String, CommandError> {
+    let (midpoint, count) = parse_point(arguments)?;
+    let remaining = &arguments[count..];
+    let (remaining, endpoint_direction) = if let Some((name, value)) =
+        remaining.last().and_then(|token| token.split_once('='))
+        && option_name_eq(name, "Direction")
+    {
+        let clockwise = if option_name_eq(value, "Clockwise") || option_name_eq(value, "CW") {
+            true
+        } else if option_name_eq(value, "Counterclockwise") || option_name_eq(value, "CCW") {
+            false
+        } else {
+            return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
+        };
+        (&remaining[..remaining.len() - 1], Some(clockwise))
+    } else {
+        (remaining, None)
+    };
+    let endpoint_tokens = match remaining {
+        [single] if single.contains(',') && !single.contains('=') => Some(remaining),
+        [name, rest @ ..] if option_name_eq(name, "End") => Some(rest),
+        [_, _, _] => Some(remaining),
+        _ => None,
+    };
+    let inline_endpoint = match remaining {
+        [single] => single
+            .split_once('=')
+            .filter(|(name, _)| option_name_eq(name, "End"))
+            .map(|(_, value)| value),
+        _ => None,
+    };
+    let endpoint = if let Some(value) = inline_endpoint {
+        let (point, used) = parse_point(&[value])?;
+        require_consumed(&[value], used, ARC_MIDPOINT_USAGE)?;
+        Some(point)
+    } else if let Some(tokens) = endpoint_tokens {
+        let (point, used) = parse_point(tokens)?;
+        require_consumed(tokens, used, ARC_MIDPOINT_USAGE)?;
+        Some(point)
+    } else {
+        None
+    };
+    let arc = if let Some(end) = endpoint {
+        let normal = if endpoint_direction.unwrap_or(false) {
+            context.construction_plane.z_axis().opposite()
+        } else {
+            context.construction_plane.z_axis()
+        };
+        CircularArc3::try_from_center_midpoint_end_on_plane(
+            center,
+            midpoint,
+            end,
+            normal,
+            document.tolerance(),
+        )?
+    } else {
+        if endpoint_direction.is_some() {
+            return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
+        }
+        let (value, is_length) = match remaining {
+            [single] if let Some((name, value)) = single.split_once('=') => {
+                if !option_name_eq(name, "Length") {
+                    return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
+                }
+                (parse_finite_real(value)?, true)
+            }
+            [name, value] if option_name_eq(name, "Length") => (parse_finite_real(value)?, true),
+            [angle] => (parse_finite_real(angle)?, false),
+            _ => return Err(CommandError::Usage(ARC_MIDPOINT_USAGE)),
+        };
+        let radial = center.vector_to(midpoint)?;
+        let radius = radial.length()?;
+        let axis = radial.normalized(document.tolerance())?;
+        let signed_sweep = if is_length {
+            value / radius
+        } else {
+            value.to_radians()
+        };
+        let normal = if signed_sweep < 0.0 {
+            context.construction_plane.z_axis().opposite()
+        } else {
+            context.construction_plane.z_axis()
+        };
+        if signed_sweep.abs() >= std::f64::consts::TAU {
+            let circle =
+                Circle3::try_from_frame(center, radius, axis, normal, document.tolerance())?;
+            CircularArc3::try_from_circle_sweep(circle, std::f64::consts::PI)?
+        } else {
+            CircularArc3::try_from_center_midpoint_sweep_on_plane(
+                center,
+                midpoint,
+                normal,
+                signed_sweep.abs(),
+                document.tolerance(),
+            )?
+        }
+    };
+    let sweep_degrees = arc.sweep_radians().to_degrees();
+    let id = document.add_geometry(Geometry::Arc(arc))?;
+    Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
+}
 
 struct EllipseCommand;
 
@@ -18456,6 +18571,71 @@ mod tests {
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
             assert_eq!(document.objects().len(), 3);
+        }
+    }
+
+    #[test]
+    fn arc_center_midpoint_handles_sweep_boundaries_and_endpoint_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for input in [
+            "Arc Center 1,2,3 Midpoint 1,6,3 90",
+            "Arc Center 1,2,3 Midpoint 1,6,3 Length=-6.283185307179586",
+            "Arc Center 1,2,3 Midpoint 1,6,3 360",
+            "Arc Center 1,2,3 Midpoint 1,6,3 End=5,2,3 Direction=Counterclockwise",
+            "Arc Center 1,2,3 Midpoint 1,6,3 End=9,2,3 Direction=Clockwise",
+        ] {
+            registry.execute(&mut document, input).unwrap();
+        }
+        let arcs = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 5);
+        let midpoint = Point3::try_new(1.0, 6.0, 3.0).unwrap();
+        assert!(
+            arcs[0]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!(
+            arcs[1]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!((arcs[2].sweep_radians() - std::f64::consts::PI).abs() < 1e-12);
+        assert!(
+            arcs[2]
+                .start()
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!((arcs[3].sweep_radians() - 3.0 * std::f64::consts::FRAC_PI_2).abs() < 1e-12);
+        assert!(
+            arcs[3]
+                .start()
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!(
+            arcs[4]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        for input in [
+            "Arc Center 1,2,3 Midpoint 1,2,3 90",
+            "Arc Center 1,2,3 Midpoint 1,6,3 End=1,10,3",
+            "Arc Center 1,2,3 Midpoint 1,6,3 0",
+            "Arc Center 1,2,3 Midpoint 1,6,3 Length=0",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 5);
         }
     }
 

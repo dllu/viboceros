@@ -37,6 +37,16 @@ as the [batch](../arc-center-endpoint-rhino-reference.json) and
 [single-pick](../arc-center-endpoint-south-alone-rhino-reference.json) records
 show. Their sampled arcs and domains match the explicitly directed native
 commands within `1e-10`.
+`Arc Center center Midpoint midpoint angle-degrees` places the picked midpoint
+halfway along the arc. After picking the center interactively, choose
+`Midpoint`, then pick that point. The final prompt also accepts
+`Length=distance` or an endpoint; endpoint commands can specify
+`Direction=Clockwise|Counterclockwise`. Rhino treats typed sweeps with a
+magnitude of at least 360° as a 180° arc starting at the supplied midpoint,
+and rejects endpoint picks on the same radial direction. The
+[17 live Rhino records](../arc-midpoint-rhino-reference.json) include these
+boundaries and both endpoint branches. Native sampled curves and domains
+match within `1e-10` when endpoint direction is specified.
 `Arc StartPoint start end through` places the endpoint before the point on the
 arc. Choose `StartPoint` at Arc's first prompt for the same viewport sequence.
 At the second prompt, choose `Direction` instead of picking the endpoint to

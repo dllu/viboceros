@@ -244,6 +244,76 @@ pub struct CircularArc3 {
 }
 
 impl CircularArc3 {
+    /// Constructs an arc with `midpoint` at half its positive angular sweep.
+    /// The midpoint radial direction is projected into the given plane.
+    pub fn try_from_center_midpoint_sweep_on_plane(
+        center: Point3,
+        midpoint: Point3,
+        normal: UnitVector3,
+        sweep_radians: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([sweep_radians], "arc sweep")?;
+        if !(sweep_radians > 0.0 && sweep_radians <= TAU) {
+            return Err(GeometryError::Degenerate {
+                context: "arc sweep",
+            });
+        }
+        let radial = center.vector_to(midpoint)?;
+        let circle = CircleFrame3::try_from_frame(
+            center,
+            radial.length()?,
+            radial.normalized(tolerance)?,
+            normal,
+            tolerance,
+        )?;
+        Self::try_from_frame_sweep(circle.rotated_seam(-sweep_radians * 0.5)?, sweep_radians)
+    }
+
+    /// Constructs Rhino's center/midpoint endpoint arc in the chosen sweep
+    /// direction. If doubling the midpoint-to-end angle would exceed a full
+    /// revolution, Rhino uses the midpoint as the start instead.
+    pub fn try_from_center_midpoint_end_on_plane(
+        center: Point3,
+        midpoint: Point3,
+        end: Point3,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let radial = center.vector_to(midpoint)?;
+        let circle = CircleFrame3::try_from_frame(
+            center,
+            radial.length()?,
+            radial.normalized(tolerance)?,
+            normal,
+            tolerance,
+        )?;
+        let endpoint = center.vector_to(end)?;
+        let x = endpoint.dot(circle.x_axis.as_vector())?;
+        let y = endpoint.dot(circle.y_axis.as_vector())?;
+        if x.hypot(y) <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "arc endpoint direction",
+            });
+        }
+        let half_sweep = positive_angle(y.atan2(x));
+        if half_sweep.min(TAU - half_sweep) <= tolerance.angular() {
+            return Err(GeometryError::Degenerate {
+                context: "arc midpoint and endpoint",
+            });
+        }
+        if half_sweep <= PI + tolerance.angular() {
+            return Self::try_from_center_midpoint_sweep_on_plane(
+                center,
+                midpoint,
+                normal,
+                (2.0 * half_sweep).min(TAU),
+                tolerance,
+            );
+        }
+        Self::try_from_center_start_end_on_plane(center, midpoint, end, normal, tolerance)
+    }
+
     /// Constructs the arc from a start point, its tangent direction, and an
     /// endpoint. The tangent and endpoint define the arc plane even when it
     /// differs from the active construction plane.
@@ -1084,6 +1154,87 @@ mod tests {
                     .is_err()
             );
         }
+    }
+
+    #[test]
+    fn center_midpoint_sweep_places_midpoint_halfway_on_minor_and_major_arcs() {
+        let center = point(1.0, 2.0, 3.0);
+        let midpoint = point(1.0, 6.0, 3.0);
+        for (normal, sweep) in [
+            (z_axis(), FRAC_PI_2),
+            (z_axis(), 3.0 * FRAC_PI_2),
+            (z_axis().opposite(), FRAC_PI_2),
+        ] {
+            let arc = CircularArc3::try_from_center_midpoint_sweep_on_plane(
+                center,
+                midpoint,
+                normal,
+                sweep,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert!(
+                arc.point_at(0.5)
+                    .unwrap()
+                    .is_near(midpoint, Tolerance::DEFAULT)
+            );
+            assert!((arc.sweep_radians() - sweep).abs() < 1e-12);
+        }
+    }
+
+    #[test]
+    fn center_midpoint_endpoint_matches_direction_and_full_turn_fallback() {
+        let center = point(1.0, 2.0, 3.0);
+        let midpoint = point(1.0, 6.0, 3.0);
+        let west = CircularArc3::try_from_center_midpoint_end_on_plane(
+            center,
+            midpoint,
+            point(-3.0, 2.0, 3.0),
+            z_axis(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((west.sweep_radians() - PI).abs() < 1e-12);
+        assert!(
+            west.point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        let east = CircularArc3::try_from_center_midpoint_end_on_plane(
+            center,
+            midpoint,
+            point(5.0, 2.0, 3.0),
+            z_axis(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((east.sweep_radians() - 3.0 * FRAC_PI_2).abs() < 1e-12);
+        assert!(east.start().unwrap().is_near(midpoint, Tolerance::DEFAULT));
+        let clockwise = CircularArc3::try_from_center_midpoint_end_on_plane(
+            center,
+            midpoint,
+            point(5.0, 2.0, 3.0),
+            z_axis().opposite(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((clockwise.sweep_radians() - PI).abs() < 1e-12);
+        assert!(
+            clockwise
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!(
+            CircularArc3::try_from_center_midpoint_end_on_plane(
+                center,
+                midpoint,
+                point(1.0, 10.0, 3.0),
+                z_axis(),
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
     }
 
     #[test]

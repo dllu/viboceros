@@ -557,6 +557,13 @@ the batch produces a counterclockwise 270° arc. Their
 [single-pick](arc-center-endpoint-south-alone-rhino-reference.json) records
 show that interaction history affects the sweep; cursor travel appears to be
 the deciding factor.
+The [Arc Center Midpoint fixture](../tools/rhino_oracle/fixtures/arc_midpoint.json)
+compares 17 typed angle/length commands and actual endpoint clicks against
+[Rhino 8 sampled curves](arc-midpoint-rhino-reference.json). It covers
+positive and negative sweeps, the 360° boundary, off-radius endpoint picks,
+and a reversed construction-plane normal. Native curves and domains agree
+within `1e-10` for explicitly directed endpoint picks. A separate same-radial
+endpoint probe was rejected by Rhino and is rejected by the native command.
 The [Arc StartPoint Direction fixture](../tools/rhino_oracle/fixtures/arc_start_direction.json)
 compares five typed Rhino direction constructions with
 [live sampled curves](arc-start-direction-rhino-reference.json): both turn

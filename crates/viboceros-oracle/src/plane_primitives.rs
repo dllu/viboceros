@@ -132,6 +132,15 @@ mod tests {
     }
 
     #[test]
+    fn arc_midpoint_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/arc_midpoint.json"),
+            include_str!("../../../docs/arc-midpoint-rhino-reference.json"),
+            17,
+        );
+    }
+
+    #[test]
     fn three_point_circle_radius_records_match_live_rhino_samples() {
         assert_circle_records_match(
             include_str!("../../../tools/rhino_oracle/fixtures/circle_three_point_radius.json"),
@@ -264,6 +273,8 @@ pub(super) fn run(
             ("Arc StartPoint", 2)
         }
         "ArcStartCenterEndpoint" if f.value.is_none() => ("Arc StartPoint", 3),
+        "ArcMidpointAngle" | "ArcMidpointLength" if f.value.is_some() => ("Arc Center", 2),
+        "ArcMidpointEndpoint" if f.value.is_none() => ("Arc Center", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
         "Rectangle" | "MeshPlane" => (f.primitive.as_str(), 2),
         "Box" | "MeshBox" => (f.primitive.as_str(), if f.value.is_some() { 2 } else { 3 }),
@@ -274,7 +285,7 @@ pub(super) fn run(
         || (f.direction.is_some()
             && !matches!(
                 f.primitive.as_str(),
-                "ArcCenterEndpoint" | "ArcStartCenterEndpoint"
+                "ArcCenterEndpoint" | "ArcStartCenterEndpoint" | "ArcMidpointEndpoint"
             ))
     {
         return Err(ProbeError::FixtureInvariant(
@@ -311,7 +322,14 @@ pub(super) fn run(
             command.push_str(&format!(" Direction={},{},{}", p[0], p[1], p[2]));
         } else if index == 1 && f.primitive.starts_with("ArcStartCenter") {
             command.push_str(&format!(" Center={},{},{}", p[0], p[1], p[2]));
-        } else if index == 2 && f.primitive == "ArcStartCenterEndpoint" {
+        } else if index == 1 && f.primitive.starts_with("ArcMidpoint") {
+            command.push_str(&format!(" Midpoint {},{},{}", p[0], p[1], p[2]));
+        } else if index == 2
+            && matches!(
+                f.primitive.as_str(),
+                "ArcStartCenterEndpoint" | "ArcMidpointEndpoint"
+            )
+        {
             command.push_str(&format!(" End={},{},{}", p[0], p[1], p[2]));
         } else if index == 2
             && matches!(
@@ -354,7 +372,7 @@ pub(super) fn run(
         }
         if matches!(
             f.primitive.as_str(),
-            "ArcCenterLength" | "ArcStartCenterLength"
+            "ArcCenterLength" | "ArcStartCenterLength" | "ArcMidpointLength"
         ) {
             command.push_str(&format!(" Length={value}"));
         } else if let Some(option) = f.primitive.strip_prefix("Circle")

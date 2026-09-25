@@ -375,6 +375,15 @@ enum InteractiveCommand {
         center: Point3,
         start: Point3,
     },
+    ArcCenterMidpoint {
+        center: Option<Point3>,
+        midpoint: Option<Point3>,
+        clockwise: bool,
+    },
+    ArcCenterMidpointLength {
+        center: Point3,
+        midpoint: Point3,
+    },
     Ellipse {
         center: Option<Point3>,
         first_axis: Option<Point3>,
@@ -635,6 +644,7 @@ impl InteractiveCommand {
             Self::ArcStartCenter { .. } | Self::ArcStartCenterLength { .. } => "Arc",
             Self::ArcCenter { .. } => "Arc",
             Self::ArcCenterLength { .. } => "Arc",
+            Self::ArcCenterMidpoint { .. } | Self::ArcCenterMidpointLength { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
@@ -899,13 +909,25 @@ impl InteractiveCommand {
                 "Arc Center: pick the center in the viewport (Esc to cancel)"
             }
             Self::ArcCenter { start: None, .. } => {
-                "Arc Center: pick the start point in the viewport (Esc to cancel)"
+                "Arc Center: pick the start point or choose Midpoint (Esc to cancel)"
             }
             Self::ArcCenter { .. } => {
                 "Arc Center: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
             }
             Self::ArcCenterLength { .. } => {
                 "Arc Center Length: enter a signed arc length (Esc to cancel)"
+            }
+            Self::ArcCenterMidpoint { center: None, .. } => {
+                "Arc Center Midpoint: pick the center (Esc to cancel)"
+            }
+            Self::ArcCenterMidpoint { midpoint: None, .. } => {
+                "Arc Center Midpoint: pick the arc midpoint (Esc to cancel)"
+            }
+            Self::ArcCenterMidpoint { .. } => {
+                "Arc Center Midpoint: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
+            }
+            Self::ArcCenterMidpointLength { .. } => {
+                "Arc Center Midpoint Length: enter a signed arc length (Esc to cancel)"
             }
             Self::Ellipse { center: None, .. } => {
                 "Ellipse: pick the center in the viewport (Esc to cancel)"
@@ -1385,6 +1407,7 @@ impl InteractiveCommand {
             | Self::ArcStartDirection { start: None, .. }
             | Self::ArcStartCenter { start: None, .. }
             | Self::ArcCenter { center: None, .. }
+            | Self::ArcCenterMidpoint { center: None, .. }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
             | Self::Curve { .. }
@@ -1570,6 +1593,16 @@ impl InteractiveCommand {
                 start: Some(start), ..
             } => Some(start),
             Self::ArcCenterLength { start, .. } => Some(start),
+            Self::ArcCenterMidpoint {
+                midpoint: Some(midpoint),
+                ..
+            } => Some(midpoint),
+            Self::ArcCenterMidpoint {
+                center: Some(center),
+                midpoint: None,
+                ..
+            } => Some(center),
+            Self::ArcCenterMidpointLength { midpoint, .. } => Some(midpoint),
             Self::CircleThreePointRadius { second, .. } => Some(second),
             Self::SrfPt {
                 corners: [_, _, Some(corner)],
@@ -2052,22 +2085,50 @@ impl VibocerosApp {
             self.push_log(command.prompt().to_owned());
             return true;
         }
-        let (center, start, is_length, start_first) = match self.active_command {
+        if let Some(InteractiveCommand::ArcCenter {
+            center: Some(center),
+            start: None,
+            ..
+        }) = self.active_command
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Midpoint")
+        {
+            let command = InteractiveCommand::ArcCenterMidpoint {
+                center: Some(center),
+                midpoint: None,
+                clockwise: false,
+            };
+            self.active_command = Some(command);
+            self.command_input.clear();
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        let (center, start, is_length, start_first, midpoint_mode) = match self.active_command {
             Some(InteractiveCommand::ArcCenter {
                 center: Some(center),
                 start: Some(start),
                 ..
-            }) => (center, start, false, false),
+            }) => (center, start, false, false, false),
             Some(InteractiveCommand::ArcCenterLength { center, start }) => {
-                (center, start, true, false)
+                (center, start, true, false, false)
             }
             Some(InteractiveCommand::ArcStartCenter {
                 start: Some(start),
                 center: Some(center),
                 ..
-            }) => (center, start, false, true),
+            }) => (center, start, false, true, false),
             Some(InteractiveCommand::ArcStartCenterLength { start, center }) => {
-                (center, start, true, true)
+                (center, start, true, true, false)
+            }
+            Some(InteractiveCommand::ArcCenterMidpoint {
+                center: Some(center),
+                midpoint: Some(midpoint),
+                ..
+            }) => (center, midpoint, false, false, true),
+            Some(InteractiveCommand::ArcCenterMidpointLength { center, midpoint }) => {
+                (center, midpoint, true, false, true)
             }
             _ => return false,
         };
@@ -2093,7 +2154,13 @@ impl VibocerosApp {
                 self.push_log("Error: direction must be Clockwise or Counterclockwise".into());
                 return true;
             };
-            let command = if start_first {
+            let command = if midpoint_mode {
+                InteractiveCommand::ArcCenterMidpoint {
+                    center: Some(center),
+                    midpoint: Some(start),
+                    clockwise,
+                }
+            } else if start_first {
                 InteractiveCommand::ArcStartCenter {
                     start: Some(start),
                     center: Some(center),
@@ -2112,7 +2179,12 @@ impl VibocerosApp {
             return true;
         }
         if !is_length && input.trim_start_matches('_').eq_ignore_ascii_case("Length") {
-            let command = if start_first {
+            let command = if midpoint_mode {
+                InteractiveCommand::ArcCenterMidpointLength {
+                    center,
+                    midpoint: start,
+                }
+            } else if start_first {
                 InteractiveCommand::ArcStartCenterLength { start, center }
             } else {
                 InteractiveCommand::ArcCenterLength { center, start }
@@ -2151,7 +2223,13 @@ impl VibocerosApp {
         } else {
             value.to_string()
         };
-        self.execute_command(&if start_first {
+        self.execute_command(&if midpoint_mode {
+            format!(
+                "Arc Center {} Midpoint {} {size}",
+                format_model_point(center),
+                format_model_point(start)
+            )
+        } else if start_first {
             format!(
                 "Arc StartPoint {} Center={} {size}",
                 format_model_point(start),
@@ -4031,6 +4109,20 @@ impl VibocerosApp {
                 clockwise: true,
             }
         } else if matches!(normalized.as_str(), "arc" | "a")
+            && arguments.len() == 2
+            && arguments[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Center")
+            && arguments[1]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Midpoint")
+        {
+            InteractiveCommand::ArcCenterMidpoint {
+                center: None,
+                midpoint: None,
+                clockwise: false,
+            }
+        } else if matches!(normalized.as_str(), "arc" | "a")
             && arguments.len() == 1
             && arguments[0]
                 .trim_start_matches('_')
@@ -4912,6 +5004,79 @@ impl VibocerosApp {
             }
             InteractiveCommand::ArcCenterLength { .. } => {
                 self.push_log("Enter a signed arc length".into());
+                return false;
+            }
+            InteractiveCommand::ArcCenterMidpoint {
+                center: None,
+                midpoint: None,
+                clockwise,
+            } => {
+                let command = InteractiveCommand::ArcCenterMidpoint {
+                    center: Some(point),
+                    midpoint: None,
+                    clockwise,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcCenterMidpoint {
+                center: Some(center),
+                midpoint: None,
+                clockwise,
+            } => {
+                if point.is_near(center, self.document.tolerance()) {
+                    self.push_log("Error: arc midpoint must differ from center".into());
+                    return false;
+                }
+                let command = InteractiveCommand::ArcCenterMidpoint {
+                    center: Some(center),
+                    midpoint: Some(point),
+                    clockwise,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Midpoint: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArcCenterMidpoint {
+                center: Some(center),
+                midpoint: Some(midpoint),
+                clockwise,
+            } => {
+                if let Err(error) = CircularArc3::try_from_center_midpoint_end_on_plane(
+                    center,
+                    midpoint,
+                    point,
+                    if clockwise {
+                        plane.z_axis().opposite()
+                    } else {
+                        plane.z_axis()
+                    },
+                    self.document.tolerance(),
+                ) {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Arc Center {} Midpoint {} End={} Direction={}",
+                    format_model_point(center),
+                    format_model_point(midpoint),
+                    format_model_point(point),
+                    if clockwise {
+                        "Clockwise"
+                    } else {
+                        "Counterclockwise"
+                    }
+                ));
+            }
+            InteractiveCommand::ArcCenterMidpointLength { .. } => {
+                self.push_log("Enter a signed arc length".into());
+                return false;
+            }
+            InteractiveCommand::ArcCenterMidpoint { .. } => {
+                self.push_log("Error: arc point state is inconsistent".into());
+                self.active_command = None;
                 return false;
             }
             InteractiveCommand::ArcStartCenter {
@@ -8546,6 +8711,67 @@ mod tests {
         assert!((arcs[0].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
         assert!(arcs[1].point_at(0.25).unwrap().y() < 2.0);
         assert!((arcs[2].sweep_radians().to_degrees() - 90.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn interactive_arc_center_midpoint_accepts_angle_length_and_endpoint() {
+        let mut app = test_app();
+        let center = point(1.0, 2.0, 3.0);
+        let midpoint = point(1.0, 6.0, 3.0);
+        assert!(app.try_start_interactive_command("Arc Center Midpoint"));
+        assert!(app.accept_drafting_point(center));
+        assert!(!app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(midpoint));
+        assert!(app.try_continue_arc("90"));
+
+        assert!(app.try_start_interactive_command("Arc Center"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.try_continue_arc("Midpoint"));
+        assert!(app.accept_drafting_point(midpoint));
+        assert!(app.try_continue_arc("Length"));
+        assert!(app.try_continue_arc("-6.283185307179586"));
+
+        assert!(app.try_start_interactive_command("Arc Center Midpoint"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.accept_drafting_point(midpoint));
+        assert!(!app.accept_drafting_point(point(1.0, 10.0, 3.0)));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::ArcCenterMidpoint {
+                midpoint: Some(_),
+                ..
+            })
+        ));
+        assert!(app.try_continue_arc("Direction=Clockwise"));
+        assert!(app.accept_drafting_point(point(9.0, 2.0, 3.0)));
+
+        let arcs = app
+            .document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Arc(arc) => *arc,
+                _ => panic!("expected arc"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 3);
+        assert!(
+            arcs[0]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!(
+            arcs[1]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
+        assert!(
+            arcs[2]
+                .point_at(0.5)
+                .unwrap()
+                .is_near(midpoint, Tolerance::DEFAULT)
+        );
     }
 
     #[test]
