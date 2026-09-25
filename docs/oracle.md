@@ -540,6 +540,12 @@ checks four actual `_Circle _3Point` results against
 [Rhino 8 observations](circle-three-point-rhino-reference.json), including
 reversed point order and off-CPlane geometry. Complete sampled curve records
 and domains agree within `1e-10`; command execution is untimed.
+The [circle size fixture](../tools/rhino_oracle/fixtures/circle_size_options.json)
+checks Diameter, Circumference, and Area against
+[Rhino 8 numeric results](circle-size-options-rhino-reference.json). The
+[picked size fixture](../tools/rhino_oracle/fixtures/circle_size_picks.json)
+checks Rhino's distinct point behavior for the same three options against
+[live results](circle-size-picks-rhino-reference.json).
 
 `plane_transforms.json` checks 140 actual transform commands using four affinely
 independent point witnesses per operation, including copied/original identity

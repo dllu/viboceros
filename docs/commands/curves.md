@@ -27,6 +27,13 @@ and the first point is its seam. Enter `Circle 3Point` to pick all three points,
 or choose `3Point` at Circle's first prompt. A collinear final pick leaves the
 prompt open for correction. The [four live Rhino command records](../circle-three-point-rhino-reference.json)
 match the native circle samples and domains within `1e-10`.
+`Circle center Diameter=6`, `Circumference=18.84955592153876`, and
+`Area=28.274333882308138` each create a radius-three circle. At the interactive
+size prompt, enter a value or pick a point. A Diameter pick supplies a radius
+point; Circumference and Area picks use their distance from the center as the
+numeric size. Numeric sizes and picked sizes match the corresponding
+[Rhino records](../circle-size-options-rhino-reference.json) and
+[pick records](../circle-size-picks-rhino-reference.json) within `1e-10`.
 
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.

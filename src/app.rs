@@ -133,6 +133,7 @@ use command_line::command_completions;
 mod align;
 mod angle;
 mod circle;
+use circle::CircleSizeMode;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -294,6 +295,10 @@ enum InteractiveCommand {
     },
     Circle {
         center: Option<Point3>,
+    },
+    CircleSize {
+        center: Point3,
+        mode: CircleSizeMode,
     },
     CircleTwoPoint {
         first: Option<Point3>,
@@ -572,6 +577,7 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
+            Self::CircleSize { .. } => "Circle",
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
@@ -721,8 +727,9 @@ impl InteractiveCommand {
                 "Circle: pick the center or enter 2Point/3Point (Esc to cancel)"
             }
             Self::Circle { center: Some(_) } => {
-                "Circle: pick a point on the circle in the viewport (Esc to cancel)"
+                "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
             }
+            Self::CircleSize { mode, .. } => mode.prompt(),
             Self::CircleTwoPoint { first: None } => {
                 "Circle 2Point: pick the first diameter end (Esc cancels)"
             }
@@ -1358,6 +1365,7 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::CircleSize { center, .. } => Some(center),
             Self::MeshTruncatedCone {
                 center: Some(center),
                 end_center: None,
@@ -3941,6 +3949,22 @@ impl VibocerosApp {
                     format_model_point(center),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::CircleSize { center, mode } => {
+                let argument = if matches!(mode, CircleSizeMode::Radius | CircleSizeMode::Diameter)
+                {
+                    format_model_point(point)
+                } else {
+                    let Ok(distance) = center.distance_to(point) else {
+                        self.push_log("Error: circle size is not representable".into());
+                        return false;
+                    };
+                    format!("{}={distance}", mode.label())
+                };
+                return self.finish_circle_size(
+                    InteractiveCommand::CircleSize { center, mode },
+                    &argument,
+                );
             }
             InteractiveCommand::CircleTwoPoint { first: None } => {
                 let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };
@@ -7456,6 +7480,56 @@ mod tests {
             Some(InteractiveCommand::Distance { start: Some(_), .. })
         ));
         assert_eq!(format!("{:?}", app.document), before);
+    }
+
+    #[test]
+    fn interactive_circle_size_options_accept_numbers_and_picks() {
+        let mut app = test_app();
+        let center = point(0.0, 0.0, 0.0);
+        let sizes = [
+            ("Diameter", "6", 3.0),
+            ("Circumference", "18.84955592153876", 3.0),
+            ("Area", "28.274333882308138", 3.0),
+        ];
+        for (mode, value, expected_radius) in sizes {
+            assert!(app.try_start_interactive_command("Circle"));
+            assert!(app.accept_drafting_point(center));
+            assert!(app.try_continue_circle(mode));
+            assert!(app.try_continue_circle(value));
+            assert_eq!(app.active_command, None);
+            assert!(matches!(app.document.objects().last().unwrap().geometry(),
+                Geometry::Circle(circle) if (circle.radius() - expected_radius).abs() < 1e-12));
+        }
+
+        for (mode, expected_radius) in [
+            ("Diameter", 6.0),
+            ("Circumference", 6.0 / std::f64::consts::TAU),
+            ("Area", (6.0 / std::f64::consts::PI).sqrt()),
+        ] {
+            assert!(app.try_start_interactive_command("Circle"));
+            assert!(app.accept_drafting_point(center));
+            assert!(app.try_continue_circle(mode));
+            assert!(app.accept_drafting_point(point(6.0, 0.0, 0.0)));
+            assert_eq!(app.active_command, None);
+            assert!(matches!(app.document.objects().last().unwrap().geometry(),
+                Geometry::Circle(circle) if (circle.radius() - expected_radius).abs() < 1e-12));
+        }
+
+        assert!(app.try_start_interactive_command("Circle"));
+        assert!(app.accept_drafting_point(center));
+        assert!(app.try_continue_circle("Area"));
+        let before = format!("{:?}", app.document);
+        assert!(app.try_continue_circle("-1"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::CircleSize {
+                center,
+                mode: CircleSizeMode::Area
+            })
+        );
+        assert_eq!(format!("{:?}", app.document), before);
+        assert!(app.try_continue_circle("9"));
+        assert_eq!(app.active_command, None);
     }
 
     #[test]

@@ -6,6 +6,20 @@ fn enter(app: &mut VibocerosApp, command: &str) {
     app.run_command();
 }
 
+#[test]
+fn circle_size_option_works_through_the_command_line() {
+    let mut app = test_app();
+    enter(&mut app, "Circle");
+    enter(&mut app, "0,0,0");
+    enter(&mut app, "Diameter");
+    enter(&mut app, "6");
+    assert_eq!(app.active_command, None);
+    assert!(matches!(
+        app.document.objects().next().unwrap().geometry(),
+        Geometry::Circle(circle) if (circle.radius() - 3.0).abs() < 1e-12
+    ));
+}
+
 fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context

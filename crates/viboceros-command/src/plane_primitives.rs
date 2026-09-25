@@ -7,6 +7,52 @@ mod tests;
 
 pub(super) struct CircleCommand;
 
+#[derive(Clone, Copy)]
+enum CircleSizeMode {
+    Radius,
+    Diameter,
+    Circumference,
+    Area,
+}
+
+impl CircleSizeMode {
+    fn parse(name: &str) -> Option<Self> {
+        if option_name_eq(name, "Radius") {
+            Some(Self::Radius)
+        } else if option_name_eq(name, "Diameter") {
+            Some(Self::Diameter)
+        } else if option_name_eq(name, "Circumference") {
+            Some(Self::Circumference)
+        } else if option_name_eq(name, "Area") {
+            Some(Self::Area)
+        } else {
+            None
+        }
+    }
+
+    fn radius(self, value: f64) -> f64 {
+        match self {
+            Self::Radius => value,
+            Self::Diameter => value * 0.5,
+            Self::Circumference => value / std::f64::consts::TAU,
+            Self::Area => (value / std::f64::consts::PI).sqrt(),
+        }
+    }
+}
+
+fn circle_numeric_radius(arguments: &[&str]) -> Result<Option<f64>, CommandError> {
+    let size = match arguments {
+        [single] if let Some((name, value)) = single.split_once('=') => {
+            CircleSizeMode::parse(name).map(|mode| (mode, value))
+        }
+        [name, value] => CircleSizeMode::parse(name).map(|mode| (mode, *value)),
+        [single] if !single.contains(',') => Some((CircleSizeMode::Radius, *single)),
+        _ => None,
+    };
+    size.map(|(mode, value)| parse_finite_real(value).map(|value| mode.radius(value)))
+        .transpose()
+}
+
 impl Command for CircleCommand {
     fn name(&self) -> &'static str {
         "Circle"
@@ -58,8 +104,7 @@ impl Command for CircleCommand {
             let (center, consumed) = parse_point(arguments)?;
             let remaining = &arguments[consumed..];
             let normal = plane.z_axis();
-            if remaining.len() == 1 && !remaining[0].contains(',') {
-                let radius = parse_finite_real(remaining[0])?;
+            if let Some(radius) = circle_numeric_radius(remaining)? {
                 Circle3::try_from_frame(
                     center,
                     radius,

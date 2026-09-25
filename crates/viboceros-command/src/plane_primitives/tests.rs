@@ -119,6 +119,45 @@ fn two_point_circle_uses_cplane_seam_and_rejects_normal_diameter() {
 }
 
 #[test]
+fn circle_numeric_size_options_use_the_same_radius_and_keep_history_atomic() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    let context = context();
+    for command in [
+        "Circle 1,2,3 3",
+        "Circle 1,2,3 _Diameter=6",
+        "Circle 1,2,3 _Circumference 18.84955592153876",
+        "Circle 1,2,3 Area=28.274333882308138",
+    ] {
+        registry
+            .execute_in_context(&mut document, command, context)
+            .unwrap();
+        let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+            panic!("circle")
+        };
+        assert!((circle.radius() - 3.0).abs() < 1e-12);
+        assert_eq!(circle.center(), point(1.0, 2.0, 3.0));
+        assert_eq!(circle.x_axis(), context.construction_plane.x_axis());
+    }
+    let before = format!("{document:?}");
+    for command in [
+        "Circle 0,0,0 Diameter=0",
+        "Circle 0,0,0 Diameter=-6",
+        "Circle 0,0,0 Circumference=nan",
+        "Circle 0,0,0 Area=-1",
+        "Circle 0,0,0 Area=28 Area=29",
+    ] {
+        assert!(
+            registry
+                .execute_in_context(&mut document, command, context)
+                .is_err(),
+            "{command}"
+        );
+        assert_eq!(format!("{document:?}"), before);
+    }
+}
+
+#[test]
 fn rectangle_normalizes_corner_order_on_a_translated_oblique_plane() {
     let registry = CommandRegistry::with_builtins();
     let context = context();

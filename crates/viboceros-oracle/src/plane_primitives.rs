@@ -87,6 +87,24 @@ mod tests {
             6,
         );
     }
+
+    #[test]
+    fn circle_size_option_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_size_options.json"),
+            include_str!("../../../docs/circle-size-options-rhino-reference.json"),
+            3,
+        );
+    }
+
+    #[test]
+    fn circle_size_pick_records_match_live_rhino_samples() {
+        assert_circle_records_match(
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_size_picks.json"),
+            include_str!("../../../docs/circle-size-picks-rhino-reference.json"),
+            3,
+        );
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -113,6 +131,14 @@ pub(super) fn run(
     )?;
     let (prefix, expected) = match f.primitive.as_str() {
         "Circle" => ("Circle", if f.value.is_some() { 1 } else { 2 }),
+        "CircleDiameter" | "CircleCircumference" | "CircleArea" if f.value.is_some() => {
+            ("Circle", 1)
+        }
+        "CircleDiameterPick" | "CircleCircumferencePick" | "CircleAreaPick"
+            if f.value.is_none() =>
+        {
+            ("Circle", 2)
+        }
         "Circle2Point" if f.value.is_none() => ("Circle 2Point", 2),
         "Circle3Point" if f.value.is_none() => ("Circle 3Point", 3),
         "Polygon" => ("Polygon 5", if f.value.is_some() { 1 } else { 2 }),
@@ -130,13 +156,31 @@ pub(super) fn run(
     let mut command = prefix.to_owned();
     for p in &f.points {
         Point3::try_from(*p)?;
-        command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
+    }
+    for (index, p) in f.points.iter().enumerate() {
+        if index == 1 && f.primitive.ends_with("Pick") && f.primitive != "CircleDiameterPick" {
+            let size = Point3::try_from(f.points[0])?.distance_to(Point3::try_from(*p)?)?;
+            let option = f
+                .primitive
+                .strip_prefix("Circle")
+                .and_then(|name| name.strip_suffix("Pick"))
+                .unwrap();
+            command.push_str(&format!(" {option}={size}"));
+        } else {
+            command.push_str(&format!(" {},{},{}", p[0], p[1], p[2]));
+        }
     }
     if let Some(value) = f.value {
         if !value.is_finite() {
             return Err(ProbeError::FixtureInvariant("nonfinite primitive size"));
         }
-        command.push_str(&format!(" {value}"));
+        if let Some(option) = f.primitive.strip_prefix("Circle")
+            && matches!(option, "Diameter" | "Circumference" | "Area")
+        {
+            command.push_str(&format!(" {option}={value}"));
+        } else {
+            command.push_str(&format!(" {value}"));
+        }
     }
     if f.primitive == "MeshPlane" {
         command.push_str(" XCount=2 YCount=3");

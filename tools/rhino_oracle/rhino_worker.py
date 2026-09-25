@@ -3386,6 +3386,10 @@ def _plane_primitive_script(operation):
     value = operation.get("value")
     if primitive in ("Circle", "Polygon"):
         expected = 1 if value is not None else 2
+    elif primitive in ("CircleDiameter", "CircleCircumference", "CircleArea") and value is not None:
+        expected = 1
+    elif primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick") and value is None:
+        expected = 2
     elif primitive == "Circle2Point" and value is None:
         expected = 2
     elif primitive == "Circle3Point" and value is None:
@@ -3399,15 +3403,28 @@ def _plane_primitive_script(operation):
     if len(points) != expected:
         raise ValueError("incorrect primitive arguments")
     script = {"Circle2Point": "_Circle _2Point ",
-              "Circle3Point": "_Circle _3Point "}.get(primitive, "_" + primitive + " ")
+              "Circle3Point": "_Circle _3Point ",
+              "CircleDiameter": "_Circle ",
+              "CircleCircumference": "_Circle ",
+              "CircleArea": "_Circle ",
+              "CircleDiameterPick": "_Circle ",
+              "CircleCircumferencePick": "_Circle ",
+              "CircleAreaPick": "_Circle "}.get(primitive, "_" + primitive + " ")
     if primitive == "Polygon":
         script += "_NumSides=5 _Mode=_Inscribed "
     if primitive == "MeshPlane":
         script += "_XCount=2 _YCount=3 "
     if primitive == "MeshBox":
         script += "_XCount=2 _YCount=3 _ZCount=2 "
-    script += " ".join("w" + _command_point(p) for p in points)
+    if primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick"):
+        script += "w" + _command_point(points[0])
+        script += " _" + primitive[len("Circle"):-len("Pick")]
+        script += " w" + _command_point(points[1])
+    else:
+        script += " ".join("w" + _command_point(p) for p in points)
     if value is not None:
+        if primitive in ("CircleDiameter", "CircleCircumference", "CircleArea"):
+            script += " _" + primitive[len("Circle"):]
         script += " %.17g" % _finite(value, "primitive size")
         if primitive == "Polygon":
             # A numeric polygon radius constrains the next pick; choose the
