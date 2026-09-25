@@ -21,6 +21,7 @@ mod edge_weld;
 mod ngon;
 mod normals;
 mod offset;
+mod planar_ngons;
 pub use offset::MeshOffsetDirection;
 mod planar_cap;
 mod quadrangulate;

@@ -111,6 +111,8 @@ MeshSphere 0,0,0 3 Style=Triangles Subdivisions=3
 MeshEllipsoid 0,0,0 5 3 2 VerticalFaces=12 AroundFaces=24 CapFaceStyle=Quad
 MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
 OffsetMesh 1 Solid=Yes DeleteInput=No
+AddNgonsToMesh PlanarTolerance=0.01
+DeleteMeshNgons
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids

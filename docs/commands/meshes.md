@@ -110,6 +110,16 @@ groups, and the edit is undoable. Offsets that collapse faces or fail to form
 a closed shell in solid mode are rejected. Exact Rhino offset directions and
 mesh storage order still need live oracle comparison.
 
+`AddNgonsToMesh PlanarTolerance=0.01` adds logical n-gon overlays to connected
+coplanar mesh faces that share welded, oppositely oriented raw edges. The
+default planarity distance is the document's absolute tolerance. A group uses
+its first face's plane; groups with holes, disconnected boundaries, or fewer
+than two faces are skipped. Existing n-gons remain. `DeleteMeshNgons` removes
+all n-gon overlays from selected meshes. Both commands keep stored faces,
+vertices, colors, object identity, attributes, groups, and selection, with
+undo support. Interactive n-gon conversion policy still needs Rhino oracle
+comparison.
+
 `ExtractMeshEdges` creates fresh current-layer curves from selected polygon
 meshes. `ExtractBy=Unwelded` (the default) includes both naked edges and seams
 whose coincident endpoints use distinct raw mesh vertices; `ExtractBy=Naked`

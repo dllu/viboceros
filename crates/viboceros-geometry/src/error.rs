@@ -670,6 +670,8 @@ pub enum GeometryError {
     MeshCapWeldSourceMissing,
     #[error("mesh n-gon {ngon} has invalid vertices, faces, or boundary topology")]
     InvalidMeshNgon { ngon: usize },
+    #[error("mesh n-gon planarity tolerance must be finite and non-negative")]
+    InvalidMeshNgonPlanarityTolerance,
 
     #[error("mesh topology edge index {edge} is outside the edge count {edge_count}")]
     MeshTopologyEdgeIndexOutOfRange { edge: usize, edge_count: usize },
