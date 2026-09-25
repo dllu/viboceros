@@ -80,7 +80,9 @@ pub(super) fn intersect(
                     && cylinder_radius + 4.0 * spatial_tolerance < major_radius + minor_radius
                     && cylinder_radius > minor_radius + 4.0 * spatial_tolerance)
                 || (cylinder_radius == major_radius - minor_radius
-                    && cylinder_radius > minor_radius + 4.0 * spatial_tolerance))
+                    && cylinder_radius > minor_radius + 4.0 * spatial_tolerance)
+                || (cylinder_radius > major_radius - minor_radius + 4.0 * spatial_tolerance
+                    && cylinder_radius + 4.0 * spatial_tolerance < minor_radius))
         {
             return perpendicular_centered::intersect(
                 (torus_frame, major_radius, minor_radius),
@@ -454,6 +456,85 @@ mod tests {
             .unwrap()
             .is_empty()
         );
+    }
+
+    #[test]
+    fn fat_ring_torus_and_perpendicular_cylinder_have_outer_and_inner_loops() {
+        let torus = NurbsSurface::try_torus(frame(), 1.5, 1.0).unwrap();
+        let cylinder = perpendicular_cylinder(0.75, -3.0, 3.0);
+        for (left, right) in [(&torus, &cylinder), (&cylinder, &torus)] {
+            let events =
+                surface_surface_intersection_events(left, right, Tolerance::DEFAULT).unwrap();
+            assert_eq!(events.len(), 4);
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("fat ring torus should give four loops")
+                };
+                assert!(curve.is_closed().unwrap());
+                for index in 0..=64 {
+                    let domain = curve.domain();
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert!(
+                        ((location.x().hypot(location.y()) - 1.5).hypot(location.z()) - 1.0).abs()
+                            < 5e-9
+                    );
+                    assert!((location.y().hypot(location.z()) - 0.75).abs() < 5e-9);
+                }
+            }
+        }
+        for radius in [0.5001, 0.9999] {
+            let events = surface_surface_intersection_events(
+                &torus,
+                &perpendicular_cylinder(radius, -3.0, 3.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(events.len(), 4, "radius {radius}");
+            for event in events {
+                let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                    panic!("near-critical fat ring section should be a curve")
+                };
+                assert!(curve.is_closed().unwrap());
+                for index in 0..=64 {
+                    let domain = curve.domain();
+                    let parameter =
+                        *domain.start() + (*domain.end() - *domain.start()) * index as Real / 64.0;
+                    let location = curve.evaluate(parameter).unwrap();
+                    assert!(
+                        ((location.x().hypot(location.y()) - 1.5).hypot(location.z()) - 1.0).abs()
+                            < 5e-9
+                    );
+                    assert!((location.y().hypot(location.z()) - radius).abs() < 5e-9);
+                }
+            }
+        }
+        let arcs = surface_surface_intersection_events(
+            &torus,
+            &perpendicular_cylinder(0.75, 0.2, 0.5),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(arcs.len(), 4);
+        for event in arcs {
+            let SurfaceSurfaceIntersectionEvent::Curve(curve) = event else {
+                panic!("finite cylinder should clip the two inner loops to four arcs")
+            };
+            assert!(!curve.is_closed().unwrap());
+            for index in 0..=32 {
+                let domain = curve.domain();
+                let parameter =
+                    *domain.start() + (*domain.end() - *domain.start()) * index as Real / 32.0;
+                let location = curve.evaluate(parameter).unwrap();
+                assert!(location.x() >= 0.2 - 5e-9 && location.x() <= 0.5 + 5e-9);
+                assert!(
+                    ((location.x().hypot(location.y()) - 1.5).hypot(location.z()) - 1.0).abs()
+                        < 5e-9
+                );
+                assert!((location.y().hypot(location.z()) - 0.75).abs() < 5e-9);
+            }
+        }
     }
 
     #[test]

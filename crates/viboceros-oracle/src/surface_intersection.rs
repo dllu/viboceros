@@ -391,6 +391,8 @@ mod tests {
             ),
             ("centered_perpendicular_turning_arcs", 4, 0, Some(3), false),
             ("centered_perpendicular_outer_tangent", 0, 2, None, false),
+            ("fat_ring_perpendicular_inner_loops", 4, 0, Some(3), true),
+            ("fat_ring_perpendicular_inner_arcs", 4, 0, Some(3), false),
             ("offset_turned_loops", 2, 0, Some(3), true),
             ("finite_rim_arcs", 2, 0, Some(3), false),
             ("critical_crossing", 2, 0, Some(3), true),

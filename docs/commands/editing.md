@@ -283,7 +283,10 @@ rim contacts. The tube-radius case retains crossing curves. At the inner rim
 radius, two crossing loops with a doubled period join the four-loop and two-loop
 regimes. Larger centered perpendicular cylinders produce two turning loops
 and finite arcs up to the outer tangent radius, which gives two contact points.
-Other nonparallel torus/cylinder axes remain unsupported. The
+The same centered-axis construction also handles thick-tube ring tori when the
+cylinder radius lies between the inner rim and tube radius, with separate outer
+and inner loops and finite rim clipping. Other nonparallel torus/cylinder axes
+remain unsupported. The
 [torus/cylinder oracle fixture](../../tools/rhino_oracle/fixtures/torus_cylinder_surface_intersection.json)
 covers exact circles, offset loops, finite arcs, crossings, and contacts.
 Spheres centered on a torus axis intersect it in one or two exact rational

@@ -24,7 +24,14 @@ enum Regime {
     Meridian,
     Critical,
     InnerCritical,
-    Turned { limit: Real },
+    Turned {
+        limit: Real,
+    },
+    FatInnerTurned {
+        half_width: Real,
+        root: Real,
+        upper: Real,
+    },
 }
 
 #[derive(Clone, Copy)]
@@ -49,127 +56,153 @@ pub(super) fn intersect(
     let end = start + cylinder_height * direction_length;
     let low = start.min(end);
     let high = start.max(end);
-    let mut events = Vec::new();
-    let regime = if cylinder_radius == major - minor {
-        Regime::InnerCritical
-    } else if cylinder_radius > major - minor {
-        let cosine = (cylinder_radius * cylinder_radius - major * major - minor * minor)
-            / (2.0 * major * minor);
-        Regime::Turned {
-            limit: cosine.clamp(-1.0, 1.0).acos(),
+    let section = |axial_side: Real, branch_side: Real, regime: Regime| Section {
+        frame,
+        major,
+        minor,
+        cylinder_radius,
+        direction,
+        axial_side,
+        branch_side,
+        regime,
+    };
+    let mut sections = Vec::with_capacity(4);
+    if cylinder_radius > major - minor && cylinder_radius < minor {
+        let root =
+            (major * major + minor * minor - cylinder_radius * cylinder_radius) / (2.0 * major);
+        let sine = (((minor - root) * (minor + root)).max(0.0)).sqrt() / cylinder_radius;
+        let half_width = std::f64::consts::FRAC_PI_2 - sine.clamp(0.0, 1.0).asin();
+        for axial_side in [1.0, -1.0] {
+            sections.push(section(axial_side, 1.0, Regime::CylinderAngle));
         }
-    } else if cylinder_radius < minor {
-        Regime::CylinderAngle
-    } else if cylinder_radius > minor {
-        Regime::Meridian
+        for upper in [1.0, -1.0] {
+            sections.push(section(
+                1.0,
+                -1.0,
+                Regime::FatInnerTurned {
+                    half_width,
+                    root,
+                    upper,
+                },
+            ));
+        }
     } else {
-        Regime::Critical
-    };
-    let axial_sides: &[Real] = if matches!(regime, Regime::Turned { .. } | Regime::InnerCritical) {
-        &[1.0]
-    } else {
-        &[1.0, -1.0]
-    };
-    for &axial_side in axial_sides {
-        for branch_side in [1.0, -1.0] {
-            let section = Section {
-                frame,
-                major,
-                minor,
-                cylinder_radius,
-                direction,
-                axial_side,
-                branch_side,
-                regime,
+        let regime = if cylinder_radius == major - minor {
+            Regime::InnerCritical
+        } else if cylinder_radius > major - minor {
+            let cosine = (cylinder_radius * cylinder_radius - major * major - minor * minor)
+                / (2.0 * major * minor);
+            Regime::Turned {
+                limit: cosine.clamp(-1.0, 1.0).acos(),
+            }
+        } else if cylinder_radius < minor {
+            Regime::CylinderAngle
+        } else if cylinder_radius > minor {
+            Regime::Meridian
+        } else {
+            Regime::Critical
+        };
+        let axial_sides: &[Real] =
+            if matches!(regime, Regime::Turned { .. } | Regime::InnerCritical) {
+                &[1.0]
+            } else {
+                &[1.0, -1.0]
             };
-            let period = section.period();
-            let quarter = period / 4.0;
-            let extrema = [
-                section.sample(0.0).axial,
-                section.sample(quarter).axial,
-                section.sample(2.0 * quarter).axial,
-                section.sample(3.0 * quarter).axial,
-            ];
-            let branch_low = extrema.into_iter().fold(Real::INFINITY, Real::min);
-            let branch_high = extrema.into_iter().fold(Real::NEG_INFINITY, Real::max);
-            if low > branch_high + fit_tolerance || high < branch_low - fit_tolerance {
+        for &axial_side in axial_sides {
+            for branch_side in [1.0, -1.0] {
+                sections.push(section(axial_side, branch_side, regime));
+            }
+        }
+    }
+    let mut events = Vec::new();
+    for section in sections {
+        let period = section.period();
+        let quarter = period / 4.0;
+        let extrema = [
+            section.sample(0.0).axial,
+            section.sample(quarter).axial,
+            section.sample(2.0 * quarter).axial,
+            section.sample(3.0 * quarter).axial,
+        ];
+        let branch_low = extrema.into_iter().fold(Real::INFINITY, Real::min);
+        let branch_high = extrema.into_iter().fold(Real::NEG_INFINITY, Real::max);
+        if low > branch_high + fit_tolerance || high < branch_low - fit_tolerance {
+            continue;
+        }
+        let mut cuts = vec![0.0, quarter, 2.0 * quarter, 3.0 * quarter, period];
+        for quarter in 0..4 {
+            let a = quarter as Real * period / 4.0;
+            let b = (quarter + 1) as Real * period / 4.0;
+            let at_a = section.sample(a).axial;
+            let at_b = section.sample(b).axial;
+            for rim in [low, high] {
+                if rim > at_a.min(at_b) && rim < at_a.max(at_b) {
+                    let mut left = a;
+                    let mut right = b;
+                    let increasing = at_b > at_a;
+                    for _ in 0..60 {
+                        let middle = 0.5 * (left + right);
+                        if (section.sample(middle).axial < rim) == increasing {
+                            left = middle;
+                        } else {
+                            right = middle;
+                        }
+                    }
+                    cuts.push(0.5 * (left + right));
+                }
+            }
+        }
+        cuts.sort_by(Real::total_cmp);
+        cuts.dedup_by(|a, b| (*a - *b).abs() <= 32.0 * Real::EPSILON);
+        let mut intervals: Vec<(Real, Real)> = Vec::new();
+        for pair in cuts.windows(2) {
+            let middle = 0.5 * (pair[0] + pair[1]);
+            let axial = section.sample(middle).axial;
+            if axial < low || axial > high {
                 continue;
             }
-            let mut cuts = vec![0.0, quarter, 2.0 * quarter, 3.0 * quarter, period];
-            for quarter in 0..4 {
-                let a = quarter as Real * period / 4.0;
-                let b = (quarter + 1) as Real * period / 4.0;
-                let at_a = section.sample(a).axial;
-                let at_b = section.sample(b).axial;
-                for rim in [low, high] {
-                    if rim > at_a.min(at_b) && rim < at_a.max(at_b) {
-                        let mut left = a;
-                        let mut right = b;
-                        let increasing = at_b > at_a;
-                        for _ in 0..60 {
-                            let middle = 0.5 * (left + right);
-                            if (section.sample(middle).axial < rim) == increasing {
-                                left = middle;
-                            } else {
-                                right = middle;
-                            }
-                        }
-                        cuts.push(0.5 * (left + right));
-                    }
-                }
-            }
-            cuts.sort_by(Real::total_cmp);
-            cuts.dedup_by(|a, b| (*a - *b).abs() <= 32.0 * Real::EPSILON);
-            let mut intervals: Vec<(Real, Real)> = Vec::new();
-            for pair in cuts.windows(2) {
-                let middle = 0.5 * (pair[0] + pair[1]);
-                let axial = section.sample(middle).axial;
-                if axial < low || axial > high {
-                    continue;
-                }
-                if let Some(last) = intervals.last_mut()
-                    && (last.1 - pair[0]).abs() <= 32.0 * Real::EPSILON
-                {
-                    last.1 = pair[1];
-                } else {
-                    intervals.push((pair[0], pair[1]));
-                }
-            }
-            if intervals.len() > 1
-                && intervals[0].0 == 0.0
-                && intervals.last().is_some_and(|last| last.1 == period)
+            if let Some(last) = intervals.last_mut()
+                && (last.1 - pair[0]).abs() <= 32.0 * Real::EPSILON
             {
-                let first = intervals.remove(0);
-                let last = intervals.pop().expect("at least two intervals");
-                intervals.insert(0, (last.0 - period, first.1));
+                last.1 = pair[1];
+            } else {
+                intervals.push((pair[0], pair[1]));
             }
-            for &angle in &cuts {
-                let axial = section.sample(angle).axial;
-                let on_rim =
-                    (axial - low).abs() <= fit_tolerance || (axial - high).abs() <= fit_tolerance;
-                let on_curve = intervals.iter().any(|&(a, b)| {
-                    [-period, 0.0, period]
-                        .into_iter()
-                        .any(|shift| angle + shift >= a && angle + shift <= b)
-                });
-                if on_rim && !on_curve {
-                    let point = section.frame.point_at(section.sample(angle).position)?;
-                    if !events.iter().any(|event| {
+        }
+        if intervals.len() > 1
+            && intervals[0].0 == 0.0
+            && intervals.last().is_some_and(|last| last.1 == period)
+        {
+            let first = intervals.remove(0);
+            let last = intervals.pop().expect("at least two intervals");
+            intervals.insert(0, (last.0 - period, first.1));
+        }
+        for &angle in &cuts {
+            let axial = section.sample(angle).axial;
+            let on_rim =
+                (axial - low).abs() <= fit_tolerance || (axial - high).abs() <= fit_tolerance;
+            let on_curve = intervals.iter().any(|&(a, b)| {
+                [-period, 0.0, period]
+                    .into_iter()
+                    .any(|shift| angle + shift >= a && angle + shift <= b)
+            });
+            if on_rim && !on_curve {
+                let point = section.frame.point_at(section.sample(angle).position)?;
+                if !events.iter().any(|event| {
                         matches!(event, SurfaceSurfaceIntersectionEvent::Point(other)
                             if point.distance_to(*other).is_ok_and(|distance| distance <= fit_tolerance))
                     }) {
                         events.push(SurfaceSurfaceIntersectionEvent::Point(point));
                     }
-                }
             }
-            for (a, b) in intervals {
-                events.push(SurfaceSurfaceIntersectionEvent::Curve(fit(
-                    section,
-                    a,
-                    b,
-                    fit_tolerance,
-                )?));
-            }
+        }
+        for (a, b) in intervals {
+            events.push(SurfaceSurfaceIntersectionEvent::Curve(fit(
+                section,
+                a,
+                b,
+                fit_tolerance,
+            )?));
         }
     }
     Ok(events)
@@ -256,6 +289,54 @@ impl Section {
                     let amplitude = 2.0 * (self.major * self.minor).sqrt();
                     let axial = amplitude * (0.5 * angle).cos();
                     let axial_derivative = -0.5 * amplitude * (0.5 * angle).sin();
+                    (
+                        lateral,
+                        height,
+                        lateral_derivative,
+                        height_derivative,
+                        axial,
+                        axial_derivative,
+                    )
+                }
+                Regime::FatInnerTurned {
+                    half_width,
+                    root,
+                    upper,
+                } => {
+                    let center = if upper > 0.0 {
+                        std::f64::consts::FRAC_PI_2
+                    } else {
+                        3.0 * std::f64::consts::FRAC_PI_2
+                    };
+                    let cylinder_angle = center - half_width * cosine;
+                    let cylinder_angle_derivative = half_width * sine;
+                    let (cylinder_sine, cylinder_cosine) = cylinder_angle.sin_cos();
+                    let height = self.cylinder_radius * cylinder_sine;
+                    let lateral = self.cylinder_radius * cylinder_cosine;
+                    let height_derivative =
+                        self.cylinder_radius * cylinder_cosine * cylinder_angle_derivative;
+                    let lateral_derivative =
+                        -self.cylinder_radius * cylinder_sine * cylinder_angle_derivative;
+                    let tube_radial = (self.minor * self.minor - height * height).sqrt();
+                    // Rationalizing the radial root and using sinc avoids a 0/0
+                    // derivative at both joins of the positive and negative sheets.
+                    let a = half_width * (1.0 + cosine);
+                    let b = half_width * (1.0 - cosine);
+                    let axial = self.cylinder_radius
+                        * half_width
+                        * (2.0 * self.major / (root + tube_radial)).sqrt()
+                        * sine
+                        * (sinc(a) * sinc(b)).sqrt();
+                    let axial_derivative = if sine.abs() <= 1.0e-8 {
+                        let endpoint_scale = self.cylinder_radius
+                            * (self.major * half_width * half_width.sin() * half_width.cos()
+                                / root)
+                                .sqrt();
+                        cosine * endpoint_scale
+                    } else {
+                        let radial_derivative = -height * height_derivative / tube_radial;
+                        -self.major * radial_derivative / axial
+                    };
                     (
                         lateral,
                         height,
