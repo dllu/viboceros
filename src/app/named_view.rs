@@ -33,6 +33,14 @@ fn add_file_views(
 }
 
 impl VibocerosApp {
+    fn three_dm_views(&self) -> Result<Vec<ThreeDmNamedView>, viboceros_command::CommandError> {
+        self.named_views
+            .entries()
+            .map(|(name, saved)| Viewport::named_view_to_3dm(*saved, name.to_owned()))
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(Into::into)
+    }
+
     pub(super) fn try_run_3dm_command(
         &mut self,
         input: &str,
@@ -48,6 +56,9 @@ impl VibocerosApp {
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
                 self.document = document;
+                self.document_path = Some(
+                    std::fs::canonicalize(path).unwrap_or_else(|_| std::path::PathBuf::from(path)),
+                );
                 self.named_views = named_views;
                 self.viewports = Viewport::standard_views();
                 self.active_viewport = 0;
@@ -68,14 +79,38 @@ impl VibocerosApp {
         if name.eq_ignore_ascii_case("Export3dm") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
-                let views = self
-                    .named_views
-                    .entries()
-                    .map(|(name, saved)| Viewport::named_view_to_3dm(*saved, name.to_owned()))
-                    .collect::<Result<Vec<_>, _>>()?;
+                let views = self.three_dm_views()?;
                 let message =
                     viboceros_command::export_3dm_with_named_views(&self.document, path, &views)?;
                 Ok(format!("{message}; exported {} named view(s)", views.len()))
+            })());
+        }
+        if name.eq_ignore_ascii_case("Save") || name.eq_ignore_ascii_case("SaveAs") {
+            return Some((|| {
+                let mut path = if tail.trim().is_empty() {
+                    if name.eq_ignore_ascii_case("SaveAs") {
+                        return Err(viboceros_command::CommandError::Usage("SaveAs path.3dm"));
+                    }
+                    self.document_path
+                        .clone()
+                        .ok_or(viboceros_command::CommandError::Usage("Save path.3dm"))?
+                } else {
+                    std::path::PathBuf::from(viboceros_command::parse_3dm_path(tail)?)
+                };
+                if path.extension().is_none() {
+                    path.set_extension("3dm");
+                }
+                let path_text = path.to_str().ok_or(viboceros_command::CommandError::Usage(
+                    "SaveAs UTF-8 path.3dm",
+                ))?;
+                let views = self.three_dm_views()?;
+                let message = viboceros_command::save_3dm_with_named_views(
+                    &self.document,
+                    path_text,
+                    &views,
+                )?;
+                self.document_path = Some(std::fs::canonicalize(&path).unwrap_or(path));
+                Ok(format!("{message}; saved {} named view(s)", views.len()))
             })());
         }
         None

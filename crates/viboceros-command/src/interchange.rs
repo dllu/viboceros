@@ -10,7 +10,7 @@ use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectC
 use viboceros_geometry::{GeometryError, Tolerance, TriangleMesh};
 use viboceros_io::{
     StlFormat, ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
-    ThreeDmNamedView, ThreeDmObject, read_stl_file, write_3dm_file, write_stl_file,
+    ThreeDmNamedView, ThreeDmObject, read_stl_file, save_3dm_file, write_3dm_file, write_stl_file,
 };
 
 pub(super) const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -434,6 +434,7 @@ fn import_3dm_model(
 }
 
 pub(super) struct ExportThreeDmCommand;
+pub(super) struct SaveAsThreeDmCommand;
 
 impl Command for ExportThreeDmCommand {
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
@@ -457,19 +458,74 @@ impl Command for ExportThreeDmCommand {
     }
 }
 
+impl Command for SaveAsThreeDmCommand {
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        paths::parse(input, false)
+    }
+
+    fn name(&self) -> &'static str {
+        "SaveAs"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Save"]
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("SaveAs path.3dm"));
+        }
+        let path = arguments.join(" ");
+        save_3dm_with_named_views(document, &path, &[])
+    }
+}
+
 pub fn export_3dm_with_named_views(
     document: &Document,
     path: &str,
     views: &[ThreeDmNamedView],
 ) -> Result<String, CommandError> {
+    write_document_3dm(document, path, views, false)
+}
+
+pub fn save_3dm_with_named_views(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+) -> Result<String, CommandError> {
+    if !std::path::Path::new(path)
+        .extension()
+        .and_then(std::ffi::OsStr::to_str)
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("3dm"))
+    {
+        return Err(CommandError::Usage("SaveAs path.3dm"));
+    }
+    write_document_3dm(document, path, views, true)
+}
+
+fn write_document_3dm(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+    backup: bool,
+) -> Result<String, CommandError> {
     let mut model = document_3dm_model(document)?;
     model.named_views = views.to_vec();
     let group_count = model.groups.len();
     let layer_count = model.layers.len();
-    let report = write_3dm_file(path, &model)?;
+    let report = if backup {
+        save_3dm_file(path, &model)?
+    } else {
+        write_3dm_file(path, &model)?
+    };
     let object_count = report.written_object_count;
     let mut message = format!(
-        "Exported {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'"
+        "{} {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'",
+        if backup { "Saved" } else { "Exported" }
     );
     if report.adapted_curve_count != 0 {
         message.push_str(&format!(

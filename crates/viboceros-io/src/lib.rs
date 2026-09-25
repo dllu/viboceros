@@ -27,5 +27,5 @@ pub use stl::{StlError, StlFormat, read_stl, read_stl_file, write_stl, write_stl
 pub use three_dm::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
     ThreeDmNamedView, ThreeDmObject, ThreeDmProjection, ThreeDmWriteReport, read_3dm_file,
-    read_3dm_file_in_units, read_3dm_file_with_model_tolerance, write_3dm_file,
+    read_3dm_file_in_units, read_3dm_file_with_model_tolerance, save_3dm_file, write_3dm_file,
 };

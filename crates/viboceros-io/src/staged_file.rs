@@ -41,6 +41,19 @@ impl<'a> StagedFile<'a> {
     }
 }
 
+/// Preserve the previous 3DM as a replaceable backup before a model save.
+pub(crate) fn backup_3dm(destination: &Path) -> io::Result<()> {
+    if !destination.exists() {
+        return Ok(());
+    }
+    let backup = destination.with_extension("3dmbak");
+    let staged = StagedFile::new(&backup, ".3dmbak.tmp")?;
+    let mut source = File::open(destination)?;
+    let mut output = staged.file();
+    io::copy(&mut source, &mut output)?;
+    staged.commit()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

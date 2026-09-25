@@ -508,6 +508,16 @@ pub fn write_3dm_file(
     }
 }
 
+/// Saves a 3DM and retains the previous file as a `.3dmbak` backup.
+pub fn save_3dm_file(
+    path: impl AsRef<Path>,
+    model: &ThreeDmModel,
+) -> Result<ThreeDmWriteReport, ThreeDmError> {
+    let path = path.as_ref();
+    crate::staged_file::backup_3dm(path)?;
+    write_3dm_file(path, model)
+}
+
 fn decode_units(handle: &ModelHandle) -> Result<LengthUnitSystem, ThreeDmError> {
     let mut unit_system = 0;
     let mut meters_per_unit = 1.0;

@@ -4,6 +4,65 @@ use viboceros_document::SelectionMode;
 use viboceros_geometry::Point3;
 
 #[test]
+fn save_as_3dm_replaces_file_with_a_readable_backup() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("saved model.3dm");
+    let mut document = Document::default();
+    document
+        .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+        .unwrap();
+    registry
+        .execute(&mut document, &format!("SaveAs \"{}\"", path.display()))
+        .unwrap();
+    assert!(!path.with_extension("3dmbak").exists());
+    document
+        .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+        .unwrap();
+    let undo = document.undo_label().map(str::to_owned);
+    let backup = path.with_extension("3dmbak");
+    std::fs::create_dir(&backup).unwrap();
+    assert!(
+        registry
+            .execute(&mut document, &format!("Save \"{}\"", path.display()))
+            .is_err()
+    );
+    assert_eq!(
+        viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        1
+    );
+    std::fs::remove_dir(&backup).unwrap();
+    registry
+        .execute(&mut document, &format!("Save \"{}\"", path.display()))
+        .unwrap();
+    assert_eq!(document.undo_label(), undo.as_deref());
+    assert_eq!(
+        viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        2
+    );
+    assert_eq!(
+        viboceros_io::read_3dm_file(backup, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        1
+    );
+    let wrong = directory.path().join("mistaken.stl");
+    assert!(
+        registry
+            .execute(&mut document, &format!("SaveAs {}", wrong.display()))
+            .is_err()
+    );
+    assert!(!wrong.exists());
+}
+
+#[test]
 fn open_3dm_replaces_document_and_preserves_file_policy_and_layer_order() {
     use viboceros_document::ObjectAttributes;
     use viboceros_geometry::{Brep, Frame3, LengthUnitSystem, Vector3};

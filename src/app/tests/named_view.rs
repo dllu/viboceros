@@ -184,5 +184,91 @@ fn open_3dm_replaces_session_document_and_named_views() {
     );
     assert_eq!(destination.document.objects().len(), 1);
     assert!(destination.named_views.get("File camera").is_ok());
-    std::fs::remove_file(path).unwrap();
+    assert_eq!(destination.document_path.as_deref(), Some(path.as_path()));
+    enter(&mut destination, "Point 4,5,6");
+    enter(&mut destination, "Save");
+    let saved = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.objects.len(), 2);
+    assert_eq!(saved.named_views.len(), 1);
+    assert!(path.with_extension("3dmbak").exists());
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_file(path.with_extension("3dmbak")).unwrap();
+}
+
+#[test]
+fn save_and_save_as_track_the_active_3dm_without_rebinding_exports() {
+    let directory = std::env::temp_dir().join(format!(
+        "viboceros-save-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let first = directory.join("first file.3dm");
+    let second = directory.join("second.3dm");
+    let export = directory.join("export.3dm");
+    let mut app = test_app();
+    enter(&mut app, "Save");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert!(app.document_path.is_none());
+
+    enter(&mut app, "Point 1,2,3");
+    enter(&mut app, "NamedView Save Work view");
+    enter(
+        &mut app,
+        &format!("SaveAs \"{}\"", directory.join("first file").display()),
+    );
+    assert_eq!(app.document_path.as_deref(), Some(first.as_path()));
+    let initial = viboceros_io::read_3dm_file(&first, Tolerance::DEFAULT).unwrap();
+    assert_eq!(initial.objects.len(), 1);
+    assert_eq!(initial.named_views.len(), 1);
+
+    enter(&mut app, "Point 4,5,6");
+    enter(&mut app, &format!("Export3dm \"{}\"", export.display()));
+    assert_eq!(app.document_path.as_deref(), Some(first.as_path()));
+    enter(&mut app, "Save");
+    assert_eq!(
+        viboceros_io::read_3dm_file(&first, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        2
+    );
+    assert_eq!(
+        viboceros_io::read_3dm_file(first.with_extension("3dmbak"), Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        1
+    );
+    assert_eq!(app.document.undo_label(), Some("Point"));
+
+    enter(&mut app, &format!("SaveAs \"{}\"", second.display()));
+    assert_eq!(app.document_path.as_deref(), Some(second.as_path()));
+    enter(&mut app, "Point 7,8,9");
+    enter(&mut app, "Save");
+    assert_eq!(
+        viboceros_io::read_3dm_file(&first, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        2
+    );
+    assert_eq!(
+        viboceros_io::read_3dm_file(&second, Tolerance::DEFAULT)
+            .unwrap()
+            .objects
+            .len(),
+        3
+    );
+
+    enter(
+        &mut app,
+        &format!("SaveAs {}", directory.join("missing/fail.3dm").display()),
+    );
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.document_path.as_deref(), Some(second.as_path()));
+    std::fs::remove_dir_all(directory).unwrap();
 }

@@ -1426,6 +1426,7 @@ impl InteractiveCommand {
 
 pub struct VibocerosApp {
     document: Document,
+    document_path: Option<std::path::PathBuf>,
     commands: CommandRegistry,
     command_input: String,
     command_log: VecDeque<String>,
@@ -1494,6 +1495,7 @@ impl VibocerosApp {
         Self {
             command_line,
             document: Document::default(),
+            document_path: None,
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log,
@@ -6938,6 +6940,7 @@ mod tests {
     pub(super) fn test_app() -> VibocerosApp {
         VibocerosApp {
             document: Document::default(),
+            document_path: None,
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log: VecDeque::new(),
