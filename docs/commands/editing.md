@@ -153,10 +153,11 @@ selection order determines their orientation as in Rhino. Coincident
 nonsingular convex bilinear patches with weights of one sign and certified
 affine or projective patches of any degree produce an exact shared edge or
 closed overlap perimeter, including Rhino's distinct edge orientation and
-loop-domain rules. Planar surface/B-rep and B-rep/B-rep intersections are
+loop-domain rules. Supported surface/B-rep and B-rep/B-rep intersections are
 clipped to exact face trim regions when needed, deduplicated at shared edges and
-vertices, and joined into maximal linear components; coincident faces are
-currently limited to untrimmed natural domains and one area-overlap face pair.
+vertices, and joined into maximal components. This includes curved surfaces
+against trimmed planar and spherical faces. Coincident faces are currently
+limited to untrimmed natural domains and one area-overlap face pair.
 Canonical spherical surfaces and planar surface patches intersect in exact
 rational circles or circular arcs clipped to the finite patch. Exact tangency
 creates a point. Rhino's surface intersection API can instead return tiny

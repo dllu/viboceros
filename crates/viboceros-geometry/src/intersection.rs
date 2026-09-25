@@ -1190,12 +1190,7 @@ pub fn surface_brep_intersection_events(
                 .collect(),
         );
     }
-    let surface_plane =
-        surface
-            .plane(tolerance)?
-            .ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "non-planar surfaces",
-            })?;
+    let surface_plane = surface.plane(tolerance)?;
     let distance_tolerance = surface_brep_distance_tolerance(surface, brep, tolerance);
     let mut points = Vec::new();
     let mut curves = Vec::new();
@@ -1203,11 +1198,12 @@ pub fn surface_brep_intersection_events(
     for face in brep.faces() {
         let face_plane = face.surface().plane(tolerance)?;
         let full_domain = crate::brep::face_covers_full_surface_domain(face, tolerance)?;
-        let coincident = if let Some(face_plane) = face_plane {
-            planes_are_coincident(surface_plane, face_plane, tolerance, distance_tolerance)?
-        } else {
-            false
-        };
+        let coincident =
+            if let (Some(surface_plane), Some(face_plane)) = (surface_plane, face_plane) {
+                planes_are_coincident(surface_plane, face_plane, tolerance, distance_tolerance)?
+            } else {
+                false
+            };
         let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
         if coincident && !face_events.is_empty() && !full_domain {
             return Err(GeometryError::UnsupportedSurfaceBrepIntersection {
@@ -4009,6 +4005,101 @@ mod tests {
             brep_brep_intersection_events(&cylinder_brep, &plane_brep, Tolerance::DEFAULT).unwrap(),
             vec![BrepBrepIntersectionEvent::Curve(expected_brep.clone())]
         );
+    }
+
+    #[test]
+    fn curved_surface_intersects_a_trimmed_planar_brep_face() {
+        let frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 4.0).unwrap();
+        let sphere_frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 2.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(sphere_frame, 2.0).unwrap();
+        let plane = horizontal_rectangle(-3.0, 3.0, -3.0, 3.0, 2.0);
+        let cut = NurbsCurve::try_new(
+            1,
+            vec![point(-3.0, 0.0, 2.0), point(3.0, 0.0, 2.0)],
+            vec![0.0, 0.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let [south, north] = Brep::try_split_rectangular_surface_face_west_east(
+            plane,
+            -3.0..=3.0,
+            -3.0..=3.0,
+            [0.0, 0.0],
+            cut,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for surface in [&cylinder, &sphere] {
+            for face in [&south, &north] {
+                let events =
+                    surface_brep_intersection_events(surface, face, Tolerance::DEFAULT).unwrap();
+                let [SurfaceBrepIntersectionEvent::Curve(arc)] = events.as_slice() else {
+                    panic!("expected one circular arc: {events:#?}");
+                };
+                assert!(!arc.is_closed().unwrap());
+                assert!(
+                    (arc.length(Tolerance::DEFAULT).unwrap() - 2.0 * std::f64::consts::PI).abs()
+                        < 1e-8
+                );
+                for endpoint in [*arc.domain().start(), *arc.domain().end()] {
+                    let point = arc.evaluate(endpoint).unwrap();
+                    assert!(point.y().abs() < 1e-9);
+                    assert!((point.x().abs() - 2.0).abs() < 1e-9);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn cylinder_surface_intersects_a_trimmed_sphere_face() {
+        let cylinder_frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(cylinder_frame, 2.0, 0.0, 4.0).unwrap();
+        let sphere_frame = crate::Frame3::try_from_normal(
+            point(0.0, 0.0, 2.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(sphere_frame, 5.0_f64.sqrt()).unwrap();
+        let u = sphere.domain_u();
+        let half = Brep::try_rectangular_surface_face(
+            sphere.clone(),
+            *u.start()..=(*u.start() + *u.end()) * 0.5,
+            sphere.domain_v(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let events =
+            surface_brep_intersection_events(&cylinder, &half, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2, "{events:#?}");
+        for event in events {
+            let SurfaceBrepIntersectionEvent::Curve(arc) = event else {
+                panic!("expected a circular arc")
+            };
+            assert!(!arc.is_closed().unwrap());
+            assert!(
+                (arc.length(Tolerance::DEFAULT).unwrap() - 2.0 * std::f64::consts::PI).abs() < 1e-8
+            );
+            let point = arc.evaluate(*arc.domain().start()).unwrap();
+            assert!((point.x().hypot(point.y()) - 2.0).abs() < 1e-8);
+            assert!(((point.z() - 2.0).abs() - 1.0).abs() < 1e-8);
+        }
     }
 
     #[test]

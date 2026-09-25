@@ -29835,7 +29835,7 @@ mod tests {
     }
 
     #[test]
-    fn intersect_rejects_unsupported_brep_pairs_atomically() {
+    fn intersect_rolls_back_unsupported_coincident_brep_pairs() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let input_ids = [
@@ -29856,8 +29856,8 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "Intersect"),
             Err(CommandError::Geometry(
-                GeometryError::UnsupportedBrepBrepIntersection {
-                    context: "non-planar face surfaces"
+                GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                    context: "coincident planar surfaces outside certified convex bilinear, affine, or projective patches"
                 }
             ))
         ));
