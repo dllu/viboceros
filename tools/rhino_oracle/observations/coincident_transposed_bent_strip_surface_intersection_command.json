@@ -5,8 +5,8 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 120925903,
-      "id": "enclosing-bent-strip",
+      "elapsed_ns": 160537720,
+      "id": "transposed-enclosing-bent-strip",
       "value": {
         "command_succeeded": true,
         "input_selected": [
@@ -29,56 +29,56 @@
                 },
                 {
                   "point": [
+                    0.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
                     5.0,
                     2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    0.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    5.0,
                     0.0
                   ],
                   "weight": 1.0
@@ -121,8 +121,8 @@
       }
     },
     {
-      "elapsed_ns": 105728149,
-      "id": "partial-bent-strip",
+      "elapsed_ns": 127822876,
+      "id": "transposed-partial-bent-strip",
       "value": {
         "command_succeeded": true,
         "input_selected": [
@@ -135,6 +135,54 @@
             "color_from_layer": true,
             "curve": {
               "control_points": [
+                {
+                  "point": [
+                    8.0,
+                    0.64,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    2.82,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.8200000000000003,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
                 {
                   "point": [
                     2.0,
@@ -154,55 +202,7 @@
                 {
                   "point": [
                     8.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    0.6400000000000001,
+                    0.64,
                     0.0
                   ],
                   "weight": 1.0
@@ -210,22 +210,22 @@
               ],
               "degree": 2,
               "domain": [
-                -0.64,
-                20.08
+                0.64,
+                21.36
               ],
               "knots": [
-                -0.64,
-                -0.64,
-                -0.64,
-                5.36,
-                5.36,
-                9.72,
-                9.72,
-                15.719999999999999,
-                15.719999999999999,
-                20.08,
-                20.08,
-                20.08
+                0.64,
+                0.64,
+                0.64,
+                5.0,
+                5.0,
+                11.0,
+                11.0,
+                15.36,
+                15.36,
+                21.36,
+                21.36,
+                21.36
               ]
             },
             "in_source_group": false,
@@ -237,8 +237,8 @@
       }
     },
     {
-      "elapsed_ns": 93757629,
-      "id": "partial-bent-strip-surface-brep",
+      "elapsed_ns": 100273132,
+      "id": "transposed-two-bent-strips",
       "value": {
         "command_succeeded": true,
         "input_selected": [
@@ -253,239 +253,7 @@
               "control_points": [
                 {
                   "point": [
-                    2.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    1.36,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                }
-              ],
-              "degree": 2,
-              "domain": [
-                -0.64,
-                20.08
-              ],
-              "knots": [
-                -0.64,
-                -0.64,
-                -0.64,
-                5.36,
-                5.36,
-                9.72,
-                9.72,
-                15.719999999999999,
-                15.719999999999999,
-                20.08,
-                20.08,
-                20.08
-              ]
-            },
-            "in_source_group": false,
-            "kind": "curve",
-            "on_current_layer": true,
-            "selected": true
-          }
-        ]
-      }
-    },
-    {
-      "elapsed_ns": 95565796,
-      "id": "partial-bent-strip-brep-brep",
-      "value": {
-        "command_succeeded": true,
-        "input_selected": [
-          false,
-          false
-        ],
-        "objects": [
-          {
-            "blank_name": true,
-            "color_from_layer": true,
-            "curve": {
-              "control_points": [
-                {
-                  "point": [
-                    2.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    1.36,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    8.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    5.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    2.8200000000000003,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    2.0,
-                    0.6400000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                }
-              ],
-              "degree": 2,
-              "domain": [
-                -0.64,
-                20.08
-              ],
-              "knots": [
-                -0.64,
-                -0.64,
-                -0.64,
-                5.36,
-                5.36,
-                9.72,
-                9.72,
-                15.719999999999999,
-                15.719999999999999,
-                20.08,
-                20.08,
-                20.08
-              ]
-            },
-            "in_source_group": false,
-            "kind": "curve",
-            "on_current_layer": true,
-            "selected": true
-          }
-        ]
-      }
-    },
-    {
-      "elapsed_ns": 91674805,
-      "id": "two-bent-strips",
-      "value": {
-        "command_succeeded": true,
-        "input_selected": [
-          false,
-          false
-        ],
-        "objects": [
-          {
-            "blank_name": true,
-            "color_from_layer": true,
-            "curve": {
-              "control_points": [
-                {
-                  "point": [
-                    10.0,
+                    0.0,
                     2.0,
                     0.0
                   ],
@@ -493,7 +261,7 @@
                 },
                 {
                   "point": [
-                    10.0,
+                    0.0,
                     6.0,
                     0.0
                   ],
@@ -501,7 +269,7 @@
                 },
                 {
                   "point": [
-                    10.0,
+                    0.0,
                     10.0,
                     0.0
                   ],
@@ -517,7 +285,7 @@
                 },
                 {
                   "point": [
-                    0.0,
+                    10.0,
                     10.000000000000002,
                     0.0
                   ],
@@ -525,7 +293,7 @@
                 },
                 {
                   "point": [
-                    0.0,
+                    10.0,
                     6.000000000000001,
                     0.0
                   ],
@@ -533,7 +301,7 @@
                 },
                 {
                   "point": [
-                    0.0,
+                    10.0,
                     2.0,
                     0.0
                   ],
@@ -549,7 +317,7 @@
                 },
                 {
                   "point": [
-                    10.0,
+                    0.0,
                     2.0,
                     0.0
                   ],
@@ -585,8 +353,8 @@
       }
     },
     {
-      "elapsed_ns": 119026184,
-      "id": "two-bent-strips-reversed-order",
+      "elapsed_ns": 104019165,
+      "id": "transposed-two-bent-strips-shift-first",
       "value": {
         "command_succeeded": true,
         "input_selected": [
@@ -599,6 +367,402 @@
             "color_from_layer": true,
             "curve": {
               "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.000000000000002,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.000000000000001,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                10.0,
+                46.0
+              ],
+              "knots": [
+                10.0,
+                10.0,
+                10.0,
+                18.0,
+                18.0,
+                28.0,
+                28.0,
+                36.0,
+                36.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 123107910,
+      "id": "transposed-two-bent-strips-shift-second",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.000000000000002,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.000000000000001,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                10.0,
+                46.0
+              ],
+              "knots": [
+                10.0,
+                10.0,
+                10.0,
+                18.0,
+                18.0,
+                28.0,
+                28.0,
+                36.0,
+                36.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 98884583,
+      "id": "transposed-two-bent-strips-shift-both",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.000000000000002,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.000000000000001,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                10.0,
+                46.0
+              ],
+              "knots": [
+                10.0,
+                10.0,
+                10.0,
+                18.0,
+                18.0,
+                28.0,
+                28.0,
+                36.0,
+                36.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 114891052,
+      "id": "transposed-two-bent-strips-reversed-order",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    1.9999999999999998,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
                 {
                   "point": [
                     10.0,
@@ -609,40 +773,8 @@
                 },
                 {
                   "point": [
-                    10.0,
-                    6.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
                     5.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    6.0,
+                    3.0,
                     0.0
                   ],
                   "weight": 1.0
@@ -654,390 +786,26 @@
                     0.0
                   ],
                   "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    3.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    1.9999999999999998,
-                    0.0
-                  ],
-                  "weight": 1.0
                 }
               ],
               "degree": 2,
               "domain": [
-                10.0,
-                46.0
+                0.0,
+                36.0
               ],
               "knots": [
-                10.0,
-                10.0,
-                10.0,
+                0.0,
+                0.0,
+                0.0,
+                8.0,
+                8.0,
                 18.0,
                 18.0,
-                28.0,
-                28.0,
+                26.0,
+                26.0,
                 36.0,
                 36.0,
-                46.0,
-                46.0,
-                46.0
-              ]
-            },
-            "in_source_group": false,
-            "kind": "curve",
-            "on_current_layer": true,
-            "selected": true
-          }
-        ]
-      }
-    },
-    {
-      "elapsed_ns": 121788025,
-      "id": "two-bent-strips-shift-first",
-      "value": {
-        "command_succeeded": true,
-        "input_selected": [
-          false,
-          false
-        ],
-        "objects": [
-          {
-            "blank_name": true,
-            "color_from_layer": true,
-            "curve": {
-              "control_points": [
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    6.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    10.000000000000002,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    6.000000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    3.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                }
-              ],
-              "degree": 2,
-              "domain": [
-                10.0,
-                46.0
-              ],
-              "knots": [
-                10.0,
-                10.0,
-                10.0,
-                18.0,
-                18.0,
-                28.0,
-                28.0,
-                36.0,
-                36.0,
-                46.0,
-                46.0,
-                46.0
-              ]
-            },
-            "in_source_group": false,
-            "kind": "curve",
-            "on_current_layer": true,
-            "selected": true
-          }
-        ]
-      }
-    },
-    {
-      "elapsed_ns": 140953064,
-      "id": "two-bent-strips-shift-second",
-      "value": {
-        "command_succeeded": true,
-        "input_selected": [
-          false,
-          false
-        ],
-        "objects": [
-          {
-            "blank_name": true,
-            "color_from_layer": true,
-            "curve": {
-              "control_points": [
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    6.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    10.000000000000002,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    6.000000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    3.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                }
-              ],
-              "degree": 2,
-              "domain": [
-                10.0,
-                46.0
-              ],
-              "knots": [
-                10.0,
-                10.0,
-                10.0,
-                18.0,
-                18.0,
-                28.0,
-                28.0,
-                36.0,
-                36.0,
-                46.0,
-                46.0,
-                46.0
-              ]
-            },
-            "in_source_group": false,
-            "kind": "curve",
-            "on_current_layer": true,
-            "selected": true
-          }
-        ]
-      }
-    },
-    {
-      "elapsed_ns": 101188660,
-      "id": "two-bent-strips-shift-both",
-      "value": {
-        "command_succeeded": true,
-        "input_selected": [
-          false,
-          false
-        ],
-        "objects": [
-          {
-            "blank_name": true,
-            "color_from_layer": true,
-            "curve": {
-              "control_points": [
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    6.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    10.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    10.000000000000002,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    6.000000000000001,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    0.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    5.0,
-                    3.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                },
-                {
-                  "point": [
-                    10.0,
-                    2.0,
-                    0.0
-                  ],
-                  "weight": 1.0
-                }
-              ],
-              "degree": 2,
-              "domain": [
-                10.0,
-                46.0
-              ],
-              "knots": [
-                10.0,
-                10.0,
-                10.0,
-                18.0,
-                18.0,
-                28.0,
-                28.0,
-                36.0,
-                36.0,
-                46.0,
-                46.0,
-                46.0
+                36.0
               ]
             },
             "in_source_group": false,

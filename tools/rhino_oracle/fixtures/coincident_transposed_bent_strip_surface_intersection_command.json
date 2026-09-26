@@ -9,7 +9,7 @@
   "operations": [
     {
       "op": "surface_surface_intersect_command",
-      "id": "enclosing-bent-strip",
+      "id": "transposed-enclosing-bent-strip",
       "first": {
         "degree_u": 1,
         "degree_v": 1,
@@ -63,15 +63,23 @@
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
               0
             ],
             "weight": 1.0
@@ -86,24 +94,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -120,14 +120,14 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
           10,
           10
         ]
@@ -135,7 +135,7 @@
     },
     {
       "op": "surface_surface_intersect_command",
-      "id": "partial-bent-strip",
+      "id": "transposed-partial-bent-strip",
       "first": {
         "degree_u": 1,
         "degree_v": 1,
@@ -189,136 +189,10 @@
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              0,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              2,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              10,
-              0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
-          0,
-          0,
-          0,
-          10,
-          10,
-          10
-        ],
-        "knots_v": [
-          0,
-          0,
-          10,
-          10
-        ]
-      }
-    },
-    {
-      "op": "surface_brep_face_intersect_command",
-      "id": "partial-bent-strip-surface-brep",
-      "surface": {
         "degree_u": 1,
-        "degree_v": 1,
+        "degree_v": 2,
         "control_point_count_u": 2,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              2,
-              -1,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              8,
-              -1,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              2,
-              5,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              8,
-              5,
-              0.0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
-          2,
-          2,
-          8,
-          8
-        ],
-        "knots_v": [
-          -1,
-          -1,
-          5,
-          5
-        ]
-      },
-      "brep_surface": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
@@ -330,6 +204,14 @@
           },
           {
             "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
               5,
               2,
               0
@@ -338,24 +220,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -372,79 +246,27 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
           10,
           10
         ]
       }
     },
     {
-      "op": "brep_face_brep_face_intersect_command",
-      "id": "partial-bent-strip-brep-brep",
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-two-bent-strips",
       "first": {
         "degree_u": 1,
-        "degree_v": 1,
+        "degree_v": 2,
         "control_point_count_u": 2,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              2,
-              -1,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              8,
-              -1,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              2,
-              5,
-              0.0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              8,
-              5,
-              0.0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
-          2,
-          2,
-          8,
-          8
-        ],
-        "knots_v": [
-          -1,
-          -1,
-          5,
-          5
-        ]
-      },
-      "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
@@ -456,6 +278,14 @@
           },
           {
             "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
               5,
               2,
               0
@@ -464,24 +294,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -498,102 +320,36 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
-          10,
-          10
-        ]
-      }
-    },
-    {
-      "op": "surface_surface_intersect_command",
-      "id": "two-bent-strips",
-      "first": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              0,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              2,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              10,
-              0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
-          0,
-          0,
           0,
           10,
-          10,
-          10
-        ],
-        "knots_v": [
-          0,
-          0,
           10,
           10
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              12.0,
               0
             ],
             "weight": 1.0
@@ -608,24 +364,16 @@
           },
           {
             "point": [
-              10,
-              2.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              2.0,
               0
             ],
             "weight": 1.0
@@ -642,14 +390,14 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
           10,
           10
         ]
@@ -657,87 +405,25 @@
     },
     {
       "op": "surface_surface_intersect_command",
-      "id": "two-bent-strips-reversed-order",
+      "id": "transposed-two-bent-strips-shift-first",
       "first": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              0,
-              2.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              3.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              2.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
-          0,
-          0,
-          0,
-          10,
-          10,
-          10
-        ],
-        "knots_v": [
-          0,
-          0,
-          10,
-          10
-        ]
-      },
-      "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
               0
             ],
             "weight": 1.0
@@ -752,24 +438,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -786,102 +464,36 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
-          0,
-          0,
-          10,
-          10
-        ]
-      }
-    },
-    {
-      "op": "surface_surface_intersect_command",
-      "id": "two-bent-strips-shift-first",
-      "first": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
-        "control_points": [
-          {
-            "point": [
-              0,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              2,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              5,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              10,
-              10,
-              0
-            ],
-            "weight": 1.0
-          }
-        ],
-        "knots_u": [
           3,
           3,
           3,
           13,
           13,
           13
-        ],
-        "knots_v": [
-          0,
-          0,
-          10,
-          10
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              12.0,
               0
             ],
             "weight": 1.0
@@ -896,24 +508,16 @@
           },
           {
             "point": [
-              10,
-              2.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              2.0,
               0
             ],
             "weight": 1.0
@@ -930,14 +534,14 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
           10,
           10
         ]
@@ -945,17 +549,25 @@
     },
     {
       "op": "surface_surface_intersect_command",
-      "id": "two-bent-strips-shift-second",
+      "id": "transposed-two-bent-strips-shift-second",
       "first": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
               0
             ],
             "weight": 1.0
@@ -970,24 +582,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -1004,28 +608,36 @@
         "knots_u": [
           0,
           0,
-          0,
-          10,
           10,
           10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
           10,
           10
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              12.0,
               0
             ],
             "weight": 1.0
@@ -1040,24 +652,16 @@
           },
           {
             "point": [
-              10,
-              2.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              12.0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              2.0,
               0
             ],
             "weight": 1.0
@@ -1072,34 +676,42 @@
           }
         ],
         "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
           3,
           3,
           3,
           13,
           13,
           13
-        ],
-        "knots_v": [
-          0,
-          0,
-          10,
-          10
         ]
       }
     },
     {
       "op": "surface_surface_intersect_command",
-      "id": "two-bent-strips-shift-both",
+      "id": "transposed-two-bent-strips-shift-both",
       "first": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
               0
             ],
             "weight": 1.0
@@ -1114,24 +726,16 @@
           },
           {
             "point": [
-              10,
-              0,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
-              0,
-              10,
-              0
-            ],
-            "weight": 1.0
-          },
-          {
-            "point": [
               5,
               10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
               0
             ],
             "weight": 1.0
@@ -1146,30 +750,38 @@
           }
         ],
         "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
           3,
           3,
           3,
           13,
           13,
           13
-        ],
-        "knots_v": [
-          0,
-          0,
-          10,
-          10
         ]
       },
       "second": {
-        "degree_u": 2,
-        "degree_v": 1,
-        "control_point_count_u": 3,
-        "control_point_count_v": 2,
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
         "control_points": [
           {
             "point": [
               0,
               2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              12.0,
               0
             ],
             "weight": 1.0
@@ -1184,7 +796,57 @@
           },
           {
             "point": [
+              5,
+              12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
               10,
+              2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              12.0,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          3,
+          3,
+          3,
+          13,
+          13,
+          13
+        ]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-two-bent-strips-reversed-order",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
               2.0,
               0
             ],
@@ -1201,7 +863,23 @@
           {
             "point": [
               5,
+              3.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
               12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              2.0,
               0
             ],
             "weight": 1.0
@@ -1216,16 +894,86 @@
           }
         ],
         "knots_u": [
-          3,
-          3,
-          3,
-          13,
-          13,
-          13
+          0,
+          0,
+          10,
+          10
         ],
         "knots_v": [
           0,
           0,
+          0,
+          10,
+          10,
+          10
+        ]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              2,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
           10,
           10
         ]

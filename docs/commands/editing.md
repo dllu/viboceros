@@ -157,7 +157,8 @@ with certified affine or projective patches of any degree, produce an exact
 shared edge or closed overlap perimeter, including Rhino's distinct edge
 orientation and loop-domain rules. Injective planar strips with a monotone
 parameter direction and separated ruled edges also return exact curved overlap
-perimeters, including their original NURBS control points and domains.
+perimeters in either U or V orientation, including their original NURBS control
+points and domains.
 Supported surface/B-rep and B-rep/B-rep
 intersections are clipped to exact face trim regions when needed, deduplicated
 at shared edges and vertices, and joined into maximal components. Curved

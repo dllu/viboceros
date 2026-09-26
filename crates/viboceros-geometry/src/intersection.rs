@@ -1980,6 +1980,7 @@ fn coincident_planar_surface_intersection_events(
                 first,
                 second,
                 first_polygon.is_none(),
+                second_polygon.is_none(),
                 tolerance,
                 distance_tolerance,
             );
@@ -2092,8 +2093,8 @@ fn coincident_planar_surface_intersection_events(
     Ok(vec![SurfaceSurfaceIntersectionEvent::Curve(curve)])
 }
 
-/// Certifies a planar strip with a strictly monotone U coordinate and
-/// separated V rows. Degree elevation may leave weights a few ulps from one;
+/// Certifies a planar strip with a strictly monotone curved direction and
+/// separated ruled edges. Degree elevation may leave weights a few ulps from one;
 /// those are accepted only when all weights remain equal to working precision.
 /// Equal U coordinates in both rows make fixed-U rulings vertical in this
 /// local frame. The B-spline convex-hull property then proves a one-to-one
@@ -2104,6 +2105,13 @@ fn certified_monotone_planar_strip(
     distance_tolerance: Real,
 ) -> Result<bool, GeometryError> {
     if surface.degree_v() != 1 || surface.control_point_count_v() != 2 {
+        if surface.degree_u() == 1 && surface.control_point_count_u() == 2 {
+            return certified_monotone_planar_strip(
+                &surface.try_swapped_uv()?,
+                plane,
+                distance_tolerance,
+            );
+        }
         return Ok(false);
     }
     let count_u = surface.control_point_count_u();
@@ -2170,6 +2178,7 @@ fn coincident_planar_boundary_events(
     first: &NurbsSurface,
     second: &NurbsSurface,
     first_is_strip: bool,
+    second_is_strip: bool,
     tolerance: Tolerance,
     distance_tolerance: Real,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
@@ -2211,20 +2220,109 @@ fn coincident_planar_boundary_events(
         finalize_brep_intersection_geometry(points, curves, tolerance, distance_tolerance)?;
     if let [curve] = curves.as_mut_slice()
         && curve.is_closed()?
-        && let Some(oriented) = orient_coincident_strip_boundary(
+    {
+        if first_is_strip && second_is_strip {
+            if let Some(oriented) = orient_coincident_two_strip_boundary(
+                curve,
+                first,
+                second,
+                tolerance,
+                distance_tolerance,
+            )? {
+                *curve = oriented;
+            }
+        } else if let Some(oriented) = orient_coincident_strip_boundary(
             curve,
             if first_is_strip { first } else { second },
             if first_is_strip { second } else { first },
             tolerance,
             distance_tolerance,
-        )?
-    {
-        *curve = oriented;
+        )? {
+            *curve = oriented;
+        }
     }
     Ok(curves
         .into_iter()
         .map(SurfaceSurfaceIntersectionEvent::Curve)
         .collect())
+}
+
+fn orient_coincident_two_strip_boundary(
+    boundary: &NurbsCurve,
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    let first_curved_u = first.degree_v() == 1;
+    if first_curved_u != (second.degree_v() == 1) {
+        return Ok(None);
+    }
+    let first_inside = strip_bottom_fully_inside(first, second, tolerance, distance_tolerance)?;
+    let second_inside = strip_bottom_fully_inside(second, first, tolerance, distance_tolerance)?;
+    let (Some(first_inside), Some(second_inside)) = (first_inside, second_inside) else {
+        return Ok(None);
+    };
+    if first_inside == second_inside {
+        return Ok(None);
+    }
+    let curved_domain = if first_curved_u {
+        first.domain_u()
+    } else {
+        first.domain_v()
+    };
+    let curved_span = *curved_domain.end() - *curved_domain.start();
+    let start = if first_curved_u || !first_inside {
+        curved_span
+    } else {
+        0.0
+    };
+    let span = *boundary.domain().end() - *boundary.domain().start();
+    Ok(Some(boundary.try_reparameterized(start..=start + span)?))
+}
+
+/// Returns `Some(true)` only when the entire natural bottom edge is inside
+/// the other strip, `Some(false)` when none of it is, and `None` for partial
+/// overlap. Restricting the domain rule to nested strips avoids guessing how
+/// Rhino parameterizes boundaries that cross or enter through a side edge.
+fn strip_bottom_fully_inside(
+    strip: &NurbsSurface,
+    other: &NurbsSurface,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<bool>, GeometryError> {
+    let mut edges = strip.natural_edge_curves()?;
+    let edge = (if strip.degree_v() == 1 {
+        edges.into_iter().next()
+    } else {
+        edges.pop()
+    })
+    .ok_or(GeometryError::InvalidControlNet {
+        context: "certified planar strip has no bottom edge",
+    })?;
+    let pieces = intersect_curve_with_planar_surface(&edge, other, tolerance)?
+        .into_iter()
+        .filter_map(|event| match event {
+            SurfaceSurfaceIntersectionEvent::Curve(curve) => Some(curve),
+            SurfaceSurfaceIntersectionEvent::Point(_) => None,
+        })
+        .collect::<Vec<_>>();
+    if pieces.is_empty() {
+        return Ok(Some(false));
+    }
+    if let [piece] = pieces.as_slice() {
+        let endpoints = |curve: &NurbsCurve| -> Result<[Point3; 2], GeometryError> {
+            let domain = curve.domain();
+            Ok([
+                curve.evaluate(*domain.start())?,
+                curve.evaluate(*domain.end())?,
+            ])
+        };
+        if point_pairs_match(endpoints(&edge)?, endpoints(piece)?, distance_tolerance) {
+            return Ok(Some(true));
+        }
+    }
+    Ok(None)
 }
 
 fn orient_coincident_strip_boundary(
@@ -2234,14 +2332,19 @@ fn orient_coincident_strip_boundary(
     tolerance: Tolerance,
     distance_tolerance: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
-    let Some(bottom) = strip.natural_edge_curves()?.into_iter().next() else {
-        return Ok(None);
-    };
-    let Some(SurfaceSurfaceIntersectionEvent::Curve(bottom_piece)) =
-        intersect_curve_with_planar_surface(&bottom, other, tolerance)?
-            .into_iter()
-            .find(|event| matches!(event, SurfaceSurfaceIntersectionEvent::Curve(_)))
-    else {
+    let mut bottom_piece = None;
+    for edge in strip.natural_edge_curves()? {
+        for event in intersect_curve_with_planar_surface(&edge, other, tolerance)? {
+            if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event {
+                bottom_piece = Some(curve);
+                break;
+            }
+        }
+        if bottom_piece.is_some() {
+            break;
+        }
+    }
+    let Some(bottom_piece) = bottom_piece else {
         return Ok(None);
     };
     let seam = bottom_piece.evaluate(*bottom_piece.domain().start())?;
@@ -6056,6 +6159,20 @@ mod tests {
                     < 1e-9
             );
         }
+        let transposed_strip = bent_boundary.try_swapped_uv().unwrap();
+        for rectangle in [&horizontal, &partial_plane] {
+            let events = surface_surface_intersection_events(
+                rectangle,
+                &transposed_strip,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("a transposed bent strip must produce one perimeter, got {events:#?}")
+            };
+            assert!(perimeter.is_closed().unwrap());
+            assert_eq!(perimeter.degree(), 2);
+        }
     }
 
     #[test]
@@ -6090,6 +6207,7 @@ mod tests {
             };
             assert!(perimeter.is_closed().unwrap());
             assert_eq!(perimeter.degree(), 2);
+            assert_eq!(perimeter.domain(), 10.0..=46.0);
             for target in [
                 point(0.0, 2.0),
                 point(5.0, 2.5),
@@ -6109,6 +6227,25 @@ mod tests {
                         < 1e-9
                 );
             }
+        }
+        let lower_v = lower.try_swapped_uv().unwrap();
+        let upper_v = upper.try_swapped_uv().unwrap();
+        for (first, second, expected_start) in
+            [(&lower_v, &upper_v, 10.0), (&upper_v, &lower_v, 0.0)]
+        {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("transposed bent strips must share one perimeter, got {events:#?}")
+            };
+            assert!(perimeter.is_closed().unwrap());
+            assert_eq!(perimeter.degree(), 2);
+            assert_eq!(perimeter.domain(), expected_start..=expected_start + 36.0);
+            assert!(
+                perimeter.control_points()[0]
+                    .point()
+                    .is_near(point(0.0, 2.0), Tolerance::DEFAULT)
+            );
         }
     }
 
