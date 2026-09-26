@@ -29754,6 +29754,74 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_exact_bent_planar_strip_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let rectangle = NurbsSurface::try_bilinear([
+            point(2.0, -1.0),
+            point(8.0, -1.0),
+            point(8.0, 5.0),
+            point(2.0, 5.0),
+        ])
+        .and_then(|surface| surface.try_reparameterized(2.0..=8.0, -1.0..=5.0))
+        .unwrap();
+        let strip = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(5.0, 2.0),
+                point(10.0, 0.0),
+                point(0.0, 10.0),
+                point(5.0, 10.0),
+                point(10.0, 10.0),
+            ],
+            vec![0.0, 0.0, 0.0, 10.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let inputs = [
+            document
+                .add_geometry(Geometry::NurbsSurface(rectangle))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(strip))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(inputs, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(curve) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("a bent planar strip overlap must produce a curve")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert_eq!(curve.degree(), 2);
+        assert!((*curve.domain().start() + 0.64).abs() < 1e-10);
+        assert!((*curve.domain().end() - 20.08).abs() < 1e-10);
+        assert_eq!(curve.control_points().len(), 9);
+        assert!(
+            curve.control_points()[0]
+                .point()
+                .is_near(point(2.0, 0.64), Tolerance::DEFAULT)
+        );
+        assert!(
+            curve.control_points()[1]
+                .point()
+                .is_near(point(5.0, 1.36), Tolerance::DEFAULT)
+        );
+        assert!(inputs.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_outputs_coincident_rational_patch_boundary() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -30047,7 +30115,7 @@ mod tests {
             registry.execute(&mut document, "Intersect"),
             Err(CommandError::Geometry(
                 GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                    context: "coincident planar surfaces outside certified convex bilinear, affine, or projective patches"
+                    context: "coincident planar surfaces outside certified convex or monotone strip patches"
                 }
             ))
         ));
