@@ -1043,6 +1043,12 @@ The [coincident trimmed B-rep face fixture](../tools/rhino_oracle/fixtures/coinc
 uses the same two regions as B-rep/B-rep command inputs. Both [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_trimmed_brep_faces_intersect_command.json)
 also match the native closed perimeters exactly after the same linear curve
 canonicalization (`2/2` cases, zero coordinate difference).
+The [coincident box fixture](../tools/rhino_oracle/fixtures/coincident_box_brep_intersect_command.json)
+compares identical boxes and coaxial boxes with overlapping heights. The
+[edge audit](../tools/rhino_oracle/audit_coincident_box_edges.py) verifies that
+both engines return every one of the twelve overlap-box edges exactly once,
+with zero coordinate error in both cases. Rhino joins the coaxial case into
+five curves; Viboceros joins the same edges into four.
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally

@@ -1,6 +1,7 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 mod bilinear_plane;
+mod coincident_brep_graph;
 mod cone_cone;
 mod cone_cylinder;
 mod cone_plane;
@@ -1336,8 +1337,8 @@ fn coincident_planar_surface_brep_face_boundary(
 /// Face-pair results are clipped against trim regions when needed;
 /// then shared-topology duplicates are removed and connected pieces are joined
 /// into maximal components. Coincident planar face pairs contribute their
-/// shared region boundaries, with at most one coincident area-overlap pair per
-/// B-rep pair.
+/// shared region boundaries. Multiple planar area-overlap pairs join their
+/// unique linear edges into traversable paths.
 pub fn brep_brep_intersection_events(
     first: &Brep,
     second: &Brep,
@@ -1406,11 +1407,6 @@ pub fn brep_brep_intersection_events(
                 }
                 if has_area_overlap {
                     coincident_area_pairs += 1;
-                    if coincident_area_pairs > 1 {
-                        return Err(GeometryError::UnsupportedBrepBrepIntersection {
-                            context: "multiple coincident face regions",
-                        });
-                    }
                 }
                 for point in pair_points {
                     push_unique_brep_point(&mut points, point, distance_tolerance);
@@ -1435,11 +1431,6 @@ pub fn brep_brep_intersection_events(
                 }
                 if has_area_overlap {
                     coincident_area_pairs += 1;
-                    if coincident_area_pairs > 1 {
-                        return Err(GeometryError::UnsupportedBrepBrepIntersection {
-                            context: "multiple coincident face regions",
-                        });
-                    }
                 }
             }
 
@@ -1519,13 +1510,67 @@ pub fn brep_brep_intersection_events(
         }
     }
 
-    let (curves, points) =
-        finalize_brep_intersection_geometry(points, curves, tolerance, distance_tolerance)?;
+    let (curves, points) = if coincident_area_pairs > 1 {
+        finalize_multi_coincident_brep_geometry(points, curves, tolerance, distance_tolerance)?
+    } else {
+        finalize_brep_intersection_geometry(points, curves, tolerance, distance_tolerance)?
+    };
     Ok(curves
         .into_iter()
         .map(BrepBrepIntersectionEvent::Curve)
         .chain(points.into_iter().map(BrepBrepIntersectionEvent::Point))
         .collect())
+}
+
+/// Several coincident planar faces may share boundary edges. Keep each linear
+/// edge once, then cover the resulting graph with joined curve paths. Junctions
+/// can have more than two incident edges, so the ordinary unambiguous polyline
+/// join used for a single face region is not applicable here.
+fn finalize_multi_coincident_brep_geometry(
+    points: Vec<Point3>,
+    curves: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<(Vec<NurbsCurve>, Vec<Point3>), GeometryError> {
+    let mut segments = Vec::new();
+    for curve in curves {
+        if curve.degree() != 1 || curve.is_rational() {
+            return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                context: "multiple coincident curved face regions",
+            });
+        }
+        for segment in linear_curve_segments(&curve, tolerance, distance_tolerance)? {
+            if !segments
+                .iter()
+                .any(|existing| linear_segments_match(existing, &segment, distance_tolerance))
+            {
+                segments.push(segment);
+            }
+        }
+    }
+    let mut curves =
+        coincident_brep_graph::cover_unique_segments(&segments, tolerance, distance_tolerance)?;
+    let mut isolated_points = Vec::new();
+    for point in points {
+        let on_curve = curves.iter().try_fold(false, |found, curve| {
+            if found {
+                return Ok::<bool, GeometryError>(true);
+            }
+            let parameter = curve.closest_parameter(point, tolerance)?;
+            Ok(curve.evaluate(parameter)?.distance_to(point)? <= distance_tolerance * 2.0)
+        })?;
+        if !on_curve {
+            isolated_points.push(point);
+        }
+    }
+    isolated_points.sort_by(|left, right| compare_points(*left, *right));
+    curves.sort_by(|left, right| {
+        compare_points(
+            left.control_points()[0].point(),
+            right.control_points()[0].point(),
+        )
+    });
+    Ok((curves, isolated_points))
 }
 
 fn coincident_planar_brep_faces_boundary(
@@ -5987,12 +6032,59 @@ mod tests {
         };
         assert!(contact.is_near(point(10.0, 10.0, 10.0), Tolerance::DEFAULT));
 
+        let assert_box_edges =
+            |events: Vec<BrepBrepIntersectionEvent>, minimum: [Real; 3], maximum: [Real; 3]| {
+                let mut actual_edges = Vec::new();
+                for event in events {
+                    let BrepBrepIntersectionEvent::Curve(curve) = event else {
+                        panic!("coincident boxes must intersect only along their edges")
+                    };
+                    assert_eq!(curve.degree(), 1);
+                    actual_edges.extend(
+                        curve
+                            .control_points()
+                            .windows(2)
+                            .map(|controls| [controls[0].point(), controls[1].point()]),
+                    );
+                }
+                assert_eq!(actual_edges.len(), 12);
+                for axis in 0..3 {
+                    let other_axes = (0..3).filter(|other| *other != axis).collect::<Vec<_>>();
+                    for first_fixed in [minimum[other_axes[0]], maximum[other_axes[0]]] {
+                        for second_fixed in [minimum[other_axes[1]], maximum[other_axes[1]]] {
+                            let mut start = minimum;
+                            let mut end = minimum;
+                            end[axis] = maximum[axis];
+                            start[other_axes[0]] = first_fixed;
+                            end[other_axes[0]] = first_fixed;
+                            start[other_axes[1]] = second_fixed;
+                            end[other_axes[1]] = second_fixed;
+                            let expected = [
+                                point(start[0], start[1], start[2]),
+                                point(end[0], end[1], end[2]),
+                            ];
+                            assert_eq!(
+                                actual_edges
+                                    .iter()
+                                    .filter(|edge| point_pairs_match(**edge, expected, 1e-10))
+                                    .count(),
+                                1,
+                                "each box edge must occur once: {expected:?}"
+                            );
+                        }
+                    }
+                }
+            };
+        let coincident = brep_brep_intersection_events(&first, &first, Tolerance::DEFAULT).unwrap();
         assert_eq!(
-            brep_brep_intersection_events(&first, &first, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedBrepBrepIntersection {
-                context: "multiple coincident face regions",
-            })
+            coincident.len(),
+            4,
+            "Rhino joins identical box edges into four paths"
         );
+        assert_box_edges(coincident, [0.0; 3], [10.0; 3]);
+        let coaxial = box_brep_with_intervals([[0.0, 10.0], [0.0, 10.0], [5.0, 15.0]]);
+        let overlap = brep_brep_intersection_events(&first, &coaxial, Tolerance::DEFAULT).unwrap();
+        assert_box_edges(overlap, [0.0, 0.0, 5.0], [10.0, 10.0, 10.0]);
     }
 
     #[test]

@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "identical-boxes",
+      "first_box_min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_box_max": [
+        10.0,
+        10.0,
+        10.0
+      ],
+      "second_box_min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "second_box_max": [
+        10.0,
+        10.0,
+        10.0
+      ],
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "coaxial-overlap-boxes",
+      "first_box_min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_box_max": [
+        10.0,
+        10.0,
+        10.0
+      ],
+      "second_box_min": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "second_box_max": [
+        10.0,
+        10.0,
+        15.0
+      ],
+      "canonicalize_linear_curves": true
+    }
+  ]
+}

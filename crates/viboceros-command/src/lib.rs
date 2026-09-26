@@ -29991,6 +29991,40 @@ mod tests {
     }
 
     #[test]
+    fn intersect_identical_boxes_creates_four_edge_paths() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let ids = [
+            document
+                .add_geometry(Geometry::Brep(intersection_box()))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::Brep(intersection_box()))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 4 intersection object(s) from 1 object pair(s)"
+        );
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        let mut edge_count = 0;
+        for output in outputs {
+            let Geometry::NurbsCurve(curve) = output.geometry() else {
+                panic!("identical boxes must create only linear curves")
+            };
+            assert_eq!(curve.degree(), 1);
+            edge_count += curve.control_points().len() - 1;
+        }
+        assert_eq!(edge_count, 12);
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
     fn intersect_rolls_back_unsupported_coincident_brep_pairs() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

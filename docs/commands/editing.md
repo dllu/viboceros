@@ -160,8 +160,9 @@ intersections are clipped to exact face trim regions when needed, deduplicated
 at shared edges and vertices, and joined into maximal components. Curved
 surfaces against trimmed planar and spherical faces are included. Coincident
 planar surface/B-rep and B-rep/B-rep pairs return the shared region perimeter,
-including trim holes and curved cap boundaries. B-rep/B-rep intersections
-currently allow one coincident area-overlap face pair.
+including trim holes and curved cap boundaries. Multiple coincident planar
+B-rep faces contribute each unique linear edge once and join the edge graph
+into traversable curves.
 Canonical spherical surfaces and planar surface patches intersect in exact
 rational circles or circular arcs clipped to the finite patch. Exact tangency
 creates a point. Rhino's surface intersection API can instead return tiny
@@ -353,8 +354,9 @@ matching Rhino. Pairwise duplicates are intentionally retained when three or
 more source objects meet at one location. Inputs remain in the document and are
 deselected, outputs are selected, and all output creation is one undo step. A
 no-hit run still clears the input selection but creates no undo record.
-Other non-planar and more general coincident surface/surface intersections, curved
-B-rep face pairs, and coincident trimmed regions remain future extensions.
+Other non-planar and more general coincident surface/surface intersections,
+curved B-rep face pairs, and multiple coincident curved face regions remain
+future extensions.
 
 `IntersectTwoSets first-id[,id...] second-id[,id...]` evaluates only pairs
 across the two sets. Either set may be `Selected` to use the current selection.
