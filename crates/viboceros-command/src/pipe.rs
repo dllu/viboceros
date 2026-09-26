@@ -3,10 +3,10 @@
 use super::*;
 use viboceros_geometry::{
     Circle3, Frame3, FrameTransportOptions, NurbsSurface, Sweep1, SweepBlend, SweepFrameStyle,
-    SweepSection,
+    SweepSection, join_breps,
 };
 
-const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Cap=None|Flat] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
+const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
 
 pub(super) struct PipeCommand;
 
@@ -14,6 +14,7 @@ pub(super) struct PipeCommand;
 enum PipeCap {
     None,
     Flat,
+    Round,
 }
 
 impl Command for PipeCommand {
@@ -58,6 +59,7 @@ impl Command for PipeCommand {
                     match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
                         "none" => PipeCap::None,
                         "flat" => PipeCap::Flat,
+                        "round" => PipeCap::Round,
                         _ => return Err(CommandError::Usage(USAGE)),
                     },
                 );
@@ -100,6 +102,12 @@ impl Command for PipeCommand {
                 Ok([first, second])
             })
             .transpose()?;
+        // Rhino 8's double-wall Pipe uses planar annular caps for Round too.
+        let cap = if second_radii.is_some() && cap == PipeCap::Round {
+            PipeCap::Flat
+        } else {
+            cap
+        };
         if !document.is_object_selectable(source_id) {
             return Err(CommandError::Usage(USAGE));
         }
@@ -118,7 +126,20 @@ impl Command for PipeCommand {
                 )?;
                 let height = line.length()?;
                 let constant = start_radius == end_radius;
-                if let Some(second) = second_radii {
+                if cap == PipeCap::Round {
+                    let end_frame = Frame3::try_from_x_and_normal(
+                        line.end(),
+                        frame.x_axis().as_vector(),
+                        frame.z_axis().as_vector(),
+                        tolerance,
+                    )?;
+                    Geometry::Brep(round_cap_single_wall(
+                        straight_wall(frame, [start_radius, end_radius], height, tolerance)?,
+                        [frame, end_frame],
+                        [start_radius, end_radius],
+                        tolerance,
+                    )?)
+                } else if let Some(second) = second_radii {
                     if cap == PipeCap::Flat && constant {
                         Geometry::Brep(Brep::try_tube(
                             frame,
@@ -161,6 +182,7 @@ impl Command for PipeCommand {
                                 height,
                             )?)
                         }
+                        (PipeCap::Round, _) => unreachable!("round caps handled above"),
                     }
                 }
             }
@@ -202,18 +224,41 @@ impl Command for PipeCommand {
                     return Err(CommandError::Usage(USAGE));
                 }
                 let first = [start_radius, end_radius];
+                let frames = if cap == PipeCap::Round {
+                    Some(pipe_rail_frames(rail, first, tolerance)?)
+                } else {
+                    None
+                };
                 let result = if let Some(second) = second_radii {
-                    let (outer, inner) = wall_radii(
+                    let (outer_radii, inner_radii) = wall_radii(
                         first,
                         second,
                         wall_thickness.expect("second wall requires a thickness"),
                     );
-                    let outer = swept_wall(rail, outer, blend, tolerance)?;
-                    let inner = swept_wall(rail, inner, blend, tolerance)?;
+                    let outer_frames = match frames {
+                        Some(frames) => frames,
+                        None => pipe_rail_frames(rail, outer_radii, tolerance)?,
+                    };
+                    let inner_frames = match frames {
+                        Some(frames) => frames,
+                        None => pipe_rail_frames(rail, inner_radii, tolerance)?,
+                    };
+                    let outer =
+                        swept_wall_with_frames(rail, outer_radii, blend, tolerance, outer_frames)?;
+                    let inner =
+                        swept_wall_with_frames(rail, inner_radii, blend, tolerance, inner_frames)?;
                     finish_two_walls(outer, inner, cap, tolerance)?
                 } else {
-                    let wall = swept_wall(rail, first, blend, tolerance)?;
-                    cap_wall(wall, cap, tolerance)?
+                    let wall_frames = match frames {
+                        Some(frames) => frames,
+                        None => pipe_rail_frames(rail, first, tolerance)?,
+                    };
+                    let wall = swept_wall_with_frames(rail, first, blend, tolerance, wall_frames)?;
+                    if let Some(frames) = frames {
+                        round_cap_single_wall(wall, frames, first, tolerance)?
+                    } else {
+                        cap_wall(wall, cap, tolerance)?
+                    }
                 };
                 Geometry::Brep(result)
             }
@@ -289,23 +334,15 @@ fn torus_wall(
     Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?)
 }
 
-fn swept_wall(
+fn swept_wall_with_frames(
     rail: CurveRef<'_>,
     radii: [Real; 2],
     blend: SweepBlend,
     tolerance: Tolerance,
+    frames: [Frame3; 2],
 ) -> Result<Brep, CommandError> {
     let domain = rail.domain();
     let parameters = [*domain.start(), *domain.end()];
-    let angular_tolerance = (0.05 * (tolerance.absolute() / radii[0].max(radii[1]))).min(1e-10);
-    let frames = rail.rotation_minimizing_frames(
-        &parameters,
-        None,
-        FrameTransportOptions {
-            angular_tolerance,
-            ..Default::default()
-        },
-    )?;
     let mut sections = vec![circular_section(
         parameters[0],
         frames[0],
@@ -324,6 +361,51 @@ fn swept_wall(
     let surface = sweep.to_rail_basis_surface()?;
     let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
     Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?.reversed())
+}
+
+fn pipe_rail_frames(
+    rail: CurveRef<'_>,
+    radii: [Real; 2],
+    tolerance: Tolerance,
+) -> Result<[Frame3; 2], CommandError> {
+    let domain = rail.domain();
+    let parameters = [*domain.start(), *domain.end()];
+    let angular_tolerance = (0.05 * (tolerance.absolute() / radii[0].max(radii[1]))).min(1e-10);
+    let frames = rail.rotation_minimizing_frames(
+        &parameters,
+        None,
+        FrameTransportOptions {
+            angular_tolerance,
+            ..Default::default()
+        },
+    )?;
+    frames.try_into().map_err(|_| CommandError::Usage(USAGE))
+}
+
+fn round_cap_single_wall(
+    wall: Brep,
+    frames: [Frame3; 2],
+    radii: [Real; 2],
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let half_pi = std::f64::consts::FRAC_PI_2;
+    let start = NurbsSurface::try_sphere(frames[0], radii[0])?.try_trimmed_v(-half_pi..=0.0)?;
+    let end = NurbsSurface::try_sphere(frames[1], radii[1])?.try_trimmed_v(0.0..=half_pi)?;
+    let start = Brep::try_surface_grid(&start, &[], &[], tolerance)?;
+    let end = Brep::try_surface_grid(&end, &[], &[], tolerance)?;
+    join_round_cap_parts(&[&wall, &start, &end], tolerance)
+}
+
+fn join_round_cap_parts(parts: &[&Brep], tolerance: Tolerance) -> Result<Brep, CommandError> {
+    let mut joined = join_breps(parts, tolerance.absolute(), tolerance)?;
+    if joined.len() != 1 {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let brep = joined.pop().expect("one joined component was checked").brep;
+    if !brep.is_closed() || !brep.is_solid() {
+        return Err(CommandError::Usage(USAGE));
+    }
+    Ok(brep)
 }
 
 fn cap_wall(wall: Brep, cap: PipeCap, tolerance: Tolerance) -> Result<Brep, CommandError> {
@@ -356,6 +438,70 @@ mod tests {
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn straight_round_pipe_has_hemispheres_and_expected_volume() {
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(0., 0., 5.), Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (radii, expected) in [
+            (
+                "1",
+                std::f64::consts::PI * 5.0 + 4.0 * std::f64::consts::PI / 3.0,
+            ),
+            (
+                "1 2",
+                std::f64::consts::PI * 5.0 * 7.0 / 3.0 + 2.0 * std::f64::consts::PI * 9.0 / 3.0,
+            ),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} {radii} Cap=Round"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("round pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            assert_eq!(pipe.faces().len(), 3);
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() / expected < 1e-8,
+                "{measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn straight_round_thick_pipe_matches_rhino_planar_caps() {
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(0., 0., 5.), Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 WallThickness=0.5 Cap=Round"),
+            )
+            .unwrap();
+        let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+            panic!("round thick pipe should be a B-rep")
+        };
+        assert!(pipe.is_closed());
+        assert!(pipe.is_solid());
+        assert_eq!(pipe.faces().len(), 4);
+        let expected = std::f64::consts::PI * (1.5_f64.powi(2) - 1.0) * 5.0;
+        let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+        assert!(
+            (measured - expected).abs() / expected < 1e-8,
+            "{measured} vs {expected}"
+        );
     }
 
     #[test]
@@ -563,6 +709,39 @@ mod tests {
             (measured - expected).abs() / expected < 1e-8,
             "{measured} vs {expected}"
         );
+        registry
+            .execute(&mut document, &format!("Pipe {source} 0.5 Cap=Round"))
+            .unwrap();
+        let Geometry::Brep(round) = document.objects().last().unwrap().geometry() else {
+            panic!("round arc pipe should be a B-rep")
+        };
+        assert!(round.is_closed());
+        assert!(round.is_solid());
+        let expected = 0.5 * std::f64::consts::PI.powi(2) * 5.0 * 0.5_f64.powi(2)
+            + 4.0 * std::f64::consts::PI * 0.5_f64.powi(3) / 3.0;
+        let measured = round.signed_volume(Tolerance::DEFAULT).unwrap();
+        assert!(
+            (measured - expected).abs() / expected < 1e-8,
+            "{measured} vs {expected}"
+        );
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 0.5 WallThickness=0.2 Cap=Round"),
+            )
+            .unwrap();
+        let Geometry::Brep(round_thick) = document.objects().last().unwrap().geometry() else {
+            panic!("round thick arc pipe should be a B-rep")
+        };
+        assert!(round_thick.is_closed());
+        assert!(round_thick.is_solid());
+        let expected =
+            0.5 * std::f64::consts::PI.powi(2) * 5.0 * (0.7_f64.powi(2) - 0.5_f64.powi(2));
+        let measured = round_thick.signed_volume(Tolerance::DEFAULT).unwrap();
+        assert!(
+            (measured - expected).abs() / expected < 1e-8,
+            "{measured} vs {expected}"
+        );
     }
 
     #[test]
@@ -587,6 +766,18 @@ mod tests {
         };
         assert!(thick.is_solid());
         assert!(thick.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 0.3 WallThickness=0.1 Cap=Round"),
+            )
+            .unwrap();
+        let Geometry::Brep(round) = document.objects().last().unwrap().geometry() else {
+            panic!("spatial round thick pipe should be a B-rep")
+        };
+        assert!(round.is_closed());
+        assert!(round.is_solid());
+        assert!(round.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
     }
 
     #[test]
@@ -607,7 +798,7 @@ mod tests {
             "Pipe 0",
             "Pipe -1",
             "Pipe NaN",
-            "Pipe 1 Cap=Round",
+            "Pipe 1 Cap=Rounding",
             "Pipe 1 Cap=Flat Cap=None",
             "Pipe 1 ShapeBlending=Other",
             "Pipe 1 WallThickness=0",

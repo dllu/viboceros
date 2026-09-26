@@ -5879,6 +5879,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "join_command":
         import join_probe
         return join_probe.run(operation, tolerance, globals())
+    if operation["op"] == "pipe_round_probe":
+        import pipe_round_probe
+        return pipe_round_probe.run(operation, tolerance, globals())
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())

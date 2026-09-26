@@ -276,6 +276,9 @@ class OracleClient:
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)
+            if any(op.get("op") == "pipe_round_probe" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("pipe_round_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("document_brep_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
