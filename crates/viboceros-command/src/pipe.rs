@@ -2,8 +2,8 @@
 
 use super::*;
 use viboceros_geometry::{
-    Circle3, Frame3, FrameTransportOptions, NurbsSurface, Sweep1, SweepBlend, SweepFrameStyle,
-    SweepSection, WeightedPoint3, join_breps,
+    Circle3, Frame3, FrameTransportOptions, NurbsSurface, SurfaceIso, Sweep1, SweepBlend,
+    SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
 const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
@@ -421,6 +421,10 @@ fn swept_wall_with_frames(
     let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
     let surface = if radii[0] == radii[1] {
         sweep.to_rail_basis_surface()?
+    } else if matches!(rail, CurveRef::Arc(_)) {
+        // A direct continuous fit matches the measured Rhino arc Pipe volume
+        // while avoiding a dense cubic rail refit.
+        sweep.fit_model_surface()?
     } else {
         sweep.to_surface()?
     };
@@ -456,7 +460,7 @@ fn round_cap_single_wall(
 ) -> Result<Brep, CommandError> {
     let start = round_cap_surface(frames[0], radii[0], cap_slopes[0], true, tolerance)?;
     let end = round_cap_surface(frames[1], radii[1], cap_slopes[1], false, tolerance)?;
-    join_round_cap_parts(&[&wall, &start, &end], tolerance)
+    join_round_cap_parts(&wall, &start, &end, tolerance)
 }
 
 fn pipe_round_cap_slopes(
@@ -521,8 +525,57 @@ fn round_cap_surface(
     Ok(Brep::try_surface_grid(&trimmed, &[], &[], tolerance)?)
 }
 
-fn join_round_cap_parts(parts: &[&Brep], tolerance: Tolerance) -> Result<Brep, CommandError> {
-    let mut joined = join_breps(parts, tolerance.absolute(), tolerance)?;
+fn join_round_cap_parts(
+    wall: &Brep,
+    start: &Brep,
+    end: &Brep,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    // These surfaces have known complete circular boundary pairs. Try exact
+    // pair assembly before the general edge-discovery and cleanup algorithm.
+    let wall_counts = wall.edge_use_counts();
+    let boundary = |iso| {
+        let mut edges = wall
+            .faces()
+            .iter()
+            .flat_map(|face| face.loops())
+            .flat_map(|loop_| loop_.trims())
+            .filter(|trim| trim.iso() == iso)
+            .filter_map(|trim| trim.edge())
+            .filter(|&edge| wall_counts[edge] == 1);
+        let edge = edges.next()?;
+        edges.next().is_none().then_some(edge)
+    };
+    let lone_naked = |brep: &Brep| {
+        let mut edges = brep
+            .edge_use_counts()
+            .into_iter()
+            .enumerate()
+            .filter_map(|(edge, uses)| (uses == 1).then_some(edge));
+        let edge = edges.next()?;
+        edges.next().is_none().then_some(edge)
+    };
+    if let (Some(west), Some(east), Some(start_edge), Some(end_edge)) = (
+        boundary(SurfaceIso::West),
+        boundary(SurfaceIso::East),
+        lone_naked(start),
+        lone_naked(end),
+    ) {
+        let combined =
+            Brep::try_combine(vec![wall.clone(), start.clone(), end.clone()], tolerance)?;
+        let offset = wall.edges().len();
+        let pairs = [
+            (west, offset + start_edge, false),
+            (east, offset + start.edges().len() + end_edge, false),
+        ];
+        if let Ok(result) = combined.try_join_edge_pairs(&pairs, tolerance.absolute(), tolerance)
+            && result.is_closed()
+            && result.is_solid()
+        {
+            return Ok(result);
+        }
+    }
+    let mut joined = join_breps(&[wall, start, end], tolerance.absolute(), tolerance)?;
     if joined.len() != 1 {
         return Err(CommandError::Usage(USAGE));
     }
@@ -979,6 +1032,18 @@ mod tests {
         assert!(round.is_closed());
         assert!(round.is_solid());
         assert!(round.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 0.3 0.4 Cap=Round ShapeBlending=Global"),
+            )
+            .unwrap();
+        let Geometry::Brep(tapered) = document.objects().last().unwrap().geometry() else {
+            panic!("spatial tapered pipe should be a B-rep")
+        };
+        assert!(tapered.is_closed());
+        assert!(tapered.is_solid());
+        assert!(tapered.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
     }
 
     #[test]
