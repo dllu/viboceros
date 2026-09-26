@@ -1,0 +1,472 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 120025635,
+      "id": "transposed-rational-enclosing-bent-strip",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.0,
+                40.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                10.0,
+                10.0,
+                20.0,
+                20.0,
+                30.0,
+                30.0,
+                40.0,
+                40.0,
+                40.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 116210938,
+      "id": "transposed-rational-partial-bent-strip",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    8.0,
+                    0.4725338327090043,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    2.736266916354502,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.736266916354502,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.47253383270900406,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    0.8938819626150742,
+                    0.0
+                  ],
+                  "weight": 0.8544003745317531
+                },
+                {
+                  "point": [
+                    8.0,
+                    0.47253383270900434,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.4725338327090042,
+                20.38078701623256
+              ],
+              "knots": [
+                0.4725338327090042,
+                0.4725338327090042,
+                0.4725338327090042,
+                5.0,
+                5.0,
+                11.0,
+                11.0,
+                15.527466167290996,
+                15.527466167290996,
+                20.38078701623256,
+                20.38078701623256,
+                20.38078701623256
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 93353271,
+      "id": "transposed-rational-partial-bent-strip-reversed-order",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    8.0,
+                    0.4725338327090043,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    2.736266916354502,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    5.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.736266916354502,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.47253383270900406,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    0.8938819626150742,
+                    0.0
+                  ],
+                  "weight": 0.8544003745317531
+                },
+                {
+                  "point": [
+                    8.0,
+                    0.47253383270900434,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                0.4725338327090042,
+                20.38078701623256
+              ],
+              "knots": [
+                0.4725338327090042,
+                0.4725338327090042,
+                0.4725338327090042,
+                5.0,
+                5.0,
+                11.0,
+                11.0,
+                15.527466167290996,
+                15.527466167290996,
+                20.38078701623256,
+                20.38078701623256,
+                20.38078701623256
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 93040466,
+      "id": "transposed-rational-two-bent-strips",
+      "value": {
+        "command_succeeded": true,
+        "input_selected": [
+          false,
+          false
+        ],
+        "objects": [
+          {
+            "blank_name": true,
+            "color_from_layer": true,
+            "curve": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.000000000000002,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.000000000000001,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 2,
+              "domain": [
+                10.0,
+                46.0
+              ],
+              "knots": [
+                10.0,
+                10.0,
+                10.0,
+                18.0,
+                18.0,
+                28.0,
+                28.0,
+                36.0,
+                36.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            },
+            "in_source_group": false,
+            "kind": "curve",
+            "on_current_layer": true,
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

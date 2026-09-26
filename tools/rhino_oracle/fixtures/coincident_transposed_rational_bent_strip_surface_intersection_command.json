@@ -1,0 +1,533 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-rational-enclosing-bent-strip",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              -2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12,
+              -2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2,
+              12,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12,
+              12,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          -2,
+          -2,
+          12,
+          12
+        ],
+        "knots_v": [
+          -2,
+          -2,
+          12,
+          12
+        ]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              2,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              5,
+              10,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-rational-partial-bent-strip",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              -1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8,
+              -1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              5,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8,
+              5,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2,
+          2,
+          8,
+          8
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          5,
+          5
+        ]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              2,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              5,
+              10,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-rational-partial-bent-strip-reversed-order",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              2,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              5,
+              10,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
+          10,
+          10
+        ]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              -1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8,
+              -1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              5,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              8,
+              5,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2,
+          2,
+          8,
+          8
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "transposed-rational-two-bent-strips",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              2,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              5,
+              10,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
+          10,
+          10
+        ]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              12.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5,
+              3.0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              5,
+              12.0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              10,
+              2.0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10,
+              12.0,
+              0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          10,
+          10,
+          10
+        ]
+      }
+    }
+  ]
+}

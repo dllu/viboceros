@@ -1053,12 +1053,18 @@ The [bent planar strip fixture](../tools/rhino_oracle/fixtures/coincident_bent_s
 checks an enclosing rectangle and a partial rectangle against a quadratic
 planar strip, repeats the partial overlap with surface/B-rep and B-rep/B-rep
 command inputs, and intersects two bent strips in both input orders and with
-shifted parameter domains. All nine [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_bent_strip_surface_intersection_command.json)
+shifted parameter domains. All ten [Xvfb-captured Rhino results](../tools/rhino_oracle/observations/coincident_bent_strip_surface_intersection_command.json)
 match the complete native degree-two curves, including control points, knots,
 and domains, within `1.8e-15`. The [transposed strip fixture](../tools/rhino_oracle/fixtures/coincident_transposed_bent_strip_surface_intersection_command.json)
 repeats seven surface cases with the curved direction in V; its
 [Xvfb observations](../tools/rhino_oracle/observations/coincident_transposed_bent_strip_surface_intersection_command.json)
 also match the native curves exactly within floating-point tolerance.
+The [rational strip fixture](../tools/rhino_oracle/fixtures/coincident_rational_bent_strip_surface_intersection_command.json)
+and its [transposed companion](../tools/rhino_oracle/fixtures/coincident_transposed_rational_bent_strip_surface_intersection_command.json)
+add eight weighted planar-strip overlaps. Their
+[U-direction](../tools/rhino_oracle/observations/coincident_rational_bent_strip_surface_intersection_command.json)
+and [V-direction](../tools/rhino_oracle/observations/coincident_transposed_rational_bent_strip_surface_intersection_command.json)
+Xvfb observations match all native control points, weights, knots, and domains.
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally

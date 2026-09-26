@@ -2094,11 +2094,11 @@ fn coincident_planar_surface_intersection_events(
 }
 
 /// Certifies a planar strip with a strictly monotone curved direction and
-/// separated ruled edges. Degree elevation may leave weights a few ulps from one;
-/// those are accepted only when all weights remain equal to working precision.
-/// Equal U coordinates in both rows make fixed-U rulings vertical in this
-/// local frame. The B-spline convex-hull property then proves a one-to-one
-/// parameterization of the region between the two edges.
+/// separated ruled edges. The two rows may have varying rational weights,
+/// provided their weight sequences are proportional and have one sign.
+/// Equal U coordinates in both rows then make fixed-U rulings vertical in
+/// this local frame. Positive rational B-spline blending preserves the
+/// monotone U coordinates and the sign of the gap between the rows.
 fn certified_monotone_planar_strip(
     surface: &NurbsSurface,
     plane: Plane,
@@ -2116,13 +2116,10 @@ fn certified_monotone_planar_strip(
     }
     let count_u = surface.control_point_count_u();
     let controls = surface.control_points();
-    let reference_weight = controls[0].weight();
-    if reference_weight == 0.0
-        || controls.iter().any(|control| {
-            let ratio = control.weight() / reference_weight;
-            !ratio.is_finite() || (ratio - 1.0).abs() > Real::EPSILON * 64.0
-        })
-    {
+    let lower_reference_weight = controls[0].weight();
+    let upper_reference_weight = controls[count_u].weight();
+    let row_scale = upper_reference_weight / lower_reference_weight;
+    if !row_scale.is_finite() || row_scale <= 0.0 {
         return Ok(false);
     }
     let origin = controls[0].point();
@@ -2143,6 +2140,17 @@ fn certified_monotone_planar_strip(
     let mut previous_x = None;
     let mut gap_sign = 0_i8;
     for index in 0..count_u {
+        let lower_weight = controls[index].weight() / lower_reference_weight;
+        let upper_weight = controls[count_u + index].weight() / upper_reference_weight;
+        if !lower_weight.is_finite()
+            || !upper_weight.is_finite()
+            || lower_weight <= 0.0
+            || upper_weight <= 0.0
+            || (lower_weight - upper_weight).abs()
+                > Real::EPSILON * 64.0 * lower_weight.abs().max(upper_weight.abs())
+        {
+            return Ok(false);
+        }
         let lower = origin.vector_to(controls[index].point())?;
         let upper = origin.vector_to(controls[count_u + index].point())?;
         let lower_x = lower.dot(axis.as_vector())?;
@@ -2184,6 +2192,7 @@ fn coincident_planar_boundary_events(
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
     let mut points = Vec::new();
     let mut curves = Vec::new();
+    let mut rational_piece_starts = Vec::new();
     let pairs = if first_is_strip {
         [(first, second), (second, first)]
     } else {
@@ -2197,6 +2206,31 @@ fn coincident_planar_boundary_events(
                         push_unique_brep_point(&mut points, point, distance_tolerance);
                     }
                     SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                        if curve.is_rational() && !curve.is_linear_at_zero_tolerance()? {
+                            rational_piece_starts.push((
+                                [
+                                    curve.control_points()[0].point(),
+                                    curve.control_points()[1].point(),
+                                ],
+                                curve.control_points()[0].weight(),
+                            ));
+                        }
+                        // Rhino joins a straight rational surface edge as a
+                        // polynomial line, even when its source isocurve has
+                        // varying weights. Keep the clipped endpoints and
+                        // interval while removing that redundant weighting.
+                        let curve = if curve.is_rational() && curve.is_linear_at_zero_tolerance()? {
+                            let domain = curve.domain();
+                            let start = *domain.start();
+                            let end = *domain.end();
+                            NurbsCurve::try_new(
+                                1,
+                                vec![curve.evaluate(start)?, curve.evaluate(end)?],
+                                vec![start, start, end, end],
+                            )?
+                        } else {
+                            curve
+                        };
                         let duplicate = curves.iter().try_fold(false, |found, existing| {
                             if found {
                                 Ok::<bool, GeometryError>(true)
@@ -2235,10 +2269,38 @@ fn coincident_planar_boundary_events(
             curve,
             if first_is_strip { first } else { second },
             if first_is_strip { second } else { first },
+            first_is_strip,
             tolerance,
             distance_tolerance,
         )? {
             *curve = oriented;
+        }
+        // Joining normalizes the first weight to one. When the loop begins
+        // along a clipped rational edge, Rhino retains that edge's original
+        // homogeneous scale instead. Match both the point and the next
+        // control so a straight edge at the same vertex is not rescaled.
+        if let Some((_, source_weight)) = rational_piece_starts.iter().find(|(points, _)| {
+            curve.control_points().len() >= 2
+                && points.iter().enumerate().all(|(index, point)| {
+                    point
+                        .distance_to(curve.control_points()[index].point())
+                        .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+                })
+        }) {
+            let scale = source_weight / curve.control_points()[0].weight();
+            if scale.is_finite() && scale > 0.0 && (scale - 1.0).abs() > Real::EPSILON * 8.0 {
+                *curve = NurbsCurve::try_new_rational(
+                    curve.degree(),
+                    curve
+                        .control_points()
+                        .iter()
+                        .map(|control| {
+                            WeightedPoint3::try_new(control.point(), control.weight() * scale)
+                        })
+                        .collect::<Result<Vec<_>, _>>()?,
+                    curve.knots().to_vec(),
+                )?;
+            }
         }
     }
     Ok(curves
@@ -2329,6 +2391,7 @@ fn orient_coincident_strip_boundary(
     boundary: &NurbsCurve,
     strip: &NurbsSurface,
     other: &NurbsSurface,
+    strip_is_first: bool,
     tolerance: Tolerance,
     distance_tolerance: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
@@ -2347,16 +2410,36 @@ fn orient_coincident_strip_boundary(
     let Some(bottom_piece) = bottom_piece else {
         return Ok(None);
     };
-    let seam = bottom_piece.evaluate(*bottom_piece.domain().start())?;
-    let mut domain_start = *bottom_piece.domain().start();
-    for edge in other.natural_edge_curves()? {
-        let parameter = edge.closest_parameter(seam, tolerance)?;
-        if edge.evaluate(parameter)?.distance_to(seam)? <= distance_tolerance * 2.0 {
-            domain_start = parameter;
-            break;
+    let use_end = strip_is_first && strip.degree_v() == 1;
+    let mut domain_start = if use_end {
+        *bottom_piece.domain().end()
+    } else {
+        *bottom_piece.domain().start()
+    };
+    let seam = bottom_piece.evaluate(domain_start)?;
+    if !use_end {
+        for edge in other.natural_edge_curves()? {
+            let parameter = edge.closest_parameter(seam, tolerance)?;
+            if edge.evaluate(parameter)?.distance_to(seam)? <= distance_tolerance * 2.0 {
+                domain_start = parameter;
+                break;
+            }
         }
     }
-    let seam_parameter = boundary.closest_parameter(seam, tolerance)?;
+    let closest = boundary.closest_parameter(seam, tolerance)?;
+    let seam_parameter = boundary
+        .knots()
+        .iter()
+        .copied()
+        .filter(|parameter| boundary.domain().contains(parameter))
+        .filter(|parameter| {
+            boundary
+                .evaluate(*parameter)
+                .and_then(|point| point.distance_to(seam))
+                .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+        })
+        .min_by(|left, right| (left - closest).abs().total_cmp(&(right - closest).abs()))
+        .unwrap_or(closest);
     if boundary.evaluate(seam_parameter)?.distance_to(seam)? > distance_tolerance * 2.0 {
         return Ok(None);
     }
@@ -6247,6 +6330,133 @@ mod tests {
                     .is_near(point(0.0, 2.0), Tolerance::DEFAULT)
             );
         }
+    }
+
+    #[test]
+    fn coincident_rational_planar_strips_preserve_curved_weights_and_loop_domains() {
+        let point = |x, y| point(x, y, 0.0);
+        let strip = |bottom: [Real; 3], top: Real| {
+            NurbsSurface::try_new_rational(
+                2,
+                1,
+                3,
+                2,
+                vec![
+                    WeightedPoint3::try_new(point(0.0, bottom[0]), 1.0).unwrap(),
+                    WeightedPoint3::try_new(point(5.0, bottom[1]), 0.5).unwrap(),
+                    WeightedPoint3::try_new(point(10.0, bottom[2]), 1.0).unwrap(),
+                    WeightedPoint3::try_new(point(0.0, top), 1.0).unwrap(),
+                    WeightedPoint3::try_new(point(5.0, top), 0.5).unwrap(),
+                    WeightedPoint3::try_new(point(10.0, top), 1.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 0.0, 10.0, 10.0, 10.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            )
+            .unwrap()
+        };
+        let lower = strip([0.0, 2.0, 0.0], 10.0);
+        let upper = strip([2.0, 3.0, 2.0], 12.0);
+        let enclosing = horizontal_rectangle(-2.0, 12.0, -2.0, 12.0, 0.0);
+        let events =
+            surface_surface_intersection_events(&enclosing, &lower, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+            panic!("an enclosed rational strip must produce one perimeter")
+        };
+        assert_eq!(perimeter.domain(), 0.0..=40.0);
+        assert_eq!(perimeter.control_points()[1].weight(), 0.5);
+        assert_eq!(perimeter.control_points()[5].weight(), 1.0);
+        let with_scaled_upper_row = |middle_weight: Real| {
+            NurbsSurface::try_new_rational(
+                2,
+                1,
+                3,
+                2,
+                lower
+                    .control_points()
+                    .iter()
+                    .enumerate()
+                    .map(|(index, control)| {
+                        WeightedPoint3::try_new(
+                            control.point(),
+                            if index == 4 {
+                                middle_weight
+                            } else if index >= 3 {
+                                control.weight() * 2.0
+                            } else {
+                                control.weight()
+                            },
+                        )
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+                    .unwrap(),
+                lower.knots_u().to_vec(),
+                lower.knots_v().to_vec(),
+            )
+            .unwrap()
+        };
+        let proportional = with_scaled_upper_row(1.0);
+        let events =
+            surface_surface_intersection_events(&enclosing, &proportional, Tolerance::DEFAULT)
+                .unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
+        let nonproportional = with_scaled_upper_row(0.75);
+        assert!(matches!(
+            surface_surface_intersection_events(&enclosing, &nonproportional, Tolerance::DEFAULT,),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
+        ));
+
+        let partial = horizontal_rectangle(2.0, 8.0, -1.0, 5.0, 0.0)
+            .try_reparameterized(2.0..=8.0, -1.0..=5.0)
+            .unwrap();
+        for (first, second, expected_start, expected_weight) in [
+            (&partial, &lower, -0.47253383270900395, 0.8088868081569272),
+            (&lower, &partial, 7.42666042447078, 1.0),
+        ] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("a clipped rational strip must produce one perimeter")
+            };
+            assert!(perimeter.is_closed().unwrap());
+            assert!((*perimeter.domain().start() - expected_start).abs() < 1e-10);
+            assert!((perimeter.control_points()[0].weight() - expected_weight).abs() < 1e-10);
+        }
+        let events =
+            surface_surface_intersection_events(&lower, &upper, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+            panic!("nested rational strips must produce one perimeter")
+        };
+        assert_eq!(perimeter.domain(), 10.0..=46.0);
+        assert_eq!(perimeter.control_points()[3].weight(), 1.0);
+        assert_eq!(perimeter.control_points()[7].weight(), 0.5);
+
+        let lower_v = lower.try_swapped_uv().unwrap();
+        let upper_v = upper.try_swapped_uv().unwrap();
+        for (first, second) in [(&partial, &lower_v), (&lower_v, &partial)] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("a transposed rational strip must produce one perimeter")
+            };
+            assert!((*perimeter.domain().start() - 0.4725338327090042).abs() < 1e-10);
+            assert_eq!(perimeter.control_points()[0].weight(), 1.0);
+            assert!((perimeter.control_points()[7].weight() - 0.8544003745317531).abs() < 1e-10);
+            assert!(
+                perimeter.control_points()[0]
+                    .point()
+                    .is_near(point(8.0, 0.4725338327090042), Tolerance::DEFAULT)
+            );
+        }
+        let events =
+            surface_surface_intersection_events(&lower_v, &upper_v, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+            panic!("nested transposed rational strips must produce one perimeter")
+        };
+        assert_eq!(perimeter.domain(), 10.0..=46.0);
+        assert_eq!(perimeter.control_points()[7].weight(), 0.5);
     }
 
     #[test]
