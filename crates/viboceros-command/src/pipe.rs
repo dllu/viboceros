@@ -3,7 +3,7 @@
 use super::*;
 use viboceros_geometry::{
     Circle3, Frame3, FrameTransportOptions, NurbsSurface, Sweep1, SweepBlend, SweepFrameStyle,
-    SweepSection, join_breps,
+    SweepSection, WeightedPoint3, join_breps,
 };
 
 const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
@@ -134,9 +134,10 @@ impl Command for PipeCommand {
                         tolerance,
                     )?;
                     Geometry::Brep(round_cap_single_wall(
-                        straight_wall(frame, [start_radius, end_radius], height, tolerance)?,
+                        straight_wall(frame, [start_radius, end_radius], height, blend, tolerance)?,
                         [frame, end_frame],
                         [start_radius, end_radius],
+                        pipe_round_cap_slopes(rail, [start_radius, end_radius], blend, tolerance)?,
                         tolerance,
                     )?)
                 } else if let Some(second) = second_radii {
@@ -153,8 +154,8 @@ impl Command for PipeCommand {
                             second,
                             wall_thickness.expect("second wall requires a thickness"),
                         );
-                        let outer = straight_wall(frame, outer, height, tolerance)?;
-                        let inner = straight_wall(frame, inner, height, tolerance)?;
+                        let outer = straight_wall(frame, outer, height, blend, tolerance)?;
+                        let inner = straight_wall(frame, inner, height, blend, tolerance)?;
                         Geometry::Brep(finish_two_walls(outer, inner, cap, tolerance)?)
                     }
                 } else {
@@ -166,6 +167,19 @@ impl Command for PipeCommand {
                             height,
                             tolerance,
                         )?),
+                        (PipeCap::Flat, false) if blend == SweepBlend::Local => {
+                            Geometry::Brep(cap_wall(
+                                straight_wall(
+                                    frame,
+                                    [start_radius, end_radius],
+                                    height,
+                                    blend,
+                                    tolerance,
+                                )?,
+                                PipeCap::Flat,
+                                tolerance,
+                            )?)
+                        }
                         (PipeCap::Flat, false) => Geometry::Brep(Brep::try_truncated_cone(
                             frame,
                             [start_radius, end_radius],
@@ -175,13 +189,12 @@ impl Command for PipeCommand {
                         (PipeCap::None, true) => Geometry::NurbsSurface(
                             NurbsSurface::try_cylinder(frame, start_radius, 0.0, height)?,
                         ),
-                        (PipeCap::None, false) => {
-                            Geometry::NurbsSurface(NurbsSurface::try_truncated_cone(
-                                frame,
-                                [start_radius, end_radius],
-                                height,
-                            )?)
-                        }
+                        (PipeCap::None, false) => Geometry::NurbsSurface(straight_surface(
+                            frame,
+                            [start_radius, end_radius],
+                            height,
+                            blend,
+                        )?),
                         (PipeCap::Round, _) => unreachable!("round caps handled above"),
                     }
                 }
@@ -255,7 +268,13 @@ impl Command for PipeCommand {
                     };
                     let wall = swept_wall_with_frames(rail, first, blend, tolerance, wall_frames)?;
                     if let Some(frames) = frames {
-                        round_cap_single_wall(wall, frames, first, tolerance)?
+                        round_cap_single_wall(
+                            wall,
+                            frames,
+                            first,
+                            pipe_round_cap_slopes(rail, first, blend, tolerance)?,
+                            tolerance,
+                        )?
                     } else {
                         cap_wall(wall, cap, tolerance)?
                     }
@@ -314,14 +333,56 @@ fn straight_wall(
     frame: Frame3,
     radii: [Real; 2],
     height: Real,
+    blend: SweepBlend,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    let surface = if radii[0] == radii[1] {
-        NurbsSurface::try_cylinder(frame, radii[0], 0.0, height)?
-    } else {
-        NurbsSurface::try_truncated_cone(frame, radii, height)?
-    };
+    let surface = straight_surface(frame, radii, height, blend)?;
     Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?)
+}
+
+fn straight_surface(
+    frame: Frame3,
+    radii: [Real; 2],
+    height: Real,
+    blend: SweepBlend,
+) -> Result<NurbsSurface, CommandError> {
+    if radii[0] == radii[1] {
+        return Ok(NurbsSurface::try_cylinder(frame, radii[0], 0.0, height)?);
+    }
+    if blend == SweepBlend::Global {
+        return Ok(NurbsSurface::try_truncated_cone(frame, radii, height)?);
+    }
+    // The cubic Bezier radii [r0, r0, r1, r1] give Rhino's Local
+    // smoothstep profile while the axial controls keep z linear.
+    let unit_cylinder = NurbsSurface::try_cylinder(frame, 1.0, 0.0, height)?;
+    let circle_controls = &unit_cylinder.control_points()[..unit_cylinder.control_point_count_u()];
+    let axial = frame.z_axis().as_vector();
+    let mut controls = Vec::with_capacity(4 * circle_controls.len());
+    for (radius, axial_distance) in [
+        (radii[0], 0.0),
+        (radii[0], height / 3.0),
+        (radii[1], 2.0 * height / 3.0),
+        (radii[1], height),
+    ] {
+        let offset = axial.scaled(axial_distance)?;
+        for control in circle_controls {
+            let radial = frame.origin().vector_to(control.point())?;
+            let point = frame
+                .origin()
+                .translated(radial.scaled(radius)?)?
+                .translated(offset)?;
+            controls.push(WeightedPoint3::try_new(point, control.weight())?);
+        }
+    }
+    Ok(NurbsSurface::try_new_rational(
+        unit_cylinder.degree_u(),
+        3,
+        circle_controls.len(),
+        4,
+        controls,
+        unit_cylinder.knots_u().to_vec(),
+        vec![0.0, 0.0, 0.0, 0.0, height, height, height, height],
+    )?)
 }
 
 fn torus_wall(
@@ -358,7 +419,11 @@ fn swept_wall_with_frames(
         )?);
     }
     let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
-    let surface = sweep.to_rail_basis_surface()?;
+    let surface = if radii[0] == radii[1] {
+        sweep.to_rail_basis_surface()?
+    } else {
+        sweep.to_surface()?
+    };
     let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
     Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?.reversed())
 }
@@ -386,14 +451,74 @@ fn round_cap_single_wall(
     wall: Brep,
     frames: [Frame3; 2],
     radii: [Real; 2],
+    cap_slopes: [Real; 2],
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    let half_pi = std::f64::consts::FRAC_PI_2;
-    let start = NurbsSurface::try_sphere(frames[0], radii[0])?.try_trimmed_v(-half_pi..=0.0)?;
-    let end = NurbsSurface::try_sphere(frames[1], radii[1])?.try_trimmed_v(0.0..=half_pi)?;
-    let start = Brep::try_surface_grid(&start, &[], &[], tolerance)?;
-    let end = Brep::try_surface_grid(&end, &[], &[], tolerance)?;
+    let start = round_cap_surface(frames[0], radii[0], cap_slopes[0], true, tolerance)?;
+    let end = round_cap_surface(frames[1], radii[1], cap_slopes[1], false, tolerance)?;
     join_round_cap_parts(&[&wall, &start, &end], tolerance)
+}
+
+fn pipe_round_cap_slopes(
+    rail: CurveRef<'_>,
+    radii: [Real; 2],
+    blend: SweepBlend,
+    tolerance: Tolerance,
+) -> Result<[Real; 2], CommandError> {
+    if blend == SweepBlend::Local || radii[0] == radii[1] {
+        return Ok([0.0; 2]);
+    }
+    let radial_rate = (radii[1] - radii[0]) / rail.length(tolerance)?;
+    let domain = rail.domain();
+    let mut slopes = [0.0; 2];
+    for (index, parameter) in [*domain.start(), *domain.end()].into_iter().enumerate() {
+        let curvature = rail.curvature_vector(parameter)?.length()?;
+        // A round cap is tangent to the inside of the swept wall, whose
+        // endpoint travel speed is (1 - curvature * radius) times rail speed.
+        let inner_speed = 1.0 - curvature * radii[index];
+        if inner_speed <= 0.0 {
+            return Err(CommandError::Usage(USAGE));
+        }
+        slopes[index] = radial_rate / inner_speed;
+    }
+    Ok(slopes)
+}
+
+fn round_cap_surface(
+    frame: Frame3,
+    radius: Real,
+    slope: Real,
+    start: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let axis = frame.z_axis().as_vector();
+    let center = frame.origin().translated(axis.scaled(-radius * slope)?)?;
+    let shifted_frame =
+        Frame3::try_from_x_and_normal(center, frame.x_axis().as_vector(), axis, tolerance)?;
+    let sphere = NurbsSurface::try_sphere(shifted_frame, radius * slope.hypot(1.0))?;
+    let half_pi = std::f64::consts::FRAC_PI_2;
+    let cut = if slope == 0.0 {
+        0.0
+    } else {
+        let target = radius * slope;
+        let (mut low, mut high) = (-half_pi, half_pi);
+        for _ in 0..64 {
+            let middle = 0.5 * (low + high);
+            let height = center.vector_to(sphere.evaluate(0.0, middle)?)?.dot(axis)?;
+            if height < target {
+                low = middle;
+            } else {
+                high = middle;
+            }
+        }
+        0.5 * (low + high)
+    };
+    let trimmed = if start {
+        sphere.try_trimmed_v(-half_pi..=cut)?
+    } else {
+        sphere.try_trimmed_v(cut..=half_pi)?
+    };
+    Ok(Brep::try_surface_grid(&trimmed, &[], &[], tolerance)?)
 }
 
 fn join_round_cap_parts(parts: &[&Brep], tolerance: Tolerance) -> Result<Brep, CommandError> {
@@ -441,7 +566,7 @@ mod tests {
     }
 
     #[test]
-    fn straight_round_pipe_has_hemispheres_and_expected_volume() {
+    fn straight_round_pipe_matches_local_and_global_rhino_volumes() {
         let mut document = Document::default();
         let source = document
             .add_geometry(Geometry::Line(
@@ -449,18 +574,39 @@ mod tests {
             ))
             .unwrap();
         let registry = CommandRegistry::with_builtins();
-        for (radii, expected) in [
+        let slope = 0.2_f64;
+        let sphere_scale = slope.hypot(1.0);
+        let spherical_cap_volume = |radius: Real, segment_height: Real| {
+            std::f64::consts::PI
+                * segment_height.powi(2)
+                * (radius * sphere_scale - segment_height / 3.0)
+        };
+        let global = std::f64::consts::PI * 5.0 * 7.0 / 3.0
+            + spherical_cap_volume(1.0, sphere_scale + slope)
+            + spherical_cap_volume(2.0, 2.0 * (sphere_scale - slope));
+        for (arguments, expected) in [
             (
                 "1",
                 std::f64::consts::PI * 5.0 + 4.0 * std::f64::consts::PI / 3.0,
             ),
             (
                 "1 2",
-                std::f64::consts::PI * 5.0 * 7.0 / 3.0 + 2.0 * std::f64::consts::PI * 9.0 / 3.0,
+                std::f64::consts::PI * 5.0 * (2.0 + 13.0 / 35.0)
+                    + 2.0 * std::f64::consts::PI * 9.0 / 3.0,
             ),
+            (
+                "2 1",
+                std::f64::consts::PI * 5.0 * (2.0 + 13.0 / 35.0)
+                    + 2.0 * std::f64::consts::PI * 9.0 / 3.0,
+            ),
+            ("1 2 ShapeBlending=Global", global),
+            ("2 1 ShapeBlending=Global", global),
         ] {
             registry
-                .execute(&mut document, &format!("Pipe {source} {radii} Cap=Round"))
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} {arguments} Cap=Round"),
+                )
                 .unwrap();
             let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
                 panic!("round pipe should be a B-rep")
@@ -505,7 +651,7 @@ mod tests {
     }
 
     #[test]
-    fn straight_pipe_has_exact_cylinder_and_frustum_outputs() {
+    fn straight_pipe_uses_local_cubic_and_global_conical_radii() {
         let mut document = Document::default();
         let source = document
             .add_geometry(Geometry::Line(
@@ -524,10 +670,30 @@ mod tests {
         registry
             .execute(&mut document, &format!("Pipe {source} 1 2 Cap=None"))
             .unwrap();
-        assert!(matches!(
-            document.objects().last().unwrap().geometry(),
-            Geometry::NurbsSurface(_)
-        ));
+        let Geometry::NurbsSurface(local) = document.objects().last().unwrap().geometry() else {
+            panic!("open local pipe should be a NURBS surface")
+        };
+        assert_eq!(local.degree_v(), 3);
+        let sample = local
+            .evaluate(*local.domain_u().start(), 0.2 * *local.domain_v().end())
+            .unwrap();
+        assert!((sample.z() - 1.0).abs() < 1e-10);
+        assert!((sample.x().hypot(sample.y()) - 1.104).abs() < 1e-10);
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 2 Cap=None ShapeBlending=Global"),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(global) = document.objects().last().unwrap().geometry() else {
+            panic!("open global pipe should be a NURBS surface")
+        };
+        assert_eq!(global.degree_v(), 1);
+        let sample = global
+            .evaluate(*global.domain_u().start(), 0.2 * *global.domain_v().end())
+            .unwrap();
+        assert!((sample.z() - 1.0).abs() < 1e-10);
+        assert!((sample.x().hypot(sample.y()) - 1.2).abs() < 1e-10);
         registry
             .execute(&mut document, &format!("Pipe {source} 1 2 Cap=Flat"))
             .unwrap();
@@ -742,6 +908,41 @@ mod tests {
             (measured - expected).abs() / expected < 1e-8,
             "{measured} vs {expected}"
         );
+    }
+
+    #[test]
+    fn tapered_arc_round_pipe_matches_rhino_volume() {
+        let mut document = Document::default();
+        let diagonal = 5.0 * std::f64::consts::FRAC_1_SQRT_2;
+        let arc = CircularArc3::try_from_three_points(
+            p(5.0, 0.0, 0.0),
+            p(diagonal, diagonal, 0.0),
+            p(0.0, 5.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (blend, reference_volume) in
+            [("Local", 12.02855252569316), ("Global", 11.891434174037984)]
+        {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.5 0.8 Cap=Round ShapeBlending={blend}"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("tapered arc round pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - reference_volume).abs() < 5e-6,
+                "{blend}: {measured} vs {reference_volume}"
+            );
+        }
     }
 
     #[test]

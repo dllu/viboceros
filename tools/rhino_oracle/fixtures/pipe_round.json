@@ -1,11 +1,104 @@
 {
   "protocol_version": 1,
   "iterations": 1,
-  "tolerance": {"absolute": 1e-7, "relative": 1e-12, "angular": 1e-10},
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
   "operations": [
-    {"op": "pipe_round_probe", "id": "line-thin", "rail": "line", "radius": 1.0},
-    {"op": "pipe_round_probe", "id": "line-thick", "rail": "line", "radius": 1.0, "thickness": 0.5},
-    {"op": "pipe_round_probe", "id": "arc-thin", "rail": "arc", "radius": 0.5},
-    {"op": "pipe_round_probe", "id": "arc-thick", "rail": "arc", "radius": 0.5, "thickness": 0.2}
+    {
+      "op": "pipe_round_probe",
+      "id": "line-thin",
+      "rail": "line",
+      "radius": 1.0
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-thick",
+      "rail": "line",
+      "radius": 1.0,
+      "thickness": 0.5
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-thin",
+      "rail": "arc",
+      "radius": 0.5
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-thick",
+      "rail": "arc",
+      "radius": 0.5,
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-tapered-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 2.0,
+      "local_blending": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-tapered-global",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 2.0,
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-tapered-thick-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 2.0,
+      "thickness": 0.5,
+      "local_blending": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-thick-command-resets-cap",
+      "rail": "line",
+      "radius": 1.0,
+      "thickness": 0.5,
+      "macro": "_-Pipe _SelID {id} _Cap=_Round _Thick=_Yes 1 1.5 1 1.5 _Enter"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-tapered-local",
+      "rail": "arc",
+      "radius": 0.5,
+      "end_radius": 0.8,
+      "local_blending": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-tapered-global",
+      "rail": "arc",
+      "radius": 0.5,
+      "end_radius": 0.8,
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-tapered-flat-local",
+      "rail": "arc",
+      "radius": 0.5,
+      "end_radius": 0.8,
+      "local_blending": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-tapered-flat-global",
+      "rail": "arc",
+      "radius": 0.5,
+      "end_radius": 0.8,
+      "local_blending": false,
+      "cap": "Flat"
+    }
   ]
 }

@@ -12,12 +12,15 @@ Pipe 1 WallThickness=0.25 Cap=Flat
 Pipe 1 Cap=Round
 ```
 
-Straight rails use exact cylinder or truncated-cone NURBS surfaces and capped
-B-reps. A circular rail with one radius creates a closed torus surface. Other
+Straight constant-radius rails use exact cylinders. For two different radii,
+`ShapeBlending=Local` uses a smooth cubic radius transition and
+`ShapeBlending=Global` uses a cone. Global round caps use sphere segments
+tangent to the cone; local round caps are hemispheres. A circular rail with one
+radius creates a closed torus surface. Other
 smooth open rails use one-rail Sweep1 with transported circular sections; flat
-ends are capped as planar B-rep faces. `Cap=Round` joins hemispherical ends to
+ends are capped as planar B-rep faces. `Cap=Round` joins spherical ends to
 a single-wall pipe. On thick pipes, `Cap=Round` produces planar annular ends,
-matching Rhino 8's `CreateThickPipe` result. `Cap=Flat` is the default.
+matching Rhino 8's Pipe command and `CreateThickPipe` result. `Cap=Flat` is the default.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
