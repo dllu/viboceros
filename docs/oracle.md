@@ -1070,6 +1070,17 @@ intersects U-curved strips with V-curved strips in both orders, with polynomial
 and rational weights, shifted parameter domains, and rotated geometry. All
 twelve [Xvfb observations](../tools/rhino_oracle/observations/coincident_mixed_axis_bent_strip_surface_intersection_command.json)
 match the full native curves.
+The [nonproportional rational strip fixture](../tools/rhino_oracle/fixtures/coincident_nonproportional_rational_strip_surface_intersection_command.json)
+and its [orientation variants](../tools/rhino_oracle/fixtures/coincident_nonproportional_rational_strip_orientation_command.json)
+cover twelve overlaps whose two weight rows are not proportional, including
+transposed and mixed-axis inputs. The
+[U-direction observations](../tools/rhino_oracle/observations/coincident_nonproportional_rational_strip_surface_intersection_command.json)
+and [orientation observations](../tools/rhino_oracle/observations/coincident_nonproportional_rational_strip_orientation_command.json)
+match all native curves. A separate
+[refined-strip fixture](../tools/rhino_oracle/fixtures/coincident_refined_nonproportional_strip_surface_intersection_command.json)
+checks degree elevation and an inserted knot in four more cases; its
+[Xvfb results](../tools/rhino_oracle/observations/coincident_refined_nonproportional_strip_surface_intersection_command.json)
+match within `7.2e-15`.
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally

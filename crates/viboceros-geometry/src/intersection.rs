@@ -2094,11 +2094,10 @@ fn coincident_planar_surface_intersection_events(
 }
 
 /// Certifies a planar strip with a strictly monotone curved direction and
-/// separated ruled edges. The two rows may have varying rational weights,
-/// provided their weight sequences are proportional and have one sign.
-/// Equal U coordinates in both rows then make fixed-U rulings vertical in
-/// this local frame. Positive rational B-spline blending preserves the
-/// monotone U coordinates and the sign of the gap between the rows.
+/// separated ruled edges. Proportional positive weight rows give vertical
+/// rulings in this local frame. For other positive weight rows, a simple
+/// boundary and a one-sign Bernstein Jacobian certify that the ruled map does
+/// not fold over itself.
 fn certified_monotone_planar_strip(
     surface: &NurbsSurface,
     plane: Plane,
@@ -2137,8 +2136,15 @@ fn certified_monotone_planar_strip(
     else {
         return Ok(false);
     };
-    let mut previous_x = None;
+    let mut previous_lower_x = None;
+    let mut previous_upper_x = None;
     let mut gap_sign = 0_i8;
+    let mut proportional_weights = true;
+    let mut matching_x_controls = true;
+    let mut lower_y_max = Real::NEG_INFINITY;
+    let mut lower_y_min = Real::INFINITY;
+    let mut upper_y_max = Real::NEG_INFINITY;
+    let mut upper_y_min = Real::INFINITY;
     for index in 0..count_u {
         let lower_weight = controls[index].weight() / lower_reference_weight;
         let upper_weight = controls[count_u + index].weight() / upper_reference_weight;
@@ -2146,10 +2152,13 @@ fn certified_monotone_planar_strip(
             || !upper_weight.is_finite()
             || lower_weight <= 0.0
             || upper_weight <= 0.0
-            || (lower_weight - upper_weight).abs()
-                > Real::EPSILON * 64.0 * lower_weight.abs().max(upper_weight.abs())
         {
             return Ok(false);
+        }
+        if (lower_weight - upper_weight).abs()
+            > Real::EPSILON * 64.0 * lower_weight.abs().max(upper_weight.abs())
+        {
+            proportional_weights = false;
         }
         let lower = origin.vector_to(controls[index].point())?;
         let upper = origin.vector_to(controls[count_u + index].point())?;
@@ -2157,15 +2166,28 @@ fn certified_monotone_planar_strip(
         let upper_x = upper.dot(axis.as_vector())?;
         let coordinate_scale = lower_x.abs().max(upper_x.abs()).max(1.0);
         if (lower_x - upper_x).abs() > Real::EPSILON * coordinate_scale * 64.0 {
-            return Ok(false);
+            matching_x_controls = false;
+            if index == 0 || index + 1 == count_u {
+                return Ok(false);
+            }
         }
-        if previous_x.is_some_and(|previous| {
+        if previous_lower_x.is_some_and(|previous| {
             lower_x
+                <= previous + distance_tolerance * 2.0 + Real::EPSILON * coordinate_scale * 128.0
+        }) || previous_upper_x.is_some_and(|previous| {
+            upper_x
                 <= previous + distance_tolerance * 2.0 + Real::EPSILON * coordinate_scale * 128.0
         }) {
             return Ok(false);
         }
-        previous_x = Some(lower_x);
+        previous_lower_x = Some(lower_x);
+        previous_upper_x = Some(upper_x);
+        let lower_y = lower.dot(transverse.as_vector())?;
+        let upper_y = upper.dot(transverse.as_vector())?;
+        lower_y_min = lower_y_min.min(lower_y);
+        lower_y_max = lower_y_max.max(lower_y);
+        upper_y_min = upper_y_min.min(upper_y);
+        upper_y_max = upper_y_max.max(upper_y);
         let gap = controls[index]
             .point()
             .vector_to(controls[count_u + index].point())?
@@ -2179,7 +2201,167 @@ fn certified_monotone_planar_strip(
         }
         gap_sign = sign;
     }
+    if proportional_weights && matching_x_controls {
+        return Ok(true);
+    }
+    if (gap_sign > 0 && upper_y_min <= lower_y_max + distance_tolerance * 2.0)
+        || (gap_sign < 0 && lower_y_min <= upper_y_max + distance_tolerance * 2.0)
+    {
+        return Ok(false);
+    }
+    certified_nonproportional_strip_jacobian(surface, origin, axis, transverse, gap_sign)
+}
+
+fn certified_nonproportional_strip_jacobian(
+    surface: &NurbsSurface,
+    origin: Point3,
+    axis: UnitVector3,
+    transverse: UnitVector3,
+    gap_sign: i8,
+) -> Result<bool, GeometryError> {
+    // On each U Bezier span write the homogeneous surface as
+    // H(u,v) = A(u) + v (B(u) - A(u)). The dehomogenized planar Jacobian has
+    // the sign of det(H, H_u, H_v) because weights have one sign. Terms with
+    // two copies of B-A cancel, so this determinant is linear in v. Prove its
+    // sign at both V rows by checking every U Bernstein coefficient. Together
+    // with the disjoint x-monotone boundary graphs above, a nonzero Jacobian
+    // certifies an injective planar patch.
+    let degree = surface.degree_u();
+    if degree > 32 {
+        return Ok(false);
+    }
+    let spans = surface.spans_u().collect::<Vec<_>>();
+    let mut refined = surface.try_clamped_to_active_domain()?;
+    for (start, _) in spans.iter().skip(1) {
+        if refined
+            .knots_u()
+            .iter()
+            .filter(|knot| **knot == *start)
+            .count()
+            > degree
+        {
+            return Ok(false);
+        }
+        refined = refined.try_insert_knot_u(*start, degree)?;
+    }
+    if refined.control_point_count_u() != spans.len() * degree + 1 {
+        return Ok(false);
+    }
+    let choose_p = strip_jacobian_binomial(degree);
+    let choose_derivative = strip_jacobian_binomial(degree - 1);
+    let choose_result = strip_jacobian_binomial(3 * degree - 1);
+    let row_length = refined.control_point_count_u();
+    let weight_scale = surface.control_points()[0].weight();
+    for span in 0..spans.len() {
+        let mut lower = Vec::with_capacity(degree + 1);
+        let mut upper = Vec::with_capacity(degree + 1);
+        for index in 0..=degree {
+            for (row, output) in [&mut lower, &mut upper].into_iter().enumerate() {
+                let control = refined.control_points()[row * row_length + span * degree + index];
+                let offset = origin.vector_to(control.point())?;
+                let weight = control.weight() / weight_scale;
+                let homogeneous = [
+                    offset.dot(axis.as_vector())? * weight,
+                    offset.dot(transverse.as_vector())? * weight,
+                    weight,
+                ];
+                if homogeneous.iter().any(|value| !value.is_finite()) || weight <= 0.0 {
+                    return Ok(false);
+                }
+                output.push(homogeneous);
+            }
+        }
+        if !strip_jacobian_bezier_span_has_sign(
+            &lower,
+            &upper,
+            gap_sign,
+            &choose_p,
+            &choose_derivative,
+            &choose_result,
+        ) {
+            return Ok(false);
+        }
+    }
     Ok(true)
+}
+
+fn strip_jacobian_binomial(degree: usize) -> Vec<Real> {
+    let mut values = vec![1.0; degree + 1];
+    for index in 1..=degree {
+        values[index] = values[index - 1] * (degree + 1 - index) as Real / index as Real;
+    }
+    values
+}
+
+fn strip_jacobian_bezier_span_has_sign(
+    lower: &[[Real; 3]],
+    upper: &[[Real; 3]],
+    gap_sign: i8,
+    choose_p: &[Real],
+    choose_derivative: &[Real],
+    choose_result: &[Real],
+) -> bool {
+    let degree = lower.len() - 1;
+    let difference = (0..=degree)
+        .map(|index| {
+            std::array::from_fn(|coordinate| upper[index][coordinate] - lower[index][coordinate])
+        })
+        .collect::<Vec<[Real; 3]>>();
+    let derivative = |row: &[[Real; 3]]| {
+        (0..degree)
+            .map(|index| {
+                std::array::from_fn(|coordinate| {
+                    degree as Real * (row[index + 1][coordinate] - row[index][coordinate])
+                })
+            })
+            .collect::<Vec<[Real; 3]>>()
+    };
+    let lower_derivative = derivative(lower);
+    let upper_derivative = derivative(upper);
+    let count = 3 * degree;
+    let mut sums = vec![[0.0; 2]; count];
+    let mut error_scales = vec![[0.0; 2]; count];
+    for i in 0..=degree {
+        for j in 0..degree {
+            for k in 0..=degree {
+                let output_index = i + j + k;
+                let factor =
+                    choose_p[i] * choose_derivative[j] * choose_p[k] / choose_result[output_index];
+                for (row, derivative, side) in
+                    [(lower, &lower_derivative, 0), (upper, &upper_derivative, 1)]
+                {
+                    let (value, scale) =
+                        strip_jacobian_determinant(row[i], derivative[j], difference[k]);
+                    sums[output_index][side] += factor * value;
+                    error_scales[output_index][side] += factor * scale;
+                }
+            }
+        }
+    }
+    sums.iter()
+        .zip(error_scales.iter())
+        .all(|(values, scales)| {
+            (0..2).all(|side| {
+                values[side].is_finite()
+                    && scales[side].is_finite()
+                    && values[side] * Real::from(gap_sign) > Real::EPSILON * 4096.0 * scales[side]
+            })
+        })
+}
+
+fn strip_jacobian_determinant(a: [Real; 3], b: [Real; 3], c: [Real; 3]) -> (Real, Real) {
+    let terms = [
+        a[0] * b[1] * c[2],
+        a[1] * b[2] * c[0],
+        a[2] * b[0] * c[1],
+        a[0] * b[2] * c[1],
+        a[1] * b[0] * c[2],
+        a[2] * b[1] * c[0],
+    ];
+    (
+        terms[0] + terms[1] + terms[2] - terms[3] - terms[4] - terms[5],
+        terms.iter().map(|term| term.abs()).sum(),
+    )
 }
 
 fn coincident_planar_boundary_events(
@@ -4635,11 +4817,20 @@ fn finite_midpoint(left: Real, right: Real) -> Real {
 }
 
 fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
-    if start.is_sign_negative() == end.is_sign_negative() {
+    // Exact endpoints and a final clamp prevent one-ulp excursions when
+    // sampling a negative or very narrow knot interval.
+    if fraction == 0.0 {
+        return start;
+    }
+    if fraction == 1.0 {
+        return end;
+    }
+    let parameter = if start.is_sign_negative() == end.is_sign_negative() {
         start + (end - start) * fraction
     } else {
         start * (1.0 - fraction) + end * fraction
-    }
+    };
+    parameter.clamp(start.min(end), start.max(end))
 }
 
 fn parameter_near(left: Real, right: Real) -> bool {
@@ -6559,8 +6750,102 @@ mod tests {
             [SurfaceSurfaceIntersectionEvent::Curve(_)]
         ));
         let nonproportional = with_scaled_upper_row(0.75);
+        let events =
+            surface_surface_intersection_events(&enclosing, &nonproportional, Tolerance::DEFAULT)
+                .unwrap();
         assert!(matches!(
-            surface_surface_intersection_events(&enclosing, &nonproportional, Tolerance::DEFAULT,),
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
+        let reversed_nonproportional = nonproportional.try_reversed_v().unwrap();
+        let events = surface_surface_intersection_events(
+            &enclosing,
+            &reversed_nonproportional,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
+        let refined_nonproportional = nonproportional
+            .try_change_degree(3, 1, false)
+            .unwrap()
+            .try_insert_knot_u(5.0, 1)
+            .unwrap();
+        let count_u = refined_nonproportional.control_point_count_u();
+        assert!((1..count_u - 1).any(|index| {
+            (refined_nonproportional.control_points()[index].point().x()
+                - refined_nonproportional.control_points()[count_u + index]
+                    .point()
+                    .x())
+            .abs()
+                > 1e-12
+        }));
+        let events = surface_surface_intersection_events(
+            &enclosing,
+            &refined_nonproportional,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
+        let transposed_nonproportional = nonproportional.try_swapped_uv().unwrap();
+        let events = surface_surface_intersection_events(
+            &enclosing,
+            &transposed_nonproportional,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(matches!(
+            events.as_slice(),
+            [SurfaceSurfaceIntersectionEvent::Curve(_)]
+        ));
+        let upper_v_for_mixed = upper.try_swapped_uv().unwrap();
+        for (pair_index, (first, second)) in [
+            (&nonproportional, &upper_v_for_mixed),
+            (&upper_v_for_mixed, &nonproportional),
+            (&transposed_nonproportional, &upper),
+            (&upper, &transposed_nonproportional),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let events = surface_surface_intersection_events(first, second, Tolerance::DEFAULT)
+                .unwrap_or_else(|error| {
+                    panic!("mixed nonproportional pair {pair_index}: {error:?}")
+                });
+            assert!(matches!(
+                events.as_slice(),
+                [SurfaceSurfaceIntersectionEvent::Curve(_)]
+            ));
+        }
+        let folded = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            [
+                (0.0, 3.1217247175489717, 1.0),
+                (1.852595734457675, 17.59781814031909, 18.51052074724487),
+                (10.0, -14.081713860622159, 1.0),
+                (0.0, 33.73973865654187, 1.0),
+                (6.625112684073066, 31.580705744076283, 197.15121464175283),
+                (10.0, 19.286302919955745, 1.0),
+            ]
+            .into_iter()
+            .map(|(x, y, weight)| WeightedPoint3::try_new(point(x, y), weight))
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap(),
+            vec![0.0, 0.0, 0.0, 10.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let enclosing_folded = horizontal_rectangle(-2.0, 12.0, -20.0, 40.0, 0.0);
+        assert!(matches!(
+            surface_surface_intersection_events(&enclosing_folded, &folded, Tolerance::DEFAULT,),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection { .. })
         ));
 

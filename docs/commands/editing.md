@@ -158,7 +158,10 @@ shared edge or closed overlap perimeter, including Rhino's distinct edge
 orientation and loop-domain rules. Injective planar strips with a monotone
 parameter direction and separated ruled edges also return exact curved overlap
 perimeters in either U or V orientation, including mixed-axis strip pairs and
-their original NURBS control points, rational weights, and domains.
+their original NURBS control points, rational weights, and domains. Rational
+strips with nonproportional weight rows are included when a one-sign Bernstein
+Jacobian and separated monotone boundaries certify that the surface cannot
+fold.
 Supported surface/B-rep and B-rep/B-rep
 intersections are clipped to exact face trim regions when needed, deduplicated
 at shared edges and vertices, and joined into maximal components. Curved

@@ -5073,11 +5073,20 @@ fn farthest_coordinate(origin: Real, minimum: Real, maximum: Real) -> Real {
 }
 
 fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
-    if start.is_sign_negative() == end.is_sign_negative() {
+    // Exact endpoints and a final clamp prevent one-ulp excursions when
+    // sampling a negative or very narrow knot interval.
+    if fraction == 0.0 {
+        return start;
+    }
+    if fraction == 1.0 {
+        return end;
+    }
+    let parameter = if start.is_sign_negative() == end.is_sign_negative() {
         start + (end - start) * fraction
     } else {
         start * (1.0 - fraction) + end * fraction
-    }
+    };
+    parameter.clamp(start.min(end), start.max(end))
 }
 
 fn curve_span_overlap(
