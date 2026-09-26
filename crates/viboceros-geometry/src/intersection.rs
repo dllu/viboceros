@@ -2317,9 +2317,6 @@ fn orient_coincident_two_strip_boundary(
     distance_tolerance: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
     let first_curved_u = first.degree_v() == 1;
-    if first_curved_u != (second.degree_v() == 1) {
-        return Ok(None);
-    }
     let first_inside = strip_bottom_fully_inside(first, second, tolerance, distance_tolerance)?;
     let second_inside = strip_bottom_fully_inside(second, first, tolerance, distance_tolerance)?;
     let (Some(first_inside), Some(second_inside)) = (first_inside, second_inside) else {
@@ -2327,6 +2324,16 @@ fn orient_coincident_two_strip_boundary(
     };
     if first_inside == second_inside {
         return Ok(None);
+    }
+    if first_curved_u != (second.degree_v() == 1) {
+        return orient_coincident_mixed_axis_strips(
+            boundary,
+            if first_inside { second } else { first },
+            if first_inside { first } else { second },
+            first_inside,
+            tolerance,
+            distance_tolerance,
+        );
     }
     let curved_domain = if first_curved_u {
         first.domain_u()
@@ -2343,6 +2350,151 @@ fn orient_coincident_two_strip_boundary(
     Ok(Some(boundary.try_reparameterized(start..=start + span)?))
 }
 
+fn orient_coincident_mixed_axis_strips(
+    boundary: &NurbsCurve,
+    outside: &NurbsSurface,
+    inside: &NurbsSurface,
+    inside_is_first: bool,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    let outside_bottom = strip_bottom_edge(outside)?;
+    let inside_bottom = strip_bottom_edge(inside)?;
+    let outside_domain = outside_bottom.domain();
+    let outside_end = outside_bottom.evaluate(*outside_domain.end())?;
+    let outside_start = outside_bottom.evaluate(*outside_domain.start())?;
+    let axis = outside_start.vector_to(outside_end)?.normalized_nonzero()?;
+    let inside_domain = inside_bottom.domain();
+    let inside_endpoints = [
+        inside_bottom.evaluate(*inside_domain.start())?,
+        inside_bottom.evaluate(*inside_domain.end())?,
+    ];
+    let projected_distance = |point: Point3| -> Result<Real, GeometryError> {
+        Ok(outside_end.vector_to(point)?.dot(axis.as_vector())?.abs())
+    };
+    let endpoint_index = usize::from(
+        projected_distance(inside_endpoints[1])? < projected_distance(inside_endpoints[0])?,
+    );
+    let seam = inside_endpoints[endpoint_index];
+    if projected_distance(seam)? > distance_tolerance * 2.0 {
+        return Ok(None);
+    }
+    let target_tangent = if inside_is_first {
+        let mut side_tangent = None;
+        for edge in inside.natural_edge_curves()? {
+            if edge.degree() != 1 {
+                continue;
+            }
+            let domain = edge.domain();
+            let start = edge.evaluate(*domain.start())?;
+            let end = edge.evaluate(*domain.end())?;
+            if start.distance_to(seam)? <= distance_tolerance * 2.0 {
+                side_tangent = Some(start.vector_to(end)?.normalized_nonzero()?);
+                break;
+            }
+            if end.distance_to(seam)? <= distance_tolerance * 2.0 {
+                side_tangent = Some(end.vector_to(start)?.normalized_nonzero()?);
+                break;
+            }
+        }
+        let Some(tangent) = side_tangent else {
+            return Ok(None);
+        };
+        tangent
+    } else if endpoint_index == 0 {
+        inside_bottom.tangent_at_on_side(*inside_domain.start(), crate::ParameterSide::Right)?
+    } else {
+        let reversed = inside_bottom.reversed()?;
+        reversed.tangent_at_on_side(*reversed.domain().start(), crate::ParameterSide::Right)?
+    };
+    let mut best = None;
+    for candidate in [boundary.clone(), boundary.reversed()?] {
+        let Some(seam_parameter) =
+            coincident_boundary_seam_parameter(&candidate, seam, tolerance, distance_tolerance)?
+        else {
+            continue;
+        };
+        let moved = candidate.try_change_closed_seam(seam_parameter)?;
+        let tangent =
+            moved.tangent_at_on_side(*moved.domain().start(), crate::ParameterSide::Right)?;
+        let alignment = tangent.as_vector().dot(target_tangent.as_vector())?;
+        if best
+            .as_ref()
+            .is_none_or(|(score, _): &(Real, NurbsCurve)| alignment > *score)
+        {
+            best = Some((alignment, moved));
+        }
+    }
+    let Some((alignment, selected)) = best else {
+        return Ok(None);
+    };
+    if alignment < 0.5 {
+        return Ok(None);
+    }
+    let domain_start = if inside_is_first {
+        let mut parameter = None;
+        for edge in outside.natural_edge_curves()? {
+            if edge.degree() != 1 {
+                continue;
+            }
+            let candidate = edge.closest_parameter(seam, tolerance)?;
+            if edge.evaluate(candidate)?.distance_to(seam)? <= distance_tolerance * 2.0 {
+                parameter = Some(candidate);
+                break;
+            }
+        }
+        let Some(parameter) = parameter else {
+            return Ok(None);
+        };
+        parameter
+    } else {
+        0.0
+    };
+    let span = *selected.domain().end() - *selected.domain().start();
+    Ok(Some(
+        selected.try_reparameterized(domain_start..=domain_start + span)?,
+    ))
+}
+
+fn strip_bottom_edge(strip: &NurbsSurface) -> Result<NurbsCurve, GeometryError> {
+    let mut edges = strip.natural_edge_curves()?;
+    (if strip.degree_v() == 1 {
+        edges.into_iter().next()
+    } else {
+        edges.pop()
+    })
+    .ok_or(GeometryError::InvalidControlNet {
+        context: "certified planar strip has no bottom edge",
+    })
+}
+
+fn coincident_boundary_seam_parameter(
+    boundary: &NurbsCurve,
+    seam: Point3,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<Real>, GeometryError> {
+    let closest = boundary.closest_parameter(seam, tolerance)?;
+    let parameter = boundary
+        .knots()
+        .iter()
+        .copied()
+        .filter(|parameter| boundary.domain().contains(parameter))
+        .filter(|parameter| {
+            boundary
+                .evaluate(*parameter)
+                .and_then(|point| point.distance_to(seam))
+                .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+        })
+        .min_by(|left, right| (left - closest).abs().total_cmp(&(right - closest).abs()))
+        .unwrap_or(closest);
+    if boundary.evaluate(parameter)?.distance_to(seam)? <= distance_tolerance * 2.0 {
+        Ok(Some(parameter))
+    } else {
+        Ok(None)
+    }
+}
+
 /// Returns `Some(true)` only when the entire natural bottom edge is inside
 /// the other strip, `Some(false)` when none of it is, and `None` for partial
 /// overlap. Restricting the domain rule to nested strips avoids guessing how
@@ -2353,15 +2505,7 @@ fn strip_bottom_fully_inside(
     tolerance: Tolerance,
     distance_tolerance: Real,
 ) -> Result<Option<bool>, GeometryError> {
-    let mut edges = strip.natural_edge_curves()?;
-    let edge = (if strip.degree_v() == 1 {
-        edges.into_iter().next()
-    } else {
-        edges.pop()
-    })
-    .ok_or(GeometryError::InvalidControlNet {
-        context: "certified planar strip has no bottom edge",
-    })?;
+    let edge = strip_bottom_edge(strip)?;
     let pieces = intersect_curve_with_planar_surface(&edge, other, tolerance)?
         .into_iter()
         .filter_map(|event| match event {
@@ -2426,23 +2570,11 @@ fn orient_coincident_strip_boundary(
             }
         }
     }
-    let closest = boundary.closest_parameter(seam, tolerance)?;
-    let seam_parameter = boundary
-        .knots()
-        .iter()
-        .copied()
-        .filter(|parameter| boundary.domain().contains(parameter))
-        .filter(|parameter| {
-            boundary
-                .evaluate(*parameter)
-                .and_then(|point| point.distance_to(seam))
-                .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
-        })
-        .min_by(|left, right| (left - closest).abs().total_cmp(&(right - closest).abs()))
-        .unwrap_or(closest);
-    if boundary.evaluate(seam_parameter)?.distance_to(seam)? > distance_tolerance * 2.0 {
+    let Some(seam_parameter) =
+        coincident_boundary_seam_parameter(boundary, seam, tolerance, distance_tolerance)?
+    else {
         return Ok(None);
-    }
+    };
     let span = *boundary.domain().end() - *boundary.domain().start();
     let end = domain_start + span;
     crate::require_finite([domain_start, end], "coincident strip boundary domain")?;
@@ -6330,6 +6462,30 @@ mod tests {
                     .is_near(point(0.0, 2.0), Tolerance::DEFAULT)
             );
         }
+        for (first, second, expected_x, expected_domain, curved_first) in [
+            (&lower, &upper_v, 10.0, 0.0, true),
+            (&upper_v, &lower, 10.0, 2.0, false),
+            (&lower_v, &upper, 0.0, 0.0, true),
+            (&upper, &lower_v, 0.0, 2.0, false),
+        ] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("mixed-axis bent strips must share one perimeter, got {events:#?}")
+            };
+            assert_eq!(perimeter.degree(), 2);
+            assert!(perimeter.is_closed().unwrap());
+            assert!((*perimeter.domain().start() - expected_domain).abs() < 1e-10);
+            assert!(
+                perimeter.control_points()[0]
+                    .point()
+                    .is_near(point(expected_x, 2.0), Tolerance::DEFAULT)
+            );
+            assert_eq!(
+                (perimeter.control_points()[1].point().x() - expected_x).abs() > 1.0,
+                curved_first
+            );
+        }
     }
 
     #[test]
@@ -6457,6 +6613,34 @@ mod tests {
         };
         assert_eq!(perimeter.domain(), 10.0..=46.0);
         assert_eq!(perimeter.control_points()[7].weight(), 0.5);
+        for (first, second, expected_x, expected_domain, curved_first) in [
+            (&lower, &upper_v, 10.0, 0.0, true),
+            (&upper_v, &lower, 10.0, 2.0, false),
+            (&lower_v, &upper, 0.0, 0.0, true),
+            (&upper, &lower_v, 0.0, 2.0, false),
+        ] {
+            let events =
+                surface_surface_intersection_events(first, second, Tolerance::DEFAULT).unwrap();
+            let [SurfaceSurfaceIntersectionEvent::Curve(perimeter)] = events.as_slice() else {
+                panic!("mixed-axis rational strips must share one perimeter")
+            };
+            assert_eq!(perimeter.degree(), 2);
+            assert!(perimeter.is_closed().unwrap());
+            assert!((*perimeter.domain().start() - expected_domain).abs() < 1e-10);
+            assert!(
+                perimeter.control_points()[0]
+                    .point()
+                    .is_near(point(expected_x, 2.0), Tolerance::DEFAULT)
+            );
+            assert_eq!(
+                (perimeter.control_points()[1].weight() - 0.5).abs() < 1e-10,
+                curved_first
+            );
+            assert_eq!(
+                (perimeter.control_points()[7].weight() - 0.5).abs() < 1e-10,
+                !curved_first
+            );
+        }
     }
 
     #[test]

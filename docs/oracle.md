@@ -1065,6 +1065,11 @@ add eight weighted planar-strip overlaps. Their
 [U-direction](../tools/rhino_oracle/observations/coincident_rational_bent_strip_surface_intersection_command.json)
 and [V-direction](../tools/rhino_oracle/observations/coincident_transposed_rational_bent_strip_surface_intersection_command.json)
 Xvfb observations match all native control points, weights, knots, and domains.
+The [mixed-axis strip fixture](../tools/rhino_oracle/fixtures/coincident_mixed_axis_bent_strip_surface_intersection_command.json)
+intersects U-curved strips with V-curved strips in both orders, with polynomial
+and rational weights, shifted parameter domains, and rotated geometry. All
+twelve [Xvfb observations](../tools/rhino_oracle/observations/coincident_mixed_axis_bent_strip_surface_intersection_command.json)
+match the full native curves.
 The [bilinear plane fixture](../tools/rhino_oracle/fixtures/bilinear_plane_intersect_command.json)
 adds five saddle-patch `Intersect` cases: two conic branches, a clipped branch,
 two plane-contained rulings, two isolated corner contacts, and rationally
