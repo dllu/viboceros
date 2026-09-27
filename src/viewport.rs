@@ -235,6 +235,12 @@ pub enum LassoSelectionInput<'a> {
     Waiting,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FacePickMode {
+    Mesh,
+    MeshAndBrep,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct ViewportInput<'a> {
     pub drafting: DraftingInput,
@@ -252,7 +258,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
-    pub mesh_face_pick: bool,
+    pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
     pub edge_highlights: &'a [EdgePick],
     pub edge_endpoints: Option<[Point3; 2]>,
@@ -300,7 +306,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
-            mesh_face_pick: false,
+            face_pick: None,
             edge_pick: false,
             edge_highlights: &[],
             edge_endpoints: None,
@@ -323,7 +329,7 @@ pub struct ViewportOutput {
     pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
     pub edge_parameter: Option<Real>,
-    pub mesh_face_click: Option<(ObjectId, usize)>,
+    pub face_click: Option<(ObjectId, usize)>,
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
@@ -747,7 +753,7 @@ impl Viewport {
             }
         }
 
-        let component_input = input.mesh_face_pick
+        let component_input = input.face_pick.is_some()
             || input.edge_pick
             || input.edge_curve.is_some()
             || input.point_cloud_remove_target.is_some();
@@ -1262,6 +1268,20 @@ impl Viewport {
             Color32::from_gray(100),
         );
 
+        let face_click = (input.face_pick.is_some()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && response.clicked_by(PointerButton::Primary))
+        .then(|| {
+            response.interact_pointer_pos().and_then(|pointer| {
+                self.pick_selected_face(pointer, rect, document, input.face_pick.unwrap())
+            })
+        })
+        .flatten();
+        let face_point_fallback = input.face_pick == Some(FacePickMode::MeshAndBrep)
+            && face_click.is_none()
+            && response.clicked_by(PointerButton::Primary)
+            && self.has_unmeshed_selected_brep(document);
         ViewportOutput {
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
@@ -1288,17 +1308,9 @@ impl Viewport {
                     .map(|p| self.pick_edges(p, rect, document))
                     .unwrap_or_default()
             }),
-            mesh_face_click: (input.mesh_face_pick
-                && !input.zoom_window
-                && input.zoom_target.is_none()
-                && response.clicked_by(PointerButton::Primary))
-            .then(|| {
-                response
-                    .interact_pointer_pos()
-                    .and_then(|p| self.pick_selected_mesh_face(p, rect, document))
-            })
-            .flatten(),
-            picked_point: (response.clicked_by(PointerButton::Primary) && !input.mesh_face_pick)
+            face_click,
+            picked_point: (response.clicked_by(PointerButton::Primary)
+                && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
             selection_click,

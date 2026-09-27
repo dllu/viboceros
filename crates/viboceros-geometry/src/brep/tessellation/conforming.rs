@@ -7,11 +7,21 @@ use crate::ParameterSide;
 impl Brep {
     /// Rebuild boundaries from one sample table per topological edge. Merely
     /// snapping independently sampled face grids cannot remove T-junctions.
+    #[cfg(test)]
     pub(super) fn tessellate_conforming(
         &self,
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate_conforming_with_face_sources(samples_per_span, tolerance)
+            .map(|(mesh, _)| mesh)
+    }
+
+    pub(super) fn tessellate_conforming_with_face_sources(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
         let frames = self
             .faces
             .iter()
@@ -242,7 +252,7 @@ impl Brep {
                 orientation_conflicts: topology.orientation_conflict_edge_count(),
             });
         }
-        Ok(mesh)
+        Ok((mesh, face_sources))
     }
 }
 

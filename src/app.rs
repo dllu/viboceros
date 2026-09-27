@@ -27,9 +27,9 @@ use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::GridSettings;
 use crate::viewport::{
     CircularSelectionInput, DisplayMode, DraftingInput, EndMarkerKind, EndMarkerOptions,
-    FenceSelectionInput, LassoSelectionInput, NamedViewSnapshot, SelectionChoice, SelectionClick,
-    SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput, ZoomExtentsBorders,
-    ZoomTargetInput, collect_end_markers,
+    FacePickMode, FenceSelectionInput, LassoSelectionInput, NamedViewSnapshot, SelectionChoice,
+    SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput, ViewportOutput,
+    ZoomExtentsBorders, ZoomTargetInput, collect_end_markers,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
@@ -7644,8 +7644,8 @@ impl VibocerosApp {
             self.accept_edge_click(picks);
         } else if let Some(parameter) = output.edge_parameter {
             self.accept_split_parameter(parameter);
-        } else if let Some((object, face)) = output.mesh_face_click {
-            self.accept_mesh_face_click(object, face);
+        } else if let Some((object, face)) = output.face_click {
+            self.accept_face_click(object, face);
         } else if let Some(point) = output.picked_point {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
@@ -7946,20 +7946,21 @@ impl eframe::App for VibocerosApp {
             .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         let preview_curve = self.curve_draft_preview();
-        let mesh_face_pick = matches!(
+        let face_pick = if matches!(
             self.active_command,
             Some(
                 InteractiveCommand::ExtractMeshFaces { .. }
                     | InteractiveCommand::ExtractConnectedMeshFaces { .. }
                     | InteractiveCommand::ExtractMeshPart { .. }
             )
-        ) || (self.active_command == Some(InteractiveCommand::DeleteFaces)
-            && self.document.selected_object_count() > 0
-            && self
-                .document
-                .selected_objects()
-                .all(|object| matches!(object.geometry(), Geometry::Mesh(_))));
-        let mesh_face_pick = mesh_face_pick && self.plane_prompt.is_none();
+        ) {
+            Some(FacePickMode::Mesh)
+        } else if self.active_command == Some(InteractiveCommand::DeleteFaces) {
+            Some(FacePickMode::MeshAndBrep)
+        } else {
+            None
+        }
+        .filter(|_| self.plane_prompt.is_none());
         let edge_pick = self
             .edge_prompt
             .as_ref()
@@ -8151,7 +8152,7 @@ impl eframe::App for VibocerosApp {
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
                             preview_curve: preview_curve.as_deref(),
-                            mesh_face_pick,
+                            face_pick,
                             edge_pick,
                             edge_highlights: &edge_highlights,
                             edge_endpoints,

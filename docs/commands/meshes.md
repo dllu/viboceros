@@ -172,8 +172,11 @@ or B-rep (`Faces=All` is supported), or omits the selector for a one-pick
 viewport workflow. A partial edit keeps the unselected source object's
 identity, attributes, groups, and surviving source face order. Mesh results
 compact unused vertices in source order; deleting every face removes the
-object. Mesh-only selections use the viewport's depth-aware face picker;
-selections containing a B-rep retain the point-pick path. Scripts can use
+object. Viewport clicks use depth-aware picking for both meshes and B-reps;
+B-rep display triangles retain their source face indices across seam repairs.
+When a B-rep cannot be meshed for display, the viewport falls back to a
+construction-plane point pick. Typed points use model-space nearest-face
+selection. Scripts can use
 `Face=index Object=selected-uuid` to target one selected mesh or B-rep. SubD
 input awaits a native SubD geometry type.
 Mesh extraction and deletion preserve n-gon overlays in any result containing

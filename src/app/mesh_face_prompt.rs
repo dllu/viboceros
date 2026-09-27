@@ -3,7 +3,7 @@ use super::{InteractiveCommand, VibocerosApp};
 use viboceros_document::ObjectId;
 
 impl VibocerosApp {
-    pub(super) fn accept_mesh_face_click(&mut self, object: ObjectId, face: usize) {
+    pub(super) fn accept_face_click(&mut self, object: ObjectId, face: usize) {
         let command = match self.active_command {
             Some(InteractiveCommand::ExtractMeshFaces { make_copy }) => format!(
                 "ExtractMeshFaces Face={face} Object={object} MakeCopy={}",

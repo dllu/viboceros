@@ -50,9 +50,14 @@ pub(super) struct DisplayGeometry {
     wire_density: i32,
     tolerance: Tolerance,
     wires: OnceCell<Vec<[Point3; 2]>>,
-    mesh: OnceCell<Option<TriangleMesh>>,
+    mesh: OnceCell<Option<GeneratedDisplayMesh>>,
     normals: OnceCell<Vec<[NaVector3<Real>; 3]>>,
     edges: OnceCell<Vec<Vec<[Point3; 2]>>>,
+}
+
+struct GeneratedDisplayMesh {
+    mesh: TriangleMesh,
+    face_sources: Option<Vec<usize>>,
 }
 
 impl DisplayGeometry {
@@ -132,14 +137,30 @@ impl DisplayGeometry {
         if let Geometry::Mesh(mesh) = &*self.geometry {
             return Some(mesh);
         }
+        self.generated_mesh().map(|generated| &generated.mesh)
+    }
+
+    pub(super) fn brep_face_sources(&self) -> Option<&[usize]> {
+        self.generated_mesh()?.face_sources.as_deref()
+    }
+
+    fn generated_mesh(&self) -> Option<&GeneratedDisplayMesh> {
         self.mesh
             .get_or_init(|| match &*self.geometry {
                 Geometry::NurbsSurface(surface) => surface
                     .tessellate(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
-                    .ok(),
+                    .ok()
+                    .map(|mesh| GeneratedDisplayMesh {
+                        mesh,
+                        face_sources: None,
+                    }),
                 Geometry::Brep(brep) => brep
-                    .display_mesh(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
-                    .ok(),
+                    .display_mesh_with_face_sources(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+                    .ok()
+                    .map(|(mesh, face_sources)| GeneratedDisplayMesh {
+                        mesh,
+                        face_sources: Some(face_sources),
+                    }),
                 _ => None,
             })
             .as_ref()

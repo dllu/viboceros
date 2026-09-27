@@ -125,26 +125,72 @@ fn triangle_depth(
 }
 
 impl Viewport {
-    pub(super) fn pick_selected_mesh_face(
+    pub(super) fn has_unmeshed_selected_brep(&self, document: &Document) -> bool {
+        document.selected_objects().any(|object| {
+            if !selection_candidate(document, object, None)
+                || !matches!(object.geometry(), Geometry::Brep(_))
+            {
+                return false;
+            }
+            let display = self
+                .display_cache
+                .borrow_mut()
+                .get(object, document.tolerance());
+            display.mesh().is_none() || display.brep_face_sources().is_none()
+        })
+    }
+
+    pub(super) fn pick_selected_face(
         &self,
         pointer: Pos2,
         rect: Rect,
         document: &Document,
+        mode: FacePickMode,
     ) -> Option<(ObjectId, usize)> {
         let mut nearest: Option<(PickHit, ObjectId, usize)> = None;
         for object in document.selected_objects() {
             if !selection_candidate(document, object, None) {
                 continue;
             }
-            let Geometry::Mesh(mesh) = object.geometry() else {
-                continue;
+            let display = if mode == FacePickMode::MeshAndBrep
+                && matches!(object.geometry(), Geometry::Brep(_))
+            {
+                Some(
+                    self.display_cache
+                        .borrow_mut()
+                        .get(object, document.tolerance()),
+                )
+            } else {
+                None
             };
-            let Some((hit, face)) = self.mesh_face_pick(pointer, rect, mesh) else {
+            let (mesh, sources) = match object.geometry() {
+                Geometry::Mesh(mesh) => (mesh, None),
+                Geometry::Brep(_) if mode == FacePickMode::MeshAndBrep => {
+                    let Some(display) = display.as_ref() else {
+                        continue;
+                    };
+                    let (Some(mesh), Some(sources)) = (display.mesh(), display.brep_face_sources())
+                    else {
+                        continue;
+                    };
+                    (mesh, Some(sources))
+                }
+                _ => continue,
+            };
+            let Some((hit, mesh_face)) = self.mesh_face_pick(pointer, rect, mesh) else {
                 continue;
             };
             if hit.distance > PICK_CAPTURE_PIXELS {
                 continue;
             }
+            let face = if let Some(sources) = sources {
+                let Some(&face) = sources.get(mesh_face) else {
+                    continue;
+                };
+                face
+            } else {
+                mesh_face
+            };
             if nearest.is_none_or(|(best, _, _)| hit.rank(best).is_lt()) {
                 nearest = Some((hit, object.id(), face));
             }
@@ -268,7 +314,7 @@ mod tests {
             .project(Point3::try_new(0.2, 0.2, 0.0).unwrap(), rect)
             .unwrap();
         assert_eq!(
-            view.pick_selected_mesh_face(pointer, rect, &document),
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
             Some((front, 0))
         );
 
@@ -276,7 +322,7 @@ mod tests {
             .select_objects_direct([back], SelectionMode::Replace)
             .unwrap();
         assert_eq!(
-            view.pick_selected_mesh_face(pointer, rect, &document),
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
             Some((back, 0))
         );
         let quad = TriangleMesh::try_new_faces(
@@ -298,8 +344,126 @@ mod tests {
             .select_objects_direct([quad_id], SelectionMode::Replace)
             .unwrap();
         assert_eq!(
-            view.pick_selected_mesh_face(pointer, rect, &document),
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
             Some((quad_id, 1))
+        );
+    }
+
+    #[test]
+    fn selected_brep_face_pick_maps_display_triangles_to_the_visible_source_face() {
+        let mut view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[-2.0, 2.0], [-2.0, 2.0], [0.0, 3.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let top_face = box_brep
+            .faces()
+            .iter()
+            .enumerate()
+            .max_by(|(_, first), (_, second)| {
+                let midpoint = |face: &viboceros_geometry::BrepFace| {
+                    let u = face.surface().domain_u();
+                    let v = face.surface().domain_v();
+                    face.surface()
+                        .evaluate((u.start() + u.end()) / 2.0, (v.start() + v.end()) / 2.0)
+                        .unwrap()
+                        .z()
+                };
+                midpoint(first).total_cmp(&midpoint(second))
+            })
+            .unwrap()
+            .0;
+        let brep = document.add_geometry(Geometry::Brep(box_brep)).unwrap();
+        let pointer = view
+            .project(Point3::try_new(0.25, 0.25, 3.0).unwrap(), rect)
+            .unwrap();
+        document
+            .select_objects_direct([brep], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrep),
+            Some((brep, top_face))
+        );
+        let context = egui::Context::default();
+        let mut frame = |events| {
+            let mut output = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(rect),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        output = view.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                face_pick: Some(FacePickMode::MeshAndBrep),
+                                object_filter: None,
+                                drafting: DraftingInput {
+                                    active: true,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            output
+        };
+        let event = |pos, pressed| egui::Event::PointerButton {
+            pos,
+            pressed,
+            button: PointerButton::Primary,
+            modifiers: egui::Modifiers::NONE,
+        };
+        frame(vec![]);
+        frame(vec![
+            egui::Event::PointerMoved(pointer),
+            event(pointer, true),
+        ]);
+        let output = frame(vec![event(pointer, false)]);
+        assert_eq!(output.face_click, Some((brep, top_face)));
+        assert!(output.picked_point.is_none());
+        let empty = rect.center() + Vec2::new(155.0, -135.0);
+        frame(vec![egui::Event::PointerMoved(empty), event(empty, true)]);
+        let empty_output = frame(vec![event(empty, false)]);
+        assert!(empty_output.face_click.is_none());
+        assert!(empty_output.picked_point.is_none());
+        drop(frame);
+
+        let front = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 4.0).unwrap(),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let mesh = document.add_geometry(Geometry::Mesh(front)).unwrap();
+        document
+            .select_objects_direct([brep, mesh], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrep),
+            Some((mesh, 0))
         );
     }
 
@@ -340,7 +504,7 @@ mod tests {
                             ui,
                             &document,
                             ViewportInput {
-                                mesh_face_pick: true,
+                                face_pick: Some(FacePickMode::Mesh),
                                 object_filter: None,
                                 drafting: DraftingInput {
                                     active: true,
@@ -366,7 +530,7 @@ mod tests {
         frame(vec![]);
         frame(vec![egui::Event::PointerMoved(pointer), event(true)]);
         let output = frame(vec![event(false)]);
-        assert_eq!(output.mesh_face_click, Some((id, 0)));
+        assert_eq!(output.face_click, Some((id, 0)));
         assert!(output.picked_point.is_none());
         assert!(output.selection_click.is_none());
     }

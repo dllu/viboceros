@@ -125,7 +125,7 @@ fn viewport_face_hit_runs_each_region_command_on_the_hit_object() {
             .select_objects_direct([target, other], viboceros_document::SelectionMode::Replace)
             .unwrap();
         assert!(app.try_start_interactive_command(&format!("{command} MakeCopy=Yes")));
-        app.accept_mesh_face_click(target, 0);
+        app.accept_face_click(target, 0);
         assert_eq!(app.active_command, None);
         assert_eq!(app.document.undo_label(), Some(command));
         let selected = app.document.selected_objects().collect::<Vec<_>>();
@@ -159,7 +159,7 @@ fn viewport_face_hit_extracts_or_deletes_the_hit_mesh_face() {
             .select_objects_direct([target, other], viboceros_document::SelectionMode::Replace)
             .unwrap();
         assert!(app.try_start_interactive_command(command));
-        app.accept_mesh_face_click(target, 1);
+        app.accept_face_click(target, 1);
         assert_eq!(app.active_command, None);
         assert_eq!(app.document.undo_label(), Some(command));
         assert!(app.document.object(other).is_some());
@@ -176,4 +176,38 @@ fn viewport_face_hit_extracts_or_deletes_the_hit_mesh_face() {
             ));
         }
     }
+}
+
+#[test]
+fn viewport_brep_face_hit_deletes_the_mapped_source_face() {
+    let mut app = test_app();
+    let frame = viboceros_geometry::Frame3::try_from_normal(
+        point(0.0, 0.0, 0.0),
+        viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let brep = viboceros_geometry::Brep::try_box(
+        frame,
+        [[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]],
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let source = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    app.document
+        .select_object(source, viboceros_document::SelectionMode::Replace)
+        .unwrap();
+    assert!(app.try_start_interactive_command("DeleteFaces"));
+    app.accept_face_click(source, 0);
+    assert_eq!(app.active_command, None);
+    assert_eq!(app.document.undo_label(), Some("DeleteFaces"));
+    assert!(matches!(
+        app.document.object(source).unwrap().geometry(),
+        Geometry::Brep(remainder) if remainder.faces().len() == 5
+    ));
+    app.document.undo().unwrap();
+    assert!(matches!(
+        app.document.object(source).unwrap().geometry(),
+        Geometry::Brep(restored) if restored.faces().len() == 6
+    ));
 }

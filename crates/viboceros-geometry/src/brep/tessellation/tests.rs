@@ -13,6 +13,36 @@ fn unit_box() -> Brep {
     Brep::try_box(frame, [[0.0, 1.0]; 3], Tolerance::DEFAULT).unwrap()
 }
 
+#[test]
+fn display_mesh_retains_source_face_indices() {
+    let source = unit_box();
+    let (mesh, faces) = source
+        .display_mesh_with_face_sources(3, Tolerance::DEFAULT)
+        .unwrap();
+    assert_eq!(mesh, source.display_mesh(3, Tolerance::DEFAULT).unwrap());
+    assert_eq!(faces.len(), mesh.face_count());
+    assert_eq!(
+        faces
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>(),
+        (0..source.faces().len()).collect()
+    );
+    assert!(faces.windows(2).all(|pair| pair[0] <= pair[1]));
+
+    let (conforming, sources) = source
+        .tessellate_conforming_with_face_sources(2, Tolerance::DEFAULT)
+        .unwrap();
+    assert_eq!(sources.len(), conforming.face_count());
+    assert_eq!(
+        sources
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>(),
+        (0..source.faces().len()).collect()
+    );
+}
+
 fn check_open_corner(mesh: &TriangleMesh) {
     let lines = mesh
         .filtered_edge_lines(crate::MeshEdgeFilter::Naked, Tolerance::DEFAULT)

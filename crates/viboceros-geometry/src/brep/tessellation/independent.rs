@@ -18,6 +18,7 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
         self.tessellate_impl(samples_per_span, false, false, tolerance)
+            .map(|(mesh, _)| mesh)
     }
 
     /// Creates a display approximation without requiring a watertight mesh.
@@ -31,7 +32,18 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        self.tessellate(samples_per_span, tolerance)
+        self.display_mesh_with_face_sources(samples_per_span, tolerance)
+            .map(|(mesh, _)| mesh)
+    }
+
+    /// Display mesh and its source B-rep face for every stored mesh face.
+    /// The mapping survives the conforming seam fallback used by `display_mesh`.
+    pub fn display_mesh_with_face_sources(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
+        self.tessellate_impl(samples_per_span, false, false, tolerance)
             .or_else(|error| {
                 // Independent UV triangulation does not constrain internal
                 // positional breaks. Never bridge one to obtain a display mesh.
@@ -91,6 +103,7 @@ impl Brep {
             .max()
             .expect("a validated B-rep has at least one face");
         self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance)
+            .map(|(mesh, _)| mesh)
     }
 
     fn tessellate_impl(
@@ -99,7 +112,7 @@ impl Brep {
         preserve_quads: bool,
         jagged_seams: bool,
         tolerance: Tolerance,
-    ) -> Result<TriangleMesh, GeometryError> {
+    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
         if samples_per_span == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
@@ -183,9 +196,9 @@ impl Brep {
         if !jagged_seams
             && !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)?
         {
-            return self.tessellate_conforming(samples_per_span, tolerance);
+            return self.tessellate_conforming_with_face_sources(samples_per_span, tolerance);
         }
-        Ok(mesh)
+        Ok((mesh, face_sources))
     }
 
     fn tessellate_planar_trimmed_face(
