@@ -232,6 +232,12 @@ def run(operation, tolerance, host):
                             piece.Faces[0].Domain(1).ParameterAt(0.0)))
                         for fraction in [i / 20.0 for i in range(21)]]
                     if operation.get("stations") else None,
+                    "wall_grid": [[
+                        host["_xyz"](piece.Faces[0].PointAt(
+                            piece.Faces[0].Domain(0).ParameterAt(u / 40.0),
+                            piece.Faces[0].Domain(1).ParameterAt(v / 16.0)))
+                        for v in range(16)] for u in range(41)]
+                    if operation.get("inspect_wall_grid") else None,
                     "wall_basis": _wall_basis(piece.Faces[0], host)
                     if operation.get("inspect_basis") else None,
                     "wall_bases": [_wall_basis(piece.Faces[i], host)

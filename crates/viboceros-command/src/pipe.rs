@@ -432,8 +432,16 @@ fn segmented_polycurve_pipe(
                     _ => None,
                 })
                 .collect::<Vec<_>>();
+            // Rhino's fitted closed Pipe places its periodic seam halfway
+            // along the first line, leaving no rail corner at that seam.
+            let first = lines[0];
+            let midpoint = first.point_at(0.5)?;
+            let mut rotated = Vec::with_capacity(lines.len() + 1);
+            rotated.push(LineSegment::try_new(midpoint, first.end(), tolerance)?);
+            rotated.extend(lines.iter().skip(1).copied());
+            rotated.push(LineSegment::try_new(first.start(), midpoint, tolerance)?);
             if let Some(pipe) = mitered_line_pipe_profile(
-                &lines,
+                &rotated,
                 endpoint_radii,
                 blend,
                 cap,
@@ -687,6 +695,27 @@ fn mitered_line_pipe_profile(
             tolerance,
         )?);
     }
+    let seam_rotation = if closed {
+        let last_direction = *directions.last().expect("closed line loop has segments");
+        let closing = AffineTransform3::try_rotation_between(
+            last_direction.normalized_nonzero()?,
+            directions[0].normalized_nonzero()?,
+            tolerance,
+        )?;
+        let initial = frames[0].x_axis().as_vector();
+        let returned = closing.transform_vector(
+            frames
+                .last()
+                .expect("closed line loop has frames")
+                .x_axis()
+                .as_vector(),
+        )?;
+        let sine = directions[0].dot(initial.cross(returned)?)?;
+        let cosine = initial.dot(returned)?;
+        -sine.atan2(cosine)
+    } else {
+        0.0
+    };
     let total = lengths.iter().sum::<Real>();
     let make_wall = |offset: Real| -> Result<Brep, CommandError> {
         let mut distance = 0.0;
@@ -705,7 +734,18 @@ fn mitered_line_pipe_profile(
                     .get(index + 1)
                     .map(|&next| [directions[index], next])
                     .or_else(|| closed.then(|| [*directions.last().unwrap(), directions[0]]));
-                let surface = if endpoint_radii[0] == endpoint_radii[1] {
+                let surface = if closed {
+                    mitered_line_closed_surface(
+                        *line,
+                        frames[index],
+                        endpoint_radii[0] + offset,
+                        [start, end],
+                        seam_rotation,
+                        start_joint,
+                        end_joint,
+                        tolerance,
+                    )?
+                } else if endpoint_radii[0] == endpoint_radii[1] {
                     mitered_line_surface(
                         *line,
                         frames[index],
@@ -913,6 +953,76 @@ fn mitered_line_surface(
         controls,
         cylinder.knots_u().to_vec(),
         cylinder.knots_v().to_vec(),
+    )?)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn mitered_line_closed_surface(
+    line: LineSegment,
+    frame: Frame3,
+    radius: Real,
+    interval: [Real; 2],
+    seam_rotation: Real,
+    start_joint: Option<[Vector3; 2]>,
+    end_joint: Option<[Vector3; 2]>,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    let length = line.length()?;
+    let unit = NurbsSurface::try_cylinder(frame, 1.0, 0.0, length)?;
+    let circle = &unit.control_points()[..unit.control_point_count_u()];
+    let blend = |fraction: Real| fraction * fraction * (3.0 - 2.0 * fraction);
+    let derivative = |fraction: Real| 6.0 * fraction * (1.0 - fraction);
+    let [start, end] = interval;
+    let span = end - start;
+    let blend_controls = [
+        blend(start),
+        blend(start) + span * derivative(start) / 3.0,
+        blend(end) - span * derivative(end) / 3.0,
+        blend(end),
+    ];
+    let (sine, cosine) = seam_rotation.sin_cos();
+    let axial = frame.z_axis().as_vector();
+    let mut controls = Vec::with_capacity(4 * circle.len());
+    for (row, blend) in blend_controls.into_iter().enumerate() {
+        let real = 1.0 - blend + blend * cosine;
+        let imaginary = blend * sine;
+        let center = frame
+            .origin()
+            .translated(axial.scaled(row as Real * length / 3.0)?)?;
+        for control in circle {
+            let radial = frame.origin().vector_to(control.point())?;
+            let tangent = axial.cross(radial)?;
+            let point = center
+                .translated(radial.scaled(radius * real)?)?
+                .translated(tangent.scaled(radius * imaginary)?)?;
+            controls.push(WeightedPoint3::try_new(point, control.weight())?);
+        }
+    }
+    let count = circle.len();
+    let direction = line.direction(tolerance)?.as_vector();
+    for (row, joint, pair) in [
+        (0, line.start(), start_joint),
+        (3 * count, line.end(), end_joint),
+    ] {
+        let Some([first_direction, second_direction]) = pair else {
+            continue;
+        };
+        let divisor = 1.0 + first_direction.dot(second_direction)?;
+        for control in &mut controls[row..row + count] {
+            let radial = joint.vector_to(control.point())?;
+            let shift = -(first_direction.dot(radial)? + second_direction.dot(radial)?) / divisor;
+            let point = control.point().translated(direction.scaled(shift)?)?;
+            *control = WeightedPoint3::try_new(point, control.weight())?;
+        }
+    }
+    Ok(NurbsSurface::try_new_rational(
+        unit.degree_u(),
+        3,
+        count,
+        4,
+        controls,
+        unit.knots_u().to_vec(),
+        vec![0.0, 0.0, 0.0, 0.0, length, length, length, length],
     )?)
 }
 
@@ -2830,11 +2940,12 @@ mod tests {
     fn fitted_closed_triangle_and_spatial_loop_make_solid_pipes() {
         let tolerance = Tolerance::DEFAULT;
         let registry = CommandRegistry::with_builtins();
-        for (name, vertices, rhino_volumes) in [
+        for (name, vertices, rhino_volumes, planar) in [
             (
                 "triangle",
                 vec![p(0., 0., 0.), p(3., 0., 0.), p(1.5, 2.5, 0.), p(0., 0., 0.)],
-                Some([2.4968928233655134, 4.438920567236832]),
+                [2.4968928233655134, 4.438920567236832],
+                true,
             ),
             (
                 "spatial loop",
@@ -2845,7 +2956,8 @@ mod tests {
                     p(0., 2., 0.),
                     p(0., 0., 0.),
                 ],
-                None,
+                [2.9073922697381915, 5.168697873404391],
+                false,
             ),
         ] {
             let perimeter = vertices
@@ -2877,19 +2989,90 @@ mod tests {
                 assert!(pipe.is_closed(), "{name} {options}");
                 assert!(pipe.is_solid(), "{name} {options}");
                 let measured = pipe.signed_volume(tolerance).unwrap();
-                assert!(
-                    (measured - perimeter * area).abs() < 5e-6,
-                    "{name} {options}: {measured} vs analytic {}",
-                    perimeter * area,
-                );
-                if let Some(rhino_volumes) = rhino_volumes {
+                if planar {
                     assert!(
-                        (measured - rhino_volumes[index]).abs() < 5e-6,
-                        "{name} {options}: {measured} vs Rhino {}",
-                        rhino_volumes[index]
+                        (measured - perimeter * area).abs() < 5e-6,
+                        "{name} {options}: {measured} vs analytic {}",
+                        perimeter * area,
                     );
                 }
+                assert!(
+                    (measured - rhino_volumes[index]).abs() < 5e-6,
+                    "{name} {options}: {measured} vs Rhino {}",
+                    rhino_volumes[index]
+                );
             }
+        }
+    }
+
+    #[test]
+    fn fitted_closed_spatial_pipe_tracks_rhino_wall_samples() {
+        let tolerance = Tolerance::DEFAULT;
+        let rail = Polyline3::try_new(
+            vec![
+                p(0., 0., 0.),
+                p(3., 0., 0.),
+                p(3., 2., 1.),
+                p(0., 2., 0.),
+                p(0., 0., 0.),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let mut document = Document::default();
+        let source = document.add_geometry(Geometry::Polyline(rail)).unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 0.3 FitRail=Yes Cap=Flat"),
+            )
+            .unwrap();
+        let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+            panic!("closed spatial pipe should be a B-rep")
+        };
+        let samples = [
+            p(2.580779172514338, 0.29944294122962345, 0.003748513965577651),
+            p(
+                2.905837102170516,
+                0.003748513965577929,
+                -0.29944294122962267,
+            ),
+            p(2.727387704892325, 1.0338568689426977, 0.3815722284741339),
+            p(3.2726122951076744, 0.933142250924031, 0.6019273314592302),
+            p(1.6303572709321312, 1.7353380686061608, 0.4019940648509084),
+            p(1.5936022690395901, 2.264661931393839, 0.6726591151396656),
+            p(
+                0.29797433174408344,
+                1.0756291590617515,
+                -0.01363095987482699,
+            ),
+            p(
+                -0.2979743317440834,
+                1.1235398334008513,
+                0.013630959874826981,
+            ),
+            p(
+                0.44352697699132704,
+                0.29944294122962295,
+                -0.0037485139655774264,
+            ),
+            p(
+                -0.0430983639715959,
+                -0.29944294122962295,
+                0.003748513965577389,
+            ),
+        ];
+        for sample in samples {
+            let nearest = pipe
+                .faces()
+                .iter()
+                .filter_map(|face| {
+                    let (u, v) = face.surface().closest_parameters(sample, tolerance).ok()?;
+                    let candidate = face.surface().evaluate(u, v).ok()?;
+                    sample.distance_to(candidate).ok()
+                })
+                .fold(Real::INFINITY, Real::min);
+            assert!(nearest < 5e-4, "{sample:?}: gap {nearest}");
         }
     }
 

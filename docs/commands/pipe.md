@@ -51,13 +51,14 @@ fits one wall face across the corners while this implementation keeps a face
 per segment.
 Closed constant-radius line loops with `FitRail=Yes` join the last miter back
 to the first, including spatial loops whose two seam curves start at different
-points. Rectangle and triangle cases match Rhino's closed solid volumes within
-`5e-6`. Rhino returns two separate closed B-reps for a thick closed pipe; this
-implementation combines the outer and inner shells in one B-rep with the same
-signed volume on the tested planar loops. End cap options have no effect on a
-closed rail. The tested nonplanar loop makes a valid exact miter tube here, but
-Rhino's fitted surface has volume `2.907392` versus `2.940063` for that tube;
-spatial closed-rail surface parity remains open.
+points. The fitted wall starts halfway along the first line and blends the
+frame's accumulated rotation around the loop. Rectangle, triangle, and spatial
+loop cases match Rhino's closed solid volumes within `5e-6` for both thin and
+thick pipes. Ten points sampled from Rhino's spatial wall lie within `5e-4`
+model units of the constructed wall. Rhino returns one periodic wall face and
+two separate closed B-reps for a thick closed pipe; this implementation uses
+one face per line segment and combines the outer and inner shells in one B-rep.
+End cap options have no effect on a closed rail.
 For tapered sharp line rails with `FitRail=Yes`, the radius follows the full
 rail distance: Local blending uses a cubic smoothstep profile, while Global
 blending uses a linear profile. The mitered construction matches the tested

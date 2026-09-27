@@ -891,7 +891,8 @@
       "rail": "closed_spatial_loop",
       "radius": 0.3,
       "fit_rail": true,
-      "cap": "Flat"
+      "cap": "Flat",
+      "inspect_wall_grid": true
     },
     {
       "op": "pipe_round_probe",
