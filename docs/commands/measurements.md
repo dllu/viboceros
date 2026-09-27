@@ -23,9 +23,9 @@ lose; no document-distance tolerance is used to reject a nonzero direction.
 An invalid second or fourth picked point leaves its prompt active for correction.
 
 This implements the four-point workflow in [Rhino's Angle documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/angle.htm).
-`SubCrv` is not implemented. Seven live Rhino
-8.32.26160.13001 probes cover parallel, opposite, perpendicular, acute, obtuse,
-and spatial directions, including a rotated/translated CPlane. The
+Seven live Rhino 8.32.26160.13001 probes cover parallel, opposite,
+perpendicular, acute, obtuse, and spatial directions, including a
+rotated/translated CPlane. The
 [captured reports](../angle-rhino-reference.json) agree with native command
 results within Rhino's three-decimal display precision. The probes do not
 establish parity for degenerate inputs or extreme numeric ranges. Reproduce with:

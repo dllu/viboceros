@@ -71,6 +71,11 @@ points, and distances agree within `1e-10` (replay maximum absolute error
 `4.44e-16`). This checks the public geometry API;
 it does not measure Rhino's interactive face click behavior. The probe ran on a
 separate Xvfb display and released its Rhino process afterward.
+The [curved-face reference](../surface-face-uv-curved-rhino-reference.json)
+adds a rational cylindrical face and a quadratic face with non-unit domains.
+Its six indexed queries agree within `1e-10` (maximum absolute replay
+difference `3.13e-12`), including command-level normalized and projected-point
+checks. It also used a separate Xvfb display.
 
 The [session capture](../evaluate-uv-session-rhino-reference.json) and
 [session fixture](../../tools/rhino_oracle/fixtures/evaluate-uv-session.json) add

@@ -14,6 +14,16 @@ python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/surface-face-uv
 ```
 
 This is a geometry API comparison, not an interactive `EvaluateUVPt` click capture.
+The [curved-face fixture](../tools/rhino_oracle/fixtures/surface-face-uv-curved-api.json)
+adds a rational cylinder and a quadratic surface with separate non-unit UV
+domains. Its six queries match the [saved Rhino result](surface-face-uv-curved-rhino-reference.json)
+within `1e-10`; the largest absolute replay difference is `3.13e-12`. Both
+fixtures also exercise the document-level face-qualified UV query.
+Regenerate the curved observation with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/surface-face-uv-curved-api.json --timeout 300
+```
 
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.

@@ -55,24 +55,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn face_uv_fixture_matches_recorded_rhinocommon_queries() {
-        let request: ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/surface-face-uv-api.json"
-        ))
-        .unwrap();
-        let reference: Value = serde_json::from_str(include_str!(
-            "../../../docs/surface-face-uv-rhino-reference.json"
-        ))
-        .unwrap();
-        let response = run_request(&request).unwrap();
-        assert_eq!(response.results.len(), 1);
-        assert_eq!(response.results[0].id, "opposed-face-projections");
-        crate::test_json::close(
-            &response.results[0].value,
-            &reference["results"][0]["value"],
-            "surface-face-uv",
-            1e-10,
-            1e-10,
-        );
+    fn face_uv_fixtures_match_recorded_rhinocommon_queries() {
+        for (request_json, reference_json) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/surface-face-uv-api.json"),
+                include_str!("../../../docs/surface-face-uv-rhino-reference.json"),
+            ),
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/surface-face-uv-curved-api.json"
+                ),
+                include_str!("../../../docs/surface-face-uv-curved-rhino-reference.json"),
+            ),
+        ] {
+            let request: ProbeRequest = serde_json::from_str(request_json).unwrap();
+            let reference: Value = serde_json::from_str(reference_json).unwrap();
+            let response = run_request(&request).unwrap();
+            assert_eq!(response.results.len(), 1);
+            assert_eq!(response.results[0].id, reference["results"][0]["id"]);
+            crate::test_json::close(
+                &response.results[0].value,
+                &reference["results"][0]["value"],
+                "surface-face-uv",
+                1e-10,
+                1e-10,
+            );
+        }
     }
 }

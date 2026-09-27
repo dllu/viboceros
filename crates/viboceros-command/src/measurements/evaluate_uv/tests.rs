@@ -259,23 +259,39 @@ fn uv_reports_native_and_normalized_parameters_with_undoable_projected_markers()
 
 #[test]
 fn uv_qualified_faces_match_live_rhinocommon_underlying_surfaces() {
+    assert_uv_face_fixture(
+        include_str!("../../../../../tools/rhino_oracle/fixtures/surface-face-uv-api.json"),
+        include_str!("../../../../../docs/surface-face-uv-rhino-reference.json"),
+    );
+}
+
+#[test]
+fn curved_rational_faces_match_live_rhinocommon_underlying_surfaces() {
+    assert_uv_face_fixture(
+        include_str!("../../../../../tools/rhino_oracle/fixtures/surface-face-uv-curved-api.json"),
+        include_str!("../../../../../docs/surface-face-uv-curved-rhino-reference.json"),
+    );
+}
+
+fn assert_uv_face_fixture(request_json: &str, response_json: &str) {
     use serde_json::Value;
     use viboceros_geometry::WeightedPoint3;
 
-    let request: Value = serde_json::from_str(include_str!(
-        "../../../../../tools/rhino_oracle/fixtures/surface-face-uv-api.json"
-    ))
-    .unwrap();
-    let response: Value = serde_json::from_str(include_str!(
-        "../../../../../docs/surface-face-uv-rhino-reference.json"
-    ))
-    .unwrap();
+    let request: Value = serde_json::from_str(request_json).unwrap();
+    let response: Value = serde_json::from_str(response_json).unwrap();
     let operation = &request["operations"][0];
     let value = &response["results"][0]["value"];
+    assert_eq!(request["operations"].as_array().unwrap().len(), 1);
+    assert_eq!(response["results"].as_array().unwrap().len(), 1);
+    assert_eq!(response["results"][0]["id"], operation["id"]);
+    assert_eq!(
+        operation["queries"].as_array().unwrap().len(),
+        value["queries"].as_array().unwrap().len()
+    );
     let mut parts = Vec::new();
     for definition in operation["surfaces"].as_array().unwrap() {
         let count = |key| definition[key].as_u64().unwrap() as usize;
-        let surface = NurbsSurface::try_new_rational(
+        let mut surface = NurbsSurface::try_new_rational(
             count("degree_u"),
             count("degree_v"),
             count("control_point_count_u"),
@@ -296,6 +312,13 @@ fn uv_qualified_faces_match_live_rhinocommon_underlying_surfaces() {
             serde_json::from_value(definition["knots_v"].clone()).unwrap(),
         )
         .unwrap();
+        if !definition["domain_u"].is_null() {
+            let u: [f64; 2] = serde_json::from_value(definition["domain_u"].clone()).unwrap();
+            let v: [f64; 2] = serde_json::from_value(definition["domain_v"].clone()).unwrap();
+            surface = surface
+                .try_reparameterized(u[0]..=u[1], v[0]..=v[1])
+                .unwrap();
+        }
         parts.push(Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap());
     }
     let mut doc = Document::default();
