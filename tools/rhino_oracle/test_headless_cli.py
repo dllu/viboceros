@@ -14,12 +14,14 @@ class HeadlessCliTests(unittest.TestCase):
             self.assertTrue(command[0].endswith("/run_headless.sh"))
             self.assertEqual(command[1:], argv)
 
-    def test_replay_and_isolated_or_explicit_visible_runs_do_not_reexec(self):
+    def test_replay_and_isolated_runs_do_not_reexec(self):
         self.assertIsNone(headless_wrapper_argv("replay", ["replay", "fixture.json"], {}, "linux"))
         self.assertIsNone(headless_wrapper_argv("rhino", ["rhino", "fixture.json"],
-                                                 {"VIBOCEROS_ORACLE_HEADLESS": "1"}, "linux"))
-        self.assertIsNone(headless_wrapper_argv("rhino", ["rhino", "fixture.json"],
-                                                 {"VIBOCEROS_RHINO_VISIBLE": "1"}, "linux"))
+                                                 {"DISPLAY": ":101", "VIBOCEROS_ORACLE_HEADLESS": ":101"}, "linux"))
+        self.assertIsNotNone(headless_wrapper_argv("rhino", ["rhino", "fixture.json"],
+                                                    {"DISPLAY": ":0", "VIBOCEROS_ORACLE_HEADLESS": ":101"}, "linux"))
+        self.assertIsNotNone(headless_wrapper_argv("rhino", ["rhino", "fixture.json"],
+                                                    {"VIBOCEROS_RHINO_VISIBLE": "1"}, "linux"))
         self.assertIsNone(headless_wrapper_argv("rhino", ["rhino", "fixture.json"], {}, "darwin"))
 
 

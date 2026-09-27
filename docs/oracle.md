@@ -5,9 +5,9 @@
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 On Linux, the CLI automatically runs live `rhino` and `compare` probes under
-the dedicated `run_headless.sh` Xvfb display. Replay and native-only modes do
-not launch Rhino. Set `VIBOCEROS_RHINO_VISIBLE=1` only for an intentional
-interactive desktop run.
+the dedicated `run_headless.sh` Xvfb display. Direct Python API calls to
+`OracleClient.run_rhino` on Linux require an Xvfb session established by this
+wrapper. Replay and native-only modes do not launch Rhino.
 
 The [Match fixture](../tools/rhino_oracle/fixtures/curve_match_geometry.json)
 contains 33 live Rhino `CreateMatchCurve` cases for single-span line, polynomial,
@@ -1302,7 +1302,9 @@ tools/rhino_oracle/run_headless.sh compare \
   --absolute-epsilon 2e-11 --relative-epsilon 2e-12
 ```
 
-The same workflow is importable for instrumentation and tests:
+The same workflow is importable for instrumentation and tests. Run the Python
+process in the dedicated Xvfb session with
+`tools/rhino_oracle/run_headless.sh exec python3 your_script.py`:
 
 ```python
 from tools.rhino_oracle import OracleClient, load_request

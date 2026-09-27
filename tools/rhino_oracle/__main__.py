@@ -14,8 +14,8 @@ from .client import OracleClient, OracleError, load_request
 def headless_wrapper_argv(mode: str, argv: list[str], environ: dict[str, str],
                           platform: str) -> list[str] | None:
     if (mode not in ("rhino", "compare") or not platform.startswith("linux")
-            or environ.get("VIBOCEROS_ORACLE_HEADLESS") == "1"
-            or environ.get("VIBOCEROS_RHINO_VISIBLE") == "1"):
+            or (environ.get("DISPLAY")
+                and environ.get("VIBOCEROS_ORACLE_HEADLESS") == environ.get("DISPLAY"))):
         return None
     return [str(Path(__file__).with_name("run_headless.sh")), *argv]
 
@@ -38,7 +38,7 @@ def main() -> int:
 
     # Live probes must not open Rhino on the caller's desktop display. The
     # wrapper starts a dedicated Xvfb server and marks its child to avoid a
-    # recursive exec. An explicit opt-out keeps interactive debugging possible.
+    # recursive exec.
     wrapper_argv = headless_wrapper_argv(arguments.mode, sys.argv[1:], os.environ, sys.platform)
     if wrapper_argv is not None:
         os.execv(wrapper_argv[0], wrapper_argv)

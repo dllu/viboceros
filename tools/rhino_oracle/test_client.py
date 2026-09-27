@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import copy
+import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -34,6 +36,17 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Xvfb is required on Linux")
+    def test_direct_rhino_api_rejects_visible_display_before_launch(self):
+        client = OracleClient(launcher="/bin/true")
+        with (
+            patch.dict(os.environ, {"DISPLAY": ":0"}, clear=True),
+            patch("tools.rhino_oracle.client._run_logged") as launch,
+            self.assertRaisesRegex(OracleError, "dedicated Xvfb"),
+        ):
+            client.run_rhino({"protocol_version": 1, "iterations": 1, "operations": []})
+        launch.assert_not_called()
+
     @unittest.skipUnless(Path("/proc").is_dir(), "startup process check uses procfs")
     def test_launcher_without_a_rhino_process_fails_before_probe_timeout(self):
         client = OracleClient(launcher="/bin/true")
@@ -43,6 +56,7 @@ class OracleClientTests(unittest.TestCase):
             patch("tools.rhino_oracle.client._rhino_process_ids", return_value=set()),
             patch("tools.rhino_oracle.client._ui_fallback_enabled", return_value=False),
             patch("tools.rhino_oracle.client._run_logged", return_value=completed),
+            patch.dict(os.environ, {"DISPLAY": ":101", "VIBOCEROS_ORACLE_HEADLESS": ":101"}),
             self.assertRaisesRegex(OracleError, "Rhino process never appeared"),
         ):
             client.run_rhino({"protocol_version": 1, "iterations": 1, "operations": []}, timeout=120)
@@ -64,6 +78,7 @@ class OracleClientTests(unittest.TestCase):
             patch("tools.rhino_oracle.client._rhino_process_ids", side_effect=process_ids),
             patch("tools.rhino_oracle.client._ui_fallback_enabled", return_value=False),
             patch("tools.rhino_oracle.client._run_logged", return_value=completed),
+            patch.dict(os.environ, {"DISPLAY": ":101", "VIBOCEROS_ORACLE_HEADLESS": ":101"}),
             self.assertRaisesRegex(OracleError, "Rhino process exited before publishing"),
         ):
             client.run_rhino({"protocol_version": 1, "iterations": 1, "operations": []}, timeout=120)

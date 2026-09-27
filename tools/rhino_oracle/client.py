@@ -9,6 +9,7 @@ import os
 import signal
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 from dataclasses import asdict, dataclass
@@ -194,6 +195,14 @@ class OracleClient:
         owned, newly-created Rhino window is used for a scoped xdotool fallback.
         Existing Rhino processes and windows are never targeted.
         """
+
+        if (sys.platform.startswith("linux")
+                and (not os.environ.get("DISPLAY")
+                     or os.environ.get("VIBOCEROS_ORACLE_HEADLESS") != os.environ["DISPLAY"])):
+            raise OracleError(
+                "live Rhino probes require dedicated Xvfb; use "
+                "tools/rhino_oracle/run_headless.sh or the oracle CLI"
+            )
 
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
