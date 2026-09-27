@@ -58,15 +58,14 @@ to edit the first curve at the nearest pair of ends. `Pick1=` and `Pick2=` choos
 other ends; single-span curves currently support position, tangent, and curvature
 matching.
 Multi-span curves also support position matching with endpoint trimming, and
-tangent or curvature matching when they have enough controls to keep the
-requested opposite end unchanged. Curvature matching can preserve curvature at
-the opposite end when the multi-span source has at least six controls; shorter
-sources still need knot edits.
+tangent or curvature matching. When the source has too few controls to preserve
+the requested opposite end, Match inserts knots before editing its end. This
+includes five-control cubic curves matched at G2 while preserving far G2.
 `AverageCurves=Yes` moves both curves for position, tangent, or curvature
 matching and keeps the change in one undo step. Average curvature matching can
 preserve the far position or tangent of multi-span curves.
-It also preserves far curvature when both edited multi-span curves have at
-least six controls.
+It also preserves far curvature on both edited multi-span curves, refining
+either curve when needed.
 Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development

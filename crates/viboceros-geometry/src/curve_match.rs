@@ -305,26 +305,29 @@ fn match_end_to_target(
     }
     let matched_controls = continuity_control_count(continuity);
     let preserved_controls = preserve_control_count(preserve);
-    if !require_single_span
-        && original.control_points().len() < matched_controls + preserved_controls
-    {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "Match requires more controls to preserve the opposite end",
-        });
-    }
+    // Refinement gives the edited and preserved ends disjoint control sets
+    // without changing the source curve before the match. In particular, a
+    // two-span cubic with five controls needs one more control for G2 at both
+    // ends. Insert inside the span nearest the selected end so the opposite
+    // end keeps its endpoint jet after the local control edits.
+    let prepared = if require_single_span {
+        original.clone()
+    } else {
+        refine_for_disjoint_end_controls(original, at_end, matched_controls + preserved_controls)?
+    };
     let desired_degree = if require_single_span {
         original
             .degree()
             .max(matched_controls + preserved_controls - 1)
     } else {
-        original.degree()
+        prepared.degree()
     };
     if continuity == CurveBlendContinuity::Curvature && desired_degree < 2 {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match curvature requires at least a quadratic source span",
         });
     }
-    let elevated = original.try_change_degree(desired_degree, false)?;
+    let elevated = prepared.try_change_degree(desired_degree, false)?;
     let mut controls = elevated.control_points().to_vec();
     let last = controls.len() - 1;
     let endpoint_index = if at_end { last } else { 0 };
@@ -411,6 +414,44 @@ fn match_end_to_target(
     let matched =
         NurbsCurve::try_new_rational(desired_degree, controls, elevated.knots().to_vec())?;
     Ok(matched)
+}
+
+fn refine_for_disjoint_end_controls(
+    original: &NurbsCurve,
+    at_end: bool,
+    required_controls: usize,
+) -> Result<NurbsCurve, GeometryError> {
+    let mut refined = original.clone();
+    while refined.control_points().len() < required_controls {
+        let knots = refined.knots();
+        let start = *refined.domain().start();
+        let end = *refined.domain().end();
+        let interval = if at_end {
+            knots
+                .iter()
+                .rev()
+                .copied()
+                .find(|knot| *knot < end)
+                .map(|previous| (previous, end))
+        } else {
+            knots
+                .iter()
+                .copied()
+                .find(|knot| *knot > start)
+                .map(|next| (start, next))
+        }
+        .ok_or(GeometryError::Degenerate {
+            context: "Match source has no refinable end span",
+        })?;
+        let parameter = interval.0.midpoint(interval.1);
+        if parameter <= interval.0 || parameter >= interval.1 {
+            return Err(GeometryError::Degenerate {
+                context: "Match source end span is too narrow to refine",
+            });
+        }
+        refined = refined.try_insert_knot(parameter, 1)?;
+    }
+    Ok(refined)
 }
 
 /// Ratio of the second and first endpoint derivative knot denominators.
@@ -711,6 +752,118 @@ mod tests {
                 .unwrap();
             assert!((before.x() - after.x()).abs() < 1e-12);
             assert!((before.y() - after.y()).abs() < 1e-12);
+        }
+    }
+
+    #[test]
+    fn five_control_multispan_g2_refines_and_preserves_far_curvature() {
+        for (at_end, rational, uneven_knots) in [
+            (false, false, false),
+            (true, false, false),
+            (false, true, true),
+            (true, true, true),
+        ] {
+            let weights = if rational {
+                [1.0, 0.8, 1.2, 0.7, 1.0]
+            } else {
+                [1.0; 5]
+            };
+            let interior = if uneven_knots { 0.7 } else { 1.0 };
+            let end = if uneven_knots { 3.0 } else { 2.0 };
+            let source = Curve3::NurbsCurve(
+                NurbsCurve::try_new_rational(
+                    3,
+                    [
+                        point(0.0, 0.0),
+                        point(1.0, 0.0),
+                        point(2.0, 1.0),
+                        point(3.0, 1.0),
+                        point(4.0, 0.0),
+                    ]
+                    .into_iter()
+                    .zip(weights)
+                    .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+                    .collect(),
+                    vec![0.0, 0.0, 0.0, 0.0, interior, end, end, end, end],
+                )
+                .unwrap(),
+            );
+            let matched = try_match_curve_end(
+                &source,
+                at_end,
+                &reference(),
+                false,
+                CurveBlendContinuity::Curvature,
+                CurveMatchPreserveEnd::Curvature,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(matched.control_points().len(), 6);
+            let far = if at_end { 0.0 } else { end };
+            let original_curvature = source.as_ref().curvature_vector(far).unwrap();
+            let matched_curvature = CurveRef::NurbsCurve(&matched)
+                .curvature_vector(far)
+                .unwrap();
+            assert!((original_curvature.x() - matched_curvature.x()).abs() < 1e-10);
+            assert!((original_curvature.y() - matched_curvature.y()).abs() < 1e-10);
+            assert!((original_curvature.z() - matched_curvature.z()).abs() < 1e-10);
+            let original_point = source.as_ref().evaluate(far).unwrap();
+            let matched_point = matched.evaluate(far).unwrap();
+            assert!(original_point.distance_to(matched_point).unwrap() < 1e-10);
+        }
+    }
+
+    #[test]
+    fn average_five_control_multispan_g2_preserves_both_far_curvatures() {
+        let first = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                [
+                    point(0.0, 0.0),
+                    point(1.0, 0.0),
+                    point(2.0, 1.0),
+                    point(3.0, 1.0),
+                    point(4.0, 0.0),
+                ]
+                .to_vec(),
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        let second = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                [
+                    point(5.0, -1.0),
+                    point(6.0, -1.0),
+                    point(7.0, 0.0),
+                    point(8.0, 0.0),
+                    point(9.0, -1.0),
+                ]
+                .to_vec(),
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        let (matched_first, matched_second) = try_average_match_curve_ends(
+            &first,
+            false,
+            &second,
+            true,
+            CurveBlendContinuity::Curvature,
+            CurveMatchPreserveEnd::Curvature,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (original, matched, far) in [
+            (&first, &matched_first, 2.0),
+            (&second, &matched_second, 0.0),
+        ] {
+            assert_eq!(matched.control_points().len(), 6);
+            let before = original.as_ref().curvature_vector(far).unwrap();
+            let after = CurveRef::NurbsCurve(matched).curvature_vector(far).unwrap();
+            assert!((before.x() - after.x()).abs() < 1e-10);
+            assert!((before.y() - after.y()).abs() < 1e-10);
         }
     }
 

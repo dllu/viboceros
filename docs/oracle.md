@@ -82,9 +82,18 @@ projection. In these samples, Rhino chooses the curvature-derived tangential
 control when it differs from the original projection by at most 10% of their
 mean magnitude;
 all 12 native replays match within `1e-10`. These probes ran on a separate Xvfb
-display. The
-[five-control probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-retains a G2 match with far G2 preservation that still needs knot edits.
+display. The [five-control probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
+is now supported by shape-preserving knot insertion before matching. The native
+output preserves the far endpoint position, tangent, and curvature, including
+for rational and uneven-knot sources, but its resulting control points and
+parameterization still differ from Rhino's. The
+[six-case Rhino probe](../tools/rhino_oracle/fixtures/curve_match_five_control_far_g2_probe.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_five_control_far_g2_probe.json)
+show Rhino returns a uniform, nonrational six-control cubic in all sampled cases.
+The [Rebuild comparison](../tools/rhino_oracle/fixtures/curve_match_five_control_rebuild_probe.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_five_control_rebuild_probe.json)
+show Rhino's public `NurbsCurve.Rebuild(6, 3, ...)` does not produce the same
+far controls as `CreateMatchCurve`. Both live probes used a separate Xvfb display.
 The [five-case supported fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_preserve_far_curvature.json)
 and [Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_preserve_far_curvature.json)
 cover six- and seven-control cubic sources, both selected ends, a rational
