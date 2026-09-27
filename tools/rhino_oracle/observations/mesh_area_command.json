@@ -1,0 +1,239 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "area-lower-equal",
+      "value": {
+        "created_count": 1,
+        "history": "Python Script ( ResetEngine ): _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 0eafe5cd-2f5b-423b-9383-e709aa7072d9\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=0.9  SelectFacesSmallerThan=1.1  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _SelectFacesLargerThan\nSelect mesh face <0.900>: 1\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=1.1  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _SelectFacesSmallerThan\nSelect mesh face <1.100>: 10\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-lower-above",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 676fece8-d03d-416f-9a66-1dfc8e39258d\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <1.000>: 1.0001\nChange option or press Enter to accept ( SelectFacesLargerThan=1.0001  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <10.000>: 10\nChange option or press Enter to accept ( SelectFacesLargerThan=1.0001  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=1.0001  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=1.0001  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-upper-equal",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 386ef5c9-d1fb-4664-ba8e-d4028d3fb96a\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=1.0001  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <1.000>: 0\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <10.000>: 1\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-upper-below",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: cf6cdd02-6e3d-4a8c-8a7f-4ae6ecb24e70\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <0.000>: 0\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <1.000>: 0.9999\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=0.9999  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=0.9999  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=0.9999  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-triangle-equal-range",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: bcedd45e-4d20-43df-af2a-e051ca6c8594\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=0.9999  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <0.000>: 1\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=0.9999  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <1.000>: 1\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-quad-equal-range",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: e4293af4-04c2-40ea-bdcb-0cff465bbc9e\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=1  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <1.000>: 4\nChange option or press Enter to accept ( SelectFacesLargerThan=4  SelectFacesSmallerThan=1  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <1.000>: 4\nChange option or press Enter to accept ( SelectFacesLargerThan=4  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=4  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=4  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-triangle-two-equal",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 730a6094-6657-4e35-ab2f-3caa73a9a2c4\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=4  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <4.000>: 2\nChange option or press Enter to accept ( SelectFacesLargerThan=2  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <4.000>: 2\nChange option or press Enter to accept ( SelectFacesLargerThan=2  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=2  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=2  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-triangle-two-high",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 4b824230-ac04-477a-98c9-fa229d72389c\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=2  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <2.000>: 0\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <2.000>: 2\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-high-four",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 9f498b07-8811-4b44-b603-09a7c0ea5bd4\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <0.000>: 0\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=2  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <2.000>: 4\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=0  SelectFacesSmallerThan=4  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

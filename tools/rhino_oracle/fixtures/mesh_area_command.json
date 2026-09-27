@@ -1,0 +1,279 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "area-lower-equal",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 1 _SelectFacesSmallerThan 10 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-lower-above",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 1.0001 _SelectFacesSmallerThan 10 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-upper-equal",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 0 _SelectFacesSmallerThan 1 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-upper-below",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 0 _SelectFacesSmallerThan 0.9999 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-triangle-equal-range",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 1 _SelectFacesSmallerThan 1 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-quad-equal-range",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 4 _SelectFacesSmallerThan 4 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-triangle-two-equal",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 2 _SelectFacesSmallerThan 2 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-triangle-two-high",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 0 _SelectFacesSmallerThan 2 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-high-four",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 0 _SelectFacesSmallerThan 4 _MakeCopy=_Yes _Enter"
+    }
+  ]
+}

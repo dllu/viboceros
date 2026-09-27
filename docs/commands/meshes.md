@@ -173,9 +173,12 @@ Mesh extraction and deletion preserve n-gon overlays in any result containing
 every member face of the n-gon. A partial face group has no retained overlay.
 
 `ExtractMeshFacesByArea SmallerThan=2` extracts stored triangle and quad faces
-whose unsigned areas are strictly below the limit. `LargerThan=area` can be
-used alone or together with `SmallerThan=area`; `MinArea` and `MaxArea` are
-accepted aliases. `MakeCopy=Yes` retains the input faces. `BorderOnly=Yes`
+whose unsigned areas are at or below the limit. `LargerThan=area` selects faces
+at or above its limit and can be used alone or together with
+`SmallerThan=area`. Equal bounds are accepted. Face thresholds use Heron's
+formula to match Rhino's observed rounding, so a mathematically exact area
+may round just below its bound. `MinArea` and `MaxArea` are accepted aliases.
+`MakeCopy=Yes` retains the input faces. `BorderOnly=Yes`
 creates boundary polylines and leaves the input mesh intact. The command
 stages all selected meshes before editing, preserves output attributes and
 group memberships, and rejects a selection containing non-mesh objects.

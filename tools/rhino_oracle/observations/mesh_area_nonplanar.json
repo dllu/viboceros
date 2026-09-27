@@ -1,0 +1,61 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "area-nonplanar-low-6.1",
+      "value": {
+        "created_count": 1,
+        "history": "Python Script ( ResetEngine ): _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 27aa8196-9179-4a1f-ae07-b4bf2edae7e6\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=5.564276181896289  SelectFacesSmallerThan=6.800782000095464  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _SelectFacesLargerThan\nSelect mesh face <5.564>: 6.1\nChange option or press Enter to accept ( SelectFacesLargerThan=6.1  SelectFacesSmallerThan=6.800782000095464  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _SelectFacesSmallerThan\nSelect mesh face <6.801>: 10\nChange option or press Enter to accept ( SelectFacesLargerThan=6.1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=No ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=6.1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=6.1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                2.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "area-nonplanar-low-6.4",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByArea\nSelect mesh: _SelID\nObject ID to select: 95f3f55f-8c0c-4e9e-9ee4-07cdc439ca39\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFacesLargerThan=6.1  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesLargerThan\nSelect mesh face <6.100>: 6.4\nChange option or press Enter to accept ( SelectFacesLargerThan=6.4  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _SelectFacesSmallerThan\nSelect mesh face <10.000>: 10\nChange option or press Enter to accept ( SelectFacesLargerThan=6.4  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFacesLargerThan=6.4  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFacesLargerThan=6.4  SelectFacesSmallerThan=10  SetRangeFromFace  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    }
+  ]
+}

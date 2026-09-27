@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "area-nonplanar-low-6.1",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 6.1 _SelectFacesSmallerThan 10 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "area-nonplanar-low-6.4",
+      "op": "mesh_area_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFacesLargerThan 6.4 _SelectFacesSmallerThan 10 _MakeCopy=_Yes _Enter"
+    }
+  ]
+}

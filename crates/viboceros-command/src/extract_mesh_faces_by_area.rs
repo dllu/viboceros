@@ -1,6 +1,7 @@
 //! Extract stored mesh faces using their unsigned polygon areas.
 
 use super::*;
+use viboceros_geometry::MeshFace;
 
 const USAGE: &str = "ExtractMeshFacesByArea (LargerThan=area|SmallerThan=area) [LargerThan=area] [SmallerThan=area] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
 
@@ -32,11 +33,52 @@ impl Command for ExtractMeshFacesByAreaCommand {
             CommandError::NoMeshFacesInAreaRange,
             CommandError::NoMeshFaceAreaBorders,
             |mesh, index| {
-                let area = mesh.face_area(index)?;
-                Ok(options.larger_than.is_none_or(|minimum| area > minimum)
-                    && options.smaller_than.is_none_or(|maximum| area < maximum))
+                let area = rhino_face_area(mesh, index)?;
+                Ok(options.larger_than.is_none_or(|minimum| area >= minimum)
+                    && options.smaller_than.is_none_or(|maximum| area <= maximum))
             },
         )
+    }
+}
+
+// Rhino's area filter rounds a 2-by-2 square face just below 4, and a
+// right triangle with legs of length 2 just below 2. Heron's formula gives
+// those same values; the cross-product area remains available in the geometry
+// kernel for numerically stable mass properties.
+fn rhino_face_area(mesh: &TriangleMesh, index: usize) -> Result<Real, GeometryError> {
+    let vertices = mesh.vertices();
+    let triangle_area =
+        |[a, b, c]: [u32; 3]| -> Result<Real, GeometryError> {
+            let (a, b, c) = (
+                vertices[a as usize],
+                vertices[b as usize],
+                vertices[c as usize],
+            );
+            let (ab, bc, ca) = (a.distance_to(b)?, b.distance_to(c)?, c.distance_to(a)?);
+            let half_perimeter = (ab + bc + ca) / 2.0;
+            Ok((half_perimeter
+                * (half_perimeter - ab)
+                * (half_perimeter - bc)
+                * (half_perimeter - ca))
+                .max(0.0)
+                .sqrt())
+        };
+    let area = match mesh.faces()[index] {
+        MeshFace::Triangle(face) => triangle_area(face)?,
+        MeshFace::Quad([a, b, c, d]) => {
+            if vertices[a as usize].distance_to(vertices[c as usize])?
+                <= vertices[b as usize].distance_to(vertices[d as usize])?
+            {
+                triangle_area([a, b, c])? + triangle_area([a, c, d])?
+            } else {
+                triangle_area([a, b, d])? + triangle_area([b, c, d])?
+            }
+        }
+    };
+    if area.is_finite() {
+        Ok(area)
+    } else {
+        mesh.face_area(index)
     }
 }
 
@@ -70,7 +112,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     }
     if larger_than
         .zip(smaller_than)
-        .is_some_and(|(minimum, maximum)| minimum >= maximum)
+        .is_some_and(|(minimum, maximum)| minimum > maximum)
     {
         return Err(CommandError::Usage(USAGE));
     }
@@ -93,7 +135,6 @@ fn parse_area(value: &str) -> Result<Real, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::MeshFace;
 
     fn point(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.0).unwrap()
@@ -120,7 +161,7 @@ mod tests {
     }
 
     #[test]
-    fn extracts_strict_area_range_and_undoes() {
+    fn extracts_area_range_and_undoes() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
@@ -218,13 +259,13 @@ mod tests {
     }
 
     #[test]
-    fn strict_thresholds_do_not_extract_equal_area_faces() {
+    fn inclusive_thresholds_extract_equal_area_faces() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
         let before = document.undo_label().map(str::to_owned);
         assert!(matches!(
-            registry.execute(&mut document, "ExtractMeshFacesByArea SmallerThan=1"),
+            registry.execute(&mut document, "ExtractMeshFacesByArea SmallerThan=0.9999"),
             Err(CommandError::NoMeshFacesInAreaRange)
         ));
         assert_eq!(document.objects().count(), 1);
@@ -232,15 +273,125 @@ mod tests {
         assert_eq!(document.selected_objects().next().unwrap().id(), source);
         assert_eq!(
             registry
-                .execute(&mut document, "ExtractMeshFacesByArea LargerThan=1")
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByArea SmallerThan=1 MakeCopy=Yes"
+                )
                 .unwrap(),
-            "Extracted 1 mesh face(s) from 1 mesh(es); source faces removed"
+            "Extracted 1 mesh face(s) from 1 mesh(es); source faces copied"
         );
         let selected = document.selected_objects().collect::<Vec<_>>();
         assert_eq!(selected.len(), 1);
         let Geometry::Mesh(extracted) = selected[0].geometry() else {
             panic!("mesh expected")
         };
-        assert_eq!(extracted.face_area(0).unwrap(), 4.0);
+        assert_eq!(extracted.face_area(0).unwrap(), 1.0);
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByArea LargerThan=1 SmallerThan=1 MakeCopy=Yes"
+                )
+                .unwrap(),
+            "Extracted 1 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractMeshFacesByArea LargerThan=1")
+                .unwrap(),
+            "Extracted 2 mesh face(s) from 1 mesh(es); source faces removed"
+        );
+    }
+
+    #[test]
+    fn heron_rounding_matches_rhino_at_exact_thresholds() {
+        let registry = CommandRegistry::with_builtins();
+        for (vertices, face, threshold) in [
+            (
+                vec![point(0.0, 0.0), point(2.0, 0.0), point(0.0, 2.0)],
+                MeshFace::Triangle([0, 1, 2]),
+                2.0,
+            ),
+            (
+                vec![
+                    point(0.0, 0.0),
+                    point(2.0, 0.0),
+                    point(2.0, 2.0),
+                    point(0.0, 2.0),
+                ],
+                MeshFace::Quad([0, 1, 2, 3]),
+                4.0,
+            ),
+        ] {
+            let mut document = Document::default();
+            let mesh =
+                TriangleMesh::try_new_faces(vertices, vec![face], document.tolerance()).unwrap();
+            let exact_area = mesh.face_area(0).unwrap();
+            assert_eq!(exact_area, threshold);
+            assert!(rhino_face_area(&mesh, 0).unwrap() < threshold);
+            let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+            document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            assert!(matches!(
+                registry.execute(
+                    &mut document,
+                    &format!("ExtractMeshFacesByArea LargerThan={threshold}")
+                ),
+                Err(CommandError::NoMeshFacesInAreaRange)
+            ));
+            assert!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("ExtractMeshFacesByArea SmallerThan={threshold}")
+                    )
+                    .is_ok()
+            );
+        }
+    }
+
+    #[test]
+    fn nonplanar_quad_uses_shorter_diagonal_for_area_filter() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 1.0, 2.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            document.tolerance(),
+        )
+        .unwrap();
+        assert!(rhino_face_area(&mesh, 0).unwrap() > 6.1);
+        assert!(rhino_face_area(&mesh, 0).unwrap() < 6.4);
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByArea LargerThan=6.1 MakeCopy=Yes"
+                )
+                .is_ok()
+        );
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshFacesByArea LargerThan=6.4"),
+            Err(CommandError::NoMeshFacesInAreaRange)
+        ));
     }
 }

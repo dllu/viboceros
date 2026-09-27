@@ -5898,7 +5898,7 @@ def _execute(operation, iterations, tolerance):
                                       for i in range(mesh.Faces.Count)]}, 0
         finally:
             mesh.Dispose()
-    if operation["op"] == "mesh_aspect_command_probe":
+    if operation["op"] in ("mesh_aspect_command_probe", "mesh_area_command_probe"):
         mesh = _polygon_mesh(operation["vertices"], operation["faces"])
         document = Rhino.RhinoDoc.ActiveDoc
         source_id = document.Objects.AddMesh(mesh)
@@ -5906,8 +5906,9 @@ def _execute(operation, iterations, tolerance):
         try:
             before = set(obj.Id for obj in document.Objects)
             history_before = Rhino.RhinoApp.CommandHistoryWindowText
-            macro = "! _-ExtractMeshFacesByAspectRatio _SelID {} {}".format(
-                source_id, operation["macro"])
+            command = ("_-ExtractMeshFacesByArea" if operation["op"] == "mesh_area_command_probe"
+                       else "_-ExtractMeshFacesByAspectRatio")
+            macro = "! {} _SelID {} {}".format(command, source_id, operation["macro"])
             succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
             history = Rhino.RhinoApp.CommandHistoryWindowText
             if history.startswith(history_before):
