@@ -64,19 +64,16 @@ impl Command for ExtractMeshPartCommand {
                     }
                 }
                 lines
-            } else if options.join_output {
+            } else if options.join_output || groups.len() == 1 {
                 vec![Geometry::Mesh(extracted)]
             } else {
                 if groups.len() > MAX_SPAN_OUTPUT_OBJECTS - output_count {
                     return Err(too_many_span_outputs("ExtractMeshPart"));
                 }
-                groups
-                    .iter()
-                    .map(|group| {
-                        let (_, part) = mesh.extract_faces(group)?.into_parts();
-                        Ok(Geometry::Mesh(part))
-                    })
-                    .collect::<Result<Vec<_>, GeometryError>>()?
+                mesh.extract_face_groups(&groups)?
+                    .into_iter()
+                    .map(Geometry::Mesh)
+                    .collect()
             };
             output_count = output_count
                 .checked_add(outputs.len())

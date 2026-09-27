@@ -459,6 +459,47 @@ mod tests {
     }
 
     #[test]
+    fn batch_face_groups_match_individual_extraction_with_colors_and_ngons() {
+        let point = |x, y| Point3::try_new(x, y, 0.).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0., 0.),
+                point(2., 0.),
+                point(2., 2.),
+                point(0., 2.),
+                point(4., 0.),
+                point(8., 8.),
+            ],
+            vec![[0, 1, 2], [0, 2, 3], [1, 4, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_vertex_colors(Some((0..6).map(|index| [index, 20, 30, 40]).collect()))
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap();
+        for groups in [vec![vec![1, 0], vec![2]], vec![vec![0], vec![1, 2]]] {
+            let batched = mesh.extract_face_groups(&groups).unwrap();
+            for (group, extracted) in groups.iter().zip(batched) {
+                assert_eq!(
+                    extracted,
+                    mesh.extract_faces(group).unwrap().extracted().clone()
+                );
+                assert!(
+                    extracted
+                        .clone()
+                        .try_with_ngons(extracted.ngons().to_vec())
+                        .is_ok()
+                );
+            }
+        }
+        assert!(matches!(
+            mesh.extract_face_groups(&[vec![0], vec![0]]),
+            Err(GeometryError::DuplicateMeshFaceIndex { face: 0 })
+        ));
+    }
+
+    #[test]
     fn mesh_hole_filling_keeps_existing_ngons() {
         let point = |x, y| Point3::try_new(x, y, 0.).unwrap();
         let mesh = TriangleMesh::try_new(

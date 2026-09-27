@@ -3026,6 +3026,105 @@ impl TriangleMesh {
         })
     }
 
+    /// Extracts disjoint face groups in one pass over their faces and vertices.
+    /// Each output retains its group's face order and its referenced vertices
+    /// in source order, including vertex colors and complete n-gons.
+    pub fn extract_face_groups(
+        &self,
+        face_groups: &[Vec<usize>],
+    ) -> Result<Vec<Self>, GeometryError> {
+        let mut face_mapping = vec![None; self.faces.len()];
+        let mut group_vertices = Vec::with_capacity(face_groups.len());
+        for (group_index, group) in face_groups.iter().enumerate() {
+            if group.is_empty() {
+                return Err(GeometryError::EmptyMeshFaceSubset);
+            }
+            let mut vertices = BTreeSet::<u32>::new();
+            for (local_index, &face_index) in group.iter().enumerate() {
+                let face =
+                    self.faces
+                        .get(face_index)
+                        .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+                            face: face_index,
+                            face_count: self.faces.len(),
+                        })?;
+                if face_mapping[face_index]
+                    .replace((
+                        group_index,
+                        u32::try_from(local_index)
+                            .expect("a face group cannot exceed its source mesh"),
+                    ))
+                    .is_some()
+                {
+                    return Err(GeometryError::DuplicateMeshFaceIndex { face: face_index });
+                }
+                vertices.extend(face.indices());
+            }
+            group_vertices.push(vertices);
+        }
+
+        let mut vertex_remaps = Vec::with_capacity(face_groups.len());
+        let mut outputs = Vec::with_capacity(face_groups.len());
+        for (group, vertices) in face_groups.iter().zip(group_vertices) {
+            let vertex_remap = vertices
+                .iter()
+                .enumerate()
+                .map(|(local, &source)| {
+                    (
+                        source,
+                        u32::try_from(local).expect("a face group cannot exceed its source mesh"),
+                    )
+                })
+                .collect::<BTreeMap<_, _>>();
+            let retained_vertices = vertices
+                .iter()
+                .map(|&source| self.vertices[source as usize])
+                .collect();
+            let retained_faces = group
+                .iter()
+                .map(|&face| self.faces[face].remapped(|vertex| vertex_remap[&vertex]))
+                .collect();
+            let mut output = Self::from_validated_parts(retained_vertices, retained_faces);
+            output.vertex_colors = self.vertex_colors.as_ref().map(|colors| {
+                vertices
+                    .iter()
+                    .map(|&source| colors[source as usize])
+                    .collect()
+            });
+            vertex_remaps.push(vertex_remap);
+            outputs.push(output);
+        }
+
+        for ngon in &self.ngons {
+            let Some((group_index, _)) = face_mapping[ngon.faces[0] as usize] else {
+                continue;
+            };
+            let mut retained_faces = Vec::with_capacity(ngon.faces.len());
+            for &face in &ngon.faces {
+                let Some((index, local)) = face_mapping[face as usize] else {
+                    retained_faces.clear();
+                    break;
+                };
+                if index != group_index {
+                    retained_faces.clear();
+                    break;
+                }
+                retained_faces.push(local);
+            }
+            if retained_faces.len() != ngon.faces.len() {
+                continue;
+            }
+            outputs[group_index].ngons.push(MeshNgon::from_parts(
+                ngon.vertices
+                    .iter()
+                    .map(|vertex| vertex_remaps[group_index][vertex])
+                    .collect(),
+                retained_faces,
+            ));
+        }
+        Ok(outputs)
+    }
+
     /// Deletes a non-empty, unique source-face subset and compacts the
     /// remainder. Surviving faces and vertices retain source order. `None`
     /// represents deleting every face, because an empty mesh is not valid.

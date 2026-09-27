@@ -255,6 +255,9 @@ an unwelded edge. The Rhino 8.32 build used for those probes does not accept
 `ExtractToNonManifoldEdges` as a script option, although Viboceros accepts it
 as an explicit boundary control. The same fixture checks that `JoinOutput=No`
 keeps two picked regions separate while `JoinOutput=Yes` combines them.
+Multi-region extraction uses a batched mesh subset path; the
+[local benchmark](../mesh-face-groups-performance.json) records its kernel
+throughput separately from command and Rhino timings.
 
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source

@@ -1,0 +1,14 @@
+{
+  "profile": "release",
+  "samples": 3,
+  "statistic": "median",
+  "construction_included": false,
+  "rhino_comparison": false,
+  "regions": 1000,
+  "faces_per_region": 1,
+  "repeated_extraction_ms": 9.369,
+  "batched_extraction_ms": 0.169,
+  "speedup": 55.6,
+  "command": "cargo run --release -p viboceros-geometry --example mesh_face_groups_bench -- 1000",
+  "note": "Local kernel throughput for disjoint regions; command selection, document edits, and Rhino are outside these timings."
+}
