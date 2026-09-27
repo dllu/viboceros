@@ -340,6 +340,7 @@ enum InteractiveCommand {
         cap_flat: bool,
         cap_round: bool,
         blend_global: bool,
+        fit_rail: bool,
         wall_thickness: Option<f64>,
         pick_second_radius: bool,
         first_radius: Option<f64>,
@@ -2025,6 +2026,7 @@ impl VibocerosApp {
             mut cap_flat,
             mut cap_round,
             mut blend_global,
+            mut fit_rail,
             mut wall_thickness,
             mut pick_second_radius,
             first_radius,
@@ -2068,6 +2070,18 @@ impl VibocerosApp {
                 }
                 _ => false,
             }
+        } else if name.eq_ignore_ascii_case("FitRail") {
+            match value.to_ascii_lowercase().as_str() {
+                "yes" => {
+                    fit_rail = true;
+                    true
+                }
+                "no" => {
+                    fit_rail = false;
+                    true
+                }
+                _ => false,
+            }
         } else if name.eq_ignore_ascii_case("Thick") {
             match (first_radius.is_none(), value.to_ascii_lowercase().as_str()) {
                 (true, "yes") => {
@@ -2097,7 +2111,7 @@ impl VibocerosApp {
         };
         self.command_input.clear();
         if !recognized {
-            self.push_log("Usage: Pipe Cap=None|Flat|Round ShapeBlending=Local|Global Thick=Yes|No WallThickness=signed-distance".to_owned());
+            self.push_log("Usage: Pipe Cap=None|Flat|Round ShapeBlending=Local|Global FitRail=Yes|No Thick=Yes|No WallThickness=signed-distance".to_owned());
             return true;
         }
         let command = InteractiveCommand::Pipe {
@@ -2105,6 +2119,7 @@ impl VibocerosApp {
             cap_flat,
             cap_round,
             blend_global,
+            fit_rail,
             wall_thickness,
             pick_second_radius,
             first_radius,
@@ -3535,6 +3550,7 @@ impl VibocerosApp {
             let mut cap_flat = true;
             let mut cap_round = false;
             let mut blend_global = false;
+            let mut fit_rail = None;
             let mut cap_seen = false;
             let mut blend_seen = false;
             let mut thick = None;
@@ -3568,6 +3584,16 @@ impl VibocerosApp {
                         return false;
                     };
                     blend_seen = true;
+                } else if name.trim_start_matches('_').eq_ignore_ascii_case("FitRail")
+                    && fit_rail.is_none()
+                {
+                    fit_rail = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                        Some(true)
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                        Some(false)
+                    } else {
+                        return false;
+                    };
                 } else if name.trim_start_matches('_').eq_ignore_ascii_case("Thick")
                     && thick.is_none()
                 {
@@ -3619,6 +3645,7 @@ impl VibocerosApp {
                 cap_flat,
                 cap_round,
                 blend_global,
+                fit_rail: fit_rail.unwrap_or(false),
                 wall_thickness,
                 pick_second_radius,
                 first_radius: None,
@@ -4869,6 +4896,7 @@ impl VibocerosApp {
                 cap_flat,
                 cap_round,
                 blend_global,
+                fit_rail,
                 wall_thickness,
                 pick_second_radius,
                 first_radius,
@@ -4894,6 +4922,7 @@ impl VibocerosApp {
                         cap_flat,
                         cap_round,
                         blend_global,
+                        fit_rail,
                         wall_thickness,
                         pick_second_radius,
                         first_radius: Some(radius),
@@ -4918,7 +4947,7 @@ impl VibocerosApp {
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "Pipe {source} {start_radius} Cap={} ShapeBlending={}{}",
+                    "Pipe {source} {start_radius} Cap={} ShapeBlending={} FitRail={}{}",
                     if cap_round {
                         "Round"
                     } else if cap_flat {
@@ -4927,6 +4956,7 @@ impl VibocerosApp {
                         "None"
                     },
                     if blend_global { "Global" } else { "Local" },
+                    if fit_rail { "Yes" } else { "No" },
                     wall_thickness.map_or_else(String::new, |thickness| {
                         format!(" WallThickness={thickness}")
                     })
@@ -7023,6 +7053,7 @@ impl VibocerosApp {
             cap_flat,
             cap_round,
             blend_global,
+            fit_rail,
             wall_thickness,
             pick_second_radius,
             first_radius,
@@ -7040,6 +7071,7 @@ impl VibocerosApp {
                     cap_flat,
                     cap_round,
                     blend_global,
+                    fit_rail,
                     wall_thickness,
                     pick_second_radius,
                     first_radius,

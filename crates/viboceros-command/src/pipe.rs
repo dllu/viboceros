@@ -2,11 +2,11 @@
 
 use super::*;
 use viboceros_geometry::{
-    Circle3, Frame3, FrameTransportOptions, NurbsSurface, SurfaceIso, Sweep1, SweepBlend,
-    SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
+    Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3, SurfaceIso,
+    Sweep1, SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
-const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
+const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
 
 pub(super) struct PipeCommand;
 
@@ -50,6 +50,7 @@ impl Command for PipeCommand {
         };
         let mut cap = None;
         let mut blend = None;
+        let mut fit_rail = None;
         let mut thick = None;
         let mut wall_thickness = None;
         let mut stations = None;
@@ -72,6 +73,8 @@ impl Command for PipeCommand {
                         _ => return Err(CommandError::Usage(USAGE)),
                     },
                 );
+            } else if option_name_eq(name, "FitRail") && fit_rail.is_none() {
+                fit_rail = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             } else if option_name_eq(name, "Thick") && thick.is_none() {
                 thick = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             } else if option_name_eq(name, "WallThickness") && wall_thickness.is_none() {
@@ -110,6 +113,7 @@ impl Command for PipeCommand {
         }
         let cap = cap.unwrap_or(PipeCap::Flat);
         let blend = blend.unwrap_or(SweepBlend::Local);
+        let fit_rail = fit_rail.unwrap_or(false);
         if thick == Some(false) && wall_thickness.is_some()
             || thick == Some(true) && wall_thickness.is_none()
         {
@@ -149,6 +153,9 @@ impl Command for PipeCommand {
         let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
         let tolerance = document.tolerance();
         let result = match source {
+            Geometry::PolyCurve(_) if !stations.is_empty() && !fit_rail => {
+                return Err(CommandError::Usage(USAGE));
+            }
             source if !stations.is_empty() => station_pipe(
                 source,
                 rail,
@@ -273,6 +280,17 @@ impl Command for PipeCommand {
                     )?)
                 }
             }
+            Geometry::PolyCurve(polycurve) if !fit_rail => {
+                Geometry::Brep(segmented_polycurve_pipe(
+                    rail,
+                    polycurve,
+                    [start_radius, end_radius],
+                    blend,
+                    cap,
+                    wall_thickness,
+                    tolerance,
+                )?)
+            }
             _ => {
                 if rail.is_closed()? {
                     return Err(CommandError::Usage(USAGE));
@@ -341,6 +359,100 @@ fn positive_radius(value: &str) -> Result<Real, CommandError> {
         return Err(CommandError::Usage(USAGE));
     }
     Ok(radius)
+}
+
+fn segmented_polycurve_pipe(
+    rail: CurveRef<'_>,
+    polycurve: &PolyCurve3,
+    endpoint_radii: [Real; 2],
+    blend: SweepBlend,
+    cap: PipeCap,
+    wall_thickness: Option<Real>,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    if rail.is_closed()? {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let lengths = polycurve
+        .segments()
+        .iter()
+        .map(|segment| segment.as_ref().length(tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
+    let total = lengths.iter().sum::<Real>();
+    if !total.is_finite() || total <= 0.0 {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let mut radii = Vec::with_capacity(lengths.len() + 1);
+    radii.push(endpoint_radii[0]);
+    let mut distance = 0.0;
+    for &length in lengths.iter().take(lengths.len() - 1) {
+        distance += length;
+        let f = distance / total;
+        // Rhino computes an implicit station at each polycurve boundary with
+        // the full-rail smoothstep, even when segment blending is Global.
+        let f = f * f * (3.0 - 2.0 * f);
+        radii.push(endpoint_radii[0].mul_add(1.0 - f, endpoint_radii[1] * f));
+    }
+    radii.push(endpoint_radii[1]);
+    let make_wall = |radii: &[Real]| -> Result<Brep, CommandError> {
+        let mut walls = Vec::with_capacity(polycurve.segments().len());
+        for (segment, pair) in polycurve.segments().iter().zip(radii.windows(2)) {
+            let wall = match segment {
+                CurveSegment3::Line(line) => {
+                    let frame = Frame3::try_from_normal(
+                        line.start(),
+                        line.start().vector_to(line.end())?,
+                        tolerance,
+                    )?;
+                    straight_wall(frame, [pair[0], pair[1]], line.length()?, blend, tolerance)?
+                }
+                _ => {
+                    let segment = segment.as_ref();
+                    let frames = pipe_rail_frames(segment, [pair[0], pair[1]], tolerance)?;
+                    swept_wall_with_frames(segment, [pair[0], pair[1]], blend, tolerance, frames)?
+                }
+            };
+            walls.push(wall);
+        }
+        if walls.len() == 1 {
+            return Ok(walls.pop().expect("one segment wall"));
+        }
+        let references = walls.iter().collect::<Vec<_>>();
+        let mut joined = join_breps(&references, tolerance.absolute(), tolerance)?;
+        if joined.len() != 1 {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(joined.pop().expect("one wall component").brep)
+    };
+    if let Some(thickness) = wall_thickness {
+        let second = radii
+            .iter()
+            .map(|&radius| radius + thickness)
+            .collect::<Vec<_>>();
+        if second
+            .iter()
+            .any(|&radius| !radius.is_finite() || radius <= 0.0)
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let (outer, inner) = if thickness > 0.0 {
+            (make_wall(&second)?, make_wall(&radii)?)
+        } else {
+            (make_wall(&radii)?, make_wall(&second)?)
+        };
+        return finish_two_walls(outer, inner, cap, tolerance);
+    }
+    let wall = make_wall(&radii)?;
+    if cap == PipeCap::Round {
+        return round_cap_single_wall(
+            wall,
+            pipe_rail_frames(rail, endpoint_radii, tolerance)?,
+            endpoint_radii,
+            pipe_round_cap_slopes(rail, endpoint_radii, blend, tolerance)?,
+            tolerance,
+        );
+    }
+    cap_wall(wall, cap, tolerance)
 }
 
 fn station_pipe(
@@ -803,7 +915,9 @@ fn finish_two_walls(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{CircularArc3, LineSegment, NurbsCurve, UnitVector3};
+    use viboceros_geometry::{
+        CircularArc3, CurveSegment3, LineSegment, NurbsCurve, PolyCurve3, UnitVector3,
+    };
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -1418,6 +1532,73 @@ mod tests {
     }
 
     #[test]
+    fn tangent_line_arc_pipe_matches_rhino_fit_rail_modes() {
+        let mut document = Document::default();
+        let diagonal = 2.0_f64.sqrt();
+        let line = LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), Tolerance::DEFAULT).unwrap();
+        let arc = CircularArc3::try_from_three_points(
+            p(2., 0., 0.),
+            p(2. + diagonal, 2. - diagonal, 0.),
+            p(4., 2., 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let rail =
+            PolyCurve3::try_new(vec![CurveSegment3::Line(line), CurveSegment3::Arc(arc)]).unwrap();
+        let source = document.add_geometry(Geometry::PolyCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected, faces) in [
+            ("", 1.4537510629312786, 4),
+            ("FitRail=Yes", 1.4537510834790615, 3),
+            ("0.5", 2.5796673434153528, 4),
+            ("0.5 FitRail=Yes", 2.6629032304651, 3),
+            ("0.5 ShapeBlending=Global", 2.5719585204790043, 4),
+            (
+                "0.5 ShapeBlending=Global FitRail=Yes",
+                2.6382894558171768,
+                3,
+            ),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 {options} Cap=Flat"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("polycurve pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            assert_eq!(pipe.faces().len(), faces);
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+        for (options, expected, faces) in [
+            ("Cap=Round", 2.8980153924831518, 4),
+            ("WallThickness=0.2 Cap=Flat", 3.1964619294525423, 6),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 0.5 {options}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("polycurve pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            assert_eq!(pipe.faces().len(), faces);
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
     fn invalid_inputs_leave_document_unchanged() {
         let mut document = Document::default();
         let source = document
@@ -1438,6 +1619,8 @@ mod tests {
             "Pipe 1 Cap=Rounding",
             "Pipe 1 Cap=Flat Cap=None",
             "Pipe 1 ShapeBlending=Other",
+            "Pipe 1 FitRail=Maybe",
+            "Pipe 1 FitRail=Yes FitRail=No",
             "Pipe 1 WallThickness=0",
             "Pipe 1 WallThickness=-1",
             "Pipe 1 WallThickness=NaN",

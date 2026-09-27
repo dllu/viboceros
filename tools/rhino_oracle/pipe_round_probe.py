@@ -58,6 +58,15 @@ def run(operation, tolerance, host):
             rail.Knots[index] = 0.0
             rail.Knots[index + 4] = 1.0
         rail.Knots[3] = 0.5
+    elif rail_kind == "linearc":
+        rail = geometry.PolyCurve()
+        rail.Append(geometry.LineCurve(
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0)))
+        rail.Append(geometry.ArcCurve(geometry.Arc(
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(2.0 + 2.0 ** 0.5, 2.0 - 2.0 ** 0.5, 0.0),
+            geometry.Point3d(4.0, 2.0, 0.0))))
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))

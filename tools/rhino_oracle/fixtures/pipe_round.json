@@ -254,6 +254,76 @@
       "end_radius": 0.5,
       "fit_rail": true,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-constant-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "cap": "Flat",
+      "inspect_basis": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-constant-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-tapered-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "cap": "Flat",
+      "inspect_basis": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-tapered-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-round-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-thick-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "thickness": 0.2,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-global-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "local_blending": false,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-global-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "local_blending": false,
+      "fit_rail": true,
+      "cap": "Flat"
     }
   ]
 }

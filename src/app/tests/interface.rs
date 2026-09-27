@@ -1603,6 +1603,7 @@ fn pipe_accepts_options_while_picking_without_losing_radius_state() {
     assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
     enter(&mut app, "Cap=Round");
     enter(&mut app, "ShapeBlending=Global");
+    enter(&mut app, "FitRail=Yes");
     enter(&mut app, "Cap=Invalid");
     assert!(matches!(
         app.active_command,
@@ -1610,6 +1611,7 @@ fn pipe_accepts_options_while_picking_without_losing_radius_state() {
             source: Some(id),
             cap_round: true,
             blend_global: true,
+            fit_rail: true,
             first_radius: Some(radius),
             ..
         }) if id == source && radius == 1.0

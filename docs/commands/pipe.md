@@ -1,6 +1,6 @@
 # Pipe
 
-`Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]`
+`Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`
 creates a circular-profile pipe around one selected curve. The first radius is
 required and the second defaults to the first. The source curve remains in the
 document. Enter `Pipe` without dimensions to pick a rail and radius point in a
@@ -14,7 +14,7 @@ Pipe 1 Cap=Round
 Pipe 1 Stations=0.5:2 Cap=Flat
 ```
 
-While picking, enter `Cap=`, `ShapeBlending=`, `Thick=`, or `WallThickness=` to
+While picking, enter `Cap=`, `ShapeBlending=`, `FitRail=`, `Thick=`, or `WallThickness=` to
 change those options. Cap and blending can also change after the first radius
 of a thick pipe has been picked.
 
@@ -34,6 +34,13 @@ An independent two-span cubic NURBS case matches Rhino's flat Pipe volumes
 within the same limit. Rhino's `FitRail=Yes|No` produced identical surfaces for
 both tested NURBS rails; [Rhino's Pipe help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm)
 describes that switch for line-and-arc polycurves.
+On a tangent line-and-arc polycurve, `FitRail=No` (the default) joins separate
+wall faces at the segment boundary; `FitRail=Yes` refits the full rail to one
+wall face. The segment boundary radius uses the full rail's distance-weighted
+smoothstep for both shape-blending modes; each segment then uses its chosen
+Local or Global blend. Rhino comparison cases cover constant and tapered flat
+pipes, a round cap, and a thick pipe, with matching face counts and volumes
+within `5e-6` model-volume units.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
@@ -47,9 +54,10 @@ at one quarter and three quarters of the rail. Local blending transitions
 smoothly between each pair of stations. The same wall thickness applies at
 every station. Global blending with interior stations is currently rejected;
 Rhino uses a different global fit for three or more radius samples.
+Interior stations on a polycurve currently require `FitRail=Yes`.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
-Rail corners, other closed rails, and SubD output are still unsupported. A
+Sharp rail corners, other closed rails, and SubD output are still unsupported. A
 circular rail requires a pipe radius smaller than the rail radius.
 The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
 radius station was supplied on a closed circular rail.
