@@ -43,6 +43,7 @@ mod match_mesh_edge;
 use extrude_mesh::ExtrudeMeshCommand;
 mod mesh_face_filter;
 mod mesh_ngon_commands;
+mod polygon_count;
 use geometric_continuity::GeometricContinuityCommand;
 use match_curve::MatchCurveCommand;
 use match_curve_direction::MatchCurveDirectionCommand;
@@ -85,6 +86,7 @@ mod to_nurbs;
 use bezier::ConvertToBeziersCommand;
 use mesh_ngon_commands::{AddNgonsToMeshCommand, DeleteMeshNgonsCommand};
 use mesh_to_nurb::MeshToNurbCommand;
+use polygon_count::PolygonCountCommand;
 use quadrangulate_mesh::QuadrangulateMeshCommand;
 use single_spans::ConvertToSingleSpansCommand;
 use split_disjoint_mesh::SplitDisjointMeshCommand;
@@ -967,6 +969,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(DeleteMeshNgonsCommand)
+            .expect("unique built-in command");
+        registry
+            .register(PolygonCountCommand)
             .expect("unique built-in command");
         registry
             .register(DeleteFacesCommand)

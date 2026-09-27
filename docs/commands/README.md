@@ -117,6 +117,7 @@ MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
 OffsetMesh 1 Solid=Yes DeleteInput=No
 AddNgonsToMesh PlanarTolerance=0.01
 DeleteMeshNgons
+PolygonCount
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids

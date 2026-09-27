@@ -5882,6 +5882,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "pipe_round_probe":
         import pipe_round_probe
         return pipe_round_probe.run(operation, tolerance, globals())
+    if operation["op"] == "polygon_count_probe":
+        import polygon_count_probe
+        return polygon_count_probe.run(operation, globals())
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())

@@ -95,6 +95,11 @@ See its reference for selection paths, option memory, budgets, and n-gon limits.
 
 ## Mesh extraction and editing
 
+`PolygonCount` reports the selected meshes' triangle and quadrilateral face
+counts, plus the triangle count after splitting every quad into two. N-gon
+overlays do not change these counts. The command is read-only and accepts mesh
+objects only, matching the tested [Rhino PolygonCount](https://docs.mcneel.com/rhino/8/help/en-us/commands/polygoncount.htm) reports.
+
 `OffsetMesh 2` copies selected meshes by moving each topological vertex along
 the average of its raw vertex normals. Coincident unwelded copies move together.
 `DirectionMethod=UserSelectedDirection` with

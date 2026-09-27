@@ -1,0 +1,37 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-7,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "polygon_count_probe",
+      "id": "two-triangles",
+      "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]]
+    },
+    {
+      "op": "polygon_count_probe",
+      "id": "one-quad",
+      "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "polygon_count_probe",
+      "id": "two-triangles-one-ngon",
+      "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]],
+      "ngon": [[0, 1, 2, 3], [0, 1]]
+    },
+    {
+      "op": "polygon_count_probe",
+      "id": "triangles-and-quad",
+      "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],
+                   [2, 0, 0], [3, 0, 0], [3, 1, 0], [2, 1, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3], [4, 5, 6, 7]]
+    }
+  ]
+}
