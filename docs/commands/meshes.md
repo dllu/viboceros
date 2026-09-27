@@ -226,6 +226,14 @@ vertices at identical positions count as connected. `MakeCopy=Yes` and
 commands' attributes, groups, result selection, and undo behavior. Viewport
 subobject picking is still pending, so scripts must supply `Face`.
 
+The separate RhinoCommon `Mesh.Faces.GetConnectedFaces` API treats an exact
+zero angle as unrestricted connectivity. For positive angles on a nonmanifold
+edge, it checks the first other incident face. The geometry module exposes
+that observed API behavior through `rhinocommon_connected_faces_by_angle`.
+The [API fixture](../../tools/rhino_oracle/fixtures/mesh_connected_faces_api.json)
+and [Rhino observations](../../tools/rhino_oracle/observations/mesh_connected_faces_api.json)
+cover folded, unwelded, and nonmanifold meshes.
+
 `ExtractMeshPart Face=0` extracts the region reachable from stored face 0
 without crossing naked, unwelded, or nonmanifold topology edges. `Faces=0,2`
 selects multiple seed regions, and `Faces=All` selects every region. The script

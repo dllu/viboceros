@@ -845,6 +845,14 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
     },
+    MeshConnectedFacesApi {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        seed: usize,
+        angle: f64,
+        greater_than: bool,
+    },
     MeshUnifyNormals {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -2060,6 +2068,7 @@ impl Operation {
             | Self::NurbsCurveClassification { id, .. }
             | Self::NurbsCurveExtractPoints { id, .. }
             | Self::MeshFaceNormals { id, .. }
+            | Self::MeshConnectedFacesApi { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
@@ -3265,6 +3274,27 @@ fn execute(
                 ),
                 elapsed,
             )
+        }
+        Operation::MeshConnectedFacesApi {
+            vertices,
+            faces,
+            seed,
+            angle,
+            greater_than,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let (faces, elapsed) = measure(iterations, || {
+                black_box(&mesh).rhinocommon_connected_faces_by_angle(*seed, *angle, *greater_than)
+            })?;
+            (json!({ "faces": faces }), elapsed)
         }
         Operation::MeshUnifyNormals {
             vertices,

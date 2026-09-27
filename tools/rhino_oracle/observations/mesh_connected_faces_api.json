@@ -1,0 +1,26 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {"elapsed_ns":0,"id":"folded-seed0-less-0","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"folded-seed0-less-90","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"folded-seed0-greater-90","value":{"faces":[0]}},
+    {"elapsed_ns":0,"id":"folded-seed1-greater-90","value":{"faces":[1,2]}},
+    {"elapsed_ns":0,"id":"folded-seed0-greater-0","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"unwelded-less-0","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"unwelded-less-90","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"nonmanifold-seed-2-less-90","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"nonmanifold-seed-2-less-180","value":{"faces":[0,1,2]}},
+    {"elapsed_ns":0,"id":"nonmanifold-seed-1-less-180","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"same-winding-less-0","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"same-winding-less-90","value":{"faces":[0]}},
+    {"elapsed_ns":0,"id":"same-winding-less-180","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"folded-less-0p1","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"unwelded-less-0p1","value":{"faces":[0,1]}},
+    {"elapsed_ns":0,"id":"counter-seed-0","value":{"faces":[0]}},
+    {"elapsed_ns":0,"id":"counter-seed-1","value":{"faces":[1]}},
+    {"elapsed_ns":0,"id":"counter-seed-2","value":{"faces":[0,2]}}
+  ]
+}

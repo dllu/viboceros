@@ -86,10 +86,36 @@ impl TriangleMesh {
         angle_degrees: Real,
         greater_than: bool,
     ) -> Result<Vec<usize>, GeometryError> {
+        self.connected_faces_by_angle_impl(seed, angle_degrees, greater_than, false)
+    }
+
+    /// Match RhinoCommon `Mesh.Faces.GetConnectedFaces(face, angle, greater)`.
+    /// Rhino 8 treats a zero angle as an unrestricted topology walk. For a
+    /// nonmanifold edge at positive angles, its traversal checks the first
+    /// other incident face in face-index order.
+    pub fn rhinocommon_connected_faces_by_angle(
+        &self,
+        seed: usize,
+        angle_degrees: Real,
+        greater_than: bool,
+    ) -> Result<Vec<usize>, GeometryError> {
+        self.connected_faces_by_angle_impl(seed, angle_degrees, greater_than, true)
+    }
+
+    fn connected_faces_by_angle_impl(
+        &self,
+        seed: usize,
+        angle_degrees: Real,
+        greater_than: bool,
+        rhino_common: bool,
+    ) -> Result<Vec<usize>, GeometryError> {
         self.validate_seed_face(seed)?;
         let face_count = self.face_count();
         if !angle_degrees.is_finite() || !(0.0..=180.0).contains(&angle_degrees) {
             return Err(GeometryError::InvalidMeshFaceAngleInterval);
+        }
+        if rhino_common && angle_degrees == 0.0 {
+            return self.mesh_part_faces(seed, MeshPartBoundary::Naked);
         }
 
         let normals = self.polygon_face_normals()?;
@@ -104,6 +130,7 @@ impl TriangleMesh {
                 .uses()
                 .map(|edge_use| edge_use.face)
                 .collect::<Vec<_>>();
+            faces.sort_unstable();
             faces.dedup();
             if faces.len() < 2 {
                 continue;
@@ -121,7 +148,17 @@ impl TriangleMesh {
         visited[seed] = true;
         while let Some(face) = queue.pop_front() {
             for &edge in &face_edges[face] {
-                for &neighbor in &edge_faces[edge] {
+                let first_other = if face == edge_faces[edge][0] {
+                    edge_faces[edge][1]
+                } else {
+                    edge_faces[edge][0]
+                };
+                let neighbors = if rhino_common {
+                    std::slice::from_ref(&first_other)
+                } else {
+                    &edge_faces[edge]
+                };
+                for &neighbor in neighbors {
                     if visited[neighbor] {
                         continue;
                     }
@@ -221,6 +258,56 @@ mod tests {
     }
 
     #[test]
+    fn rhinocommon_zero_angle_walks_the_whole_component() {
+        let mesh = folded_chain();
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 0.0, false)
+                .unwrap(),
+            vec![0, 1, 2]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 0.1, false)
+                .unwrap(),
+            vec![0, 1]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 90.0, false)
+                .unwrap(),
+            vec![0, 1, 2]
+        );
+    }
+
+    #[test]
+    fn rhinocommon_nonmanifold_walk_checks_only_the_first_other_face() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(0.0, -1.0, 0.0),
+            ],
+            vec![
+                MeshFace::Triangle([0, 1, 2]),
+                MeshFace::Triangle([1, 0, 3]),
+                MeshFace::Triangle([1, 0, 4]),
+            ],
+            Tolerance::default(),
+        )
+        .unwrap();
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 1.0, false)
+                .unwrap(),
+            vec![0]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(2, 1.0, false)
+                .unwrap(),
+            vec![0, 2]
+        );
+    }
+
+    #[test]
     fn rejects_bad_seed_and_angle() {
         let mesh = folded_chain();
         assert!(matches!(
@@ -264,6 +351,21 @@ mod tests {
         );
         assert_eq!(
             mesh.connected_faces_by_angle(0, 90.0, false).unwrap(),
+            vec![0, 1, 2]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 0.0, false)
+                .unwrap(),
+            vec![0, 1, 2]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(0, 90.0, false)
+                .unwrap(),
+            vec![0, 1]
+        );
+        assert_eq!(
+            mesh.rhinocommon_connected_faces_by_angle(2, 90.0, false)
+                .unwrap(),
             vec![0, 1, 2]
         );
         assert_eq!(

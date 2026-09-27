@@ -1,0 +1,24 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"mesh_connected_faces_api","id":"folded-seed0-less-0","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"angle":0,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"folded-seed0-less-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"angle":90,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"folded-seed0-greater-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"angle":90,"greater_than":true},
+    {"op":"mesh_connected_faces_api","id":"folded-seed1-greater-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":1,"angle":90,"greater_than":true},
+    {"op":"mesh_connected_faces_api","id":"folded-seed0-greater-0","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"angle":0,"greater_than":true},
+    {"op":"mesh_connected_faces_api","id":"unwelded-less-0","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":0,"angle":0,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"unwelded-less-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":0,"angle":90,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"nonmanifold-seed-2-less-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":2,"angle":90,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"nonmanifold-seed-2-less-180","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":2,"angle":180,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"nonmanifold-seed-1-less-180","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":1,"angle":180,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"same-winding-less-0","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,-1,0]],"faces":[[0,1,2],[0,1,3]],"seed":0,"angle":0,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"same-winding-less-90","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,-1,0]],"faces":[[0,1,2],[0,1,3]],"seed":0,"angle":90,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"same-winding-less-180","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,-1,0]],"faces":[[0,1,2],[0,1,3]],"seed":0,"angle":180,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"folded-less-0p1","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"angle":0.1,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"unwelded-less-0p1","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":0,"angle":0.1,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"counter-seed-0","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,-1,0]],"faces":[[0,1,2],[1,0,3],[1,0,4]],"seed":0,"angle":1,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"counter-seed-1","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,-1,0]],"faces":[[0,1,2],[1,0,3],[1,0,4]],"seed":1,"angle":1,"greater_than":false},
+    {"op":"mesh_connected_faces_api","id":"counter-seed-2","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,-1,0]],"faces":[[0,1,2],[1,0,3],[1,0,4]],"seed":2,"angle":1,"greater_than":false}
+  ]
+}

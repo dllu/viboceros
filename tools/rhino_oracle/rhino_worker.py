@@ -5898,6 +5898,17 @@ def _execute(operation, iterations, tolerance):
                                       for i in range(mesh.Faces.Count)]}, 0
         finally:
             mesh.Dispose()
+    if operation["op"] == "mesh_connected_faces_api":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        try:
+            if not mesh.FaceNormals.ComputeFaceNormals():
+                raise ValueError("could not compute connected-face normals")
+            indices = mesh.Faces.GetConnectedFaces(
+                int(operation["seed"]), math.radians(float(operation["angle"])),
+                bool(operation["greater_than"]))
+            return {"faces": sorted(int(index) for index in indices)}, 0
+        finally:
+            mesh.Dispose()
     if operation["op"] in ("mesh_aspect_command_probe", "mesh_area_command_probe",
                            "mesh_edge_length_command_probe"):
         mesh = _polygon_mesh(operation["vertices"], operation["faces"])
