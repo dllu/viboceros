@@ -1582,6 +1582,47 @@ fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
 }
 
 #[test]
+fn pipe_accepts_options_while_picking_without_losing_radius_state() {
+    let mut app = test_app();
+    enter(&mut app, "Line 0,0,0 10,0,0");
+    let source = app.document.objects().next().unwrap().id();
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Pipe");
+    enter(&mut app, "Thick=Yes");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            source: Some(id),
+            pick_second_radius: true,
+            first_radius: None,
+            ..
+        }) if id == source
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    enter(&mut app, "Cap=Round");
+    enter(&mut app, "ShapeBlending=Global");
+    enter(&mut app, "Cap=Invalid");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Pipe {
+            source: Some(id),
+            cap_round: true,
+            blend_global: true,
+            first_radius: Some(radius),
+            ..
+        }) if id == source && radius == 1.0
+    ));
+    assert!(app.accept_drafting_point(Point3::try_new(5., 1.2, 0.).unwrap()));
+    assert!(app.active_command.is_none());
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Brep(brep) if brep.is_closed() && brep.is_solid() && brep.faces().len() == 4
+    ));
+}
+
+#[test]
 fn sel_box_picks_base_and_height_without_creating_geometry() {
     let mut app = test_app();
     enter(&mut app, "Point 1,1,1");

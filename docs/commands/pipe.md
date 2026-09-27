@@ -14,6 +14,10 @@ Pipe 1 Cap=Round
 Pipe 1 Stations=0.5:2 Cap=Flat
 ```
 
+While picking, enter `Cap=`, `ShapeBlending=`, `Thick=`, or `WallThickness=` to
+change those options. Cap and blending can also change after the first radius
+of a thick pipe has been picked.
+
 Straight constant-radius rails use exact cylinders. For two different radii,
 `ShapeBlending=Local` uses a smooth cubic radius transition and
 `ShapeBlending=Global` uses a cone. Global round caps use sphere segments
