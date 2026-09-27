@@ -291,6 +291,9 @@ class OracleClient:
             if any(op.get("op") == "polygon_count_probe" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("polygon_count_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "self_intersect_probe" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("self_intersect_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("document_brep_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

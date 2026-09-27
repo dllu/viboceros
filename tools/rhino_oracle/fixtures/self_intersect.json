@@ -1,0 +1,12 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"id": "crossing", "op": "self_intersect_probe", "vertices": [[0,0,0],[2,2,0],[0,2,0],[2,0,0]]},
+    {"id": "simple-closed", "op": "self_intersect_probe", "vertices": [[0,0,0],[2,0,0],[2,2,0],[0,2,0],[0,0,0]]},
+    {"id": "backtrack", "op": "self_intersect_probe", "vertices": [[0,0,0],[2,0,0],[1,0,0],[1,2,0]]},
+    {"id": "overlap", "op": "self_intersect_probe", "vertices": [[0,0,0],[3,0,0],[1,0,0],[2,0,0]]},
+    {"id": "cubic-crossing", "op": "self_intersect_probe", "curve": {"type": "nurbs", "degree": 3, "control_points": [{"point": [-1,0,0], "weight": 1}, {"point": [3,2,0], "weight": 1}, {"point": [-3,2,0], "weight": 1}, {"point": [1,0,0], "weight": 1}], "knots": [0,0,0,0,1,1,1,1]}},
+    {"id": "cubic-seam", "op": "self_intersect_probe", "curve": {"type": "nurbs", "degree": 3, "control_points": [{"point": [0,0,0], "weight": 1}, {"point": [1,2,0], "weight": 1}, {"point": [-1,2,0], "weight": 1}, {"point": [0,0,0], "weight": 1}], "knots": [0,0,0,0,1,1,1,1]}}
+  ]
+}

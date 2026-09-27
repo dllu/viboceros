@@ -365,6 +365,16 @@ Other non-planar and more general coincident surface/surface intersections,
 curved B-rep face pairs, and multiple coincident curved face regions remain
 future extensions.
 
+`IntersectSelf` finds crossings and overlaps between distinct parameter
+intervals of each selected curve. It creates point objects for crossings and
+NURBS curve segments for overlaps, leaving source curves intact. Rhino leaves
+point markers unselected and selects overlap curves; this command follows that
+selection behavior. Adjacent segment joints and a closed curve's seam are excluded.
+The [Rhino fixture](../../tools/rhino_oracle/fixtures/self_intersect.json)
+checks a crossing, a simple closed polyline, and a backtracking overlap.
+Nested overlapping segments remain a known discrepancy: Rhino reports only
+one inner overlap in the retained [observation](../../tools/rhino_oracle/observations/self_intersect.json).
+
 `IntersectTwoSets first-id[,id...] second-id[,id...]` evaluates only pairs
 across the two sets. Either set may be `Selected` to use the current selection.
 `OutputLayer=Current|FirstSet|SecondSet` places each result on the current

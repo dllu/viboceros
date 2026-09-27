@@ -1,0 +1,114 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "crossing",
+      "value": {
+        "output": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "type": "point"
+          }
+        ],
+        "report": "Found 1 self-intersection point.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "simple-closed",
+      "value": {
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "backtrack",
+      "value": {
+        "output": [
+          {
+            "end": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "overlap",
+      "value": {
+        "output": [
+          {
+            "end": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cubic-crossing",
+      "value": {
+        "output": [
+          {
+            "point": [
+              -2.944866572818228e-14,
+              0.5999999999999772,
+              0.0
+            ],
+            "type": "point"
+          }
+        ],
+        "report": "Found 1 self-intersection point.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cubic-seam",
+      "value": {
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    }
+  ]
+}

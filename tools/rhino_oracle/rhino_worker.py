@@ -5885,6 +5885,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "polygon_count_probe":
         import polygon_count_probe
         return polygon_count_probe.run(operation, globals())
+    if operation["op"] == "self_intersect_probe":
+        import self_intersect_probe
+        return self_intersect_probe.run(operation, globals())
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())

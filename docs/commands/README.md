@@ -312,6 +312,7 @@ Split 4,0,0 7,0,0
 Split CuttingObjects=1,0,0
 Split Isocurve=4,6,0 Direction=Both Shrink=Yes
 Intersect
+IntersectSelf
 IntersectTwoSets first-id[,id...] second-id[,id...] OutputLayer=FirstSet
 IntersectTwoSets Selected second-id
 Trim 5,0,0
