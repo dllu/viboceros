@@ -3,7 +3,7 @@
 use super::*;
 use viboceros_geometry::MeshPartBoundary;
 
-const USAGE: &str = "ExtractMeshPart (Face=index|Faces=0,2,...|Faces=All|FacePoint=x,y,z) [ExtractWholeDisjointParts=Yes|No] [ExtractToNonManifoldEdges=Yes|No] [JoinOutput=Yes|No] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+const USAGE: &str = "ExtractMeshPart (Face=index|Faces=0,2,...|Faces=All|FacePoint=x,y,z) [Object=selected-uuid] [ExtractWholeDisjointParts=Yes|No] [ExtractToNonManifoldEdges=Yes|No] [JoinOutput=Yes|No] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
 
 enum MeshPartSeeds {
     Faces(SurfaceFaceIndices),
@@ -12,6 +12,7 @@ enum MeshPartSeeds {
 
 struct Options {
     seeds: MeshPartSeeds,
+    object: Option<ObjectId>,
     boundary: MeshPartBoundary,
     join_output: bool,
     make_copy: bool,
@@ -43,13 +44,20 @@ impl Command for ExtractMeshPartCommand {
             )?),
             MeshPartSeeds::Faces(_) => None,
         };
+        if let Some(id) = options.object
+            && !document.is_selected(id)
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
         let tolerance = document.tolerance();
         let mut source_count = 0_usize;
         let mut face_count = 0_usize;
         let mut output_count = 0_usize;
         let mut plans = Vec::new();
         for object in document.selected_objects() {
-            if picked.is_some_and(|(id, _)| object.id() != id) {
+            if picked.is_some_and(|(id, _)| object.id() != id)
+                || options.object.is_some_and(|id| object.id() != id)
+            {
                 continue;
             }
             source_count += 1;
@@ -153,6 +161,7 @@ impl Command for ExtractMeshPartCommand {
 
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     let mut seeds = None;
+    let mut object = None;
     let mut whole_disjoint = None;
     let mut to_nonmanifold = None;
     let mut join_output = None;
@@ -175,6 +184,12 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         } else if key.eq_ignore_ascii_case("FacePoint") && seeds.is_none() {
             let (point, _) = parse_point(&[value])?;
             seeds = Some(MeshPartSeeds::Point(point));
+        } else if key.eq_ignore_ascii_case("Object") && object.is_none() {
+            object = Some(
+                value
+                    .parse::<ObjectId>()
+                    .map_err(|_| CommandError::Usage(USAGE))?,
+            );
         } else if key.eq_ignore_ascii_case("ExtractWholeDisjointParts") && whole_disjoint.is_none()
         {
             whole_disjoint = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
@@ -198,8 +213,13 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     } else {
         MeshPartBoundary::Unwelded
     };
+    let seeds = seeds.ok_or(CommandError::Usage(USAGE))?;
+    if object.is_some() && matches!(seeds, MeshPartSeeds::Point(_)) {
+        return Err(CommandError::Usage(USAGE));
+    }
     Ok(Options {
-        seeds: seeds.ok_or(CommandError::Usage(USAGE))?,
+        seeds,
+        object,
         boundary,
         join_output: join_output.unwrap_or(false),
         make_copy: make_copy.unwrap_or(false),
@@ -296,6 +316,38 @@ mod tests {
         };
         assert_eq!(extracted.face_count(), 2);
         assert_eq!(document.objects().count(), 3);
+    }
+
+    #[test]
+    fn object_qualified_face_seed_ignores_other_selected_geometry() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = selected_mesh(&mut document);
+        let point = document
+            .add_geometry(Geometry::Point(point(10.0, 0.0)))
+            .unwrap();
+        document
+            .select_objects_direct([mesh, point], SelectionMode::Replace)
+            .unwrap();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractMeshPart FacePoint=0,0,0 Object={mesh}")
+                )
+                .is_err()
+        );
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractMeshPart Face=0 Object={mesh} MakeCopy=Yes")
+                )
+                .unwrap(),
+            "Extracted 2 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        assert!(!document.is_selected(mesh));
+        assert!(!document.is_selected(point));
     }
 
     #[test]

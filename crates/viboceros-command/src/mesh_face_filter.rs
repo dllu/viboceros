@@ -62,6 +62,7 @@ pub(super) fn extract_filtered_mesh_faces(
         unsupported,
         no_matches,
         no_borders,
+        None,
         |_, mesh| {
             let mut indices = Vec::new();
             for index in 0..mesh.face_count() {
@@ -81,6 +82,7 @@ pub(super) fn extract_selected_mesh_faces(
     unsupported: CommandError,
     no_matches: CommandError,
     no_borders: CommandError,
+    target: Option<ObjectId>,
     mut select: impl FnMut(ObjectId, &TriangleMesh) -> Result<Vec<usize>, GeometryError>,
 ) -> Result<String, CommandError> {
     let tolerance = document.tolerance();
@@ -89,6 +91,9 @@ pub(super) fn extract_selected_mesh_faces(
     let mut output_count = 0_usize;
     let mut plans = Vec::new();
     for object in document.selected_objects() {
+        if target.is_some_and(|id| object.id() != id) {
+            continue;
+        }
         source_count += 1;
         let Geometry::Mesh(mesh) = object.geometry() else {
             return Err(unsupported);

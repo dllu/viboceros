@@ -1,5 +1,41 @@
 //! Interactive option parsing for mesh face region commands.
-use super::InteractiveCommand;
+use super::{InteractiveCommand, VibocerosApp};
+use viboceros_document::ObjectId;
+
+impl VibocerosApp {
+    pub(super) fn accept_mesh_face_click(&mut self, object: ObjectId, face: usize) {
+        let command = match self.active_command {
+            Some(InteractiveCommand::ExtractConnectedMeshFaces {
+                angle,
+                greater_than,
+                make_copy,
+                border_only,
+            }) => format!(
+                "ExtractConnectedMeshFaces Face={face} Object={object} Angle={angle} Compare={} MakeCopy={} BorderOnly={}",
+                if greater_than { "Greater" } else { "Less" },
+                if make_copy { "Yes" } else { "No" },
+                if border_only { "Yes" } else { "No" },
+            ),
+            Some(InteractiveCommand::ExtractMeshPart {
+                whole_disjoint,
+                to_nonmanifold,
+                join_output,
+                make_copy,
+                border_only,
+            }) => format!(
+                "ExtractMeshPart Face={face} Object={object} ExtractWholeDisjointParts={} ExtractToNonManifoldEdges={} JoinOutput={} MakeCopy={} BorderOnly={}",
+                if whole_disjoint { "Yes" } else { "No" },
+                if to_nonmanifold { "Yes" } else { "No" },
+                if join_output { "Yes" } else { "No" },
+                if make_copy { "Yes" } else { "No" },
+                if border_only { "Yes" } else { "No" },
+            ),
+            _ => return,
+        };
+        self.active_command = None;
+        self.execute_command(&command);
+    }
+}
 
 fn yes_no(value: &str) -> Option<bool> {
     if value.eq_ignore_ascii_case("Yes") {

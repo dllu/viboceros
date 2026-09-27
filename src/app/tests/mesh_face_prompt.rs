@@ -101,3 +101,36 @@ fn mesh_part_prompt_picks_through_unwelded_seam_when_requested() {
     assert!(!app.try_start_interactive_command("ExtractMeshPart JoinOutput=Maybe"));
     assert!(!app.try_start_interactive_command("ExtractMeshPart MakeCopy=Yes MakeCopy=No"));
 }
+
+#[test]
+fn viewport_face_hit_runs_each_region_command_on_the_hit_object() {
+    for command in ["ExtractConnectedMeshFaces", "ExtractMeshPart"] {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let target = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let other = app
+            .document
+            .add_geometry(Geometry::Point(point(2.0, 2.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_objects_direct([target, other], viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(app.try_start_interactive_command(&format!("{command} MakeCopy=Yes")));
+        app.accept_mesh_face_click(target, 0);
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some(command));
+        let selected = app.document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 1);
+        assert!(matches!(selected[0].geometry(), Geometry::Mesh(mesh) if mesh.face_count() == 1));
+        assert!(app.document.object(other).is_some());
+    }
+}

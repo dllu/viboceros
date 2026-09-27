@@ -125,6 +125,33 @@ fn triangle_depth(
 }
 
 impl Viewport {
+    pub(super) fn pick_selected_mesh_face(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+    ) -> Option<(ObjectId, usize)> {
+        let mut nearest: Option<(PickHit, ObjectId, usize)> = None;
+        for object in document.selected_objects() {
+            if !selection_candidate(document, object, None) {
+                continue;
+            }
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                continue;
+            };
+            let Some((hit, face)) = self.mesh_face_pick(pointer, rect, mesh) else {
+                continue;
+            };
+            if hit.distance > PICK_CAPTURE_PIXELS {
+                continue;
+            }
+            if nearest.is_none_or(|(best, _, _)| hit.rank(best).is_lt()) {
+                nearest = Some((hit, object.id(), face));
+            }
+        }
+        nearest.map(|(_, object, face)| (object, face))
+    }
+
     pub(super) fn mesh_pick(
         &self,
         pointer: Pos2,
@@ -145,41 +172,58 @@ impl Viewport {
                 .unwrap_or(f32::INFINITY);
             return PickHit::screen(2, distance);
         }
-        let mut nearest = PickHit::screen(2, f32::INFINITY);
-        for triangle_index in 0..mesh.triangles().len() {
-            let Some(points) = mesh.triangle_points(triangle_index) else {
-                continue;
-            };
-            for points in self.clip_triangle(points).into_iter().flatten() {
-                let [Some(first), Some(second), Some(third)] =
-                    points.map(|point| self.project(point, rect))
-                else {
+        self.mesh_face_pick(pointer, rect, mesh)
+            .map_or(PickHit::screen(2, f32::INFINITY), |(hit, _)| hit)
+    }
+
+    /// Return the closest visible polygon face under a screen point. The face
+    /// index refers to stored triangles/quads, rather than tessellation triangles.
+    pub(super) fn mesh_face_pick(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        mesh: &TriangleMesh,
+    ) -> Option<(PickHit, usize)> {
+        let mut nearest = None;
+        let mut triangle_index = 0;
+        for (face_index, face) in mesh.faces().iter().enumerate() {
+            for _ in 0..if face.is_triangle() { 1 } else { 2 } {
+                let Some(points) = mesh.triangle_points(triangle_index) else {
+                    triangle_index += 1;
                     continue;
                 };
-                let hit = if point_in_triangle(pointer, first, second, third) {
-                    let Some(depth) = triangle_depth(
-                        pointer,
-                        [first, second, third],
-                        points.map(|p| self.view_depth(p)),
-                        !self.kind.is_parallel(),
-                    ) else {
+                triangle_index += 1;
+                for points in self.clip_triangle(points).into_iter().flatten() {
+                    let [Some(first), Some(second), Some(third)] =
+                        points.map(|point| self.project(point, rect))
+                    else {
                         continue;
                     };
-                    PickHit {
-                        distance: 0.0,
-                        priority: 2,
-                        depth,
+                    let hit = if point_in_triangle(pointer, first, second, third) {
+                        let Some(depth) = triangle_depth(
+                            pointer,
+                            [first, second, third],
+                            points.map(|p| self.view_depth(p)),
+                            !self.kind.is_parallel(),
+                        ) else {
+                            continue;
+                        };
+                        PickHit {
+                            distance: 0.0,
+                            priority: 2,
+                            depth,
+                        }
+                    } else {
+                        PickHit::screen(
+                            2,
+                            point_segment_distance(pointer, first, second)
+                                .min(point_segment_distance(pointer, second, third))
+                                .min(point_segment_distance(pointer, third, first)),
+                        )
+                    };
+                    if nearest.is_none_or(|(best, _): (PickHit, usize)| hit.is_better_than(best)) {
+                        nearest = Some((hit, face_index));
                     }
-                } else {
-                    PickHit::screen(
-                        2,
-                        point_segment_distance(pointer, first, second)
-                            .min(point_segment_distance(pointer, second, third))
-                            .min(point_segment_distance(pointer, third, first)),
-                    )
-                };
-                if hit.is_better_than(nearest) {
-                    nearest = hit;
                 }
             }
         }
@@ -190,6 +234,142 @@ impl Viewport {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_document::SelectionMode;
+    use viboceros_geometry::MeshFace;
+
+    #[test]
+    fn selected_mesh_face_pick_uses_visible_depth_and_stored_quad_index() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let triangle = |z| {
+            TriangleMesh::try_new_faces(
+                vec![
+                    Point3::try_new(0.0, 0.0, z).unwrap(),
+                    Point3::try_new(1.0, 0.0, z).unwrap(),
+                    Point3::try_new(0.0, 1.0, z).unwrap(),
+                ],
+                vec![MeshFace::Triangle([0, 1, 2])],
+                tolerance,
+            )
+            .unwrap()
+        };
+        let back = document
+            .add_geometry(Geometry::Mesh(triangle(0.0)))
+            .unwrap();
+        let front = document
+            .add_geometry(Geometry::Mesh(triangle(2.0)))
+            .unwrap();
+        document
+            .select_objects_direct([back, front], SelectionMode::Replace)
+            .unwrap();
+        let pointer = view
+            .project(Point3::try_new(0.2, 0.2, 0.0).unwrap(), rect)
+            .unwrap();
+        assert_eq!(
+            view.pick_selected_mesh_face(pointer, rect, &document),
+            Some((front, 0))
+        );
+
+        document
+            .select_objects_direct([back], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            view.pick_selected_mesh_face(pointer, rect, &document),
+            Some((back, 0))
+        );
+        let quad = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Quad([3, 4, 5, 6])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let quad_id = document.add_geometry(Geometry::Mesh(quad)).unwrap();
+        document
+            .select_objects_direct([quad_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            view.pick_selected_mesh_face(pointer, rect, &document),
+            Some((quad_id, 1))
+        );
+    }
+
+    #[test]
+    fn viewport_click_emits_face_hit_instead_of_a_drafting_point() {
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        let pointer = viewport
+            .project(Point3::try_new(0.2, 0.2, 0.0).unwrap(), rect)
+            .unwrap();
+        let context = egui::Context::default();
+        let mut frame = |events| {
+            let mut output = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(rect),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        output = viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                mesh_face_pick: true,
+                                object_filter: None,
+                                drafting: DraftingInput {
+                                    active: true,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            output
+        };
+        let event = |pressed| egui::Event::PointerButton {
+            pos: pointer,
+            pressed,
+            button: PointerButton::Primary,
+            modifiers: egui::Modifiers::NONE,
+        };
+        frame(vec![]);
+        frame(vec![egui::Event::PointerMoved(pointer), event(true)]);
+        let output = frame(vec![event(false)]);
+        assert_eq!(output.mesh_face_click, Some((id, 0)));
+        assert!(output.picked_point.is_none());
+        assert!(output.selection_click.is_none());
+    }
 
     #[test]
     fn perspective_depth_is_bounded_at_captured_edges() {

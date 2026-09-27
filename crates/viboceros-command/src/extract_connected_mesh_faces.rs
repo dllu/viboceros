@@ -2,7 +2,7 @@
 
 use super::*;
 
-const USAGE: &str = "ExtractConnectedMeshFaces (Face=index|FacePoint=x,y,z) [Angle=degrees] [Compare=Less|Greater] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+const USAGE: &str = "ExtractConnectedMeshFaces (Face=index|FacePoint=x,y,z) [Object=selected-uuid] [Angle=degrees] [Compare=Less|Greater] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
 
 #[derive(Clone, Copy)]
 enum FaceSeed {
@@ -13,6 +13,7 @@ enum FaceSeed {
 #[derive(Clone, Copy)]
 struct Options {
     seed: FaceSeed,
+    object: Option<ObjectId>,
     angle: Real,
     greater_than: bool,
     make_copy: bool,
@@ -36,6 +37,11 @@ impl Command for ExtractConnectedMeshFacesCommand {
             )?),
             FaceSeed::Index(_) => None,
         };
+        if let Some(id) = options.object
+            && !document.is_selected(id)
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
         mesh_face_filter::extract_selected_mesh_faces(
             document,
             "ExtractConnectedMeshFaces",
@@ -46,6 +52,7 @@ impl Command for ExtractConnectedMeshFacesCommand {
             CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
             CommandError::NoConnectedMeshFaces,
             CommandError::NoConnectedMeshFaceBorders,
+            options.object,
             |id, mesh| {
                 let face = if let Some((picked_id, face)) = picked {
                     if id != picked_id {
@@ -65,6 +72,7 @@ impl Command for ExtractConnectedMeshFacesCommand {
 
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     let mut seed = None;
+    let mut object = None;
     let mut angle = None;
     let mut greater_than = None;
     let mut make_copy = None;
@@ -82,6 +90,12 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         } else if key.eq_ignore_ascii_case("FacePoint") && seed.is_none() {
             let (point, _) = parse_point(&[value])?;
             seed = Some(FaceSeed::Point(point));
+        } else if key.eq_ignore_ascii_case("Object") && object.is_none() {
+            object = Some(
+                value
+                    .parse::<ObjectId>()
+                    .map_err(|_| CommandError::Usage(USAGE))?,
+            );
         } else if key.eq_ignore_ascii_case("Angle") && angle.is_none() {
             angle = Some(
                 value
@@ -106,8 +120,13 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
             return Err(CommandError::Usage(USAGE));
         }
     }
+    let seed = seed.ok_or(CommandError::Usage(USAGE))?;
+    if object.is_some() && matches!(seed, FaceSeed::Point(_)) {
+        return Err(CommandError::Usage(USAGE));
+    }
     Ok(Options {
-        seed: seed.ok_or(CommandError::Usage(USAGE))?,
+        seed,
+        object,
         angle: angle.unwrap_or(0.0),
         greater_than: greater_than.unwrap_or(false),
         make_copy: make_copy.unwrap_or(false),
@@ -236,6 +255,38 @@ mod tests {
             panic!("mesh expected")
         };
         assert_eq!(unchanged.face_count(), 3);
+    }
+
+    #[test]
+    fn object_qualified_face_seed_ignores_other_selected_geometry() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = selected_mesh(&mut document);
+        let point = document
+            .add_geometry(Geometry::Point(point(10.0, 0.0, 0.0)))
+            .unwrap();
+        document
+            .select_objects_direct([mesh, point], SelectionMode::Replace)
+            .unwrap();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractConnectedMeshFaces FacePoint=0,0,0 Object={mesh}")
+                )
+                .is_err()
+        );
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractConnectedMeshFaces Face=0 Object={mesh} MakeCopy=Yes")
+                )
+                .unwrap(),
+            "Extracted 3 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        assert!(!document.is_selected(mesh));
+        assert!(!document.is_selected(point));
     }
 
     #[test]

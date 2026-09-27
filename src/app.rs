@@ -7644,6 +7644,8 @@ impl VibocerosApp {
             self.accept_edge_click(picks);
         } else if let Some(parameter) = output.edge_parameter {
             self.accept_split_parameter(parameter);
+        } else if let Some((object, face)) = output.mesh_face_click {
+            self.accept_mesh_face_click(object, face);
         } else if let Some(point) = output.picked_point {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
@@ -7944,6 +7946,13 @@ impl eframe::App for VibocerosApp {
             .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         let preview_curve = self.curve_draft_preview();
+        let mesh_face_pick = matches!(
+            self.active_command,
+            Some(
+                InteractiveCommand::ExtractConnectedMeshFaces { .. }
+                    | InteractiveCommand::ExtractMeshPart { .. }
+            )
+        ) && self.plane_prompt.is_none();
         let edge_pick = self
             .edge_prompt
             .as_ref()
@@ -8135,6 +8144,7 @@ impl eframe::App for VibocerosApp {
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
                             preview_curve: preview_curve.as_deref(),
+                            mesh_face_pick,
                             edge_pick,
                             edge_highlights: &edge_highlights,
                             edge_endpoints,

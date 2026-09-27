@@ -224,9 +224,10 @@ selected mesh; the same seed index is used for every selected mesh. Unwelded
 vertices at identical positions count as connected. `MakeCopy=Yes` and
 `BorderOnly=Yes` preserve the source mesh and use the other extraction
 commands' attributes, groups, result selection, and undo behavior. Viewport
-face picking uses the nearest face on the selected meshes. Scripts can supply
-`Face` or `FacePoint=x,y,z`. A point pick targets one mesh; a face index applies
-to every selected mesh.
+clicks select the visible face by screen coverage and depth, including stacked
+meshes and quadrilateral faces. Scripts can supply `Face`, `FacePoint=x,y,z`
+(nearest in model space), or `Face=index Object=selected-uuid`. A bare face index
+applies to every selected mesh.
 
 The command and RhinoCommon `Mesh.Faces.GetConnectedFaces` both check the first
 other incident face on a nonmanifold edge at positive angles. The geometry
@@ -249,9 +250,10 @@ combines selected faces into one mesh per source; `JoinOutput=No` emits one
 mesh per selected region and is the default. `MakeCopy=Yes` retains the source;
 `BorderOnly=Yes` emits a line
 segment for each boundary edge and leaves the source unchanged. Viewport
-face picking uses the nearest face on the selected meshes. Scripts can supply
-`Face`, `Faces`, or `FacePoint=x,y,z`. A point pick targets one mesh; face
-indices apply to every selected mesh.
+clicks select the visible face by screen coverage and depth, including stacked
+meshes and quadrilateral faces. Scripts can supply `Face`, `Faces`,
+`FacePoint=x,y,z` (nearest in model space), or `Face=index Object=selected-uuid`.
+Bare face indices apply to every selected mesh.
 The [live command fixture](../../tools/rhino_oracle/fixtures/mesh_part_command.json)
 and [Rhino 8 observations](../../tools/rhino_oracle/observations/mesh_part_command.json)
 show that Rhino's default crosses a three-face nonmanifold edge but stops at
