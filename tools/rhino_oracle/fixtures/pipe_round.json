@@ -617,6 +617,153 @@
       "thickness": 0.2,
       "fit_rail": true,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-local-flat",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-global-flat",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-local-round",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-local-thick",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-global-thick",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false,
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-local-flat",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-global-flat",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-local-round",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-local-thick",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-global-thick",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false,
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-local-flat",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-global-flat",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-local-round",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-local-thick",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-global-thick",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat",
+      "local_blending": false,
+      "thickness": 0.2
     }
   ]
 }

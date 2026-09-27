@@ -152,10 +152,14 @@ impl Command for PipeCommand {
             .ok_or(CommandError::Usage(USAGE))?;
         let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
         let tolerance = document.tolerance();
+        let fitted_tapered_corner = fit_rail
+            && stations.is_empty()
+            && start_radius != end_radius
+            && rail.to_nurbs()?.has_full_multiplicity_kink(tolerance)?;
         let result = match source {
             Geometry::Polyline(polyline)
                 if stations.is_empty()
-                    && start_radius == end_radius
+                    && (start_radius == end_radius || fitted_tapered_corner)
                     && polyline.vertices().len() >= 3 =>
             {
                 let lines = polyline
@@ -174,6 +178,7 @@ impl Command for PipeCommand {
                     [start_radius, end_radius],
                     &stations,
                     blend,
+                    fit_rail,
                     cap,
                     wall_thickness,
                     tolerance,
@@ -185,7 +190,7 @@ impl Command for PipeCommand {
             Geometry::PolyCurve(polycurve)
                 if !fit_rail
                     || (stations.is_empty()
-                        && start_radius == end_radius
+                        && (start_radius == end_radius || fitted_tapered_corner)
                         && polycurve.segments().len() >= 2
                         && polycurve
                             .segments()
@@ -198,6 +203,7 @@ impl Command for PipeCommand {
                     [start_radius, end_radius],
                     &stations,
                     blend,
+                    fit_rail,
                     cap,
                     wall_thickness,
                     tolerance,
@@ -403,6 +409,7 @@ fn segmented_polycurve_pipe(
     endpoint_radii: [Real; 2],
     stations: &[(Real, Real)],
     blend: SweepBlend,
+    fit_rail: bool,
     cap: PipeCap,
     wall_thickness: Option<Real>,
     tolerance: Tolerance,
@@ -411,7 +418,7 @@ fn segmented_polycurve_pipe(
         return Err(CommandError::Usage(USAGE));
     }
     if stations.is_empty()
-        && endpoint_radii[0] == endpoint_radii[1]
+        && (endpoint_radii[0] == endpoint_radii[1] || fit_rail)
         && polycurve.segments().len() >= 2
         && polycurve
             .segments()
@@ -426,9 +433,22 @@ fn segmented_polycurve_pipe(
                 _ => None,
             })
             .collect::<Vec<_>>();
-        if let Some(pipe) =
+        let pipe = if endpoint_radii[0] == endpoint_radii[1] {
             mitered_line_pipe(&lines, endpoint_radii[0], cap, wall_thickness, tolerance)?
-        {
+        } else {
+            if cap == PipeCap::Round && blend == SweepBlend::Global {
+                return Err(CommandError::Usage(USAGE));
+            }
+            mitered_line_pipe_profile(
+                &lines,
+                endpoint_radii,
+                blend,
+                cap,
+                wall_thickness,
+                tolerance,
+            )?
+        };
+        if let Some(pipe) = pipe {
             return Ok(pipe);
         }
     }
@@ -543,6 +563,24 @@ fn mitered_line_pipe(
     wall_thickness: Option<Real>,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, CommandError> {
+    mitered_line_pipe_profile(
+        lines,
+        [radius; 2],
+        SweepBlend::Local,
+        cap,
+        wall_thickness,
+        tolerance,
+    )
+}
+
+fn mitered_line_pipe_profile(
+    lines: &[LineSegment],
+    endpoint_radii: [Real; 2],
+    blend: SweepBlend,
+    cap: PipeCap,
+    wall_thickness: Option<Real>,
+    tolerance: Tolerance,
+) -> Result<Option<Brep>, CommandError> {
     let directions = lines
         .iter()
         .map(|line| Ok(line.direction(tolerance)?.as_vector()))
@@ -558,7 +596,8 @@ fn mitered_line_pipe(
     let Some(binormal) = binormal else {
         return Ok(None);
     };
-    let largest_radius = radius + wall_thickness.unwrap_or(0.0).max(0.0);
+    let largest_radius =
+        endpoint_radii[0].max(endpoint_radii[1]) + wall_thickness.unwrap_or(0.0).max(0.0);
     let reaches = directions
         .windows(2)
         .map(|pair| {
@@ -600,23 +639,44 @@ fn mitered_line_pipe(
             tolerance,
         )?);
     }
-    let make_wall = |radius: Real| -> Result<Brep, CommandError> {
+    let total = lengths.iter().sum::<Real>();
+    let make_wall = |offset: Real| -> Result<Brep, CommandError> {
+        let mut distance = 0.0;
         let walls = lines
             .iter()
             .enumerate()
             .map(|(index, line)| {
-                let surface = mitered_line_surface(
-                    *line,
-                    frames[index],
-                    radius,
-                    index
-                        .checked_sub(1)
-                        .map(|i| [directions[i], directions[index]]),
-                    directions
-                        .get(index + 1)
-                        .map(|&next| [directions[index], next]),
-                    tolerance,
-                )?;
+                let start = distance / total;
+                distance += lengths[index];
+                let end = distance / total;
+                let start_joint = index
+                    .checked_sub(1)
+                    .map(|i| [directions[i], directions[index]]);
+                let end_joint = directions
+                    .get(index + 1)
+                    .map(|&next| [directions[index], next]);
+                let surface = if endpoint_radii[0] == endpoint_radii[1] {
+                    mitered_line_surface(
+                        *line,
+                        frames[index],
+                        endpoint_radii[0] + offset,
+                        start_joint,
+                        end_joint,
+                        tolerance,
+                    )?
+                } else {
+                    mitered_line_profile_surface(
+                        *line,
+                        frames[index],
+                        endpoint_radii,
+                        offset,
+                        blend,
+                        [start, end],
+                        start_joint,
+                        end_joint,
+                        tolerance,
+                    )?
+                };
                 Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -628,15 +688,14 @@ fn mitered_line_pipe(
         Ok(joined.pop().expect("one mitered wall component").brep)
     };
     if let Some(thickness) = wall_thickness {
-        let second_radius = radius + thickness;
         let (outer, inner) = if thickness > 0.0 {
-            (make_wall(second_radius)?, make_wall(radius)?)
+            (make_wall(thickness)?, make_wall(0.0)?)
         } else {
-            (make_wall(radius)?, make_wall(second_radius)?)
+            (make_wall(0.0)?, make_wall(thickness)?)
         };
         return Ok(Some(finish_two_walls(outer, inner, cap, tolerance)?));
     }
-    let wall = make_wall(radius)?;
+    let wall = make_wall(0.0)?;
     if cap == PipeCap::Round {
         let last = *lines.last().expect("at least two mitered lines");
         let end_frame = Frame3::try_from_x_and_normal(
@@ -652,8 +711,12 @@ fn mitered_line_pipe(
         return Ok(Some(round_cap_single_wall(
             wall,
             [frames[0], end_frame],
-            [radius; 2],
-            [0.0; 2],
+            endpoint_radii,
+            if blend == SweepBlend::Global {
+                [(endpoint_radii[1] - endpoint_radii[0]) / total; 2]
+            } else {
+                [0.0; 2]
+            },
             tolerance,
         )?));
     }
@@ -698,6 +761,90 @@ fn mitered_line_surface(
         controls,
         cylinder.knots_u().to_vec(),
         cylinder.knots_v().to_vec(),
+    )?)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn mitered_line_profile_surface(
+    line: LineSegment,
+    frame: Frame3,
+    endpoint_radii: [Real; 2],
+    offset: Real,
+    blend: SweepBlend,
+    interval: [Real; 2],
+    start_joint: Option<[Vector3; 2]>,
+    end_joint: Option<[Vector3; 2]>,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    let length = line.length()?;
+    let unit = NurbsSurface::try_cylinder(frame, 1.0, 0.0, length)?;
+    let circle = &unit.control_points()[..unit.control_point_count_u()];
+    let delta = endpoint_radii[1] - endpoint_radii[0];
+    let radius = |fraction: Real| {
+        endpoint_radii[0]
+            + delta
+                * if blend == SweepBlend::Local {
+                    fraction * fraction * (3.0 - 2.0 * fraction)
+                } else {
+                    fraction
+                }
+    };
+    let derivative = |fraction: Real| {
+        delta
+            * if blend == SweepBlend::Local {
+                6.0 * fraction * (1.0 - fraction)
+            } else {
+                1.0
+            }
+    };
+    let [start, end] = interval;
+    let span = end - start;
+    let first = radius(start);
+    let last = radius(end);
+    let profile = [
+        first,
+        first + span * derivative(start) / 3.0,
+        last - span * derivative(end) / 3.0,
+        last,
+    ];
+    let axial = frame.z_axis().as_vector();
+    let mut controls = Vec::with_capacity(4 * circle.len());
+    for (index, profile_radius) in profile.into_iter().enumerate() {
+        let offset_vector = axial.scaled(index as Real * length / 3.0)?;
+        for control in circle {
+            let radial = frame.origin().vector_to(control.point())?;
+            let point = frame
+                .origin()
+                .translated(radial.scaled(profile_radius + offset)?)?
+                .translated(offset_vector)?;
+            controls.push(WeightedPoint3::try_new(point, control.weight())?);
+        }
+    }
+    let count = circle.len();
+    let direction = line.direction(tolerance)?.as_vector();
+    for (row, joint, pair) in [
+        (0, line.start(), start_joint),
+        (3 * count, line.end(), end_joint),
+    ] {
+        let Some([first_direction, second_direction]) = pair else {
+            continue;
+        };
+        let divisor = 1.0 + first_direction.dot(second_direction)?;
+        for control in &mut controls[row..row + count] {
+            let radial = joint.vector_to(control.point())?;
+            let shift = -(first_direction.dot(radial)? + second_direction.dot(radial)?) / divisor;
+            let point = control.point().translated(direction.scaled(shift)?)?;
+            *control = WeightedPoint3::try_new(point, control.weight())?;
+        }
+    }
+    Ok(NurbsSurface::try_new_rational(
+        unit.degree_u(),
+        3,
+        count,
+        4,
+        controls,
+        unit.knots_u().to_vec(),
+        vec![0.0, 0.0, 0.0, 0.0, length, length, length, length],
     )?)
 }
 
@@ -2202,6 +2349,159 @@ mod tests {
                     "{name}: {option}: {measured} vs {volume}"
                 );
             }
+        }
+    }
+
+    #[test]
+    fn tapered_sharp_fit_profile_matches_rhino_volume() {
+        let tolerance = Tolerance::DEFAULT;
+        let mut mismatches = Vec::new();
+        for (vertices, expected) in [
+            (
+                vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.)],
+                [
+                    2.0716563894655327,
+                    2.0525075453971313,
+                    2.3900044399127722,
+                    2.5132743510996836,
+                    2.5132743406284277,
+                ],
+            ),
+            (
+                vec![p(0., 0., 0.), p(2., 0., 0.), p(3., 1., 1.)],
+                [
+                    1.9328814905368568,
+                    1.9150153216013213,
+                    2.251229540274963,
+                    2.34491674771564,
+                    2.3449167040785506,
+                ],
+            ),
+            (
+                vec![
+                    p(0., 0., 0.),
+                    p(2., 0., 0.),
+                    p(3., 1., 0.5),
+                    p(4., 1.3, 1.8),
+                ],
+                [
+                    2.676234466580245,
+                    2.6514974679478795,
+                    2.9945825138115723,
+                    3.2467313600092877,
+                    3.2467315788085314,
+                ],
+            ),
+        ] {
+            let lines = vertices
+                .windows(2)
+                .map(|pair| LineSegment::try_new(pair[0], pair[1], tolerance).unwrap())
+                .collect::<Vec<_>>();
+            let options = [
+                (SweepBlend::Local, PipeCap::Flat, None),
+                (SweepBlend::Global, PipeCap::Flat, None),
+                (SweepBlend::Local, PipeCap::Round, None),
+                (SweepBlend::Local, PipeCap::Flat, Some(0.2)),
+                (SweepBlend::Global, PipeCap::Flat, Some(0.2)),
+            ];
+            for ((blend, cap, thickness), expected) in options.into_iter().zip(expected) {
+                let pipe =
+                    mitered_line_pipe_profile(&lines, [0.3, 0.5], blend, cap, thickness, tolerance)
+                        .unwrap()
+                        .unwrap();
+                assert!(pipe.is_closed());
+                assert!(pipe.is_solid());
+                let measured = pipe.signed_volume(tolerance).unwrap();
+                if (measured - expected).abs() >= 5e-6 {
+                    mismatches.push(format!(
+                        "{blend:?} {cap:?} {thickness:?}: {measured} vs {expected}"
+                    ));
+                }
+            }
+        }
+        assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+    }
+
+    #[test]
+    fn fitted_tapered_sharp_pipe_command_uses_miter_profile() {
+        let tolerance = Tolerance::DEFAULT;
+        let mut document = Document::default();
+        let lines = [
+            LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), tolerance).unwrap(),
+            LineSegment::try_new(p(2., 0., 0.), p(2., 2., 0.), tolerance).unwrap(),
+        ];
+        let rail =
+            PolyCurve3::try_new(lines.into_iter().map(CurveSegment3::Line).collect()).unwrap();
+        let source = document.add_geometry(Geometry::PolyCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected) in [
+            ("Cap=Flat", 2.0716563894655327),
+            ("ShapeBlending=Global Cap=Flat", 2.0525075453971313),
+            ("Cap=Round", 2.3900044399127722),
+            ("WallThickness=0.2 Cap=Flat", 2.5132743510996836),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 0.5 FitRail=Yes {options}"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("fitted tapered pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            let measured = pipe.signed_volume(tolerance).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+        let count = document.objects().count();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 0.5 FitRail=Yes ShapeBlending=Global Cap=Round"),
+                )
+                .is_err()
+        );
+        assert_eq!(document.objects().count(), count);
+
+        let skew = Polyline3::try_new(
+            vec![
+                p(0., 0., 0.),
+                p(2., 0., 0.),
+                p(3., 1., 0.5),
+                p(4., 1.3, 1.8),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let skew_id = document.add_geometry(Geometry::Polyline(skew)).unwrap();
+        for (options, expected) in [
+            ("Cap=Round", 2.9945825138115723),
+            (
+                "ShapeBlending=Global WallThickness=0.2 Cap=Flat",
+                3.2467315788085314,
+            ),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {skew_id} 0.3 0.5 FitRail=Yes {options}"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("fitted spatial polyline pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            let measured = pipe.signed_volume(tolerance).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
         }
     }
 

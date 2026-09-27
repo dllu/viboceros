@@ -49,6 +49,14 @@ Rhino's volumes within `5e-6` with both `FitRail=No` and `FitRail=Yes`.
 Rhino divides oblique spatial walls into more faces. With `FitRail=Yes`, Rhino
 fits one wall face across the corners while this implementation keeps a face
 per segment.
+For tapered sharp line rails with `FitRail=Yes`, the radius follows the full
+rail distance: Local blending uses a cubic smoothstep profile, while Global
+blending uses a linear profile. The mitered construction matches the tested
+planar and spatial Rhino flat and thick volumes within `5e-6`; Local round
+caps also meet that limit. Global round caps on tapered sharp rails remain
+unsupported because the tested spatial cases exceed the volume tolerance.
+The tested planar fitted taper differs from Rhino's wall by about `0.0075`
+in radius at one matched axial position; pointwise surface parity remains open.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
@@ -71,8 +79,8 @@ with `FitRail=Yes` on a polycurve are currently rejected; the fitted Rhino
 surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
-Variable-radius sharp rails, other closed rails, and SubD output are still
-unsupported. A
+Variable-radius sharp rails with `FitRail=No`, other closed rails, and SubD
+output are still unsupported. A
 circular rail requires a pipe radius smaller than the rail radius.
 The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
 radius station was supplied on a closed circular rail.
