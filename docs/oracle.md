@@ -74,12 +74,22 @@ for preserved opposite-end options None, Position, and Tangency. Its
 adds 15 matching [observations](../tools/rhino_oracle/observations/curve_match_multispan_curvature_extended.json)
 for uneven knots, rational weights, and reversed selected ends. The
 [uneven rational boundary case](../tools/rhino_oracle/fixtures/curve_match_multispan_curvature_boundary.json)
-retains one mismatch in the tangential second-control coordinate when the
-second control and endpoint weights are equal; its
-[Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_curvature_boundary.json)
-keeps the difference reproducible. The
+now matches its [Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_curvature_boundary.json).
+The [12-case transition fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_curvature_b1_rule.json)
+and [live observation](../tools/rhino_oracle/observations/curve_match_multispan_curvature_b1_rule.json)
+vary the first rational weight, first interior knot, and original second-control
+projection. In these samples, Rhino chooses the curvature-derived tangential
+control when it differs from the original projection by at most 10% of their
+mean magnitude;
+all 12 native replays match within `1e-10`. These probes ran on a separate Xvfb
+display. The
 [additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
 remains as historical evidence for the now-supported two-span curvature case.
+Replay the transition fixture with:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/curve_match_multispan_curvature_b1_rule.json --observations tools/rhino_oracle/observations/curve_match_multispan_curvature_b1_rule.json
+```
 
 The `viewport_arrangement_probe` operation records model viewport bounds,
 titles, cameras, projection, floating state, and active view after a bounded

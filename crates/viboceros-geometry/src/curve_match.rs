@@ -389,13 +389,24 @@ fn match_end_to_target(
                     2.0 * (degree * a * a - a) / ((degree - 1.0) * b)
                 }
                 CurvatureControlRule::OneSidedMultiSpan if b == 1.0 => {
-                    // Rhino keeps the original second control's projection onto
-                    // the endpoint handle when their weights are equal.
+                    // Captured Rhino cases use the curvature-derived projection
+                    // while it differs by at most 10% of the mean magnitude;
+                    // otherwise they retain the original second control's
+                    // projection onto the endpoint handle.
                     let first =
                         endpoint.vector_to(elevated.control_points()[adjacent_index].point())?;
                     let second =
                         endpoint.vector_to(elevated.control_points()[second_index].point())?;
-                    second.dot(first)? / (handle * handle)
+                    let original_projection = second.dot(first)? / (handle * handle);
+                    let curvature_projection = zero_tangential_coefficient();
+                    if curvature_projection.is_finite()
+                        && (curvature_projection - original_projection).abs()
+                            <= 0.05 * curvature_projection.abs() + 0.05 * original_projection.abs()
+                    {
+                        curvature_projection
+                    } else {
+                        original_projection
+                    }
                 }
                 CurvatureControlRule::OneSidedMultiSpan
                 | CurvatureControlRule::AverageMultiSpan => zero_tangential_coefficient(),
@@ -607,6 +618,46 @@ mod tests {
             for (a, e) in actual.into_iter().zip(expected) {
                 assert!((a - e).abs() < 1e-12, "{a} vs {e}");
             }
+        }
+    }
+
+    #[test]
+    fn multispan_g2_rational_tangential_choice_matches_live_rhino_controls() {
+        for (second_x, expected_y) in [
+            (2.0, -1.171_428_571_428_570_8),
+            (2.4, -1.171_428_571_428_570_8),
+            (2.41, -1.41),
+        ] {
+            let source = Curve3::NurbsCurve(
+                NurbsCurve::try_new_rational(
+                    3,
+                    [
+                        (0.0, 0.0, 1.0),
+                        (1.0, 0.0, 0.8),
+                        (second_x, 1.0, 1.0),
+                        (3.0, 1.0, 0.7),
+                        (4.0, 0.0, 1.0),
+                    ]
+                    .into_iter()
+                    .map(|(x, y, weight)| WeightedPoint3::try_new(point(x, y), weight).unwrap())
+                    .collect(),
+                    vec![0.0, 0.0, 0.0, 0.0, 0.7, 3.0, 3.0, 3.0, 3.0],
+                )
+                .unwrap(),
+            );
+            let matched = try_match_curve_end(
+                &source,
+                false,
+                &reference(),
+                false,
+                CurveBlendContinuity::Curvature,
+                CurveMatchPreserveEnd::None,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let second = matched.control_points()[2].point();
+            assert!((second.x() - 8.114_285_714_285_721).abs() < 1e-11);
+            assert!((second.y() - expected_y).abs() < 1e-11);
         }
     }
 

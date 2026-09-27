@@ -1,0 +1,1002 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.5-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.75-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.785-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.785
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.65-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.65,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.75-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.75,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.805-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.805
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a1-b1-k0.7-x2",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.7-x1.9",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              1.9,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.7-x1.97",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              1.97,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.7-x2.4",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              2.4,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    },
+    {
+      "op": "curve_match_geometry",
+      "id": "a0.8-b1-k0.7-x2.41",
+      "first": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 0.8
+          },
+          {
+            "point": [
+              2.41,
+              1,
+              0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 0.7
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "second": {
+        "type": "arc",
+        "points": [
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            5,
+            2,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ]
+        ]
+      },
+      "continuity": "Curvature",
+      "preserve_other_end": "None"
+    }
+  ]
+}
