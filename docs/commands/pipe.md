@@ -27,6 +27,9 @@ smooth open rails use one-rail Sweep1 with transported circular sections; flat
 ends are capped as planar B-rep faces. `Cap=Round` joins spherical ends to
 a single-wall pipe. On thick pipes, `Cap=Round` produces planar annular ends,
 matching Rhino 8's Pipe command and `CreateThickPipe` result. `Cap=Flat` is the default.
+The NURBS rail branch refits even for a constant radius: a cubic Bézier oracle
+case differs by about 0.9% in volume when its original rail basis is retained,
+while the refitted surface matches Rhino within `5e-6` model-volume units.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with

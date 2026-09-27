@@ -41,6 +41,14 @@ def run(operation, tolerance, host):
         rail = geometry.ArcCurve(arc)
     elif rail_kind == "circle":
         rail = geometry.Circle(geometry.Plane.WorldXY, 5.0).ToNurbsCurve()
+    elif rail_kind == "bezier":
+        rail = geometry.NurbsCurve(3, False, 4, 4)
+        for index, xyz in enumerate([(0, 0, 0), (2, 0, 0),
+                                     (3, 2, 1), (5, 0, 2)]):
+            rail.Points.SetPoint(index, geometry.Point3d(*xyz))
+        for index in range(3):
+            rail.Knots[index] = 0.0
+            rail.Knots[index + 3] = 1.0
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))
@@ -58,6 +66,7 @@ def run(operation, tolerance, host):
             or any(value <= 0.0 for value in radii)):
         raise ValueError("invalid Pipe radius stations")
     local_blending = bool(operation.get("local_blending", True))
+    fit_rail = bool(operation.get("fit_rail", False))
     cap_mode = getattr(geometry.PipeCapMode, operation.get("cap", "Round"))
     thickness = operation.get("thickness")
     if radius <= 0.0 or end_radius <= 0.0 or (thickness is not None and float(thickness) <= 0.0):
@@ -88,19 +97,19 @@ def run(operation, tolerance, host):
         elif thickness is None:
             if end_radius == radius and not stations:
                 pieces = list(geometry.Brep.CreatePipe(
-                    rail, radius, local_blending, cap_mode, False,
+                    rail, radius, local_blending, cap_mode, fit_rail,
                     tolerance["absolute"], tolerance["angular"]))
             else:
                 numbers = host["System"].Array[host["System"].Double]
                 pieces = list(geometry.Brep.CreatePipe(
                     rail, numbers(parameters), numbers(radii),
-                    local_blending, cap_mode, False,
+                    local_blending, cap_mode, fit_rail,
                     tolerance["absolute"], tolerance["angular"]))
         else:
             if end_radius == radius and not stations:
                 pieces = list(geometry.Brep.CreateThickPipe(
                     rail, radius, radius + float(thickness), local_blending,
-                    cap_mode, False,
+                    cap_mode, fit_rail,
                     tolerance["absolute"], tolerance["angular"]))
             else:
                 numbers = host["System"].Array[host["System"].Double]
@@ -108,7 +117,7 @@ def run(operation, tolerance, host):
                     rail, numbers(parameters),
                     numbers(radii),
                     numbers([value + float(thickness) for value in radii]),
-                    local_blending, cap_mode, False,
+                    local_blending, cap_mode, fit_rail,
                     tolerance["absolute"], tolerance["angular"]))
         records = []
         for piece in pieces:

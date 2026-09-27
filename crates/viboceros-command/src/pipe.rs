@@ -608,7 +608,9 @@ fn swept_wall_with_frames(
         )?);
     }
     let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
-    let surface = if radii[0] == radii[1] {
+    // Rhino refits even a constant-radius cubic NURBS rail. Retaining its
+    // four-control Bézier basis changes the measured flat Pipe volume.
+    let surface = if radii[0] == radii[1] && !matches!(rail, CurveRef::NurbsCurve(_)) {
         sweep.to_rail_basis_surface()?
     } else if matches!(rail, CurveRef::Arc(_)) {
         // A direct continuous fit matches the measured Rhino arc Pipe volume
@@ -801,7 +803,7 @@ fn finish_two_walls(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::{CircularArc3, LineSegment, UnitVector3};
+    use viboceros_geometry::{CircularArc3, LineSegment, NurbsCurve, UnitVector3};
 
     fn p(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -1341,6 +1343,41 @@ mod tests {
             (measured - expected).abs() < 5e-6,
             "{measured} vs {expected}"
         );
+    }
+
+    #[test]
+    fn bezier_rail_pipe_matches_rhino_flat_volumes() {
+        let mut document = Document::default();
+        let rail = NurbsCurve::try_new(
+            3,
+            vec![p(0., 0., 0.), p(2., 0., 0.), p(3., 2., 1.), p(5., 0., 2.)],
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::NurbsCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (suffix, expected) in [
+            ("", 1.6495215095113431),
+            ("0.5", 3.021505338976187),
+            ("0.5 ShapeBlending=Global", 2.9935770434779623),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 {suffix} Cap=Flat"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("Bézier pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{suffix}: {measured} vs {expected}"
+            );
+        }
     }
 
     #[test]

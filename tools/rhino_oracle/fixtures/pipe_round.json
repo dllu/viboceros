@@ -188,6 +188,40 @@
       "stations": [[0.5, 0.8]],
       "local_blending": false,
       "cap": "None"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "bezier-constant",
+      "rail": "bezier",
+      "radius": 0.3,
+      "cap": "Flat",
+      "inspect_basis": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "bezier-local",
+      "rail": "bezier",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "bezier-local-fit",
+      "rail": "bezier",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "bezier-global",
+      "rail": "bezier",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "local_blending": false,
+      "cap": "Flat"
     }
   ]
 }
