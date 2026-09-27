@@ -49,16 +49,18 @@ for opposite-end preservation of None or Position. The
 adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_position.json)
 for trimmed and reversed ends, including rational controls. One
 [boundary diagnostic](../tools/rhino_oracle/fixtures/curve_match_average_position_boundary.json)
-retains a difference: Rhino trims a straight cubic to a roughly 1e-6-unit
-segment when its closest point is the far endpoint; native closest-point search
-returns the endpoint exactly. The
+retains a difference: Rhino's `CreateMatchCurve` sometimes trims a straight
+cubic to a `2^-22` parameter tail when the midpoint projects onto the far
+endpoint. Both public `ClosestPoint` and the native closest-point search return
+that endpoint exactly. Additional private-Xvfb probes found the tail at lengths
+1 through 90 in several cases, but not at lengths 12 and 100. The
 [average multi-span curvature fixture](../tools/rhino_oracle/fixtures/curve_match_average_multispan_curvature.json)
 adds 13 matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_multispan_curvature.json)
 for multi-span sources and references, rational weights, uneven knots, reversed
 ends, and preserved far tangents. Its
 [boundary fixture](../tools/rhino_oracle/fixtures/curve_match_average_multispan_curvature_boundary.json)
-retains two [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_multispan_curvature_boundary.json)
-that still need knot edits to preserve far curvature. The
+and its two [Rhino observations](../tools/rhino_oracle/observations/curve_match_average_multispan_curvature_boundary.json)
+now match after uniform Greville preparation of short source curves. The
 [multi-span tangency fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_tangency.json)
 adds ten matching [Rhino observations](../tools/rhino_oracle/observations/curve_match_multispan_tangency.json)
 for cubic and quadratic two-span sources, opposite-end preservation, and
@@ -98,7 +100,11 @@ replays agree within `1e-10`. The
 [six-case quadratic NURBS fixture](../tools/rhino_oracle/fixtures/curve_match_five_control_quadratic_general.json)
 and [observations](../tools/rhino_oracle/observations/curve_match_five_control_quadratic_general.json)
 cover both selected ends, rational weights, and uneven knots; all six match
-within `1e-10`. These live captures used a separate Xvfb display.
+within `1e-10`. The
+[four-control quadratic fixture](../tools/rhino_oracle/fixtures/curve_match_four_control_quadratic_g2.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_four_control_quadratic_g2.json)
+exercise two added controls, both selected ends, and rational weights. These live
+captures used a separate Xvfb display.
 The [Rebuild comparison](../tools/rhino_oracle/fixtures/curve_match_five_control_rebuild_probe.json)
 and [observations](../tools/rhino_oracle/observations/curve_match_five_control_rebuild_probe.json)
 show Rhino's public `NurbsCurve.Rebuild(6, 3, ...)` does not produce the same

@@ -314,7 +314,7 @@ fn match_end_to_target(
     let prepared = if require_single_span {
         original.clone()
     } else if original.degree() == 2
-        && original.control_points().len() == 5
+        && original.control_points().len() < matched_controls + preserved_controls
         && continuity == CurveBlendContinuity::Curvature
         && preserve == CurveMatchPreserveEnd::Curvature
     {
