@@ -223,8 +223,7 @@ impl TriangleMesh {
         let mut boundary_sides = Vec::with_capacity(naked_sides.len());
         for (face_index, face) in self.faces.iter().enumerate() {
             let indices = face.indices();
-            // Rhino starts at the second side of the first face, then walks
-            // the complete boundary loop before starting another loop.
+            // Keep each naked side in source face order before tracing loops.
             for side in 0..indices.len() {
                 let a = indices[(side + 1) % indices.len()];
                 let b = indices[(side + 2) % indices.len()];
@@ -239,20 +238,72 @@ impl TriangleMesh {
             outgoing[source_topology.topological_vertices[a as usize]].push(index);
         }
         let mut used = vec![false; boundary_sides.len()];
-        let mut ordered_sides = Vec::with_capacity(boundary_sides.len());
+        let mut boundary_loops = Vec::new();
         for start in 0..boundary_sides.len() {
+            if used[start] {
+                continue;
+            }
             let mut current = start;
+            let start_vertex =
+                source_topology.topological_vertices[boundary_sides[start][0] as usize];
+            let mut loop_sides = Vec::new();
             while !used[current] {
                 used[current] = true;
                 let [a, b] = boundary_sides[current];
-                ordered_sides.push([a, b]);
+                loop_sides.push([a, b]);
                 let end = source_topology.topological_vertices[b as usize];
+                if end == start_vertex {
+                    break;
+                }
                 let Some(next) = outgoing[end].iter().copied().find(|&edge| !used[edge]) else {
                     break;
                 };
                 current = next;
             }
+            let minimum = loop_sides
+                .iter()
+                .flat_map(|&[a, b]| [a, b])
+                .map(|vertex| source_topology.topological_vertices[vertex as usize])
+                .min()
+                .expect("a boundary trail has at least one side");
+            if loop_sides.len() > 1 {
+                // Rhino orders loops by their least topology vertex. The
+                // incident edge with the least neighbor establishes the
+                // starting wall: advance from it for a forward edge, or walk
+                // backward from it for a reverse edge (as around a hole).
+                let reference = loop_sides
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, &[a, b])| {
+                        let a = source_topology.topological_vertices[a as usize];
+                        let b = source_topology.topological_vertices[b as usize];
+                        if a == minimum {
+                            Some((b, index, true))
+                        } else if b == minimum {
+                            Some((a, index, false))
+                        } else {
+                            None
+                        }
+                    })
+                    .min_by_key(|&(neighbor, index, _)| (neighbor, index))
+                    .expect("the minimum boundary vertex has a side");
+                let (_, reference, forward) = reference;
+                let first = if forward {
+                    (reference + 1) % loop_sides.len()
+                } else {
+                    (reference + loop_sides.len() - 1) % loop_sides.len()
+                };
+                if forward {
+                    loop_sides.rotate_left(first);
+                } else {
+                    loop_sides.reverse();
+                    let reversed_first = loop_sides.len() - 1 - first;
+                    loop_sides.rotate_left(reversed_first);
+                }
+            }
+            boundary_loops.push((minimum, loop_sides));
         }
+        boundary_loops.sort_by_key(|(minimum, _)| *minimum);
         let mut colors = first
             .vertex_colors
             .as_ref()
@@ -262,7 +313,7 @@ impl TriangleMesh {
                 colors.extend_from_slice(second_colors);
                 colors
             });
-        for [a, b] in ordered_sides {
+        for [a, b] in boundary_loops.into_iter().flat_map(|(_, sides)| sides) {
             let base =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             vertices.extend([

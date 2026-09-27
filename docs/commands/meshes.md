@@ -111,20 +111,22 @@ moves all vertices in their common average direction, falling back to the
 active construction plane normal when that average cancels. `FlipAll=Yes`
 reverses the side. `BothSides=Yes` creates two offset skins; `Solid=Yes` also
 includes the original skin for a one-sided offset and joins naked boundaries
-with quadrilateral walls. `AllowDisjoint=No` creates separate objects for
-disconnected non-solid results, while `AllowDisjoint=Yes` retains one mesh per
-source. Solid offsets retain one object per source, including closed inner and
-outer shells.
+with quadrilateral walls. Without `Solid`, `AllowDisjoint=No` returns only the
+offset skin, or two separate skins for `BothSides=Yes`. `AllowDisjoint=Yes`
+combines the original and offset skins in one result, or combines the two
+offset skins when using both sides. Each skin keeps any disconnected source
+components in the same mesh. Solid offsets retain one object per source,
+including closed inner and outer shells.
 `DeleteInput=Yes` removes the originals. Output keeps source attributes and
 groups, and the edit is undoable. Offsets that collapse faces are rejected.
 If the offset skin merges formerly distinct topology vertices, Rhino returns
 two skins without walls; this command follows that behavior. The retained
 [Rhino fixture](../../tools/rhino_oracle/fixtures/mesh_offset.json) and
 [observations](../../tools/rhino_oracle/observations/mesh_offset.json) cover
-normal offsets, both sides, solid triangle and quad raw wall order, boundary
-ordering across a triangulated square, a bent collapsed skin, and a closed
-tetrahedron. Other direction modes and mesh
-arrangements still need live comparison.
+normal offsets, both sides, `AllowDisjoint`, solid raw wall order for triangles,
+quads, and rings with holes, boundary ordering across a triangulated square,
+an unwelded seam, a bent collapsed skin, and a closed tetrahedron. Other
+direction modes and mesh arrangements still need live comparison.
 
 `AddNgonsToMesh PlanarTolerance=0.01` adds logical n-gon overlays to connected
 coplanar mesh faces that share welded, oppositely oriented raw edges. The

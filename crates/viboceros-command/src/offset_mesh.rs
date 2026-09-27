@@ -49,25 +49,38 @@ impl Command for OffsetMeshCommand {
             let Geometry::Mesh(mesh) = geometry else {
                 return Err(CommandError::UnsupportedOffsetMeshGeometry);
             };
-            let result = mesh.offset_mesh(
+            let mut result = mesh.offset_mesh(
                 options.distance,
                 options.direction,
                 options.both_sides,
                 options.solid,
                 document.tolerance(),
             )?;
-            if options.allow_disjoint || options.solid {
+            if options.both_sides && !options.solid {
+                let negative_faces = (0..mesh.face_count()).collect::<Vec<_>>();
+                let (positive, negative) = result.extract_faces(&negative_faces)?.into_parts();
+                let positive = positive.expect("both offset skins exist");
+                if options.allow_disjoint {
+                    result = TriangleMesh::try_append(&[&positive, &negative])?;
+                    if outputs.len() == MAX_SPAN_OUTPUT_OBJECTS {
+                        return Err(too_many_span_outputs("OffsetMesh"));
+                    }
+                    outputs.push((*id, Geometry::Mesh(result)));
+                } else {
+                    if outputs.len() > MAX_SPAN_OUTPUT_OBJECTS - 2 {
+                        return Err(too_many_span_outputs("OffsetMesh"));
+                    }
+                    outputs.push((*id, Geometry::Mesh(negative)));
+                    outputs.push((*id, Geometry::Mesh(positive)));
+                }
+            } else {
+                if options.allow_disjoint && !options.solid {
+                    result = TriangleMesh::try_append(&[&result, mesh])?;
+                }
                 if outputs.len() == MAX_SPAN_OUTPUT_OBJECTS {
                     return Err(too_many_span_outputs("OffsetMesh"));
                 }
                 outputs.push((*id, Geometry::Mesh(result)));
-            } else {
-                outputs.extend(
-                    result
-                        .try_disjoint_pieces(MAX_SPAN_OUTPUT_OBJECTS - outputs.len())?
-                        .into_iter()
-                        .map(|piece| (*id, Geometry::Mesh(piece))),
-                );
             }
         }
         let count = outputs.len();
@@ -278,7 +291,21 @@ mod tests {
             panic!("mesh expected")
         };
         assert_eq!(mesh.disjoint_pieces().len(), 2);
+        assert_eq!(mesh.vertices()[0].z(), 1.0);
+        assert_eq!(mesh.vertices()[3].z(), -1.0);
         assert_eq!(document.selected_objects().count(), 1);
+        document.undo().unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "OffsetMesh 1 AllowDisjoint=Yes")
+            .unwrap();
+        let Geometry::Mesh(mesh) = document.selected_objects().next().unwrap().geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(mesh.vertices()[0].z(), 1.0);
+        assert_eq!(mesh.vertices()[3].z(), 0.0);
     }
 
     #[test]
@@ -347,7 +374,17 @@ mod tests {
         let Geometry::Mesh(result) = document.selected_objects().next().unwrap().geometry() else {
             panic!("mesh expected")
         };
-        assert!(result.vertices().iter().all(|point| point.x() >= 2.0));
+        let offset_count = result.vertices().len() / 2;
+        assert!(
+            result.vertices()[..offset_count]
+                .iter()
+                .all(|point| point.x() >= 2.0)
+        );
+        assert!(
+            result.vertices()[offset_count..]
+                .iter()
+                .all(|point| point.x() <= 1.0)
+        );
         assert!(result.vertices().iter().all(|point| point.z() == 0.0));
     }
 
@@ -464,6 +501,13 @@ mod tests {
             {
                 command.push_str(" BothSides=Yes");
             }
+            if operation["macro"]
+                .as_str()
+                .unwrap()
+                .contains("_AllowDisjoint=_Yes")
+            {
+                command.push_str(" AllowDisjoint=Yes");
+            }
             registry.execute(&mut document, &command).unwrap();
             let expected = observation["value"]["output"].as_array().unwrap();
             let actual = document.selected_objects().collect::<Vec<_>>();
@@ -480,7 +524,9 @@ mod tests {
                     "{id}: vertices"
                 );
                 assert_eq!(mesh.faces().len(), expected_faces.len(), "{id}: faces");
-                for (vertex, expected_vertex) in mesh.vertices().iter().zip(expected_vertices) {
+                for (vertex_index, (vertex, expected_vertex)) in
+                    mesh.vertices().iter().zip(expected_vertices).enumerate()
+                {
                     for (coordinate, expected_coordinate) in vertex
                         .to_array()
                         .into_iter()
@@ -488,7 +534,8 @@ mod tests {
                     {
                         assert!(
                             (coordinate - expected_coordinate.as_f64().unwrap()).abs() <= 1e-6,
-                            "{id}: vertex mismatch"
+                            "{id}: vertex {vertex_index} mismatch: native {coordinate}, Rhino {}",
+                            expected_coordinate.as_f64().unwrap()
                         );
                     }
                 }
