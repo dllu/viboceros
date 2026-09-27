@@ -1,8 +1,7 @@
 //! Face picking and per-face border extraction.
 use super::*;
 
-const DUPLICATE_FACE_BORDER_USAGE: &str =
-    "DupFaceBorder (point|Faces=All|Faces=0,2,...) [OutputLayer=Current|Input]";
+const DUPLICATE_FACE_BORDER_USAGE: &str = "DupFaceBorder (point|Faces=All|Faces=0,2,...|Face=index [Object=selected-uuid]) [OutputLayer=Current|Input]";
 
 #[derive(Clone, Debug, PartialEq)]
 struct DuplicateFaceBorderOptions {
@@ -32,8 +31,21 @@ pub(super) fn run(
     copy_input_attributes: bool,
 ) -> Result<String, CommandError> {
     let options = parse_duplicate_face_border_arguments(arguments)?;
+    if options
+        .selection
+        .object()
+        .is_some_and(|id| !document.is_selected(id))
+    {
+        return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+    }
     let sources = document
         .selected_objects()
+        .filter(|object| {
+            options
+                .selection
+                .object()
+                .is_none_or(|id| object.id() == id)
+        })
         .map(|object| {
             if !matches!(
                 object.geometry(),
@@ -129,6 +141,8 @@ fn parse_duplicate_face_border_arguments(
 ) -> Result<DuplicateFaceBorderOptions, CommandError> {
     let mut output_layer = DuplicateBorderOutputLayer::Current;
     let mut face_selection = None;
+    let mut face_index = None;
+    let mut object = None;
     let mut output_layer_seen = false;
     let mut positional = Vec::new();
     let mut index = 0;
@@ -139,6 +153,8 @@ fn parse_duplicate_face_border_arguments(
         } else if option_name_eq(argument, "OutputLayer")
             || option_name_eq(argument, "Faces")
             || option_name_eq(argument, "FaceIndices")
+            || option_name_eq(argument, "Face")
+            || option_name_eq(argument, "Object")
         {
             let value = arguments
                 .get(index + 1)
@@ -169,15 +185,42 @@ fn parse_duplicate_face_border_arguments(
                 value,
                 DUPLICATE_FACE_BORDER_USAGE,
             )?);
+        } else if option_name_eq(name, "Face") && face_index.is_none() {
+            face_index = Some(
+                value
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE))?,
+            );
+        } else if option_name_eq(name, "Object") && object.is_none() {
+            object = Some(
+                value
+                    .parse::<ObjectId>()
+                    .map_err(|_| CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE))?,
+            );
         } else {
             return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
         }
         index += consumed;
     }
-    let selection = if let Some(face_selection) = face_selection {
+    let selection = if let Some(face) = face_index {
+        if face_selection.is_some() || !positional.is_empty() {
+            return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+        }
+        if let Some(object) = object {
+            SurfaceFaceSelection::ObjectFace { object, face }
+        } else {
+            SurfaceFaceSelection::Faces(SurfaceFaceIndices::Indices(vec![face]))
+        }
+    } else if let Some(face_selection) = face_selection {
+        if object.is_some() {
+            return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+        }
         require_consumed(&positional, 0, DUPLICATE_FACE_BORDER_USAGE)?;
         SurfaceFaceSelection::Faces(face_selection)
     } else {
+        if object.is_some() {
+            return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+        }
         let (point, consumed) = parse_point(&positional)?;
         require_consumed(&positional, consumed, DUPLICATE_FACE_BORDER_USAGE)?;
         SurfaceFaceSelection::Point(point)

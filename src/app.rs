@@ -7957,6 +7957,11 @@ impl eframe::App for VibocerosApp {
             Some(FacePickMode::Mesh)
         } else if self.active_command == Some(InteractiveCommand::DeleteFaces) {
             Some(FacePickMode::MeshAndBrep)
+        } else if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ExtractSrf { .. } | InteractiveCommand::DupFaceBorder { .. })
+        ) {
+            Some(FacePickMode::SurfaceAndBrep)
         } else {
             None
         }
@@ -10012,6 +10017,39 @@ mod tests {
         };
         assert_eq!(surface.evaluate(0.5, 0.5).unwrap(), point(2.0, 1.5, 0.0));
         assert_eq!(app.document.undo_label(), Some("SrfPt"));
+    }
+
+    #[test]
+    fn interactive_surface_face_click_targets_the_clicked_object() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 1,0,0 1,1,0 0,1,0");
+        let first = app.document.objects().next().unwrap().id();
+        app.execute_command("SrfPt 3,0,0 4,0,0 4,1,0 3,1,0");
+        let second = app
+            .document
+            .objects()
+            .find(|object| object.id() != first)
+            .unwrap()
+            .id();
+        app.document
+            .select_objects_direct([first, second], viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(app.try_start_interactive_command("ExtractSrf Copy=No"));
+        app.accept_face_click(second, 0);
+        assert!(app.document.object(first).is_some());
+        assert!(app.document.object(second).is_none());
+        assert_eq!(app.document.undo_label(), Some("ExtractSrf"));
+
+        app.execute_command("Undo");
+        app.document
+            .select_objects_direct([first, second], viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(app.try_start_interactive_command("DupFaceBorder"));
+        app.accept_face_click(second, 0);
+        assert_eq!(app.document.objects().len(), 3);
+        assert!(app.document.object(first).is_some());
+        assert!(app.document.object(second).is_some());
+        assert_eq!(app.document.undo_label(), Some("DupFaceBorder"));
     }
 
     #[test]

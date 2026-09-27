@@ -42,7 +42,9 @@ selector for a one-pick viewport workflow.
 
 `DupFaceBorder` duplicates the exact non-seam border of the nearest selected
 surface or B-rep face, or accepts ordered zero-based `Faces=0,2`/`Faces=All`
-selectors. Omit the selector for a one-pick viewport workflow. Linear edge
+selectors. Omit the selector for a one-pick viewport workflow that chooses the
+visible face at the click depth. Scripts can target one selected source with
+`Face=0 Object=<uuid>`. Linear edge
 chains become one closed polyline; curved multi-edge chains become exact native
 polycurves. Holes and disconnected
 borders remain separate, singular and seam trims are omitted, and fresh

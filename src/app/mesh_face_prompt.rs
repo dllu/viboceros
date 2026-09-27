@@ -5,6 +5,28 @@ use viboceros_document::ObjectId;
 impl VibocerosApp {
     pub(super) fn accept_face_click(&mut self, object: ObjectId, face: usize) {
         let command = match self.active_command {
+            Some(InteractiveCommand::ExtractSrf {
+                copy,
+                output_on_current_layer,
+            }) => format!(
+                "ExtractSrf Face={face} Object={object} Copy={} OutputLayer={}",
+                if copy { "Yes" } else { "No" },
+                if output_on_current_layer {
+                    "Current"
+                } else {
+                    "Input"
+                },
+            ),
+            Some(InteractiveCommand::DupFaceBorder {
+                output_on_current_layer,
+            }) => format!(
+                "DupFaceBorder Face={face} Object={object} OutputLayer={}",
+                if output_on_current_layer {
+                    "Current"
+                } else {
+                    "Input"
+                },
+            ),
             Some(InteractiveCommand::ExtractMeshFaces { make_copy }) => format!(
                 "ExtractMeshFaces Face={face} Object={object} MakeCopy={}",
                 if make_copy { "Yes" } else { "No" },

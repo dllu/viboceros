@@ -92,7 +92,9 @@ not implemented.
 `ExtractSrf` separates the nearest exact face at a model-space point, or accepts
 an ordered zero-based list such as `Faces=0,2` (`Faces=All` is also supported).
 The face list applies to every selected NURBS surface or B-rep; entering the
-command without a selector starts a one-pick viewport workflow. `Copy=No` is
+command without a selector starts a one-pick viewport workflow that chooses the
+visible face at the click depth. Scripts can target one selected source with
+`Face=0 Object=<uuid>`. `Copy=No` is
 the default: an unextracted B-rep remainder keeps the source identity,
 attributes, and groups, while a fully extracted source is deleted. Extracted
 faces preserve attributes, become selected independent objects, and never

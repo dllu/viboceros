@@ -8291,8 +8291,7 @@ fn parse_extract_control_polygon_arguments(
     }
 }
 
-const EXTRACT_SURFACE_USAGE: &str =
-    "ExtractSrf (point|Faces=All|Faces=0,2,...) [Copy=Yes|No] [OutputLayer=Input|Current]";
+const EXTRACT_SURFACE_USAGE: &str = "ExtractSrf (point|Faces=All|Faces=0,2,...|Face=index [Object=selected-uuid]) [Copy=Yes|No] [OutputLayer=Input|Current]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExtractSurfaceOutputLayer {
@@ -8310,6 +8309,16 @@ enum SurfaceFaceIndices {
 enum SurfaceFaceSelection {
     Point(Point3),
     Faces(SurfaceFaceIndices),
+    ObjectFace { object: ObjectId, face: usize },
+}
+
+impl SurfaceFaceSelection {
+    fn object(&self) -> Option<ObjectId> {
+        match self {
+            Self::ObjectFace { object, .. } => Some(*object),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -8371,8 +8380,21 @@ impl Command for ExtractSurfaceCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_extract_surface_arguments(arguments)?;
+        if options
+            .selection
+            .object()
+            .is_some_and(|id| !document.is_selected(id))
+        {
+            return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+        }
         let sources = document
             .selected_objects()
+            .filter(|object| {
+                options
+                    .selection
+                    .object()
+                    .is_none_or(|id| object.id() == id)
+            })
             .map(|object| {
                 if !matches!(
                     object.geometry(),
@@ -8488,6 +8510,14 @@ fn selected_surface_faces(
     command: SurfaceFaceCommand,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
+        SurfaceFaceSelection::ObjectFace { face, .. } => {
+            let source = &sources[0];
+            let face_count = extract_surface_face_count(&source.geometry);
+            if *face >= face_count {
+                return Err(command.face_index_out_of_range(*face, face_count));
+            }
+            Ok(vec![(0, vec![*face])])
+        }
         SurfaceFaceSelection::Faces(selection) => sources
             .iter()
             .enumerate()
@@ -8555,6 +8585,8 @@ fn parse_extract_surface_arguments(
     let mut copy = false;
     let mut output_layer = ExtractSurfaceOutputLayer::Input;
     let mut face_selection = None;
+    let mut face_index = None;
+    let mut object = None;
     let mut copy_seen = false;
     let mut output_layer_seen = false;
     let mut positional = Vec::new();
@@ -8567,6 +8599,8 @@ fn parse_extract_surface_arguments(
             || option_name_eq(argument, "OutputLayer")
             || option_name_eq(argument, "Faces")
             || option_name_eq(argument, "FaceIndices")
+            || option_name_eq(argument, "Face")
+            || option_name_eq(argument, "Object")
         {
             let value = arguments
                 .get(index + 1)
@@ -8598,16 +8632,43 @@ fn parse_extract_surface_arguments(
         {
             let value = value.trim_start_matches('_');
             face_selection = Some(parse_surface_face_indices(value, EXTRACT_SURFACE_USAGE)?);
+        } else if option_name_eq(name, "Face") && face_index.is_none() {
+            face_index = Some(
+                value
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::Usage(EXTRACT_SURFACE_USAGE))?,
+            );
+        } else if option_name_eq(name, "Object") && object.is_none() {
+            object = Some(
+                value
+                    .parse::<ObjectId>()
+                    .map_err(|_| CommandError::Usage(EXTRACT_SURFACE_USAGE))?,
+            );
         } else {
             return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
         }
         index += consumed;
     }
 
-    let selection = if let Some(face_selection) = face_selection {
+    let selection = if let Some(face) = face_index {
+        if face_selection.is_some() || !positional.is_empty() {
+            return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+        }
+        if let Some(object) = object {
+            SurfaceFaceSelection::ObjectFace { object, face }
+        } else {
+            SurfaceFaceSelection::Faces(SurfaceFaceIndices::Indices(vec![face]))
+        }
+    } else if let Some(face_selection) = face_selection {
+        if object.is_some() {
+            return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+        }
         require_consumed(&positional, 0, EXTRACT_SURFACE_USAGE)?;
         SurfaceFaceSelection::Faces(face_selection)
     } else {
+        if object.is_some() {
+            return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+        }
         let (point, consumed) = parse_point(&positional)?;
         require_consumed(&positional, consumed, EXTRACT_SURFACE_USAGE)?;
         SurfaceFaceSelection::Point(point)
@@ -21755,6 +21816,84 @@ mod tests {
         ));
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn qualified_surface_face_commands_only_change_the_target_source() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "SrfPt 0,0,0 1,0,0 1,1,0 0,1,0")
+            .unwrap();
+        let first = document.objects().next().unwrap().id();
+        registry
+            .execute(&mut document, "SrfPt 3,0,0 4,0,0 4,1,0 3,1,0")
+            .unwrap();
+        let second = document
+            .objects()
+            .find(|object| object.id() != first)
+            .unwrap()
+            .id();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        let original_count = document.objects().len();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            format!("ExtractSrf Face=1 Object={second}"),
+            format!("DupFaceBorder Face=1 Object={second}"),
+            format!("ExtractSrf Face=0 Object={second} Faces=All"),
+        ] {
+            assert!(
+                registry.execute(&mut document, &command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), original_count);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+        document
+            .select_objects_direct([first], SelectionMode::Replace)
+            .unwrap();
+        for command in [
+            format!("ExtractSrf Face=0 Object={second}"),
+            format!("DupFaceBorder Face=0 Object={second}"),
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, &command),
+                Err(CommandError::Usage(_))
+            ));
+            assert_eq!(document.objects().len(), original_count);
+        }
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractSrf Face=0 Object={second} Copy=No")
+                )
+                .unwrap(),
+            "Extracted 1 surface(s) from 1 object(s); source faces removed"
+        );
+        assert!(document.object(first).is_some());
+        assert!(document.object(second).is_none());
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("DupFaceBorder Face=0 Object={second}")
+                )
+                .unwrap(),
+            "Duplicated 1 curve object(s) in 1 face border(s) from 1 object(s)"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(document.object(first).is_some());
+        assert!(document.object(second).is_some());
     }
 
     #[test]

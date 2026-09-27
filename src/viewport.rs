@@ -239,6 +239,7 @@ pub enum LassoSelectionInput<'a> {
 pub enum FacePickMode {
     Mesh,
     MeshAndBrep,
+    SurfaceAndBrep,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -1278,10 +1279,12 @@ impl Viewport {
             })
         })
         .flatten();
-        let face_point_fallback = input.face_pick == Some(FacePickMode::MeshAndBrep)
-            && face_click.is_none()
+        let face_point_fallback = matches!(
+            input.face_pick,
+            Some(FacePickMode::MeshAndBrep | FacePickMode::SurfaceAndBrep)
+        ) && face_click.is_none()
             && response.clicked_by(PointerButton::Primary)
-            && self.has_unmeshed_selected_brep(document);
+            && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
         ViewportOutput {
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response

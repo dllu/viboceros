@@ -125,10 +125,16 @@ fn triangle_depth(
 }
 
 impl Viewport {
-    pub(super) fn has_unmeshed_selected_brep(&self, document: &Document) -> bool {
+    pub(super) fn has_unmeshed_selected_face_source(
+        &self,
+        document: &Document,
+        mode: FacePickMode,
+    ) -> bool {
         document.selected_objects().any(|object| {
             if !selection_candidate(document, object, None)
-                || !matches!(object.geometry(), Geometry::Brep(_))
+                || !(matches!(object.geometry(), Geometry::Brep(_))
+                    || mode == FacePickMode::SurfaceAndBrep
+                        && matches!(object.geometry(), Geometry::NurbsSurface(_)))
             {
                 return false;
             }
@@ -136,7 +142,9 @@ impl Viewport {
                 .display_cache
                 .borrow_mut()
                 .get(object, document.tolerance());
-            display.mesh().is_none() || display.brep_face_sources().is_none()
+            display.mesh().is_none()
+                || (matches!(object.geometry(), Geometry::Brep(_))
+                    && display.brep_face_sources().is_none())
         })
     }
 
@@ -152,8 +160,12 @@ impl Viewport {
             if !selection_candidate(document, object, None) {
                 continue;
             }
-            let display = if mode == FacePickMode::MeshAndBrep
-                && matches!(object.geometry(), Geometry::Brep(_))
+            let display = if matches!(
+                mode,
+                FacePickMode::MeshAndBrep | FacePickMode::SurfaceAndBrep
+            ) && matches!(object.geometry(), Geometry::Brep(_))
+                || mode == FacePickMode::SurfaceAndBrep
+                    && matches!(object.geometry(), Geometry::NurbsSurface(_))
             {
                 Some(
                     self.display_cache
@@ -163,9 +175,9 @@ impl Viewport {
             } else {
                 None
             };
-            let (mesh, sources) = match object.geometry() {
-                Geometry::Mesh(mesh) => (mesh, None),
-                Geometry::Brep(_) if mode == FacePickMode::MeshAndBrep => {
+            let (mesh, sources, single_surface) = match object.geometry() {
+                Geometry::Mesh(mesh) if mode != FacePickMode::SurfaceAndBrep => (mesh, None, false),
+                Geometry::Brep(_) if mode != FacePickMode::Mesh => {
                     let Some(display) = display.as_ref() else {
                         continue;
                     };
@@ -173,7 +185,13 @@ impl Viewport {
                     else {
                         continue;
                     };
-                    (mesh, Some(sources))
+                    (mesh, Some(sources), false)
+                }
+                Geometry::NurbsSurface(_) if mode == FacePickMode::SurfaceAndBrep => {
+                    let Some(mesh) = display.as_ref().and_then(|display| display.mesh()) else {
+                        continue;
+                    };
+                    (mesh, None, true)
                 }
                 _ => continue,
             };
@@ -188,6 +206,8 @@ impl Viewport {
                     continue;
                 };
                 face
+            } else if single_surface {
+                0
             } else {
                 mesh_face
             };
@@ -282,6 +302,47 @@ mod tests {
     use super::*;
     use viboceros_document::SelectionMode;
     use viboceros_geometry::MeshFace;
+
+    #[test]
+    fn selected_surface_face_pick_uses_tessellation_and_excludes_mesh() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(-1.0, -1.0, 1.0),
+            point(1.0, -1.0, 1.0),
+            point(1.0, 1.0, 1.0),
+            point(-1.0, 1.0, 1.0),
+        ])
+        .unwrap();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(-1.0, -1.0, 2.0),
+                point(1.0, -1.0, 2.0),
+                point(0.0, 1.0, 2.0),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let mesh_id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([surface_id, mesh_id], SelectionMode::Replace)
+            .unwrap();
+        let pointer = view.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrep),
+            Some((surface_id, 0))
+        );
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
+            Some((mesh_id, 0))
+        );
+    }
 
     #[test]
     fn selected_mesh_face_pick_uses_visible_depth_and_stored_quad_index() {
@@ -394,6 +455,10 @@ mod tests {
             view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrep),
             Some((brep, top_face))
         );
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrep),
+            Some((brep, top_face))
+        );
         let context = egui::Context::default();
         let mut frame = |events| {
             let mut output = ViewportOutput::default();
@@ -464,6 +529,10 @@ mod tests {
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrep),
             Some((mesh, 0))
+        );
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrep),
+            Some((brep, top_face))
         );
     }
 
