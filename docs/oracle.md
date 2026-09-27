@@ -83,8 +83,20 @@ control when it differs from the original projection by at most 10% of their
 mean magnitude;
 all 12 native replays match within `1e-10`. These probes ran on a separate Xvfb
 display. The
-[additional Rhino-only probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-remains as historical evidence for the now-supported two-span curvature case.
+[five-control probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
+retains a G2 match with far G2 preservation that still needs knot edits.
+The [five-case supported fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_preserve_far_curvature.json)
+and [Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_preserve_far_curvature.json)
+cover six- and seven-control cubic sources, both selected ends, a rational
+source, and an average match between two six-control curves. Their far three
+controls and knot vectors remain unchanged; native replay agrees to `1e-10`.
+These captures also ran on a separate Xvfb display.
+Replay the supported case with:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/curve_match_multispan_preserve_far_curvature.json --observations tools/rhino_oracle/observations/curve_match_multispan_preserve_far_curvature.json
+```
+
 Replay the transition fixture with:
 
 ```sh

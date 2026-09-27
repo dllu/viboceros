@@ -70,14 +70,6 @@ pub fn try_match_curve_end(
         original
     };
     let source_single_span = original.spans().count() == 1;
-    if !source_single_span
-        && continuity == CurveBlendContinuity::Curvature
-        && preserve == CurveMatchPreserveEnd::Curvature
-    {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "Match multi-span curvature with far curvature preservation needs knot edits",
-        });
-    }
     let matched = match_end_to_target(
         &original,
         source_at_end,
@@ -216,14 +208,6 @@ pub fn try_average_match_curve_ends(
     let tangent = tangent_sum.normalized(tolerance)?;
     let first_nurbs = first_curve.to_nurbs()?;
     let second_nurbs = second_curve.to_nurbs()?;
-    if continuity == CurveBlendContinuity::Curvature
-        && preserve == CurveMatchPreserveEnd::Curvature
-        && (first_nurbs.spans().count() > 1 || second_nurbs.spans().count() > 1)
-    {
-        return Err(GeometryError::InvalidPolyCurve {
-            context: "average Match multi-span curvature with far curvature preservation needs knot edits",
-        });
-    }
     let curvature = if continuity == CurveBlendContinuity::Curvature {
         let first_curvature = first_curve.curvature_vector(first_parameter)?;
         let second_curvature = second_curve.curvature_vector(second_parameter)?;
@@ -658,6 +642,75 @@ mod tests {
             let second = matched.control_points()[2].point();
             assert!((second.x() - 8.114_285_714_285_721).abs() < 1e-11);
             assert!((second.y() - expected_y).abs() < 1e-11);
+        }
+    }
+
+    #[test]
+    fn multispan_g2_preserves_disjoint_far_curvature_controls() {
+        let source = Curve3::NurbsCurve(
+            NurbsCurve::try_new(
+                3,
+                [
+                    point(0.0, 0.0),
+                    point(1.0, 0.0),
+                    point(2.0, 1.0),
+                    point(3.0, 1.0),
+                    point(4.0, 1.0),
+                    point(5.0, 0.0),
+                ]
+                .to_vec(),
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0],
+            )
+            .unwrap(),
+        );
+        for (at_end, expected) in [
+            (
+                false,
+                [
+                    [4.0, 1.0],
+                    [4.0, 0.0],
+                    [7.0, -1.0],
+                    [3.0, 1.0],
+                    [4.0, 1.0],
+                    [5.0, 0.0],
+                ],
+            ),
+            (
+                true,
+                [
+                    [0.0, 0.0],
+                    [1.0, 0.0],
+                    [2.0, 1.0],
+                    [10.0, -1.121_320_343_559_642_4],
+                    [4.0, -0.414_213_562_373_095_15],
+                    [4.0, 1.0],
+                ],
+            ),
+        ] {
+            let matched = try_match_curve_end(
+                &source,
+                at_end,
+                &reference(),
+                false,
+                CurveBlendContinuity::Curvature,
+                CurveMatchPreserveEnd::Curvature,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(matched.degree(), 3);
+            assert_eq!(matched.knots(), source.as_ref().to_nurbs().unwrap().knots());
+            for (control, expected) in matched.control_points().iter().zip(expected) {
+                let point = control.point();
+                assert!((point.x() - expected[0]).abs() < 1e-12);
+                assert!((point.y() - expected[1]).abs() < 1e-12);
+            }
+            let far_parameter = if at_end { 0.0 } else { 3.0 };
+            let before = source.as_ref().curvature_vector(far_parameter).unwrap();
+            let after = CurveRef::NurbsCurve(&matched)
+                .curvature_vector(far_parameter)
+                .unwrap();
+            assert!((before.x() - after.x()).abs() < 1e-12);
+            assert!((before.y() - after.y()).abs() < 1e-12);
         }
     }
 
