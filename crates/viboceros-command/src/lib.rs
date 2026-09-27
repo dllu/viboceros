@@ -129,7 +129,9 @@ use measurements::{
     AngleCommand, AreaCommand, DistanceCommand, DomainCommand, EvaluatePointCommand, LengthCommand,
     VolumeCommand,
 };
-pub use measurements::{EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv};
+pub use measurements::{
+    EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv, evaluate_surface_uv_on_face,
+};
 mod grouping;
 mod remove_from_group;
 pub use distribute::{DistributionMode, DistributionSettings, distribution_unit_count};
@@ -17833,6 +17835,11 @@ pub enum CommandError {
 
     #[error("the requested surface location has no non-degenerate isocurve")]
     NoExtractableIsocurves,
+
+    #[error(
+        "EvaluateUVPt face index {face} is outside the selected object's face count {face_count}"
+    )]
+    EvaluateUvFaceIndexOutOfRange { face: usize, face_count: usize },
 
     #[error("ExtractWireframe supports selected NURBS surfaces, B-reps, and triangle meshes only")]
     UnsupportedExtractWireframeGeometry,

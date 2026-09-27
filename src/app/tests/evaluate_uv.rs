@@ -1,6 +1,67 @@
 use super::*;
 
 #[test]
+fn evaluate_uv_viewport_face_hits_keep_component_choice_across_a_session() {
+    use viboceros_geometry::{Brep, NurbsSurface};
+    let mut app = test_app();
+    let surface = |z| {
+        NurbsSurface::try_bilinear([
+            point(0.0, 0.0, z),
+            point(4.0, 0.0, z),
+            point(4.0, 2.0, z),
+            point(0.0, 2.0, z),
+        ])
+        .unwrap()
+    };
+    let bottom = Brep::try_surface_face(surface(0.0), Tolerance::DEFAULT).unwrap();
+    let top = Brep::try_surface_face(
+        surface(5.0)
+            .try_reparameterized(100.0..=200.0, -2.0..=2.0)
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Brep(
+            Brep::try_combine(vec![bottom, top], Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_object(source, viboceros_document::SelectionMode::Replace)
+        .unwrap();
+    assert!(app.try_start_interactive_command("EvaluateUVPt CreatePoint=Yes"));
+    app.accept_component_face_hit(source, 0, Some(point(1.0, 1.0, 4.5)));
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "Surface UV coordinates = 0.25,0.5"
+    );
+    assert!(app.active_command.is_some());
+    app.accept_component_face_hit(source, 1, Some(point(1.0, 1.0, 0.5)));
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "Surface UV coordinates = 125,0"
+    );
+    assert!(app.active_command.is_some());
+    assert_eq!(app.document.objects().len(), 3);
+    let mut marker_heights = app
+        .document
+        .objects()
+        .filter_map(|object| match object.geometry() {
+            Geometry::Point(point) => Some(point.z()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    marker_heights.sort_by(f64::total_cmp);
+    assert_eq!(marker_heights, [0.0, 5.0]);
+    assert!(app.try_continue_evaluate_uv(""));
+    assert_eq!(app.document.undo_label(), Some("EvaluateUVPt"));
+    app.execute_command("Undo");
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(app.document.object(source).is_some());
+}
+
+#[test]
 fn evaluate_uv_replays_rhino_repeated_picks_esc_and_persisted_options() {
     use serde_json::Value;
     use viboceros_geometry::{NurbsSurface, WeightedPoint3};

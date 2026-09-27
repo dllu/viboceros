@@ -13,9 +13,11 @@ EvaluateUVPt Normalized=No CreatePoint=No 1,1,3
 ```
 
 Coordinates in a complete command are world coordinates. Interactive input also
-supports normal world/CPlane/relative point modes and snaps. The command reports
-the closest underlying surface's native U/V parameters. For a polysurface it
-searches component surfaces and uses the nearest, retaining face order on ties.
+supports normal world/CPlane/relative point modes and snaps. Viewport clicks use
+the visible surface or B-rep face and its surface hit point; typed locations use
+the closest underlying surface. For a polysurface, typed locations search all
+component surfaces and use the nearest, retaining face order on ties. Scripts
+can fix a zero-based component with `EvaluateUVPt 1,1,3 Face=0`.
 Trim loops are deliberately ignored, matching the documented underlying-surface
 behavior of [Rhino's command](https://docs.mcneel.com/rhino/8/help/en-us/commands/evaluateuvpt.htm).
 A location over a trim hole can therefore be evaluated.
@@ -72,9 +74,10 @@ not evidence of Rhino undo grouping. Native tests separately verify one undo/red
 step for the complete marker session and preservation of redo during pure queries.
 
 These captures are not timing benchmarks (`elapsed_ns` is zero). Trim holes and
-multi-face selection still have native analytic coverage only. Closest-surface
-lookup uses model-space distance rather than a screen-space hit aperture. Exact
-interactive picking, initial-default parity, and report text formatting are not
-established. The worker deletes its temporary geometry and restores the previous
+multi-face selection have native analytic coverage; viewport face selection also
+has native tests, but no live Rhino comparison. Typed closest-surface lookup uses
+model-space distance. Rhino parity for interactive picking, initial defaults,
+and report text formatting is not established. The worker deletes its temporary
+geometry and restores the previous
 selection, including on failure. The session fixture must run in order to measure
 option inheritance; its first operation explicitly seeds both choices.

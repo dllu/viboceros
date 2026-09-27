@@ -226,7 +226,8 @@ midpoint by default, and restore the original surface domain; `At=value`
 chooses the edge parameter explicitly. A model point in place of `Edge=` picks
 the closest non-singular open natural boundary and supplies that path parameter
 for shrinking. In the UI, enter `ExtendSrf Distance=value` with any type and
-merge options to pick this boundary in a viewport. `Direction=U|V
+merge options to pick this boundary on the rendered surface in a viewport;
+the hit is independent of the construction plane. `Direction=U|V
 Domain=start,end` exposes the corresponding analytic-domain extension.
 `Type=Smooth` analytically extrapolates the edge span, while `Type=Line` joins
 an exact degree-matched straight tangent span. `Merge=No` retains the source

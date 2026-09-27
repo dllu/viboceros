@@ -7966,6 +7966,8 @@ impl eframe::App for VibocerosApp {
                     | InteractiveCommand::DomainFace
                     | InteractiveCommand::SrfSeam { .. }
                     | InteractiveCommand::SplitSurfaceIsocurve { .. }
+                    | InteractiveCommand::ExtendSrf { .. }
+                    | InteractiveCommand::EvaluateUv { .. }
             )
         ) {
             Some(FacePickMode::SurfaceAndBrep)
@@ -10942,7 +10944,7 @@ mod tests {
             })
         );
         assert!(app.command_log.back().unwrap().contains("natural edge"));
-        app.accept_drafting_point(pick);
+        app.accept_component_face_hit(source_id, 0, Some(pick));
 
         assert_eq!(app.active_command, None);
         assert_eq!(

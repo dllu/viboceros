@@ -289,6 +289,29 @@ fn uv_uses_the_nearest_component_surfaces_own_domain() {
     for (a, b) in uv(&report).iter().zip([125., 0.]) {
         assert!((a - b).abs() < 1e-8, "{report}");
     }
+    let report = registry
+        .execute(&mut doc, "EvaluateUVPt 1,1,4.5 Face=0")
+        .unwrap();
+    for (a, b) in uv(&report).iter().zip([0.25, 0.5]) {
+        assert!((a - b).abs() < 1e-8, "{report}");
+    }
+    let report = registry
+        .execute(&mut doc, "EvaluateUVPt 1,1,0.5 Face=1")
+        .unwrap();
+    for (a, b) in uv(&report).iter().zip([125., 0.]) {
+        assert!((a - b).abs() < 1e-8, "{report}");
+    }
+    assert!(matches!(
+        registry.execute(&mut doc, "EvaluateUVPt 1,1,0.5 Face=2"),
+        Err(CommandError::EvaluateUvFaceIndexOutOfRange { .. })
+    ));
+    for input in [
+        "EvaluateUVPt Face=0",
+        "EvaluateUVPt 1,1,0.5 Face=0 Face=1",
+        "EvaluateUVPt 1,1,0.5 Face=oops",
+    ] {
+        assert!(registry.execute(&mut doc, input).is_err(), "{input}");
+    }
     assert_eq!(format!("{doc:?}"), before);
 }
 

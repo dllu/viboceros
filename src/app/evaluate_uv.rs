@@ -1,6 +1,6 @@
 //! Repeated UV inspection with shared preferences and one marker undo record.
 use super::*;
-use viboceros_command::{EvaluateUvOptions, ObjectSelectionFilter, evaluate_surface_uv};
+use viboceros_command::{EvaluateUvOptions, ObjectSelectionFilter, evaluate_surface_uv_on_face};
 use viboceros_document::Geometry;
 
 pub(super) struct EvaluateUvSession {
@@ -30,8 +30,22 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_evaluate_uv(&mut self, point: Point3, options: EvaluateUvOptions) -> bool {
-        let input = format!("{} {}", options.command_line(), format_model_point(point));
-        let result = match evaluate_surface_uv(&self.document, point, options) {
+        self.apply_evaluate_uv_on_face(point, options, None)
+    }
+
+    pub(super) fn apply_evaluate_uv_on_face(
+        &mut self,
+        point: Point3,
+        options: EvaluateUvOptions,
+        face: Option<usize>,
+    ) -> bool {
+        let input = format!(
+            "{} {}{}",
+            options.command_line(),
+            format_model_point(point),
+            face.map_or_else(String::new, |face| format!(" Face={face}"))
+        );
+        let result = match evaluate_surface_uv_on_face(&self.document, point, options, face) {
             Ok(result) => result,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));

@@ -19,9 +19,15 @@ impl VibocerosApp {
                     self.accept_isocurve_face_click(object, face, point);
                 }
             }
+            Some(InteractiveCommand::EvaluateUv { options }) => {
+                if let Some(point) = point {
+                    self.apply_evaluate_uv_on_face(point, options, Some(face));
+                }
+            }
             Some(
                 InteractiveCommand::SrfSeam { .. }
-                | InteractiveCommand::SplitSurfaceIsocurve { .. },
+                | InteractiveCommand::SplitSurfaceIsocurve { .. }
+                | InteractiveCommand::ExtendSrf { .. },
             ) => {
                 if let Some(point) = point {
                     self.accept_drafting_point(point);
