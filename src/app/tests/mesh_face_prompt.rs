@@ -134,3 +134,46 @@ fn viewport_face_hit_runs_each_region_command_on_the_hit_object() {
         assert!(app.document.object(other).is_some());
     }
 }
+
+#[test]
+fn viewport_face_hit_extracts_or_deletes_the_hit_mesh_face() {
+    for command in ["ExtractMeshFaces", "DeleteFaces"] {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 2, 3])],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let target = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let other = app
+            .document
+            .add_geometry(Geometry::Point(point(2.0, 2.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_objects_direct([target, other], viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(app.try_start_interactive_command(command));
+        app.accept_mesh_face_click(target, 1);
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some(command));
+        assert!(app.document.object(other).is_some());
+        if command == "DeleteFaces" {
+            assert!(matches!(
+                app.document.object(target).unwrap().geometry(),
+                Geometry::Mesh(mesh) if mesh.face_count() == 1
+            ));
+        } else {
+            assert_eq!(app.document.selected_objects().count(), 1);
+            assert!(matches!(
+                app.document.selected_objects().next().unwrap().geometry(),
+                Geometry::Mesh(mesh) if mesh.face_count() == 1
+            ));
+        }
+    }
+}

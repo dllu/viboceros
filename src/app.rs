@@ -7949,10 +7949,17 @@ impl eframe::App for VibocerosApp {
         let mesh_face_pick = matches!(
             self.active_command,
             Some(
-                InteractiveCommand::ExtractConnectedMeshFaces { .. }
+                InteractiveCommand::ExtractMeshFaces { .. }
+                    | InteractiveCommand::ExtractConnectedMeshFaces { .. }
                     | InteractiveCommand::ExtractMeshPart { .. }
             )
-        ) && self.plane_prompt.is_none();
+        ) || (self.active_command == Some(InteractiveCommand::DeleteFaces)
+            && self.document.selected_object_count() > 0
+            && self
+                .document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::Mesh(_))));
+        let mesh_face_pick = mesh_face_pick && self.plane_prompt.is_none();
         let edge_pick = self
             .edge_prompt
             .as_ref()

@@ -5,6 +5,10 @@ use viboceros_document::ObjectId;
 impl VibocerosApp {
     pub(super) fn accept_mesh_face_click(&mut self, object: ObjectId, face: usize) {
         let command = match self.active_command {
+            Some(InteractiveCommand::ExtractMeshFaces { make_copy }) => format!(
+                "ExtractMeshFaces Face={face} Object={object} MakeCopy={}",
+                if make_copy { "Yes" } else { "No" },
+            ),
             Some(InteractiveCommand::ExtractConnectedMeshFaces {
                 angle,
                 greater_than,
@@ -30,6 +34,9 @@ impl VibocerosApp {
                 if make_copy { "Yes" } else { "No" },
                 if border_only { "Yes" } else { "No" },
             ),
+            Some(InteractiveCommand::DeleteFaces) => {
+                format!("DeleteFaces Face={face} Object={object}")
+            }
             _ => return,
         };
         self.active_command = None;

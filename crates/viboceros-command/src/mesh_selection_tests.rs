@@ -149,7 +149,7 @@ fn mesh_staging_retains_action_order_group_peers_and_read_only_failures() {
     assert!(expected.contains(&ids[1]));
     let before = format!("{document:?}");
     let unsupported = || CommandError::Usage("expected mesh");
-    let sources = selected_mesh_face_sources(&document, unsupported).unwrap();
+    let sources = selected_mesh_face_sources(&document, unsupported, None).unwrap();
     let topology = selected_mesh_topology_sources(&document, unsupported).unwrap();
     assert_eq!(
         topology.iter().map(|source| source.id).collect::<Vec<_>>(),

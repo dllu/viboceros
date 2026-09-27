@@ -161,14 +161,21 @@ selected mesh (`Faces=All` is supported), or omits the selector for a one-pick
 viewport workflow. The unselected remainder keeps its source identity; the
 selected result inherits attributes and group membership. Extracting every
 face reuses the source identity. `MakeCopy=Yes` instead leaves each source
-unchanged. Both parts compact unused vertices in Rhino source order.
+unchanged. Both parts compact unused vertices in Rhino source order. Viewport
+clicks pick the visible selected-mesh face by screen coverage and depth.
+`Face=index Object=selected-uuid` targets one mesh in a script; an unqualified
+face index applies to every selected mesh. Typed points retain model-space
+nearest-face selection.
 
 `DeleteFaces` removes an ordered zero-based face list from every selected mesh
 or B-rep (`Faces=All` is supported), or omits the selector for a one-pick
 viewport workflow. A partial edit keeps the unselected source object's
 identity, attributes, groups, and surviving source face order. Mesh results
 compact unused vertices in source order; deleting every face removes the
-object. SubD input awaits a native SubD geometry type.
+object. Mesh-only selections use the viewport's depth-aware face picker;
+selections containing a B-rep retain the point-pick path. Scripts can use
+`Face=index Object=selected-uuid` to target one selected mesh or B-rep. SubD
+input awaits a native SubD geometry type.
 Mesh extraction and deletion preserve n-gon overlays in any result containing
 every member face of the n-gon. A partial face group has no retained overlay.
 
