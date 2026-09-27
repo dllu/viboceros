@@ -236,6 +236,40 @@ mod tests {
         Point3::try_new(x, y, z).unwrap()
     }
 
+    fn assert_mesh_matches_oracle(mesh: &TriangleMesh, expected: &serde_json::Value, id: &str) {
+        let expected_vertices = expected["vertices"].as_array().unwrap();
+        let expected_faces = expected["faces"].as_array().unwrap();
+        assert_eq!(
+            mesh.vertices().len(),
+            expected_vertices.len(),
+            "{id}: vertices"
+        );
+        assert_eq!(mesh.faces().len(), expected_faces.len(), "{id}: faces");
+        for (vertex_index, (vertex, expected_vertex)) in
+            mesh.vertices().iter().zip(expected_vertices).enumerate()
+        {
+            for (coordinate, expected_coordinate) in vertex
+                .to_array()
+                .into_iter()
+                .zip(expected_vertex.as_array().unwrap())
+            {
+                assert!(
+                    (coordinate - expected_coordinate.as_f64().unwrap()).abs() <= 1e-6,
+                    "{id}: vertex {vertex_index} mismatch: native {coordinate}, Rhino {}",
+                    expected_coordinate.as_f64().unwrap()
+                );
+            }
+        }
+        for (face, expected_face) in mesh.faces().iter().zip(expected_faces) {
+            let indices = face.indices();
+            let expected_indices = expected_face.as_array().unwrap();
+            assert_eq!(indices.len(), expected_indices.len(), "{id}: face size");
+            for (&index, expected_index) in indices.iter().zip(expected_indices) {
+                assert_eq!(index as u64, expected_index.as_u64().unwrap(), "{id}: face");
+            }
+        }
+    }
+
     fn selected_triangle(document: &mut Document) -> ObjectId {
         let mesh = TriangleMesh::try_new_faces(
             vec![
@@ -499,6 +533,17 @@ mod tests {
                 })
                 .collect();
             let mesh = TriangleMesh::try_new_faces(vertices, faces, document.tolerance()).unwrap();
+            let api = &observation["value"]["api"];
+            if !api.is_null() {
+                let api_mesh = mesh
+                    .offset_mesh_rhinocommon_normal(
+                        operation["distance"].as_f64().unwrap(),
+                        operation["solid"].as_bool().unwrap_or(false),
+                        document.tolerance(),
+                    )
+                    .unwrap();
+                assert_mesh_matches_oracle(&api_mesh, api, id);
+            }
             let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
             document
                 .select_objects_direct([source], SelectionMode::Replace)
@@ -539,37 +584,7 @@ mod tests {
                 let Geometry::Mesh(mesh) = mesh_object.geometry() else {
                     panic!("{id}: output must be a mesh");
                 };
-                let expected_vertices = expected_mesh["vertices"].as_array().unwrap();
-                let expected_faces = expected_mesh["faces"].as_array().unwrap();
-                assert_eq!(
-                    mesh.vertices().len(),
-                    expected_vertices.len(),
-                    "{id}: vertices"
-                );
-                assert_eq!(mesh.faces().len(), expected_faces.len(), "{id}: faces");
-                for (vertex_index, (vertex, expected_vertex)) in
-                    mesh.vertices().iter().zip(expected_vertices).enumerate()
-                {
-                    for (coordinate, expected_coordinate) in vertex
-                        .to_array()
-                        .into_iter()
-                        .zip(expected_vertex.as_array().unwrap())
-                    {
-                        assert!(
-                            (coordinate - expected_coordinate.as_f64().unwrap()).abs() <= 1e-6,
-                            "{id}: vertex {vertex_index} mismatch: native {coordinate}, Rhino {}",
-                            expected_coordinate.as_f64().unwrap()
-                        );
-                    }
-                }
-                for (face, expected_face) in mesh.faces().iter().zip(expected_faces) {
-                    let indices = face.indices();
-                    let expected_indices = expected_face.as_array().unwrap();
-                    assert_eq!(indices.len(), expected_indices.len(), "{id}: face size");
-                    for (&index, expected_index) in indices.iter().zip(expected_indices) {
-                        assert_eq!(index as u64, expected_index.as_u64().unwrap(), "{id}: face");
-                    }
-                }
+                assert_mesh_matches_oracle(mesh, expected_mesh, id);
             }
         }
     }

@@ -14,6 +14,52 @@ pub enum MeshOffsetDirection {
 }
 
 impl TriangleMesh {
+    /// Matches RhinoCommon `Mesh.Offset(distance, solidify)`, which displaces
+    /// along the opposite vertex normal and uses its own solid skin winding.
+    pub fn offset_mesh_rhinocommon_normal(
+        &self,
+        distance: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.offset_mesh(
+            -distance,
+            MeshOffsetDirection::VertexNormals,
+            false,
+            solid,
+            tolerance,
+        )
+    }
+
+    /// Matches RhinoCommon `Mesh.Offset(distance, solidify, direction)` for an
+    /// explicit unit direction. Its solid skin winding differs from the
+    /// interactive `OffsetMesh` command for the same signed distance.
+    pub fn offset_mesh_rhinocommon_vector(
+        &self,
+        distance: Real,
+        direction: UnitVector3,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if solid {
+            self.offset_mesh(
+                -distance,
+                MeshOffsetDirection::Vector(direction.opposite()),
+                false,
+                true,
+                tolerance,
+            )
+        } else {
+            self.offset_mesh(
+                distance,
+                MeshOffsetDirection::Vector(direction),
+                false,
+                false,
+                tolerance,
+            )
+        }
+    }
+
     /// Offset an indexed mesh, optionally including both displaced skins and
     /// walls along naked topological edges. Positive distance follows the
     /// stored polygon winding. A solid offset of a closed mesh has two shells.
@@ -546,6 +592,90 @@ mod tests {
             .unwrap();
         assert_eq!(result.vertices().len(), 8);
         assert_eq!(result.faces().len(), 4);
+    }
+
+    #[test]
+    fn explicit_vector_offset_matches_rhinocommon_api_observations() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../tools/rhino_oracle/fixtures/mesh_offset_vector_api.json"
+        ))
+        .unwrap();
+        let observed: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../tools/rhino_oracle/observations/mesh_offset_vector_api.json"
+        ))
+        .unwrap();
+        let operations = fixture["operations"].as_array().unwrap();
+        let results = observed["results"].as_array().unwrap();
+        assert_eq!(operations.len(), results.len());
+        for (operation, observation) in operations.iter().zip(results) {
+            let id = operation["id"].as_str().unwrap();
+            assert_eq!(id, observation["id"].as_str().unwrap());
+            let coordinates = |array: &serde_json::Value| -> [Real; 3] {
+                let array = array.as_array().unwrap();
+                [
+                    array[0].as_f64().unwrap(),
+                    array[1].as_f64().unwrap(),
+                    array[2].as_f64().unwrap(),
+                ]
+            };
+            let vertices = operation["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|value| Point3::try_from(coordinates(value)).unwrap())
+                .collect();
+            let faces = operation["faces"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|value| {
+                    let indices = value
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|index| index.as_u64().unwrap() as u32)
+                        .collect::<Vec<_>>();
+                    match indices.as_slice() {
+                        &[a, b, c] => MeshFace::Triangle([a, b, c]),
+                        &[a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                        _ => panic!("{id}: invalid face size"),
+                    }
+                })
+                .collect();
+            let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+            let [x, y, z] = coordinates(&operation["api_direction"]);
+            let direction = UnitVector3::try_new(x, y, z, Tolerance::DEFAULT).unwrap();
+            let result = mesh
+                .offset_mesh_rhinocommon_vector(
+                    operation["distance"].as_f64().unwrap(),
+                    direction,
+                    operation["solid"].as_bool().unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+            let expected = &observation["value"]["api"];
+            let expected_vertices = expected["vertices"].as_array().unwrap();
+            let expected_faces = expected["faces"].as_array().unwrap();
+            assert_eq!(result.vertices().len(), expected_vertices.len(), "{id}");
+            assert_eq!(result.faces().len(), expected_faces.len(), "{id}");
+            for (index, (actual, expected)) in
+                result.vertices().iter().zip(expected_vertices).enumerate()
+            {
+                for (actual, expected) in actual.to_array().into_iter().zip(coordinates(expected)) {
+                    assert!((actual - expected).abs() <= 1e-6, "{id}: vertex {index}");
+                }
+            }
+            for (index, (actual, expected)) in result.faces().iter().zip(expected_faces).enumerate()
+            {
+                let expected = expected
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|value| value.as_u64().unwrap() as u32)
+                    .collect::<Vec<_>>();
+                assert_eq!(actual.indices(), expected, "{id}: face {index}");
+            }
+        }
     }
 
     #[test]

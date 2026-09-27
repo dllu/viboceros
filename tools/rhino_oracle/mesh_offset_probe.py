@@ -13,10 +13,20 @@ def run(operation, host):
     results = []
     try:
         if operation.get("include_api", True):
-            api = source.Offset(float(operation["distance"]), bool(operation.get("solid", False)))
+            if "api_direction" in operation:
+                direction = Rhino.Geometry.Vector3d(*operation["api_direction"])
+                api = source.Offset(float(operation["distance"]),
+                                    bool(operation.get("solid", False)), direction)
+            else:
+                api = source.Offset(float(operation["distance"]),
+                                    bool(operation.get("solid", False)))
             if api is None:
                 raise ValueError("Rhino Mesh.Offset returned no mesh")
             api_output = host["_polygon_mesh_value"](api)
+        if operation.get("api_only", False):
+            if api_output is None:
+                raise ValueError("api_only requires an API offset")
+            return {"api": api_output}, 0
         source_id = document.Objects.AddMesh(source)
         if source_id == System.Guid.Empty:
             raise ValueError("could not add OffsetMesh source")

@@ -3728,6 +3728,7 @@ dependencies = [
  "num-bigint",
  "num-rational",
  "num-traits",
+ "serde_json",
  "spade",
  "thiserror 2.0.20",
 ]

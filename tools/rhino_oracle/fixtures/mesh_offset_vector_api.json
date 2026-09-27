@@ -1,0 +1,316 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "triangle-vector-z",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "solid": false,
+      "api_direction": [
+        0,
+        0,
+        1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "triangle-vector-diagonal",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "solid": false,
+      "api_direction": [
+        1,
+        1,
+        1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "triangle-vector-negative",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "solid": false,
+      "api_direction": [
+        0,
+        0,
+        -1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "triangle-vector-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "solid": true,
+      "api_direction": [
+        0,
+        0,
+        1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "bent-vector-x",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "solid": false,
+      "api_direction": [
+        1,
+        0,
+        0
+      ],
+      "api_only": true
+    },
+    {
+      "id": "quad-vector-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "distance": 1,
+      "solid": true,
+      "api_direction": [
+        0,
+        0,
+        1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "triangle-vector-solid-negative",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "solid": true,
+      "api_direction": [
+        0,
+        0,
+        1
+      ],
+      "api_only": true
+    },
+    {
+      "id": "quad-vector-solid-negative",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "distance": -1,
+      "solid": true,
+      "api_direction": [
+        0,
+        0,
+        1
+      ],
+      "api_only": true
+    }
+  ]
+}

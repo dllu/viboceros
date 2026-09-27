@@ -129,6 +129,13 @@ normal and average-normal offsets, both sides, `FlipAll`, negative distances,
 boundary ordering across a triangulated square, an unwelded seam, a bent
 collapsed skin, and a closed tetrahedron. Manually picked vector directions
 and other mesh arrangements still need live comparison.
+The geometry kernel also exposes `offset_mesh_rhinocommon_normal` and
+`offset_mesh_rhinocommon_vector` for the public RhinoCommon `Mesh.Offset`
+overloads. RhinoCommon's normal overload moves opposite vertex normals, and
+its solid overload uses different skin winding from the interactive command.
+The retained [vector API fixture](../../tools/rhino_oracle/fixtures/mesh_offset_vector_api.json)
+and [observations](../../tools/rhino_oracle/observations/mesh_offset_vector_api.json)
+cover eight open and solid explicit-vector offsets.
 
 `AddNgonsToMesh PlanarTolerance=0.01` adds logical n-gon overlays to connected
 coplanar mesh faces that share welded, oppositely oriented raw edges. The

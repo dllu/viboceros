@@ -13,3 +13,6 @@ num-rational.workspace = true
 num-traits.workspace = true
 spade.workspace = true
 thiserror.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

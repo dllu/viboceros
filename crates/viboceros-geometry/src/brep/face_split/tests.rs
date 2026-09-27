@@ -654,7 +654,7 @@ fn smooth_clamped_poles_are_neutral_but_regular_samples_detect_real_creases() {
                 .unwrap();
                 assert_eq!(
                     surface.sampled_kink_parameters(1e-10).unwrap(),
-                    [vec![], vec![]]
+                    [Vec::<f64>::new(), Vec::<f64>::new()]
                 );
                 let source = Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap();
                 assert!(
