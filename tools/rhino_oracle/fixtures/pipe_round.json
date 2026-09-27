@@ -871,7 +871,8 @@
       "rail": "closed_rectangle",
       "radius": 0.3,
       "fit_rail": true,
-      "cap": "Flat"
+      "cap": "Flat",
+      "inspect_basis": true
     },
     {
       "op": "pipe_round_probe",
@@ -896,7 +897,8 @@
       "rail": "closed_triangle",
       "radius": 0.3,
       "fit_rail": true,
-      "cap": "Flat"
+      "cap": "Flat",
+      "inspect_basis": true
     },
     {
       "op": "pipe_round_probe",
@@ -914,6 +916,7 @@
       "radius": 0.3,
       "fit_rail": true,
       "cap": "Flat",
+      "inspect_basis": true,
       "inspect_wall_grid": true
     },
     {

@@ -2,8 +2,8 @@
 
 use super::*;
 use viboceros_geometry::{
-    BrepEdge, Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3,
-    SurfaceIso, Sweep1, SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
+    Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3, SurfaceIso,
+    Sweep1, SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
 const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
@@ -729,7 +729,7 @@ fn mitered_line_pipe_profile(
     let total = lengths.iter().sum::<Real>();
     let make_wall = |offset: Real| -> Result<Brep, CommandError> {
         let mut distance = 0.0;
-        let walls = lines
+        let surfaces = lines
             .iter()
             .enumerate()
             .map(|(index, line)| {
@@ -777,20 +777,26 @@ fn mitered_line_pipe_profile(
                         tolerance,
                     )?
                 };
-                Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?)
+                Ok(surface)
             })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if closed {
+            // Rhino uses rail distance as U and the circular section as V.
+            // Swapping axes reverses the natural normal, so reverse the B-rep.
+            let surface =
+                combine_closed_line_wall_surfaces(&surfaces, tolerance)?.try_swapped_uv()?;
+            return Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?.reversed());
+        }
+        let walls = surfaces
+            .iter()
+            .map(|surface| Ok(Brep::try_surface_grid(surface, &[], &[], tolerance)?))
             .collect::<Result<Vec<_>, CommandError>>()?;
         let references = walls.iter().collect::<Vec<_>>();
         let mut joined = join_breps(&references, tolerance.absolute(), tolerance)?;
         if joined.len() != 1 {
             return Err(CommandError::Usage(USAGE));
         }
-        let wall = joined.pop().expect("one mitered wall component").brep;
-        if closed && !wall.is_closed() {
-            close_mitered_wall_seam(wall, tolerance)
-        } else {
-            Ok(wall)
-        }
+        Ok(joined.pop().expect("one mitered wall component").brep)
     };
     if let Some(thickness) = wall_thickness {
         let (outer, inner) = if thickness > 0.0 {
@@ -836,93 +842,48 @@ fn mitered_line_pipe_profile(
     Ok(Some(cap_wall(wall, cap, tolerance)?))
 }
 
-fn close_mitered_wall_seam(wall: Brep, tolerance: Tolerance) -> Result<Brep, CommandError> {
-    let naked = wall
-        .edge_use_counts()
-        .into_iter()
-        .enumerate()
-        .filter_map(|(edge, uses)| (uses == 1).then_some(edge))
-        .collect::<Vec<_>>();
-    let [first, second] = naked.as_slice() else {
-        return Err(CommandError::Usage(USAGE));
-    };
-    for reversed in [false, true] {
-        if let Ok(joined) = wall.try_join_edge_pairs(
-            &[(*first, *second, reversed)],
-            tolerance.absolute(),
-            tolerance,
-        ) && joined.is_closed()
-        {
-            return Ok(joined);
+fn combine_closed_line_wall_surfaces(
+    surfaces: &[NurbsSurface],
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    let first = &surfaces[0];
+    let width = first.control_point_count_u();
+    let mut controls = first.control_points().to_vec();
+    let mut knots_v = vec![0.0; 4];
+    let mut distance = 0.0;
+    for (index, surface) in surfaces.iter().enumerate() {
+        if index > 0 {
+            let previous = &controls[controls.len() - width..];
+            let next = &surface.control_points()[..width];
+            if previous.iter().zip(next).any(|(a, b)| {
+                !a.point()
+                    .distance_to(b.point())
+                    .is_ok_and(|gap| gap <= tolerance.absolute())
+                    || (a.weight() - b.weight()).abs() > 64.0 * Real::EPSILON
+            }) {
+                return Err(CommandError::Usage(USAGE));
+            }
+            controls.extend_from_slice(&surface.control_points()[width..]);
         }
+        distance += *surface.domain_v().end() - *surface.domain_v().start();
+        knots_v.extend(std::iter::repeat_n(
+            distance,
+            if index + 1 == surfaces.len() { 4 } else { 3 },
+        ));
     }
-    let first_edge = &wall.edges()[*first];
-    let second_edge = &wall.edges()[*second];
-    let first_seam = wall.vertices()[first_edge.vertices()[0]].point();
-    let second_seam = wall.vertices()[second_edge.vertices()[0]].point();
-    let first_cut = first_edge
-        .curve()
-        .closest_parameter(second_seam, tolerance)?;
-    let second_cut = second_edge
-        .curve()
-        .closest_parameter(first_seam, tolerance)?;
-    let old_count = wall.edges().len();
-    let split = wall.try_split_edges_at_parameters(
-        &[(*first, vec![first_cut]), (*second, vec![second_cut])],
-        tolerance,
+    let surface = NurbsSurface::try_new_rational(
+        first.degree_u(),
+        3,
+        width,
+        controls.len() / width,
+        controls,
+        first.knots_u().to_vec(),
+        knots_v,
     )?;
-    let (first_added, second_added) = if first < second {
-        (old_count, old_count + 1)
-    } else {
-        (old_count + 1, old_count)
-    };
-    let arcs = [[*first, first_added], [*second, second_added]];
-    let midpoint = |edge: usize| -> Result<Point3, CommandError> {
-        let curve = split.edges()[edge].curve();
-        let domain = curve.domain();
-        Ok(curve.evaluate(0.5 * (domain.start() + domain.end()))?)
-    };
-    let first_midpoint = midpoint(arcs[0][0])?;
-    let (same, other) = if first_midpoint.distance_to(midpoint(arcs[1][0])?)?
-        <= first_midpoint.distance_to(midpoint(arcs[1][1])?)?
-    {
-        (0, 1)
-    } else {
-        (1, 0)
-    };
-    let pairs = [(arcs[0][0], arcs[1][same]), (arcs[0][1], arcs[1][other])]
-        .map(|(a, b)| {
-            let left = split.edges()[a].vertices();
-            let right = split.edges()[b].vertices();
-            let left_start = split.vertices()[left[0]].point();
-            let right_end = split.vertices()[right[1]].point();
-            Ok((
-                a,
-                b,
-                left_start.distance_to(right_end)? < tolerance.absolute(),
-            ))
-        })
-        .into_iter()
-        .collect::<Result<Vec<_>, GeometryError>>()?;
-    let mut edges = split.edges().to_vec();
-    for &(a, b, reversed) in &pairs {
-        // These arcs are cuts of the same analytically constructed miter
-        // ellipse. Reuse one 3D edge parameterization on both sides; the UV
-        // trims retain their original surface parameterizations.
-        let curve = if reversed {
-            edges[a].curve().reversed()?
-        } else {
-            edges[a].curve().clone()
-        };
-        edges[b] = BrepEdge::try_new(edges[b].vertices(), curve, edges[b].tolerance())?;
+    if !surface.is_closed_u()? || !surface.is_closed_v()? {
+        return Err(CommandError::Usage(USAGE));
     }
-    let aligned = Brep::try_new(
-        split.vertices().to_vec(),
-        edges,
-        split.faces().to_vec(),
-        tolerance,
-    )?;
-    Ok(aligned.try_join_edge_pairs(&pairs, tolerance.absolute(), tolerance)?)
+    Ok(surface)
 }
 
 fn mitered_line_surface(
@@ -2965,6 +2926,22 @@ mod tests {
             };
             assert!(pipe.is_closed(), "{option}");
             assert!(pipe.is_solid(), "{option}");
+            assert_eq!(
+                pipe.faces().len(),
+                if option.contains("WallThickness") {
+                    2
+                } else {
+                    1
+                }
+            );
+            let wall = pipe.faces()[0].surface();
+            assert_eq!((wall.degree_u(), wall.degree_v()), (3, 2));
+            assert!(wall.is_closed_u().unwrap());
+            assert!(wall.is_closed_v().unwrap());
+            assert_eq!(
+                (wall.control_point_count_u(), wall.control_point_count_v()),
+                (16, 9)
+            );
             let measured = pipe.signed_volume(tolerance).unwrap();
             assert!(
                 (measured - expected).abs() < 5e-6,
@@ -3032,6 +3009,10 @@ mod tests {
                 };
                 assert!(pipe.is_closed(), "{name} {options}");
                 assert!(pipe.is_solid(), "{name} {options}");
+                assert_eq!(pipe.faces().len(), if index == 0 { 1 } else { 2 });
+                let wall = pipe.faces()[0].surface();
+                assert_eq!((wall.degree_u(), wall.degree_v()), (3, 2));
+                assert_eq!(wall.control_point_count_v(), 9);
                 let measured = pipe.signed_volume(tolerance).unwrap();
                 if planar {
                     assert!(

@@ -55,9 +55,10 @@ points. The fitted wall starts halfway along the first line and blends the
 frame's accumulated rotation around the loop. Rectangle, triangle, and spatial
 loop cases match Rhino's closed solid volumes within `5e-6` for both thin and
 thick pipes. Ten points sampled from Rhino's spatial wall lie within `5e-4`
-model units of the constructed wall. Rhino returns one periodic wall face and
-two separate closed B-reps for a thick closed pipe; this implementation uses
-one face per line segment and combines the outer and inner shells in one B-rep.
+model units of the constructed wall. Both Rhino and this implementation use
+one wall face around the full loop. Rhino returns two separate closed B-reps
+for a thick closed pipe; this implementation combines the outer and inner
+shells in one two-face B-rep.
 End cap options have no effect on a closed rail.
 For tapered sharp line rails with `FitRail=Yes`, the radius follows the full
 rail distance: Local blending uses a cubic smoothstep profile, while Global
