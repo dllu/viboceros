@@ -42,6 +42,7 @@ impl From<ProbeError> for OperationFailure {
             | ProbeError::InvalidMatchOption(_)
             | ProbeError::InvalidMaximumCurveLength(_)
             | ProbeError::InvalidStateCycleObjectCount(_)
+            | ProbeError::InvalidSurfaceFaceUvFixture
             | ProbeError::InvalidStateCycleObjectIndex { .. } => "input",
         };
         Self {

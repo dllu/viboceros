@@ -2832,6 +2832,56 @@ def _evaluate_uv_command(operation):
         surface.Dispose()
 
 
+def _surface_face_uv_api(operation):
+    definitions = operation.get("surfaces", [])
+    queries = operation.get("queries", [])
+    if not 2 <= len(definitions) <= 8 or not 1 <= len(queries) <= 32:
+        raise ValueError("face UV probe requires 2..8 surfaces and 1..32 queries")
+    brep = Rhino.Geometry.Brep()
+    owned = []
+    try:
+        for definition in definitions:
+            surface = _nurbs_surface_from_definition(definition)
+            owned.append(surface)
+            part = Rhino.Geometry.Brep.CreateFromSurface(surface)
+            if part is None:
+                raise ValueError("could not make face UV probe B-rep")
+            owned.append(part)
+            brep.Append(part)
+        if brep.Faces.Count != len(definitions) or not brep.IsValid:
+            raise ValueError("face UV probe B-rep is invalid")
+        result = []
+        for query in queries:
+            face_index = query["face"]
+            if type(face_index) is not int or not 0 <= face_index < brep.Faces.Count:
+                raise ValueError("face UV probe index is out of range")
+            target = _point(query["point"])
+            surface = brep.Faces[face_index].UnderlyingSurface()
+            found, u, v = surface.ClosestPoint(target)
+            if not found:
+                raise ValueError("face UV probe closest point failed")
+            u = _checked_closest_parameter(surface.Domain(0), u)
+            v = _checked_closest_parameter(surface.Domain(1), v)
+            projected = surface.PointAt(u, v)
+            if not projected.IsValid:
+                raise ValueError("face UV probe point is invalid")
+            result.append({
+                "face": face_index,
+                "parameters": [u, v],
+                "normalized_parameters": [
+                    surface.Domain(0).NormalizedParameterAt(u),
+                    surface.Domain(1).NormalizedParameterAt(v),
+                ],
+                "point": _xyz(projected),
+                "distance": projected.DistanceTo(target),
+            })
+        return {"face_count": brep.Faces.Count, "queries": result}, 0
+    finally:
+        brep.Dispose()
+        for item in reversed(owned):
+            item.Dispose()
+
+
 def _domain_command(operation):
     curve = "curve" in operation
     if curve == ("surface" in operation):
@@ -6169,6 +6219,8 @@ def _execute(operation, iterations, tolerance):
         return _domain_command(operation)
     if kind == "evaluate_uv_command":
         return _evaluate_uv_command(operation)
+    if kind == "surface_face_uv_api":
+        return _surface_face_uv_api(operation)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

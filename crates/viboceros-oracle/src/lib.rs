@@ -56,6 +56,8 @@ mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
 mod surface_closest;
+mod surface_face_uv;
+pub use surface_face_uv::FaceUvQuery;
 mod surface_intersection;
 mod surface_wires;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
@@ -237,6 +239,11 @@ pub enum Operation {
         id: String,
         surface: NurbsSurfaceDefinition,
         points: Vec<[f64; 3]>,
+    },
+    SurfaceFaceUvApi {
+        id: String,
+        surfaces: Vec<NurbsSurfaceDefinition>,
+        queries: Vec<FaceUvQuery>,
     },
     SpherePlaneSurfaceIntersection {
         id: String,
@@ -1967,6 +1974,7 @@ impl Operation {
             | Self::ConnectCommand { id, .. }
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceClosestPoint { id, .. }
+            | Self::SurfaceFaceUvApi { id, .. }
             | Self::SpherePlaneSurfaceIntersection { id, .. }
             | Self::SphereSphereSurfaceIntersection { id, .. }
             | Self::SphereCylinderSurfaceIntersection { id, .. }
@@ -2216,6 +2224,8 @@ pub struct OperationResult {
 
 #[derive(Debug, Error)]
 pub enum ProbeError {
+    #[error("face UV oracle probe requires 2..8 surfaces, 1..32 queries, and valid face indices")]
+    InvalidSurfaceFaceUvFixture,
     #[error("invalid Match option: {0}")]
     InvalidMatchOption(&'static str),
     #[error("a cylinder oracle case cannot split both U and V at once")]
@@ -2418,6 +2428,9 @@ fn execute(
         Operation::SurfaceClosestPoint {
             surface, points, ..
         } => surface_closest::run(surface, points, iterations, tolerance)?,
+        Operation::SurfaceFaceUvApi {
+            surfaces, queries, ..
+        } => surface_face_uv::run(surfaces, queries, tolerance)?,
         Operation::SpherePlaneSurfaceIntersection { .. }
         | Operation::SphereSphereSurfaceIntersection { .. }
         | Operation::SphereCylinderSurfaceIntersection { .. }

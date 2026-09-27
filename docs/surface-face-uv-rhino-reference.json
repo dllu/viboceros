@@ -1,0 +1,85 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "opposed-face-projections",
+      "value": {
+        "face_count": 2,
+        "queries": [
+          {
+            "distance": 4.5,
+            "face": 0,
+            "normalized_parameters": [
+              0.25,
+              0.5000000000000001
+            ],
+            "parameters": [
+              0.25,
+              0.5000000000000001
+            ],
+            "point": [
+              1.0,
+              1.0000000000000002,
+              0.0
+            ]
+          },
+          {
+            "distance": 4.5,
+            "face": 1,
+            "normalized_parameters": [
+              0.25,
+              0.5000000000000001
+            ],
+            "parameters": [
+              125.0,
+              4.440892098500626e-16
+            ],
+            "point": [
+              1.0,
+              1.0000000000000002,
+              5.0
+            ]
+          },
+          {
+            "distance": 5.0,
+            "face": 0,
+            "normalized_parameters": [
+              0.75,
+              0.25
+            ],
+            "parameters": [
+              0.75,
+              0.25
+            ],
+            "point": [
+              3.0,
+              0.5,
+              0.0
+            ]
+          },
+          {
+            "distance": 5.0,
+            "face": 1,
+            "normalized_parameters": [
+              0.75,
+              0.25
+            ],
+            "parameters": [
+              175.0,
+              -1.0
+            ],
+            "point": [
+              3.0,
+              0.5,
+              5.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

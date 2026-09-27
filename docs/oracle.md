@@ -2,6 +2,19 @@
 
 [Project overview](../README.md)
 
+The [two-face UV reference](surface-face-uv-rhino-reference.json) records four
+RhinoCommon projections onto explicitly indexed B-rep underlying surfaces.
+The matching [fixture](../tools/rhino_oracle/fixtures/surface-face-uv-api.json)
+ran on a separate Xvfb display; a native regression compares UV parameters,
+projected points, and distances to `1e-10`. Python replay matches all four
+queries, with maximum absolute error `4.44e-16`:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/surface-face-uv-api.json --observations docs/surface-face-uv-rhino-reference.json --absolute-epsilon 1e-10 --relative-epsilon 1e-10
+```
+
+This is a geometry API comparison, not an interactive `EvaluateUVPt` click capture.
+
 [Diagnostic replay and Python API](oracle-replay.md) retain per-operation native
 errors while comparing every successful record against saved Rhino observations.
 On Linux, the CLI automatically runs live `rhino` and `compare` probes under

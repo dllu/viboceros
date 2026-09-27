@@ -258,6 +258,107 @@ fn uv_reports_native_and_normalized_parameters_with_undoable_projected_markers()
 }
 
 #[test]
+fn uv_qualified_faces_match_live_rhinocommon_underlying_surfaces() {
+    use serde_json::Value;
+    use viboceros_geometry::WeightedPoint3;
+
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/fixtures/surface-face-uv-api.json"
+    ))
+    .unwrap();
+    let response: Value = serde_json::from_str(include_str!(
+        "../../../../../docs/surface-face-uv-rhino-reference.json"
+    ))
+    .unwrap();
+    let operation = &request["operations"][0];
+    let value = &response["results"][0]["value"];
+    let mut parts = Vec::new();
+    for definition in operation["surfaces"].as_array().unwrap() {
+        let count = |key| definition[key].as_u64().unwrap() as usize;
+        let surface = NurbsSurface::try_new_rational(
+            count("degree_u"),
+            count("degree_v"),
+            count("control_point_count_u"),
+            count("control_point_count_v"),
+            definition["control_points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|control| {
+                    WeightedPoint3::try_new(
+                        point(serde_json::from_value(control["point"].clone()).unwrap()),
+                        control["weight"].as_f64().unwrap(),
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            serde_json::from_value(definition["knots_u"].clone()).unwrap(),
+            serde_json::from_value(definition["knots_v"].clone()).unwrap(),
+        )
+        .unwrap();
+        parts.push(Brep::try_surface_face(surface, Tolerance::DEFAULT).unwrap());
+    }
+    let mut doc = Document::default();
+    let brep = Brep::try_combine(parts, doc.tolerance()).unwrap();
+    assert_eq!(
+        brep.faces().len(),
+        value["face_count"].as_u64().unwrap() as usize
+    );
+    let id = doc.add_geometry(Geometry::Brep(brep)).unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    let before = format!("{doc:?}");
+    for (query, expected) in operation["queries"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(value["queries"].as_array().unwrap())
+    {
+        let target = point(serde_json::from_value(query["point"].clone()).unwrap());
+        let face = query["face"].as_u64().unwrap() as usize;
+        assert_eq!(expected["face"].as_u64().unwrap() as usize, face);
+        let native = evaluate_surface_uv_on_face(
+            &doc,
+            target,
+            EvaluateUvOptions {
+                normalized: false,
+                create_point: true,
+            },
+            Some(face),
+        )
+        .unwrap();
+        let expected_parameters: [f64; 2] =
+            serde_json::from_value(expected["parameters"].clone()).unwrap();
+        for (actual, expected) in uv(&native.report).iter().zip(expected_parameters) {
+            assert!((actual - expected).abs() < 1e-10);
+        }
+        let marker = native.marker.unwrap();
+        let expected_point: [f64; 3] = serde_json::from_value(expected["point"].clone()).unwrap();
+        assert!(marker.distance_to(point(expected_point)).unwrap() < 1e-10);
+        assert!(
+            (marker.distance_to(target).unwrap() - expected["distance"].as_f64().unwrap()).abs()
+                < 1e-10
+        );
+        let normalized = evaluate_surface_uv_on_face(
+            &doc,
+            target,
+            EvaluateUvOptions {
+                normalized: true,
+                create_point: false,
+            },
+            Some(face),
+        )
+        .unwrap();
+        let expected_normalized: [f64; 2] =
+            serde_json::from_value(expected["normalized_parameters"].clone()).unwrap();
+        for (actual, expected) in uv(&normalized.report).iter().zip(expected_normalized) {
+            assert!((actual - expected).abs() < 1e-10);
+        }
+        assert!(normalized.marker.is_none());
+    }
+    assert_eq!(format!("{doc:?}"), before);
+}
+
+#[test]
 fn uv_uses_the_nearest_component_surfaces_own_domain() {
     let registry = CommandRegistry::with_builtins();
     let parts = [0., 5.]

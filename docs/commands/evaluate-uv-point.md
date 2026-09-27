@@ -63,6 +63,15 @@ three-decimal display. Run the Rhino-only probe with:
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/evaluate-uv-command.json --timeout 240
 ```
 
+The [two-face RhinoCommon reference](../surface-face-uv-rhino-reference.json)
+uses [this probe](../../tools/rhino_oracle/fixtures/surface-face-uv-api.json)
+to evaluate four points against explicitly indexed underlying faces. Each point
+lies nearer the other face. Native reports, normalized UV values, projected
+points, and distances agree within `1e-10` (replay maximum absolute error
+`4.44e-16`). This checks the public geometry API;
+it does not measure Rhino's interactive face click behavior. The probe ran on a
+separate Xvfb display and released its Rhino process afterward.
+
 The [session capture](../evaluate-uv-session-rhino-reference.json) and
 [session fixture](../../tools/rhino_oracle/fixtures/evaluate-uv-session.json) add
 repeated picks, option changes between points, Enter/Esc completion, and subsequent
@@ -73,9 +82,9 @@ undo/redo” inside the Python probe: their unchanged point arrays are diagnosti
 not evidence of Rhino undo grouping. Native tests separately verify one undo/redo
 step for the complete marker session and preservation of redo during pure queries.
 
-These captures are not timing benchmarks (`elapsed_ns` is zero). Trim holes and
-multi-face selection have native analytic coverage; viewport face selection also
-has native tests, but no live Rhino comparison. Typed closest-surface lookup uses
+These captures are not timing benchmarks (`elapsed_ns` is zero). Trim holes have
+native analytic coverage; viewport face selection has native tests, but no live
+Rhino click comparison. Typed closest-surface lookup uses
 model-space distance. Rhino parity for interactive picking, initial defaults,
 and report text formatting is not established. The worker deletes its temporary
 geometry and restores the previous
