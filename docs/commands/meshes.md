@@ -95,10 +95,13 @@ See its reference for selection paths, option memory, budgets, and n-gon limits.
 
 ## Mesh extraction and editing
 
-`PolygonCount` reports the selected meshes' triangle and quadrilateral face
-counts, plus the triangle count after splitting every quad into two. N-gon
-overlays do not change these counts. The command is read-only and accepts mesh
-objects only, matching the tested [Rhino PolygonCount](https://docs.mcneel.com/rhino/8/help/en-us/commands/polygoncount.htm) reports.
+`PolygonCount` reports the selected objects' triangle and quadrilateral mesh
+face counts, plus the triangle count after splitting every quad into two.
+N-gon overlays do not change these counts. The command is read-only and matches
+the tested explicit mesh, rectangular planar surface, and box B-rep
+[Rhino PolygonCount](https://docs.mcneel.com/rhino/8/help/en-us/commands/polygoncount.htm)
+reports. Curved surfaces and B-reps remain unsupported because Rhino counts
+their render meshes, whose polygon counts depend on the meshing settings.
 
 `OffsetMesh 2` copies selected meshes by moving each topological vertex along
 the average of its raw vertex normals. Coincident unwelded copies move together.

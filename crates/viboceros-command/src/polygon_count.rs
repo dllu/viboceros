@@ -24,7 +24,7 @@ impl Command for PolygonCountCommand {
         }
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
-            filter: ObjectSelectionFilter::Mesh,
+            filter: ObjectSelectionFilter::PolygonCount,
             workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
             menus: vec![],
             choices: vec![],
@@ -41,9 +41,30 @@ impl Command for PolygonCountCommand {
             return Err(CommandError::NoObjectsSelected);
         }
         let (mut triangles, mut quads) = (0_usize, 0_usize);
+        let tolerance = document.tolerance();
         for object in selected {
-            let Geometry::Mesh(mesh) = object.geometry() else {
-                return Err(CommandError::Usage("PolygonCount requires mesh objects"));
+            let generated;
+            let mesh = match object.geometry() {
+                Geometry::Mesh(mesh) => mesh,
+                Geometry::NurbsSurface(surface) if surface.plane(tolerance)?.is_some() => {
+                    generated = surface.polygon_mesh(0.5, true, tolerance)?;
+                    &generated
+                }
+                Geometry::Brep(brep)
+                    if brep.faces().iter().try_fold(true, |planar, face| {
+                        Ok::<bool, GeometryError>(
+                            planar && face.surface().plane(tolerance)?.is_some(),
+                        )
+                    })? =>
+                {
+                    generated = brep.polygon_mesh(0.5, true, false, tolerance)?;
+                    &generated
+                }
+                _ => {
+                    return Err(CommandError::Usage(
+                        "PolygonCount requires a mesh or planar surface/B-rep",
+                    ));
+                }
             };
             for face in mesh.faces() {
                 if face.is_triangle() {
@@ -106,7 +127,7 @@ mod tests {
             .object_selection_prompt(&[])
             .unwrap()
             .unwrap();
-        assert_eq!(prompt.filter, ObjectSelectionFilter::Mesh);
+        assert_eq!(prompt.filter, ObjectSelectionFilter::PolygonCount);
         assert_eq!(
             prompt.workflow,
             ObjectSelectionWorkflow::ConfirmAfterSelection
@@ -133,6 +154,50 @@ mod tests {
     }
 
     #[test]
+    fn counts_planar_surface_and_box_faces_like_rhino() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            point(0., 0.),
+            point(2., 0.),
+            point(2., 3.),
+            point(0., 3.),
+        ])
+        .unwrap();
+        let plane = document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        let solid = Brep::try_box(
+            CommandContext::default().construction_plane,
+            [[0., 2.], [0., 3.], [0., 4.]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let box_id = document.add_geometry(Geometry::Brep(solid)).unwrap();
+        document
+            .select_objects_direct([plane], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "PolygonCount").unwrap(),
+            "There are 1 quadrilateral polygons and 0 triangular polygons in this selection\nThere would be 2 total triangular polygons in this selection after forced triangulation"
+        );
+        document
+            .select_objects_direct([box_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "PolygonCount").unwrap(),
+            "There are 6 quadrilateral polygons and 0 triangular polygons in this selection\nThere would be 12 total triangular polygons in this selection after forced triangulation"
+        );
+        document
+            .select_objects_direct([plane, box_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "PolygonCount").unwrap(),
+            "There are 7 quadrilateral polygons and 0 triangular polygons in this selection\nThere would be 14 total triangular polygons in this selection after forced triangulation"
+        );
+    }
+
+    #[test]
     fn rejects_invalid_selection_and_arguments() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -150,6 +215,15 @@ mod tests {
             .unwrap();
         document
             .select_objects_direct([point_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(registry.execute(&mut document, "PolygonCount").is_err());
+        let sphere =
+            NurbsSurface::try_sphere(CommandContext::default().construction_plane, 1.0).unwrap();
+        let sphere_id = document
+            .add_geometry(Geometry::NurbsSurface(sphere))
+            .unwrap();
+        document
+            .select_objects_direct([sphere_id], SelectionMode::Replace)
             .unwrap();
         assert!(registry.execute(&mut document, "PolygonCount").is_err());
     }

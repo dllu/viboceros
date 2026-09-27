@@ -13,6 +13,7 @@ pub enum ObjectSelectionFilter {
     Any,
     Grouped,
     Mesh,
+    PolygonCount,
     Curves,
     Join,
     ToNurbs,
@@ -61,6 +62,10 @@ impl ObjectSelectionFilter {
             Self::HiddenObjects => !object.attributes().is_visible(),
             Self::LockedObjects => object.attributes().is_locked(),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::PolygonCount => matches!(
+                geometry,
+                Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+            ),
             Self::Curves => geometry.curve_ref().is_some(),
             Self::Join => {
                 geometry.curve_ref().is_some()
