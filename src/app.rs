@@ -147,6 +147,7 @@ mod group_prompt;
 mod interface;
 mod intersect_two_sets;
 mod length;
+mod mesh_face_prompt;
 mod named_view;
 mod object_selection;
 mod plane_primitives;
@@ -499,6 +500,19 @@ enum InteractiveCommand {
     ExtractMeshFaces {
         make_copy: bool,
     },
+    ExtractConnectedMeshFaces {
+        angle: f64,
+        greater_than: bool,
+        make_copy: bool,
+        border_only: bool,
+    },
+    ExtractMeshPart {
+        whole_disjoint: bool,
+        to_nonmanifold: bool,
+        join_output: bool,
+        make_copy: bool,
+        border_only: bool,
+    },
     DeleteFaces,
     SwapMeshEdge,
     CollapseMeshEdge,
@@ -674,6 +688,8 @@ impl InteractiveCommand {
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
             Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
+            Self::ExtractConnectedMeshFaces { .. } => "ExtractConnectedMeshFaces",
+            Self::ExtractMeshPart { .. } => "ExtractMeshPart",
             Self::DeleteFaces => "DeleteFaces",
             Self::SwapMeshEdge => "SwapMeshEdge",
             Self::CollapseMeshEdge => "CollapseMeshEdge",
@@ -1165,6 +1181,12 @@ impl InteractiveCommand {
             Self::ExtractMeshFaces { .. } => {
                 "ExtractMeshFaces: pick a face on a selected mesh (Esc to cancel)"
             }
+            Self::ExtractConnectedMeshFaces { .. } => {
+                "ExtractConnectedMeshFaces: pick a face on a selected mesh (Esc to cancel)"
+            }
+            Self::ExtractMeshPart { .. } => {
+                "ExtractMeshPart: pick a face on a selected mesh (Esc to cancel)"
+            }
             Self::DeleteFaces => {
                 "DeleteFaces: pick a face on a selected mesh or B-rep (Esc to cancel)"
             }
@@ -1443,6 +1465,8 @@ impl InteractiveCommand {
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
             | Self::ExtractMeshFaces { .. }
+            | Self::ExtractConnectedMeshFaces { .. }
+            | Self::ExtractMeshPart { .. }
             | Self::DeleteFaces
             | Self::SwapMeshEdge
             | Self::CollapseMeshEdge
@@ -3498,6 +3522,16 @@ impl VibocerosApp {
                 }
             }
             InteractiveCommand::ExtractMeshFaces { make_copy }
+        } else if normalized == "extractconnectedmeshfaces" {
+            let Some(command) = mesh_face_prompt::parse_connected(&arguments) else {
+                return false;
+            };
+            command
+        } else if normalized == "extractmeshpart" {
+            let Some(command) = mesh_face_prompt::parse_part(&arguments) else {
+                return false;
+            };
+            command
         } else if normalized == "deletefaces" {
             if !arguments.is_empty() {
                 return false;
@@ -4415,6 +4449,8 @@ impl VibocerosApp {
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }
+                | InteractiveCommand::ExtractConnectedMeshFaces { .. }
+                | InteractiveCommand::ExtractMeshPart { .. }
                 | InteractiveCommand::DeleteFaces
                 | InteractiveCommand::SwapMeshEdge
                 | InteractiveCommand::CollapseMeshEdge
@@ -6350,6 +6386,39 @@ impl VibocerosApp {
                     if make_copy { "Yes" } else { "No" },
                 ));
             }
+            InteractiveCommand::ExtractConnectedMeshFaces {
+                angle,
+                greater_than,
+                make_copy,
+                border_only,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtractConnectedMeshFaces FacePoint={} Angle={angle} Compare={} MakeCopy={} BorderOnly={}",
+                    format_model_point(point),
+                    if greater_than { "Greater" } else { "Less" },
+                    if make_copy { "Yes" } else { "No" },
+                    if border_only { "Yes" } else { "No" },
+                ));
+            }
+            InteractiveCommand::ExtractMeshPart {
+                whole_disjoint,
+                to_nonmanifold,
+                join_output,
+                make_copy,
+                border_only,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtractMeshPart FacePoint={} ExtractWholeDisjointParts={} ExtractToNonManifoldEdges={} JoinOutput={} MakeCopy={} BorderOnly={}",
+                    format_model_point(point),
+                    if whole_disjoint { "Yes" } else { "No" },
+                    if to_nonmanifold { "Yes" } else { "No" },
+                    if join_output { "Yes" } else { "No" },
+                    if make_copy { "Yes" } else { "No" },
+                    if border_only { "Yes" } else { "No" },
+                ));
+            }
             InteractiveCommand::DeleteFaces => {
                 self.active_command = None;
                 self.execute_command(&format!("DeleteFaces {}", format_model_point(point)));
@@ -8222,6 +8291,7 @@ mod tests {
     mod intersect_two_sets;
     mod length;
     mod merge_edge;
+    mod mesh_face_prompt;
     mod named_view;
     mod nurbs_selection;
     mod object_selection;

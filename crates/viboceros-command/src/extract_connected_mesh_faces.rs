@@ -2,11 +2,17 @@
 
 use super::*;
 
-const USAGE: &str = "ExtractConnectedMeshFaces Face=index [Angle=degrees] [Compare=Less|Greater] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+const USAGE: &str = "ExtractConnectedMeshFaces (Face=index|FacePoint=x,y,z) [Angle=degrees] [Compare=Less|Greater] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+
+#[derive(Clone, Copy)]
+enum FaceSeed {
+    Index(usize),
+    Point(Point3),
+}
 
 #[derive(Clone, Copy)]
 struct Options {
-    face: usize,
+    seed: FaceSeed,
     angle: Real,
     greater_than: bool,
     make_copy: bool,
@@ -22,6 +28,14 @@ impl Command for ExtractConnectedMeshFacesCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse(arguments)?;
+        let picked = match options.seed {
+            FaceSeed::Point(point) => Some(mesh_face_filter::closest_selected_mesh_face(
+                document,
+                point,
+                || CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
+            )?),
+            FaceSeed::Index(_) => None,
+        };
         mesh_face_filter::extract_selected_mesh_faces(
             document,
             "ExtractConnectedMeshFaces",
@@ -32,19 +46,25 @@ impl Command for ExtractConnectedMeshFacesCommand {
             CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
             CommandError::NoConnectedMeshFaces,
             CommandError::NoConnectedMeshFaceBorders,
-            |mesh| {
-                mesh.rhinocommon_connected_faces_by_angle(
-                    options.face,
-                    options.angle,
-                    options.greater_than,
-                )
+            |id, mesh| {
+                let face = if let Some((picked_id, face)) = picked {
+                    if id != picked_id {
+                        return Ok(Vec::new());
+                    }
+                    face
+                } else if let FaceSeed::Index(face) = options.seed {
+                    face
+                } else {
+                    unreachable!("point seeds are resolved before extraction")
+                };
+                mesh.rhinocommon_connected_faces_by_angle(face, options.angle, options.greater_than)
             },
         )
     }
 }
 
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
-    let mut face = None;
+    let mut seed = None;
     let mut angle = None;
     let mut greater_than = None;
     let mut make_copy = None;
@@ -53,12 +73,15 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         let Some((key, value)) = argument.split_once('=') else {
             return Err(CommandError::Usage(USAGE));
         };
-        if key.eq_ignore_ascii_case("Face") && face.is_none() {
-            face = Some(
+        if key.eq_ignore_ascii_case("Face") && seed.is_none() {
+            seed = Some(FaceSeed::Index(
                 value
                     .parse::<usize>()
                     .map_err(|_| CommandError::Usage(USAGE))?,
-            );
+            ));
+        } else if key.eq_ignore_ascii_case("FacePoint") && seed.is_none() {
+            let (point, _) = parse_point(&[value])?;
+            seed = Some(FaceSeed::Point(point));
         } else if key.eq_ignore_ascii_case("Angle") && angle.is_none() {
             angle = Some(
                 value
@@ -84,7 +107,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
         }
     }
     Ok(Options {
-        face: face.ok_or(CommandError::Usage(USAGE))?,
+        seed: seed.ok_or(CommandError::Usage(USAGE))?,
         angle: angle.unwrap_or(0.0),
         greater_than: greater_than.unwrap_or(false),
         make_copy: make_copy.unwrap_or(false),
@@ -178,6 +201,44 @@ mod tests {
     }
 
     #[test]
+    fn face_point_picks_one_mesh_from_a_multiple_mesh_selection() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let first = selected_mesh(&mut document);
+        let second_mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(10.0, 0.0, 0.0),
+                point(11.0, 0.0, 0.0),
+                point(10.0, 1.0, 0.0),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let second = document.add_geometry(Geometry::Mesh(second_mesh)).unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "ExtractConnectedMeshFaces FacePoint=10.2,0.2,0 MakeCopy=Yes",
+            )
+            .unwrap();
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 1);
+        let Geometry::Mesh(extracted) = selected[0].geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(extracted.face_count(), 1);
+        assert_eq!(document.objects().count(), 3);
+        let Geometry::Mesh(unchanged) = document.object(first).unwrap().geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(unchanged.face_count(), 3);
+    }
+
+    #[test]
     fn positive_angle_on_nonmanifold_edge_checks_first_other_face() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -267,6 +328,8 @@ mod tests {
             "ExtractConnectedMeshFaces Face=0 Angle=-1",
             "ExtractConnectedMeshFaces Face=0 Compare=Other",
             "ExtractConnectedMeshFaces Face=0 Face=1",
+            "ExtractConnectedMeshFaces Face=0 FacePoint=0,0,0",
+            "ExtractConnectedMeshFaces FacePoint=bad",
         ] {
             assert!(registry.execute(&mut document, input).is_err());
             assert_eq!(document.objects().count(), 1);

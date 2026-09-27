@@ -3,10 +3,15 @@
 use super::*;
 use viboceros_geometry::MeshPartBoundary;
 
-const USAGE: &str = "ExtractMeshPart (Face=index|Faces=0,2,...|Faces=All) [ExtractWholeDisjointParts=Yes|No] [ExtractToNonManifoldEdges=Yes|No] [JoinOutput=Yes|No] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+const USAGE: &str = "ExtractMeshPart (Face=index|Faces=0,2,...|Faces=All|FacePoint=x,y,z) [ExtractWholeDisjointParts=Yes|No] [ExtractToNonManifoldEdges=Yes|No] [JoinOutput=Yes|No] [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+
+enum MeshPartSeeds {
+    Faces(SurfaceFaceIndices),
+    Point(Point3),
+}
 
 struct Options {
-    seeds: SurfaceFaceIndices,
+    seeds: MeshPartSeeds,
     boundary: MeshPartBoundary,
     join_output: bool,
     make_copy: bool,
@@ -30,19 +35,33 @@ impl Command for ExtractMeshPartCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse(arguments)?;
+        let picked = match &options.seeds {
+            MeshPartSeeds::Point(point) => Some(mesh_face_filter::closest_selected_mesh_face(
+                document,
+                *point,
+                || CommandError::UnsupportedExtractMeshPartGeometry,
+            )?),
+            MeshPartSeeds::Faces(_) => None,
+        };
         let tolerance = document.tolerance();
         let mut source_count = 0_usize;
         let mut face_count = 0_usize;
         let mut output_count = 0_usize;
         let mut plans = Vec::new();
         for object in document.selected_objects() {
+            if picked.is_some_and(|(id, _)| object.id() != id) {
+                continue;
+            }
             source_count += 1;
             let Geometry::Mesh(mesh) = object.geometry() else {
                 return Err(CommandError::UnsupportedExtractMeshPartGeometry);
             };
             let seeds = match &options.seeds {
-                SurfaceFaceIndices::All => (0..mesh.face_count()).collect::<Vec<_>>(),
-                SurfaceFaceIndices::Indices(indices) => indices.clone(),
+                MeshPartSeeds::Faces(SurfaceFaceIndices::All) => {
+                    (0..mesh.face_count()).collect::<Vec<_>>()
+                }
+                MeshPartSeeds::Faces(SurfaceFaceIndices::Indices(indices)) => indices.clone(),
+                MeshPartSeeds::Point(_) => vec![picked.expect("point seed was resolved").1],
             };
             let groups = mesh.mesh_part_face_groups(&seeds, options.boundary)?;
             let mut selected = groups.iter().flatten().copied().collect::<Vec<_>>();
@@ -144,13 +163,18 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
             return Err(CommandError::Usage(USAGE));
         };
         if key.eq_ignore_ascii_case("Face") && seeds.is_none() {
-            seeds = Some(SurfaceFaceIndices::Indices(vec![
+            seeds = Some(MeshPartSeeds::Faces(SurfaceFaceIndices::Indices(vec![
                 value
                     .parse::<usize>()
                     .map_err(|_| CommandError::Usage(USAGE))?,
-            ]));
+            ])));
         } else if key.eq_ignore_ascii_case("Faces") && seeds.is_none() {
-            seeds = Some(parse_surface_face_indices(value, USAGE)?);
+            seeds = Some(MeshPartSeeds::Faces(parse_surface_face_indices(
+                value, USAGE,
+            )?));
+        } else if key.eq_ignore_ascii_case("FacePoint") && seeds.is_none() {
+            let (point, _) = parse_point(&[value])?;
+            seeds = Some(MeshPartSeeds::Point(point));
         } else if key.eq_ignore_ascii_case("ExtractWholeDisjointParts") && whole_disjoint.is_none()
         {
             whole_disjoint = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
@@ -242,6 +266,39 @@ mod tests {
     }
 
     #[test]
+    fn face_point_extracts_only_the_picked_mesh_region() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let first = selected_mesh(&mut document);
+        let other_mesh = TriangleMesh::try_new_faces(
+            vec![point(10.0, 0.0), point(11.0, 0.0), point(10.0, 1.0)],
+            vec![MeshFace::Triangle([0, 1, 2])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let other = document.add_geometry(Geometry::Mesh(other_mesh)).unwrap();
+        document
+            .select_objects_direct([first, other], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshPart FacePoint=0.2,0.2,0 MakeCopy=Yes",
+                )
+                .unwrap(),
+            "Extracted 2 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 1);
+        let Geometry::Mesh(extracted) = selected[0].geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(extracted.face_count(), 2);
+        assert_eq!(document.objects().count(), 3);
+    }
+
+    #[test]
     fn whole_disjoint_copy_and_border_modes_preserve_source_and_groups() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -297,6 +354,8 @@ mod tests {
             "ExtractMeshPart Face=0 ExtractToNonManifoldEdges=Maybe",
             "ExtractMeshPart Face=0 Face=1",
             "ExtractMeshPart Face=0 Faces=1",
+            "ExtractMeshPart Face=0 FacePoint=0,0,0",
+            "ExtractMeshPart FacePoint=bad",
             "ExtractMeshPart Faces=0,0",
             "ExtractMeshPart Faces=0,3",
             "ExtractMeshPart Face=0 JoinOutput=Maybe",

@@ -17,6 +17,35 @@ struct Plan {
     groups: Vec<GroupId>,
 }
 
+/// Resolve one picked model point against the selected mesh faces. Ties keep
+/// the first object and face in selection order.
+pub(super) fn closest_selected_mesh_face(
+    document: &Document,
+    target: Point3,
+    unsupported: impl Fn() -> CommandError,
+) -> Result<(ObjectId, usize), CommandError> {
+    let mut best = None;
+    let mut source_count = 0;
+    for object in document.selected_objects() {
+        source_count += 1;
+        let Geometry::Mesh(mesh) = object.geometry() else {
+            return Err(unsupported());
+        };
+        for face in 0..mesh.face_count() {
+            let closest = mesh.closest_point_on_face(face, target)?;
+            let distance = closest.distance_to(target)?;
+            if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                best = Some((distance, object.id(), face));
+            }
+        }
+    }
+    if source_count == 0 {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    let (_, object, face) = best.expect("a selected validated mesh has a face");
+    Ok((object, face))
+}
+
 pub(super) fn extract_filtered_mesh_faces(
     document: &mut Document,
     command: &'static str,
@@ -33,7 +62,7 @@ pub(super) fn extract_filtered_mesh_faces(
         unsupported,
         no_matches,
         no_borders,
-        |mesh| {
+        |_, mesh| {
             let mut indices = Vec::new();
             for index in 0..mesh.face_count() {
                 if matches(mesh, index)? {
@@ -52,7 +81,7 @@ pub(super) fn extract_selected_mesh_faces(
     unsupported: CommandError,
     no_matches: CommandError,
     no_borders: CommandError,
-    mut select: impl FnMut(&TriangleMesh) -> Result<Vec<usize>, GeometryError>,
+    mut select: impl FnMut(ObjectId, &TriangleMesh) -> Result<Vec<usize>, GeometryError>,
 ) -> Result<String, CommandError> {
     let tolerance = document.tolerance();
     let mut source_count = 0;
@@ -64,7 +93,7 @@ pub(super) fn extract_selected_mesh_faces(
         let Geometry::Mesh(mesh) = object.geometry() else {
             return Err(unsupported);
         };
-        let indices = select(mesh)?;
+        let indices = select(object.id(), mesh)?;
         if indices.is_empty() {
             continue;
         }

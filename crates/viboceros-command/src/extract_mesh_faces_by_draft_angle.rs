@@ -35,7 +35,7 @@ impl Command for ExtractMeshFacesByDraftAngleCommand {
             CommandError::UnsupportedExtractMeshFacesByDraftAngleGeometry,
             CommandError::NoMeshFacesInDraftAngleRange,
             CommandError::NoMeshFaceDraftAngleBorders,
-            |mesh| mesh.faces_by_draft_angle(options.viewward, options.start, options.end),
+            |_, mesh| mesh.faces_by_draft_angle(options.viewward, options.start, options.end),
         )
     }
 }
