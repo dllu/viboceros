@@ -154,8 +154,7 @@ impl Command for PipeCommand {
         let tolerance = document.tolerance();
         let result = match source {
             Geometry::Polyline(polyline)
-                if !fit_rail
-                    && stations.is_empty()
+                if stations.is_empty()
                     && start_radius == end_radius
                     && polyline.vertices().len() >= 3 =>
             {
@@ -183,7 +182,16 @@ impl Command for PipeCommand {
             Geometry::PolyCurve(_) if fit_rail && !stations.is_empty() => {
                 return Err(CommandError::Usage(USAGE));
             }
-            Geometry::PolyCurve(polycurve) if !fit_rail => {
+            Geometry::PolyCurve(polycurve)
+                if !fit_rail
+                    || (stations.is_empty()
+                        && start_radius == end_radius
+                        && polycurve.segments().len() >= 2
+                        && polycurve
+                            .segments()
+                            .iter()
+                            .all(|segment| matches!(segment, CurveSegment3::Line(_)))) =>
+            {
                 Geometry::Brep(segmented_polycurve_pipe(
                     rail,
                     polycurve,
@@ -2113,6 +2121,87 @@ mod tests {
                 (measured - expected).abs() < 5e-6,
                 "{options}: {measured} vs {expected}"
             );
+        }
+    }
+
+    #[test]
+    fn fitted_sharp_constant_radius_pipes_match_rhino_volume() {
+        let tolerance = Tolerance::DEFAULT;
+        let first = LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), tolerance).unwrap();
+        let second = LineSegment::try_new(p(2., 0., 0.), p(2., 2., 0.), tolerance).unwrap();
+        let two_lines = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(first),
+            CurveSegment3::Line(second),
+        ])
+        .unwrap();
+        let rails = [
+            (
+                "two lines",
+                Geometry::PolyCurve(two_lines),
+                [1.130973357832259, 1.2440706907864723, 2.0106193005915816],
+            ),
+            (
+                "planar polyline",
+                Geometry::Polyline(
+                    Polyline3::try_new(
+                        vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.), p(4., 2., 0.)],
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                [1.696460042103737, 1.8095573727505831, 3.0159289603031096],
+            ),
+            (
+                "orthogonal spatial polyline",
+                Geometry::Polyline(
+                    Polyline3::try_new(
+                        vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.), p(2., 2., 2.)],
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                [1.696460048805896, 1.8095573844488695, 3.0159289406129766],
+            ),
+            (
+                "skew spatial polyline",
+                Geometry::Polyline(
+                    Polyline3::try_new(
+                        vec![
+                            p(0., 0., 0.),
+                            p(2., 0., 0.),
+                            p(3., 1., 0.5),
+                            p(4., 1.3, 1.8),
+                        ],
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                [1.4610290445769174, 1.5741263764973636, 2.5973849605325876],
+            ),
+        ];
+        let registry = CommandRegistry::with_builtins();
+        let options = ["Cap=Flat", "Cap=Round", "WallThickness=0.2 Cap=Flat"];
+        for (name, rail, expected) in rails {
+            let mut document = Document::default();
+            let source = document.add_geometry(rail).unwrap();
+            for (option, volume) in options.into_iter().zip(expected) {
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("Pipe {source} 0.3 FitRail=Yes {option}"),
+                    )
+                    .unwrap();
+                let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                    panic!("{name}: fitted pipe should be a B-rep")
+                };
+                assert!(pipe.is_closed(), "{name}: {option}");
+                assert!(pipe.is_solid(), "{name}: {option}");
+                let measured = pipe.signed_volume(tolerance).unwrap();
+                assert!(
+                    (measured - volume).abs() < 5e-6,
+                    "{name}: {option}: {measured} vs {volume}"
+                );
+            }
         }
     }
 

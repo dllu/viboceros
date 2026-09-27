@@ -41,12 +41,14 @@ smoothstep for both shape-blending modes; each segment then uses its chosen
 Local or Global blend. Rhino comparison cases cover constant and tapered flat
 pipes, a round cap, and a thick pipe, with matching face counts and volumes
 within `5e-6` model-volume units.
-For constant-radius open polylines and line-only polycurves, `FitRail=No`
-constructs exact mitered cylinder walls at sharp corners, including spatial
-chains with bends in different planes. Two- and three-segment flat, round, and
-thick oracle cases match Rhino's volumes within `5e-6`. Planar and orthogonal
-three-segment cases match its face counts; Rhino divides oblique spatial walls
-into more faces.
+For constant-radius open polylines and line-only polycurves, sharp corners use
+exact mitered cylinder walls, including spatial chains with bends in different
+planes. Two- and three-segment flat, round, and thick oracle cases match
+Rhino's volumes within `5e-6` with both `FitRail=No` and `FitRail=Yes`.
+`FitRail=No` planar and orthogonal three-segment cases also match face counts;
+Rhino divides oblique spatial walls into more faces. With `FitRail=Yes`, Rhino
+fits one wall face across the corners while this implementation keeps a face
+per segment.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
@@ -69,8 +71,8 @@ with `FitRail=Yes` on a polycurve are currently rejected; the fitted Rhino
 surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
-Variable-radius sharp rails, sharp rails with `FitRail=Yes`, other closed rails,
-and SubD output are still unsupported. A
+Variable-radius sharp rails, other closed rails, and SubD output are still
+unsupported. A
 circular rail requires a pipe radius smaller than the rail radius.
 The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
 radius station was supplied on a closed circular rail.
