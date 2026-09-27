@@ -110,8 +110,11 @@ direction's degree, including non-clamped spans. Trim-aware B-rep extraction
 uses a [lossless local UV frame](../brep-isocurves.md); native output parameters
 are restored only when every knot can be translated exactly. Otherwise the
 curve retains a local domain to avoid rounding its geometry. Omit the
-point to pick a surface location in the viewport. `IgnoreTrims=Yes` uses the
-full underlying B-rep face instead. `ExtractAll` emits the natural boundaries,
+point to pick the visible surface or B-rep face in the viewport; the pick uses
+the surface hit location even when the construction plane is elsewhere. Scripts
+can target one selected face with `point Face=0 Object=<uuid>`.
+`IgnoreTrims=Yes` uses the full underlying B-rep face instead. `ExtractAll`
+emits the natural boundaries,
 knot wires, and density-dependent wires inside each knot span from all selected
 surfaces or B-rep faces; the per-object Rhino wire density survives 3DM I/O.
 The same wire-density rules drive viewport display and `ExtractWireframe`.

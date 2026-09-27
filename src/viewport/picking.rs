@@ -124,6 +124,56 @@ fn triangle_depth(
     (depth.is_finite() && (!perspective || depth > 0.0)).then_some(depth)
 }
 
+fn triangle_world_point(
+    pointer: Pos2,
+    screen: [Pos2; 3],
+    points: [Point3; 3],
+    depths: [Real; 3],
+    perspective: bool,
+) -> Option<Point3> {
+    let area = signed_area(screen[0], screen[1], screen[2]);
+    if !area.is_finite() || area.abs() <= Real::EPSILON {
+        return None;
+    }
+    let weights = [
+        signed_area(screen[1], screen[2], pointer) / area,
+        signed_area(screen[2], screen[0], pointer) / area,
+        signed_area(screen[0], screen[1], pointer) / area,
+    ]
+    .map(|weight| weight.max(0.0));
+    let scale = if perspective {
+        weights
+            .into_iter()
+            .zip(depths)
+            .filter(|(weight, _)| *weight > 0.0)
+            .map(|(_, depth)| depth)
+            .fold(Real::INFINITY, Real::min)
+    } else {
+        1.0
+    };
+    let weights = std::array::from_fn::<_, 3, _>(|index| {
+        weights[index]
+            * if perspective {
+                scale / depths[index]
+            } else {
+                1.0
+            }
+    });
+    let sum = weights.into_iter().sum::<Real>();
+    if !sum.is_finite() || sum <= 0.0 {
+        return None;
+    }
+    let origin = points[0].to_array();
+    let second = points[1].to_array();
+    let third = points[2].to_array();
+    Point3::try_from(std::array::from_fn(|axis| {
+        origin[axis]
+            + weights[1] / sum * (second[axis] - origin[axis])
+            + weights[2] / sum * (third[axis] - origin[axis])
+    }))
+    .ok()
+}
+
 impl Viewport {
     pub(super) fn has_unmeshed_selected_face_source(
         &self,
@@ -148,6 +198,7 @@ impl Viewport {
         })
     }
 
+    #[cfg(test)]
     pub(super) fn pick_selected_face(
         &self,
         pointer: Pos2,
@@ -155,7 +206,18 @@ impl Viewport {
         document: &Document,
         mode: FacePickMode,
     ) -> Option<(ObjectId, usize)> {
-        let mut nearest: Option<(PickHit, ObjectId, usize)> = None;
+        self.pick_selected_face_with_point(pointer, rect, document, mode)
+            .map(|(object, face, _)| (object, face))
+    }
+
+    pub(super) fn pick_selected_face_with_point(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        mode: FacePickMode,
+    ) -> Option<(ObjectId, usize, Option<Point3>)> {
+        let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         for object in document.selected_objects() {
             if !selection_candidate(document, object, None) {
                 continue;
@@ -195,7 +257,8 @@ impl Viewport {
                 }
                 _ => continue,
             };
-            let Some((hit, mesh_face)) = self.mesh_face_pick(pointer, rect, mesh) else {
+            let Some((hit, mesh_face, point)) = self.mesh_face_pick_with_point(pointer, rect, mesh)
+            else {
                 continue;
             };
             if hit.distance > PICK_CAPTURE_PIXELS {
@@ -211,11 +274,11 @@ impl Viewport {
             } else {
                 mesh_face
             };
-            if nearest.is_none_or(|(best, _, _)| hit.rank(best).is_lt()) {
-                nearest = Some((hit, object.id(), face));
+            if nearest.is_none_or(|(best, _, _, _)| hit.rank(best).is_lt()) {
+                nearest = Some((hit, object.id(), face, point));
             }
         }
-        nearest.map(|(_, object, face)| (object, face))
+        nearest.map(|(_, object, face, point)| (object, face, point))
     }
 
     pub(super) fn mesh_pick(
@@ -250,6 +313,16 @@ impl Viewport {
         rect: Rect,
         mesh: &TriangleMesh,
     ) -> Option<(PickHit, usize)> {
+        self.mesh_face_pick_with_point(pointer, rect, mesh)
+            .map(|(hit, face, _)| (hit, face))
+    }
+
+    fn mesh_face_pick_with_point(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        mesh: &TriangleMesh,
+    ) -> Option<(PickHit, usize, Option<Point3>)> {
         let mut nearest = None;
         let mut triangle_index = 0;
         for (face_index, face) in mesh.faces().iter().enumerate() {
@@ -266,10 +339,11 @@ impl Viewport {
                         continue;
                     };
                     let hit = if point_in_triangle(pointer, first, second, third) {
+                        let depths = points.map(|p| self.view_depth(p));
                         let Some(depth) = triangle_depth(
                             pointer,
                             [first, second, third],
-                            points.map(|p| self.view_depth(p)),
+                            depths,
                             !self.kind.is_parallel(),
                         ) else {
                             continue;
@@ -287,13 +361,24 @@ impl Viewport {
                                 .min(point_segment_distance(pointer, third, first)),
                         )
                     };
-                    if nearest.is_none_or(|(best, _): (PickHit, usize)| hit.is_better_than(best)) {
-                        nearest = Some((hit, face_index));
+                    if nearest.is_none_or(|(best, _, _, _): (PickHit, usize, _, _)| {
+                        hit.is_better_than(best)
+                    }) {
+                        nearest = Some((hit, face_index, points, [first, second, third]));
                     }
                 }
             }
         }
-        nearest
+        nearest.map(|(hit, face_index, points, screen)| {
+            let world_point = triangle_world_point(
+                pointer,
+                screen,
+                points,
+                points.map(|point| self.view_depth(point)),
+                !self.kind.is_parallel(),
+            );
+            (hit, face_index, world_point)
+        })
     }
 }
 
@@ -302,6 +387,25 @@ mod tests {
     use super::*;
     use viboceros_document::SelectionMode;
     use viboceros_geometry::MeshFace;
+
+    #[test]
+    fn perspective_world_hit_uses_reciprocal_depth_weights() {
+        let point = triangle_world_point(
+            Pos2::new(2.0, 3.0),
+            [Pos2::ZERO, Pos2::new(10.0, 0.0), Pos2::new(0.0, 10.0)],
+            [
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 10.0, 10.0).unwrap(),
+            ],
+            [1.0, 2.0, 4.0],
+            true,
+        )
+        .unwrap();
+        assert!((point.x() - 1.0 / 0.675).abs() < 1e-12);
+        assert!((point.y() - 0.75 / 0.675).abs() < 1e-12);
+        assert_eq!(point.y(), point.z());
+    }
 
     #[test]
     fn selected_surface_face_pick_uses_tessellation_and_excludes_mesh() {
@@ -337,6 +441,30 @@ mod tests {
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrep),
             Some((surface_id, 0))
+        );
+        let (object, face, hit_point) = view
+            .pick_selected_face_with_point(pointer, rect, &document, FacePickMode::SurfaceAndBrep)
+            .unwrap();
+        assert_eq!((object, face), (surface_id, 0));
+        let hit_point = hit_point.unwrap();
+        assert!(hit_point.distance_to(point(0.0, 0.0, 1.0)).unwrap() < 1e-10);
+        let perspective = Viewport::new(ViewKind::Perspective);
+        let perspective_pointer = perspective.project(point(0.0, 0.0, 1.0), rect).unwrap();
+        let (object, face, hit_point) = perspective
+            .pick_selected_face_with_point(
+                perspective_pointer,
+                rect,
+                &document,
+                FacePickMode::SurfaceAndBrep,
+            )
+            .unwrap();
+        assert_eq!((object, face), (surface_id, 0));
+        assert!(
+            hit_point
+                .unwrap()
+                .distance_to(point(0.0, 0.0, 1.0))
+                .unwrap()
+                < 1e-4
         );
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
@@ -504,6 +632,7 @@ mod tests {
         ]);
         let output = frame(vec![event(pointer, false)]);
         assert_eq!(output.face_click, Some((brep, top_face)));
+        assert!((output.face_hit_point.unwrap().z() - 3.0).abs() < 1e-10);
         assert!(output.picked_point.is_none());
         let empty = rect.center() + Vec2::new(155.0, -135.0);
         frame(vec![egui::Event::PointerMoved(empty), event(empty, true)]);

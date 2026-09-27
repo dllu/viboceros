@@ -1,8 +1,31 @@
 //! Interactive option parsing for mesh face region commands.
-use super::{InteractiveCommand, VibocerosApp};
+use super::{InteractiveCommand, VibocerosApp, format_model_point};
 use viboceros_document::ObjectId;
+use viboceros_geometry::Point3;
 
 impl VibocerosApp {
+    pub(super) fn accept_isocurve_face_click(
+        &mut self,
+        object: ObjectId,
+        face: usize,
+        point: Point3,
+    ) {
+        let Some(InteractiveCommand::ExtractIsocurve {
+            direction,
+            ignore_trims,
+        }) = self.active_command
+        else {
+            return;
+        };
+        self.active_command = None;
+        self.execute_command(&format!(
+            "ExtractIsocurve {} Face={face} Object={object} Direction={} IgnoreTrims={}",
+            format_model_point(point),
+            direction.option_value(),
+            if ignore_trims { "Yes" } else { "No" },
+        ));
+    }
+
     pub(super) fn accept_face_click(&mut self, object: ObjectId, face: usize) {
         let command = match self.active_command {
             Some(InteractiveCommand::ExtractSrf {

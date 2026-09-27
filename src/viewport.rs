@@ -331,6 +331,7 @@ pub struct ViewportOutput {
     pub edge_click: Option<Vec<EdgePick>>,
     pub edge_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
+    pub face_hit_point: Option<Point3>,
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
@@ -1269,16 +1270,23 @@ impl Viewport {
             Color32::from_gray(100),
         );
 
-        let face_click = (input.face_pick.is_some()
+        let face_hit = (input.face_pick.is_some()
             && !input.zoom_window
             && input.zoom_target.is_none()
             && response.clicked_by(PointerButton::Primary))
         .then(|| {
             response.interact_pointer_pos().and_then(|pointer| {
-                self.pick_selected_face(pointer, rect, document, input.face_pick.unwrap())
+                self.pick_selected_face_with_point(
+                    pointer,
+                    rect,
+                    document,
+                    input.face_pick.unwrap(),
+                )
             })
         })
         .flatten();
+        let face_click = face_hit.map(|(object, face, _)| (object, face));
+        let face_hit_point = face_hit.and_then(|(_, _, point)| point);
         let face_point_fallback = matches!(
             input.face_pick,
             Some(FacePickMode::MeshAndBrep | FacePickMode::SurfaceAndBrep)
@@ -1312,6 +1320,7 @@ impl Viewport {
                     .unwrap_or_default()
             }),
             face_click,
+            face_hit_point,
             picked_point: (response.clicked_by(PointerButton::Primary)
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))

@@ -7645,7 +7645,16 @@ impl VibocerosApp {
         } else if let Some(parameter) = output.edge_parameter {
             self.accept_split_parameter(parameter);
         } else if let Some((object, face)) = output.face_click {
-            self.accept_face_click(object, face);
+            if matches!(
+                self.active_command,
+                Some(InteractiveCommand::ExtractIsocurve { .. })
+            ) {
+                if let Some(point) = output.face_hit_point {
+                    self.accept_isocurve_face_click(object, face, point);
+                }
+            } else {
+                self.accept_face_click(object, face);
+            }
         } else if let Some(point) = output.picked_point {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
@@ -7959,7 +7968,11 @@ impl eframe::App for VibocerosApp {
             Some(FacePickMode::MeshAndBrep)
         } else if matches!(
             self.active_command,
-            Some(InteractiveCommand::ExtractSrf { .. } | InteractiveCommand::DupFaceBorder { .. })
+            Some(
+                InteractiveCommand::ExtractSrf { .. }
+                    | InteractiveCommand::DupFaceBorder { .. }
+                    | InteractiveCommand::ExtractIsocurve { .. }
+            )
         ) {
             Some(FacePickMode::SurfaceAndBrep)
         } else {
@@ -11258,6 +11271,36 @@ mod tests {
         assert!(app.try_start_interactive_command("Trim"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_isocurve_face_click_targets_one_selected_surface() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 2,0,0 2,2,0 0,2,0");
+        let back = app.document.objects().next().unwrap().id();
+        app.execute_command("SrfPt 0,0,10 2,0,10 2,2,10 0,2,10");
+        let front = app
+            .document
+            .objects()
+            .find(|object| object.id() != back)
+            .unwrap()
+            .id();
+        app.document
+            .select_objects_direct([back, front], viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(app.try_start_interactive_command("ExtractIsocurve Direction=Both"));
+        app.accept_isocurve_face_click(back, 0, point(0.5, 0.5, 10.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 4);
+        assert_eq!(app.document.selected_object_count(), 2);
+        for object in app.document.selected_objects() {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("expected isocurve")
+            };
+            assert!(curve.evaluate(0.5).unwrap().z().abs() < 1e-10);
+        }
+        assert!(app.document.object(back).is_some());
+        assert!(app.document.object(front).is_some());
     }
 
     #[test]

@@ -17826,6 +17826,11 @@ pub enum CommandError {
     #[error("ExtractIsocurve supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractIsocurveGeometry,
 
+    #[error(
+        "ExtractIsocurve face index {face} is outside the selected object's face count {face_count}"
+    )]
+    ExtractIsocurveFaceIndexOutOfRange { face: usize, face_count: usize },
+
     #[error("the requested surface location has no non-degenerate isocurve")]
     NoExtractableIsocurves,
 

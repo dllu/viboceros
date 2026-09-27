@@ -1,6 +1,102 @@
 use super::*;
 
 #[test]
+fn qualified_isocurve_pick_uses_one_brep_face_and_selected_object() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+        document.tolerance(),
+    )
+    .unwrap();
+    let brep = Brep::try_box(
+        frame,
+        [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+        document.tolerance(),
+    )
+    .unwrap();
+    let top_face = brep
+        .faces()
+        .iter()
+        .enumerate()
+        .max_by(|(_, a), (_, b)| {
+            let height = |face: &BrepFace| {
+                let u = face.surface().domain_u();
+                let v = face.surface().domain_v();
+                face.surface()
+                    .evaluate((u.start() + u.end()) / 2.0, (v.start() + v.end()) / 2.0)
+                    .unwrap()
+                    .z()
+            };
+            height(a).total_cmp(&height(b))
+        })
+        .unwrap()
+        .0;
+    let box_id = document.add_geometry(Geometry::Brep(brep)).unwrap();
+    let front_surface = NurbsSurface::try_bilinear([
+        Point3::try_new(0.0, 0.0, 10.0).unwrap(),
+        Point3::try_new(2.0, 0.0, 10.0).unwrap(),
+        Point3::try_new(2.0, 3.0, 10.0).unwrap(),
+        Point3::try_new(0.0, 3.0, 10.0).unwrap(),
+    ])
+    .unwrap();
+    let front_id = document
+        .add_geometry(Geometry::NurbsSurface(front_surface))
+        .unwrap();
+    document
+        .select_objects_direct([box_id, front_id], SelectionMode::Replace)
+        .unwrap();
+    let command =
+        format!("ExtractIsocurve 0.5,0.5,10 Face={top_face} Object={box_id} Direction=Both");
+    assert_eq!(
+        registry.execute(&mut document, &command).unwrap(),
+        "Extracted 2 exact U/V isocurve(s) from 1 surface(s)"
+    );
+    assert_eq!(document.objects().len(), 4);
+    for object in document.selected_objects() {
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("expected exact isocurve")
+        };
+        assert!((curve.evaluate(0.5).unwrap().z() - 4.0).abs() < 1e-10);
+    }
+
+    registry.execute(&mut document, "Undo").unwrap();
+    document
+        .select_objects_direct([box_id, front_id], SelectionMode::Replace)
+        .unwrap();
+    let history = document.undo_label().map(str::to_owned);
+    assert!(matches!(
+        registry.execute(
+            &mut document,
+            &format!("ExtractIsocurve 0.5,0.5,4 Face=99 Object={box_id}")
+        ),
+        Err(CommandError::ExtractIsocurveFaceIndexOutOfRange { .. })
+    ));
+    assert_eq!(document.objects().len(), 2);
+    assert_eq!(document.undo_label(), history.as_deref());
+    for command in [
+        format!("ExtractIsocurve ExtractAll Face={top_face} Object={box_id}"),
+        format!("ExtractIsocurve 0.5,0.5,4 Face={top_face}"),
+        format!("ExtractIsocurve 0.5,0.5,4 Object={box_id}"),
+    ] {
+        assert!(matches!(
+            registry.execute(&mut document, &command),
+            Err(CommandError::Usage(_))
+        ));
+        assert_eq!(document.objects().len(), 2);
+    }
+    document
+        .select_objects_direct([front_id], SelectionMode::Replace)
+        .unwrap();
+    assert!(matches!(
+        registry.execute(&mut document, &command),
+        Err(CommandError::Usage(_))
+    ));
+    assert_eq!(document.objects().len(), 2);
+}
+
+#[test]
 fn extract_all_stations_are_not_rounded_to_the_native_uv_grid() {
     let registry = CommandRegistry::with_builtins();
     for offset in [[0., 0.], [1e12, -2e12], [-1e12, 2e12]] {

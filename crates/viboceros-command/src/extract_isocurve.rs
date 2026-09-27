@@ -4,8 +4,7 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-const EXTRACT_ISOCURVE_USAGE: &str =
-    "ExtractIsocurve (point|ExtractAll) [Direction=U|V|Both] [IgnoreTrims=Yes|No]";
+const EXTRACT_ISOCURVE_USAGE: &str = "ExtractIsocurve (point [Face=index Object=selected-uuid]|ExtractAll) [Direction=U|V|Both] [IgnoreTrims=Yes|No]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExtractIsocurveDirection {
@@ -26,6 +25,7 @@ impl ExtractIsocurveDirection {
 
 struct ExtractIsocurveOptions {
     point: Option<Point3>,
+    target: Option<(ObjectId, usize)>,
     direction: ExtractIsocurveDirection,
     ignore_trims: bool,
 }
@@ -43,13 +43,30 @@ impl Command for ExtractIsocurveCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_extract_isocurve_arguments(arguments)?;
+        if options
+            .target
+            .is_some_and(|(id, _)| !document.is_selected(id))
+        {
+            return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+        }
         let mut curves = Vec::new();
         let mut source_count = 0;
-        for object in document.selected_objects() {
+        for object in document
+            .selected_objects()
+            .filter(|object| options.target.is_none_or(|(id, _)| object.id() == id))
+        {
             source_count += 1;
             match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
                     if let Some(point) = options.point {
+                        if let Some((_, face)) = options.target {
+                            if face != 0 {
+                                return Err(CommandError::ExtractIsocurveFaceIndexOutOfRange {
+                                    face,
+                                    face_count: 1,
+                                });
+                            }
+                        }
                         let (u, v) = surface.closest_parameters(point, document.tolerance())?;
                         append_surface_isocurves_at(&mut curves, surface, u, v, options.direction)?;
                     } else {
@@ -63,7 +80,18 @@ impl Command for ExtractIsocurveCommand {
                 }
                 Geometry::Brep(brep) => {
                     if let Some(point) = options.point {
-                        let closest =
+                        let closest = if let Some((_, face)) = options.target {
+                            let selected_face = brep.faces().get(face).ok_or(
+                                CommandError::ExtractIsocurveFaceIndexOutOfRange {
+                                    face,
+                                    face_count: brep.faces().len(),
+                                },
+                            )?;
+                            let (u, v) = selected_face
+                                .surface()
+                                .closest_parameters(point, document.tolerance())?;
+                            Some((face, u, v))
+                        } else {
                             if options.ignore_trims {
                                 Some(brep.closest_underlying_face_parameters(
                                     point,
@@ -71,7 +99,8 @@ impl Command for ExtractIsocurveCommand {
                                 )?)
                             } else {
                                 brep.closest_face_parameters(point, document.tolerance())?
-                            };
+                            }
+                        };
                         let Some((face_index, u, v)) = closest else {
                             continue;
                         };
@@ -249,6 +278,8 @@ fn parse_extract_isocurve_arguments(
 ) -> Result<ExtractIsocurveOptions, CommandError> {
     let mut direction = ExtractIsocurveDirection::U;
     let mut ignore_trims = false;
+    let mut face = None;
+    let mut object = None;
     let mut extract_all = false;
     let mut direction_seen = false;
     let mut ignore_trims_seen = false;
@@ -266,7 +297,11 @@ fn parse_extract_isocurve_arguments(
         }
         let option = if let Some((name, value)) = argument.split_once('=') {
             Some((name, value, 1))
-        } else if option_name_eq(argument, "Direction") || option_name_eq(argument, "IgnoreTrims") {
+        } else if option_name_eq(argument, "Direction")
+            || option_name_eq(argument, "IgnoreTrims")
+            || option_name_eq(argument, "Face")
+            || option_name_eq(argument, "Object")
+        {
             let value = arguments
                 .get(index + 1)
                 .ok_or(CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?;
@@ -291,6 +326,18 @@ fn parse_extract_isocurve_arguments(
                 ignore_trims =
                     parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?;
                 ignore_trims_seen = true;
+            } else if option_name_eq(name, "Face") && face.is_none() {
+                face = Some(
+                    value
+                        .parse::<usize>()
+                        .map_err(|_| CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?,
+                );
+            } else if option_name_eq(name, "Object") && object.is_none() {
+                object = Some(
+                    value
+                        .parse::<ObjectId>()
+                        .map_err(|_| CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?,
+                );
             } else {
                 return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
             }
@@ -301,6 +348,9 @@ fn parse_extract_isocurve_arguments(
         }
     }
     let point = if extract_all {
+        if face.is_some() || object.is_some() {
+            return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+        }
         require_consumed(&positional, 0, EXTRACT_ISOCURVE_USAGE)?;
         None
     } else {
@@ -308,8 +358,14 @@ fn parse_extract_isocurve_arguments(
         require_consumed(&positional, consumed, EXTRACT_ISOCURVE_USAGE)?;
         Some(point)
     };
+    let target = match (object, face) {
+        (Some(object), Some(face)) => Some((object, face)),
+        (None, None) => None,
+        _ => return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE)),
+    };
     Ok(ExtractIsocurveOptions {
         point,
+        target,
         direction,
         ignore_trims,
     })
