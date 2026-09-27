@@ -400,6 +400,79 @@
       "stations": [[0.5, 0.65]],
       "fit_rail": true,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-flat",
+      "rail": "lineline",
+      "radius": 0.3,
+      "cap": "Flat",
+      "inspect_edges": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-round",
+      "rail": "lineline",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-thick",
+      "rail": "lineline",
+      "radius": 0.3,
+      "thickness": 0.2,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-flat",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-round",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline-flat",
+      "rail": "polyline",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline-round",
+      "rail": "polyline",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3-flat",
+      "rail": "polyline3",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3-round",
+      "rail": "polyline3",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3-thick",
+      "rail": "polyline3",
+      "radius": 0.3,
+      "thickness": 0.2,
+      "cap": "Flat"
     }
   ]
 }

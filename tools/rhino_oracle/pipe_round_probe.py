@@ -67,6 +67,33 @@ def run(operation, tolerance, host):
             geometry.Point3d(2.0, 0.0, 0.0),
             geometry.Point3d(2.0 + 2.0 ** 0.5, 2.0 - 2.0 ** 0.5, 0.0),
             geometry.Point3d(4.0, 2.0, 0.0))))
+    elif rail_kind == "lineline":
+        rail = geometry.PolyCurve()
+        rail.Append(geometry.LineCurve(
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0)))
+        rail.Append(geometry.LineCurve(
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 2.0, 0.0)))
+    elif rail_kind == "lineline3d":
+        rail = geometry.PolyCurve()
+        rail.Append(geometry.LineCurve(
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0)))
+        rail.Append(geometry.LineCurve(
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 1.0, 1.0)))
+    elif rail_kind == "polyline":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 2.0, 0.0)]))
+    elif rail_kind == "polyline3":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 2.0, 0.0),
+            geometry.Point3d(4.0, 2.0, 0.0)]))
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))
@@ -163,6 +190,11 @@ def run(operation, tolerance, host):
                     "wall_bases": [_wall_basis(piece.Faces[i], host)
                                    for i in range(min(2, piece.Faces.Count))]
                     if operation.get("inspect_wall_bases") else None,
+                    "edge_bounds": [
+                        [host["_xyz"](edge.GetBoundingBox(True).Min),
+                         host["_xyz"](edge.GetBoundingBox(True).Max)]
+                        for edge in piece.Edges]
+                    if operation.get("inspect_edges") else None,
                 })
             finally:
                 properties.Dispose()

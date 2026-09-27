@@ -153,6 +153,33 @@ impl Command for PipeCommand {
         let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
         let tolerance = document.tolerance();
         let result = match source {
+            Geometry::Polyline(polyline)
+                if !fit_rail
+                    && stations.is_empty()
+                    && start_radius == end_radius
+                    && polyline.vertices().len() >= 3 =>
+            {
+                let lines = polyline
+                    .vertices()
+                    .windows(2)
+                    .map(|pair| {
+                        Ok(CurveSegment3::Line(LineSegment::try_new(
+                            pair[0], pair[1], tolerance,
+                        )?))
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?;
+                let polycurve = PolyCurve3::try_new(lines)?;
+                Geometry::Brep(segmented_polycurve_pipe(
+                    rail,
+                    &polycurve,
+                    [start_radius, end_radius],
+                    &stations,
+                    blend,
+                    cap,
+                    wall_thickness,
+                    tolerance,
+                )?)
+            }
             Geometry::PolyCurve(_) if fit_rail && !stations.is_empty() => {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -375,6 +402,28 @@ fn segmented_polycurve_pipe(
     if rail.is_closed()? {
         return Err(CommandError::Usage(USAGE));
     }
+    if stations.is_empty()
+        && endpoint_radii[0] == endpoint_radii[1]
+        && polycurve.segments().len() >= 2
+        && polycurve
+            .segments()
+            .iter()
+            .all(|segment| matches!(segment, CurveSegment3::Line(_)))
+    {
+        let lines = polycurve
+            .segments()
+            .iter()
+            .filter_map(|segment| match segment {
+                CurveSegment3::Line(line) => Some(*line),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if let Some(pipe) =
+            mitered_line_pipe(&lines, endpoint_radii[0], cap, wall_thickness, tolerance)?
+        {
+            return Ok(pipe);
+        }
+    }
     if !stations.is_empty() && blend == SweepBlend::Global {
         return Err(CommandError::Usage(USAGE));
     }
@@ -477,6 +526,161 @@ fn segmented_polycurve_pipe(
         );
     }
     cap_wall(wall, cap, tolerance)
+}
+
+fn mitered_line_pipe(
+    lines: &[LineSegment],
+    radius: Real,
+    cap: PipeCap,
+    wall_thickness: Option<Real>,
+    tolerance: Tolerance,
+) -> Result<Option<Brep>, CommandError> {
+    let directions = lines
+        .iter()
+        .map(|line| Ok(line.direction(tolerance)?.as_vector()))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let mut binormal = None;
+    for pair in directions.windows(2) {
+        let turn = pair[0].cross(pair[1])?;
+        if turn.length()? > tolerance.angular() {
+            binormal = Some(turn.normalized(tolerance)?.as_vector());
+            break;
+        }
+    }
+    let Some(binormal) = binormal else {
+        return Ok(None);
+    };
+    // One common binormal keeps every segment's circular parameter aligned
+    // across the miter ellipses. Spatial chains need a different frame model.
+    for direction in &directions {
+        if direction.dot(binormal)?.abs() > tolerance.angular() {
+            return Ok(None);
+        }
+    }
+    let largest_radius = radius + wall_thickness.unwrap_or(0.0).max(0.0);
+    let reaches = directions
+        .windows(2)
+        .map(|pair| {
+            let divisor = 1.0 + pair[0].dot(pair[1])?;
+            if divisor <= tolerance.angular() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            Ok(largest_radius * pair[0].cross(pair[1])?.length()? / divisor)
+        })
+        .collect::<Result<Vec<_>, CommandError>>()?;
+    let lengths = lines
+        .iter()
+        .map(|line| line.length())
+        .collect::<Result<Vec<_>, _>>()?;
+    if lengths.iter().enumerate().any(|(index, &length)| {
+        let start = index.checked_sub(1).map_or(0.0, |i| reaches[i]);
+        let end = reaches.get(index).copied().unwrap_or(0.0);
+        start + end >= length
+    }) {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let frames = lines
+        .iter()
+        .zip(&directions)
+        .map(|(line, direction)| {
+            Frame3::try_from_x_and_normal(line.start(), binormal, *direction, tolerance)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let make_wall = |radius: Real| -> Result<Brep, CommandError> {
+        let walls = lines
+            .iter()
+            .enumerate()
+            .map(|(index, line)| {
+                let surface = mitered_line_surface(
+                    *line,
+                    frames[index],
+                    radius,
+                    index
+                        .checked_sub(1)
+                        .map(|i| [directions[i], directions[index]]),
+                    directions
+                        .get(index + 1)
+                        .map(|&next| [directions[index], next]),
+                    tolerance,
+                )?;
+                Ok(Brep::try_surface_grid(&surface, &[], &[], tolerance)?)
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let references = walls.iter().collect::<Vec<_>>();
+        let mut joined = join_breps(&references, tolerance.absolute(), tolerance)?;
+        if joined.len() != 1 {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(joined.pop().expect("one mitered wall component").brep)
+    };
+    if let Some(thickness) = wall_thickness {
+        let second_radius = radius + thickness;
+        let (outer, inner) = if thickness > 0.0 {
+            (make_wall(second_radius)?, make_wall(radius)?)
+        } else {
+            (make_wall(radius)?, make_wall(second_radius)?)
+        };
+        return Ok(Some(finish_two_walls(outer, inner, cap, tolerance)?));
+    }
+    let wall = make_wall(radius)?;
+    if cap == PipeCap::Round {
+        let last = *lines.last().expect("at least two mitered lines");
+        let end_frame = Frame3::try_from_x_and_normal(
+            last.end(),
+            binormal,
+            *directions.last().expect("last mitered direction"),
+            tolerance,
+        )?;
+        return Ok(Some(round_cap_single_wall(
+            wall,
+            [frames[0], end_frame],
+            [radius; 2],
+            [0.0; 2],
+            tolerance,
+        )?));
+    }
+    Ok(Some(cap_wall(wall, cap, tolerance)?))
+}
+
+fn mitered_line_surface(
+    line: LineSegment,
+    frame: Frame3,
+    radius: Real,
+    start_joint: Option<[Vector3; 2]>,
+    end_joint: Option<[Vector3; 2]>,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    let length = line.length()?;
+    let cylinder = NurbsSurface::try_cylinder(frame, radius, 0.0, length)?;
+    let mut controls = cylinder.control_points().to_vec();
+    let count = cylinder.control_point_count_u();
+    let direction = line.direction(tolerance)?.as_vector();
+    for (row, joint, pair) in [
+        (0, line.start(), start_joint),
+        (count, line.end(), end_joint),
+    ] {
+        let Some([first_direction, second_direction]) = pair else {
+            continue;
+        };
+        let divisor = 1.0 + first_direction.dot(second_direction)?;
+        for control in &mut controls[row..row + count] {
+            let radial = joint.vector_to(control.point())?;
+            // The joint plane has normal t_before + t_after. Move each
+            // circular control along this segment's axis onto that plane.
+            let shift = -(first_direction.dot(radial)? + second_direction.dot(radial)?) / divisor;
+            let point = control.point().translated(direction.scaled(shift)?)?;
+            *control = WeightedPoint3::try_new(point, control.weight())?;
+        }
+    }
+    Ok(NurbsSurface::try_new_rational(
+        cylinder.degree_u(),
+        cylinder.degree_v(),
+        cylinder.control_point_count_u(),
+        cylinder.control_point_count_v(),
+        controls,
+        cylinder.knots_u().to_vec(),
+        cylinder.knots_v().to_vec(),
+    )?)
 }
 
 fn segmented_station_wall(
@@ -1707,6 +1911,131 @@ mod tests {
                 .is_err()
         );
         assert_eq!(document.objects().count(), count);
+    }
+
+    #[test]
+    fn sharp_two_line_pipe_matches_rhino_miter() {
+        let mut document = Document::default();
+        let first = LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), Tolerance::DEFAULT).unwrap();
+        let second =
+            LineSegment::try_new(p(2., 0., 0.), p(2., 2., 0.), Tolerance::DEFAULT).unwrap();
+        let rail = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(first),
+            CurveSegment3::Line(second),
+        ])
+        .unwrap();
+        let source = document.add_geometry(Geometry::PolyCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected, faces) in [
+            ("Cap=Flat", 1.1309737513007323, 4),
+            ("Cap=Round", 1.2440711643189903, 4),
+            ("WallThickness=0.2 Cap=Flat", 2.010619896220259, 6),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 {options}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("mitered pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            assert_eq!(pipe.faces().len(), faces, "{options}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn oblique_three_dimensional_miter_matches_rhino_volume() {
+        let mut document = Document::default();
+        let first = LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), Tolerance::DEFAULT).unwrap();
+        let second =
+            LineSegment::try_new(p(2., 0., 0.), p(3., 1., 1.), Tolerance::DEFAULT).unwrap();
+        let rail = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(first),
+            CurveSegment3::Line(second),
+        ])
+        .unwrap();
+        let source = document.add_geometry(Geometry::PolyCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (cap, expected) in [("Flat", 1.0552124780965215), ("Round", 1.1683098049457938)] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 Cap={cap}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("oblique pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{cap}");
+            assert!(pipe.is_solid(), "{cap}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{cap}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn sharp_polyline_pipe_matches_rhino_miter() {
+        let mut document = Document::default();
+        let rail = Polyline3::try_new(
+            vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Polyline(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (cap, expected) in [("Flat", 1.1309737513007323), ("Round", 1.2440711643189903)] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 Cap={cap}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("mitered polyline pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{cap}");
+            assert!(pipe.is_solid(), "{cap}");
+            assert_eq!(pipe.faces().len(), 4, "{cap}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{cap}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn three_segment_polyline_pipe_matches_rhino_miters() {
+        let mut document = Document::default();
+        let rail = Polyline3::try_new(
+            vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.), p(4., 2., 0.)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Polyline(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected, faces) in [
+            ("Cap=Flat", 1.6964605759770885, 5),
+            ("Cap=Round", 1.8095579066239338, 5),
+            ("WallThickness=0.2 Cap=Flat", 3.0159299051156543, 8),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 {options}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("three-segment pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            assert_eq!(pipe.faces().len(), faces, "{options}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
     }
 
     #[test]
