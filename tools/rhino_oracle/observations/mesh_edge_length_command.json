@@ -1,0 +1,253 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "edge-shorter-equal",
+      "value": {
+        "created_count": 1,
+        "history": "Python Script ( ResetEngine ): _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: c9c38537-7dc1-4ae4-b14e-f4117d218aab\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=No ): _SelectFaces=_ShorterThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=No ): _EdgeLength\nEdgeLength <2>: 2\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=No ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-shorter-above",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: 0b396b54-9b15-4cd2-9db4-0c4907ed4ea2\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_ShorterThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <2>: 2.0001\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-longer-equal",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: cf2e66a8-e26e-46f8-8e1b-a8b5d79c5b17\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_LongerThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <2.0001>: 2\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-longer-below",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: ed4ce682-502b-4031-b8f0-376534226907\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_LongerThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <2>: 1.9999\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-shorter-below",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: 2b23e972-92b8-42c8-b963-3cbd145c0cd5\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_ShorterThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <1.9999>: 1.9999\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-longer-above",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: 50f1ea91-2943-46d9-b65a-5b425cf4ea35\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=ShorterThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_LongerThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=1.9999  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <1.9999>: 2.0001\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-diagonal-excluded",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: 726c907a-cacd-4dfc-8562-f6587cdd2046\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_LongerThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.0001  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <2.0001>: 2.1\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.1  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.1  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.1  SelectEdge  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "edge-longer-zero",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByEdgeLength\nSelect mesh: _SelID\nObject ID to select: a6b4d1d9-5fe1-4ccb-9432-ce9119e34ea2\n1 mesh added to selection.\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.1  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _SelectFaces=_LongerThanEdgeLength\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=2.1  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _EdgeLength\nEdgeLength <2.1>: 0\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=0  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=0  SelectEdge  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( SelectFaces=LongerThanEdgeLength  EdgeLength=0  SelectEdge  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

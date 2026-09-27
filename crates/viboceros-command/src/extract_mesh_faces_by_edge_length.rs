@@ -40,8 +40,8 @@ impl Command for ExtractMeshFacesByEdgeLengthCommand {
             |mesh, index| {
                 let (shortest, longest) = mesh.face_edge_length_range(index)?;
                 Ok(match options.comparison {
-                    Comparison::Shorter => shortest < options.length,
-                    Comparison::Longer => longest > options.length,
+                    Comparison::Shorter => shortest <= options.length,
+                    Comparison::Longer => longest >= options.length,
                 })
             },
         )
@@ -62,7 +62,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
                 value
                     .parse::<Real>()
                     .ok()
-                    .filter(|length| length.is_finite() && *length > 0.0)
+                    .filter(|length| length.is_finite() && *length >= 0.0)
                     .ok_or(CommandError::Usage(USAGE))?,
             );
         } else if key.eq_ignore_ascii_case("Select") && comparison.is_none() {
@@ -116,19 +116,22 @@ mod tests {
     }
 
     #[test]
-    fn shorter_mode_uses_any_boundary_edge_and_is_strict() {
+    fn shorter_mode_uses_any_boundary_edge_and_includes_equal_length() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
         let before = document.undo_label().map(str::to_owned);
         assert!(matches!(
-            registry.execute(&mut document, "ExtractMeshFacesByEdgeLength EdgeLength=1"),
+            registry.execute(
+                &mut document,
+                "ExtractMeshFacesByEdgeLength EdgeLength=0.9999"
+            ),
             Err(CommandError::NoMeshFacesInEdgeLengthRange)
         ));
         assert_eq!(document.undo_label(), before.as_deref());
         assert_eq!(
             registry
-                .execute(&mut document, "ExtractMeshFacesByEdgeLength EdgeLength=2")
+                .execute(&mut document, "ExtractMeshFacesByEdgeLength EdgeLength=1.5")
                 .unwrap(),
             "Extracted 1 mesh face(s) from 1 mesh(es); source faces removed"
         );
@@ -142,6 +145,67 @@ mod tests {
             panic!("mesh expected")
         };
         assert_eq!(restored.face_count(), 2);
+    }
+
+    #[test]
+    fn both_modes_include_equal_boundary_edges_but_exclude_quad_diagonals() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+                point(0.0, 2.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        for mode in ["Shorter", "Longer"] {
+            document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            assert!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!(
+                            "ExtractMeshFacesByEdgeLength EdgeLength=2 Select={mode} MakeCopy=Yes"
+                        )
+                    )
+                    .is_ok()
+            );
+        }
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        for (mode, length) in [("Shorter", 1.9999), ("Longer", 2.0001)] {
+            assert!(matches!(
+                registry.execute(
+                    &mut document,
+                    &format!("ExtractMeshFacesByEdgeLength EdgeLength={length} Select={mode}")
+                ),
+                Err(CommandError::NoMeshFacesInEdgeLengthRange)
+            ));
+        }
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ExtractMeshFacesByEdgeLength EdgeLength=2.1 Select=Longer"
+            ),
+            Err(CommandError::NoMeshFacesInEdgeLengthRange)
+        ));
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByEdgeLength EdgeLength=0 Select=Longer MakeCopy=Yes"
+                )
+                .is_ok()
+        );
     }
 
     #[test]
@@ -186,7 +250,7 @@ mod tests {
         let before = document.undo_label().map(str::to_owned);
         for input in [
             "ExtractMeshFacesByEdgeLength",
-            "ExtractMeshFacesByEdgeLength EdgeLength=0",
+            "ExtractMeshFacesByEdgeLength EdgeLength=-1",
             "ExtractMeshFacesByEdgeLength EdgeLength=1 Select=Other",
             "ExtractMeshFacesByEdgeLength EdgeLength=1 EdgeLength=2",
             "ExtractMeshFacesByEdgeLength EdgeLength=2",

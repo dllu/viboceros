@@ -1,0 +1,286 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "edge-shorter-equal",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_ShorterThanEdgeLength _EdgeLength 2 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-shorter-above",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_ShorterThanEdgeLength _EdgeLength 2.0001 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-longer-equal",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_LongerThanEdgeLength _EdgeLength 2 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-longer-below",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_LongerThanEdgeLength _EdgeLength 1.9999 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-shorter-below",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_ShorterThanEdgeLength _EdgeLength 1.9999 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-longer-above",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_LongerThanEdgeLength _EdgeLength 2.0001 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-diagonal-excluded",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_LongerThanEdgeLength _EdgeLength 2.1 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "edge-longer-zero",
+      "op": "mesh_edge_length_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_SelectFaces=_LongerThanEdgeLength _EdgeLength 0 _MakeCopy=_Yes _Enter"
+    }
+  ]
+}

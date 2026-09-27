@@ -184,10 +184,11 @@ stages all selected meshes before editing, preserves output attributes and
 group memberships, and rejects a selection containing non-mesh objects.
 
 `ExtractMeshFacesByEdgeLength EdgeLength=0.1 Select=Shorter` extracts faces
-with any boundary edge strictly shorter than the given length. `Select=Longer`
-uses the longest boundary edge and a strict greater-than test. Quad diagonals
-are excluded. It shares the area command's `MakeCopy` and `BorderOnly` behavior,
-atomic staging, attributes, groups, selection, and undo.
+with any boundary edge at or below the given length. `Select=Longer` uses the
+longest boundary edge and includes equality. Zero is accepted; negative
+thresholds are rejected. Quad diagonals are excluded. It shares the area
+command's `MakeCopy` and `BorderOnly` behavior, atomic staging, attributes,
+groups, selection, and undo.
 
 `ExtractMeshFacesByAspectRatio AspectRatio=9` extracts faces whose aspect ratio
 is at least the threshold. A triangle's ratio is its longest edge divided by
