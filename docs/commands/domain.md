@@ -13,6 +13,7 @@ as a substitute. Reparameterized and imported domains are retained in the report
 No geometry, attributes, selection, or model undo/redo is changed by evaluation.
 
 For a multi-face B-rep, the application then asks for a component-surface location.
+Viewport clicks choose the visible face at the click depth.
 `Domain 0.5,0.5,10` performs the same query at a world-space location. The nearest
 trimmed face supplies its underlying surface's U/V domains; no aggregate domain is
 invented for the polysurface. A single-face B-rep needs no additional pick.
@@ -41,8 +42,8 @@ that phase without model edits; failed point evaluations stay open for correctio
 
 [Rhino's Domain command](https://docs.mcneel.com/rhino/8/help/en-us/commands/domain.htm)
 also offers `SubCrv` picking. `Face=index` and the scripted `SubCrv` arguments are native scripting
-conveniences, not claims of identical Rhino command syntax. Component lookup
-currently uses 3D nearest-face distance, not a screen-space hit aperture.
+conveniences, not claims of identical Rhino command syntax. Typed locations use
+3D nearest-face distance; viewport clicks use the tessellated screen-space hit.
 
 Native tests cover stored/reparameterized curve intervals, independently
 reparameterized component surfaces, explicit and picked faces, invalid selection,

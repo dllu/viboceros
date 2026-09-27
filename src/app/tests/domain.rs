@@ -72,6 +72,54 @@ fn domain_polysurface_transitions_to_face_pick_for_pre_and_postselection() {
 }
 
 #[test]
+fn domain_viewport_face_hit_reports_the_picked_component_domain() {
+    use viboceros_geometry::{Brep, NurbsSurface};
+    let mut app = test_app();
+    let surface = |z| {
+        NurbsSurface::try_bilinear([
+            point(0.0, 0.0, z),
+            point(1.0, 0.0, z),
+            point(1.0, 1.0, z),
+            point(0.0, 1.0, z),
+        ])
+        .unwrap()
+    };
+    let bottom = Brep::try_surface_face(surface(0.0), Tolerance::DEFAULT).unwrap();
+    let top = Brep::try_surface_face(
+        surface(10.0)
+            .try_reparameterized(5.0..=6.0, -8.0..=-3.0)
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::Brep(
+            Brep::try_combine(vec![bottom, top], Tolerance::DEFAULT).unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_object(id, viboceros_document::SelectionMode::Replace)
+        .unwrap();
+    let before = format!("{:?}", app.document);
+    assert!(app.try_start_interactive_command("Domain"));
+    app.accept_component_face_hit(id, 1, None);
+    assert_eq!(app.active_command, None);
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "Face 1: U domain = [5,6]; V domain = [-8,-3]"
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+
+    assert!(app.try_start_interactive_command("Domain"));
+    assert!(app.accept_drafting_point(point(0.5, 0.5, 0.0)));
+    assert_eq!(
+        app.command_log.back().unwrap(),
+        "Face 0: U domain = [0,1]; V domain = [0,1]"
+    );
+}
+
+#[test]
 fn domain_subcurve_picks_two_locations_for_pre_and_postselection() {
     for preselected in [false, true] {
         let mut app = test_app();

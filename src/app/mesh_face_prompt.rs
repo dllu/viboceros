@@ -1,9 +1,36 @@
-//! Interactive option parsing for mesh face region commands.
+//! Dispatch viewport face hits to component and surface commands.
 use super::{InteractiveCommand, VibocerosApp, format_model_point};
 use viboceros_document::ObjectId;
 use viboceros_geometry::Point3;
 
 impl VibocerosApp {
+    pub(super) fn accept_component_face_hit(
+        &mut self,
+        object: ObjectId,
+        face: usize,
+        point: Option<Point3>,
+    ) {
+        match self.active_command {
+            Some(InteractiveCommand::DomainFace) => {
+                self.finish_domain_face_index(face);
+            }
+            Some(InteractiveCommand::ExtractIsocurve { .. }) => {
+                if let Some(point) = point {
+                    self.accept_isocurve_face_click(object, face, point);
+                }
+            }
+            Some(
+                InteractiveCommand::SrfSeam { .. }
+                | InteractiveCommand::SplitSurfaceIsocurve { .. },
+            ) => {
+                if let Some(point) = point {
+                    self.accept_drafting_point(point);
+                }
+            }
+            _ => self.accept_face_click(object, face),
+        }
+    }
+
     pub(super) fn accept_isocurve_face_click(
         &mut self,
         object: ObjectId,

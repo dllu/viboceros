@@ -138,8 +138,9 @@ Current surface/surface intersection support is planar.
 `Split Isocurve=point
 Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
-location; omit the point after `Split Isocurve` for one viewport pick. The
-direction names the isocurve itself, so a U isocurve divides the V parameter
+location; omit the point after `Split Isocurve` for one viewport pick on the
+surface, independent of the construction plane. The direction names the
+isocurve itself, so a U isocurve divides the V parameter
 domain and vice versa. The source is replaced by two or four fresh exact
 single-face B-reps with matching attributes and group membership, selected
 together in one undo step. Existing rectangular single-face B-reps can be

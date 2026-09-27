@@ -7645,16 +7645,7 @@ impl VibocerosApp {
         } else if let Some(parameter) = output.edge_parameter {
             self.accept_split_parameter(parameter);
         } else if let Some((object, face)) = output.face_click {
-            if matches!(
-                self.active_command,
-                Some(InteractiveCommand::ExtractIsocurve { .. })
-            ) {
-                if let Some(point) = output.face_hit_point {
-                    self.accept_isocurve_face_click(object, face, point);
-                }
-            } else {
-                self.accept_face_click(object, face);
-            }
+            self.accept_component_face_hit(object, face, output.face_hit_point);
         } else if let Some(point) = output.picked_point {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
@@ -7972,6 +7963,9 @@ impl eframe::App for VibocerosApp {
                 InteractiveCommand::ExtractSrf { .. }
                     | InteractiveCommand::DupFaceBorder { .. }
                     | InteractiveCommand::ExtractIsocurve { .. }
+                    | InteractiveCommand::DomainFace
+                    | InteractiveCommand::SrfSeam { .. }
+                    | InteractiveCommand::SplitSurfaceIsocurve { .. }
             )
         ) {
             Some(FacePickMode::SurfaceAndBrep)
@@ -10813,7 +10807,7 @@ mod tests {
             Some(InteractiveCommand::SrfSeam { direction: None })
         );
         assert!(app.command_log.back().unwrap().contains("closed surface"));
-        app.accept_drafting_point(pick);
+        app.accept_component_face_hit(source_id, 0, Some(pick));
 
         assert_eq!(app.active_command, None);
         let Geometry::NurbsSurface(relocated) = app.document.object(source_id).unwrap().geometry()
@@ -11176,6 +11170,57 @@ mod tests {
     }
 
     #[test]
+    fn interactive_isocurve_split_uses_hit_elevation_on_a_sloped_surface() {
+        let mut clicked = test_app();
+        clicked.execute_command("SrfPt 0,0,0 4,0,4 4,3,4 0,3,0");
+        let source = clicked.document.objects().next().unwrap().id();
+        clicked
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(clicked.try_start_interactive_command("Split Isocurve Direction=V"));
+        clicked.accept_component_face_hit(source, 0, Some(point(1.5, 2.0, 1.5)));
+        assert_eq!(clicked.document.selected_object_count(), 2);
+        let click_geometry = clicked
+            .document
+            .selected_objects()
+            .map(|object| object.geometry().clone())
+            .collect::<Vec<_>>();
+
+        let mut exact = test_app();
+        exact.execute_command("SrfPt 0,0,0 4,0,4 4,3,4 0,3,0");
+        let source = exact.document.objects().next().unwrap().id();
+        exact
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        exact.execute_command("Split Isocurve=1.5,2,1.5 Direction=V");
+        assert_eq!(
+            click_geometry,
+            exact
+                .document
+                .selected_objects()
+                .map(|object| object.geometry().clone())
+                .collect::<Vec<_>>()
+        );
+
+        exact.execute_command("Undo");
+        exact
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        exact.execute_command("Split Isocurve=1.5,2,0 Direction=V");
+        assert_ne!(
+            click_geometry,
+            exact
+                .document
+                .selected_objects()
+                .map(|object| object.geometry().clone())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
     fn interactive_surface_isocurve_split_uses_one_location_pick() {
         let mut app = test_app();
         app.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
@@ -11193,7 +11238,7 @@ mod tests {
             })
         );
         assert!(app.command_log.back().unwrap().contains("selected surface"));
-        app.accept_drafting_point(point(1.5, 2.0, 0.0));
+        app.accept_component_face_hit(source_id, 0, Some(point(1.5, 2.0, 0.0)));
 
         assert_eq!(app.active_command, None);
         assert!(app.document.object(source_id).is_none());

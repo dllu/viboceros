@@ -18,8 +18,16 @@ impl VibocerosApp {
         selected.next().is_none()
             && matches!(object.geometry(), viboceros_document::Geometry::Brep(brep) if brep.faces().len() > 1)
     }
+
     pub(super) fn finish_domain_face(&mut self, point: Point3) -> bool {
-        let input = format!("Domain {}", format_model_point(point));
+        self.finish_domain_face_query(format!("Domain {}", format_model_point(point)))
+    }
+
+    pub(super) fn finish_domain_face_index(&mut self, face: usize) -> bool {
+        self.finish_domain_face_query(format!("Domain Face={face}"))
+    }
+
+    fn finish_domain_face_query(&mut self, input: String) -> bool {
         match self.commands.execute(&mut self.document, &input) {
             Ok(report) => {
                 self.cancel_interactive_command(false);

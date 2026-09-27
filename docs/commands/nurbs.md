@@ -114,8 +114,9 @@ domain is `[0,1]` (in both directions for surfaces); trims are discarded.
 
 `SrfSeam point Direction=U|V|Both` performs the corresponding exact edit on
 one selected untrimmed NURBS surface; omit the point for a one-click viewport
-pick. `Parameter=value` targets one axis directly, while `Parameter=u,v` also
-supports `Direction=Both`. Without `Direction`, the only closed axis is chosen,
+pick on the surface, independent of the construction plane. `Parameter=value`
+targets one axis directly, while `Parameter=u,v` also supports
+`Direction=Both`. Without `Direction`, the only closed axis is chosen,
 or U is used when both axes close. The implementation follows OpenNURBS by
 flattening the stored homogeneous control net, so rational and periodic tensor
 structure, parameter-span lengths, surface orientation, identity, attributes,
