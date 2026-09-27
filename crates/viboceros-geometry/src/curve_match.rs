@@ -24,6 +24,7 @@ enum CurvatureControlRule {
     SingleSpan,
     OneSidedMultiSpan,
     AverageMultiSpan,
+    PreparedFiveControl(Real),
 }
 
 /// Changes the selected end of one open curve to meet another with G0, G1, or
@@ -305,13 +306,43 @@ fn match_end_to_target(
     }
     let matched_controls = continuity_control_count(continuity);
     let preserved_controls = preserve_control_count(preserve);
-    // Refinement gives the edited and preserved ends disjoint control sets
-    // without changing the source curve before the match. In particular, a
-    // two-span cubic with five controls needs one more control for G2 at both
-    // ends. Insert inside the span nearest the selected end so the opposite
-    // end keeps its endpoint jet after the local control edits.
+    // A short multi-span source needs disjoint control sets for the edited and
+    // preserved ends. The five-control G2/G2 cases use the uniform Greville
+    // preparation observed in Rhino. Other short curves are refined inside
+    // the selected end span without changing their geometry before the match.
+    let mut effective_curvature_rule = curvature_rule;
     let prepared = if require_single_span {
         original.clone()
+    } else if original.degree() == 2
+        && original.control_points().len() == 5
+        && continuity == CurveBlendContinuity::Curvature
+        && preserve == CurveMatchPreserveEnd::Curvature
+    {
+        let interpolant = crate::curve_rebuild::interpolate_affine_greville(original, 6)?;
+        if at_end {
+            interpolant.try_reparameterized(-4.0..=0.0)?
+        } else {
+            interpolant
+        }
+    } else if original.degree() == 3
+        && original.control_points().len() == 5
+        && continuity == CurveBlendContinuity::Curvature
+        && preserve == CurveMatchPreserveEnd::Curvature
+    {
+        match prepare_five_control_g2(original, at_end)? {
+            Some((prepared, coefficient)) => {
+                if let CurvatureControlRule::OneSidedMultiSpan = curvature_rule {
+                    effective_curvature_rule =
+                        CurvatureControlRule::PreparedFiveControl(coefficient);
+                }
+                prepared
+            }
+            None => refine_for_disjoint_end_controls(
+                original,
+                at_end,
+                matched_controls + preserved_controls,
+            )?,
+        }
     } else {
         refine_for_disjoint_end_controls(original, at_end, matched_controls + preserved_controls)?
     };
@@ -371,7 +402,8 @@ fn match_end_to_target(
             let zero_tangential_coefficient = || {
                 a / b * (1.0 + knot_ratio + 2.0 * degree * (a - 1.0) * knot_ratio / (degree - 1.0))
             };
-            let tangential_coefficient = match curvature_rule {
+            let tangential_coefficient = match effective_curvature_rule {
+                CurvatureControlRule::PreparedFiveControl(coefficient) => coefficient,
                 CurvatureControlRule::SingleSpan => {
                     2.0 * (degree * a * a - a) / ((degree - 1.0) * b)
                 }
@@ -414,6 +446,157 @@ fn match_end_to_target(
     let matched =
         NurbsCurve::try_new_rational(desired_degree, controls, elevated.knots().to_vec())?;
     Ok(matched)
+}
+
+/// Rhino's five-control cubic G2/G2 path first interpolates a six-control
+/// uniform polynomial at affine Greville stations. Its handle length at the
+/// untouched end equals the corresponding interpolant handle length. The far
+/// second-control tangential offset comes from the source's homogeneous XYZ
+/// control-distance ratio and the curvature-derived transverse offset.
+fn prepare_five_control_g2(
+    original: &NurbsCurve,
+    at_end: bool,
+) -> Result<Option<(NurbsCurve, Real)>, GeometryError> {
+    let interpolant = crate::curve_rebuild::interpolate_affine_greville(original, 6)?;
+    let selected_index = if at_end { 4 } else { 1 };
+    let selected_endpoint = if at_end { 5 } else { 0 };
+    let selected_handle = interpolant.control_points()[selected_endpoint]
+        .point()
+        .distance_to(interpolant.control_points()[selected_index].point())?;
+    let source_controls = original.control_points();
+    let (endpoint, adjacent, second, parameter) = if at_end {
+        (
+            source_controls[4],
+            source_controls[3],
+            source_controls[2],
+            *original.domain().end(),
+        )
+    } else {
+        (
+            source_controls[0],
+            source_controls[1],
+            source_controls[2],
+            *original.domain().start(),
+        )
+    };
+    let adjacent_distance = homogeneous_spatial_distance(endpoint, adjacent)?;
+    if selected_handle == 0.0 || adjacent_distance == 0.0 {
+        return Ok(None);
+    }
+    let radial =
+        selected_handle * homogeneous_spatial_distance(endpoint, second)? / adjacent_distance;
+    let curvature = CurveRef::NurbsCurve(original).curvature_vector(parameter)?;
+    let transverse = curvature
+        .scaled(3.0 * selected_handle * selected_handle)?
+        .length()?;
+    if !radial.is_finite() {
+        return Ok(None);
+    }
+    let radial_coefficient = radial_tangential_distance(radial, transverse) / selected_handle;
+    if !radial_coefficient.is_finite() {
+        return Ok(None);
+    }
+    let selected_coefficient =
+        if (radial_coefficient - 3.0).abs() <= 0.05 * (radial_coefficient.abs() + 3.0) {
+            3.0
+        } else {
+            radial_coefficient
+        };
+    let first = interpolant.control_points();
+    let last = first.len() - 1;
+    let (endpoint_index, adjacent_index, second_index, far_at_end) = if at_end {
+        (0, 1, 2, false)
+    } else {
+        (last, last - 1, last - 2, true)
+    };
+    let endpoint = first[endpoint_index].point();
+    let handle = endpoint.distance_to(first[adjacent_index].point())?;
+    let source_controls = original.control_points();
+    let source_last = source_controls.len() - 1;
+    let (source_endpoint, source_adjacent, source_second) = if far_at_end {
+        (
+            source_controls[source_last],
+            source_controls[source_last - 1],
+            source_controls[source_last - 2],
+        )
+    } else {
+        (source_controls[0], source_controls[1], source_controls[2])
+    };
+    let adjacent_distance = homogeneous_spatial_distance(source_endpoint, source_adjacent)?;
+    if handle == 0.0 || adjacent_distance == 0.0 {
+        return Ok(None);
+    }
+    let second_distance = homogeneous_spatial_distance(source_endpoint, source_second)?;
+    let radius = handle * (second_distance / adjacent_distance);
+    let parameter = if far_at_end {
+        *original.domain().end()
+    } else {
+        *original.domain().start()
+    };
+    let side = if far_at_end {
+        ParameterSide::Left
+    } else {
+        ParameterSide::Right
+    };
+    let tangent = CurveRef::NurbsCurve(original)
+        .evaluate_with_tangent_on_side(parameter, side)?
+        .tangent()
+        .as_vector();
+    let inward = tangent.scaled(if far_at_end { -1.0 } else { 1.0 })?;
+    let curvature = CurveRef::NurbsCurve(original).curvature_vector(parameter)?;
+    // A clamped uniform cubic with three spans has endpoint knot ratio two.
+    let transverse = curvature.scaled(3.0 * handle * handle)?;
+    let transverse_length = transverse.length()?;
+    if !radius.is_finite() {
+        return Ok(None);
+    }
+    let tangential = radial_tangential_distance(radius, transverse_length);
+    if !tangential.is_finite() {
+        return Ok(None);
+    }
+    let mut controls = first
+        .iter()
+        .map(|control| control.point())
+        .collect::<Vec<_>>();
+    controls[adjacent_index] = endpoint.translated(inward.scaled(handle)?)?;
+    controls[second_index] = endpoint
+        .translated(inward.scaled(tangential)?)?
+        .translated(transverse)?;
+    let prepared = NurbsCurve::try_new(3, controls, interpolant.knots().to_vec())?;
+    if at_end {
+        Ok(Some((
+            prepared.try_reparameterized(-3.0..=0.0)?,
+            selected_coefficient,
+        )))
+    } else {
+        Ok(Some((prepared, selected_coefficient)))
+    }
+}
+
+fn radial_tangential_distance(radius: Real, transverse: Real) -> Real {
+    // Rhino takes the absolute squared difference when the homogeneous
+    // radius is smaller than the curvature offset. Splitting the square root
+    // avoids overflowing either squared value at large model scales.
+    let high = radius.max(transverse);
+    if high == 0.0 {
+        return 0.0;
+    }
+    let low = radius.min(transverse);
+    (radius - transverse).abs().sqrt() * high.sqrt() * (1.0 + low / high).sqrt()
+}
+
+fn homogeneous_spatial_distance(
+    first: WeightedPoint3,
+    second: WeightedPoint3,
+) -> Result<Real, GeometryError> {
+    let a = first.point();
+    let b = second.point();
+    Vector3::try_new(
+        a.x() * first.weight() - b.x() * second.weight(),
+        a.y() * first.weight() - b.y() * second.weight(),
+        a.z() * first.weight() - b.z() * second.weight(),
+    )?
+    .length()
 }
 
 fn refine_for_disjoint_end_controls(
@@ -756,7 +939,7 @@ mod tests {
     }
 
     #[test]
-    fn five_control_multispan_g2_refines_and_preserves_far_curvature() {
+    fn five_control_multispan_g2_prepares_and_preserves_far_curvature() {
         for (at_end, rational, uneven_knots) in [
             (false, false, false),
             (true, false, false),
@@ -800,16 +983,46 @@ mod tests {
             .unwrap();
             assert_eq!(matched.control_points().len(), 6);
             let far = if at_end { 0.0 } else { end };
+            let matched_far = if at_end {
+                *matched.domain().start()
+            } else {
+                *matched.domain().end()
+            };
             let original_curvature = source.as_ref().curvature_vector(far).unwrap();
             let matched_curvature = CurveRef::NurbsCurve(&matched)
-                .curvature_vector(far)
+                .curvature_vector(matched_far)
                 .unwrap();
-            assert!((original_curvature.x() - matched_curvature.x()).abs() < 1e-10);
+            assert!(
+                (original_curvature.x() - matched_curvature.x()).abs() < 1e-10,
+                "at_end={at_end} rational={rational} uneven={uneven_knots} before={original_curvature:?} after={matched_curvature:?}"
+            );
             assert!((original_curvature.y() - matched_curvature.y()).abs() < 1e-10);
             assert!((original_curvature.z() - matched_curvature.z()).abs() < 1e-10);
             let original_point = source.as_ref().evaluate(far).unwrap();
-            let matched_point = matched.evaluate(far).unwrap();
+            let matched_point = matched.evaluate(matched_far).unwrap();
             assert!(original_point.distance_to(matched_point).unwrap() < 1e-10);
+            let expected_controls: &[(usize, [Real; 2])] = match (at_end, rational, uneven_knots) {
+                (false, false, false) => &[
+                    (1, [4.0, 1.0 / 3.0]),
+                    (3, [2.747_375_722_722_700_3, 0.808_179_832_832_856_2]),
+                    (4, [10.0 / 3.0, 2.0 / 3.0]),
+                ],
+                (true, false, false) => &[
+                    (1, [2.0 / 3.0, 0.0]),
+                    (2, [1.422_916_497_207_299_2, 4.0 / 9.0]),
+                ],
+                (false, true, true) => &[
+                    (1, [4.0, -0.356_607_679_527_325_5]),
+                    (3, [3.558_214_165_460_0, 0.059_386_796_179_0]),
+                    (4, [3.680_884_775_481_0, 0.319_115_224_519_0]),
+                ],
+                _ => &[],
+            };
+            for (index, expected) in expected_controls {
+                let actual = matched.control_points()[*index].point();
+                assert!((actual.x() - expected[0]).abs() < 1e-10);
+                assert!((actual.y() - expected[1]).abs() < 1e-10);
+            }
         }
     }
 
@@ -861,9 +1074,76 @@ mod tests {
         ] {
             assert_eq!(matched.control_points().len(), 6);
             let before = original.as_ref().curvature_vector(far).unwrap();
-            let after = CurveRef::NurbsCurve(matched).curvature_vector(far).unwrap();
+            let matched_far = if far == 0.0 {
+                *matched.domain().start()
+            } else {
+                *matched.domain().end()
+            };
+            let after = CurveRef::NurbsCurve(matched)
+                .curvature_vector(matched_far)
+                .unwrap();
             assert!((before.x() - after.x()).abs() < 1e-10);
             assert!((before.y() - after.y()).abs() < 1e-10);
+        }
+    }
+
+    #[test]
+    fn translated_rational_five_control_g2_matches_rhino_end_controls() {
+        for (shift, expected_second_y, expected_far_second) in [
+            (
+                -10.0,
+                0.434_973_418_047_429_4,
+                [-7.841_560_011_392_847, 1.157_601_399_958_361_2],
+            ),
+            (
+                10.0,
+                -1.098_863_453_792_275,
+                [13.343_837_707_420_112, -0.027_796_318_854_605_595],
+            ),
+        ] {
+            let source = Curve3::NurbsCurve(
+                NurbsCurve::try_new_rational(
+                    3,
+                    [
+                        (0.0, 0.0, 1.0),
+                        (1.0, 0.0, 0.8),
+                        (2.0, 1.0, 1.2),
+                        (3.0, 1.0, 0.7),
+                        (4.0, 0.0, 1.0),
+                    ]
+                    .into_iter()
+                    .map(|(x, y, weight)| {
+                        WeightedPoint3::try_new(point(x + shift, y), weight).unwrap()
+                    })
+                    .collect(),
+                    vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+                )
+                .unwrap(),
+            );
+            let reference = Curve3::Arc(
+                CircularArc3::try_from_three_points(
+                    point(4.0 + shift, 1.0),
+                    point(5.0 + shift, 2.0),
+                    point(6.0 + shift, 1.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            );
+            let matched = try_match_curve_end(
+                &source,
+                false,
+                &reference,
+                false,
+                CurveBlendContinuity::Curvature,
+                CurveMatchPreserveEnd::Curvature,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let second = matched.control_points()[2].point();
+            let far_second = matched.control_points()[3].point();
+            assert!((second.y() - expected_second_y).abs() < 1e-10);
+            assert!((far_second.x() - expected_far_second[0]).abs() < 1e-10);
+            assert!((far_second.y() - expected_far_second[1]).abs() < 1e-10);
         }
     }
 

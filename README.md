@@ -59,8 +59,9 @@ other ends; single-span curves currently support position, tangent, and curvatur
 matching.
 Multi-span curves also support position matching with endpoint trimming, and
 tangent or curvature matching. When the source has too few controls to preserve
-the requested opposite end, Match inserts knots before editing its end. This
-includes five-control cubic curves matched at G2 while preserving far G2.
+the requested opposite end, Match adds controls before editing its end. For
+five-control cubic and quadratic G2 matches preserving far G2, it uses a uniform
+curve fitted at Greville parameters; other short sources use knot insertion.
 `AverageCurves=Yes` moves both curves for position, tangent, or curvature
 matching and keeps the change in one undo step. Average curvature matching can
 preserve the far position or tangent of multi-span curves.

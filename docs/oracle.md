@@ -83,17 +83,32 @@ control when it differs from the original projection by at most 10% of their
 mean magnitude;
 all 12 native replays match within `1e-10`. These probes ran on a separate Xvfb
 display. The [five-control probe](../tools/rhino_oracle/fixtures/curve_match_rhino_only.json)
-is now supported by shape-preserving knot insertion before matching. The native
-output preserves the far endpoint position, tangent, and curvature, including
-for rational and uneven-knot sources, but its resulting control points and
-parameterization still differ from Rhino's. The
+now matches after interpolation at affine Greville parameters into a uniform,
+nonrational six-control curve. The
 [six-case Rhino probe](../tools/rhino_oracle/fixtures/curve_match_five_control_far_g2_probe.json)
 and [observations](../tools/rhino_oracle/observations/curve_match_five_control_far_g2_probe.json)
-show Rhino returns a uniform, nonrational six-control cubic in all sampled cases.
+cover both selected ends, uneven knots, a changed middle control, and rational
+sources; all six native replays agree within `1e-10`. The
+[two-case average boundary](../tools/rhino_oracle/fixtures/curve_match_average_multispan_curvature_boundary.json)
+also now matches within `1e-10`. The
+[four-case quadratic arc fixture](../tools/rhino_oracle/fixtures/curve_match_five_control_quadratic_end.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_five_control_quadratic_end.json)
+cover both selected ends with one-sided and average matching; all four native
+replays agree within `1e-10`. The
+[six-case quadratic NURBS fixture](../tools/rhino_oracle/fixtures/curve_match_five_control_quadratic_general.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_five_control_quadratic_general.json)
+cover both selected ends, rational weights, and uneven knots; all six match
+within `1e-10`. These live captures used a separate Xvfb display.
 The [Rebuild comparison](../tools/rhino_oracle/fixtures/curve_match_five_control_rebuild_probe.json)
 and [observations](../tools/rhino_oracle/observations/curve_match_five_control_rebuild_probe.json)
 show Rhino's public `NurbsCurve.Rebuild(6, 3, ...)` does not produce the same
-far controls as `CreateMatchCurve`. Both live probes used a separate Xvfb display.
+far controls as `CreateMatchCurve`. The
+[translated rational sweep](../tools/rhino_oracle/fixtures/curve_match_five_control_rational_translation_sweep.json)
+and [observations](../tools/rhino_oracle/observations/curve_match_five_control_rational_translation_sweep.json)
+cover 13 X translations from `-15` to `+15`; all match within `1e-10` after
+private-Xvfb capture. The source's homogeneous XYZ control-distance ratio determines
+the curvature control offset; Rhino uses the absolute squared difference when
+the transverse curvature offset exceeds that radius.
 The [five-case supported fixture](../tools/rhino_oracle/fixtures/curve_match_multispan_preserve_far_curvature.json)
 and [Rhino observation](../tools/rhino_oracle/observations/curve_match_multispan_preserve_far_curvature.json)
 cover six- and seven-control cubic sources, both selected ends, a rational

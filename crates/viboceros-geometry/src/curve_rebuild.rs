@@ -108,6 +108,51 @@ fn rebuild_open(
     NurbsCurve::try_new(degree, controls, knots)
 }
 
+/// Interpolates the source at affine parameter locations corresponding to a
+/// clamped uniform curve's Greville abscissae. Match uses this when it needs an
+/// extra control while keeping the source end-handle lengths determined by
+/// Rhino's uniform preparation step. Unlike `try_rebuild_curve`, these targets
+/// follow the source parameter rather than its arc length.
+pub(crate) fn interpolate_affine_greville(
+    source: &NurbsCurve,
+    point_count: usize,
+) -> Result<NurbsCurve, GeometryError> {
+    let degree = source.degree();
+    if point_count <= degree {
+        return Err(GeometryError::InvalidCurveRebuildPointCount {
+            actual: point_count,
+            minimum: degree + 1,
+            maximum: MAX_CURVE_REBUILD_POINT_COUNT,
+        });
+    }
+    let span_count = point_count - degree;
+    let knots = clamped_uniform_knots(degree, point_count, span_count);
+    let domain = source.domain();
+    let start = *domain.start();
+    let length = *domain.end() - start;
+    let mut targets = Vec::with_capacity(point_count);
+    let mut rows = Vec::with_capacity(point_count);
+    for control_index in 0..point_count {
+        let parameter = greville_parameter(&knots, degree, control_index);
+        let source_parameter = if control_index + 1 == point_count {
+            *domain.end()
+        } else {
+            (parameter / span_count as Real).mul_add(length, start)
+        };
+        targets.push(source.evaluate(source_parameter)?);
+        rows.push(bspline_basis_values(
+            &knots,
+            degree,
+            point_count,
+            parameter,
+        )?);
+    }
+    let mut controls = solve_banded_collocation(rows, &targets)?;
+    controls[0] = targets[0];
+    controls[point_count - 1] = targets[point_count - 1];
+    NurbsCurve::try_new(degree, controls, knots)
+}
+
 fn rebuild_closed(
     sampler: &ArcLengthSampler<'_>,
     point_count: usize,
