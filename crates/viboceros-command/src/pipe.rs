@@ -1381,6 +1381,43 @@ mod tests {
     }
 
     #[test]
+    fn multispan_rail_pipe_matches_rhino_flat_volumes() {
+        let mut document = Document::default();
+        let rail = NurbsCurve::try_new(
+            3,
+            vec![
+                p(0., 0., 0.),
+                p(1., 1., 0.),
+                p(2., -1., 1.),
+                p(3., 2., 1.),
+                p(5., 0., 2.),
+            ],
+            vec![0., 0., 0., 0., 0.5, 1., 1., 1., 1.],
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::NurbsCurve(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (suffix, expected) in [("", 1.7380221094021495), ("0.5", 3.183615713670431)] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 {suffix} Cap=Flat"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("multispan pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{suffix}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
     fn invalid_inputs_leave_document_unchanged() {
         let mut document = Document::default();
         let source = document

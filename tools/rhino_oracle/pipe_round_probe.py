@@ -49,6 +49,15 @@ def run(operation, tolerance, host):
         for index in range(3):
             rail.Knots[index] = 0.0
             rail.Knots[index + 3] = 1.0
+    elif rail_kind == "multispan":
+        rail = geometry.NurbsCurve(3, False, 4, 5)
+        for index, xyz in enumerate([(0, 0, 0), (1, 1, 0), (2, -1, 1),
+                                     (3, 2, 1), (5, 0, 2)]):
+            rail.Points.SetPoint(index, geometry.Point3d(*xyz))
+        for index in range(3):
+            rail.Knots[index] = 0.0
+            rail.Knots[index + 4] = 1.0
+        rail.Knots[3] = 0.5
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))

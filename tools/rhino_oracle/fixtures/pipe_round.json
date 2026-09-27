@@ -222,6 +222,38 @@
       "end_radius": 0.5,
       "local_blending": false,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "multispan-constant-no-fit",
+      "rail": "multispan",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "multispan-constant-fit",
+      "rail": "multispan",
+      "radius": 0.3,
+      "fit_rail": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "multispan-tapered-no-fit",
+      "rail": "multispan",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "multispan-tapered-fit",
+      "rail": "multispan",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Flat"
     }
   ]
 }

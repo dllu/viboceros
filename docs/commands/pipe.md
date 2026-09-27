@@ -30,6 +30,10 @@ matching Rhino 8's Pipe command and `CreateThickPipe` result. `Cap=Flat` is the 
 The NURBS rail branch refits even for a constant radius: a cubic Bézier oracle
 case differs by about 0.9% in volume when its original rail basis is retained,
 while the refitted surface matches Rhino within `5e-6` model-volume units.
+An independent two-span cubic NURBS case matches Rhino's flat Pipe volumes
+within the same limit. Rhino's `FitRail=Yes|No` produced identical surfaces for
+both tested NURBS rails; [Rhino's Pipe help](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm)
+describes that switch for line-and-arc polycurves.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
