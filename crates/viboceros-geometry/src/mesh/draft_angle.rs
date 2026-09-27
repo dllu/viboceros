@@ -91,6 +91,19 @@ mod tests {
             mesh.faces_by_draft_angle(toward_top, 0.0, 180.0).unwrap(),
             vec![0, 1, 2]
         );
+        assert_eq!(
+            mesh.faces_by_draft_angle(toward_top, 0.0, 90.0).unwrap(),
+            vec![0, 2]
+        );
+        assert_eq!(
+            mesh.faces_by_draft_angle(toward_top, 90.0, 180.0).unwrap(),
+            vec![1, 2]
+        );
+        assert!(
+            mesh.faces_by_draft_angle(toward_top, 89.0, 89.0)
+                .unwrap()
+                .is_empty()
+        );
         let toward_bottom = Vector3::try_new(0.0, 0.0, -1.0).unwrap();
         assert_eq!(
             mesh.faces_by_draft_angle(toward_bottom, 0.0, 0.0).unwrap(),

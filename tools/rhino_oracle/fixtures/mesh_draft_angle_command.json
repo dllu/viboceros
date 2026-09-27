@@ -34,6 +34,56 @@
       "mode": "right_angle",
       "vertices": [[0,0,0], [1,0,0], [0,1,0], [3,0,0], [4,0,0], [3,1,0], [6,0,0], [6,1,0], [6,0,1]],
       "faces": [[0,1,2], [3,5,4], [6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-zero-through-right",
+      "view": "Top",
+      "mode": "range",
+      "start": 0,
+      "end": 90,
+      "vertices": [[0,0,0],[1,0,0],[0,1,0],[3,0,0],[4,0,0],[3,1,0],[6,0,0],[6,1,0],[6,0,1]],
+      "faces": [[0,1,2],[3,5,4],[6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-right-through-back",
+      "view": "Top",
+      "mode": "range",
+      "start": 90,
+      "end": 180,
+      "vertices": [[0,0,0],[1,0,0],[0,1,0],[3,0,0],[4,0,0],[3,1,0],[6,0,0],[6,1,0],[6,0,1]],
+      "faces": [[0,1,2],[3,5,4],[6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-back-only",
+      "view": "Top",
+      "mode": "range",
+      "start": 180,
+      "end": 180,
+      "vertices": [[0,0,0],[1,0,0],[0,1,0],[3,0,0],[4,0,0],[3,1,0],[6,0,0],[6,1,0],[6,0,1]],
+      "faces": [[0,1,2],[3,5,4],[6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-eighty-nine-only",
+      "view": "Top",
+      "mode": "range",
+      "start": 89,
+      "end": 89,
+      "vertices": [[0,0,0],[1,0,0],[0,1,0],[3,0,0],[4,0,0],[3,1,0],[6,0,0],[6,1,0],[6,0,1]],
+      "faces": [[0,1,2],[3,5,4],[6,7,8]]
+    },
+    {
+      "op": "mesh_draft_angle_command",
+      "id": "top-reversed-range",
+      "view": "Top",
+      "mode": "range",
+      "start": 90,
+      "end": 0,
+      "vertices": [[0,0,0],[1,0,0],[0,1,0],[3,0,0],[4,0,0],[3,1,0],[6,0,0],[6,1,0],[6,0,1]],
+      "faces": [[0,1,2],[3,5,4],[6,7,8]]
     }
   ]
 }

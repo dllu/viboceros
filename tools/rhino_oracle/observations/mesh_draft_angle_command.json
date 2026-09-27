@@ -1,0 +1,255 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "top-defaults",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No )\nExtracted 1 face.\nCommand: _Enter\n",
+        "mode": "defaults",
+        "objects": [
+          {
+            "faces": 2,
+            "normal_z": [
+              -1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 1,
+            "normal_z": [
+              1.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-zero",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No )\nExtracted 1 face.\n",
+        "mode": "zero",
+        "objects": [
+          {
+            "faces": 2,
+            "normal_z": [
+              -1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 1,
+            "normal_z": [
+              1.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "bottom-zero",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No )\nExtracted 1 face.\n",
+        "mode": "zero",
+        "objects": [
+          {
+            "faces": 2,
+            "normal_z": [
+              1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 1,
+            "normal_z": [
+              -1.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Bottom"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-right-angle",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=90\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=90\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No )\nExtracted 1 face.\n",
+        "mode": "right_angle",
+        "objects": [
+          {
+            "faces": 2,
+            "normal_z": [
+              1.0,
+              -1.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 1,
+            "normal_z": [
+              -0.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-zero-through-right",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=90\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No )\nExtracted 2 faces.\n",
+        "mode": "range",
+        "objects": [
+          {
+            "faces": 1,
+            "normal_z": [
+              -1.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 2,
+            "normal_z": [
+              1.0,
+              -0.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-right-through-back",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=0  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=90\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=90  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=180\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No )\nExtracted 2 faces.\n",
+        "mode": "range",
+        "objects": [
+          {
+            "faces": 1,
+            "normal_z": [
+              1.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 2,
+            "normal_z": [
+              -1.0,
+              -0.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-back-only",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=180\nChange option or press Enter to accept ( StartAngleFromCameraDir=180  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=180\nChange option or press Enter to accept ( StartAngleFromCameraDir=180  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=180  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No )\nExtracted 1 face.\n",
+        "mode": "range",
+        "objects": [
+          {
+            "faces": 2,
+            "normal_z": [
+              1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          },
+          {
+            "faces": 1,
+            "normal_z": [
+              -1.0
+            ],
+            "selected": true,
+            "source": false
+          }
+        ],
+        "succeeded": true,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-eighty-nine-only",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=180  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=89\nChange option or press Enter to accept ( StartAngleFromCameraDir=89  EndAngleFromCameraDir=180  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=89\nChange option or press Enter to accept ( StartAngleFromCameraDir=89  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=89  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No )\n",
+        "mode": "range",
+        "objects": [
+          {
+            "faces": 3,
+            "normal_z": [
+              1.0,
+              -1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          }
+        ],
+        "succeeded": false,
+        "view": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-reversed-range",
+      "value": {
+        "history": "Command: _-ExtractMeshFacesByDraftAngle\nChange option or press Enter to accept ( StartAngleFromCameraDir=89  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _StartAngleFromCameraDir=90\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=89  BorderOnly=No  MakeCopy=No ): _EndAngleFromCameraDir=0\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No ): _Enter\nChange option or press Enter to accept ( StartAngleFromCameraDir=90  EndAngleFromCameraDir=0  BorderOnly=No  MakeCopy=No )\n",
+        "mode": "range",
+        "objects": [
+          {
+            "faces": 3,
+            "normal_z": [
+              1.0,
+              -1.0,
+              -0.0
+            ],
+            "selected": false,
+            "source": true
+          }
+        ],
+        "succeeded": false,
+        "view": "Top"
+      }
+    }
+  ]
+}

@@ -206,11 +206,14 @@ compare Rhino's quad ratio and inclusive extraction threshold.
 extracts stored faces whose oriented polygon normal makes an angle in the
 inclusive range with the direction from the model toward the viewer. The app
 supplies its active viewport direction when `ViewDirection` is omitted;
-standalone command calls supply it explicitly. `MakeCopy=Yes` and
-`BorderOnly=Yes` follow the other face-filter commands. Rhino's older
-`StartAngleFromCameraDir`, `EndAngleFromCameraDir`, and `GetBorder` option
-names are accepted. Exact command thresholds and defaults still require direct
-Rhino oracle comparison.
+standalone command calls supply it explicitly. Omitted angles default to
+`StartAngle=0 EndAngle=89`, matching Rhino's initial command values.
+`MakeCopy=Yes` and `BorderOnly=Yes` follow the other face-filter commands.
+Rhino's older `StartAngleFromCameraDir`, `EndAngleFromCameraDir`, and
+`GetBorder` names are accepted. A reversed range extracts no faces. The retained
+[command fixture](../../tools/rhino_oracle/fixtures/mesh_draft_angle_command.json)
+and [Rhino observations](../../tools/rhino_oracle/observations/mesh_draft_angle_command.json)
+record Top and Bottom view selections and angle boundaries.
 
 `ExtractConnectedMeshFaces Face=0 Angle=0 Compare=Less` extracts the region
 reachable from stored face 0 across topological edges. Each neighboring face

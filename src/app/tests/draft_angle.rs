@@ -58,6 +58,19 @@ fn draft_angle_uses_active_view_and_logs_the_direction_used() {
 }
 
 #[test]
+fn draft_angle_uses_rhino_default_range_when_angles_are_omitted() {
+    let mut app = test_app();
+    facing_pair(&mut app);
+    assert!(app.try_execute_command("ExtractMeshFacesByDraftAngle"));
+    let selected = app.document.selected_objects().next().unwrap();
+    let Geometry::Mesh(top_face) = selected.geometry() else {
+        panic!("mesh expected")
+    };
+    assert_eq!(top_face.face_count(), 1);
+    assert_eq!(top_face.polygon_face_normals().unwrap()[0].z(), 1.0);
+}
+
+#[test]
 fn viewward_directions_follow_front_back_and_perspective_cameras() {
     let front = Viewport::new(ViewKind::Front).viewward_direction();
     let back = Viewport::new(ViewKind::Back).viewward_direction();

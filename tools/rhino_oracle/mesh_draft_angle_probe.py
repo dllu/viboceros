@@ -13,7 +13,7 @@ def run(operation, tolerance, host):
     if view not in ("Top", "Bottom"):
         raise ValueError("draft-angle probe accepts Top or Bottom view")
     mode = operation.get("mode", "defaults")
-    if mode not in ("defaults", "zero", "right_angle"):
+    if mode not in ("defaults", "zero", "right_angle", "range"):
         raise ValueError("unsupported draft-angle probe mode")
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
@@ -37,9 +37,10 @@ def run(operation, tolerance, host):
         if mode == "defaults":
             macro = "_-ExtractMeshFacesByDraftAngle _Enter _Enter"
         else:
-            angle = 0 if mode == "zero" else 90
+            start = operation["start"] if mode == "range" else (0 if mode == "zero" else 90)
+            end = operation["end"] if mode == "range" else start
             macro = ("_-ExtractMeshFacesByDraftAngle "
-                "_StartAngleFromCameraDir=%d _EndAngleFromCameraDir=%d _Enter" % (angle, angle))
+                "_StartAngleFromCameraDir=%s _EndAngleFromCameraDir=%s _Enter" % (start, end))
         succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
         history_after = Rhino.RhinoApp.CommandHistoryWindowText
         history = history_after[len(command_history):] if history_after.startswith(command_history) else history_after

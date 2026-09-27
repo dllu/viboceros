@@ -2,7 +2,7 @@
 
 use super::*;
 
-const USAGE: &str = "ExtractMeshFacesByDraftAngle StartAngle=degrees EndAngle=degrees ViewDirection=x,y,z [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
+const USAGE: &str = "ExtractMeshFacesByDraftAngle [StartAngle=degrees] [EndAngle=degrees] ViewDirection=x,y,z [MakeCopy=Yes|No] [BorderOnly=Yes|No]";
 
 #[derive(Clone, Copy)]
 struct Options {
@@ -22,6 +22,9 @@ impl Command for ExtractMeshFacesByDraftAngleCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse(arguments)?;
+        if options.start > options.end {
+            return Err(CommandError::NoMeshFacesInDraftAngleRange);
+        }
         mesh_face_filter::extract_selected_mesh_faces(
             document,
             "ExtractMeshFacesByDraftAngle",
@@ -69,11 +72,8 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
             return Err(CommandError::Usage(USAGE));
         }
     }
-    let start = start.ok_or(CommandError::Usage(USAGE))?;
-    let end = end.ok_or(CommandError::Usage(USAGE))?;
-    if start > end {
-        return Err(CommandError::Usage(USAGE));
-    }
+    let start = start.unwrap_or(0.0);
+    let end = end.unwrap_or(89.0);
     Ok(Options {
         start,
         end,
@@ -172,6 +172,39 @@ mod tests {
     }
 
     #[test]
+    fn omitted_angles_use_rhino_default_zero_to_eighty_nine() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = selected_mesh(&mut document);
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByDraftAngle ViewDirection=0,0,1",
+                )
+                .unwrap(),
+            "Extracted 1 mesh face(s) from 1 mesh(es); source faces removed"
+        );
+        let Geometry::Mesh(remainder) = document.object(source).unwrap().geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(remainder.face_count(), 2);
+        document.undo().unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByDraftAngle EndAngle=90 ViewDirection=0,0,1 MakeCopy=Yes",
+                )
+                .unwrap(),
+            "Extracted 2 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+    }
+
+    #[test]
     fn copy_and_border_modes_preserve_source_and_groups() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -210,7 +243,6 @@ mod tests {
         let before = document.undo_label().map(str::to_owned);
         for input in [
             "ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=90",
-            "ExtractMeshFacesByDraftAngle StartAngle=90 EndAngle=0 ViewDirection=0,0,1",
             "ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=181 ViewDirection=0,0,1",
             "ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=90 ViewDirection=0,0,0",
             "ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=90 ViewDirection=0,0,1 StartAngle=1",
@@ -219,6 +251,15 @@ mod tests {
             assert_eq!(document.objects().count(), 1);
             assert_eq!(document.undo_label(), before.as_deref());
         }
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ExtractMeshFacesByDraftAngle StartAngle=90 EndAngle=0 ViewDirection=0,0,1"
+            ),
+            Err(CommandError::NoMeshFacesInDraftAngleRange)
+        ));
+        assert_eq!(document.objects().count(), 1);
+        assert_eq!(document.undo_label(), before.as_deref());
         let other = document
             .add_geometry(Geometry::Point(point(9.0, 0.0, 0.0)))
             .unwrap();
