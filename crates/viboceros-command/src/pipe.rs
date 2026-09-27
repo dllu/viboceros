@@ -6,7 +6,7 @@ use viboceros_geometry::{
     SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
-const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
+const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [Thick=Yes|No] [WallThickness=signed-distance]";
 
 pub(super) struct PipeCommand;
 
@@ -52,6 +52,7 @@ impl Command for PipeCommand {
         let mut blend = None;
         let mut thick = None;
         let mut wall_thickness = None;
+        let mut stations = None;
         for argument in &arguments[next..] {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if option_name_eq(name, "Cap") && cap.is_none() {
@@ -81,6 +82,28 @@ impl Command for PipeCommand {
                     return Err(CommandError::Usage(USAGE));
                 }
                 wall_thickness = Some(value);
+            } else if option_name_eq(name, "Stations") && stations.is_none() {
+                let parsed = value
+                    .split(',')
+                    .map(|station| {
+                        let (fraction, radius) =
+                            station.split_once(':').ok_or(CommandError::Usage(USAGE))?;
+                        let fraction = fraction
+                            .parse::<Real>()
+                            .map_err(|_| CommandError::InvalidNumber(fraction.to_owned()))?;
+                        if !fraction.is_finite() || !(0.0..1.0).contains(&fraction) {
+                            return Err(CommandError::Usage(USAGE));
+                        }
+                        Ok((fraction, positive_radius(radius)?))
+                    })
+                    .collect::<Result<Vec<_>, CommandError>>()?;
+                if parsed.is_empty()
+                    || parsed.len() > 254
+                    || parsed.windows(2).any(|pair| pair[0].0 >= pair[1].0)
+                {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                stations = Some(parsed);
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -102,6 +125,14 @@ impl Command for PipeCommand {
                 Ok([first, second])
             })
             .transpose()?;
+        let stations = stations.unwrap_or_default();
+        if let Some(thickness) = wall_thickness
+            && stations
+                .iter()
+                .any(|(_, radius)| radius + thickness <= 0.0 || !(radius + thickness).is_finite())
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
         // Rhino 8's double-wall Pipe uses planar annular caps for Round too.
         let cap = if second_radii.is_some() && cap == PipeCap::Round {
             PipeCap::Flat
@@ -118,6 +149,16 @@ impl Command for PipeCommand {
         let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
         let tolerance = document.tolerance();
         let result = match source {
+            source if !stations.is_empty() => station_pipe(
+                source,
+                rail,
+                [start_radius, end_radius],
+                &stations,
+                blend,
+                cap,
+                wall_thickness,
+                tolerance,
+            )?,
             Geometry::Line(line) => {
                 let frame = Frame3::try_from_normal(
                     line.start(),
@@ -300,6 +341,154 @@ fn positive_radius(value: &str) -> Result<Real, CommandError> {
         return Err(CommandError::Usage(USAGE));
     }
     Ok(radius)
+}
+
+fn station_pipe(
+    source: &Geometry,
+    rail: CurveRef<'_>,
+    endpoint_radii: [Real; 2],
+    stations: &[(Real, Real)],
+    blend: SweepBlend,
+    cap: PipeCap,
+    wall_thickness: Option<Real>,
+    tolerance: Tolerance,
+) -> Result<Geometry, CommandError> {
+    if rail.is_closed()? {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let mut profile = Vec::with_capacity(stations.len() + 2);
+    if blend == SweepBlend::Global {
+        return Err(CommandError::Usage(USAGE));
+    }
+    profile.push((*rail.domain().start(), endpoint_radii[0]));
+    for &(fraction, radius) in stations {
+        profile.push((rail.parameter_at(fraction)?, radius));
+    }
+    profile.push((*rail.domain().end(), endpoint_radii[1]));
+    if profile.windows(2).any(|pair| pair[0].0 >= pair[1].0) {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let parameters = profile.iter().map(|&(t, _)| t).collect::<Vec<_>>();
+    let max_radius = profile.iter().map(|&(_, r)| r).fold(0.0, Real::max);
+    let angular_tolerance = (0.05 * (tolerance.absolute() / max_radius)).min(1e-10);
+    let frames = rail.rotation_minimizing_frames(
+        &parameters,
+        None,
+        FrameTransportOptions {
+            angular_tolerance,
+            ..Default::default()
+        },
+    )?;
+    let make_surface = |profile: &[(Real, Real)]| -> Result<NurbsSurface, CommandError> {
+        if matches!(source, Geometry::Line(_)) {
+            return straight_station_surface(frames[0], profile);
+        }
+        let sections = profile
+            .iter()
+            .zip(&frames)
+            .map(|(&(parameter, radius), &frame)| {
+                circular_section(parameter, frame, radius, tolerance)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
+        if matches!(source, Geometry::Line(_) | Geometry::Arc(_)) {
+            Ok(sweep.fit_model_surface()?)
+        } else {
+            Ok(sweep.to_surface()?)
+        }
+    };
+    let make_wall = |profile: &[(Real, Real)]| -> Result<Brep, CommandError> {
+        let surface = make_surface(profile)?;
+        let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        let wall = Brep::try_surface_grid(&surface, &u, &v, tolerance)?;
+        Ok(if matches!(source, Geometry::Line(_)) {
+            wall
+        } else {
+            wall.reversed()
+        })
+    };
+    if let Some(thickness) = wall_thickness {
+        let second = profile
+            .iter()
+            .map(|&(t, r)| (t, r + thickness))
+            .collect::<Vec<_>>();
+        let (outer, inner) = if thickness > 0.0 {
+            (make_wall(&second)?, make_wall(&profile)?)
+        } else {
+            (make_wall(&profile)?, make_wall(&second)?)
+        };
+        return Ok(Geometry::Brep(finish_two_walls(
+            outer, inner, cap, tolerance,
+        )?));
+    }
+    if cap == PipeCap::None && matches!(source, Geometry::Line(_)) {
+        return Ok(Geometry::NurbsSurface(make_surface(&profile)?));
+    }
+    let wall = make_wall(&profile)?;
+    if cap == PipeCap::Round {
+        return Ok(Geometry::Brep(round_cap_single_wall(
+            wall,
+            [frames[0], *frames.last().expect("endpoint frame")],
+            endpoint_radii,
+            [0.0; 2],
+            tolerance,
+        )?));
+    }
+    Ok(Geometry::Brep(cap_wall(wall, cap, tolerance)?))
+}
+
+fn straight_station_surface(
+    frame: Frame3,
+    profile: &[(Real, Real)],
+) -> Result<NurbsSurface, CommandError> {
+    let start = profile[0].0;
+    let height = profile.last().expect("endpoint profile").0 - start;
+    let unit_cylinder = NurbsSurface::try_cylinder(frame, 1.0, 0.0, height)?;
+    let circle_controls = &unit_cylinder.control_points()[..unit_cylinder.control_point_count_u()];
+    let mut rows = Vec::with_capacity(3 * profile.len() - 2);
+    for (index, pair) in profile.windows(2).enumerate() {
+        let [(a, ra), (b, rb)] = [pair[0], pair[1]];
+        for (j, (t, radius)) in [
+            (a, ra),
+            (a + (b - a) / 3.0, ra),
+            (a + 2.0 * (b - a) / 3.0, rb),
+            (b, rb),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            if index > 0 && j == 0 {
+                continue;
+            }
+            rows.push((t - start, radius));
+        }
+    }
+    let mut controls = Vec::with_capacity(rows.len() * circle_controls.len());
+    for (distance, radius) in rows {
+        let offset = frame.z_axis().as_vector().scaled(distance)?;
+        for control in circle_controls {
+            let radial = frame.origin().vector_to(control.point())?;
+            let point = frame
+                .origin()
+                .translated(radial.scaled(radius)?)?
+                .translated(offset)?;
+            controls.push(WeightedPoint3::try_new(point, control.weight())?);
+        }
+    }
+    let mut knots = vec![0.0; 4];
+    for &(t, _) in &profile[1..profile.len() - 1] {
+        knots.extend([t - start; 3]);
+    }
+    knots.extend([height; 4]);
+    Ok(NurbsSurface::try_new_rational(
+        unit_cylinder.degree_u(),
+        3,
+        circle_controls.len(),
+        3 * profile.len() - 2,
+        controls,
+        unit_cylinder.knots_u().to_vec(),
+        knots,
+    )?)
 }
 
 fn circular_section(
@@ -1047,6 +1236,114 @@ mod tests {
     }
 
     #[test]
+    fn straight_local_radius_station_matches_rhino_flat_and_thick_pipes() {
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(0., 0., 5.), Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (suffix, expected, faces) in [
+            ("", 37.250313352254224, 3),
+            ("WallThickness=0.5", 27.488936058139387, 4),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 1 Stations=0.5:2 Cap=Flat {suffix}"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("station pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed());
+            assert!(pipe.is_solid());
+            assert_eq!(pipe.faces().len(), faces);
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 1e-6,
+                "{measured} vs {expected}"
+            );
+        }
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 Stations=0.5:2 Cap=None"),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(surface) = document.objects().last().unwrap().geometry() else {
+            panic!("open station pipe should be a surface")
+        };
+        for (z, radius) in [(0.5, 1.104), (2.5, 2.0), (4.5, 1.104)] {
+            let point = surface.evaluate(*surface.domain_u().start(), z).unwrap();
+            assert!((point.x().hypot(point.y()) - radius).abs() < 1e-10);
+        }
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 Stations=0.25:1.5,0.75:2 Cap=None"),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(surface) = document.objects().last().unwrap().geometry() else {
+            panic!("multi-station pipe should be a surface")
+        };
+        for (z, radius) in [(1.25, 1.5), (3.75, 2.0), (5.0, 1.0)] {
+            let point = surface.evaluate(*surface.domain_u().start(), z).unwrap();
+            assert!((point.x().hypot(point.y()) - radius).abs() < 1e-10);
+        }
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 Stations=0.5:2 Cap=Round"),
+            )
+            .unwrap();
+        let Geometry::Brep(round) = document.objects().last().unwrap().geometry() else {
+            panic!("round station pipe should be a B-rep")
+        };
+        assert!(round.is_closed());
+        assert!(round.is_solid());
+        let expected = 41.439103495320765;
+        let measured = round.signed_volume(Tolerance::DEFAULT).unwrap();
+        assert!(
+            (measured - expected).abs() < 1e-6,
+            "{measured} vs {expected}"
+        );
+    }
+
+    #[test]
+    fn arc_local_radius_station_matches_rhino_flat_pipe() {
+        let mut document = Document::default();
+        let diagonal = 5.0 * std::f64::consts::FRAC_1_SQRT_2;
+        let arc = CircularArc3::try_from_three_points(
+            p(5.0, 0.0, 0.0),
+            p(diagonal, diagonal, 0.0),
+            p(0.0, 5.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Arc(arc)).unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 0.5 Stations=0.5:0.8 Cap=Flat"),
+            )
+            .unwrap();
+        let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+            panic!("arc station pipe should be a B-rep")
+        };
+        assert!(pipe.is_closed());
+        assert!(pipe.is_solid());
+        assert_eq!(pipe.faces().len(), 3);
+        let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+        let expected = 10.694421898601524;
+        assert!(
+            (measured - expected).abs() < 5e-6,
+            "{measured} vs {expected}"
+        );
+    }
+
+    #[test]
     fn invalid_inputs_leave_document_unchanged() {
         let mut document = Document::default();
         let source = document
@@ -1073,6 +1370,15 @@ mod tests {
             "Pipe 1 WallThickness=inf",
             "Pipe 1 Thick=Yes",
             "Pipe 1 Thick=No WallThickness=0.2",
+            "Pipe 1 Stations=",
+            "Pipe 1 Stations=0:2",
+            "Pipe 1 Stations=1:2",
+            "Pipe 1 Stations=0.5:-2",
+            "Pipe 1 Stations=0.5:2,0.25:3",
+            "Pipe 1 Stations=0.5:2,0.5:3",
+            "Pipe 1 Stations=0.5:2 Stations=0.75:3",
+            "Pipe 1 Stations=0.5:2 ShapeBlending=Global",
+            "Pipe 1 Stations=0.5:0.3 WallThickness=-0.5",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),

@@ -99,6 +99,70 @@
       "end_radius": 0.8,
       "local_blending": false,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-station-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.0,
+      "stations": [
+        [
+          0.5,
+          2.0
+        ]
+      ],
+      "local_blending": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-station-round-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.0,
+      "stations": [[0.5, 2.0]],
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-station-global",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.0,
+      "stations": [
+        [
+          0.5,
+          2.0
+        ]
+      ],
+      "local_blending": false,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-station-thick-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.0,
+      "stations": [
+        [
+          0.5,
+          2.0
+        ]
+      ],
+      "thickness": 0.5,
+      "local_blending": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-station-local",
+      "rail": "arc",
+      "radius": 0.5,
+      "end_radius": 0.5,
+      "stations": [[0.5, 0.8]],
+      "cap": "Flat"
     }
   ]
 }

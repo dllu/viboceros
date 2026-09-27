@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Rhino Pipe references, run inside the oracle's isolated Xvfb display."""
+import math
 
 
 def run(operation, tolerance, host):
@@ -20,6 +21,18 @@ def run(operation, tolerance, host):
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))
     end_radius = float(operation.get("end_radius", radius))
+    stations = operation.get("stations", [])
+    if not isinstance(stations, list) or any(
+            not isinstance(station, list) or len(station) != 2
+            for station in stations):
+        raise ValueError("invalid Pipe radius stations")
+    parameters = [0.0] + [float(station[0]) for station in stations] + [1.0]
+    radii = [radius] + [float(station[1]) for station in stations] + [end_radius]
+    if (any(math.isnan(value) or math.isinf(value) for value in parameters + radii)
+            or any(not 0.0 < parameter < 1.0 for parameter in parameters[1:-1])
+            or any(a >= b for a, b in zip(parameters, parameters[1:]))
+            or any(value <= 0.0 for value in radii)):
+        raise ValueError("invalid Pipe radius stations")
     local_blending = bool(operation.get("local_blending", True))
     cap_mode = getattr(geometry.PipeCapMode, operation.get("cap", "Round"))
     thickness = operation.get("thickness")
@@ -49,18 +62,18 @@ def run(operation, tolerance, host):
                       else item.Geometry.ToBrep(True)
                       for item in created if isinstance(item.Geometry, (geometry.Brep, geometry.Extrusion))]
         elif thickness is None:
-            if end_radius == radius:
+            if end_radius == radius and not stations:
                 pieces = list(geometry.Brep.CreatePipe(
                     rail, radius, local_blending, cap_mode, False,
                     tolerance["absolute"], tolerance["angular"]))
             else:
                 numbers = host["System"].Array[host["System"].Double]
                 pieces = list(geometry.Brep.CreatePipe(
-                    rail, numbers([0.0, 1.0]), numbers([radius, end_radius]),
+                    rail, numbers(parameters), numbers(radii),
                     local_blending, cap_mode, False,
                     tolerance["absolute"], tolerance["angular"]))
         else:
-            if end_radius == radius:
+            if end_radius == radius and not stations:
                 pieces = list(geometry.Brep.CreateThickPipe(
                     rail, radius, radius + float(thickness), local_blending,
                     cap_mode, False,
@@ -68,9 +81,9 @@ def run(operation, tolerance, host):
             else:
                 numbers = host["System"].Array[host["System"].Double]
                 pieces = list(geometry.Brep.CreateThickPipe(
-                    rail, numbers([0.0, 1.0]),
-                    numbers([radius, end_radius]),
-                    numbers([radius + float(thickness), end_radius + float(thickness)]),
+                    rail, numbers(parameters),
+                    numbers(radii),
+                    numbers([value + float(thickness) for value in radii]),
                     local_blending, cap_mode, False,
                     tolerance["absolute"], tolerance["angular"]))
         records = []
@@ -88,6 +101,12 @@ def run(operation, tolerance, host):
                         [host["_xyz"](face.GetBoundingBox(True).Min),
                          host["_xyz"](face.GetBoundingBox(True).Max)]
                         for face in piece.Faces],
+                    "wall_samples": [
+                        host["_xyz"](piece.Faces[0].PointAt(
+                            piece.Faces[0].Domain(0).ParameterAt(fraction),
+                            piece.Faces[0].Domain(1).ParameterAt(0.0)))
+                        for fraction in [i / 20.0 for i in range(21)]]
+                    if operation.get("stations") else None,
                 })
             finally:
                 properties.Dispose()
