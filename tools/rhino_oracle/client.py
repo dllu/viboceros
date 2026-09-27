@@ -264,10 +264,22 @@ class OracleClient:
             from .merge_edges_probe import validate_mouse_request
             validate_mouse_request(request)
             interaction = IdlePicker()
-        if any(op.get("op") == "mesh_connected_command_probe" and op.get("mouse_pick")
+        if any(op.get("op") in ("mesh_connected_command_probe", "mesh_part_command_probe")
+               and op.get("mouse_pick")
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
-            interaction = IdlePicker()
+            accept = []
+            pause = []
+            for op in request["operations"]:
+                if op.get("op") != "mesh_part_command_probe":
+                    continue
+                count = len(op.get("pick_points", [op.get("pick_point")]))
+                names = ([op["id"]] if count == 1 else
+                         ["%s-%d" % (op["id"], index + 1) for index in range(count)])
+                pause.extend(names)
+                accept.append(names[-1])
+            interaction = IdlePicker(accept_after_click=accept,
+                                     pause_after_click=pause)
         if any(operation.get("op") in ("group_picking", "mesh_split_picking", "mesh_explode_picking") for operation in request.get("operations", [])):
             from .group_picking import IdlePicker, validate_request
             validate_request(request)

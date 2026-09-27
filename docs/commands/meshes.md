@@ -237,16 +237,24 @@ and [command observations](../../tools/rhino_oracle/observations/mesh_connected_
 cover the same boundary behavior through Shaded viewport face picks.
 
 `ExtractMeshPart Face=0` extracts the region reachable from stored face 0
-without crossing naked, unwelded, or nonmanifold topology edges. `Faces=0,2`
+without crossing naked or unwelded topology edges. `Faces=0,2`
 selects multiple seed regions, and `Faces=All` selects every region. The script
-option `ExtractToNonManifoldEdges=No` allows traversal across nonmanifold
-edges, while `ExtractWholeDisjointParts=Yes` crosses both nonmanifold and
-unwelded edges, stopping only at naked edges. An unwelded edge has distinct
+option `ExtractToNonManifoldEdges=Yes` stops at nonmanifold edges, while
+`ExtractWholeDisjointParts=Yes` crosses both nonmanifold and unwelded edges,
+stopping only at naked edges. An unwelded edge has distinct
 raw vertex indices on both ends for each incident face. `JoinOutput=Yes`
 combines selected faces into one mesh per source; `JoinOutput=No` emits one
-mesh per face. `MakeCopy=Yes` retains the source; `BorderOnly=Yes` emits a line
+mesh per selected region and is the default. `MakeCopy=Yes` retains the source;
+`BorderOnly=Yes` emits a line
 segment for each boundary edge and leaves the source unchanged. Viewport
 subobject picking remains pending, so scripts supply `Face` or `Faces`.
+The [live command fixture](../../tools/rhino_oracle/fixtures/mesh_part_command.json)
+and [Rhino 8 observations](../../tools/rhino_oracle/observations/mesh_part_command.json)
+show that Rhino's default crosses a three-face nonmanifold edge but stops at
+an unwelded edge. The Rhino 8.32 build used for those probes does not accept
+`ExtractToNonManifoldEdges` as a script option, although Viboceros accepts it
+as an explicit boundary control. The same fixture checks that `JoinOutput=No`
+keeps two picked regions separate while `JoinOutput=Yes` combines them.
 
 `TriangulateMesh` splits every quad on selected meshes along its shortest 3D
 diagonal, choosing A-C on exact ties. First triangles replace their source

@@ -45,7 +45,7 @@ impl Command for ExtractMeshPartCommand {
                 SurfaceFaceIndices::Indices(indices) => indices.clone(),
             };
             let groups = mesh.mesh_part_face_groups(&seeds, options.boundary)?;
-            let mut selected = groups.into_iter().flatten().collect::<Vec<_>>();
+            let mut selected = groups.iter().flatten().copied().collect::<Vec<_>>();
             selected.sort_unstable();
             face_count = face_count
                 .checked_add(selected.len())
@@ -67,14 +67,16 @@ impl Command for ExtractMeshPartCommand {
             } else if options.join_output {
                 vec![Geometry::Mesh(extracted)]
             } else {
-                if extracted.face_count() > MAX_SPAN_OUTPUT_OBJECTS - output_count {
+                if groups.len() > MAX_SPAN_OUTPUT_OBJECTS - output_count {
                     return Err(too_many_span_outputs("ExtractMeshPart"));
                 }
-                extracted
-                    .individual_face_meshes()
-                    .into_iter()
-                    .map(Geometry::Mesh)
-                    .collect()
+                groups
+                    .iter()
+                    .map(|group| {
+                        let (_, part) = mesh.extract_faces(group)?.into_parts();
+                        Ok(Geometry::Mesh(part))
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?
             };
             output_count = output_count
                 .checked_add(outputs.len())
@@ -170,7 +172,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     }
     let boundary = if whole_disjoint.unwrap_or(false) {
         MeshPartBoundary::Naked
-    } else if to_nonmanifold.unwrap_or(true) {
+    } else if to_nonmanifold.unwrap_or(false) {
         MeshPartBoundary::UnweldedAndNonManifold
     } else {
         MeshPartBoundary::Unwelded
@@ -178,7 +180,7 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     Ok(Options {
         seeds: seeds.ok_or(CommandError::Usage(USAGE))?,
         boundary,
-        join_output: join_output.unwrap_or(true),
+        join_output: join_output.unwrap_or(false),
         make_copy: make_copy.unwrap_or(false),
         border_only: border_only.unwrap_or(false),
     })
@@ -350,21 +352,21 @@ mod tests {
         else {
             panic!("mesh expected")
         };
-        assert_eq!(default_part.face_count(), 1);
+        assert_eq!(default_part.face_count(), 3);
         document
             .select_objects_direct([source], SelectionMode::Replace)
             .unwrap();
         registry
             .execute(
                 &mut document,
-                "ExtractMeshPart Face=0 ExtractToNonManifoldEdges=No MakeCopy=Yes",
+                "ExtractMeshPart Face=0 ExtractToNonManifoldEdges=Yes MakeCopy=Yes",
             )
             .unwrap();
-        let Geometry::Mesh(extended_part) = document.selected_objects().next().unwrap().geometry()
+        let Geometry::Mesh(bounded_part) = document.selected_objects().next().unwrap().geometry()
         else {
             panic!("mesh expected")
         };
-        assert_eq!(extended_part.face_count(), 3);
+        assert_eq!(bounded_part.face_count(), 1);
     }
 
     #[test]
@@ -392,7 +394,7 @@ mod tests {
             .execute(&mut document, "ExtractMeshPart Face=0 JoinOutput=No")
             .unwrap();
         let split = document.selected_objects().collect::<Vec<_>>();
-        assert_eq!(split.len(), 2);
+        assert_eq!(split.len(), 1);
         assert!(
             split
                 .iter()
@@ -400,7 +402,7 @@ mod tests {
         );
         assert!(split.iter().all(|object| matches!(
             object.geometry(),
-            Geometry::Mesh(mesh) if mesh.face_count() == 1
+            Geometry::Mesh(mesh) if mesh.face_count() == 2
         )));
         let Geometry::Mesh(remainder) = document.object(source).unwrap().geometry() else {
             panic!("mesh expected")
@@ -414,7 +416,7 @@ mod tests {
     }
 
     #[test]
-    fn all_faces_with_separate_output_reuses_source_for_one_face() {
+    fn all_faces_with_separate_output_reuses_source_for_one_region() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
@@ -422,12 +424,17 @@ mod tests {
             .execute(&mut document, "ExtractMeshPart Faces=All JoinOutput=No")
             .unwrap();
         let selected = document.selected_objects().collect::<Vec<_>>();
-        assert_eq!(selected.len(), 3);
+        assert_eq!(selected.len(), 2);
         assert!(selected.iter().any(|object| object.id() == source));
-        assert!(selected.iter().all(|object| matches!(
-            object.geometry(),
-            Geometry::Mesh(mesh) if mesh.face_count() == 1
-        )));
+        let mut face_counts = selected
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::Mesh(mesh) => mesh.face_count(),
+                _ => panic!("mesh expected"),
+            })
+            .collect::<Vec<_>>();
+        face_counts.sort_unstable();
+        assert_eq!(face_counts, [1, 2]);
         document.undo().unwrap();
         let Geometry::Mesh(restored) = document.object(source).unwrap().geometry() else {
             panic!("mesh expected")

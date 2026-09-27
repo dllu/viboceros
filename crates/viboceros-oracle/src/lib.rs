@@ -861,6 +861,15 @@ pub enum Operation {
         angle: f64,
         greater_than: bool,
     },
+    MeshPartCommandProbe {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        seed: usize,
+        seeds: Option<Vec<usize>>,
+        whole_disjoint: bool,
+        join_output: Option<bool>,
+    },
     MeshUnifyNormals {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -2078,6 +2087,7 @@ impl Operation {
             | Self::MeshFaceNormals { id, .. }
             | Self::MeshConnectedFacesApi { id, .. }
             | Self::MeshConnectedCommandProbe { id, .. }
+            | Self::MeshPartCommandProbe { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
@@ -3328,31 +3338,53 @@ fn execute(
             let command = format!(
                 "ExtractConnectedMeshFaces Face={seed} Angle={angle} Compare={compare} MakeCopy=Yes"
             );
-            CommandRegistry::with_builtins().execute(&mut document, &command)?;
-            let output = document
-                .objects()
-                .filter(|object| object.id() != source_id)
-                .map(|object| match object.geometry() {
-                    Geometry::Mesh(mesh) => Ok(canonical_polygon_mesh_face_value(mesh)),
-                    _ => Err(ProbeError::FixtureInvariant(
-                        "connected mesh face command created a nonmesh object",
-                    )),
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            let source = document.object(source_id).and_then(|object| {
-                if let Geometry::Mesh(mesh) = object.geometry() {
-                    Some(polygon_mesh_value(mesh))
-                } else {
-                    None
-                }
-            });
             (
-                json!({
-                    "succeeded": true,
-                    "created_count": output.len(),
-                    "output": output,
-                    "source": source,
-                }),
+                mesh_extract_command_value(&mut document, source_id, &command)?,
+                0,
+            )
+        }
+        Operation::MeshPartCommandProbe {
+            vertices,
+            faces,
+            seed,
+            seeds,
+            whole_disjoint,
+            join_output,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let mut document = Document::new(tolerance);
+            let source_id = document.add_geometry(Geometry::Mesh(mesh))?;
+            document.select_objects_direct([source_id], SelectionMode::Replace)?;
+            let whole = if *whole_disjoint { "Yes" } else { "No" };
+            let selector = if let Some(seeds) = seeds {
+                format!(
+                    "Faces={}",
+                    seeds
+                        .iter()
+                        .map(usize::to_string)
+                        .collect::<Vec<_>>()
+                        .join(",")
+                )
+            } else {
+                format!("Face={seed}")
+            };
+            let mut command = format!(
+                "ExtractMeshPart {selector} ExtractWholeDisjointParts={whole} MakeCopy=Yes"
+            );
+            if let Some(join_output) = join_output {
+                let join = if *join_output { "Yes" } else { "No" };
+                command.push_str(&format!(" JoinOutput={join}"));
+            }
+            (
+                mesh_extract_command_value(&mut document, source_id, &command)?,
                 0,
             )
         }
@@ -8669,6 +8701,44 @@ fn polygon_mesh_value(mesh: &TriangleMesh) -> Value {
         "faces": mesh.faces().iter().map(|face| face.indices()).collect::<Vec<_>>(),
         "vertices": mesh.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
     })
+}
+
+fn mesh_extract_command_value(
+    document: &mut Document,
+    source_id: ObjectId,
+    command: &str,
+) -> Result<Value, ProbeError> {
+    CommandRegistry::with_builtins().execute(document, command)?;
+    let mut output = document
+        .objects()
+        .filter(|object| object.id() != source_id)
+        .map(|object| match object.geometry() {
+            Geometry::Mesh(mesh) => Ok(canonical_polygon_mesh_face_value(mesh)),
+            _ => Err(ProbeError::FixtureInvariant(
+                "mesh extraction command created a nonmesh object",
+            )),
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    // Mesh object creation order is not geometric data; compare the region set.
+    output.sort_by_key(|value| {
+        (
+            value["faces"].as_array().map_or(0, Vec::len),
+            value.to_string(),
+        )
+    });
+    let source = document.object(source_id).and_then(|object| {
+        if let Geometry::Mesh(mesh) = object.geometry() {
+            Some(polygon_mesh_value(mesh))
+        } else {
+            None
+        }
+    });
+    Ok(json!({
+        "succeeded": true,
+        "created_count": output.len(),
+        "output": output,
+        "source": source,
+    }))
 }
 
 fn canonical_polygon_mesh_face_value(mesh: &TriangleMesh) -> Value {

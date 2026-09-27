@@ -5909,9 +5909,9 @@ def _execute(operation, iterations, tolerance):
             return {"faces": sorted(int(index) for index in indices)}, 0
         finally:
             mesh.Dispose()
-    if operation["op"] == "mesh_connected_command_probe":
+    if operation["op"] in ("mesh_connected_command_probe", "mesh_part_command_probe"):
         if not operation.get("mouse_pick"):
-            raise ValueError("connected mesh command probe requires a mouse pick")
+            raise ValueError("mesh face command probe requires a mouse pick")
         mesh = _polygon_mesh(operation["vertices"], operation["faces"])
         document = Rhino.RhinoDoc.ActiveDoc
         source_id = document.Objects.AddMesh(mesh)
@@ -5927,23 +5927,37 @@ def _execute(operation, iterations, tolerance):
             document.Views.Redraw()
             view = document.Views.ActiveView
             viewport = view.ActiveViewport
-            pixel = viewport.WorldToClient(_point(operation["pick_point"]))
-            x, y = int(pixel.X), int(pixel.Y)
-            if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
-                raise ValueError("connected-face mouse pick lies outside viewport")
-            screen = view.ClientToScreen(System.Drawing.Point(x, y))
+            pick_points = operation.get("pick_points", [operation.get("pick_point")])
+            if not pick_points or any(point is None for point in pick_points):
+                raise ValueError("mesh face command probe needs pick points")
             path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 "worker-progress.log")
             with open(path, "a") as stream:
-                stream.write("PICK %s %d %d\n" %
-                             (operation["id"], screen.X, screen.Y))
+                for index, pick_point in enumerate(pick_points):
+                    pixel = viewport.WorldToClient(_point(pick_point))
+                    x, y = int(pixel.X), int(pixel.Y)
+                    if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
+                        raise ValueError("mesh face mouse pick lies outside viewport")
+                    screen = view.ClientToScreen(System.Drawing.Point(x, y))
+                    name = (operation["id"] if len(pick_points) == 1 else
+                            "%s-%d" % (operation["id"], index + 1))
+                    stream.write("PICK %s %d %d\n" % (name, screen.X, screen.Y))
                 stream.flush()
             before = set(obj.Id for obj in document.Objects)
             history_before = Rhino.RhinoApp.CommandHistoryWindowText
-            angle = float(operation["angle"])
-            compare = "GreaterThan" if operation["greater_than"] else "LessThan"
-            macro = ("! _-ExtractConnectedMeshFaces _AngleBetween=%s "
-                     "_SelectFacesBy=_%s _MakeCopy=_Yes _Pause" % (angle, compare))
+            if operation["op"] == "mesh_connected_command_probe":
+                angle = float(operation["angle"])
+                compare = "GreaterThan" if operation["greater_than"] else "LessThan"
+                macro = ("! _-ExtractConnectedMeshFaces _AngleBetween=%s "
+                         "_SelectFacesBy=_%s _MakeCopy=_Yes _Pause" % (angle, compare))
+            else:
+                whole = "Yes" if operation.get("whole_disjoint", False) else "No"
+                macro = ("! _-ExtractMeshPart _ExtractWholeDisjointParts=_%s "
+                         "_MakeCopy=_Yes" % whole)
+                if "join_output" in operation:
+                    join = "Yes" if operation["join_output"] else "No"
+                    macro += " _JoinOutput=_%s" % join
+                macro += " _Pause"
             succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
             history = Rhino.RhinoApp.CommandHistoryWindowText
             if history.startswith(history_before):
@@ -5954,6 +5968,9 @@ def _execute(operation, iterations, tolerance):
                 obj = document.Objects.FindId(identifier)
                 if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
                     outputs.append(_canonical_polygon_mesh_face_value(obj.Geometry))
+            # Compare extracted regions independently of object creation order.
+            outputs.sort(key=lambda value: (
+                len(value["faces"]), json.dumps(value, sort_keys=True, separators=(",", ":"))))
             source = document.Objects.FindId(source_id)
             remaining = (_polygon_mesh_value(source.Geometry) if source is not None
                          and isinstance(source.Geometry, Rhino.Geometry.Mesh) else None)

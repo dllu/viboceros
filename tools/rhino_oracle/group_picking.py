@@ -74,16 +74,23 @@ def validate_request(request):
 
 
 class IdlePicker:
-    def __init__(self):
+    def __init__(self, accept_after_click=(), pause_after_click=()):
         self.seen = set()
         self.ready = {}
         self.aborted = set()
+        self.accept_after_click = set(accept_after_click)
+        self.pause_after_click = set(pause_after_click)
 
     def send_input(self, name, x, y, window):
         # X11 processes the warp before the following click. Waiting for
         # a motion event can stall repeated picks at the same location.
         subprocess.run(["xdotool", "windowactivate", "--sync", window,
                         "mousemove", x, y, "click", "1"], check=True, timeout=10)
+        if name in self.pause_after_click:
+            time.sleep(0.25)
+        if name in self.accept_after_click:
+            subprocess.run(["xdotool", "windowactivate", "--sync", window,
+                            "key", "--clearmodifiers", "Return"], check=True, timeout=10)
         return True
 
     def __call__(self, job, owned_pids):
