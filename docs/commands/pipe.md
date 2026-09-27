@@ -63,8 +63,12 @@ For tapered sharp line rails with `FitRail=Yes`, the radius follows the full
 rail distance: Local blending uses a cubic smoothstep profile, while Global
 blending uses a linear profile. The mitered construction matches the tested
 planar and spatial Rhino flat and thick volumes within `5e-6`; Local round
-caps also meet that limit. Global round caps on tapered sharp rails remain
-unsupported because the tested spatial cases exceed the volume tolerance.
+caps also meet that limit. Global round caps on horizontal tapered sharp rails
+meet the same limit for the tested two-segment cases. Thick global pipes use
+planar annular ends for `Cap=Round`, matching the tested spatial case. Thin
+global round caps on nonhorizontal sharp rails remain unsupported: Rhino's
+fitted caps change with rail orientation, and the tested spatial cases exceed
+the volume tolerance.
 The tested planar fitted taper agrees within `1e-4` in radius at six matched
 axial positions. A global pointwise surface error bound remains open.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be

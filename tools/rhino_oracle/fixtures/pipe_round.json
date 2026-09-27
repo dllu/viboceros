@@ -788,6 +788,17 @@
     },
     {
       "op": "pipe_round_probe",
+      "id": "line-chain-xy-short-taper-fit-global-round",
+      "rail": "line_chain",
+      "vertices": [[0, 0, 0], [2, 0, 0], [3, 1.4142135623730951, 0]],
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
       "id": "lineline3d-taper-fit-local-round-faces",
       "rail": "lineline3d",
       "radius": 0.3,
@@ -827,6 +838,17 @@
       "cap": "Round",
       "inspect_face_bases": true,
       "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-global-thick-round",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "local_blending": false,
+      "thickness": 0.2
     },
     {
       "op": "pipe_round_probe",

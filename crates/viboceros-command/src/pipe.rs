@@ -473,7 +473,17 @@ fn segmented_polycurve_pipe(
         let pipe = if endpoint_radii[0] == endpoint_radii[1] {
             mitered_line_pipe(&lines, endpoint_radii[0], cap, wall_thickness, tolerance)?
         } else {
-            if cap == PipeCap::Round && blend == SweepBlend::Global {
+            // Rhino's thin Global round caps on sharp rails depend on the
+            // rail's orientation relative to world Z. The spherical cap
+            // construction agrees on horizontal rails; thick round pipes
+            // use annular planar ends and do not need that fitted cap.
+            if cap == PipeCap::Round
+                && blend == SweepBlend::Global
+                && wall_thickness.is_none()
+                && lines
+                    .iter()
+                    .any(|line| (line.end().z() - line.start().z()).abs() > tolerance.absolute())
+            {
                 return Err(CommandError::Usage(USAGE));
             }
             mitered_line_pipe_profile(
@@ -2818,6 +2828,7 @@ mod tests {
             ("Cap=Flat", 2.0716563894655327),
             ("ShapeBlending=Global Cap=Flat", 2.0525075453971313),
             ("Cap=Round", 2.3900044399127722),
+            ("ShapeBlending=Global Cap=Round", 2.3566305015018547),
             ("WallThickness=0.2 Cap=Flat", 2.5132743510996836),
         ] {
             registry
@@ -2837,16 +2848,35 @@ mod tests {
                 "{options}: {measured} vs {expected}"
             );
         }
-        let count = document.objects().count();
-        assert!(
-            registry
-                .execute(
-                    &mut document,
-                    &format!("Pipe {source} 0.3 0.5 FitRail=Yes ShapeBlending=Global Cap=Round"),
+        let short_rail = PolyCurve3::try_new(vec![
+            CurveSegment3::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), tolerance).unwrap(),
+            ),
+            CurveSegment3::Line(
+                LineSegment::try_new(
+                    p(2., 0., 0.),
+                    p(3., std::f64::consts::SQRT_2, 0.),
+                    tolerance,
                 )
-                .is_err()
-        );
-        assert_eq!(document.objects().count(), count);
+                .unwrap(),
+            ),
+        ])
+        .unwrap();
+        let short_source = document
+            .add_geometry(Geometry::PolyCurve(short_rail))
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {short_source} 0.3 0.5 FitRail=Yes ShapeBlending=Global Cap=Round"),
+            )
+            .unwrap();
+        let Geometry::Brep(short_pipe) = document.objects().last().unwrap().geometry() else {
+            panic!("short horizontal pipe should be a B-rep")
+        };
+        assert!(short_pipe.is_solid());
+        let measured = short_pipe.signed_volume(tolerance).unwrap();
+        assert!((measured - 2.2182048402524526).abs() < 5e-6);
 
         let skew = Polyline3::try_new(
             vec![
@@ -2863,6 +2893,10 @@ mod tests {
             ("Cap=Round", 2.9945825138115723),
             (
                 "ShapeBlending=Global WallThickness=0.2 Cap=Flat",
+                3.2467315788085314,
+            ),
+            (
+                "ShapeBlending=Global WallThickness=0.2 Cap=Round",
                 3.2467315788085314,
             ),
         ] {
@@ -2883,6 +2917,16 @@ mod tests {
                 "{options}: {measured} vs {expected}"
             );
         }
+        let count = document.objects().count();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {skew_id} 0.3 0.5 FitRail=Yes ShapeBlending=Global Cap=Round"),
+                )
+                .is_err()
+        );
+        assert_eq!(document.objects().count(), count);
     }
 
     #[test]

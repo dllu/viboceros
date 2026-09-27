@@ -90,7 +90,8 @@ def run(operation, tolerance, host):
                     for vertex in vertices)):
             raise ValueError("line_chain needs at least three xyz vertices")
         coordinates = [[float(value) for value in vertex] for vertex in vertices]
-        if any(not math.isfinite(value) for vertex in coordinates for value in vertex):
+        if any(math.isnan(value) or math.isinf(value)
+               for vertex in coordinates for value in vertex):
             raise ValueError("line_chain vertices must be finite")
         points = [geometry.Point3d(*vertex) for vertex in coordinates]
         rail = geometry.PolyCurve()
