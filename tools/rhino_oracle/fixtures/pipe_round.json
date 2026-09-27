@@ -137,6 +137,7 @@
         ]
       ],
       "local_blending": false,
+      "inspect_basis": true,
       "cap": "Flat"
     },
     {

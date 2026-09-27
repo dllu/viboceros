@@ -3,6 +3,28 @@
 import math
 
 
+def _wall_basis(face, host):
+    surface = face.UnderlyingSurface().ToNurbsSurface()
+    try:
+        points = surface.Points
+        return {
+            "degree_u": int(surface.Degree(0)),
+            "degree_v": int(surface.Degree(1)),
+            "knots_u": [float(surface.KnotsU[i]) for i in range(surface.KnotsU.Count)],
+            "knots_v": [float(surface.KnotsV[i]) for i in range(surface.KnotsV.Count)],
+            "controls": [
+                [host["_xyz"](points.GetControlPoint(i, j).Location)
+                 for j in range(points.CountV)]
+                for i in range(points.CountU)],
+            "weights": [
+                [float(points.GetControlPoint(i, j).Weight)
+                 for j in range(points.CountV)]
+                for i in range(points.CountU)],
+        }
+    finally:
+        surface.Dispose()
+
+
 def run(operation, tolerance, host):
     Rhino = host["Rhino"]
     geometry = Rhino.Geometry
@@ -107,6 +129,8 @@ def run(operation, tolerance, host):
                             piece.Faces[0].Domain(1).ParameterAt(0.0)))
                         for fraction in [i / 20.0 for i in range(21)]]
                     if operation.get("stations") else None,
+                    "wall_basis": _wall_basis(piece.Faces[0], host)
+                    if operation.get("inspect_basis") else None,
                 })
             finally:
                 properties.Dispose()
