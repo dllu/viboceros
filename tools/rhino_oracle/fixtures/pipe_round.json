@@ -473,6 +473,50 @@
       "radius": 0.3,
       "thickness": 0.2,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-flat",
+      "rail": "polyline3d",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-round",
+      "rail": "polyline3d",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-thick",
+      "rail": "polyline3d",
+      "radius": 0.3,
+      "thickness": 0.2,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-skew-flat",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-skew-round",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "cap": "Round"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d-skew-thick",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "thickness": 0.2,
+      "cap": "Flat"
     }
   ]
 }

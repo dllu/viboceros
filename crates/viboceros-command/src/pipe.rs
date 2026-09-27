@@ -550,13 +550,6 @@ fn mitered_line_pipe(
     let Some(binormal) = binormal else {
         return Ok(None);
     };
-    // One common binormal keeps every segment's circular parameter aligned
-    // across the miter ellipses. Spatial chains need a different frame model.
-    for direction in &directions {
-        if direction.dot(binormal)?.abs() > tolerance.angular() {
-            return Ok(None);
-        }
-    }
     let largest_radius = radius + wall_thickness.unwrap_or(0.0).max(0.0);
     let reaches = directions
         .windows(2)
@@ -579,13 +572,26 @@ fn mitered_line_pipe(
     }) {
         return Err(CommandError::Usage(USAGE));
     }
-    let frames = lines
-        .iter()
-        .zip(&directions)
-        .map(|(line, direction)| {
-            Frame3::try_from_x_and_normal(line.start(), binormal, *direction, tolerance)
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    let mut frame_x = binormal;
+    let mut frames = Vec::with_capacity(lines.len());
+    for (index, (line, direction)) in lines.iter().zip(&directions).enumerate() {
+        if index > 0 {
+            // Carry one circular seam through spatial bends so the two
+            // parameterizations of each miter ellipse agree at the join.
+            let rotation = AffineTransform3::try_rotation_between(
+                directions[index - 1].normalized_nonzero()?,
+                direction.normalized_nonzero()?,
+                tolerance,
+            )?;
+            frame_x = rotation.transform_vector(frame_x)?;
+        }
+        frames.push(Frame3::try_from_x_and_normal(
+            line.start(),
+            frame_x,
+            *direction,
+            tolerance,
+        )?);
+    }
     let make_wall = |radius: Real| -> Result<Brep, CommandError> {
         let walls = lines
             .iter()
@@ -627,7 +633,11 @@ fn mitered_line_pipe(
         let last = *lines.last().expect("at least two mitered lines");
         let end_frame = Frame3::try_from_x_and_normal(
             last.end(),
-            binormal,
+            frames
+                .last()
+                .expect("last mitered frame")
+                .x_axis()
+                .as_vector(),
             *directions.last().expect("last mitered direction"),
             tolerance,
         )?;
@@ -2030,6 +2040,74 @@ mod tests {
             assert!(pipe.is_closed(), "{options}");
             assert!(pipe.is_solid(), "{options}");
             assert_eq!(pipe.faces().len(), faces, "{options}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn spatial_three_segment_polyline_pipe_matches_rhino_miters() {
+        let mut document = Document::default();
+        let rail = Polyline3::try_new(
+            vec![p(0., 0., 0.), p(2., 0., 0.), p(2., 2., 0.), p(2., 2., 2.)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Polyline(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected, faces) in [
+            ("Cap=Flat", 1.6964609638052046, 5),
+            ("Cap=Round", 1.8095583636292623, 5),
+            ("WallThickness=0.2 Cap=Flat", 3.0159304945160126, 8),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 {options}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("spatial three-segment pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            assert_eq!(pipe.faces().len(), faces, "{options}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn skew_spatial_polyline_pipe_matches_rhino_volume() {
+        let mut document = Document::default();
+        let rail = Polyline3::try_new(
+            vec![
+                p(0., 0., 0.),
+                p(2., 0., 0.),
+                p(3., 1., 0.5),
+                p(4., 1.3, 1.8),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Polyline(rail)).unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (options, expected) in [
+            ("Cap=Flat", 1.461029031976258),
+            ("Cap=Round", 1.574126366134179),
+            ("WallThickness=0.2 Cap=Flat", 2.5973849459504827),
+        ] {
+            registry
+                .execute(&mut document, &format!("Pipe {source} 0.3 {options}"))
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("skew spatial pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
             let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
             assert!(
                 (measured - expected).abs() < 5e-6,

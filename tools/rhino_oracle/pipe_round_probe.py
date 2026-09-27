@@ -94,6 +94,18 @@ def run(operation, tolerance, host):
             geometry.Point3d(2.0, 0.0, 0.0),
             geometry.Point3d(2.0, 2.0, 0.0),
             geometry.Point3d(4.0, 2.0, 0.0)]))
+    elif rail_kind == "polyline3d":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 2.0, 0.0),
+            geometry.Point3d(2.0, 2.0, 2.0)]))
+    elif rail_kind == "polyline3d_skew":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(2.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 1.0, 0.5),
+            geometry.Point3d(4.0, 1.3, 1.8)]))
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))

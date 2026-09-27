@@ -41,11 +41,11 @@ smoothstep for both shape-blending modes; each segment then uses its chosen
 Local or Global blend. Rhino comparison cases cover constant and tapered flat
 pipes, a round cap, and a thick pipe, with matching face counts and volumes
 within `5e-6` model-volume units.
-For constant-radius open planar polylines and line-only polycurves,
-`FitRail=No` constructs exact mitered cylinder walls at sharp corners.
-Two- and three-segment flat, round, and thick oracle cases match Rhino's
-volumes within `5e-6`; the planar cases also match its face counts. A
-two-segment oblique 3D miter matches the volume, while Rhino splits its wall
+For constant-radius open polylines and line-only polycurves, `FitRail=No`
+constructs exact mitered cylinder walls at sharp corners, including spatial
+chains with bends in different planes. Two- and three-segment flat, round, and
+thick oracle cases match Rhino's volumes within `5e-6`. Planar and orthogonal
+three-segment cases match its face counts; Rhino divides oblique spatial walls
 into more faces.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
@@ -69,8 +69,8 @@ with `FitRail=Yes` on a polycurve are currently rejected; the fitted Rhino
 surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
-Variable-radius sharp rails, nonplanar rails with several corners, other closed
-rails, and SubD output are still unsupported. A
+Variable-radius sharp rails, sharp rails with `FitRail=Yes`, other closed rails,
+and SubD output are still unsupported. A
 circular rail requires a pipe radius smaller than the rail radius.
 The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
 radius station was supplied on a closed circular rail.
