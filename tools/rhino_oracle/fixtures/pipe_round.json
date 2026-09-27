@@ -164,6 +164,30 @@
       "end_radius": 0.5,
       "stations": [[0.5, 0.8]],
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "circle-constant",
+      "rail": "circle",
+      "radius": 0.5,
+      "cap": "None"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "circle-station-local",
+      "rail": "circle",
+      "radius": 0.5,
+      "stations": [[0.5, 0.8]],
+      "cap": "None"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "circle-station-global",
+      "rail": "circle",
+      "radius": 0.5,
+      "stations": [[0.5, 0.8]],
+      "local_blending": false,
+      "cap": "None"
     }
   ]
 }

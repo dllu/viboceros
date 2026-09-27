@@ -40,3 +40,5 @@ Rhino uses a different global fit for three or more radius samples.
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
 Rail corners, other closed rails, and SubD output are still unsupported. A
 circular rail requires a pipe radius smaller than the rail radius.
+The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
+radius station was supplied on a closed circular rail.

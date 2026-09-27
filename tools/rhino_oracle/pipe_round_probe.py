@@ -39,6 +39,8 @@ def run(operation, tolerance, host):
             geometry.Point3d(5.0 / 2.0 ** 0.5, 5.0 / 2.0 ** 0.5, 0.0),
             geometry.Point3d(0.0, 5.0, 0.0))
         rail = geometry.ArcCurve(arc)
+    elif rail_kind == "circle":
+        rail = geometry.Circle(geometry.Plane.WorldXY, 5.0).ToNurbsCurve()
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))
