@@ -822,6 +822,33 @@ fn mitered_line_profile_surface(
     }
     let count = circle.len();
     let direction = line.direction(tolerance)?.as_vector();
+    // Ease joint-plane shear through the fitted span. The interior control
+    // fractions approximate Rhino's fitted wall; scaling from the opposite
+    // endpoint radius prevents a taper from amplifying the shear early.
+    for (joint, free_radius, rows) in [
+        (start_joint, profile[3] + offset, [(1, 0.5), (2, 0.27)]),
+        (end_joint, profile[0] + offset, [(1, 0.27), (2, 0.5)]),
+    ] {
+        let Some([first_direction, second_direction]) = joint else {
+            continue;
+        };
+        let divisor = 1.0 + first_direction.dot(second_direction)?;
+        for (row, factor) in rows {
+            let center = frame
+                .origin()
+                .translated(axial.scaled(row as Real * length / 3.0)?)?;
+            for control in &mut controls[row * count..(row + 1) * count] {
+                let radial = center.vector_to(control.point())?;
+                let shift = -(first_direction.dot(radial)? + second_direction.dot(radial)?)
+                    / divisor
+                    * free_radius
+                    / (profile[row] + offset)
+                    * factor;
+                let point = control.point().translated(direction.scaled(shift)?)?;
+                *control = WeightedPoint3::try_new(point, control.weight())?;
+            }
+        }
+    }
     for (row, joint, pair) in [
         (0, line.start(), start_joint),
         (3 * count, line.end(), end_joint),
@@ -2420,6 +2447,90 @@ mod tests {
             }
         }
         assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+    }
+
+    #[test]
+    fn fitted_tapered_miter_tracks_rhino_wall_at_matched_axial_positions() {
+        let tolerance = Tolerance::DEFAULT;
+        let lines = [
+            LineSegment::try_new(p(0., 0., 0.), p(2., 0., 0.), tolerance).unwrap(),
+            LineSegment::try_new(p(2., 0., 0.), p(2., 2., 0.), tolerance).unwrap(),
+        ];
+        let directions = lines.map(|line| line.direction(tolerance).unwrap().as_vector());
+        let seam = p(0., 0., 0.).vector_to(p(0., 0., 1.)).unwrap();
+        let first_frame =
+            Frame3::try_from_x_and_normal(lines[0].start(), seam, directions[0], tolerance)
+                .unwrap();
+        let second_frame =
+            Frame3::try_from_x_and_normal(lines[1].start(), seam, directions[1], tolerance)
+                .unwrap();
+        let surfaces = [
+            mitered_line_profile_surface(
+                lines[0],
+                first_frame,
+                [0.3, 0.5],
+                0.0,
+                SweepBlend::Local,
+                [0.0, 0.5],
+                None,
+                Some(directions),
+                tolerance,
+            )
+            .unwrap(),
+            mitered_line_profile_surface(
+                lines[1],
+                second_frame,
+                [0.3, 0.5],
+                0.0,
+                SweepBlend::Local,
+                [0.5, 1.0],
+                Some(directions),
+                None,
+                tolerance,
+            )
+            .unwrap(),
+        ];
+        let references = [
+            [
+                (0.4382538993558626, 0.30859375),
+                (0.8632822913683168, 0.33125),
+                (1.2566695376966126, 0.36328125),
+            ],
+            [
+                (0.7923368998234105, 0.43671875),
+                (1.1936672523437442, 0.46875),
+                (1.5981639786922057, 0.49140625),
+            ],
+        ];
+        for (index, surface) in surfaces.iter().enumerate() {
+            let circle_parameter = 3.0 * std::f64::consts::FRAC_PI_2;
+            for (axial, expected_radius) in references[index] {
+                let mut low = 0.0;
+                let mut high = 2.0;
+                for _ in 0..60 {
+                    let middle = 0.5 * (low + high);
+                    let point = surface.evaluate(circle_parameter, middle).unwrap();
+                    let measured_axial = point.to_array()[index];
+                    if measured_axial < axial {
+                        low = middle;
+                    } else {
+                        high = middle;
+                    }
+                }
+                let point = surface
+                    .evaluate(circle_parameter, 0.5 * (low + high))
+                    .unwrap();
+                let measured_radius = if index == 0 {
+                    point.y()
+                } else {
+                    2.0 - point.x()
+                };
+                assert!(
+                    (measured_radius - expected_radius).abs() < 1e-4,
+                    "segment {index}, axial {axial}: {measured_radius} vs {expected_radius}"
+                );
+            }
+        }
     }
 
     #[test]

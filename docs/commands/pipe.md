@@ -55,8 +55,8 @@ blending uses a linear profile. The mitered construction matches the tested
 planar and spatial Rhino flat and thick volumes within `5e-6`; Local round
 caps also meet that limit. Global round caps on tapered sharp rails remain
 unsupported because the tested spatial cases exceed the volume tolerance.
-The tested planar fitted taper differs from Rhino's wall by about `0.0075`
-in radius at one matched axial position; pointwise surface parity remains open.
+The tested planar fitted taper agrees within `1e-4` in radius at six matched
+axial positions. A global pointwise surface error bound remains open.
 `WallThickness` adds a second wall and implies `Thick=Yes`; both options can be
 entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with

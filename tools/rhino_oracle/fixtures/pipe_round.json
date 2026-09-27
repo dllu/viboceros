@@ -764,6 +764,69 @@
       "cap": "Flat",
       "local_blending": false,
       "thickness": 0.2
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-local-round-faces",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline-taper-fit-global-round-faces",
+      "rail": "lineline",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true,
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-local-round-faces",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "lineline3d-taper-fit-global-round-faces",
+      "rail": "lineline3d",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true,
+      "local_blending": false
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-local-round-faces",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "polyline3d_skew-taper-fit-global-round-faces",
+      "rail": "polyline3d_skew",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "fit_rail": true,
+      "cap": "Round",
+      "inspect_face_bases": true,
+      "local_blending": false
     }
   ]
 }

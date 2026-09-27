@@ -202,6 +202,8 @@ def run(operation, tolerance, host):
                     "wall_bases": [_wall_basis(piece.Faces[i], host)
                                    for i in range(min(2, piece.Faces.Count))]
                     if operation.get("inspect_wall_bases") else None,
+                    "face_bases": [_wall_basis(face, host) for face in piece.Faces]
+                    if operation.get("inspect_face_bases") else None,
                     "edge_bounds": [
                         [host["_xyz"](edge.GetBoundingBox(True).Min),
                          host["_xyz"](edge.GetBoundingBox(True).Max)]
