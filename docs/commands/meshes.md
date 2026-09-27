@@ -216,23 +216,25 @@ and [Rhino observations](../../tools/rhino_oracle/observations/mesh_draft_angle_
 record Top and Bottom view selections and angle boundaries.
 
 `ExtractConnectedMeshFaces Face=0 Angle=0 Compare=Less` extracts the region
-reachable from stored face 0 across topological edges. Each neighboring face
-pair must have a normal angle less than or equal to `Angle`; `Compare=Greater`
-uses greater than or equal instead. The default is 0 degrees with `Less`, so
-connected coplanar faces are extracted. `Face` is a zero-based index on each
+reachable from stored face 0 across topological edges. At the default 0° angle,
+Rhino extracts the whole connected region regardless of face normals. At
+positive angles, neighboring faces must meet the inclusive `Less` or `Greater`
+normal-angle comparison. `Face` is a zero-based index on each
 selected mesh; the same seed index is used for every selected mesh. Unwelded
 vertices at identical positions count as connected. `MakeCopy=Yes` and
 `BorderOnly=Yes` preserve the source mesh and use the other extraction
 commands' attributes, groups, result selection, and undo behavior. Viewport
 subobject picking is still pending, so scripts must supply `Face`.
 
-The separate RhinoCommon `Mesh.Faces.GetConnectedFaces` API treats an exact
-zero angle as unrestricted connectivity. For positive angles on a nonmanifold
-edge, it checks the first other incident face. The geometry module exposes
-that observed API behavior through `rhinocommon_connected_faces_by_angle`.
+The command and RhinoCommon `Mesh.Faces.GetConnectedFaces` both check the first
+other incident face on a nonmanifold edge at positive angles. The geometry
+module implements this traversal in `rhinocommon_connected_faces_by_angle`.
 The [API fixture](../../tools/rhino_oracle/fixtures/mesh_connected_faces_api.json)
 and [Rhino observations](../../tools/rhino_oracle/observations/mesh_connected_faces_api.json)
-cover folded, unwelded, and nonmanifold meshes.
+cover folded, unwelded, and nonmanifold meshes. The
+[command fixture](../../tools/rhino_oracle/fixtures/mesh_connected_command.json)
+and [command observations](../../tools/rhino_oracle/observations/mesh_connected_command.json)
+cover the same boundary behavior through Shaded viewport face picks.
 
 `ExtractMeshPart Face=0` extracts the region reachable from stored face 0
 without crossing naked, unwelded, or nonmanifold topology edges. `Faces=0,2`

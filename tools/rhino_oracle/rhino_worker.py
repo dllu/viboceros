@@ -5909,6 +5909,65 @@ def _execute(operation, iterations, tolerance):
             return {"faces": sorted(int(index) for index in indices)}, 0
         finally:
             mesh.Dispose()
+    if operation["op"] == "mesh_connected_command_probe":
+        if not operation.get("mouse_pick"):
+            raise ValueError("connected mesh command probe requires a mouse pick")
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        document = Rhino.RhinoDoc.ActiveDoc
+        source_id = document.Objects.AddMesh(mesh)
+        created = []
+        try:
+            document.Objects.UnselectAll()
+            Rhino.RhinoApp.RunScript("_SetView _World _Top", False)
+            Rhino.RhinoApp.RunScript("_Zoom _Extents", False)
+            mode = Rhino.Display.DisplayModeDescription.FindByName("Shaded")
+            if mode is None:
+                raise ValueError("Shaded display mode is unavailable")
+            document.Views.ActiveView.ActiveViewport.DisplayMode = mode
+            document.Views.Redraw()
+            view = document.Views.ActiveView
+            viewport = view.ActiveViewport
+            pixel = viewport.WorldToClient(_point(operation["pick_point"]))
+            x, y = int(pixel.X), int(pixel.Y)
+            if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
+                raise ValueError("connected-face mouse pick lies outside viewport")
+            screen = view.ClientToScreen(System.Drawing.Point(x, y))
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "worker-progress.log")
+            with open(path, "a") as stream:
+                stream.write("PICK %s %d %d\n" %
+                             (operation["id"], screen.X, screen.Y))
+                stream.flush()
+            before = set(obj.Id for obj in document.Objects)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            angle = float(operation["angle"])
+            compare = "GreaterThan" if operation["greater_than"] else "LessThan"
+            macro = ("! _-ExtractConnectedMeshFaces _AngleBetween=%s "
+                     "_SelectFacesBy=_%s _MakeCopy=_Yes _Pause" % (angle, compare))
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            history = Rhino.RhinoApp.CommandHistoryWindowText
+            if history.startswith(history_before):
+                history = history[len(history_before):]
+            created = [obj.Id for obj in document.Objects if obj.Id not in before]
+            outputs = []
+            for identifier in created:
+                obj = document.Objects.FindId(identifier)
+                if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
+                    outputs.append(_canonical_polygon_mesh_face_value(obj.Geometry))
+            source = document.Objects.FindId(source_id)
+            remaining = (_polygon_mesh_value(source.Geometry) if source is not None
+                         and isinstance(source.Geometry, Rhino.Geometry.Mesh) else None)
+            result = {"succeeded": succeeded, "created_count": len(created),
+                      "output": outputs, "source": remaining}
+            if operation.get("include_history"):
+                result["history"] = history
+            return result, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for identifier in created:
+                document.Objects.Delete(identifier, True)
+            document.Objects.Delete(source_id, True)
+            mesh.Dispose()
     if operation["op"] in ("mesh_aspect_command_probe", "mesh_area_command_probe",
                            "mesh_edge_length_command_probe"):
         mesh = _polygon_mesh(operation["vertices"], operation["faces"])

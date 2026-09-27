@@ -32,7 +32,13 @@ impl Command for ExtractConnectedMeshFacesCommand {
             CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
             CommandError::NoConnectedMeshFaces,
             CommandError::NoConnectedMeshFaceBorders,
-            |mesh| mesh.connected_faces_by_angle(options.face, options.angle, options.greater_than),
+            |mesh| {
+                mesh.rhinocommon_connected_faces_by_angle(
+                    options.face,
+                    options.angle,
+                    options.greater_than,
+                )
+            },
         )
     }
 }
@@ -120,13 +126,13 @@ mod tests {
     }
 
     #[test]
-    fn extracts_planar_region_and_undo_restores_source() {
+    fn positive_angle_extracts_planar_region_and_undo_restores_source() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
         assert_eq!(
             registry
-                .execute(&mut document, "ExtractConnectedMeshFaces Face=0")
+                .execute(&mut document, "ExtractConnectedMeshFaces Face=0 Angle=0.1")
                 .unwrap(),
             "Extracted 2 mesh face(s) from 1 mesh(es); source faces removed"
         );
@@ -142,6 +148,73 @@ mod tests {
             panic!("mesh expected")
         };
         assert_eq!(restored.face_count(), 3);
+    }
+
+    #[test]
+    fn zero_angle_copies_the_whole_connected_component() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = selected_mesh(&mut document);
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractConnectedMeshFaces Face=0 MakeCopy=Yes"
+                )
+                .unwrap(),
+            "Extracted 3 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 1);
+        assert_ne!(selected[0].id(), source);
+        let Geometry::Mesh(extracted) = selected[0].geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(extracted.face_count(), 3);
+        let Geometry::Mesh(original) = document.object(source).unwrap().geometry() else {
+            panic!("mesh expected")
+        };
+        assert_eq!(original.face_count(), 3);
+    }
+
+    #[test]
+    fn positive_angle_on_nonmanifold_edge_checks_first_other_face() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(0.0, -1.0, 0.0),
+            ],
+            vec![
+                MeshFace::Triangle([0, 1, 2]),
+                MeshFace::Triangle([1, 0, 3]),
+                MeshFace::Triangle([1, 0, 4]),
+            ],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        for (face, expected) in [(0, 1), (2, 2)] {
+            document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ExtractConnectedMeshFaces Face={face} Angle=1 MakeCopy=Yes"),
+                )
+                .unwrap();
+            let selected = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(selected.len(), 1);
+            let Geometry::Mesh(extracted) = selected[0].geometry() else {
+                panic!("mesh expected")
+            };
+            assert_eq!(extracted.face_count(), expected);
+        }
     }
 
     #[test]

@@ -1,0 +1,14 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op":"mesh_connected_command_probe","id":"folded-less-zero","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":0.0,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"folded-less-point-one","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":0.1,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"folded-less-ninety","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":90.0,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"folded-greater-ninety","vertices":[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,1],[2,1,0],[3,0,0],[4,0,0],[3,1,0]],"faces":[[0,1,2],[1,3,2],[1,4,3],[6,7,8]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":90.0,"greater_than":true},
+    {"op":"mesh_connected_command_probe","id":"unwelded-less-zero","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":0.0,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"unwelded-less-ninety","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,0],[1,0,0],[0,-1,0],[0,0,1]],"faces":[[0,1,2],[4,3,5],[0,1,6]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":90.0,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"counter-first-neighbor","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,-1,0]],"faces":[[0,1,2],[1,0,3],[1,0,4]],"seed":0,"mouse_pick":true,"pick_point":[0.2,0.2,0],"angle":1.0,"greater_than":false},
+    {"op":"mesh_connected_command_probe","id":"counter-third-seed","vertices":[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,-1,0]],"faces":[[0,1,2],[1,0,3],[1,0,4]],"seed":2,"mouse_pick":true,"pick_point":[0.2,-0.2,0],"angle":1.0,"greater_than":false}
+  ]
+}

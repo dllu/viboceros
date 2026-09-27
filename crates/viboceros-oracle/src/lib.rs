@@ -853,6 +853,14 @@ pub enum Operation {
         angle: f64,
         greater_than: bool,
     },
+    MeshConnectedCommandProbe {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        seed: usize,
+        angle: f64,
+        greater_than: bool,
+    },
     MeshUnifyNormals {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -2069,6 +2077,7 @@ impl Operation {
             | Self::NurbsCurveExtractPoints { id, .. }
             | Self::MeshFaceNormals { id, .. }
             | Self::MeshConnectedFacesApi { id, .. }
+            | Self::MeshConnectedCommandProbe { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
@@ -3295,6 +3304,57 @@ fn execute(
                 black_box(&mesh).rhinocommon_connected_faces_by_angle(*seed, *angle, *greater_than)
             })?;
             (json!({ "faces": faces }), elapsed)
+        }
+        Operation::MeshConnectedCommandProbe {
+            vertices,
+            faces,
+            seed,
+            angle,
+            greater_than,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let mut document = Document::new(tolerance);
+            let source_id = document.add_geometry(Geometry::Mesh(mesh))?;
+            document.select_objects_direct([source_id], SelectionMode::Replace)?;
+            let compare = if *greater_than { "Greater" } else { "Less" };
+            let command = format!(
+                "ExtractConnectedMeshFaces Face={seed} Angle={angle} Compare={compare} MakeCopy=Yes"
+            );
+            CommandRegistry::with_builtins().execute(&mut document, &command)?;
+            let output = document
+                .objects()
+                .filter(|object| object.id() != source_id)
+                .map(|object| match object.geometry() {
+                    Geometry::Mesh(mesh) => Ok(canonical_polygon_mesh_face_value(mesh)),
+                    _ => Err(ProbeError::FixtureInvariant(
+                        "connected mesh face command created a nonmesh object",
+                    )),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let source = document.object(source_id).and_then(|object| {
+                if let Geometry::Mesh(mesh) = object.geometry() {
+                    Some(polygon_mesh_value(mesh))
+                } else {
+                    None
+                }
+            });
+            (
+                json!({
+                    "succeeded": true,
+                    "created_count": output.len(),
+                    "output": output,
+                    "source": source,
+                }),
+                0,
+            )
         }
         Operation::MeshUnifyNormals {
             vertices,
