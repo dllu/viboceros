@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::Vector3;
+use std::collections::BTreeSet;
 
 /// Direction used for every mesh vertex. Coincident raw vertices share a
 /// topological offset direction in `VertexNormals` mode.
@@ -61,14 +62,14 @@ impl TriangleMesh {
                 context: "mesh offset solid topology",
             });
         }
-        let (bottom, top) = if both_sides {
-            (negative.unwrap(), positive.unwrap())
+        let (first, second, reverse_first) = if both_sides {
+            (negative.unwrap(), positive.unwrap(), true)
         } else if distance < 0.0 {
-            (negative.unwrap(), self.clone())
+            (negative.unwrap(), self.clone(), true)
         } else {
-            (self.clone(), positive.unwrap())
+            (positive.unwrap(), self.clone(), false)
         };
-        self.offset_solid_between(&bottom, &top, tolerance)
+        self.offset_solid_between(&first, &second, reverse_first, tolerance)
     }
 
     fn offset_directions(
@@ -156,18 +157,43 @@ impl TriangleMesh {
 
     fn offset_solid_between(
         &self,
-        bottom: &Self,
-        top: &Self,
+        first: &Self,
+        second: &Self,
+        reverse_first: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        let source_vertices = self.topology().topological_vertex_count();
+        if first.topology().topological_vertex_count() < source_vertices
+            || second.topology().topological_vertex_count() < source_vertices
+        {
+            // Rhino retains both skins but omits the walls when the offset
+            // has merged source topology vertices, as on a folded mesh.
+            let first_skin = if reverse_first {
+                first.reversed()
+            } else {
+                first.clone()
+            };
+            let second_skin = if reverse_first {
+                second.clone()
+            } else {
+                second.reversed()
+            };
+            return Self::try_append(&[&first_skin, &second_skin]);
+        }
         let count = self.vertices.len();
         let offset = u32::try_from(count).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let (_, naked) = self.topology_with_boundary();
         count
             .checked_mul(2)
+            .and_then(|total| {
+                naked
+                    .len()
+                    .checked_mul(4)
+                    .and_then(|walls| total.checked_add(walls))
+            })
             .and_then(|total| total.checked_sub(1))
             .filter(|&last| u32::try_from(last).is_ok())
             .ok_or(GeometryError::TooManyMeshVertices)?;
-        let (_, naked) = self.topology_with_boundary();
         self.faces
             .len()
             .checked_mul(2)
@@ -175,39 +201,94 @@ impl TriangleMesh {
             .and_then(|count| count.checked_sub(1))
             .filter(|&last| u32::try_from(last).is_ok())
             .ok_or(GeometryError::TooManyMeshFaces)?;
-        let mut vertices = bottom.vertices.clone();
-        vertices.extend_from_slice(&top.vertices);
+        let mut vertices = first.vertices.clone();
+        vertices.extend_from_slice(&second.vertices);
         let mut faces = self
             .faces
             .iter()
             .copied()
-            .map(MeshFace::reversed)
+            .map(|face| if reverse_first { face.reversed() } else { face })
             .collect::<Vec<_>>();
-        faces.extend(
-            self.faces
-                .iter()
-                .copied()
-                .map(|face| face.remapped(|i| i + offset)),
-        );
-        for edge in naked {
-            let indices = self.faces[edge.face].indices();
-            let [a, b] = indices
-                .iter()
-                .copied()
-                .zip(indices.iter().copied().cycle().skip(1))
-                .take(indices.len())
-                .find(|&(a, b)| [a, b] == edge.vertices || [b, a] == edge.vertices)
-                .map(|(a, b)| [a, b])
-                .expect("naked edge comes from its source face");
-            faces.push(MeshFace::Quad([a, b, b + offset, a + offset]));
+        faces.extend(self.faces.iter().copied().map(|face| {
+            let face = if reverse_first { face } else { face.reversed() };
+            face.remapped(|i| i + offset)
+        }));
+        let naked_sides = naked
+            .into_iter()
+            .map(|edge| {
+                let [a, b] = edge.vertices;
+                (edge.face, a.min(b), a.max(b))
+            })
+            .collect::<BTreeSet<_>>();
+        let mut boundary_sides = Vec::with_capacity(naked_sides.len());
+        for (face_index, face) in self.faces.iter().enumerate() {
+            let indices = face.indices();
+            // Rhino starts at the second side of the first face, then walks
+            // the complete boundary loop before starting another loop.
+            for side in 0..indices.len() {
+                let a = indices[(side + 1) % indices.len()];
+                let b = indices[(side + 2) % indices.len()];
+                if naked_sides.contains(&(face_index, a.min(b), a.max(b))) {
+                    boundary_sides.push([a, b]);
+                }
+            }
+        }
+        let source_topology = self.topology_data();
+        let mut outgoing = vec![Vec::new(); source_topology.topological_vertex_count];
+        for (index, &[a, _]) in boundary_sides.iter().enumerate() {
+            outgoing[source_topology.topological_vertices[a as usize]].push(index);
+        }
+        let mut used = vec![false; boundary_sides.len()];
+        let mut ordered_sides = Vec::with_capacity(boundary_sides.len());
+        for start in 0..boundary_sides.len() {
+            let mut current = start;
+            while !used[current] {
+                used[current] = true;
+                let [a, b] = boundary_sides[current];
+                ordered_sides.push([a, b]);
+                let end = source_topology.topological_vertices[b as usize];
+                let Some(next) = outgoing[end].iter().copied().find(|&edge| !used[edge]) else {
+                    break;
+                };
+                current = next;
+            }
+        }
+        let mut colors = first
+            .vertex_colors
+            .as_ref()
+            .zip(second.vertex_colors.as_ref())
+            .map(|(first_colors, second_colors)| {
+                let mut colors = first_colors.clone();
+                colors.extend_from_slice(second_colors);
+                colors
+            });
+        for [a, b] in ordered_sides {
+            let base =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            vertices.extend([
+                first.vertices[a as usize],
+                first.vertices[b as usize],
+                second.vertices[b as usize],
+                second.vertices[a as usize],
+            ]);
+            if let Some(colors) = &mut colors {
+                let first_colors = first.vertex_colors.as_ref().unwrap();
+                let second_colors = second.vertex_colors.as_ref().unwrap();
+                colors.extend([
+                    first_colors[a as usize],
+                    first_colors[b as usize],
+                    second_colors[b as usize],
+                    second_colors[a as usize],
+                ]);
+            }
+            faces.push(if reverse_first {
+                MeshFace::Quad([base, base + 1, base + 2, base + 3])
+            } else {
+                MeshFace::Quad([base, base + 3, base + 2, base + 1])
+            });
         }
         let mut mesh = Self::try_new_faces(vertices, faces, tolerance)?;
-        if let (Some(bottom_colors), Some(top_colors)) = (&bottom.vertex_colors, &top.vertex_colors)
-        {
-            let mut colors = bottom_colors.clone();
-            colors.extend_from_slice(top_colors);
-            mesh.vertex_colors = Some(colors);
-        }
+        mesh.vertex_colors = colors;
         let face_offset =
             u32::try_from(self.faces.len()).map_err(|_| GeometryError::TooManyMeshFaces)?;
         let mut ngons = Vec::with_capacity(self.ngons.len() * 2);
@@ -284,6 +365,157 @@ mod tests {
             .unwrap();
         assert!(both.topology().is_solid());
         assert!((both.signed_volume().unwrap() - 2.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn solid_offset_uses_rhino_skin_and_raw_wall_order() {
+        let source = triangle();
+        for (distance, both_sides, first_z, second_z, reversed_first) in [
+            (1.0, false, 1.0, 0.0, false),
+            (-1.0, false, -1.0, 0.0, true),
+            (1.0, true, -1.0, 1.0, true),
+        ] {
+            let mesh = source
+                .offset_mesh(
+                    distance,
+                    MeshOffsetDirection::VertexNormals,
+                    both_sides,
+                    true,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+            assert_eq!(mesh.vertices().len(), 18);
+            assert_eq!(mesh.faces().len(), 5);
+            assert!(
+                mesh.vertices()[..3]
+                    .iter()
+                    .all(|point| point.z() == first_z)
+            );
+            assert!(
+                mesh.vertices()[3..6]
+                    .iter()
+                    .all(|point| point.z() == second_z)
+            );
+            assert_eq!(
+                mesh.faces()[0],
+                if reversed_first {
+                    MeshFace::Triangle([0, 2, 1])
+                } else {
+                    MeshFace::Triangle([0, 1, 2])
+                }
+            );
+            assert_eq!(
+                mesh.faces()[1],
+                if reversed_first {
+                    MeshFace::Triangle([3, 4, 5])
+                } else {
+                    MeshFace::Triangle([3, 5, 4])
+                }
+            );
+            let wall = if reversed_first {
+                MeshFace::Quad([6, 7, 8, 9])
+            } else {
+                MeshFace::Quad([6, 9, 8, 7])
+            };
+            assert_eq!(mesh.faces()[2], wall);
+            assert_eq!(mesh.vertices()[6].to_array(), [1.0, 0.0, first_z]);
+            assert_eq!(mesh.vertices()[7].to_array(), [0.0, 1.0, first_z]);
+            assert_eq!(mesh.vertices()[8].to_array(), [0.0, 1.0, second_z]);
+            assert_eq!(mesh.vertices()[9].to_array(), [1.0, 0.0, second_z]);
+        }
+
+        let quad = TriangleMesh::try_new_faces(
+            [[0., 0., 0.], [2., 0., 0.], [2., 1., 0.], [0., 1., 0.]]
+                .into_iter()
+                .map(|value| Point3::try_from(value).unwrap())
+                .collect(),
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let solid = quad
+            .offset_mesh(
+                1.0,
+                MeshOffsetDirection::VertexNormals,
+                false,
+                true,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(solid.vertices().len(), 24);
+        assert_eq!(solid.faces().len(), 6);
+        assert_eq!(solid.faces()[0], MeshFace::Quad([0, 1, 2, 3]));
+        assert_eq!(solid.faces()[1], MeshFace::Quad([4, 7, 6, 5]));
+        let wall_starts = [1, 2, 3, 0];
+        for (wall, &source_vertex) in wall_starts.iter().enumerate() {
+            assert_eq!(
+                solid.vertices()[8 + 4 * wall].to_array()[..2],
+                quad.vertices()[source_vertex].to_array()[..2]
+            );
+            assert_eq!(
+                solid.faces()[2 + wall],
+                MeshFace::Quad([
+                    (8 + 4 * wall) as u32,
+                    (11 + 4 * wall) as u32,
+                    (10 + 4 * wall) as u32,
+                    (9 + 4 * wall) as u32,
+                ])
+            );
+        }
+    }
+
+    #[test]
+    fn solid_offset_with_collapsed_skin_matches_rhino_two_skin_fallback() {
+        let source = TriangleMesh::try_new_faces(
+            [[0., 0., 0.], [1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]
+                .into_iter()
+                .map(|value| Point3::try_from(value).unwrap())
+                .collect(),
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 3, 1])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let result = source
+            .offset_mesh(
+                1.0,
+                MeshOffsetDirection::VertexNormals,
+                false,
+                true,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(result.vertices().len(), 8);
+        assert_eq!(result.faces().len(), 4);
+    }
+
+    #[test]
+    fn solid_offset_traces_boundary_across_source_faces() {
+        let source = TriangleMesh::try_new(
+            [[0., 0., 0.], [2., 0., 0.], [2., 1., 0.], [0., 1., 0.]]
+                .into_iter()
+                .map(|value| Point3::try_from(value).unwrap())
+                .collect(),
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let solid = source
+            .offset_mesh(
+                1.0,
+                MeshOffsetDirection::VertexNormals,
+                false,
+                true,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(solid.vertices().len(), 24);
+        assert_eq!(solid.faces().len(), 8);
+        for (wall, source_vertex) in [1, 2, 3, 0].into_iter().enumerate() {
+            assert_eq!(
+                solid.vertices()[8 + 4 * wall].to_array()[..2],
+                source.vertices()[source_vertex].to_array()[..2]
+            );
+        }
     }
 
     #[test]
@@ -384,7 +616,7 @@ mod tests {
                 Tolerance::DEFAULT,
             )
             .unwrap();
-        assert_eq!(shell.vertex_colors().unwrap().len(), 8);
+        assert_eq!(shell.vertex_colors().unwrap().len(), 24);
         assert_eq!(shell.ngons().len(), 2);
     }
 

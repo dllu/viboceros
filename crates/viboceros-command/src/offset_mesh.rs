@@ -56,7 +56,7 @@ impl Command for OffsetMeshCommand {
                 options.solid,
                 document.tolerance(),
             )?;
-            if options.allow_disjoint {
+            if options.allow_disjoint || options.solid {
                 if outputs.len() == MAX_SPAN_OUTPUT_OBJECTS {
                     return Err(too_many_span_outputs("OffsetMesh"));
                 }
@@ -367,5 +367,140 @@ mod tests {
         };
         assert!(result.vertices().iter().all(|point| point.z() == -1.0));
         assert!(document.object(source).is_some());
+    }
+
+    #[test]
+    fn collapsed_solid_offset_keeps_rhino_two_skin_result_in_one_object() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0., 0., 0.),
+                point(1., 0., 0.),
+                point(0., 1., 0.),
+                point(0., 0., 1.),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 3, 1])],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "OffsetMesh 1 Solid=Yes")
+            .unwrap();
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(selected.len(), 1);
+        let Geometry::Mesh(result) = selected[0].geometry() else {
+            panic!("offset result must be a mesh");
+        };
+        assert_eq!(result.vertices().len(), 8);
+        assert_eq!(result.faces().len(), 4);
+    }
+
+    #[test]
+    fn command_mesh_storage_matches_rhino_offset_fixtures() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/mesh_offset.json"
+        ))
+        .unwrap();
+        let observed: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/mesh_offset.json"
+        ))
+        .unwrap();
+        let operations = fixture["operations"].as_array().unwrap();
+        let results = observed["results"].as_array().unwrap();
+        assert_eq!(operations.len(), results.len());
+        let registry = CommandRegistry::with_builtins();
+        for (operation, observation) in operations.iter().zip(results) {
+            let id = operation["id"].as_str().unwrap();
+            assert_eq!(id, observation["id"].as_str().unwrap());
+            let mut document = Document::default();
+            let vertices = operation["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|coordinates| {
+                    let coordinates = coordinates.as_array().unwrap();
+                    point(
+                        coordinates[0].as_f64().unwrap(),
+                        coordinates[1].as_f64().unwrap(),
+                        coordinates[2].as_f64().unwrap(),
+                    )
+                })
+                .collect();
+            let faces = operation["faces"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|indices| {
+                    let indices = indices.as_array().unwrap();
+                    let indices = indices
+                        .iter()
+                        .map(|index| index.as_u64().unwrap() as u32)
+                        .collect::<Vec<_>>();
+                    match indices.as_slice() {
+                        &[a, b, c] => MeshFace::Triangle([a, b, c]),
+                        &[a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                        _ => panic!("unsupported fixture face"),
+                    }
+                })
+                .collect();
+            let mesh = TriangleMesh::try_new_faces(vertices, faces, document.tolerance()).unwrap();
+            let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+            document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            let mut command = format!("OffsetMesh {}", operation["distance"].as_f64().unwrap());
+            if operation["solid"].as_bool().unwrap_or(false) {
+                command.push_str(" Solid=Yes");
+            }
+            if operation["macro"]
+                .as_str()
+                .unwrap()
+                .contains("_BothSides=_Yes")
+            {
+                command.push_str(" BothSides=Yes");
+            }
+            registry.execute(&mut document, &command).unwrap();
+            let expected = observation["value"]["output"].as_array().unwrap();
+            let actual = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(actual.len(), expected.len(), "{id}: output count");
+            for (mesh_object, expected_mesh) in actual.into_iter().zip(expected) {
+                let Geometry::Mesh(mesh) = mesh_object.geometry() else {
+                    panic!("{id}: output must be a mesh");
+                };
+                let expected_vertices = expected_mesh["vertices"].as_array().unwrap();
+                let expected_faces = expected_mesh["faces"].as_array().unwrap();
+                assert_eq!(
+                    mesh.vertices().len(),
+                    expected_vertices.len(),
+                    "{id}: vertices"
+                );
+                assert_eq!(mesh.faces().len(), expected_faces.len(), "{id}: faces");
+                for (vertex, expected_vertex) in mesh.vertices().iter().zip(expected_vertices) {
+                    for (coordinate, expected_coordinate) in vertex
+                        .to_array()
+                        .into_iter()
+                        .zip(expected_vertex.as_array().unwrap())
+                    {
+                        assert!(
+                            (coordinate - expected_coordinate.as_f64().unwrap()).abs() <= 1e-6,
+                            "{id}: vertex mismatch"
+                        );
+                    }
+                }
+                for (face, expected_face) in mesh.faces().iter().zip(expected_faces) {
+                    let indices = face.indices();
+                    let expected_indices = expected_face.as_array().unwrap();
+                    assert_eq!(indices.len(), expected_indices.len(), "{id}: face size");
+                    for (&index, expected_index) in indices.iter().zip(expected_indices) {
+                        assert_eq!(index as u64, expected_index.as_u64().unwrap(), "{id}: face");
+                    }
+                }
+            }
+        }
     }
 }

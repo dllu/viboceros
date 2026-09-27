@@ -112,11 +112,19 @@ active construction plane normal when that average cancels. `FlipAll=Yes`
 reverses the side. `BothSides=Yes` creates two offset skins; `Solid=Yes` also
 includes the original skin for a one-sided offset and joins naked boundaries
 with quadrilateral walls. `AllowDisjoint=No` creates separate objects for
-disconnected results, while `AllowDisjoint=Yes` retains one mesh per source.
+disconnected non-solid results, while `AllowDisjoint=Yes` retains one mesh per
+source. Solid offsets retain one object per source, including closed inner and
+outer shells.
 `DeleteInput=Yes` removes the originals. Output keeps source attributes and
-groups, and the edit is undoable. Offsets that collapse faces or fail to form
-a closed shell in solid mode are rejected. Exact Rhino offset directions and
-mesh storage order still need live oracle comparison.
+groups, and the edit is undoable. Offsets that collapse faces are rejected.
+If the offset skin merges formerly distinct topology vertices, Rhino returns
+two skins without walls; this command follows that behavior. The retained
+[Rhino fixture](../../tools/rhino_oracle/fixtures/mesh_offset.json) and
+[observations](../../tools/rhino_oracle/observations/mesh_offset.json) cover
+normal offsets, both sides, solid triangle and quad raw wall order, boundary
+ordering across a triangulated square, a bent collapsed skin, and a closed
+tetrahedron. Other direction modes and mesh
+arrangements still need live comparison.
 
 `AddNgonsToMesh PlanarTolerance=0.01` adds logical n-gon overlays to connected
 coplanar mesh faces that share welded, oppositely oriented raw edges. The

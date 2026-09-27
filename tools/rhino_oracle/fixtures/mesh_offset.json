@@ -1,0 +1,369 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "triangle-default",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No 1 _Enter"
+    },
+    {
+      "id": "triangle-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "triangle-both",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_Yes 1 _Enter"
+    },
+    {
+      "id": "triangle-both-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_Yes 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "bent-default",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No 1 _Enter"
+    },
+    {
+      "id": "triangle-negative-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No -1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "quad-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "bent-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "tetra-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "distance": 0.1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 0.1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "square-triangulated-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          3
+        ]
+      ],
+      "distance": 1,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 1 _Enter",
+      "solid": true
+    }
+  ]
+}

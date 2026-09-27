@@ -5888,6 +5888,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "self_intersect_probe":
         import self_intersect_probe
         return self_intersect_probe.run(operation, globals())
+    if operation["op"] == "mesh_offset_probe":
+        import mesh_offset_probe
+        return mesh_offset_probe.run(operation, globals())
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())
