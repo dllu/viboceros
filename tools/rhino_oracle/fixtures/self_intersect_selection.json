@@ -1,0 +1,279 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "crossing",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "include_selection": true
+    },
+    {
+      "id": "simple-closed",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "include_selection": true
+    },
+    {
+      "id": "backtrack",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0
+        ]
+      ],
+      "include_selection": true
+    },
+    {
+      "id": "cubic-crossing",
+      "op": "self_intersect_probe",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -3,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "include_selection": true
+    },
+    {
+      "id": "cubic-seam",
+      "op": "self_intersect_probe",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "include_selection": true
+    },
+    {
+      "id": "nested-one",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "include_selection": true
+    },
+    {
+      "id": "nested-extend",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "include_selection": true
+    },
+    {
+      "id": "continue-after-backtrack",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "include_selection": true
+    }
+  ]
+}

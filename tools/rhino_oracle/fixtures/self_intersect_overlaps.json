@@ -1,0 +1,431 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "backtrack-basic",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "nested-one",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "nested-long",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2.5,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "nested-extend",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "retrace",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "short-first",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "double-backtrack",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "continue-after-backtrack",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "two-turns",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "four-segments",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "wide-nested",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "inside-end",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "cross-outside",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "far-backtrack",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    },
+    {
+      "id": "zigzag",
+      "op": "self_intersect_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ],
+      "include_api": true
+    }
+  ]
+}

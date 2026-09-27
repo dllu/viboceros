@@ -374,6 +374,16 @@ The [Rhino fixture](../../tools/rhino_oracle/fixtures/self_intersect.json)
 checks a crossing, a simple closed polyline, and a backtracking overlap.
 Nested overlapping segments remain a known discrepancy: Rhino reports only
 one inner overlap in the retained [observation](../../tools/rhino_oracle/observations/self_intersect.json).
+The [expanded overlap fixture](../../tools/rhino_oracle/fixtures/self_intersect_overlaps.json)
+and [Rhino observations](../../tools/rhino_oracle/observations/self_intersect_overlaps.json)
+show that Rhino's public [CurveSelf](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.intersect.intersection/curveself)
+API returns the same results as its
+command: one inner interval for nested overlaps and no contact for some
+backtracking paths.
+`SelSelfIntersectingCrv` uses the same self-contact search to select matching
+visible, unlocked curves. Rhino's selection agrees with its `CurveSelf` API in
+the [selection probe](../../tools/rhino_oracle/observations/self_intersect_selection.json);
+the same nested collinear cases remain a parity gap here too.
 
 `IntersectTwoSets first-id[,id...] second-id[,id...]` evaluates only pairs
 across the two sets. Either set may be `Selected` to use the current selection.

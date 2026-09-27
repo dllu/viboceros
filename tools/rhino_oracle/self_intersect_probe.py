@@ -17,6 +17,31 @@ def run(operation, host):
         raise ValueError("could not add IntersectSelf source")
     results = []
     try:
+        api_events = None
+        if operation.get("include_api"):
+            api_events = []
+            events = Rhino.Geometry.Intersect.Intersection.CurveSelf(
+                source, document.ModelAbsoluteTolerance)
+            if events is not None:
+                for event in events:
+                    if event.IsOverlap:
+                        api_events.append({"type": "overlap",
+                                           "a": [float(event.OverlapA.T0), float(event.OverlapA.T1)],
+                                           "b": [float(event.OverlapB.T0), float(event.OverlapB.T1)],
+                                           "points": [[event.PointA.X, event.PointA.Y, event.PointA.Z],
+                                                      [event.PointA2.X, event.PointA2.Y, event.PointA2.Z]]})
+                    else:
+                        api_events.append({"type": "point", "a": float(event.ParameterA),
+                                           "b": float(event.ParameterB),
+                                           "point": [event.PointA.X, event.PointA.Y, event.PointA.Z]})
+        selected_as_self_intersecting = None
+        if operation.get("include_selection"):
+            document.Objects.UnselectAll()
+            if not Rhino.RhinoApp.RunScript("! _SelSelfIntersectingCrv", True):
+                raise ValueError("Rhino SelSelfIntersectingCrv failed")
+            selected_as_self_intersecting = bool(
+                document.Objects.FindId(source_id).IsSelected(False))
+            document.Objects.UnselectAll()
         before = set(obj.Id for obj in document.Objects)
         history_before = Rhino.RhinoApp.CommandHistoryWindowText
         succeeded = bool(Rhino.RhinoApp.RunScript(
@@ -47,10 +72,15 @@ def run(operation, host):
                   if line.strip().startswith("Found ")]
         if not succeeded or len(report) != 1:
             raise ValueError("Rhino IntersectSelf did not return a result")
-        return {"report": report[0], "output": output,
-                "source_selected": bool(document.Objects.FindId(source_id).IsSelected(False)),
-                "selected_output_count": sum(bool(document.Objects.FindId(result_id).IsSelected(False))
-                                             for result_id in results)}, 0
+        value = {"report": report[0], "output": output,
+                 "source_selected": bool(document.Objects.FindId(source_id).IsSelected(False)),
+                 "selected_output_count": sum(bool(document.Objects.FindId(result_id).IsSelected(False))
+                                              for result_id in results)}
+        if api_events is not None:
+            value["api_events"] = api_events
+        if selected_as_self_intersecting is not None:
+            value["selected_as_self_intersecting"] = selected_as_self_intersecting
+        return value, 0
     finally:
         Rhino.RhinoApp.RunScript("!", False)
         for result_id in results:

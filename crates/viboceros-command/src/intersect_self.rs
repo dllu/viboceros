@@ -7,6 +7,37 @@ const MAX_SELF_PAIRS: usize = 1_000_000;
 const MAX_SELF_DEPTH: usize = 18;
 
 pub(super) struct IntersectSelfCommand;
+pub(super) struct SelSelfIntersectingCrvCommand;
+
+impl Command for SelSelfIntersectingCrvCommand {
+    fn name(&self) -> &'static str {
+        "SelSelfIntersectingCrv"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, self.name())?;
+        let mut matches = Vec::new();
+        for object in document.selectable_objects() {
+            let Some(curve) = object.geometry().nurbs_curve_representation()? else {
+                continue;
+            };
+            let mut contacts = SelfContacts::new(document.tolerance());
+            contacts.search(&curve)?;
+            if !contacts.output.is_empty() {
+                matches.push(object.id());
+            }
+        }
+        document.select_objects_direct(matches, SelectionMode::Add)?;
+        Ok(format!(
+            "Selected {} object(s)",
+            document.selected_object_count()
+        ))
+    }
+}
 
 impl Command for IntersectSelfCommand {
     fn name(&self) -> &'static str {
@@ -301,6 +332,7 @@ fn same_contact(first: &Geometry, second: &Geometry, tolerance: Tolerance) -> bo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_geometry::Polyline3;
 
     fn point(x: Real, y: Real) -> Point3 {
         Point3::try_new(x, y, 0.0).unwrap()
@@ -396,5 +428,34 @@ mod tests {
             registry.execute(&mut document, "IntersectSelf").unwrap(),
             "Found 0 self-intersections."
         );
+    }
+
+    #[test]
+    fn selects_only_curves_with_self_contacts() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mut add_polyline = |points: &[(Real, Real)]| {
+            document
+                .add_geometry(Geometry::Polyline(
+                    Polyline3::try_new(
+                        points.iter().map(|&(x, y)| point(x, y)).collect(),
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap(),
+                ))
+                .unwrap()
+        };
+        let crossing = add_polyline(&[(0., 0.), (2., 2.), (0., 2.), (2., 0.)]);
+        let simple_closed = add_polyline(&[(4., 0.), (6., 0.), (6., 2.), (4., 2.), (4., 0.)]);
+        let overlap = add_polyline(&[(8., 0.), (10., 0.), (9., 0.), (9., 2.)]);
+        assert_eq!(
+            registry
+                .execute(&mut document, "SelSelfIntersectingCrv")
+                .unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert!(document.is_selected(crossing));
+        assert!(document.is_selected(overlap));
+        assert!(!document.is_selected(simple_closed));
     }
 }

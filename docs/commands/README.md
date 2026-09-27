@@ -175,6 +175,7 @@ SelLast
 SelPrev
 SelLast DeselectOthersBeforeSelect=No
 SelCrv
+SelSelfIntersectingCrv
 SelOpenCrv
 SelClosedCrv
 SelPlanarCrv

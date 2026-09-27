@@ -1,0 +1,535 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "backtrack-basic",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.3333333333333333,
+              1.0
+            ],
+            "b": [
+              2.0,
+              1.0
+            ],
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nested-one",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.6666666666666667,
+              2.0
+            ],
+            "b": [
+              3.0,
+              2.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nested-long",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.8333333333333334,
+              2.0
+            ],
+            "b": [
+              3.0,
+              2.0
+            ],
+            "points": [
+              [
+                2.5,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nested-extend",
+      "value": {
+        "api_events": [],
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "retrace",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              1.0,
+              2.0
+            ],
+            "b": [
+              3.0,
+              2.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "short-first",
+      "value": {
+        "api_events": [],
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "double-backtrack",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.3333333333333333,
+              1.0
+            ],
+            "b": [
+              3.0,
+              1.0
+            ],
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "continue-after-backtrack",
+      "value": {
+        "api_events": [],
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "two-turns",
+      "value": {
+        "api_events": [],
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "four-segments",
+      "value": {
+        "api_events": [
+          {
+            "a": 2.0,
+            "b": 4.0,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "point"
+          }
+        ],
+        "output": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "point"
+          }
+        ],
+        "report": "Found 1 self-intersection point.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "wide-nested",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.75,
+              2.0
+            ],
+            "b": [
+              3.0,
+              2.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inside-end",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.25,
+              1.0
+            ],
+            "b": [
+              3.0,
+              1.0
+            ],
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cross-outside",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.6666666666666667,
+              3.0
+            ],
+            "b": [
+              4.0,
+              3.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "far-backtrack",
+      "value": {
+        "api_events": [
+          {
+            "a": [
+              0.8,
+              2.0
+            ],
+            "b": [
+              3.0,
+              2.0
+            ],
+            "points": [
+              [
+                4.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "type": "overlap"
+          }
+        ],
+        "output": [
+          {
+            "end": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "start": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "type": "curve"
+          }
+        ],
+        "report": "Found 1 self-intersection overlap.",
+        "selected_output_count": 1,
+        "source_selected": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "zigzag",
+      "value": {
+        "api_events": [],
+        "output": [],
+        "report": "Found 0 self-intersections.",
+        "selected_output_count": 0,
+        "source_selected": false
+      }
+    }
+  ]
+}
