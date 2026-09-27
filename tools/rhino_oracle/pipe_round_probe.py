@@ -83,6 +83,21 @@ def run(operation, tolerance, host):
         rail.Append(geometry.LineCurve(
             geometry.Point3d(2.0, 0.0, 0.0),
             geometry.Point3d(3.0, 1.0, 1.0)))
+    elif rail_kind == "line_chain":
+        vertices = operation.get("vertices")
+        if (not isinstance(vertices, list) or len(vertices) < 3 or
+                any(not isinstance(vertex, list) or len(vertex) != 3
+                    for vertex in vertices)):
+            raise ValueError("line_chain needs at least three xyz vertices")
+        coordinates = [[float(value) for value in vertex] for vertex in vertices]
+        if any(not math.isfinite(value) for vertex in coordinates for value in vertex):
+            raise ValueError("line_chain vertices must be finite")
+        points = [geometry.Point3d(*vertex) for vertex in coordinates]
+        rail = geometry.PolyCurve()
+        for start, end in zip(points, points[1:]):
+            if start.DistanceTo(end) <= tolerance["absolute"]:
+                raise ValueError("line_chain has a zero-length segment")
+            rail.Append(geometry.LineCurve(start, end))
     elif rail_kind == "polyline":
         rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
             geometry.Point3d(0.0, 0.0, 0.0),
@@ -106,6 +121,26 @@ def run(operation, tolerance, host):
             geometry.Point3d(2.0, 0.0, 0.0),
             geometry.Point3d(3.0, 1.0, 0.5),
             geometry.Point3d(4.0, 1.3, 1.8)]))
+    elif rail_kind == "closed_rectangle":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 2.0, 0.0),
+            geometry.Point3d(0.0, 2.0, 0.0),
+            geometry.Point3d(0.0, 0.0, 0.0)]))
+    elif rail_kind == "closed_triangle":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 0.0, 0.0),
+            geometry.Point3d(1.5, 2.5, 0.0),
+            geometry.Point3d(0.0, 0.0, 0.0)]))
+    elif rail_kind == "closed_spatial_loop":
+        rail = geometry.PolylineCurve(host["System"].Array[geometry.Point3d]([
+            geometry.Point3d(0.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 0.0, 0.0),
+            geometry.Point3d(3.0, 2.0, 1.0),
+            geometry.Point3d(0.0, 2.0, 0.0),
+            geometry.Point3d(0.0, 0.0, 0.0)]))
     else:
         raise ValueError("invalid round Pipe rail")
     radius = float(operation.get("radius", 1.0))

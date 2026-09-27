@@ -49,6 +49,15 @@ Rhino's volumes within `5e-6` with both `FitRail=No` and `FitRail=Yes`.
 Rhino divides oblique spatial walls into more faces. With `FitRail=Yes`, Rhino
 fits one wall face across the corners while this implementation keeps a face
 per segment.
+Closed constant-radius line loops with `FitRail=Yes` join the last miter back
+to the first, including spatial loops whose two seam curves start at different
+points. Rectangle and triangle cases match Rhino's closed solid volumes within
+`5e-6`. Rhino returns two separate closed B-reps for a thick closed pipe; this
+implementation combines the outer and inner shells in one B-rep with the same
+signed volume on the tested planar loops. End cap options have no effect on a
+closed rail. The tested nonplanar loop makes a valid exact miter tube here, but
+Rhino's fitted surface has volume `2.907392` versus `2.940063` for that tube;
+spatial closed-rail surface parity remains open.
 For tapered sharp line rails with `FitRail=Yes`, the radius follows the full
 rail distance: Local blending uses a cubic smoothstep profile, while Global
 blending uses a linear profile. The mitered construction matches the tested
@@ -79,8 +88,10 @@ with `FitRail=Yes` on a polycurve are currently rejected; the fitted Rhino
 surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
-Variable-radius sharp rails with `FitRail=No`, other closed rails, and SubD
-output are still unsupported. A
+Variable-radius sharp rails with `FitRail=No`, closed rails other than
+constant-radius line loops and circles, and SubD output are still unsupported.
+Closed sharp line loops with `FitRail=No` remain unsupported because Rhino's
+tested rectangle case produces an open five-face result. A
 circular rail requires a pipe radius smaller than the rail radius.
 The Rhino 8 `CreatePipe` oracle likewise returned no geometry when an interior
 radius station was supplied on a closed circular rail.
