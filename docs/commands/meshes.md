@@ -107,9 +107,10 @@ their render meshes, whose polygon counts depend on the meshing settings.
 the average of its raw vertex normals. Coincident unwelded copies move together.
 `DirectionMethod=UserSelectedDirection` with
 `Direction=0,0,1` uses one specified vector instead. `AverageNormals=Yes`
-moves all vertices in their common average direction, falling back to the
-active construction plane normal when that average cancels. `FlipAll=Yes`
-reverses the side. `BothSides=Yes` creates two offset skins; `Solid=Yes` also
+moves all vertices opposite their common average normal, falling back to the
+opposite of the active construction plane normal when that average cancels.
+`FlipAll=Yes` reverses the side and the winding of open output skins.
+`BothSides=Yes` creates two offset skins; `Solid=Yes` also
 includes the original skin for a one-sided offset and joins naked boundaries
 with quadrilateral walls. Without `Solid`, `AllowDisjoint=No` returns only the
 offset skin, or two separate skins for `BothSides=Yes`. `AllowDisjoint=Yes`
@@ -123,10 +124,11 @@ If the offset skin merges formerly distinct topology vertices, Rhino returns
 two skins without walls; this command follows that behavior. The retained
 [Rhino fixture](../../tools/rhino_oracle/fixtures/mesh_offset.json) and
 [observations](../../tools/rhino_oracle/observations/mesh_offset.json) cover
-normal offsets, both sides, `AllowDisjoint`, solid raw wall order for triangles,
-quads, and rings with holes, boundary ordering across a triangulated square,
-an unwelded seam, a bent collapsed skin, and a closed tetrahedron. Other
-direction modes and mesh arrangements still need live comparison.
+normal and average-normal offsets, both sides, `FlipAll`, negative distances,
+`AllowDisjoint`, solid raw wall order for triangles, quads, and rings with holes,
+boundary ordering across a triangulated square, an unwelded seam, a bent
+collapsed skin, and a closed tetrahedron. Manually picked vector directions
+and other mesh arrangements still need live comparison.
 
 `AddNgonsToMesh PlanarTolerance=0.01` adds logical n-gon overlays to connected
 coplanar mesh faces that share welded, oppositely oriented raw edges. The

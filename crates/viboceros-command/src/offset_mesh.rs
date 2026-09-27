@@ -11,6 +11,7 @@ pub(super) struct OffsetMeshCommand;
 struct Options {
     distance: Real,
     direction: MeshOffsetDirection,
+    flip_all: bool,
     solid: bool,
     both_sides: bool,
     allow_disjoint: bool,
@@ -56,12 +57,17 @@ impl Command for OffsetMeshCommand {
                 options.solid,
                 document.tolerance(),
             )?;
+            // Solid skin and wall winding is determined by the signed offset.
+            // Rhino additionally flips the winding of open skins for FlipAll.
+            if options.flip_all && !options.solid {
+                result = result.reversed();
+            }
             if options.both_sides && !options.solid {
                 let negative_faces = (0..mesh.face_count()).collect::<Vec<_>>();
-                let (positive, negative) = result.extract_faces(&negative_faces)?.into_parts();
-                let positive = positive.expect("both offset skins exist");
+                let (second, first) = result.extract_faces(&negative_faces)?.into_parts();
+                let second = second.expect("both offset skins exist");
                 if options.allow_disjoint {
-                    result = TriangleMesh::try_append(&[&positive, &negative])?;
+                    result = TriangleMesh::try_append(&[&second, &first])?;
                     if outputs.len() == MAX_SPAN_OUTPUT_OBJECTS {
                         return Err(too_many_span_outputs("OffsetMesh"));
                     }
@@ -70,12 +76,17 @@ impl Command for OffsetMeshCommand {
                     if outputs.len() > MAX_SPAN_OUTPUT_OBJECTS - 2 {
                         return Err(too_many_span_outputs("OffsetMesh"));
                     }
-                    outputs.push((*id, Geometry::Mesh(negative)));
-                    outputs.push((*id, Geometry::Mesh(positive)));
+                    outputs.push((*id, Geometry::Mesh(first)));
+                    outputs.push((*id, Geometry::Mesh(second)));
                 }
             } else {
                 if options.allow_disjoint && !options.solid {
-                    result = TriangleMesh::try_append(&[&result, mesh])?;
+                    let source = if options.flip_all {
+                        mesh.reversed()
+                    } else {
+                        mesh.clone()
+                    };
+                    result = TriangleMesh::try_append(&[&result, &source])?;
                 }
                 if outputs.len() == MAX_SPAN_OUTPUT_OBJECTS {
                     return Err(too_many_span_outputs("OffsetMesh"));
@@ -208,6 +219,7 @@ fn parse(
             distance
         },
         direction,
+        flip_all: flip_all.unwrap_or(false),
         solid: solid.unwrap_or(false),
         both_sides: both_sides.unwrap_or(false),
         allow_disjoint: allow_disjoint.unwrap_or(false),
@@ -378,7 +390,7 @@ mod tests {
         assert!(
             result.vertices()[..offset_count]
                 .iter()
-                .all(|point| point.x() >= 2.0)
+                .all(|point| point.x() <= -1.0)
         );
         assert!(
             result.vertices()[offset_count..]
@@ -403,6 +415,7 @@ mod tests {
             panic!("mesh expected")
         };
         assert!(result.vertices().iter().all(|point| point.z() == -1.0));
+        assert_eq!(result.faces()[0], MeshFace::Triangle([0, 2, 1]));
         assert!(document.object(source).is_some());
     }
 
@@ -507,6 +520,16 @@ mod tests {
                 .contains("_AllowDisjoint=_Yes")
             {
                 command.push_str(" AllowDisjoint=Yes");
+            }
+            if operation["macro"]
+                .as_str()
+                .unwrap()
+                .contains("_AverageNormals=_Yes")
+            {
+                command.push_str(" AverageNormals=Yes");
+            }
+            if operation["macro"].as_str().unwrap().contains("_FlipAll") {
+                command.push_str(" FlipAll=Yes");
             }
             registry.execute(&mut document, &command).unwrap();
             let expected = observation["value"]["output"].as_array().unwrap();

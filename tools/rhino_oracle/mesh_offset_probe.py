@@ -38,8 +38,11 @@ def run(operation, host):
             if not isinstance(obj.Geometry, Rhino.Geometry.Mesh):
                 raise ValueError("OffsetMesh produced non-mesh geometry")
             output.append(host["_polygon_mesh_value"](obj.Geometry))
-        return {"api": api_output, "output": output,
-                "source_exists": document.Objects.FindId(source_id) is not None}, 0
+        value = {"api": api_output, "output": output,
+                 "source_exists": document.Objects.FindId(source_id) is not None}
+        if operation.get("include_history", False):
+            value["history"] = history
+        return value, 0
     finally:
         Rhino.RhinoApp.RunScript("!", False)
         for result_id in results:

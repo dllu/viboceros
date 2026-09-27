@@ -990,6 +990,576 @@
       "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_Yes _BothSides=_No 1 _Enter",
       "solid": true,
       "include_api": false
+    },
+    {
+      "id": "triangle-average",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes 1 _Enter"
+    },
+    {
+      "id": "triangle-average-flip",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes _FlipAll 1 _Enter"
+    },
+    {
+      "id": "bent-average",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes 1 _Enter"
+    },
+    {
+      "id": "bent-average-flip",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes _FlipAll 1 _Enter"
+    },
+    {
+      "id": "tetra-average",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes 1 _Enter"
+    },
+    {
+      "id": "opposed-average-fallback",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          5,
+          4
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_Yes 1 _Enter"
+    },
+    {
+      "id": "triangle-flip-action",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _Solid=_No _BothSides=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _FlipAll 1 _Enter"
+    },
+    {
+      "id": "triangle-flip-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_Yes _BothSides=_No _AllowDisjoint=_No _FlipAll 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "triangle-flip-both",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_No _BothSides=_Yes _AllowDisjoint=_No _FlipAll 1 _Enter"
+    },
+    {
+      "id": "triangle-flip-both-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_Yes _BothSides=_Yes _AllowDisjoint=_No _FlipAll 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "triangle-flip-allow",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_No _BothSides=_No _AllowDisjoint=_Yes _FlipAll 1 _Enter"
+    },
+    {
+      "id": "triangle-flip-negative",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_No _BothSides=_No _AllowDisjoint=_No _FlipAll -1 _Enter"
+    },
+    {
+      "id": "bent-flip-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          1
+        ]
+      ],
+      "distance": 1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_Yes _BothSides=_No _AllowDisjoint=_No _FlipAll 1 _Enter",
+      "solid": true
+    },
+    {
+      "id": "triangle-negative-open",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_No _BothSides=_No -1 _Enter"
+    },
+    {
+      "id": "triangle-negative-both",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_No _BothSides=_Yes -1 _Enter"
+    },
+    {
+      "id": "triangle-negative-both-solid",
+      "op": "mesh_offset_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "distance": -1,
+      "include_api": false,
+      "macro": "_DynamicPreview=_No _DeleteInput=_No _AllowDisjoint=_No _DirectionMethod=_UseVertexNormals _AverageNormals=_No _Solid=_Yes _BothSides=_Yes -1 _Enter",
+      "solid": true
     }
   ]
 }

@@ -49,7 +49,11 @@ impl TriangleMesh {
             .transpose()?;
         if !solid {
             return if both_sides {
-                Self::try_append(&[negative.as_ref().unwrap(), positive.as_ref().unwrap()])
+                if distance > 0.0 {
+                    Self::try_append(&[negative.as_ref().unwrap(), positive.as_ref().unwrap()])
+                } else {
+                    Self::try_append(&[positive.as_ref().unwrap(), negative.as_ref().unwrap()])
+                }
             } else if distance > 0.0 {
                 Ok(positive.unwrap())
             } else {
@@ -62,7 +66,9 @@ impl TriangleMesh {
                 context: "mesh offset solid topology",
             });
         }
-        let (first, second, reverse_first) = if both_sides {
+        let (first, second, reverse_first) = if both_sides && distance < 0.0 {
+            (positive.unwrap(), negative.unwrap(), false)
+        } else if both_sides {
             (negative.unwrap(), positive.unwrap(), true)
         } else if distance < 0.0 {
             (negative.unwrap(), self.clone(), true)
@@ -149,7 +155,9 @@ impl TriangleMesh {
                 } else {
                     Vector3::try_from(sum)?.normalized_nonzero()?.as_vector()
                 };
-                Ok(vec![average; self.vertices.len()])
+                // Rhino's AverageNormals command direction is opposite the
+                // averaged vertex normal, including the CPlane fallback.
+                Ok(vec![average.scaled(-1.0)?; self.vertices.len()])
             }
             MeshOffsetDirection::Vector(_) => unreachable!(),
         }
@@ -425,6 +433,7 @@ mod tests {
             (1.0, false, 1.0, 0.0, false),
             (-1.0, false, -1.0, 0.0, true),
             (1.0, true, -1.0, 1.0, true),
+            (-1.0, true, 1.0, -1.0, false),
         ] {
             let mesh = source
                 .offset_mesh(
@@ -584,7 +593,7 @@ mod tests {
             )
             .unwrap();
         for (before, after) in opposed.vertices().iter().zip(output.vertices()) {
-            assert_eq!(after.x() - before.x(), 3.0);
+            assert_eq!(after.x() - before.x(), -3.0);
             assert_eq!(after.y(), before.y());
             assert_eq!(after.z(), before.z());
         }
