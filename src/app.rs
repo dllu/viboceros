@@ -338,6 +338,7 @@ enum InteractiveCommand {
     Pipe {
         source: Option<ObjectId>,
         cap_flat: bool,
+        cap_round: bool,
         blend_global: bool,
         wall_thickness: Option<f64>,
         pick_second_radius: bool,
@@ -3436,6 +3437,7 @@ impl VibocerosApp {
             InteractiveCommand::WeldEdge
         } else if normalized == "pipe" {
             let mut cap_flat = true;
+            let mut cap_round = false;
             let mut blend_global = false;
             let mut cap_seen = false;
             let mut blend_seen = false;
@@ -3449,6 +3451,9 @@ impl VibocerosApp {
                     cap_flat = if value.trim_start_matches('_').eq_ignore_ascii_case("Flat") {
                         true
                     } else if value.trim_start_matches('_').eq_ignore_ascii_case("None") {
+                        false
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Round") {
+                        cap_round = true;
                         false
                     } else {
                         return false;
@@ -3516,6 +3521,7 @@ impl VibocerosApp {
             InteractiveCommand::Pipe {
                 source,
                 cap_flat,
+                cap_round,
                 blend_global,
                 wall_thickness,
                 pick_second_radius,
@@ -4765,6 +4771,7 @@ impl VibocerosApp {
             InteractiveCommand::Pipe {
                 source: Some(source),
                 cap_flat,
+                cap_round,
                 blend_global,
                 wall_thickness,
                 pick_second_radius,
@@ -4789,6 +4796,7 @@ impl VibocerosApp {
                     let command = InteractiveCommand::Pipe {
                         source: Some(source),
                         cap_flat,
+                        cap_round,
                         blend_global,
                         wall_thickness,
                         pick_second_radius,
@@ -4815,7 +4823,13 @@ impl VibocerosApp {
                 self.active_command = None;
                 self.execute_command(&format!(
                     "Pipe {source} {start_radius} Cap={} ShapeBlending={}{}",
-                    if cap_flat { "Flat" } else { "None" },
+                    if cap_round {
+                        "Round"
+                    } else if cap_flat {
+                        "Flat"
+                    } else {
+                        "None"
+                    },
                     if blend_global { "Global" } else { "Local" },
                     wall_thickness.map_or_else(String::new, |thickness| {
                         format!(" WallThickness={thickness}")
@@ -6911,6 +6925,7 @@ impl VibocerosApp {
         if let Some(InteractiveCommand::Pipe {
             source: None,
             cap_flat,
+            cap_round,
             blend_global,
             wall_thickness,
             pick_second_radius,
@@ -6927,6 +6942,7 @@ impl VibocerosApp {
                 let command = InteractiveCommand::Pipe {
                     source: Some(source),
                     cap_flat,
+                    cap_round,
                     blend_global,
                     wall_thickness,
                     pick_second_radius,

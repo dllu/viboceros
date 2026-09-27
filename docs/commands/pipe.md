@@ -4,7 +4,8 @@
 creates a circular-profile pipe around one selected curve. The first radius is
 required and the second defaults to the first. The source curve remains in the
 document. Enter `Pipe` without dimensions to pick a rail and radius point in a
-viewport. For example, after selecting a line:
+viewport. `Pipe Cap=Round` also works in this picking flow. For example, after
+selecting a line:
 
 ```text
 Pipe 1.5 2.0 Cap=Flat ShapeBlending=Global
