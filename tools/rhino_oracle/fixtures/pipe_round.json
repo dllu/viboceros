@@ -324,6 +324,43 @@
       "local_blending": false,
       "fit_rail": true,
       "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-line-station-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "stations": [[0.25, 0.65]],
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-junction-station-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "stations": [[0.38898452964834274, 0.65]],
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-arc-station-no-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "stations": [[0.5, 0.65]],
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "linearc-arc-station-fit",
+      "rail": "linearc",
+      "radius": 0.3,
+      "end_radius": 0.5,
+      "stations": [[0.5, 0.65]],
+      "fit_rail": true,
+      "cap": "Flat"
     }
   ]
 }

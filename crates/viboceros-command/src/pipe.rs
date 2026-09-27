@@ -153,8 +153,20 @@ impl Command for PipeCommand {
         let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
         let tolerance = document.tolerance();
         let result = match source {
-            Geometry::PolyCurve(_) if !stations.is_empty() && !fit_rail => {
+            Geometry::PolyCurve(_) if fit_rail && !stations.is_empty() => {
                 return Err(CommandError::Usage(USAGE));
+            }
+            Geometry::PolyCurve(polycurve) if !fit_rail => {
+                Geometry::Brep(segmented_polycurve_pipe(
+                    rail,
+                    polycurve,
+                    [start_radius, end_radius],
+                    &stations,
+                    blend,
+                    cap,
+                    wall_thickness,
+                    tolerance,
+                )?)
             }
             source if !stations.is_empty() => station_pipe(
                 source,
@@ -280,17 +292,6 @@ impl Command for PipeCommand {
                     )?)
                 }
             }
-            Geometry::PolyCurve(polycurve) if !fit_rail => {
-                Geometry::Brep(segmented_polycurve_pipe(
-                    rail,
-                    polycurve,
-                    [start_radius, end_radius],
-                    blend,
-                    cap,
-                    wall_thickness,
-                    tolerance,
-                )?)
-            }
             _ => {
                 if rail.is_closed()? {
                     return Err(CommandError::Usage(USAGE));
@@ -365,12 +366,16 @@ fn segmented_polycurve_pipe(
     rail: CurveRef<'_>,
     polycurve: &PolyCurve3,
     endpoint_radii: [Real; 2],
+    stations: &[(Real, Real)],
     blend: SweepBlend,
     cap: PipeCap,
     wall_thickness: Option<Real>,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
     if rail.is_closed()? {
+        return Err(CommandError::Usage(USAGE));
+    }
+    if !stations.is_empty() && blend == SweepBlend::Global {
         return Err(CommandError::Usage(USAGE));
     }
     let lengths = polycurve
@@ -382,34 +387,63 @@ fn segmented_polycurve_pipe(
     if !total.is_finite() || total <= 0.0 {
         return Err(CommandError::Usage(USAGE));
     }
-    let mut radii = Vec::with_capacity(lengths.len() + 1);
-    radii.push(endpoint_radii[0]);
-    let mut distance = 0.0;
-    for &length in lengths.iter().take(lengths.len() - 1) {
-        distance += length;
-        let f = distance / total;
-        // Rhino computes an implicit station at each polycurve boundary with
-        // the full-rail smoothstep, even when segment blending is Global.
+    let mut profile = Vec::with_capacity(stations.len() + 2);
+    profile.push((0.0, endpoint_radii[0]));
+    profile.extend_from_slice(stations);
+    profile.push((1.0, endpoint_radii[1]));
+    let radius_at = |fraction: Real| -> Real {
+        let pair = profile
+            .windows(2)
+            .find(|pair| fraction <= pair[1].0)
+            .expect("last profile station is the end");
+        let f = (fraction - pair[0].0) / (pair[1].0 - pair[0].0);
         let f = f * f * (3.0 - 2.0 * f);
-        radii.push(endpoint_radii[0].mul_add(1.0 - f, endpoint_radii[1] * f));
+        pair[0].1.mul_add(1.0 - f, pair[1].1 * f)
+    };
+    let mut segment_profiles = Vec::with_capacity(lengths.len());
+    let mut distance = 0.0;
+    for (index, &length) in lengths.iter().enumerate() {
+        let start = distance / total;
+        distance += length;
+        let end = distance / total;
+        let segment = polycurve.segments()[index].as_ref();
+        let mut segment_profile = vec![(*segment.domain().start(), radius_at(start))];
+        for &(fraction, radius) in stations {
+            if start < fraction && fraction < end {
+                if !matches!(polycurve.segments()[index], CurveSegment3::Line(_)) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                let parameter = segment.parameter_at((fraction - start) / (end - start))?;
+                segment_profile.push((parameter, radius));
+            }
+        }
+        segment_profile.push((*segment.domain().end(), radius_at(end)));
+        segment_profiles.push(segment_profile);
     }
-    radii.push(endpoint_radii[1]);
-    let make_wall = |radii: &[Real]| -> Result<Brep, CommandError> {
+    let make_wall = |offset: Real| -> Result<Brep, CommandError> {
         let mut walls = Vec::with_capacity(polycurve.segments().len());
-        for (segment, pair) in polycurve.segments().iter().zip(radii.windows(2)) {
+        for (segment, original_profile) in polycurve.segments().iter().zip(&segment_profiles) {
+            let profile = original_profile
+                .iter()
+                .map(|&(parameter, radius)| (parameter, radius + offset))
+                .collect::<Vec<_>>();
+            let pair = [profile[0].1, profile.last().expect("end radius").1];
             let wall = match segment {
+                _ if profile.len() > 2 => {
+                    segmented_station_wall(segment.as_ref(), &profile, tolerance)?
+                }
                 CurveSegment3::Line(line) => {
                     let frame = Frame3::try_from_normal(
                         line.start(),
                         line.start().vector_to(line.end())?,
                         tolerance,
                     )?;
-                    straight_wall(frame, [pair[0], pair[1]], line.length()?, blend, tolerance)?
+                    straight_wall(frame, pair, line.length()?, blend, tolerance)?
                 }
                 _ => {
                     let segment = segment.as_ref();
-                    let frames = pipe_rail_frames(segment, [pair[0], pair[1]], tolerance)?;
-                    swept_wall_with_frames(segment, [pair[0], pair[1]], blend, tolerance, frames)?
+                    let frames = pipe_rail_frames(segment, pair, tolerance)?;
+                    swept_wall_with_frames(segment, pair, blend, tolerance, frames)?
                 }
             };
             walls.push(wall);
@@ -425,24 +459,14 @@ fn segmented_polycurve_pipe(
         Ok(joined.pop().expect("one wall component").brep)
     };
     if let Some(thickness) = wall_thickness {
-        let second = radii
-            .iter()
-            .map(|&radius| radius + thickness)
-            .collect::<Vec<_>>();
-        if second
-            .iter()
-            .any(|&radius| !radius.is_finite() || radius <= 0.0)
-        {
-            return Err(CommandError::Usage(USAGE));
-        }
         let (outer, inner) = if thickness > 0.0 {
-            (make_wall(&second)?, make_wall(&radii)?)
+            (make_wall(thickness)?, make_wall(0.0)?)
         } else {
-            (make_wall(&radii)?, make_wall(&second)?)
+            (make_wall(0.0)?, make_wall(thickness)?)
         };
         return finish_two_walls(outer, inner, cap, tolerance);
     }
-    let wall = make_wall(&radii)?;
+    let wall = make_wall(0.0)?;
     if cap == PipeCap::Round {
         return round_cap_single_wall(
             wall,
@@ -453,6 +477,45 @@ fn segmented_polycurve_pipe(
         );
     }
     cap_wall(wall, cap, tolerance)
+}
+
+fn segmented_station_wall(
+    rail: CurveRef<'_>,
+    profile: &[(Real, Real)],
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let parameters = profile
+        .iter()
+        .map(|&(parameter, _)| parameter)
+        .collect::<Vec<_>>();
+    let max_radius = profile
+        .iter()
+        .map(|&(_, radius)| radius)
+        .fold(0.0, Real::max);
+    let angular_tolerance = (0.05 * tolerance.absolute() / max_radius).min(1e-10);
+    let frames = rail.rotation_minimizing_frames(
+        &parameters,
+        None,
+        FrameTransportOptions {
+            angular_tolerance,
+            ..Default::default()
+        },
+    )?;
+    let sections = profile
+        .iter()
+        .zip(&frames)
+        .map(|(&(parameter, radius), &frame)| circular_section(parameter, frame, radius, tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
+    let sweep = Sweep1::try_new(
+        rail,
+        &sections,
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        tolerance,
+    )?;
+    let surface = sweep.to_surface()?;
+    let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+    Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?.reversed())
 }
 
 fn station_pipe(
@@ -1596,6 +1659,47 @@ mod tests {
                 "{options}: {measured} vs {expected}"
             );
         }
+        for (options, expected) in [
+            ("Stations=0.25:0.65", 5.1070735157919955),
+            ("Stations=0.38898452964834274:0.65", 4.801208532983822),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 0.5 {options} Cap=Flat"),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("polycurve station pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{options}");
+            assert!(pipe.is_solid(), "{options}");
+            assert_eq!(pipe.faces().len(), 4, "{options}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{options}: {measured} vs {expected}"
+            );
+        }
+        let count = document.objects().count();
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 0.5 Stations=0.5:0.65 Cap=Flat"),
+                )
+                .is_err()
+        );
+        assert_eq!(document.objects().count(), count);
+        assert!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Pipe {source} 0.3 0.5 Stations=0.5:0.65 FitRail=Yes Cap=Flat"),
+                )
+                .is_err()
+        );
+        assert_eq!(document.objects().count(), count);
     }
 
     #[test]

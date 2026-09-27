@@ -160,6 +160,9 @@ def run(operation, tolerance, host):
                     if operation.get("stations") else None,
                     "wall_basis": _wall_basis(piece.Faces[0], host)
                     if operation.get("inspect_basis") else None,
+                    "wall_bases": [_wall_basis(piece.Faces[i], host)
+                                   for i in range(min(2, piece.Faces.Count))]
+                    if operation.get("inspect_wall_bases") else None,
                 })
             finally:
                 properties.Dispose()

@@ -54,7 +54,12 @@ at one quarter and three quarters of the rail. Local blending transitions
 smoothly between each pair of stations. The same wall thickness applies at
 every station. Global blending with interior stations is currently rejected;
 Rhino uses a different global fit for three or more radius samples.
-Interior stations on a polycurve currently require `FitRail=Yes`.
+On a tangent line-and-arc polycurve with `FitRail=No`, stations on a line
+segment or at a segment boundary retain one wall face per original segment.
+The radius at a segment boundary uses a smoothstep transition between the
+nearest explicit stations. Stations inside a curved segment and all stations
+with `FitRail=Yes` on a polycurve are currently rejected; the fitted Rhino
+surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
 Sharp rail corners, other closed rails, and SubD output are still unsupported. A
