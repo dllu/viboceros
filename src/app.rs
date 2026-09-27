@@ -7946,6 +7946,15 @@ impl eframe::App for VibocerosApp {
             .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         let preview_curve = self.curve_draft_preview();
+        let insert_surface_pick = matches!(
+            self.active_command,
+            Some(InteractiveCommand::InsertControlPoint { .. })
+        ) && self.document.selected_object_count() == 1
+            && self
+                .document
+                .selected_objects()
+                .next()
+                .is_some_and(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)));
         let face_pick = if matches!(
             self.active_command,
             Some(
@@ -7969,7 +7978,8 @@ impl eframe::App for VibocerosApp {
                     | InteractiveCommand::ExtendSrf { .. }
                     | InteractiveCommand::EvaluateUv { .. }
             )
-        ) {
+        ) || insert_surface_pick
+        {
             Some(FacePickMode::SurfaceAndBrep)
         } else {
             None
@@ -10691,6 +10701,44 @@ mod tests {
         assert!(matches!(output.geometry(), Geometry::Polyline(boundary) if boundary == &expected));
         assert_eq!(app.document.undo_label(), Some("DupMeshHoleBoundary"));
         assert!(!app.try_start_interactive_command("DupMeshHoleBoundary Boundaries=All"));
+    }
+
+    #[test]
+    fn interactive_surface_control_point_uses_the_rendered_hit_location() {
+        let mut clicked = test_app();
+        clicked.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
+        let source = clicked.document.objects().next().unwrap().id();
+        clicked
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(clicked.try_start_interactive_command("InsertControlPoint Direction=V"));
+        clicked.accept_component_face_hit(source, 0, Some(point(1.5, 1.0, 1.5)));
+        let clicked_geometry = clicked.document.object(source).unwrap().geometry().clone();
+        assert_eq!(clicked.document.undo_label(), Some("InsertControlPoint"));
+
+        let mut scripted = test_app();
+        scripted.execute_command("SrfPt 0,0,0 4,0,4 4,2,4 0,2,0");
+        let source = scripted.document.objects().next().unwrap().id();
+        scripted
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        scripted.execute_command("InsertControlPoint 1.5,1,1.5 Direction=V");
+        assert_eq!(
+            scripted.document.object(source).unwrap().geometry(),
+            &clicked_geometry
+        );
+        scripted.execute_command("Undo");
+        scripted
+            .document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        scripted.execute_command("InsertControlPoint 1.5,1,0 Direction=V");
+        assert_ne!(
+            scripted.document.object(source).unwrap().geometry(),
+            &clicked_geometry
+        );
     }
 
     #[test]
