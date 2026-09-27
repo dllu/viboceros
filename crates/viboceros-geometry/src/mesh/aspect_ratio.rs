@@ -1,11 +1,11 @@
-//! Triangle aspect ratio, extended to all triples of a quad's vertices.
+//! Mesh face aspect ratios from triangles along the shortest quad diagonal.
 
 use super::*;
 
 impl TriangleMesh {
     /// Longest triangle edge divided by its opposite altitude. For a quad,
-    /// returns the maximum over all four vertex triples. A collinear triple
-    /// has infinite aspect ratio.
+    /// returns the larger ratio of its shorter-diagonal triangles. A
+    /// collinear constituent triangle has infinite aspect ratio.
     pub fn face_aspect_ratio(&self, face_index: usize) -> Result<Real, GeometryError> {
         let face = self
             .faces
@@ -14,16 +14,15 @@ impl TriangleMesh {
                 face: face_index,
                 face_count: self.faces.len(),
             })?;
-        let indices = face.indices();
-        let point = |index| self.vertices[indices[index] as usize];
-        let mut ratio: Real = 0.0;
-        let triples: &[[usize; 3]] = if indices.len() == 3 {
-            &[[0, 1, 2]]
-        } else {
-            &[[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]]
+        let triangles = match *face {
+            MeshFace::Triangle(triangle) => [Some(triangle), None],
+            MeshFace::Quad(quad) => mass_triangles::split(&self.vertices, quad).map(Some),
         };
-        for &[a, b, c] in triples {
-            ratio = ratio.max(triangle_aspect_ratio([point(a), point(b), point(c)])?);
+        let mut ratio: Real = 0.0;
+        for triangle in triangles.into_iter().flatten() {
+            ratio = ratio.max(triangle_aspect_ratio(
+                triangle.map(|index| self.vertices[index as usize]),
+            )?);
         }
         Ok(ratio)
     }
@@ -82,7 +81,7 @@ mod tests {
     }
 
     #[test]
-    fn square_uses_the_worst_of_four_triangle_triples() {
+    fn square_ratio_matches_short_diagonal_triangles() {
         let mesh = TriangleMesh::try_new_faces(
             vec![
                 point(0.0, 0.0),
@@ -136,5 +135,67 @@ mod tests {
                 face_count: 1,
             })
         );
+    }
+
+    #[test]
+    fn face_aspect_ratios_match_rhinocommon_observations() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../tools/rhino_oracle/fixtures/mesh_face_metrics.json"
+        ))
+        .unwrap();
+        let observed: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../tools/rhino_oracle/observations/mesh_face_metrics.json"
+        ))
+        .unwrap();
+        let operations = fixture["operations"].as_array().unwrap();
+        let results = observed["results"].as_array().unwrap();
+        assert_eq!(operations.len(), results.len());
+        for (operation, observation) in operations.iter().zip(results) {
+            let id = operation["id"].as_str().unwrap();
+            assert_eq!(id, observation["id"].as_str().unwrap());
+            let vertices = operation["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|array| {
+                    let array = array.as_array().unwrap();
+                    Point3::try_new(
+                        array[0].as_f64().unwrap(),
+                        array[1].as_f64().unwrap(),
+                        array[2].as_f64().unwrap(),
+                    )
+                    .unwrap()
+                })
+                .collect();
+            let faces = operation["faces"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|array| {
+                    let values = array
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|value| value.as_u64().unwrap() as u32)
+                        .collect::<Vec<_>>();
+                    match values.as_slice() {
+                        &[a, b, c] => MeshFace::Triangle([a, b, c]),
+                        &[a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                        _ => panic!("{id}: unsupported face"),
+                    }
+                })
+                .collect();
+            let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::DEFAULT).unwrap();
+            let expected = observation["value"]["aspect_ratios"].as_array().unwrap();
+            assert_eq!(mesh.face_count(), expected.len(), "{id}: face count");
+            for (index, value) in expected.iter().enumerate() {
+                let actual = mesh.face_aspect_ratio(index).unwrap();
+                let expected = value.as_f64().unwrap();
+                assert!(
+                    (actual - expected).abs() <= 1e-8,
+                    "{id}: face {index}: {actual} vs {expected}"
+                );
+            }
+        }
     }
 }

@@ -187,13 +187,16 @@ are excluded. It shares the area command's `MakeCopy` and `BorderOnly` behavior,
 atomic staging, attributes, groups, selection, and undo.
 
 `ExtractMeshFacesByAspectRatio AspectRatio=9` extracts faces whose aspect ratio
-is strictly greater than the threshold. A triangle's ratio is its longest edge
-divided by the opposite altitude. A quad uses the largest ratio among its four
-vertex triples, matching [McNeel's stated quad rule](https://discourse.mcneel.com/t/mesh-elements-aspect-ratio/181343/11).
-A square therefore has ratio 2. Collinear triples count as infinite ratio.
+is at least the threshold. A triangle's ratio is its longest edge divided by
+the opposite altitude. A quad uses the larger ratio of the two triangles
+formed by its shorter diagonal. A square therefore has ratio 2. Collinear
+constituent triangles count as infinite ratio.
 `MakeCopy` and `BorderOnly` use the same output policy as the other metric
-extraction commands. The triangle formula is an independent implementation;
-direct Rhino oracle comparison is still needed for exact threshold parity.
+extraction commands. The retained [face metric fixture](../../tools/rhino_oracle/fixtures/mesh_face_metrics.json),
+[API observations](../../tools/rhino_oracle/observations/mesh_face_metrics.json),
+[command fixture](../../tools/rhino_oracle/fixtures/mesh_aspect_command.json), and
+[command observations](../../tools/rhino_oracle/observations/mesh_aspect_command.json)
+compare Rhino's quad ratio and inclusive extraction threshold.
 
 `ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=45 ViewDirection=0,0,1`
 extracts stored faces whose oriented polygon normal makes an angle in the

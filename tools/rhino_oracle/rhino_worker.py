@@ -5891,6 +5891,41 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "mesh_offset_probe":
         import mesh_offset_probe
         return mesh_offset_probe.run(operation, globals())
+    if operation["op"] == "mesh_face_metrics":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        try:
+            return {"aspect_ratios": [float(mesh.Faces.GetFaceAspectRatio(i))
+                                      for i in range(mesh.Faces.Count)]}, 0
+        finally:
+            mesh.Dispose()
+    if operation["op"] == "mesh_aspect_command_probe":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        document = Rhino.RhinoDoc.ActiveDoc
+        source_id = document.Objects.AddMesh(mesh)
+        created = []
+        try:
+            before = set(obj.Id for obj in document.Objects)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            macro = "! _-ExtractMeshFacesByAspectRatio _SelID {} {}".format(
+                source_id, operation["macro"])
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            history = Rhino.RhinoApp.CommandHistoryWindowText
+            if history.startswith(history_before):
+                history = history[len(history_before):]
+            created = [obj.Id for obj in document.Objects if obj.Id not in before]
+            output = []
+            for identifier in created:
+                obj = document.Objects.FindId(identifier)
+                if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
+                    output.append(_polygon_mesh_value(obj.Geometry))
+            return {"succeeded": succeeded, "history": history,
+                    "created_count": len(created), "output": output}, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for identifier in created:
+                document.Objects.Delete(identifier, True)
+            document.Objects.Delete(source_id, True)
+            mesh.Dispose()
     if operation["op"] == "cap_command":
         import cap_probe
         return cap_probe.run(operation, tolerance, globals())

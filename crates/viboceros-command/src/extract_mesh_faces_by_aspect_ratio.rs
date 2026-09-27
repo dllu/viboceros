@@ -1,4 +1,4 @@
-//! Extract mesh faces whose Rhino-style triangle aspect exceeds a limit.
+//! Extract mesh faces whose Rhino-style triangle aspect meets a limit.
 
 use super::*;
 
@@ -31,7 +31,7 @@ impl Command for ExtractMeshFacesByAspectRatioCommand {
             CommandError::UnsupportedExtractMeshFacesByAspectRatioGeometry,
             CommandError::NoMeshFacesAboveAspectRatio,
             CommandError::NoMeshFaceAspectRatioBorders,
-            |mesh, index| Ok(mesh.face_aspect_ratio(index)? > options.minimum),
+            |mesh, index| Ok(mesh.face_aspect_ratio(index)? >= options.minimum),
         )
     }
 }
@@ -99,7 +99,7 @@ mod tests {
     }
 
     #[test]
-    fn selects_only_faces_strictly_above_the_limit_and_undoes() {
+    fn selects_faces_at_or_above_the_limit_and_undoes() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let source = selected_mesh(&mut document);
@@ -114,7 +114,10 @@ mod tests {
         assert_eq!(document.undo_label(), before.as_deref());
         assert_eq!(
             registry
-                .execute(&mut document, "ExtractMeshFacesByAspectRatio AspectRatio=2")
+                .execute(
+                    &mut document,
+                    "ExtractMeshFacesByAspectRatio AspectRatio=2.1"
+                )
                 .unwrap(),
             "Extracted 1 mesh face(s) from 1 mesh(es); source faces removed"
         );
@@ -142,7 +145,7 @@ mod tests {
         registry
             .execute(
                 &mut document,
-                "ExtractMeshFacesByAspectRatio AspectRatio=2 MakeCopy=Yes",
+                "ExtractMeshFacesByAspectRatio AspectRatio=2.1 MakeCopy=Yes",
             )
             .unwrap();
         let selected = document.selected_objects().collect::<Vec<_>>();
@@ -155,7 +158,7 @@ mod tests {
         registry
             .execute(
                 &mut document,
-                "ExtractMeshFacesByAspectRatio AspectRatio=2 BorderOnly=Yes",
+                "ExtractMeshFacesByAspectRatio AspectRatio=2.1 BorderOnly=Yes",
             )
             .unwrap();
         let selected = document.selected_objects().collect::<Vec<_>>();
@@ -166,6 +169,48 @@ mod tests {
             panic!("mesh expected")
         };
         assert_eq!(original.face_count(), 2);
+    }
+
+    #[test]
+    fn skew_quad_matches_rhino_short_diagonal_and_inclusive_limit() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0),
+                point(3.0, 0.0),
+                point(2.0, 1.0),
+                point(0.0, 1.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            document.tolerance(),
+        )
+        .unwrap();
+        assert_eq!(mesh.face_aspect_ratio(0).unwrap(), 3.0);
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ExtractMeshFacesByAspectRatio AspectRatio=4 MakeCopy=Yes"
+            ),
+            Err(CommandError::NoMeshFacesAboveAspectRatio)
+        ));
+        registry
+            .execute(
+                &mut document,
+                "ExtractMeshFacesByAspectRatio AspectRatio=3 MakeCopy=Yes",
+            )
+            .unwrap();
+        assert_eq!(document.objects().count(), 2);
+        assert!(document.object(source).is_some());
+        let Geometry::Mesh(extracted) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("extracted face must be a mesh");
+        };
+        assert_eq!(extracted.faces(), &[MeshFace::Quad([0, 1, 2, 3])]);
     }
 
     #[test]

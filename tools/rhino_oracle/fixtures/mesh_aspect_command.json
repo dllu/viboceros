@@ -1,0 +1,181 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "skew-quad-threshold-2.5",
+      "op": "mesh_aspect_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_AspectRatio 2.5 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "skew-quad-threshold-3.0",
+      "op": "mesh_aspect_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_AspectRatio 3.0 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "skew-quad-threshold-4.0",
+      "op": "mesh_aspect_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_AspectRatio 4.0 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "warped-quad-threshold-2.4",
+      "op": "mesh_aspect_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_AspectRatio 2.4 _MakeCopy=_Yes _Enter"
+    },
+    {
+      "id": "warped-quad-threshold-2.5",
+      "op": "mesh_aspect_command_probe",
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "faces": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "macro": "_AspectRatio 2.5 _MakeCopy=_Yes _Enter"
+    }
+  ]
+}

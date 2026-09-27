@@ -1,0 +1,190 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "skew-quad-threshold-2.5",
+      "value": {
+        "created_count": 1,
+        "history": "Python Script ( ResetEngine ): _-ExtractMeshFacesByAspectRatio\nSelect mesh: _SelID\nObject ID to select: 4f3fc8c5-f27b-4e5e-8766-5ef31946b5d4\n1 mesh added to selection.\nChange option or press Enter to accept ( AspectRatio=3  BorderOnly=No  MakeCopy=No ): _AspectRatio\nSelect mesh face <3.000>: 2.5\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=No ): _MakeCopy=_Yes\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "skew-quad-threshold-3.0",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByAspectRatio\nSelect mesh: _SelID\nObject ID to select: c8150b1b-3475-4212-aa9e-32c63ce0f65e\n1 mesh added to selection.\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes ): _AspectRatio\nSelect mesh face <2.500>: 3.0\nChange option or press Enter to accept ( AspectRatio=3  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( AspectRatio=3  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( AspectRatio=3  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "skew-quad-threshold-4.0",
+      "value": {
+        "created_count": 0,
+        "history": "Command: _-ExtractMeshFacesByAspectRatio\nSelect mesh: _SelID\nObject ID to select: d3deb7af-4eb1-4bf5-99b9-7bb02a504926\n1 mesh added to selection.\nChange option or press Enter to accept ( AspectRatio=3  BorderOnly=No  MakeCopy=Yes ): _AspectRatio\nSelect mesh face <3.000>: 4.0\nChange option or press Enter to accept ( AspectRatio=4  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( AspectRatio=4  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( AspectRatio=4  BorderOnly=No  MakeCopy=Yes )\n",
+        "output": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "warped-quad-threshold-2.4",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByAspectRatio\nSelect mesh: _SelID\nObject ID to select: 4eda5729-353e-4003-afa6-76a376f8b8c3\n1 mesh added to selection.\nChange option or press Enter to accept ( AspectRatio=4  BorderOnly=No  MakeCopy=Yes ): _AspectRatio\nSelect mesh face <4.000>: 2.4\nChange option or press Enter to accept ( AspectRatio=2.4  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( AspectRatio=2.4  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( AspectRatio=2.4  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "warped-quad-threshold-2.5",
+      "value": {
+        "created_count": 1,
+        "history": "Command: _-ExtractMeshFacesByAspectRatio\nSelect mesh: _SelID\nObject ID to select: 1e5dddaf-a7d6-4a9f-8dc9-36463d994e24\n1 mesh added to selection.\nChange option or press Enter to accept ( AspectRatio=2.4  BorderOnly=No  MakeCopy=Yes ): _AspectRatio\nSelect mesh face <2.400>: 2.5\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes ): _MakeCopy=_Yes\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes ): _Enter\nChange option or press Enter to accept ( AspectRatio=2.5  BorderOnly=No  MakeCopy=Yes )\nCopied 1 face.\n",
+        "output": [
+          {
+            "faces": [
+              [
+                0,
+                1,
+                2,
+                3
+              ]
+            ],
+            "vertices": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                1.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

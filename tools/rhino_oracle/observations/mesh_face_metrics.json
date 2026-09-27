@@ -1,0 +1,63 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "right-triangle",
+      "value": {
+        "aspect_ratios": [
+          2.5
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "square-quad",
+      "value": {
+        "aspect_ratios": [
+          2.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rectangle-quad",
+      "value": {
+        "aspect_ratios": [
+          3.333333333333334
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "skew-quad",
+      "value": {
+        "aspect_ratios": [
+          3.0
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "warped-quad",
+      "value": {
+        "aspect_ratios": [
+          2.5
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-faces",
+      "value": {
+        "aspect_ratios": [
+          2.5,
+          2.0
+        ]
+      }
+    }
+  ]
+}
