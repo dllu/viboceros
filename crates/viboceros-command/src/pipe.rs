@@ -555,9 +555,6 @@ fn station_pipe(
         },
     )?;
     let make_surface = |profile: &[(Real, Real)]| -> Result<NurbsSurface, CommandError> {
-        if matches!(source, Geometry::Line(_)) {
-            return straight_station_surface(frames[0], profile);
-        }
         let sections = profile
             .iter()
             .zip(&frames)
@@ -566,7 +563,7 @@ fn station_pipe(
             })
             .collect::<Result<Vec<_>, _>>()?;
         let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
-        if matches!(source, Geometry::Line(_) | Geometry::Arc(_)) {
+        if matches!(source, Geometry::Arc(_)) {
             Ok(sweep.fit_model_surface()?)
         } else {
             Ok(sweep.to_surface()?)
@@ -576,11 +573,7 @@ fn station_pipe(
         let surface = make_surface(profile)?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
         let wall = Brep::try_surface_grid(&surface, &u, &v, tolerance)?;
-        Ok(if matches!(source, Geometry::Line(_)) {
-            wall
-        } else {
-            wall.reversed()
-        })
+        Ok(wall.reversed())
     };
     if let Some(thickness) = wall_thickness {
         let second = profile
@@ -610,60 +603,6 @@ fn station_pipe(
         )?));
     }
     Ok(Geometry::Brep(cap_wall(wall, cap, tolerance)?))
-}
-
-fn straight_station_surface(
-    frame: Frame3,
-    profile: &[(Real, Real)],
-) -> Result<NurbsSurface, CommandError> {
-    let start = profile[0].0;
-    let height = profile.last().expect("endpoint profile").0 - start;
-    let unit_cylinder = NurbsSurface::try_cylinder(frame, 1.0, 0.0, height)?;
-    let circle_controls = &unit_cylinder.control_points()[..unit_cylinder.control_point_count_u()];
-    let mut rows = Vec::with_capacity(3 * profile.len() - 2);
-    for (index, pair) in profile.windows(2).enumerate() {
-        let [(a, ra), (b, rb)] = [pair[0], pair[1]];
-        for (j, (t, radius)) in [
-            (a, ra),
-            (a + (b - a) / 3.0, ra),
-            (a + 2.0 * (b - a) / 3.0, rb),
-            (b, rb),
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            if index > 0 && j == 0 {
-                continue;
-            }
-            rows.push((t - start, radius));
-        }
-    }
-    let mut controls = Vec::with_capacity(rows.len() * circle_controls.len());
-    for (distance, radius) in rows {
-        let offset = frame.z_axis().as_vector().scaled(distance)?;
-        for control in circle_controls {
-            let radial = frame.origin().vector_to(control.point())?;
-            let point = frame
-                .origin()
-                .translated(radial.scaled(radius)?)?
-                .translated(offset)?;
-            controls.push(WeightedPoint3::try_new(point, control.weight())?);
-        }
-    }
-    let mut knots = vec![0.0; 4];
-    for &(t, _) in &profile[1..profile.len() - 1] {
-        knots.extend([t - start; 3]);
-    }
-    knots.extend([height; 4]);
-    Ok(NurbsSurface::try_new_rational(
-        unit_cylinder.degree_u(),
-        3,
-        circle_controls.len(),
-        3 * profile.len() - 2,
-        controls,
-        unit_cylinder.knots_u().to_vec(),
-        knots,
-    )?)
 }
 
 fn circular_section(
@@ -1455,7 +1394,7 @@ mod tests {
             panic!("open station pipe should be a surface")
         };
         for (z, radius) in [(0.5, 1.104), (2.5, 2.0), (4.5, 1.104)] {
-            let point = surface.evaluate(*surface.domain_u().start(), z).unwrap();
+            let point = surface.evaluate(z, *surface.domain_v().start()).unwrap();
             assert!((point.x().hypot(point.y()) - radius).abs() < 1e-10);
         }
         registry
@@ -1468,7 +1407,7 @@ mod tests {
             panic!("multi-station pipe should be a surface")
         };
         for (z, radius) in [(1.25, 1.5), (3.75, 2.0), (5.0, 1.0)] {
-            let point = surface.evaluate(*surface.domain_u().start(), z).unwrap();
+            let point = surface.evaluate(z, *surface.domain_v().start()).unwrap();
             assert!((point.x().hypot(point.y()) - radius).abs() < 1e-10);
         }
         registry
@@ -1488,6 +1427,74 @@ mod tests {
             (measured - expected).abs() < 1e-6,
             "{measured} vs {expected}"
         );
+    }
+
+    #[test]
+    fn straight_local_stations_match_rhino_volumes() {
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(0., 0., 5.), Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        for (end_radius, stations, expected) in [
+            (1.0, "0.5:2", 37.250313352254224),
+            (1.2, "0.25:1.5,0.75:2", 40.99960133023945),
+            (2.0, "0.25:1.4,0.75:1.8", 40.1960120376526),
+        ] {
+            registry
+                .execute(
+                    &mut document,
+                    &format!(
+                        "Pipe {source} 1 {end_radius} Stations={stations} ShapeBlending=Local Cap=Flat"
+                    ),
+                )
+                .unwrap();
+            let Geometry::Brep(pipe) = document.objects().last().unwrap().geometry() else {
+                panic!("station pipe should be a B-rep")
+            };
+            assert!(pipe.is_closed(), "{stations}");
+            assert!(pipe.is_solid(), "{stations}");
+            assert_eq!(pipe.faces().len(), 3, "{stations}");
+            let measured = pipe.signed_volume(Tolerance::DEFAULT).unwrap();
+            assert!(
+                (measured - expected).abs() < 5e-6,
+                "{stations}: {measured} vs {expected}"
+            );
+        }
+        registry
+            .execute(
+                &mut document,
+                &format!("Pipe {source} 1 1.2 Stations=0.25:1.5,0.75:2 Cap=None"),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(surface) = document.objects().last().unwrap().geometry() else {
+            panic!("open station pipe should be a surface")
+        };
+        assert_eq!(surface.degree_u(), 3);
+        assert_eq!(surface.control_point_count_u(), 10);
+        for (index, expected) in [
+            1.0,
+            0.994613743,
+            1.276931283,
+            1.538819894,
+            1.577445556,
+            1.88731348,
+            2.107178385,
+            1.629006755,
+            1.194198649,
+            1.2,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let point = surface.control_point(index, 0).unwrap().point();
+            assert!(
+                (point.x().hypot(point.y()) - expected).abs() < 2e-5,
+                "control {index}: {point:?} vs radius {expected}"
+            );
+        }
     }
 
     #[test]

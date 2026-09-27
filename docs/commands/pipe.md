@@ -50,10 +50,11 @@ use nested tori. In the viewport, `Pipe Thick=Yes` asks for two radius points.
 
 `Stations=` supplies interior radius samples as normalized rail parameters in
 strictly increasing order. For example, `Stations=0.25:1.5,0.75:2` sets radii
-at one quarter and three quarters of the rail. Local blending transitions
-smoothly between each pair of stations. The same wall thickness applies at
-every station. Global blending with interior stations is currently rejected;
-Rhino uses a different global fit for three or more radius samples.
+at one quarter and three quarters of the rail. Local blending fits a cubic
+sweep through the stations; straight-rail cases with one or two interior
+stations match Rhino's face counts and volumes within `5e-6`. The same wall
+thickness applies at every station. Global blending with interior stations is
+currently rejected; Rhino's fit changes intermediate cross sections.
 On a tangent line-and-arc polycurve with `FitRail=No`, stations on a line
 segment or at a segment boundary retain one wall face per original segment.
 The radius at a segment boundary uses a smoothstep transition between the

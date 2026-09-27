@@ -158,6 +158,45 @@
     },
     {
       "op": "pipe_round_probe",
+      "id": "line-stations-asymmetric-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.2,
+      "stations": [[0.25, 1.5], [0.75, 2.0]],
+      "inspect_basis": true,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-stations-asymmetric-global",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 1.2,
+      "stations": [[0.25, 1.5], [0.75, 2.0]],
+      "local_blending": false,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-stations-monotone-local",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 2.0,
+      "stations": [[0.25, 1.4], [0.75, 1.8]],
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "line-stations-monotone-global",
+      "rail": "line",
+      "radius": 1.0,
+      "end_radius": 2.0,
+      "stations": [[0.25, 1.4], [0.75, 1.8]],
+      "local_blending": false,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
       "id": "arc-station-local",
       "rail": "arc",
       "radius": 0.5,
