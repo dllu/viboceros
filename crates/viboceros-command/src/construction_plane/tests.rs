@@ -86,6 +86,20 @@ fn all_viewport_actions_resolve_the_active_plane_input_once() {
 }
 
 #[test]
+fn view_option_is_a_camera_dependent_action() {
+    let frame = WorldPlane::Front.frame();
+    assert_eq!(
+        parse_action("_CPlane _View", frame),
+        PlaneAction::AlignToView
+    );
+    assert!(
+        parse("CPlane View Extra", frame, None, Tolerance::DEFAULT)
+            .unwrap()
+            .is_err()
+    );
+}
+
+#[test]
 fn origin_and_through_remember_independent_all_options() {
     let frame = WorldPlane::Top.frame();
     let mut options = PlaneOptions::default();

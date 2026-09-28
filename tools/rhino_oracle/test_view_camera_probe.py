@@ -1,4 +1,4 @@
-"""Whitelist and cleanup checks for the SetView CPlane camera oracle."""
+"""Whitelist and cleanup checks for the camera and CPlane View oracle."""
 from copy import deepcopy
 import json
 from math import sqrt
@@ -19,6 +19,20 @@ def fixture():
 
 
 class CameraProbeTests(unittest.TestCase):
+    def test_recorded_cplane_view_uses_camera_target_and_right_up_axes(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/construction_plane_view.json").read_text())
+        response = json.loads((root / "observations/construction_plane_view.json").read_text())
+        for operation, record in zip(request["operations"], response["results"]):
+            self.assertEqual(operation["id"], record["id"])
+            rows = record["value"]
+            report = view_camera_probe.compare_cplane_view(operation, rows)
+            self.assertTrue(report["passed"])
+            self.assertLess(max(row["cplane_error"] for row in report["views"]), 1e-14)
+            changed = deepcopy(rows)
+            changed[1]["cplane_origin"][0] += 0.01
+            self.assertFalse(view_camera_probe.compare_cplane_view(operation, changed)["passed"])
+
     def test_recorded_plan_probe_checks_parallel_zoom_and_marks_perspective_limit(self):
         root = Path(__file__).parent
         operation = json.loads((root / "fixtures/view_camera_plan.json").read_text())["operations"][0]
@@ -82,9 +96,11 @@ class CameraProbeTests(unittest.TestCase):
     def test_whitelist_rejects_unbounded_or_malformed_input(self):
         view_camera_probe.validate(fixture())
         view_camera_probe.validate(dict(fixture(), directions=["Plan"]))
+        view_camera_probe.validate(dict(fixture(), directions=["CPlaneView"]))
         for mutation in [
             dict(origin=[0, 0, float("nan")]),
             dict(origin=[True, 0, 0]),
+            dict(camera_target=[0, float("inf"), 0]),
             dict(projections=["Top", "Top"]),
             dict(projections=["_Delete"]),
             dict(directions=["Top", "Top"]),
@@ -97,6 +113,7 @@ class CameraProbeTests(unittest.TestCase):
             view_camera_probe.script("_Delete")
         self.assertEqual(view_camera_probe.script("Back"), "_SetView _CPlane _Back")
         self.assertEqual(view_camera_probe.script("Plan"), "_Plan")
+        self.assertEqual(view_camera_probe.script("CPlaneView"), "_CPlane _View")
 
     def test_probe_restores_projection_target_and_name_after_command_failure(self):
         class Vector:

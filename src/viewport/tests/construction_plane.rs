@@ -66,6 +66,79 @@ fn oblique_plane() -> Frame3 {
 }
 
 #[test]
+fn cplane_view_uses_the_visual_camera_target_and_screen_axes() {
+    let mut top = Viewport::new(ViewKind::Top);
+    top.target = NaVector3::new(3., 4., 5.);
+    top.pan = Vec2::new(20., -40.);
+    let top_camera = top.camera_snapshot();
+    let aligned = top.construction_plane_aligned_to_view().unwrap();
+    assert_eq!(aligned.origin(), point(2.5, 3., 5.));
+    assert_eq!(aligned.axes(), WorldPlane::Top.frame().axes());
+    assert_eq!(top.camera_snapshot(), top_camera);
+
+    for (kind, preset) in [
+        (ViewKind::Top, WorldPlane::Top),
+        (ViewKind::Bottom, WorldPlane::Bottom),
+        (ViewKind::Front, WorldPlane::Front),
+        (ViewKind::Back, WorldPlane::Back),
+        (ViewKind::Right, WorldPlane::Right),
+        (ViewKind::Left, WorldPlane::Left),
+    ] {
+        let mut view = Viewport::new(kind);
+        view.target = NaVector3::new(3., 4., 5.);
+        let aligned = view.construction_plane_aligned_to_view().unwrap();
+        assert_eq!(aligned.origin(), point(3., 4., 5.));
+        assert_eq!(aligned.axes(), preset.frame().axes());
+    }
+
+    let mut plan = Viewport::new(ViewKind::Top);
+    plan.plane.set(oblique_plane());
+    plan.set_cplane_view(WorldPlane::Top);
+    let camera_frame = plan.plan_frame;
+    plan.plane.set(WorldPlane::Top.frame());
+    let aligned = plan.construction_plane_aligned_to_view().unwrap();
+    assert_eq!(aligned.origin(), camera_frame.origin());
+    for (actual, expected) in aligned.axes().into_iter().zip(camera_frame.axes()) {
+        for (actual, expected) in actual
+            .as_vector()
+            .to_array()
+            .into_iter()
+            .zip(expected.as_vector().to_array())
+        {
+            assert!((actual - expected).abs() < 1e-14);
+        }
+    }
+
+    let mut perspective = Viewport::new(ViewKind::Perspective);
+    perspective.target = NaVector3::new(3., 4., 5.);
+    perspective.orbit_yaw = -std::f64::consts::FRAC_PI_3;
+    let perspective_camera = perspective.camera_snapshot();
+    let aligned = perspective.construction_plane_aligned_to_view().unwrap();
+    assert_eq!(aligned.origin(), point(3., 4., 5.));
+    let expected_x = [0.8660254037844387, 0.5, 0.];
+    let expected_y = [-0.25, 0.43301270189221935, 0.8660254037844387];
+    for (actual, expected) in aligned
+        .x_axis()
+        .as_vector()
+        .to_array()
+        .into_iter()
+        .zip(expected_x)
+    {
+        assert!((actual - expected).abs() < 1e-14);
+    }
+    for (actual, expected) in aligned
+        .y_axis()
+        .as_vector()
+        .to_array()
+        .into_iter()
+        .zip(expected_y)
+    {
+        assert!((actual - expected).abs() < 1e-14);
+    }
+    assert_eq!(perspective.camera_snapshot(), perspective_camera);
+}
+
+#[test]
 fn cplane_edits_do_not_move_camera_projection_depth_or_gpu_matrices() {
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
     for kind in [

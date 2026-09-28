@@ -5,7 +5,7 @@ use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | World Top|Bottom|Front|Back|Right|Left | 3Point origin x-point y-point | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin x-point y-point | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -71,6 +71,7 @@ pub enum PlaneAction {
     Set(Frame3),
     SetAllOrigin(Point3),
     SetThroughAll(Point3),
+    AlignToView,
     Undo,
     Redo,
     Prompt(PlanePromptKind),
@@ -203,6 +204,7 @@ fn parse_arguments(
         }),
         [name] if keyword(name, "Undo") => PlaneAction::Undo,
         [name] if keyword(name, "Redo") => PlaneAction::Redo,
+        [name] if keyword(name, "View") => PlaneAction::AlignToView,
         [name] if keyword(name, "3Point") => PlaneAction::Prompt(PlanePromptKind::ThreePoint),
         [name] if keyword(name, "Elevation") => PlaneAction::Prompt(PlanePromptKind::Elevation),
         [name] if keyword(name, "Through") => PlaneAction::Prompt(if options.through_all {

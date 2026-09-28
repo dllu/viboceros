@@ -12,6 +12,7 @@ primitives, and plane-aware transforms use that frame.
 | --- | --- |
 | `CPlane point` | Move the origin, retaining all axes. |
 | `CPlane All point` | Move every viewport's plane origin to the same world point, retaining each viewport's axes. |
+| `CPlane View` | Put the active plane at the camera target, with X and Y along screen right and up. |
 | `CPlane World Top\|Bottom\|Front\|Back\|Right\|Left` | Restore a world preset at the world origin. |
 | `CPlane 3Point origin x-point y-point` | Set X toward the second point; the third determines the positive XY half-plane. |
 | `CPlane Elevation distance` | Move along the plane's normal by a signed distance. |
@@ -38,6 +39,11 @@ role; this also applies to Top. Renamed user views are left alone.
 `SetView=No` updates only construction planes; `SetView=Yes` also points the
 parallel cameras along those planes. Perspective's camera stays in place. The
 default is `SetView=Yes`.
+
+`CPlane View` reads the current viewport camera, including its effective
+parallel-view pan target, and changes only that viewport's construction plane.
+It preserves camera position, direction, and projection. At the bare `CPlane`
+origin prompt, type `View` to apply the same option.
 
 Points accept the regular local/world/relative coordinate syntax; prefix `w`
 for world coordinates. Angles are degrees. For example:
@@ -131,7 +137,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-View/Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
+Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
 rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
 commands with a picked source viewport remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction

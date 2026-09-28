@@ -90,6 +90,11 @@ fn apply_step(
         PlaneAction::Prompt(_) => {
             return Err(ProbeError::FixtureInvariant("incomplete CPlane fixture"));
         }
+        PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) | PlaneAction::AlignToView => {
+            return Err(ProbeError::FixtureInvariant(
+                "CPlane fixture requires a viewport-specific action",
+            ));
+        }
     }
     Ok(())
 }

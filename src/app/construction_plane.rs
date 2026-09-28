@@ -279,6 +279,17 @@ impl VibocerosApp {
             ));
             return true;
         }
+        let action = if action == PlaneAction::AlignToView {
+            match self.viewports[viewport].construction_plane_aligned_to_view() {
+                Ok(frame) => PlaneAction::Set(frame),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            }
+        } else {
+            action
+        };
         let state = &mut self.viewports[viewport].plane;
         let changed = match action {
             PlaneAction::Set(frame) => state.set(frame),
@@ -286,6 +297,7 @@ impl VibocerosApp {
             PlaneAction::Redo => state.redo(),
             PlaneAction::Prompt(_) => unreachable!(),
             PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) => unreachable!(),
+            PlaneAction::AlignToView => unreachable!(),
         };
         self.push_log(
             if changed {
@@ -316,6 +328,17 @@ impl VibocerosApp {
         {
             self.cancel_plane_prompt();
             return false;
+        }
+        if matches!(
+            prompt.kind,
+            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+        ) && input.trim_start_matches('_').eq_ignore_ascii_case("View")
+        {
+            let viewport = prompt.viewport;
+            self.plane_prompt = None;
+            self.apply_plane_action(PlaneAction::AlignToView, viewport);
+            self.command_input.clear();
+            return true;
         }
         if input.is_empty()
             && prompt.points.is_empty()

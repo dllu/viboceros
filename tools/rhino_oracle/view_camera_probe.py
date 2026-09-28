@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Bounded public-RhinoCommon camera probe for SetView CPlane and Plan."""
+"""Bounded public-RhinoCommon camera probe for SetView, Plan, and CPlane View."""
 import math
 
 
@@ -29,6 +29,8 @@ def validate(operation):
         raise ValueError("unsupported camera probe operation")
     for name in ("origin", "x_axis", "y_axis"):
         _point(operation.get(name), name)
+    if "camera_target" in operation:
+        _point(operation["camera_target"], "camera_target")
     projections = operation.get("projections")
     directions = operation.get("directions")
     if not isinstance(projections, list) or not projections or len(projections) > 2 \
@@ -37,15 +39,17 @@ def validate(operation):
         raise ValueError("camera probe projections must be distinct Top/Perspective values")
     if not isinstance(directions, list) or not directions or len(directions) > 6 \
             or any(not isinstance(value, string_types) for value in directions) \
-            or (directions != ["Plan"] and
+            or (directions not in (["Plan"], ["CPlaneView"]) and
                 (any(value not in DIRECTIONS for value in directions)
                  or len(set(directions)) != len(directions))):
-        raise ValueError("camera probe directions must be Plan or distinct standard CPlane views")
+        raise ValueError("camera probe directions must be Plan, CPlaneView, or distinct standard CPlane views")
 
 
 def script(direction):
     if direction == "Plan":
         return "_Plan"
+    if direction == "CPlaneView":
+        return "_CPlane _View"
     if direction not in DIRECTIONS:
         raise ValueError("unsupported CPlane view")
     return "_SetView _CPlane _" + direction
@@ -103,7 +107,8 @@ def _screen_scale(viewport, Rhino, point):
 
 
 def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before,
-              scale_before, target_scale_before, target_before, near_before, origin):
+              scale_before, target_scale_before, target_before, near_before, origin,
+              camera_before):
     plane = viewport.ConstructionPlane()
     result = dict(
         projection=projection, direction=direction,
@@ -119,6 +124,9 @@ def _snapshot(viewport, Rhino, projection, direction, distance_before, width_bef
         cplane_x=_unit(plane.XAxis),
         cplane_y=_unit(plane.YAxis),
     )
+    if direction == "CPlaneView":
+        result["camera_target_before"] = target_before
+        result.update(camera_before)
     if scale_before is not None:
         result["screen_scale_before"] = scale_before
         result["screen_scale"] = _screen_scale(viewport, Rhino, origin)
@@ -153,6 +161,9 @@ def run(operation, viewport, host):
             for direction in operation["directions"]:
                 if not viewport.SetProjection(defined, "SetView camera probe", False):
                     raise ValueError("could not set camera probe projection")
+                if "camera_target" in operation:
+                    viewport.SetCameraTarget(
+                        Rhino.Geometry.Point3d(*operation["camera_target"]), True)
                 if viewport.SetConstructionPlane(plane) is False:
                     raise ValueError("could not set camera probe CPlane")
                 distance_before = _camera_distance(viewport)
@@ -160,17 +171,24 @@ def run(operation, viewport, host):
                 scale_before = (_screen_scale(viewport, Rhino, origin)
                                 if direction == "Plan" else None)
                 target_before = (_xyz(viewport.CameraTarget)
-                                 if direction == "Plan" else None)
+                                 if direction in ("Plan", "CPlaneView") else None)
                 target_scale_before = (_screen_scale(viewport, Rhino, target_before)
                                        if direction == "Plan" else None)
                 near_before = (_frustum_near(viewport, Rhino)
                                if direction == "Plan" else None)
+                camera_before = (dict(
+                    camera_location_before=_xyz(viewport.CameraLocation),
+                    camera_direction_before=_unit(viewport.CameraDirection),
+                    camera_up_before=_unit(viewport.CameraUp),
+                ) if direction == "CPlaneView" else None)
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
-                    raise ValueError("SetView CPlane command failed")
+                    raise ValueError("%s command failed" % (
+                        "CPlane View" if direction == "CPlaneView" else "SetView CPlane"))
                 results.append(_snapshot(viewport, Rhino, projection, direction,
                                          distance_before, width_before,
                                          scale_before, target_scale_before,
-                                         target_before, near_before, origin))
+                                         target_before, near_before, origin,
+                                         camera_before))
         return results
     finally:
         errors = []
@@ -206,6 +224,44 @@ def _maximum_difference(a, b):
     return max(abs(left - right) for left, right in zip(a, b))
 
 
+def compare_cplane_view(operation, rows, epsilon=1.0e-9):
+    """Check the observed CPlane View transition against camera-aligned planes."""
+    validate(operation)
+    if operation["directions"] != ["CPlaneView"]:
+        raise ValueError("expected CPlaneView directions")
+    if not _finite(float(epsilon)) or epsilon < 0.0:
+        raise ValueError("invalid camera comparison epsilon")
+    if not isinstance(rows, list) or len(rows) != len(operation["projections"]):
+        raise ValueError("camera probe did not return every requested view")
+    results = []
+    for row, projection in zip(rows, operation["projections"]):
+        if row["projection"] != projection or row["direction"] != "CPlaneView":
+            raise ValueError("camera probe view order changed")
+        vectors = {name: _point(row.get(name), name) for name in (
+            "camera_location", "camera_location_before", "camera_direction",
+            "camera_direction_before", "camera_up", "camera_up_before",
+            "camera_target", "camera_target_before", "cplane_origin",
+            "cplane_x", "cplane_y")}
+        forward = _normalized(vectors["camera_direction_before"])
+        up = _normalized(vectors["camera_up_before"])
+        right = _normalized(_cross(forward, up))
+        up = _normalized(_cross(right, forward))
+        plane_error = max(
+            _maximum_difference(vectors["cplane_origin"], vectors["camera_target_before"]),
+            _maximum_difference(vectors["cplane_x"], right),
+            _maximum_difference(vectors["cplane_y"], up),
+        )
+        camera_error = max(_maximum_difference(vectors[name], vectors[name + "_before"])
+                           for name in ("camera_location", "camera_direction", "camera_up",
+                                        "camera_target"))
+        projection_matches = bool(row["perspective"]) == (projection == "Perspective")
+        passed = plane_error <= epsilon and camera_error <= epsilon and projection_matches
+        results.append(dict(projection=projection, passed=passed,
+                            cplane_error=plane_error, camera_error=camera_error,
+                            projection_matches=projection_matches))
+    return dict(passed=all(row["passed"] for row in results), views=results)
+
+
 def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     """Compare recorded public camera state with the implemented camera rule.
 
@@ -217,6 +273,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     remains diagnostic until native frustum conversion is represented.
     """
     validate(operation)
+    if operation["directions"] == ["CPlaneView"]:
+        return compare_cplane_view(operation, rows, epsilon)
     if not _finite(float(epsilon)) or epsilon < 0.0:
         raise ValueError("invalid camera comparison epsilon")
     expected_x = _normalized(_point(operation["x_axis"], "x_axis"))
@@ -336,9 +394,19 @@ if __name__ == "__main__":
         request = json.load(stream)
     with open(sys.argv[2]) as stream:
         response = json.load(stream)
-    operation = request["operations"][0]
-    rows = response["results"][0]["value"]
-    result = compare_to_viboceros(operation, rows)
+    operations = request["operations"]
+    records = response["results"]
+    if len(operations) != len(records):
+        raise SystemExit("camera probe operation count changed")
+    comparisons = []
+    for operation, record in zip(operations, records):
+        if operation["id"] != record["id"]:
+            raise SystemExit("camera probe operation order changed")
+        comparisons.append(dict(id=operation["id"],
+                                **compare_to_viboceros(operation, record["value"])))
+    result = (comparisons[0] if len(comparisons) == 1 else
+              dict(passed=all(item["passed"] for item in comparisons),
+                   operations=comparisons))
     print(json.dumps(result, indent=2, sort_keys=True))
     if not result["passed"]:
         raise SystemExit(1)

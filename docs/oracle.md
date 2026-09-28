@@ -12,6 +12,29 @@ all plane axes and camera targets unchanged. Regenerate it with:
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_all.json --timeout 180
 ```
 
+The [CPlane View fixture](../tools/rhino_oracle/fixtures/construction_plane_view.json)
+uses the public viewport API to place an oblique CPlane in Top and Perspective
+views, then runs `_CPlane _View`. Its [Rhino 8.32 observation](../tools/rhino_oracle/observations/construction_plane_view.json)
+shows that the new plane origin is the camera target, and X/Y match camera
+right/up even when the old CPlane had a different origin and axes. The camera
+target and direction remain unchanged. Both zero and offset targets were
+captured in a private Xvfb session. Regenerate with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_view.json --timeout 300
+```
+
+Compare all four recorded states with:
+
+```sh
+python3 -m tools.rhino_oracle.view_camera_probe \
+  tools/rhino_oracle/fixtures/construction_plane_view.json \
+  tools/rhino_oracle/observations/construction_plane_view.json
+```
+
+The largest component difference from the camera alignment rule is `5.56e-17`;
+recorded camera changes are zero.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

@@ -1,0 +1,272 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "cplane-view-oblique-origin",
+      "value": [
+        {
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_direction_before": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_distance_before": 102.22596637953806,
+          "camera_location": [
+            0.0,
+            0.0,
+            102.22596637953806
+          ],
+          "camera_location_before": [
+            0.0,
+            0.0,
+            102.22596637953806
+          ],
+          "camera_target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "camera_target_before": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "camera_up": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "camera_up_before": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "cplane_origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "cplane_x": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "cplane_y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "direction": "CPlaneView",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
+          "perspective": false,
+          "projection": "Top"
+        },
+        {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_direction_before": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_distance_before": 102.22596637953806,
+          "camera_location": [
+            44.26514190554695,
+            -76.66947478465354,
+            51.11298318976903
+          ],
+          "camera_location_before": [
+            44.26514190554695,
+            -76.66947478465354,
+            51.11298318976903
+          ],
+          "camera_target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "camera_target_before": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "camera_up_before": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "cplane_x": [
+            0.8660254037844387,
+            0.5,
+            5.551115123125783e-17
+          ],
+          "cplane_y": [
+            -0.25000000000000006,
+            0.43301270189221935,
+            0.8660254037844387
+          ],
+          "direction": "CPlaneView",
+          "frustum_width": 92.2835185022301,
+          "frustum_width_before": 93.38536796387996,
+          "perspective": true,
+          "projection": "Perspective"
+        }
+      ]
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cplane-view-offset-camera-target",
+      "value": [
+        {
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_direction_before": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_distance_before": 102.22596637953806,
+          "camera_location": [
+            3.0,
+            4.0,
+            107.22596637953806
+          ],
+          "camera_location_before": [
+            3.0,
+            4.0,
+            107.22596637953806
+          ],
+          "camera_target": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "camera_target_before": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "camera_up": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "camera_up_before": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "cplane_origin": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "cplane_x": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "cplane_y": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "direction": "CPlaneView",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
+          "perspective": false,
+          "projection": "Top"
+        },
+        {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_direction_before": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_distance_before": 102.22596637953806,
+          "camera_location": [
+            47.26514190554695,
+            -72.66947478465354,
+            56.11298318976903
+          ],
+          "camera_location_before": [
+            47.26514190554695,
+            -72.66947478465354,
+            56.11298318976903
+          ],
+          "camera_target": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "camera_target_before": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "camera_up_before": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "cplane_x": [
+            0.8660254037844387,
+            0.5,
+            5.551115123125783e-17
+          ],
+          "cplane_y": [
+            -0.25000000000000006,
+            0.43301270189221935,
+            0.8660254037844387
+          ],
+          "direction": "CPlaneView",
+          "frustum_width": 93.01691715677462,
+          "frustum_width_before": 98.02098440223614,
+          "perspective": true,
+          "projection": "Perspective"
+        }
+      ]
+    }
+  ]
+}

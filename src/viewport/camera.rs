@@ -54,6 +54,38 @@ fn real_to_gpu(value: Real) -> Option<f32> {
 }
 
 impl Viewport {
+    /// Rhino's CPlane View uses the camera target as origin and screen right/up
+    /// as the plane axes. Parallel pan is represented separately in this camera.
+    pub(crate) fn construction_plane_aligned_to_view(&self) -> Result<Frame3, GeometryError> {
+        let (right, up) = if self.kind == ViewKind::Perspective {
+            let (right, up, _) = self.perspective_basis();
+            (right, up)
+        } else {
+            let frame = if self.kind == ViewKind::Plan {
+                self.plan_frame
+            } else {
+                Self::default_plane(self.kind)
+            };
+            (
+                NaVector3::from(frame.x_axis().as_vector().to_array()),
+                NaVector3::from(frame.y_axis().as_vector().to_array()),
+            )
+        };
+        let target = if self.kind == ViewKind::Perspective {
+            self.target
+        } else {
+            let scale = Real::from(self.pixels_per_unit);
+            self.target - right * (Real::from(self.pan.x) / scale)
+                + up * (Real::from(self.pan.y) / scale)
+        };
+        Frame3::try_from_directions(
+            Point3::try_from([target.x, target.y, target.z])?,
+            Vector3::try_from([right.x, right.y, right.z])?,
+            Vector3::try_from([up.x, up.y, up.z])?,
+            Tolerance::DEFAULT,
+        )
+    }
+
     /// Direction from the model toward the camera for face-angle commands.
     pub(crate) fn viewward_direction(&self) -> Vector3 {
         match self.kind {

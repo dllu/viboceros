@@ -89,6 +89,30 @@ fn cplane_all_prompts_resolve_typed_world_points() {
 }
 
 #[test]
+fn cplane_view_aligns_only_the_active_plane_without_moving_its_camera() {
+    let mut app = test_app();
+    app.active_viewport = 1;
+    let old = app.viewports[1].construction_plane();
+    let other = app.viewports[0].construction_plane();
+    let expected = app.viewports[1]
+        .construction_plane_aligned_to_view()
+        .unwrap();
+    let camera = app.viewports[1].camera_snapshot();
+    enter(&mut app, "CPlane View");
+    assert_eq!(app.viewports[1].construction_plane(), expected);
+    assert_eq!(app.viewports[1].camera_snapshot(), camera);
+    assert_eq!(app.viewports[0].construction_plane(), other);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[1].construction_plane(), old);
+    assert_eq!(app.viewports[1].camera_snapshot(), camera);
+    enter(&mut app, "CPlane");
+    enter(&mut app, "_View");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.viewports[1].construction_plane(), expected);
+    assert_eq!(app.viewports[1].camera_snapshot(), camera);
+}
+
+#[test]
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");
