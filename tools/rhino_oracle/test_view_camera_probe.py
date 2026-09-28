@@ -43,6 +43,7 @@ class CameraProbeTests(unittest.TestCase):
                     camera_direction=forward, camera_up=up,
                     camera_target=origin,
                     camera_location=[a - 50 * b for a, b in zip(origin, forward)],
+                    camera_distance_before=50.0,
                 ))
         self.assertTrue(view_camera_probe.compare_to_viboceros(operation, rows)["passed"])
         for field, value in [
@@ -50,6 +51,7 @@ class CameraProbeTests(unittest.TestCase):
             ("cplane_x", [1, 0, 0]),
             ("camera_target", [0, 0, 0]),
             ("camera_location", [0, 0, 0]),
+            ("camera_distance_before", 25.0),
             ("perspective", False),
         ]:
             with self.subTest(field=field):

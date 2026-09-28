@@ -62,12 +62,19 @@ def _unit(value):
     return [component / length for component in components]
 
 
-def _snapshot(viewport, projection, direction):
+def _camera_distance(viewport):
+    location = _xyz(viewport.CameraLocation)
+    target = _xyz(viewport.CameraTarget)
+    return math.sqrt(sum((a - b) ** 2 for a, b in zip(location, target)))
+
+
+def _snapshot(viewport, projection, direction, distance_before):
     plane = viewport.ConstructionPlane()
     return dict(
         projection=projection, direction=direction,
         perspective=bool(viewport.IsPerspectiveProjection),
         camera_location=_xyz(viewport.CameraLocation),
+        camera_distance_before=distance_before,
         camera_target=_xyz(viewport.CameraTarget),
         camera_direction=_unit(viewport.CameraDirection),
         camera_up=_unit(viewport.CameraUp),
@@ -102,9 +109,10 @@ def run(operation, viewport, host):
                     raise ValueError("could not set camera probe projection")
                 if viewport.SetConstructionPlane(plane) is False:
                     raise ValueError("could not set camera probe CPlane")
+                distance_before = _camera_distance(viewport)
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("SetView CPlane command failed")
-                results.append(_snapshot(viewport, projection, direction))
+                results.append(_snapshot(viewport, projection, direction, distance_before))
         return results
     finally:
         errors = []
@@ -145,8 +153,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
 
     The orientation and CPlane are compared componentwise. Parallel camera
     location is diagnostic because Viboceros represents parallel views without
-    a finite camera location; perspective distance uses Viboceros's current 50
-    model-unit default.
+    a finite camera location. Perspective SetView must preserve the distance
+    recorded immediately before the command, independent of startup zoom.
     """
     validate(operation)
     if not _finite(float(epsilon)) or epsilon < 0.0:
@@ -194,7 +202,11 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             (location - target) ** 2
             for location, target in zip(vectors["camera_location"], vectors["camera_target"])
         ))
-        distance_error = abs(distance - 50.0) if projection == "Perspective" else None
+        distance_before = row.get("camera_distance_before")
+        if isinstance(distance_before, bool) or not isinstance(distance_before, (int, float)) \
+                or not _finite(float(distance_before)) or distance_before <= 0.0:
+            raise ValueError("invalid pre-command camera distance")
+        distance_error = abs(distance - distance_before) if projection == "Perspective" else None
         passed = (projection_matches and orientation_error <= epsilon
                   and plane_error <= epsilon and axes_error <= epsilon
                   and target_error <= epsilon
@@ -204,6 +216,7 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             orientation_error=orientation_error, cplane_origin_error=plane_error,
             cplane_axes_error=axes_error,
             target_error=target_error, perspective_distance=distance if projection == "Perspective" else None,
+            perspective_distance_before=distance_before if projection == "Perspective" else None,
             perspective_distance_error=distance_error,
             projection_matches=projection_matches,
         ))

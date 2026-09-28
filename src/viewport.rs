@@ -693,7 +693,6 @@ impl Viewport {
         self.target = NaVector3::from(plane.origin().to_array());
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = 40.0;
-        self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
         self.record_camera_change(previous);
     }
 
@@ -3371,6 +3370,18 @@ mod tests {
                 assert_eq!(view.project(model, rect), Some(screen));
             }
         }
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_perspective_camera_distance() {
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.perspective_camera_distance = 125.0;
+        view.set_cplane_view(WorldPlane::Front);
+        assert_eq!(view.perspective_camera_distance, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.perspective_camera_distance, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.perspective_camera_distance, 125.0);
     }
 
     #[test]

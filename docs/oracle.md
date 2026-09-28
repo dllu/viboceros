@@ -1412,21 +1412,26 @@ CPlane, and model aid settings. Run the Rhino side with:
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_cplane.json --timeout 300
 ```
 
-Save the JSON response and compare its camera and CPlane values with the current
-Viboceros camera rule:
+The [saved Rhino 8.32 observation](../tools/rhino_oracle/observations/view_camera_cplane.json)
+was captured on a separate Xvfb display. Compare its camera and CPlane values
+with the current Viboceros camera rule:
 
 ```sh
-python3 -m tools.rhino_oracle.view_camera_probe tools/rhino_oracle/fixtures/view_camera_cplane.json rhino-camera-response.json
+python3 -m tools.rhino_oracle.view_camera_probe tools/rhino_oracle/fixtures/view_camera_cplane.json tools/rhino_oracle/observations/view_camera_cplane.json
 ```
 
 The comparator checks the six orientations, CPlane axes and origin, camera
-target, projection, and perspective distance. Parallel camera location is
-diagnostic because Viboceros has no finite parallel camera location. The camera
-probe has no native oracle operation yet, so `compare` is unavailable for this
-fixture. The current Wine launcher crashed during .NET startup before the
-worker ran; no live camera observation was saved or used to claim numeric
-agreement. The independent Rust viewport tests cover all six directions in
-both projections while a live comparison remains pending.
+target, projection, and whether each perspective SetView preserves the camera
+distance measured immediately before the command. All 12 states pass at
+componentwise epsilon `1e-9`; the largest observed perspective distance change
+is `1.5e-14` model units. Rhino's startup distance in this capture is about
+`102.226`, while Viboceros currently starts at `50`; the comparison tests the
+SetView transition from the existing camera, not identical startup framing.
+Parallel camera location is diagnostic because Viboceros has no finite parallel
+camera location. The camera probe has no native oracle operation yet, so the
+generic `compare` mode is unavailable for this fixture. The independent Rust
+viewport tests cover all six directions in both projections and preservation of
+a nondefault perspective camera distance.
 
 ## Timing interpretation
 
