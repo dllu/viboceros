@@ -5,7 +5,7 @@ use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin x-point y-point | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -60,6 +60,8 @@ pub enum PlanePromptKind {
     Origin,
     AllOrigin,
     ThreePoint,
+    ThreePointVertical,
+    ThreePointZAxis,
     Elevation,
     Through,
     ThroughAll,
@@ -232,6 +234,12 @@ fn parse_arguments(
                 .ok_or(PlaneCommandError::Usage)?
                 .frame(),
         ),
+        [name, a, option, b] if keyword(name, "3Point") && keyword(option, "Vertical") => {
+            PlaneAction::Set(vertical(plane, point(a)?, point(b)?, tolerance)?)
+        }
+        [name, a, option, b] if keyword(name, "3Point") && keyword(option, "ZAxis") => {
+            PlaneAction::Set(three_point_z_axis(point(a)?, point(b)?, tolerance)?)
+        }
         [name, a, b, c] if keyword(name, "3Point") => PlaneAction::Set(Frame3::try_from_points(
             point(a)?,
             point(b)?,
@@ -290,6 +298,33 @@ pub fn elevated(plane: Frame3, distance: f64) -> Result<Frame3, GeometryError> {
 
 pub fn through(plane: Frame3, point: Point3) -> Result<Frame3, GeometryError> {
     elevated(plane, plane.coordinates_of(point)?[2])
+}
+
+pub fn vertical(
+    plane: Frame3,
+    origin: Point3,
+    x_point: Point3,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    let direction = origin.vector_to(x_point)?;
+    let up = plane.z_axis().as_vector();
+    let height = direction.dot(up)?;
+    let direction = direction.to_array();
+    let up_axis = up.to_array();
+    let horizontal = Vector3::try_new(
+        (-height).mul_add(up_axis[0], direction[0]),
+        (-height).mul_add(up_axis[1], direction[1]),
+        (-height).mul_add(up_axis[2], direction[2]),
+    )?;
+    Frame3::try_from_directions(origin, horizontal, up, tolerance)
+}
+
+pub fn three_point_z_axis(
+    origin: Point3,
+    z_point: Point3,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    Frame3::try_from_normal(origin, origin.vector_to(z_point)?, tolerance)
 }
 
 pub fn rotated(

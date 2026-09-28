@@ -15,6 +15,8 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane View` | Put the active plane at the camera target, with X and Y along screen right and up. |
 | `CPlane World Top\|Bottom\|Front\|Back\|Right\|Left` | Restore a world preset at the world origin. |
 | `CPlane 3Point origin x-point y-point` | Set X toward the second point; the third determines the positive XY half-plane. |
+| `CPlane 3Point origin Vertical x-point` | Project the X direction onto the old plane, then use the old normal as the new Y axis. |
+| `CPlane 3Point origin ZAxis z-point` | Set the new normal toward the second point, with deterministic OpenNURBS axes. |
 | `CPlane Elevation distance` | Move along the plane's normal by a signed distance. |
 | `CPlane Through point` | Move only along the normal until the plane passes through the point. |
 | `CPlane Through All point` | Move every viewport's plane along its own normal until it passes through the point. |
@@ -64,6 +66,11 @@ point; Rotate accepts two axis points followed by a typed angle. Enter at the
 origin prompt retains the starting plane origin. Degenerate axes, collinear
 three-point definitions, nonfinite values, and unrepresentable results remain
 correctable errors; they do not partially change the plane.
+
+At the 3Point X-axis prompt, `Vertical` changes the next pick to a projected
+X direction and completes the plane. `ZAxis` changes it to a new normal and
+also completes after that pick. The old CPlane's axes affect Vertical;
+ZAxis uses the normal-only OpenNURBS frame rule.
 
 `CPlane All` and `CPlane Through All` also accept a picked point. Typed points
 use the active viewport's CPlane for local coordinates; the resolved world
@@ -137,7 +144,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
+Object/Surface/Curve/Gumball options, picked-angle
 rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
 commands with a picked source viewport remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction

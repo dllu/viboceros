@@ -113,6 +113,57 @@ fn cplane_view_aligns_only_the_active_plane_without_moving_its_camera() {
 }
 
 #[test]
+fn cplane_three_point_options_complete_after_one_direction_pick() {
+    let mut app = test_app();
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, "CPlane 3Point");
+    enter(&mut app, "w1,2,3");
+    enter(&mut app, "Vertical");
+    enter(&mut app, "w1,2,6");
+    assert!(app.plane_prompt.is_some());
+    assert_eq!(
+        app.viewports[0].construction_plane(),
+        viboceros_command::construction_plane::WorldPlane::Top.frame()
+    );
+    enter(&mut app, "w4,5,7");
+    assert!(app.plane_prompt.is_none());
+    let vertical = app.viewports[0].construction_plane();
+    assert_eq!(vertical.origin(), point(1., 2., 3.));
+    assert_eq!(vertical.y_axis().as_vector().to_array(), [0., 0., 1.]);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(
+        app.viewports[0].construction_plane(),
+        viboceros_command::construction_plane::WorldPlane::Top.frame()
+    );
+
+    enter(&mut app, "CPlane 3Point");
+    enter(&mut app, "w1,2,3");
+    enter(&mut app, "ZAxis");
+    enter(&mut app, "w1,2,3");
+    assert!(app.plane_prompt.is_some());
+    enter(&mut app, "w1,5,3");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0]
+            .construction_plane()
+            .x_axis()
+            .as_vector()
+            .to_array(),
+        [0., 0., 1.]
+    );
+    assert_eq!(
+        app.viewports[0]
+            .construction_plane()
+            .z_axis()
+            .as_vector()
+            .to_array(),
+        [0., 1., 0.]
+    );
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+}
+
+#[test]
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");

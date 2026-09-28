@@ -1019,13 +1019,16 @@ class RhinoWorkerTests(unittest.TestCase):
                 ({"kind":"origin", "point":[1,2,3]}, "_CPlane w1,2,3"),
                 ({"kind":"through", "point":[1,2,3]}, "_CPlane _Through w1,2,3"),
                 ({"kind":"three_point", "points":[[0,0,0],[1,0,0],[0,1,0]]}, "_CPlane _3Point w0,0,0 w1,0,0 w0,1,0"),
+                ({"kind":"three_point_vertical", "points":[[1,2,3],[4,2,3]]}, "_CPlane _3Point w1,2,3 _Vertical w4,2,3"),
+                ({"kind":"three_point_z_axis", "points":[[1,2,3],[1,5,3]]}, "_CPlane _3Point w1,2,3 _ZAxis w1,5,3"),
                 ({"kind":"rotate", "axis":[[0,0,0],[0,0,1]], "angle":37}, "_CPlane _Rotate w0,0,0 w0,0,1 37"),
                 ({"kind":"elevation", "distance":-2.5}, "_CPlane _Elevation -2.5"),
                 ({"kind":"undo"}, "_CPlane _Undo"), ({"kind":"redo"}, "_CPlane _Redo"),
             ]:
                 self.assertEqual(self.worker._construction_plane_script(step), expected)
         for invalid in [{"kind":"Delete"}, {"kind":"world", "view":"Top _Delete"}, {"kind":"elevation", "distance":float("nan")},
-                        {"kind":"origin_input", "point":"0 _Delete"}, {"kind":"three_point_input", "points":["0", "1,2 _Enter", "3,4"]}]:
+                        {"kind":"origin_input", "point":"0 _Delete"}, {"kind":"three_point_input", "points":["0", "1,2 _Enter", "3,4"]},
+                        {"kind":"three_point_vertical", "points":[[0,0,0],[1,0,0],[0,0,1]]}]:
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 self.worker._construction_plane_script(invalid)
 

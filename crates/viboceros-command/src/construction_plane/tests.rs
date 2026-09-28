@@ -100,6 +100,70 @@ fn view_option_is_a_camera_dependent_action() {
 }
 
 #[test]
+fn three_point_vertical_projects_x_and_z_axis_uses_normal_constructor() {
+    let top = WorldPlane::Top.frame();
+    let vertical = edited("CPlane 3Point w1,2,3 Vertical w4,5,7", top);
+    assert_eq!(vertical.origin(), point(1., 2., 3.));
+    assert_eq!(vertical.y_axis(), top.z_axis());
+    let [x, y, z] = vertical.x_axis().as_vector().to_array();
+    assert!((x - std::f64::consts::FRAC_1_SQRT_2).abs() < 1e-15);
+    assert!((y - std::f64::consts::FRAC_1_SQRT_2).abs() < 1e-15);
+    assert_eq!(z, 0.);
+
+    let side = edited("_CPlane _3Point w1,2,3 _ZAxis w1,5,3", top);
+    assert_eq!(side.origin(), point(1., 2., 3.));
+    assert_eq!(side.x_axis().as_vector().to_array(), [0., 0., 1.]);
+    assert_eq!(side.y_axis().as_vector().to_array(), [1., 0., 0.]);
+    assert_eq!(side.z_axis().as_vector().to_array(), [0., 1., 0.]);
+
+    let oblique = Frame3::try_from_directions(
+        point(10., 20., 30.),
+        Vector3::try_from([1., 1., 0.]).unwrap(),
+        Vector3::try_from([-1., 1., 1.]).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let vertical = edited("CPlane 3Point w1,2,3 Vertical w4,2,3", oblique);
+    for (actual, expected) in vertical.x_axis().as_vector().to_array().into_iter().zip([
+        0.9128709291752768,
+        0.18257418583505536,
+        -0.3651483716701108,
+    ]) {
+        assert!((actual - expected).abs() < 1e-14);
+    }
+    let z_axis = edited("CPlane 3Point w1,2,3 ZAxis w4,6,5", oblique);
+    for (actual, expected) in z_axis
+        .x_axis()
+        .as_vector()
+        .to_array()
+        .into_iter()
+        .zip([0.8, -0.6, 0.])
+    {
+        assert!((actual - expected).abs() < 1e-14);
+    }
+    assert!(
+        parse(
+            "CPlane 3Point w1,2,3 Vertical w1,2,6",
+            top,
+            None,
+            Tolerance::DEFAULT
+        )
+        .unwrap()
+        .is_err()
+    );
+    assert!(
+        parse(
+            "CPlane 3Point w1,2,3 ZAxis w1,2,3",
+            top,
+            None,
+            Tolerance::DEFAULT
+        )
+        .unwrap()
+        .is_err()
+    );
+}
+
+#[test]
 fn origin_and_through_remember_independent_all_options() {
     let frame = WorldPlane::Top.frame();
     let mut options = PlaneOptions::default();

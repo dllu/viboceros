@@ -16,6 +16,8 @@ pub enum PlaneStep {
     World { view: String },
     Origin { point: [f64; 3] },
     ThreePoint { points: [[f64; 3]; 3] },
+    ThreePointVertical { points: [[f64; 3]; 2] },
+    ThreePointZAxis { points: [[f64; 3]; 2] },
     ThreePointInput { points: [String; 3] },
     OriginInput { point: String },
     Elevation { distance: f64 },
@@ -62,6 +64,12 @@ fn apply_step(
         PlaneStep::Origin { point: p } => format!("CPlane {}", point(p)),
         PlaneStep::ThreePoint { points: [a, b, c] } => {
             format!("CPlane 3Point {} {} {}", point(a), point(b), point(c))
+        }
+        PlaneStep::ThreePointVertical { points: [a, b] } => {
+            format!("CPlane 3Point {} Vertical {}", point(a), point(b))
+        }
+        PlaneStep::ThreePointZAxis { points: [a, b] } => {
+            format!("CPlane 3Point {} ZAxis {}", point(a), point(b))
         }
         PlaneStep::ThreePointInput { points: [a, b, c] } => format!("CPlane 3Point {a} {b} {c}"),
         PlaneStep::OriginInput { point } => format!("CPlane {point}"),
@@ -150,6 +158,47 @@ pub(super) fn run_input(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn three_point_options_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_three_point_options.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_three_point_options.json"
+        ))
+        .unwrap();
+        let actual = run_request(&request).unwrap();
+        let expected = recorded["results"].as_array().unwrap();
+        assert_eq!(actual.results.len(), 5);
+        for (result, observation) in actual.results.iter().zip(expected) {
+            assert_eq!(result.id, observation["id"].as_str().unwrap());
+            let states = result.value["states"].as_array().unwrap();
+            let references = observation["value"]["states"].as_array().unwrap();
+            assert_eq!(states.len(), references.len());
+            for (state, reference) in states.iter().zip(references) {
+                let actual = state["origin"].as_array().unwrap().iter().chain(
+                    state["axes"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .flat_map(|axis| axis.as_array().unwrap()),
+                );
+                let expected = reference["origin"].as_array().unwrap().iter().chain(
+                    reference["axes"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .flat_map(|axis| axis.as_array().unwrap()),
+                );
+                for (actual, expected) in actual.zip(expected) {
+                    assert!((actual.as_f64().unwrap() - expected.as_f64().unwrap()).abs() <= 1e-10);
+                }
+            }
+        }
+    }
+
     #[test]
     fn nested_cplane_fixtures_preserve_prior_polyline_points() {
         let request: ProbeRequest = serde_json::from_str(include_str!(

@@ -37,6 +37,12 @@ impl PlanePrompt {
             (PlanePromptKind::ThreePoint, _) => {
                 "CPlane 3Point: pick a point in the positive XY half-plane"
             }
+            (PlanePromptKind::ThreePointVertical, _) => {
+                "CPlane 3Point Vertical: pick the positive X direction"
+            }
+            (PlanePromptKind::ThreePointZAxis, _) => {
+                "CPlane 3Point ZAxis: pick the positive Z direction"
+            }
             (PlanePromptKind::Elevation, _) => {
                 "CPlane Elevation: type an offset distance or pick a height point"
             }
@@ -340,6 +346,28 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if prompt.kind == PlanePromptKind::ThreePoint && prompt.points.len() == 1 {
+            let kind = if input
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Vertical")
+            {
+                Some(PlanePromptKind::ThreePointVertical)
+            } else if input.trim_start_matches('_').eq_ignore_ascii_case("ZAxis") {
+                Some(PlanePromptKind::ThreePointZAxis)
+            } else {
+                None
+            };
+            if let Some(kind) = kind {
+                let message = {
+                    let prompt = self.plane_prompt.as_mut().unwrap();
+                    prompt.kind = kind;
+                    prompt.message()
+                };
+                self.push_log(message.into());
+                self.command_input.clear();
+                return true;
+            }
+        }
         if input.is_empty()
             && prompt.points.is_empty()
             && matches!(
@@ -427,6 +455,25 @@ impl VibocerosApp {
                     )?)),
                     _ => unreachable!(),
                 },
+                PlanePromptKind::ThreePointVertical => {
+                    let [origin] = prompt.points.as_slice() else {
+                        unreachable!()
+                    };
+                    Some(PlaneAction::Set(cplane::vertical(
+                        prompt.frame,
+                        *origin,
+                        point,
+                        tolerance,
+                    )?))
+                }
+                PlanePromptKind::ThreePointZAxis => {
+                    let [origin] = prompt.points.as_slice() else {
+                        unreachable!()
+                    };
+                    Some(PlaneAction::Set(cplane::three_point_z_axis(
+                        *origin, point, tolerance,
+                    )?))
+                }
                 PlanePromptKind::Rotate => match prompt.points.as_slice() {
                     [] => {
                         prompt.points.push(point);

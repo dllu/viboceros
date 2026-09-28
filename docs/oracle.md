@@ -35,6 +35,23 @@ python3 -m tools.rhino_oracle.view_camera_probe \
 The largest component difference from the camera alignment rule is `5.56e-17`;
 recorded camera changes are zero.
 
+The [3Point option fixture](../tools/rhino_oracle/fixtures/construction_plane_three_point_options.json)
+records five Rhino 8.32 transitions for `Vertical` and `ZAxis`, starting from
+world and oblique CPlanes. Its [private-Xvfb observation](../tools/rhino_oracle/observations/construction_plane_three_point_options.json)
+shows that each option is chosen after the 3Point origin and completes after
+one direction point. Vertical projects X into the old plane and uses the old
+normal for Y; ZAxis uses the OpenNURBS normal-frame rule. Replay with:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_three_point_options.json \
+  --observations tools/rhino_oracle/observations/construction_plane_three_point_options.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All five transitions replay, with a largest axis-component difference of
+`2.22e-16`. A Rust oracle test also checks the saved frames at `1e-10`.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

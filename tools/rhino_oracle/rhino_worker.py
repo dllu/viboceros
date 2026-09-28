@@ -4555,6 +4555,12 @@ def _construction_plane_script(step):
         return "_CPlane " + point(step["point"])
     if kind == "three_point" and len(step["points"]) == 3:
         return "_CPlane _3Point " + " ".join(point(p) for p in step["points"])
+    if kind == "three_point_vertical" and len(step["points"]) == 2:
+        origin, x_point = step["points"]
+        return "_CPlane _3Point %s _Vertical %s" % (point(origin), point(x_point))
+    if kind == "three_point_z_axis" and len(step["points"]) == 2:
+        origin, z_point = step["points"]
+        return "_CPlane _3Point %s _ZAxis %s" % (point(origin), point(z_point))
     if kind == "three_point_input" and len(step["points"]) == 3:
         _point_input_script(step["points"])
         return "_CPlane _3Point " + " ".join(step["points"])
@@ -4675,8 +4681,12 @@ def _construction_plane(operation):
         states = [record()]
         for script in scripts:
             _record_progress("CPlane command: " + script)
+            history_before = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
             if not _run_surface_script(script, True):
-                raise ValueError("CPlane command failed: " + script)
+                history_after = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
+                history = (history_after[len(history_before):] if history_after.startswith(history_before)
+                           else history_after[-1500:])
+                raise ValueError("CPlane command failed: %s; history: %s" % (script, history[-1500:]))
             states.append(record())
         return {"states": states}, 0
 
