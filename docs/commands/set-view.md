@@ -19,12 +19,13 @@ the view direction and construction plane.
 `SetView CPlane Top|Bottom|Front|Back|Right|Left` points the active camera along
 one of the six standard directions of the current construction plane. It centers
 the camera on the CPlane origin and resets pan. The construction plane and
-viewport projection remain unchanged: a parallel viewport stays parallel, and a
-perspective viewport keeps its field of view and camera distance. The camera
-captures the plane orientation, so later CPlane edits do not rotate it. View
-history restores the captured orientation, and perspective orbit continues from
-it. The current parallel implementation resets its drawing scale to 40 pixels
-per model unit; Rhino parallel zoom behavior still needs a direct comparison.
+viewport projection remain unchanged: a parallel viewport stays parallel and
+keeps its drawing scale, while a perspective viewport keeps its field of view
+and camera distance. The camera captures the plane orientation, so later CPlane
+edits do not rotate it. View history restores the captured orientation, and
+perspective orbit continues from
+it. The [live camera probe](../oracle.md#setview-cplane-camera-probe) confirms
+that Rhino also preserves parallel frustum width through all six directions.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
 unfinished modeling prompt. [Named views](named-view.md) save and restore

@@ -46,6 +46,8 @@
             0.5773502691896258
           ],
           "direction": "Top",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -87,6 +89,8 @@
             0.5773502691896258
           ],
           "direction": "Bottom",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -128,6 +132,8 @@
             0.5773502691896258
           ],
           "direction": "Front",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -169,6 +175,8 @@
             0.5773502691896258
           ],
           "direction": "Back",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -210,6 +218,8 @@
             0.5773502691896258
           ],
           "direction": "Right",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -251,6 +261,8 @@
             0.5773502691896258
           ],
           "direction": "Left",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top"
         },
@@ -292,6 +304,8 @@
             0.5773502691896258
           ],
           "direction": "Top",
+          "frustum_width": 111.06500348143832,
+          "frustum_width_before": 73.33408017529698,
           "perspective": true,
           "projection": "Perspective"
         },
@@ -333,6 +347,8 @@
             0.5773502691896258
           ],
           "direction": "Bottom",
+          "frustum_width": 0.4616728228431649,
+          "frustum_width_before": 111.06500348143832,
           "perspective": true,
           "projection": "Perspective"
         },
@@ -374,6 +390,8 @@
             0.5773502691896258
           ],
           "direction": "Front",
+          "frustum_width": 72.06060938027348,
+          "frustum_width_before": 0.4616728228431649,
           "perspective": true,
           "projection": "Perspective"
         },
@@ -415,6 +433,8 @@
             0.5773502691896258
           ],
           "direction": "Back",
+          "frustum_width": 113.43539006686139,
+          "frustum_width_before": 72.06060938027348,
           "perspective": true,
           "projection": "Perspective"
         },
@@ -456,6 +476,8 @@
             0.5773502691896258
           ],
           "direction": "Right",
+          "frustum_width": 112.00081950552146,
+          "frustum_width_before": 113.43539006686139,
           "perspective": true,
           "projection": "Perspective"
         },
@@ -497,6 +519,8 @@
             0.5773502691896258
           ],
           "direction": "Left",
+          "frustum_width": 73.6124603300016,
+          "frustum_width_before": 112.00081950552146,
           "perspective": true,
           "projection": "Perspective"
         }

@@ -1421,17 +1421,19 @@ python3 -m tools.rhino_oracle.view_camera_probe tools/rhino_oracle/fixtures/view
 ```
 
 The comparator checks the six orientations, CPlane axes and origin, camera
-target, projection, and whether each perspective SetView preserves the camera
-distance measured immediately before the command. All 12 states pass at
-componentwise epsilon `1e-9`; the largest observed perspective distance change
-is `1.5e-14` model units. Rhino's startup distance in this capture is about
-`102.226`, while Viboceros currently starts at `50`; the comparison tests the
-SetView transition from the existing camera, not identical startup framing.
+target, projection, whether each parallel SetView preserves frustum width, and
+whether each perspective SetView preserves the camera distance measured
+immediately before the command. All 12 states pass at componentwise epsilon
+`1e-9`; the recorded parallel frustum-width change is exactly zero, and the
+largest observed perspective distance change is `1.5e-14` model units. Rhino's
+startup distance in this capture is about `102.226`, while Viboceros currently
+starts at `50`; the comparison tests the SetView transition from the existing
+camera, not identical startup framing.
 Parallel camera location is diagnostic because Viboceros has no finite parallel
 camera location. The camera probe has no native oracle operation yet, so the
 generic `compare` mode is unavailable for this fixture. The independent Rust
 viewport tests cover all six directions in both projections and preservation of
-a nondefault perspective camera distance.
+nondefault parallel zoom and perspective camera distance.
 
 ## Timing interpretation
 

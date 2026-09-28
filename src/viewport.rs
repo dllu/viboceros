@@ -692,7 +692,6 @@ impl Viewport {
         }
         self.target = NaVector3::from(plane.origin().to_array());
         self.pan = Vec2::ZERO;
-        self.pixels_per_unit = 40.0;
         self.record_camera_change(previous);
     }
 
@@ -3382,6 +3381,19 @@ mod tests {
         assert_eq!(view.perspective_camera_distance, 125.0);
         assert!(view.redo_view());
         assert_eq!(view.perspective_camera_distance, 125.0);
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_parallel_zoom() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.pixels_per_unit = 125.0;
+        view.set_cplane_view(WorldPlane::Front);
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
     }
 
     #[test]

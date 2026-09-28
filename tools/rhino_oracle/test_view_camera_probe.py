@@ -44,6 +44,8 @@ class CameraProbeTests(unittest.TestCase):
                     camera_target=origin,
                     camera_location=[a - 50 * b for a, b in zip(origin, forward)],
                     camera_distance_before=50.0,
+                    frustum_width_before=20.0,
+                    frustum_width=20.0,
                 ))
         self.assertTrue(view_camera_probe.compare_to_viboceros(operation, rows)["passed"])
         for field, value in [
@@ -58,6 +60,9 @@ class CameraProbeTests(unittest.TestCase):
                 changed = deepcopy(rows)
                 changed[-1][field] = value
                 self.assertFalse(view_camera_probe.compare_to_viboceros(operation, changed)["passed"])
+        changed = deepcopy(rows)
+        changed[0]["frustum_width"] = 25.0
+        self.assertFalse(view_camera_probe.compare_to_viboceros(operation, changed)["passed"])
 
     def test_whitelist_rejects_unbounded_or_malformed_input(self):
         view_camera_probe.validate(fixture())
@@ -126,6 +131,7 @@ class CameraProbeTests(unittest.TestCase):
         class Info:
             def __init__(self, view):
                 self.projection = view.projection
+                self.FrustumWidth = 20.0
                 captured.append(self)
 
             def Dispose(self):

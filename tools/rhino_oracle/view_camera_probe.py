@@ -68,13 +68,26 @@ def _camera_distance(viewport):
     return math.sqrt(sum((a - b) ** 2 for a, b in zip(location, target)))
 
 
-def _snapshot(viewport, projection, direction, distance_before):
+def _frustum_width(viewport, Rhino):
+    info = Rhino.DocObjects.ViewportInfo(viewport)
+    try:
+        width = float(info.FrustumWidth)
+        if not _finite(width) or width <= 0.0:
+            raise ValueError("invalid viewport frustum width")
+        return width
+    finally:
+        info.Dispose()
+
+
+def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before):
     plane = viewport.ConstructionPlane()
     return dict(
         projection=projection, direction=direction,
         perspective=bool(viewport.IsPerspectiveProjection),
         camera_location=_xyz(viewport.CameraLocation),
         camera_distance_before=distance_before,
+        frustum_width_before=width_before,
+        frustum_width=_frustum_width(viewport, Rhino),
         camera_target=_xyz(viewport.CameraTarget),
         camera_direction=_unit(viewport.CameraDirection),
         camera_up=_unit(viewport.CameraUp),
@@ -110,9 +123,11 @@ def run(operation, viewport, host):
                 if viewport.SetConstructionPlane(plane) is False:
                     raise ValueError("could not set camera probe CPlane")
                 distance_before = _camera_distance(viewport)
+                width_before = _frustum_width(viewport, Rhino)
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("SetView CPlane command failed")
-                results.append(_snapshot(viewport, projection, direction, distance_before))
+                results.append(_snapshot(viewport, Rhino, projection, direction,
+                                         distance_before, width_before))
         return results
     finally:
         errors = []
@@ -153,8 +168,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
 
     The orientation and CPlane are compared componentwise. Parallel camera
     location is diagnostic because Viboceros represents parallel views without
-    a finite camera location. Perspective SetView must preserve the distance
-    recorded immediately before the command, independent of startup zoom.
+    a finite camera location. Parallel SetView preserves frustum width, while
+    perspective SetView preserves camera distance, independent of startup zoom.
     """
     validate(operation)
     if not _finite(float(epsilon)) or epsilon < 0.0:
@@ -206,11 +221,17 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
         if isinstance(distance_before, bool) or not isinstance(distance_before, (int, float)) \
                 or not _finite(float(distance_before)) or distance_before <= 0.0:
             raise ValueError("invalid pre-command camera distance")
+        widths = [row.get("frustum_width_before"), row.get("frustum_width")]
+        if any(isinstance(width, bool) or not isinstance(width, (int, float))
+               or not _finite(float(width)) or width <= 0.0 for width in widths):
+            raise ValueError("invalid camera frustum width")
         distance_error = abs(distance - distance_before) if projection == "Perspective" else None
+        parallel_width_error = abs(widths[1] - widths[0]) if projection == "Top" else None
         passed = (projection_matches and orientation_error <= epsilon
                   and plane_error <= epsilon and axes_error <= epsilon
                   and target_error <= epsilon
-                  and (distance_error is None or distance_error <= epsilon))
+                  and (distance_error is None or distance_error <= epsilon)
+                  and (parallel_width_error is None or parallel_width_error <= epsilon))
         results.append(dict(
             projection=projection, direction=direction, passed=passed,
             orientation_error=orientation_error, cplane_origin_error=plane_error,
@@ -218,6 +239,9 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             target_error=target_error, perspective_distance=distance if projection == "Perspective" else None,
             perspective_distance_before=distance_before if projection == "Perspective" else None,
             perspective_distance_error=distance_error,
+            parallel_frustum_width_before=widths[0] if projection == "Top" else None,
+            parallel_frustum_width=widths[1] if projection == "Top" else None,
+            parallel_frustum_width_error=parallel_width_error,
             projection_matches=projection_matches,
         ))
     return dict(passed=all(row["passed"] for row in results), views=results)
