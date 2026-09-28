@@ -116,6 +116,8 @@ pub(crate) struct CameraSnapshot {
     orbit_pitch: Real,
     perspective_camera_distance: Real,
     perspective_fov_radians: Real,
+    frustum_near: Real,
+    frustum_far: Real,
     perspective_lens_shift: [Real; 2],
     pub(crate) target: NaVector3<Real>,
 }
@@ -398,6 +400,8 @@ pub struct Viewport {
     orbit_pitch: Real,
     perspective_camera_distance: Real,
     perspective_fov_radians: Real,
+    frustum_near: Real,
+    frustum_far: Real,
     perspective_lens_shift: [Real; 2],
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
@@ -440,6 +444,12 @@ impl Viewport {
             orbit_pitch: std::f64::consts::FRAC_PI_6,
             perspective_camera_distance: DEFAULT_PERSPECTIVE_CAMERA_DISTANCE,
             perspective_fov_radians: PERSPECTIVE_VERTICAL_FOV_RADIANS,
+            frustum_near: if kind == ViewKind::Perspective {
+                DEFAULT_PERSPECTIVE_CAMERA_DISTANCE
+            } else {
+                1.0
+            },
+            frustum_far: 1.0e9,
             perspective_lens_shift: [0.0; 2],
             target: NaVector3::zeros(),
             last_rect: None,
@@ -464,6 +474,8 @@ impl Viewport {
             orbit_pitch: self.orbit_pitch,
             perspective_camera_distance: self.perspective_camera_distance,
             perspective_fov_radians: self.perspective_fov_radians,
+            frustum_near: self.frustum_near,
+            frustum_far: self.frustum_far,
             perspective_lens_shift: self.perspective_lens_shift,
             target: self.target,
         }
@@ -515,6 +527,8 @@ impl Viewport {
         self.orbit_pitch = camera.orbit_pitch;
         self.perspective_camera_distance = camera.perspective_camera_distance;
         self.perspective_fov_radians = camera.perspective_fov_radians;
+        self.frustum_near = camera.frustum_near;
+        self.frustum_far = camera.frustum_far;
         self.perspective_lens_shift = camera.perspective_lens_shift;
         self.target = camera.target;
     }
@@ -631,6 +645,10 @@ impl Viewport {
     /// camera projection, navigation, or geometry display.
     pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {
         let previous = self.camera_snapshot();
+        if kind == ViewKind::Perspective && self.kind != ViewKind::Perspective {
+            self.frustum_near = self.perspective_camera_distance;
+            self.frustum_far = self.frustum_far.max(self.frustum_near * 2.0);
+        }
         self.kind = kind;
         self.perspective_frame = None;
         self.cplane_direction = None;
@@ -648,6 +666,12 @@ impl Viewport {
         self.pixels_per_unit = 40.0;
         self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
         self.perspective_fov_radians = PERSPECTIVE_VERTICAL_FOV_RADIANS;
+        self.frustum_near = if kind == ViewKind::Perspective {
+            DEFAULT_PERSPECTIVE_CAMERA_DISTANCE
+        } else {
+            1.0
+        };
+        self.frustum_far = 1.0e9;
         self.perspective_lens_shift = [0.0; 2];
         self.orbit_yaw = -std::f64::consts::FRAC_PI_4;
         self.orbit_pitch = std::f64::consts::FRAC_PI_6;
@@ -659,6 +683,14 @@ impl Viewport {
 
     pub(crate) fn set_plan_view(&mut self) {
         let previous = self.camera_snapshot();
+        if self.kind == ViewKind::Perspective {
+            let height = f64::from(self.named_view_port_size()[1]);
+            let half_height = self.frustum_near * (self.perspective_fov_radians * 0.5).tan();
+            let scale = height / (2.0 * half_height);
+            if scale.is_finite() && scale >= f64::from(f32::MIN_POSITIVE) {
+                self.pixels_per_unit = scale.min(f64::from(f32::MAX)) as f32;
+            }
+        }
         self.plan_frame = self.construction_plane();
         self.kind = ViewKind::Plan;
         self.perspective_frame = None;
@@ -3281,7 +3313,8 @@ mod tests {
         assert_eq!(view.target, NaVector3::from(frame.origin().to_array()));
         let model = frame.point_at([2.0, 3.0, 4.0]).unwrap();
         let screen = view.project(model, rect).unwrap();
-        assert!((screen - Pos2::new(480.0, 180.0)).length() < 1.0e-3);
+        let scale = view.pixels_per_unit;
+        assert!((screen - Pos2::new(400.0 + 2.0 * scale, 300.0 - 3.0 * scale)).length() < 1.0e-3);
         let on_plane = view.unproject_drafting_plane(screen, rect, None).unwrap();
         let expected_plane = frame.point_at([2.0, 3.0, 0.0]).unwrap();
         assert!(
@@ -3321,6 +3354,42 @@ mod tests {
         assert_eq!(view.pixels_per_unit, 125.0);
         assert!(view.redo_view());
         assert_eq!(view.pixels_per_unit, 125.0);
+    }
+
+    #[test]
+    fn plan_from_perspective_uses_frustum_near_for_parallel_scale() {
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(705.0, 365.0)));
+        view.perspective_camera_distance = 102.2259663795381;
+        view.frustum_near = 120.50535531728079;
+        let raw_width = 111.72332120374747;
+        let aspect = 705.0 / 365.0;
+        view.perspective_fov_radians =
+            2.0 * (raw_width / (2.0 * aspect * view.frustum_near)).atan();
+        let rect = view.last_rect.unwrap();
+        let perspective_scale = f64::from(view.pixels_per_model_unit_at_origin(rect));
+        let before = view.camera_snapshot();
+        let encoded_before =
+            Viewport::named_view_to_3dm(view.named_view_snapshot(), "Before".into()).unwrap();
+        assert!((encoded_before.frustum[1] - encoded_before.frustum[0] - raw_width).abs() < 1e-10);
+
+        view.set_plan_view();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert!((f64::from(view.pixels_per_unit) - 6.3102313143225155).abs() < 1e-6);
+        assert!(
+            (f64::from(view.pixels_per_unit) / perspective_scale
+                - view.perspective_camera_distance / view.frustum_near)
+                .abs()
+                < 1e-7
+        );
+        let encoded_after =
+            Viewport::named_view_to_3dm(view.named_view_snapshot(), "After".into()).unwrap();
+        assert!((encoded_after.frustum[1] - encoded_after.frustum[0] - raw_width).abs() < 1e-5);
+        assert_eq!(encoded_after.frustum[4..], encoded_before.frustum[4..]);
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), before);
+        assert!(view.redo_view());
+        assert_eq!(view.kind(), ViewKind::Plan);
     }
 
     #[test]

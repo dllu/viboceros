@@ -1459,10 +1459,11 @@ projection switch. Its
 [frustum near distance](https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.viewportinfo/frustumnear)
 also remains unchanged at `120.5053553` model units. The ratio equals the recorded camera distance
 `102.2259664` divided by that near distance, to floating-point precision.
-The comparator checks this Rhino relation but marks native zoom parity as
-unchecked: the native viewport does not retain an equivalent projection
-frustum state for this transfer. The generic oracle `compare` mode has no native
-camera operation for either fixture.
+The native viewport now retains the near and far frustum distances through 3DM
+views and view history. Its Plan conversion uses the measured ratio; a focused
+Rust test checks the saved Rhino width and scale. The Python comparator still
+marks native zoom parity as unchecked because the generic oracle `compare` mode
+has no native camera operation for either fixture.
 
 ## Timing interpretation
 

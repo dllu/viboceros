@@ -29,9 +29,8 @@ that Rhino also preserves parallel frustum width through all six directions.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
 unfinished modeling prompt. [Named views](named-view.md) save and restore
-camera and CPlane state within the current session. Two-point perspective,
-3DM named-view persistence, and Rhino's configurable named-view projection/CPlane
-policy remain pending. See
+camera and CPlane state and persist them in 3DM files. Two-point perspective
+and Rhino's configurable named-view projection/CPlane policy remain pending. See
 [Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
 
 `Plan` changes the active viewport to a parallel view looking down the current
@@ -43,9 +42,10 @@ tree with lazy three-dimensional subtree bounds for picking and snapping. The
 command preserves unfinished modeling prompts and document undo/redo. It keeps
 the drawing scale when the source view is parallel, matching the
 [live Plan probe](../oracle.md#plan-camera-probe). Rhino's perspective-to-parallel
-Plan conversion preserves raw frustum width but changes the visible scale; that
-conversion remains to be implemented. Other SetView forms still need live camera
-comparisons.
+Plan conversion preserves raw frustum width while changing scale at the former
+camera target by the camera-distance/frustum-near ratio. The native view retains the frustum near
+distance through 3DM import, named views, and view history and uses it for this
+conversion. Other SetView forms still need live camera comparisons.
 
 `NextViewport` and `PrevViewport` cycle through the four viewports, wrapping at
 the ends. Ctrl/Cmd+Tab and Ctrl/Cmd+Shift+Tab run them without moving focus out

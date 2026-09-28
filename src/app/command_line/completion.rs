@@ -309,8 +309,8 @@ mod tests {
         assert_eq!(command_completions(&commands, "mshsph")[0], "MeshSphere");
         assert_eq!(command_completions(&commands, "circel")[0], "Circle");
         assert_eq!(
-            command_completions(&commands, "_pOlY")[..2],
-            ["Polygon", "Polyline"]
+            command_completions(&commands, "_pOlY")[..3],
+            ["Polygon", "PolygonCount", "Polyline"]
         );
         let mut state = CompletionState::default();
         state.refresh(&commands, "po", true);

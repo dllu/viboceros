@@ -25,60 +25,61 @@ impl Viewport {
         let camera = saved.camera;
         let [width, height] = saved.port_size;
         let aspect = f64::from(width) / f64::from(height);
-        let (projection, location, direction, up, target, frustum) =
-            if camera.kind == ViewKind::Perspective {
-                let mut view = Self::new(ViewKind::Perspective);
-                view.restore_camera(camera);
-                let (_, up, forward) = view.perspective_basis();
-                let location = camera.target - forward * camera.perspective_camera_distance;
-                let half_height = (camera.perspective_fov_radians * 0.5).tan();
-                let half_width = half_height * aspect;
-                let [shift_x, shift_y] = camera.perspective_lens_shift;
-                (
-                    ThreeDmProjection::Perspective,
-                    location,
-                    forward,
-                    up,
-                    camera.target,
-                    [
-                        (shift_x - 1.0) * half_width,
-                        (shift_x + 1.0) * half_width,
-                        (shift_y - 1.0) * half_height,
-                        (shift_y + 1.0) * half_height,
-                        1.0,
-                        1.0e9,
-                    ],
-                )
+        let (projection, location, direction, up, target, frustum) = if camera.kind
+            == ViewKind::Perspective
+        {
+            let mut view = Self::new(ViewKind::Perspective);
+            view.restore_camera(camera);
+            let (_, up, forward) = view.perspective_basis();
+            let location = camera.target - forward * camera.perspective_camera_distance;
+            let half_height = camera.frustum_near * (camera.perspective_fov_radians * 0.5).tan();
+            let half_width = half_height * aspect;
+            let [shift_x, shift_y] = camera.perspective_lens_shift;
+            (
+                ThreeDmProjection::Perspective,
+                location,
+                forward,
+                up,
+                camera.target,
+                [
+                    (shift_x - 1.0) * half_width,
+                    (shift_x + 1.0) * half_width,
+                    (shift_y - 1.0) * half_height,
+                    (shift_y + 1.0) * half_height,
+                    camera.frustum_near,
+                    camera.frustum_far,
+                ],
+            )
+        } else {
+            let frame = if camera.kind == ViewKind::Plan {
+                camera.plan_frame
             } else {
-                let frame = if camera.kind == ViewKind::Plan {
-                    camera.plan_frame
-                } else {
-                    Self::default_plane(camera.kind)
-                };
-                let right = NaVector3::from(frame.x_axis().as_vector().to_array());
-                let up = NaVector3::from(frame.y_axis().as_vector().to_array());
-                let forward = -NaVector3::from(frame.z_axis().as_vector().to_array());
-                let scale = f64::from(camera.pixels_per_unit);
-                let center = camera.target - right * (f64::from(camera.pan.x) / scale)
-                    + up * (f64::from(camera.pan.y) / scale);
-                let half_width = f64::from(width) / (2.0 * scale);
-                let half_height = f64::from(height) / (2.0 * scale);
-                (
-                    ThreeDmProjection::Parallel,
-                    center - forward * 50.0,
-                    forward,
-                    up,
-                    center,
-                    [
-                        -half_width,
-                        half_width,
-                        -half_height,
-                        half_height,
-                        1.0,
-                        1.0e9,
-                    ],
-                )
+                Self::default_plane(camera.kind)
             };
+            let right = NaVector3::from(frame.x_axis().as_vector().to_array());
+            let up = NaVector3::from(frame.y_axis().as_vector().to_array());
+            let forward = -NaVector3::from(frame.z_axis().as_vector().to_array());
+            let scale = f64::from(camera.pixels_per_unit);
+            let center = camera.target - right * (f64::from(camera.pan.x) / scale)
+                + up * (f64::from(camera.pan.y) / scale);
+            let half_width = f64::from(width) / (2.0 * scale);
+            let half_height = f64::from(height) / (2.0 * scale);
+            (
+                ThreeDmProjection::Parallel,
+                center - forward * 50.0,
+                forward,
+                up,
+                center,
+                [
+                    -half_width,
+                    half_width,
+                    -half_height,
+                    half_height,
+                    camera.frustum_near,
+                    camera.frustum_far,
+                ],
+            )
+        };
         Ok(ThreeDmNamedView {
             name,
             projection,
@@ -95,14 +96,17 @@ impl Viewport {
     pub(crate) fn named_view_from_3dm(
         source: &ThreeDmNamedView,
     ) -> Result<NamedViewSnapshot, GeometryError> {
-        let [left, right, bottom, top, near, _] = source.frustum;
+        let [left, right, bottom, top, near, far] = source.frustum;
         let width = right - left;
         let height = top - bottom;
         if !width.is_finite()
             || !height.is_finite()
             || width <= 0.0
             || height <= 0.0
-            || (source.projection == ThreeDmProjection::Perspective && near <= 0.0)
+            || !near.is_finite()
+            || !far.is_finite()
+            || near <= 0.0
+            || far <= near
         {
             return Err(GeometryError::Degenerate {
                 context: "named view frustum",
@@ -135,6 +139,8 @@ impl Viewport {
         view.plane.set(source.construction_plane);
         view.cplane_direction = None;
         view.pan = Vec2::ZERO;
+        view.frustum_near = near;
+        view.frustum_far = far;
         if source.projection == ThreeDmProjection::Perspective {
             view.kind = ViewKind::Perspective;
             // The app's orbit target lies on the camera axis. Rhino targets may
@@ -239,5 +245,38 @@ mod tests {
         let target_w = gpu.view_projection[3][3];
         assert!((gpu.view_projection[3][0] / target_w + 0.2).abs() < 1.0e-6);
         assert!((gpu.view_projection[3][1] / target_w - 0.15).abs() < 1.0e-6);
+    }
+
+    #[test]
+    fn imported_perspective_clip_planes_survive_round_trip_and_plan() {
+        let mut source = Viewport::new(ViewKind::Perspective);
+        source.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(705.0, 365.0)));
+        let mut encoded =
+            Viewport::named_view_to_3dm(source.named_view_snapshot(), "Clip".into()).unwrap();
+        let half_width = 55.861660601873735;
+        let half_height = half_width * 365.0 / 705.0;
+        encoded.frustum = [
+            -half_width,
+            half_width,
+            -half_height,
+            half_height,
+            120.50535531728079,
+            2500.0,
+        ];
+        let decoded = Viewport::named_view_from_3dm(&encoded).unwrap();
+        let again = Viewport::named_view_to_3dm(decoded, "Clip".into()).unwrap();
+        for (actual, expected) in again.frustum.into_iter().zip(encoded.frustum) {
+            assert!((actual - expected).abs() < 1e-10);
+        }
+
+        let mut restored = Viewport::new(ViewKind::Top);
+        restored.last_rect = source.last_rect;
+        restored.restore_named_view(decoded);
+        restored.set_plan_view();
+        assert!((f64::from(restored.pixels_per_unit) - 365.0 / (2.0 * half_height)).abs() < 1e-6);
+        let parallel =
+            Viewport::named_view_to_3dm(restored.named_view_snapshot(), "Plan".into()).unwrap();
+        assert_eq!(parallel.projection, ThreeDmProjection::Parallel);
+        assert_eq!(parallel.frustum[4..], encoded.frustum[4..]);
     }
 }

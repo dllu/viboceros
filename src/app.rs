@@ -8498,8 +8498,8 @@ mod tests {
     fn command_completion_prioritizes_prefixes_and_is_case_insensitive() {
         let commands = CommandRegistry::with_builtins();
         assert_eq!(
-            command_completions(&commands, "pOlY")[..2],
-            ["Polygon", "Polyline"]
+            command_completions(&commands, "pOlY")[..3],
+            ["Polygon", "PolygonCount", "Polyline"]
         );
         assert_eq!(
             command_completions(&commands, "_eXtRuDeCrVt")[..1],
