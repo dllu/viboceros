@@ -69,6 +69,7 @@ pub(super) fn run(
     let (succeeded, reported_boxes) = match result {
         Ok(message) => (true, message.matches(" size ").count()),
         Err(CommandError::DegenerateBoundingBox) => (false, 0),
+        Err(CommandError::PartialBoundingBox { reported_boxes, .. }) => (false, reported_boxes),
         Err(error) => return Err(error.into()),
     };
     let mut records = Vec::new();

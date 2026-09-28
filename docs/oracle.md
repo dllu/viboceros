@@ -791,8 +791,10 @@ five retained box/trim-evaluation diagnostics in
 multi-face trimmed B-reps, recording every face domain and trim-image samples.
 `bounding_box.json` checks 57 actual BoundingBox commands, including output
 corners/topology, groups, reports, and World/CPlane orientation.
-`bounding_box_diagnostics.json` retains 26 curved-bound, thin-geometry, and
-atomicity differences. See [bounding boxes](commands/bounding-box.md), including
+`bounding_box_mixed.json` compares six mixed valid/point selections with actual
+Rhino partial output and failure reporting; all six match. The remaining 20 of
+the 26 `bounding_box_diagnostics.json` cases retain curved-bound and thin-geometry
+differences. See [bounding boxes](commands/bounding-box.md), including
 why raw Rhino script success flags are not used for report-only commands.
 `distribute.json` adds 188 actual distribution commands with signed spacing,
 World/CPlane directions, bound tie ordering, retained source identities, and

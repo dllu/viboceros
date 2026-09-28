@@ -1,0 +1,293 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-false-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-false-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-false-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-true-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-true-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mixed-true-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

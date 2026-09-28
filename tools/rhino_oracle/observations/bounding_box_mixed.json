@@ -1,0 +1,584 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-false-Solids",
+      "value": {
+        "group_sizes": [],
+        "objects": [
+          {
+            "closed": true,
+            "current_layer": true,
+            "faces": 6,
+            "kind": "brep",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-false-None",
+      "value": {
+        "group_sizes": [],
+        "objects": [],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-false-Curves",
+      "value": {
+        "group_sizes": [
+          6
+        ],
+        "objects": [
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-true-Solids",
+      "value": {
+        "group_sizes": [],
+        "objects": [
+          {
+            "closed": true,
+            "current_layer": true,
+            "faces": 6,
+            "kind": "brep",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-true-None",
+      "value": {
+        "group_sizes": [],
+        "objects": [],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "mixed-true-Curves",
+      "value": {
+        "group_sizes": [
+          6
+        ],
+        "objects": [
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                2.0,
+                9.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                6.0,
+                3.0
+              ],
+              [
+                1.0,
+                6.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "closed": true,
+            "current_layer": true,
+            "degree": 1,
+            "kind": "curve",
+            "name": null,
+            "points": [
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                9.0
+              ],
+              [
+                4.0,
+                6.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                9.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "reported_boxes": 1,
+        "selected_sources": [
+          0,
+          1
+        ],
+        "sources_retained": [
+          0,
+          1
+        ],
+        "succeeded": false
+      }
+    }
+  ]
+}

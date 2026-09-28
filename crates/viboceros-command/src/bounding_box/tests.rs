@@ -19,6 +19,67 @@ fn selected(geometry: Geometry) -> Document {
     document
 }
 
+#[test]
+fn mixed_individual_bounds_keep_valid_outputs_and_one_undo_step() {
+    let registry = CommandRegistry::with_builtins();
+    for point_first in [false, true] {
+        let mut document = Document::default();
+        let sources = if point_first {
+            [
+                Geometry::Point(point([2., 3., 4.])),
+                cloud(&[[1., 2., 3.], [4., 6., 9.]]),
+            ]
+        } else {
+            [
+                cloud(&[[1., 2., 3.], [4., 6., 9.]]),
+                Geometry::Point(point([2., 3., 4.])),
+            ]
+        };
+        let ids = sources.map(|source| document.add_geometry(source).unwrap());
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        let error = registry
+            .execute(&mut document, "BoundingBox Cumulative=No Output=Solids")
+            .unwrap_err();
+        let CommandError::PartialBoundingBox {
+            reported_boxes,
+            reports,
+        } = error
+        else {
+            panic!("valid and degenerate individual boxes must report partial failure")
+        };
+        assert_eq!(reported_boxes, 1);
+        assert!(reports.contains("size 3.000000,4.000000,6.000000"));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.undo_label(), Some("BoundingBox"));
+        assert!(ids.into_iter().all(|id| document.is_selected(id)));
+        assert!(
+            document
+                .objects()
+                .any(|object| matches!(object.geometry(), Geometry::Brep(_)))
+        );
+        document.undo().unwrap();
+        assert_eq!(document.objects().len(), 2);
+        document.redo().unwrap();
+        assert_eq!(document.objects().len(), 3);
+
+        let previous_undo = document.undo_label().map(str::to_owned);
+        let error = registry
+            .execute(&mut document, "BBox Cumulative=No Output=None")
+            .unwrap_err();
+        assert!(matches!(
+            error,
+            CommandError::PartialBoundingBox {
+                reported_boxes: 1,
+                ..
+            }
+        ));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.undo_label(), previous_undo.as_deref());
+    }
+}
+
 fn near(actual: Point3, expected: Point3) {
     assert!(
         actual.distance_to(expected).unwrap() < 1e-8,
@@ -238,7 +299,7 @@ fn rank_uses_document_tolerance_without_discarding_resolved_thin_solids() {
 }
 
 #[test]
-fn failed_individual_bounds_leave_no_partial_geometry_groups_selection_or_history() {
+fn unresolved_individual_bounds_leave_no_partial_geometry_groups_selection_or_history() {
     let pole = NurbsCurve::try_new_rational(
         2,
         [[0., 0., 0.], [1., 10., 0.], [2., 0., 0.]]
@@ -249,36 +310,32 @@ fn failed_individual_bounds_leave_no_partial_geometry_groups_selection_or_histor
         vec![0., 0., 0., 1., 1., 1.],
     )
     .unwrap();
-    for bad in [
-        Geometry::Point(point([1., 2., 3.])),
-        Geometry::NurbsCurve(pole),
-    ] {
-        for reverse in [false, true] {
-            for output in ["Solids", "Meshes", "Curves", "None"] {
-                let mut document = Document::default();
-                let mut sources = [cloud(&[[1., 2., 3.], [4., 6., 9.]]), bad.clone()];
-                if reverse {
-                    sources.reverse();
-                }
-                for geometry in sources {
-                    document.add_geometry(geometry).unwrap();
-                }
-                document.select_all();
-                let originals = document.objects().cloned().collect::<Vec<_>>();
-                let history = document.undo_label().map(str::to_owned);
-                assert!(
-                    CommandRegistry::with_builtins()
-                        .execute(
-                            &mut document,
-                            &format!("BoundingBox Cumulative=No Output={output}")
-                        )
-                        .is_err()
-                );
-                assert_eq!(document.objects().cloned().collect::<Vec<_>>(), originals);
-                assert_eq!(document.selected_objects().count(), 2);
-                assert_eq!(document.groups().len(), 0);
-                assert_eq!(document.undo_label(), history.as_deref());
+    let bad = Geometry::NurbsCurve(pole);
+    for reverse in [false, true] {
+        for output in ["Solids", "Meshes", "Curves", "None"] {
+            let mut document = Document::default();
+            let mut sources = [cloud(&[[1., 2., 3.], [4., 6., 9.]]), bad.clone()];
+            if reverse {
+                sources.reverse();
             }
+            for geometry in sources {
+                document.add_geometry(geometry).unwrap();
+            }
+            document.select_all();
+            let originals = document.objects().cloned().collect::<Vec<_>>();
+            let history = document.undo_label().map(str::to_owned);
+            assert!(
+                CommandRegistry::with_builtins()
+                    .execute(
+                        &mut document,
+                        &format!("BoundingBox Cumulative=No Output={output}")
+                    )
+                    .is_err()
+            );
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), originals);
+            assert_eq!(document.selected_objects().count(), 2);
+            assert_eq!(document.groups().len(), 0);
+            assert_eq!(document.undo_label(), history.as_deref());
         }
     }
 }

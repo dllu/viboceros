@@ -50,6 +50,10 @@ impl Command for BoundingBoxCommand {
         &["BBox"]
     }
 
+    fn commits_on_error(&self, error: &CommandError) -> bool {
+        matches!(error, CommandError::PartialBoundingBox { .. })
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         self.run_in_context(document, arguments, CommandContext::default())
     }
@@ -69,24 +73,35 @@ impl Command for BoundingBoxCommand {
             BoundingBoxCoordinateSystem::World => CommandContext::default().construction_plane,
             BoundingBoxCoordinateSystem::ConstructionPlane => context.construction_plane,
         };
-        let bounds = if options.cumulative {
-            vec![oriented_bounds(
-                selected.iter().map(|o| o.geometry()),
-                coordinates,
-                document.tolerance(),
-            )?]
+        let (bounds, degenerate_count) = if options.cumulative {
+            (
+                vec![oriented_bounds(
+                    selected.iter().map(|o| o.geometry()),
+                    coordinates,
+                    document.tolerance(),
+                )?],
+                0,
+            )
         } else {
-            selected
-                .iter()
-                .map(|object| {
-                    oriented_bounds(
-                        [object.geometry()].into_iter(),
-                        coordinates,
-                        document.tolerance(),
-                    )
-                })
-                .collect::<Result<Vec<_>, _>>()?
+            let mut bounds = Vec::with_capacity(selected.len());
+            let mut degenerate_count = 0;
+            for object in &selected {
+                let candidate = oriented_bounds(
+                    [object.geometry()].into_iter(),
+                    coordinates,
+                    document.tolerance(),
+                )?;
+                if candidate.varying_axes(document.tolerance())?.len() < 2 {
+                    degenerate_count += 1;
+                } else {
+                    bounds.push(candidate);
+                }
+            }
+            (bounds, degenerate_count)
         };
+        if bounds.is_empty() {
+            return Err(CommandError::DegenerateBoundingBox);
+        }
         for bounds in &bounds {
             if bounds.varying_axes(document.tolerance())?.len() < 2 {
                 return Err(CommandError::DegenerateBoundingBox);
@@ -98,6 +113,12 @@ impl Command for BoundingBoxCommand {
             .map(|(index, bounds)| bounds.report(index, coordinates))
             .collect::<Result<Vec<_>, _>>()?;
         if options.output == BoundingBoxOutput::None {
+            if degenerate_count > 0 {
+                return Err(CommandError::PartialBoundingBox {
+                    reported_boxes: bounds.len(),
+                    reports: reports.join("; "),
+                });
+            }
             return Ok(format!(
                 "{} bounding box(es) in {} coordinates: {}",
                 bounds.len(),
@@ -123,6 +144,12 @@ impl Command for BoundingBoxCommand {
                 document.add_group(Some(name), ids)?;
                 group_count += 1;
             }
+        }
+        if degenerate_count > 0 {
+            return Err(CommandError::PartialBoundingBox {
+                reported_boxes: bounds.len(),
+                reports: reports.join("; "),
+            });
         }
         Ok(format!(
             "Created {object_count} bounding-box object(s) for {} {} bound(s){}: {}",

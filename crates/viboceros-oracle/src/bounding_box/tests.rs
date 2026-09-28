@@ -3,6 +3,23 @@ use super::*;
 const ORDINARY: &str = include_str!("../../../../tools/rhino_oracle/fixtures/bounding_box.json");
 const DIAGNOSTICS: &str =
     include_str!("../../../../tools/rhino_oracle/fixtures/bounding_box_diagnostics.json");
+const MIXED: &str = include_str!("../../../../tools/rhino_oracle/fixtures/bounding_box_mixed.json");
+
+#[test]
+fn mixed_individual_bounds_match_recorded_rhino_partial_outputs() {
+    let request: ProbeRequest = serde_json::from_str(MIXED).unwrap();
+    let observation: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/bounding_box_mixed.json"
+    ))
+    .unwrap();
+    let response = run_request(&request).unwrap();
+    let expected = observation["results"].as_array().unwrap();
+    assert_eq!(response.results.len(), expected.len());
+    for (actual, expected) in response.results.iter().zip(expected) {
+        assert_eq!(actual.id, expected["id"]);
+        crate::test_json::close(&actual.value, &expected["value"], &actual.id, 1e-8, 1e-12);
+    }
+}
 
 #[test]
 fn permanent_commands_check_output_topology_selection_groups_and_report_counts() {
@@ -18,13 +35,15 @@ fn permanent_commands_check_output_topology_selection_groups_and_report_counts()
             let indices = (0..fixture.sources.len()).collect::<Vec<_>>();
             assert_eq!(value["sources_retained"], json!(indices));
             assert_eq!(value["selected_sources"], json!(indices));
-            let failure =
-                id.starts_with("line-") || id.starts_with("point-") || id.starts_with("mixed-");
-            assert_eq!(value["succeeded"], !failure, "{id}");
+            let failure = id.starts_with("line-") || id.starts_with("point-");
+            let partial = id.starts_with("mixed-");
+            assert_eq!(value["succeeded"], !(failure || partial), "{id}");
             assert_eq!(
                 value["reported_boxes"],
                 if failure {
                     0
+                } else if partial {
+                    1
                 } else if fixture.cumulative {
                     1
                 } else {

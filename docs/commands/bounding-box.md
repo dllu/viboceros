@@ -56,11 +56,13 @@ can nevertheless lose small differences in floating point; the separately
 computed dimensions and actual output geometry remain useful.
 
 An axis collapses when its extent is at most the document's absolute tolerance.
-All boxes are validated and constructed before document mutation. A degenerate
-individual input, unresolved rational pole, ambiguous trim, exhausted bounds
-budget, or unrepresentable transform fails the whole command without partial
-objects/groups or an undo entry. This intentionally differs from Rhino's
-partial output for mixed valid/degenerate individual selections.
+For `Cumulative=No`, inputs with fewer than two varying axes are skipped after
+the valid boxes have been staged. The command reports a partial failure and
+retains the valid outputs and reports, regardless of selection order. Created
+outputs form one undo step; `Output=None` retains the valid reports without an
+undo step. If no valid box exists, the command fails without output. An
+unresolved rational pole, ambiguous trim, exhausted bounds budget, or
+unrepresentable transform still fails atomically, before adding objects.
 
 ## Verification and retained differences
 
@@ -70,8 +72,10 @@ and degenerate inputs, point clouds, mesh vertices, lines, and positive/mixed-
 weight NURBS curves and surfaces. All agree at absolute `1e-8`, relative `1e-12`;
 maximum observed coordinate error is `7.84e-10`.
 
-`bounding_box_diagnostics.json` retains 26 failing comparisons at the same
-epsilon; they are not counted as passing compatibility tests:
+`bounding_box_mixed.json` adds six live Rhino comparisons for mixed valid/point
+selections, including partial output, report counts, source selection, grouping,
+and both input orders. All six now match. `bounding_box_diagnostics.json`
+retains 26 diagnostic cases; the other 20 still fail at the same epsilon:
 
 - Six ordinary disk-face cases differ by `1.1921e-8`; Rhino reports corners
   at approximately ±0.8000000119 instead of ±0.8.
@@ -85,8 +89,6 @@ epsilon; they are not counted as passing compatibility tests:
   found Rhino collapsing thickness `1e-7` but retaining `2e-7`. The command's
   complete cutoff policy is not established; native code retains features
   resolved by the requested tolerance.
-- Six mixed valid/point selections expose Rhino's partial output/report behavior;
-  native execution is atomic.
 
 The oracle records corners, face sizes, closure, groups, source retention,
 selection, current layer, and report count. Rhino's `RunScript` returns false

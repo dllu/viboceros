@@ -330,9 +330,15 @@ pub trait Command: Send + Sync {
         true
     }
 
-    /// Optional selection cleanup after a failed transaction has
-    /// rolled back. Implementations may release prompt selection, but must not
-    /// mutate geometry or other model state. Most errors retain selection.
+    /// Commands with a Rhino-style partial result can report failure after
+    /// keeping valid staged edits. Other failures roll back the transaction.
+    fn commits_on_error(&self, _error: &CommandError) -> bool {
+        false
+    }
+
+    /// Optional selection cleanup after a failed command. Implementations may
+    /// release prompt selection, but must not mutate geometry or other model
+    /// state. Most errors retain selection.
     fn cleanup_failed_selection(
         &self,
         _document: &mut Document,
@@ -1268,7 +1274,9 @@ impl CommandRegistry {
             }
         };
         let result = if command.records_history() {
-            run_command_transaction(document, command.name(), run)
+            run_command_transaction_with_policy(document, command.name(), run, |error| {
+                command.commits_on_error(error)
+            })
         } else {
             run(document)
         };
@@ -1297,6 +1305,15 @@ fn run_command_transaction<T>(
     name: &'static str,
     run: impl FnOnce(&mut Document) -> Result<T, CommandError>,
 ) -> Result<T, CommandError> {
+    run_command_transaction_with_policy(document, name, run, |_| false)
+}
+
+fn run_command_transaction_with_policy<T>(
+    document: &mut Document,
+    name: &'static str,
+    run: impl FnOnce(&mut Document) -> Result<T, CommandError>,
+    commits_on_error: impl FnOnce(&CommandError) -> bool,
+) -> Result<T, CommandError> {
     document.begin_transaction(name)?;
     match run(document) {
         Ok(message) => {
@@ -1304,7 +1321,11 @@ fn run_command_transaction<T>(
             Ok(message)
         }
         Err(error) => {
-            document.rollback_transaction()?;
+            if commits_on_error(&error) {
+                document.commit_transaction()?;
+            } else {
+                document.rollback_transaction()?;
+            }
             Err(error)
         }
     }
@@ -18169,6 +18190,12 @@ pub enum CommandError {
 
     #[error("BoundingBox requires extents in at least two coordinate directions")]
     DegenerateBoundingBox,
+
+    #[error("BoundingBox failed after reporting {reported_boxes} valid box(es): {reports}")]
+    PartialBoundingBox {
+        reported_boxes: usize,
+        reports: String,
+    },
 
     #[error("Distribute requires at least three independent objects or groups; found {actual}")]
     InsufficientDistributionObjects { actual: usize },
