@@ -64,7 +64,10 @@ use the active viewport's CPlane for local coordinates; the resolved world
 point is then applied to every viewport. Each viewport records its own plane
 history. Through All computes every new plane before applying any of them, so
 an invalid result leaves all planes unchanged. Explicit `All=Yes` and `All=No`
-forms are accepted in command macros.
+forms are accepted in command macros. Origin and Through remember their own
+`All` setting for the current session. A bare `All` toggles its setting;
+`All=Yes` and `All=No` select it explicitly. The setting survives a canceled
+point prompt.
 
 Plane prompts are separate from model prompts: start `Polyline`, accept two
 points, run `CPlane 3Point`, define the frame, then continue the same polyline.
@@ -133,7 +136,5 @@ rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
 commands with a picked source viewport remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.
-Rhino remembers the `All=Yes|No` option between CPlane commands; the explicit
-Viboceros `All` forms do not yet reproduce that option memory. The typed
-`Through All` macro has a documented/native discrepancy described in the
+The typed `Through All` macro has a documented/native discrepancy described in the
 [oracle notes](oracle.md), so its exact Rhino parity remains unverified.

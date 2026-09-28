@@ -76,6 +76,18 @@ pub enum PlaneAction {
     Prompt(PlanePromptKind),
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct PlaneOptions {
+    pub origin_all: bool,
+    pub through_all: bool,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ParsedPlaneCommand {
+    pub options: PlaneOptions,
+    pub action: Result<PlaneAction, PlaneCommandError>,
+}
+
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 pub enum PlaneCommandError {
     #[error("Usage: {USAGE}")]
@@ -92,18 +104,33 @@ fn keyword(input: &str, expected: &str) -> bool {
     input.trim_start_matches('_').eq_ignore_ascii_case(expected)
 }
 
-fn all_option(input: &str) -> Option<bool> {
+#[derive(Clone, Copy)]
+enum AllOption {
+    Toggle,
+    Set(bool),
+}
+
+impl AllOption {
+    fn apply(self, current: bool) -> bool {
+        match self {
+            Self::Toggle => !current,
+            Self::Set(value) => value,
+        }
+    }
+}
+
+fn all_option(input: &str) -> Option<AllOption> {
     if keyword(input, "All") {
-        return Some(true);
+        return Some(AllOption::Toggle);
     }
     let (name, value) = input.split_once('=')?;
     if !keyword(name, "All") {
         return None;
     }
     if keyword(value, "Yes") {
-        Some(true)
+        Some(AllOption::Set(true))
     } else if keyword(value, "No") {
-        Some(false)
+        Some(AllOption::Set(false))
     } else {
         None
     }
@@ -115,6 +142,17 @@ pub fn parse(
     previous: Option<Point3>,
     tolerance: Tolerance,
 ) -> Option<Result<PlaneAction, PlaneCommandError>> {
+    parse_with_options(input, plane, previous, tolerance, PlaneOptions::default())
+        .map(|parsed| parsed.action)
+}
+
+pub fn parse_with_options(
+    input: &str,
+    plane: Frame3,
+    previous: Option<Point3>,
+    tolerance: Tolerance,
+    options: PlaneOptions,
+) -> Option<ParsedPlaneCommand> {
     let mut tokens = input.split_whitespace();
     if !tokens
         .next()?
@@ -123,12 +161,19 @@ pub fn parse(
     {
         return None;
     }
-    Some(parse_arguments(
-        &tokens.collect::<Vec<_>>(),
-        plane,
-        previous,
-        tolerance,
-    ))
+    let args = tokens.collect::<Vec<_>>();
+    let mut options = options;
+    if let Some(option) = args.first().and_then(|name| all_option(name)) {
+        options.origin_all = option.apply(options.origin_all);
+    } else if args.first().is_some_and(|name| keyword(name, "Through"))
+        && let Some(option) = args.get(1).and_then(|name| all_option(name))
+    {
+        options.through_all = option.apply(options.through_all);
+    }
+    Some(ParsedPlaneCommand {
+        options,
+        action: parse_arguments(&args, plane, previous, tolerance, options),
+    })
 }
 
 fn parse_arguments(
@@ -136,6 +181,7 @@ fn parse_arguments(
     plane: Frame3,
     mut previous: Option<Point3>,
     tolerance: Tolerance,
+    options: PlaneOptions,
 ) -> Result<PlaneAction, PlaneCommandError> {
     let mut point = |text: &str| {
         let parsed = PointInput::parse(text).ok_or(PlaneCommandError::Usage)??;
@@ -150,19 +196,31 @@ fn parse_arguments(
             .ok_or(PlaneCommandError::Number)
     };
     Ok(match args {
-        [] => PlaneAction::Prompt(PlanePromptKind::Origin),
+        [] => PlaneAction::Prompt(if options.origin_all {
+            PlanePromptKind::AllOrigin
+        } else {
+            PlanePromptKind::Origin
+        }),
         [name] if keyword(name, "Undo") => PlaneAction::Undo,
         [name] if keyword(name, "Redo") => PlaneAction::Redo,
         [name] if keyword(name, "3Point") => PlaneAction::Prompt(PlanePromptKind::ThreePoint),
         [name] if keyword(name, "Elevation") => PlaneAction::Prompt(PlanePromptKind::Elevation),
-        [name] if keyword(name, "Through") => PlaneAction::Prompt(PlanePromptKind::Through),
-        [name] if all_option(name) == Some(true) => PlaneAction::Prompt(PlanePromptKind::AllOrigin),
-        [name] if all_option(name) == Some(false) => PlaneAction::Prompt(PlanePromptKind::Origin),
-        [name, option] if keyword(name, "Through") && all_option(option) == Some(true) => {
-            PlaneAction::Prompt(PlanePromptKind::ThroughAll)
-        }
-        [name, option] if keyword(name, "Through") && all_option(option) == Some(false) => {
-            PlaneAction::Prompt(PlanePromptKind::Through)
+        [name] if keyword(name, "Through") => PlaneAction::Prompt(if options.through_all {
+            PlanePromptKind::ThroughAll
+        } else {
+            PlanePromptKind::Through
+        }),
+        [name] if all_option(name).is_some() => PlaneAction::Prompt(if options.origin_all {
+            PlanePromptKind::AllOrigin
+        } else {
+            PlanePromptKind::Origin
+        }),
+        [name, option] if keyword(name, "Through") && all_option(option).is_some() => {
+            PlaneAction::Prompt(if options.through_all {
+                PlanePromptKind::ThroughAll
+            } else {
+                PlanePromptKind::Through
+            })
         }
         [name] if keyword(name, "Rotate") => PlaneAction::Prompt(PlanePromptKind::Rotate),
         [name, view] if keyword(name, "World") => PlaneAction::Set(
@@ -182,17 +240,28 @@ fn parse_arguments(
             PlaneAction::Set(elevated(plane, number(value)?)?)
         }
         [name, value] if keyword(name, "Through") => {
-            PlaneAction::Set(through(plane, point(value)?)?)
+            let target = point(value)?;
+            if options.through_all {
+                PlaneAction::SetThroughAll(target)
+            } else {
+                PlaneAction::Set(through(plane, target)?)
+            }
         }
-        [name, value] if all_option(name) == Some(true) => PlaneAction::SetAllOrigin(point(value)?),
-        [name, value] if all_option(name) == Some(false) => {
-            PlaneAction::Set(plane.with_origin(point(value)?))
+        [name, value] if all_option(name).is_some() => {
+            let target = point(value)?;
+            if options.origin_all {
+                PlaneAction::SetAllOrigin(target)
+            } else {
+                PlaneAction::Set(plane.with_origin(target))
+            }
         }
-        [name, option, value] if keyword(name, "Through") && all_option(option) == Some(true) => {
-            PlaneAction::SetThroughAll(point(value)?)
-        }
-        [name, option, value] if keyword(name, "Through") && all_option(option) == Some(false) => {
-            PlaneAction::Set(through(plane, point(value)?)?)
+        [name, option, value] if keyword(name, "Through") && all_option(option).is_some() => {
+            let target = point(value)?;
+            if options.through_all {
+                PlaneAction::SetThroughAll(target)
+            } else {
+                PlaneAction::Set(through(plane, target)?)
+            }
         }
         [name, a, b, angle] if keyword(name, "Rotate") => PlaneAction::Set(rotated(
             plane,
@@ -201,7 +270,14 @@ fn parse_arguments(
             number(angle)?,
             tolerance,
         )?),
-        [value] => PlaneAction::Set(plane.with_origin(point(value)?)),
+        [value] => {
+            let target = point(value)?;
+            if options.origin_all {
+                PlaneAction::SetAllOrigin(target)
+            } else {
+                PlaneAction::Set(plane.with_origin(target))
+            }
+        }
         _ => return Err(PlaneCommandError::Usage),
     })
 }

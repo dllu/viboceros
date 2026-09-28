@@ -86,6 +86,85 @@ fn all_viewport_actions_resolve_the_active_plane_input_once() {
 }
 
 #[test]
+fn origin_and_through_remember_independent_all_options() {
+    let frame = WorldPlane::Top.frame();
+    let mut options = PlaneOptions::default();
+    let cases = [
+        (
+            "CPlane All=Yes",
+            PlaneAction::Prompt(PlanePromptKind::AllOrigin),
+            true,
+            false,
+        ),
+        (
+            "CPlane",
+            PlaneAction::Prompt(PlanePromptKind::AllOrigin),
+            true,
+            false,
+        ),
+        (
+            "CPlane Through",
+            PlaneAction::Prompt(PlanePromptKind::Through),
+            true,
+            false,
+        ),
+        (
+            "CPlane Through All",
+            PlaneAction::Prompt(PlanePromptKind::ThroughAll),
+            true,
+            true,
+        ),
+        (
+            "CPlane Through",
+            PlaneAction::Prompt(PlanePromptKind::ThroughAll),
+            true,
+            true,
+        ),
+        (
+            "CPlane All",
+            PlaneAction::Prompt(PlanePromptKind::Origin),
+            false,
+            true,
+        ),
+        (
+            "CPlane Through All=No",
+            PlaneAction::Prompt(PlanePromptKind::Through),
+            false,
+            false,
+        ),
+    ];
+    for (input, expected, origin_all, through_all) in cases {
+        let parsed = parse_with_options(input, frame, None, Tolerance::DEFAULT, options).unwrap();
+        assert_eq!(parsed.action, Ok(expected), "{input}");
+        options = parsed.options;
+        assert_eq!(options.origin_all, origin_all, "{input}");
+        assert_eq!(options.through_all, through_all, "{input}");
+    }
+    let parsed = parse_with_options(
+        "CPlane Through All=Yes bad",
+        frame,
+        None,
+        Tolerance::DEFAULT,
+        options,
+    )
+    .unwrap();
+    assert!(parsed.action.is_err());
+    assert!(parsed.options.through_all);
+    assert_eq!(
+        parse_with_options(
+            "CPlane Through w1,2,3",
+            frame,
+            None,
+            Tolerance::DEFAULT,
+            parsed.options
+        )
+        .unwrap()
+        .action,
+        Ok(PlaneAction::SetThroughAll(point(1., 2., 3.)))
+    );
+}
+
+#[test]
 fn rotation_moves_the_origin_and_axes_and_keeps_a_right_handed_frame() {
     let initial = WorldPlane::Top.frame().with_origin(point(2., 0., 3.));
     let result = edited("CPlane Rotate w0,0,0 w0,0,2 90", initial);

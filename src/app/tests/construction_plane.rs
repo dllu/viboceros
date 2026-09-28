@@ -89,6 +89,54 @@ fn cplane_all_prompts_resolve_typed_world_points() {
 }
 
 #[test]
+fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
+    let mut app = test_app();
+    enter(&mut app, "CPlane All=Yes");
+    assert_eq!(app.cplane_options.origin_all, true);
+    app.cancel_plane_prompt();
+    enter(&mut app, "CPlane Through w1,2,3");
+    assert_eq!(app.cplane_options.through_all, false);
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(0., 0., 3.)
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(0., 0., 0.)
+    );
+    enter(&mut app, "CPlane w4,5,6");
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.construction_plane().origin() == point(4., 5., 6.))
+    );
+    enter(&mut app, "CPlane Through All=Yes");
+    app.cancel_plane_prompt();
+    enter(&mut app, "CPlane Through w7,8,9");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(4., 5., 9.)
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(4., 8., 6.)
+    );
+    enter(&mut app, "CPlane All=No w0,0,0");
+    assert_eq!(app.cplane_options.origin_all, false);
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(0., 0., 0.)
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(4., 8., 6.)
+    );
+    enter(&mut app, "CPlane Through All=No");
+    app.cancel_plane_prompt();
+    assert_eq!(app.cplane_options.through_all, false);
+}
+
+#[test]
 fn cplane_through_all_rejects_unrepresentable_target_atomically() {
     let mut app = test_app();
     let extreme = app.viewports[3]

@@ -213,12 +213,18 @@ impl VibocerosApp {
 
     pub(super) fn try_run_plane_command(&mut self, input: &str) -> bool {
         let frame = self.viewports[self.active_viewport].construction_plane();
-        let Some(action) = cplane::parse(input, frame, self.last_point, self.document.tolerance())
-        else {
+        let Some(parsed) = cplane::parse_with_options(
+            input,
+            frame,
+            self.last_point,
+            self.document.tolerance(),
+            self.cplane_options,
+        ) else {
             return false;
         };
+        self.cplane_options = parsed.options;
         self.push_log(format!("> {input}"));
-        match action {
+        match parsed.action {
             Ok(action) => {
                 self.plane_prompt = None;
                 if self.apply_plane_action(action, self.active_viewport) {
