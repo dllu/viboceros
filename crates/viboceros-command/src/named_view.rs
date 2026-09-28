@@ -1,7 +1,7 @@
 //! Named-view command syntax and ordered, case-insensitive view names.
 //! The saved camera type belongs to the host (GUI or headless viewport).
 
-pub const USAGE: &str = "NamedView [List | Save name | Update name | Restore name | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
+pub const USAGE: &str = "NamedView [List | Save name | Update name | Restore name | Import path.3dm | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamedViewAction {
@@ -9,6 +9,7 @@ pub enum NamedViewAction {
     Save(String),
     Update(String),
     Restore(String),
+    Import(String),
     Delete(String),
     Rename { old: String, new: String },
     Duplicate { source: String, new: String },
@@ -24,6 +25,8 @@ pub enum NamedViewError {
     Missing(String),
     #[error("named view '{0}' already exists")]
     Duplicate(String),
+    #[error("named view import failed: {0}")]
+    ImportFile(String),
 }
 
 fn keyword(input: &str, expected: &str) -> bool {
@@ -66,6 +69,11 @@ pub fn parse(input: &str) -> Option<Result<NamedViewAction, NamedViewError>> {
         name(value).map(NamedViewAction::Update)
     } else if keyword(verb, "Restore") {
         name(value).map(NamedViewAction::Restore)
+    } else if keyword(verb, "Import") {
+        crate::parse_3dm_path(value)
+            .map(str::to_owned)
+            .map(NamedViewAction::Import)
+            .map_err(|_| NamedViewError::Usage)
     } else if keyword(verb, "Delete") {
         name(value).map(NamedViewAction::Delete)
     } else if keyword(verb, "MoveUp") {
@@ -218,6 +226,11 @@ mod tests {
             parse("NamedView Rename a | "),
             Some(Err(NamedViewError::Usage))
         );
+        assert_eq!(
+            parse("NamedView Import \"folder/two  spaces.3dm\""),
+            Some(Ok(NamedViewAction::Import("folder/two  spaces.3dm".into())))
+        );
+        assert_eq!(parse("NamedView Import"), Some(Err(NamedViewError::Usage)));
         let mut views = NamedViews::default();
         views.save("Upper left".into(), 1).unwrap();
         views.save("Right".into(), 2).unwrap();

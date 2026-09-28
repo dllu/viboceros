@@ -15,7 +15,10 @@ name. `Rename Front detail | Entrance` and `Duplicate Front detail | Entrance`
 use `|` to separate two names, so spaces are allowed in either name. Names are
 matched without regard to case and keep the spelling you enter.
 
-The current registry lives in the application session and is read or written
-with `Open3dm`, `Save`, `Import3dm`, and `Export3dm`. A thumbnails panel and
-floating viewport restore remain to be implemented. See
+`NamedView Import "views.3dm"` reads saved named views without importing model
+objects or changing current viewports. Imported coordinates are converted to the
+current document units, and duplicate names receive a numbered suffix. The
+registry is also read or written with `Open3dm`, `Save`, `Import3dm`, and
+`Export3dm`. A thumbnails panel and floating viewport restore remain to be
+implemented. See
 [Rhino's NamedView command](https://docs.mcneel.com/rhino/8/help/en-us/commands/namedview.htm).

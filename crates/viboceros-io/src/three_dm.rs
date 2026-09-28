@@ -286,6 +286,20 @@ pub fn read_3dm_viewports_file_in_units(
     Ok(viewports)
 }
 
+/// Reads named views in destination units without decoding document geometry.
+pub fn read_3dm_named_views_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut views = decode_named_views(&handle)?;
+    for view in &mut views {
+        scale_view(view, scale)?;
+    }
+    Ok(views)
+}
+
 /// Reads coordinates into target units. The supplied tolerance is expressed
 /// in target units; B-rep topology matching uses a converted source tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
@@ -802,17 +816,7 @@ fn decode_model(
         });
     }
 
-    // SAFETY: the handle owns a live bridge model.
-    let named_view_count = unsafe { ffi::vibo_3dm_named_view_count(handle.0.as_ptr()) };
-    let mut named_views = Vec::with_capacity(named_view_count);
-    for index in 0..named_view_count {
-        let mut raw = ffi::ViboNamedView::default();
-        // SAFETY: the handle is live, the index is in range, and output is writable.
-        if unsafe { ffi::vibo_3dm_named_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
-            return Err(ThreeDmError::MalformedBridge("invalid named view record"));
-        }
-        named_views.push(decode_view(&raw)?);
-    }
+    let named_views = decode_named_views(handle)?;
     let viewports = decode_viewports(handle)?;
 
     // SAFETY: the handle owns a live bridge model.
@@ -845,6 +849,21 @@ fn decode_model(
         objects,
         unsupported_object_count: unsupported,
     })
+}
+
+fn decode_named_views(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let count = unsafe { ffi::vibo_3dm_named_view_count(handle.0.as_ptr()) };
+    let mut views = Vec::with_capacity(count);
+    for index in 0..count {
+        let mut raw = ffi::ViboNamedView::default();
+        // SAFETY: the handle is live, the index is in range, and output is writable.
+        if unsafe { ffi::vibo_3dm_named_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid named view record"));
+        }
+        views.push(decode_view(&raw)?);
+    }
+    Ok(views)
 }
 
 fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {

@@ -1,7 +1,7 @@
 use super::*;
 use crate::viewport::GridSettings;
 use viboceros_command::named_view::NamedViews;
-use viboceros_command::named_view::{self, NamedViewAction};
+use viboceros_command::named_view::{self, NamedViewAction, NamedViewError};
 use viboceros_io::{ThreeDmDisplayMode, ThreeDmGridSettings, ThreeDmNamedView, ThreeDmViewport};
 
 fn add_file_views(
@@ -343,6 +343,13 @@ impl VibocerosApp {
                 Ok(format!(
                     "Restored named view '{saved_name}' in active viewport"
                 ))
+            }
+            NamedViewAction::Import(path) => {
+                let views =
+                    viboceros_io::read_3dm_named_views_file_in_units(&path, self.document.units())
+                        .map_err(|error| NamedViewError::ImportFile(error.to_string()))?;
+                let count = add_file_views(&mut self.named_views, views);
+                Ok(format!("Imported {count} named view(s) from {path}"))
             }
             NamedViewAction::Delete(name) => {
                 self.named_views.delete(&name)?;

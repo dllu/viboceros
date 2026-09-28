@@ -63,8 +63,11 @@ viewport and its rectangle. Centered overlapping views created by
 `ReadViewportsFromFile path.3dm` reads the saved model viewports,
 converting camera positions, frustum distances, and grid spacing into the
 current document's units. It leaves objects, layers, named views, and the
-current file path in place. A file with no model viewports is rejected. Open
-restores the file's current layer when it is visible and unlocked; Import keeps
+current file path in place. A file with no model viewports is rejected.
+`NamedView Import path.3dm` reads only named views, converts camera and frustum
+coordinates into the current units, and resolves duplicate names with numbered
+suffixes; model objects, viewport layout, and document history stay in place.
+Open restores the file's current layer when it is visible and unlocked; `Import3dm` keeps
 the destination's current layer.
 3DM round trips also keep user text attached to object attributes and user text
 attached to geometry as separate collections, including identical keys in both.

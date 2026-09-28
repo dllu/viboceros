@@ -167,6 +167,22 @@ fn path_argument(input: &str) -> Option<(&str, &str)> {
     let command = input[start..end]
         .trim_start_matches(['\'', '_', '-'])
         .to_ascii_lowercase();
+    if command == "namedview" {
+        let offset = input.len() - input[end..].trim_start().len();
+        let rest = &input[offset..];
+        let token_end = rest.find(char::is_whitespace).unwrap_or(rest.len());
+        if !rest[..token_end]
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("Import")
+        {
+            return None;
+        }
+        if token_end == rest.len() {
+            return Some((input, ""));
+        }
+        let offset = input.len() - input[offset + token_end..].trim_start().len();
+        return Some((&input[..offset], &input[offset..]));
+    }
     if !matches!(
         command.as_str(),
         "readviewportsfromfile"
@@ -338,6 +354,7 @@ mod tests {
         assert!(files[0].replacement.ends_with("模型.3dm\""));
         for command in [
             "ReadViewportsFromFile",
+            "NamedView Import",
             "ExportStl Binary",
             "ExportStl Ascii",
             "ImportStep Native=Yes",
@@ -358,5 +375,6 @@ mod tests {
             .is_empty()
         );
         assert!(path_argument("Move 0,0,0 1,1,1").is_none());
+        assert!(path_argument("NamedView Save Front detail").is_none());
     }
 }

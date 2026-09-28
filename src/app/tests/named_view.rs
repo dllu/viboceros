@@ -142,6 +142,89 @@ fn named_views_round_trip_through_app_3dm_commands() {
 }
 
 #[test]
+fn named_view_import_reads_only_views_and_converts_units() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-import-named-views-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    enter(&mut source, "Units Meters Scale=No");
+    enter(&mut source, "Point 4,5,6");
+    enter(&mut source, "SetView World Perspective");
+    enter(&mut source, "NamedView Save Camera A");
+    enter(&mut source, &format!("Export3dm \"{}\"", path.display()));
+    let expected = viboceros_io::read_3dm_named_views_file_in_units(
+        &path,
+        &viboceros_io::LengthUnitSystem::Millimeters,
+    )
+    .unwrap();
+    assert_eq!(expected.len(), 1);
+
+    let mut destination = test_app();
+    enter(&mut destination, "Point 9,8,7");
+    enter(&mut destination, "Undo");
+    enter(&mut destination, "NamedView Save Camera A");
+    let view_before = destination.viewports[0].named_view_snapshot();
+    let path_before = destination.document_path.clone();
+    enter(
+        &mut destination,
+        &format!("NamedView Import \"{}\"", path.display()),
+    );
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .contains("Imported 1")
+    );
+    assert_eq!(
+        destination.named_views.names().collect::<Vec<_>>(),
+        ["Camera A", "Camera A (2)"]
+    );
+    assert_eq!(destination.document.objects().count(), 0);
+    assert!(destination.document.can_redo());
+    assert_eq!(destination.document_path, path_before);
+    assert_eq!(destination.viewports[0].named_view_snapshot(), view_before);
+    let imported = Viewport::named_view_to_3dm(
+        *destination.named_views.get("Camera A (2)").unwrap(),
+        "Camera A".into(),
+    )
+    .unwrap();
+    assert_eq!(imported.projection, expected[0].projection);
+    assert_eq!(imported.construction_plane, expected[0].construction_plane);
+    for (actual, expected) in imported.frustum.into_iter().zip(expected[0].frustum) {
+        assert!((actual - expected).abs() < 1e-5);
+    }
+    for (actual, expected) in imported
+        .camera_location
+        .to_array()
+        .into_iter()
+        .zip(expected[0].camera_location.to_array())
+    {
+        assert!((actual - expected).abs() < 1e-5);
+    }
+
+    std::fs::remove_file(&path).unwrap();
+    enter(
+        &mut destination,
+        &format!("NamedView Import \"{}\"", path.display()),
+    );
+    assert!(
+        destination
+            .command_log
+            .back()
+            .unwrap()
+            .starts_with("Error:")
+    );
+    assert_eq!(destination.named_views.names().count(), 2);
+    assert!(destination.document.can_redo());
+}
+
+#[test]
 fn open_restores_current_viewports_without_named_views() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-current-views-{}-{}.3dm",
