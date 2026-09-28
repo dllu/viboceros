@@ -13,16 +13,41 @@ pub struct ConstructionPlaneFixture {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum PlaneStep {
-    World { view: String },
-    Origin { point: [f64; 3] },
-    ThreePoint { points: [[f64; 3]; 3] },
-    ThreePointVertical { points: [[f64; 3]; 2] },
-    ThreePointZAxis { points: [[f64; 3]; 2] },
-    ThreePointInput { points: [String; 3] },
-    OriginInput { point: String },
-    Elevation { distance: f64 },
-    Through { point: [f64; 3] },
-    Rotate { axis: [[f64; 3]; 2], angle: f64 },
+    World {
+        view: String,
+    },
+    Origin {
+        point: [f64; 3],
+    },
+    ThreePoint {
+        points: [[f64; 3]; 3],
+    },
+    ThreePointVertical {
+        points: [[f64; 3]; 2],
+    },
+    ThreePointZAxis {
+        points: [[f64; 3]; 2],
+    },
+    ThreePointInput {
+        points: [String; 3],
+    },
+    OriginInput {
+        point: String,
+    },
+    Elevation {
+        distance: f64,
+    },
+    Through {
+        point: [f64; 3],
+    },
+    Rotate {
+        axis: [[f64; 3]; 2],
+        angle: f64,
+    },
+    RotatePoints {
+        axis: [[f64; 3]; 2],
+        references: [[f64; 3]; 2],
+    },
     Undo,
     Redo,
 }
@@ -79,6 +104,16 @@ fn apply_step(
             axis: [a, b],
             angle,
         } => format!("CPlane Rotate {} {} {angle}", point(a), point(b)),
+        PlaneStep::RotatePoints {
+            axis: [a, b],
+            references: [c, d],
+        } => format!(
+            "CPlane Rotate {} {} {} {}",
+            point(a),
+            point(b),
+            point(c),
+            point(d)
+        ),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -169,9 +204,27 @@ mod tests {
             "../../../tools/rhino_oracle/observations/construction_plane_three_point_options.json"
         ))
         .unwrap();
+        assert_saved_plane_frames(request, recorded, 5);
+    }
+
+    #[test]
+    fn picked_rotation_references_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_rotate_points.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_rotate_points.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 4);
+    }
+
+    fn assert_saved_plane_frames(request: ProbeRequest, recorded: Value, count: usize) {
         let actual = run_request(&request).unwrap();
         let expected = recorded["results"].as_array().unwrap();
-        assert_eq!(actual.results.len(), 5);
+        assert_eq!(actual.results.len(), count);
+        assert_eq!(expected.len(), count);
         for (result, observation) in actual.results.iter().zip(expected) {
             assert_eq!(result.id, observation["id"].as_str().unwrap());
             let states = result.value["states"].as_array().unwrap();

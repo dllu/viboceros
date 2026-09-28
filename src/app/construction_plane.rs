@@ -17,7 +17,7 @@ pub(super) struct PlanePrompt {
 
 impl PlanePrompt {
     pub(super) fn requests_point(&self) -> bool {
-        self.kind != PlanePromptKind::Rotate || self.points.len() < 2
+        true
     }
     pub(super) fn anchor(&self) -> Option<Point3> {
         self.points.first().copied()
@@ -54,7 +54,10 @@ impl PlanePrompt {
             }
             (PlanePromptKind::Rotate, 0) => "CPlane Rotate: pick the rotation axis start",
             (PlanePromptKind::Rotate, 1) => "CPlane Rotate: pick the rotation axis end",
-            (PlanePromptKind::Rotate, _) => "CPlane Rotate: type the angle in degrees",
+            (PlanePromptKind::Rotate, 2) => {
+                "CPlane Rotate: type an angle or pick the first reference point"
+            }
+            (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
         }
     }
 }
@@ -484,7 +487,29 @@ impl VibocerosApp {
                         prompt.points.push(point);
                         None
                     }
-                    _ => return Err(PlaneCommandError::Number),
+                    [start, end] => {
+                        cplane::rotated_by_reference_points(
+                            prompt.frame,
+                            *start,
+                            *end,
+                            point,
+                            point,
+                            tolerance,
+                        )?;
+                        prompt.points.push(point);
+                        None
+                    }
+                    [start, end, reference] => {
+                        Some(PlaneAction::Set(cplane::rotated_by_reference_points(
+                            prompt.frame,
+                            *start,
+                            *end,
+                            *reference,
+                            point,
+                            tolerance,
+                        )?))
+                    }
+                    _ => unreachable!(),
                 },
             })
         })();

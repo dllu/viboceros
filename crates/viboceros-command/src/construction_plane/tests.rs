@@ -259,6 +259,39 @@ fn rotation_moves_the_origin_and_axes_and_keeps_a_right_handed_frame() {
 }
 
 #[test]
+fn picked_rotation_references_project_to_the_axis_normal_plane() {
+    let top = WorldPlane::Top.frame().with_origin(point(2., 0., 3.));
+    let positive = edited("CPlane Rotate w0,0,0 w0,0,1 w1,0,0 w0,1,0", top);
+    assert!(positive.origin().distance_to(point(0., 2., 3.)).unwrap() < 1e-14);
+    assert!(
+        positive
+            .x_axis()
+            .as_vector()
+            .to_array()
+            .into_iter()
+            .zip([0., 1., 0.])
+            .all(|(actual, expected)| (actual - expected).abs() < 1e-14)
+    );
+    let negative = edited("CPlane Rotate w0,0,0 w0,0,1 w0,1,5 w1,0,-2", top);
+    assert!(negative.origin().distance_to(point(0., -2., 3.)).unwrap() < 1e-14);
+    let shifted = WorldPlane::Top.frame().with_origin(point(3., 2., 3.));
+    let shifted = edited("CPlane Rotate w1,2,3 w1,2,4 w2,2,3 w1,3,3", shifted);
+    assert!(shifted.origin().distance_to(point(1., 4., 3.)).unwrap() < 1e-14);
+    for input in [
+        "CPlane Rotate w0,0,0 w0,0,0 w1,0,0 w0,1,0",
+        "CPlane Rotate w0,0,0 w0,0,1 w0,0,5 w0,1,0",
+        "CPlane Rotate w0,0,0 w0,0,1 w1,0,0 w0,0,-2",
+    ] {
+        assert!(
+            parse(input, top, None, Tolerance::DEFAULT)
+                .unwrap()
+                .is_err(),
+            "{input}"
+        );
+    }
+}
+
+#[test]
 fn invalid_commands_and_degenerate_frames_cannot_mutate_plane_history() {
     let initial = WorldPlane::Top.frame();
     let state = ConstructionPlaneState::new(initial);

@@ -5,7 +5,7 @@ use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -280,6 +280,16 @@ fn parse_arguments(
             number(angle)?,
             tolerance,
         )?),
+        [name, a, b, reference, target] if keyword(name, "Rotate") => {
+            PlaneAction::Set(rotated_by_reference_points(
+                plane,
+                point(a)?,
+                point(b)?,
+                point(reference)?,
+                point(target)?,
+                tolerance,
+            )?)
+        }
         [value] => {
             let target = point(value)?;
             if options.origin_all {
@@ -334,8 +344,41 @@ pub fn rotated(
     degrees: f64,
     tolerance: Tolerance,
 ) -> Result<Frame3, GeometryError> {
+    rotated_radians(plane, start, end, degrees.to_radians(), tolerance)
+}
+
+pub fn rotated_by_reference_points(
+    plane: Frame3,
+    start: Point3,
+    end: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
     let axis = start.vector_to(end)?.normalized(tolerance)?;
-    let transform = AffineTransform3::try_rotation(start, axis, degrees.to_radians())?;
+    let frame = Frame3::try_from_normal(start, axis.as_vector(), tolerance)?;
+    let projected_unit = |point: Point3| -> Result<[f64; 2], GeometryError> {
+        let [x, y, _] = frame.coordinates_of(point)?;
+        let vector = Vector3::try_new(x, y, 0.0)?.normalized(tolerance)?;
+        let [x, y, _] = vector.as_vector().to_array();
+        Ok([x, y])
+    };
+    let [from_x, from_y] = projected_unit(reference)?;
+    let [to_x, to_y] = projected_unit(target)?;
+    let sine = from_x.mul_add(to_y, -(from_y * to_x));
+    let cosine = from_x.mul_add(to_x, from_y * to_y);
+    rotated_radians(plane, start, end, sine.atan2(cosine), tolerance)
+}
+
+fn rotated_radians(
+    plane: Frame3,
+    start: Point3,
+    end: Point3,
+    angle: f64,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    let axis = start.vector_to(end)?.normalized(tolerance)?;
+    let transform = AffineTransform3::try_rotation(start, axis, angle)?;
     Frame3::try_from_directions(
         transform.transform_point(plane.origin())?,
         transform.transform_vector(plane.x_axis().as_vector())?,

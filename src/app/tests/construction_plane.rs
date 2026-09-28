@@ -164,6 +164,62 @@ fn cplane_three_point_options_complete_after_one_direction_pick() {
 }
 
 #[test]
+fn cplane_rotate_accepts_picked_angle_references() {
+    let mut app = test_app();
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, "CPlane 3Point w2,0,3 w3,0,3 w2,1,3");
+    enter(&mut app, "CPlane Rotate");
+    for picked in [point(0., 0., 0.), point(0., 0., 1.), point(1., 0., 0.)] {
+        assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+        app.accept_plane_prompt_point(picked);
+    }
+    assert!(app.plane_prompt.is_some());
+    app.accept_plane_prompt_point(point(0., 1., 0.));
+    assert!(app.plane_prompt.is_none());
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .distance_to(point(0., 2., 3.))
+            .unwrap()
+            < 1e-14
+    );
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(2., 0., 3.)
+    );
+}
+
+#[test]
+fn cplane_rotate_rejects_axis_aligned_references_without_losing_the_prompt() {
+    let mut app = test_app();
+    let original = app.viewports[0].construction_plane();
+    enter(&mut app, "CPlane Rotate");
+    app.accept_plane_prompt_point(point(0., 0., 0.));
+    app.accept_plane_prompt_point(point(0., 0., 1.));
+    assert!(!app.accept_plane_prompt_point(point(0., 0., 5.)));
+    assert_eq!(app.plane_prompt.as_ref().unwrap().points.len(), 2);
+    assert_eq!(app.viewports[0].construction_plane(), original);
+    app.accept_plane_prompt_point(point(1., 0., 0.));
+    assert!(!app.accept_plane_prompt_point(point(0., 0., -2.)));
+    assert_eq!(app.plane_prompt.as_ref().unwrap().points.len(), 3);
+    assert_eq!(app.viewports[0].construction_plane(), original);
+    app.accept_plane_prompt_point(point(0., 1., 0.));
+    assert!(app.plane_prompt.is_none());
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .x_axis()
+            .as_vector()
+            .dot(Vector3::try_new(0., 1., 0.).unwrap())
+            .unwrap()
+            > 1.0 - 1e-14
+    );
+}
+
+#[test]
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");

@@ -52,6 +52,29 @@ python3 -m tools.rhino_oracle replay \
 All five transitions replay, with a largest axis-component difference of
 `2.22e-16`. A Rust oracle test also checks the saved frames at `1e-10`.
 
+The [picked Rotate fixture](../tools/rhino_oracle/fixtures/construction_plane_rotate_points.json)
+records four Rhino 8.32 transitions: positive and negative quarter turns,
+an offset rotation axis, and an oblique axis with an oblique starting plane.
+Its [private-Xvfb observation](../tools/rhino_oracle/observations/construction_plane_rotate_points.json)
+shows that Rhino uses the signed angle between reference directions projected
+perpendicular to the rotation axis. Regenerate it with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_rotate_points.json --timeout 180
+```
+
+Replay the saved frames with:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_rotate_points.json \
+  --observations tools/rhino_oracle/observations/construction_plane_rotate_points.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All four transitions replay, with a largest component difference of `8.88e-16`.
+A Rust oracle test checks the same frames at `1e-10`.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

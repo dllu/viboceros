@@ -21,6 +21,7 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Through point` | Move only along the normal until the plane passes through the point. |
 | `CPlane Through All point` | Move every viewport's plane along its own normal until it passes through the point. |
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
+| `CPlane Rotate axis-start axis-end reference-point target-point` | Rotate by the signed angle between two directions from the axis. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
@@ -62,8 +63,9 @@ CPlane Undo
 Bare `CPlane` prompts for a new origin. `CPlane 3Point`, `CPlane Through`,
 `CPlane Elevation`, and `CPlane Rotate` also have interactive prompts, mixing
 typed coordinates and viewport picks. Elevation accepts a distance or height
-point; Rotate accepts two axis points followed by a typed angle. Enter at the
-origin prompt retains the starting plane origin. Degenerate axes, collinear
+point; Rotate accepts two axis points followed by a typed angle or two picked
+reference points. Their directions are projected perpendicular to the axis.
+Enter at the origin prompt retains the starting plane origin. Degenerate axes, collinear
 three-point definitions, nonfinite values, and unrepresentable results remain
 correctable errors; they do not partially change the plane.
 
@@ -144,9 +146,9 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object/Surface/Curve/Gumball options, picked-angle
-rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
-commands with a picked source viewport remain unimplemented. General scalar point-input
+Object/Surface/Curve/Gumball options, universal/automatic planes, the named-plane
+panel, and CopyCPlane commands with a picked source viewport remain
+unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.
 The typed `Through All` macro has a documented/native discrepancy described in the

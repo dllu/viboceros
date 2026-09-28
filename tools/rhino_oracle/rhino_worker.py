@@ -4573,6 +4573,10 @@ def _construction_plane_script(step):
         return "_CPlane _Through " + point(step["point"])
     if kind == "rotate" and len(step["axis"]) == 2:
         return "_CPlane _Rotate %s %s %.17g" % (point(step["axis"][0]), point(step["axis"][1]), _finite(step["angle"], "CPlane angle"))
+    if kind == "rotate_points" and len(step["axis"]) == 2 and len(step["references"]) == 2:
+        return "_CPlane _Rotate %s %s %s %s" % (
+            point(step["axis"][0]), point(step["axis"][1]),
+            point(step["references"][0]), point(step["references"][1]))
     if kind in ("undo", "redo"):
         return "_CPlane _" + kind.title()
     raise ValueError("unsupported CPlane step")
