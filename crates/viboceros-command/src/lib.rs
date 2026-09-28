@@ -154,7 +154,7 @@ mod curve_cut;
 pub mod interface;
 mod plane_primitives;
 mod plane_transforms;
-mod set_point;
+pub mod set_point;
 use plane_transforms::{
     MirrorCommand, ProjectToConstructionPlaneCommand, RotateCommand, ScaleTwoDimensionalCommand,
     ShearCommand,

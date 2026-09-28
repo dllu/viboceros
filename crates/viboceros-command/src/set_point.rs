@@ -4,6 +4,81 @@ use super::*;
 
 const USAGE: &str = "SetPt target-point [XSet=Yes|No] [YSet=Yes|No] [ZSet=Yes|No] [Alignment=World|CPlane] [Copy=Yes|No]";
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SetPointOptions {
+    pub axes: [bool; 3],
+    pub align_to_cplane: bool,
+    pub copy: bool,
+}
+
+impl Default for SetPointOptions {
+    fn default() -> Self {
+        Self {
+            axes: [true; 3],
+            align_to_cplane: false,
+            copy: false,
+        }
+    }
+}
+
+impl SetPointOptions {
+    pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
+        let mut options = Self::default();
+        let mut seen = [false; 5];
+        for argument in arguments {
+            let field = options.update(argument)?;
+            if seen[field] {
+                return Err(CommandError::Usage(USAGE));
+            }
+            seen[field] = true;
+        }
+        if !options.axes.contains(&true) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(options)
+    }
+
+    /// Updates one Rhino-style option and returns its index for duplicate checks.
+    pub fn update(&mut self, argument: &str) -> Result<usize, CommandError> {
+        let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        let field = if option_name_eq(name, "XSet") {
+            0
+        } else if option_name_eq(name, "YSet") {
+            1
+        } else if option_name_eq(name, "ZSet") {
+            2
+        } else if option_name_eq(name, "Alignment") {
+            3
+        } else if option_name_eq(name, "Copy") {
+            4
+        } else {
+            return Err(CommandError::Usage(USAGE));
+        };
+        match field {
+            0..=2 => self.axes[field] = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
+            3 if option_name_eq(value, "World") => self.align_to_cplane = false,
+            3 if option_name_eq(value, "CPlane") => self.align_to_cplane = true,
+            3 => return Err(CommandError::Usage(USAGE)),
+            4 => self.copy = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
+            _ => unreachable!(),
+        }
+        Ok(field)
+    }
+
+    pub fn command_options(self) -> String {
+        let [x, y, z] = self.axes.map(|enabled| if enabled { "Yes" } else { "No" });
+        format!(
+            "XSet={x} YSet={y} ZSet={z} Alignment={} Copy={}",
+            if self.align_to_cplane {
+                "CPlane"
+            } else {
+                "World"
+            },
+            if self.copy { "Yes" } else { "No" },
+        )
+    }
+}
+
 pub(super) struct SetPointCommand;
 
 impl Command for SetPointCommand {
@@ -22,48 +97,19 @@ impl Command for SetPointCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let mut axes = [true; 3];
-        let mut seen = [false; 5];
-        let mut copy = false;
-        let mut cplane_alignment = false;
         let mut positional = Vec::new();
+        let mut option_arguments = Vec::new();
         for argument in arguments {
-            let Some((name, value)) = argument.split_once('=') else {
+            if !argument.contains('=') {
                 positional.push(*argument);
                 continue;
-            };
-            let field = if option_name_eq(name, "XSet") {
-                0
-            } else if option_name_eq(name, "YSet") {
-                1
-            } else if option_name_eq(name, "ZSet") {
-                2
-            } else if option_name_eq(name, "Alignment") {
-                3
-            } else if option_name_eq(name, "Copy") {
-                4
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            };
-            if seen[field] {
-                return Err(CommandError::Usage(USAGE));
             }
-            seen[field] = true;
-            match field {
-                0..=2 => axes[field] = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
-                3 if option_name_eq(value, "World") => cplane_alignment = false,
-                3 if option_name_eq(value, "CPlane") => cplane_alignment = true,
-                3 => return Err(CommandError::Usage(USAGE)),
-                4 => copy = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
-                _ => unreachable!(),
-            }
+            option_arguments.push(*argument);
         }
-        if !axes.contains(&true) {
-            return Err(CommandError::Usage(USAGE));
-        }
+        let options = SetPointOptions::parse(&option_arguments)?;
         let (target, consumed) = parse_point(&positional)?;
         require_consumed(&positional, consumed, USAGE)?;
-        let frame = if cplane_alignment {
+        let frame = if options.align_to_cplane {
             context.construction_plane
         } else {
             CommandContext::default().construction_plane
@@ -72,10 +118,10 @@ impl Command for SetPointCommand {
         let transform = AffineTransform3::try_frame_mapping(
             frame,
             frame,
-            axes.map(|enabled| if enabled { 0.0 } else { 1.0 }),
+            options.axes.map(|enabled| if enabled { 0.0 } else { 1.0 }),
         )?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
         Ok(format!(
             "Set coordinates of {transformed} object(s), creating {copied} copy object(s)"
         ))

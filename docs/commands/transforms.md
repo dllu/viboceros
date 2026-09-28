@@ -31,7 +31,10 @@ target. `XSet=`, `YSet=`, and `ZSet=` choose the axes (all enabled by default);
 `Alignment=World|CPlane` selects their frame, and `Copy=Yes` keeps the
 original objects. For example, `SetPt 0,0,5 XSet=No YSet=No ZSet=Yes` flattens
 selected geometry to world Z=5. A CPlane aligned edit uses the active
-viewport's construction plane.
+viewport's construction plane. Enter `SetPt` with objects selected to pick the
+target in a viewport; the same options can be given when starting the prompt
+or changed at the prompt. With `Copy=Yes`, keep picking targets and press Enter
+to finish.
 
 Rotate, Mirror, Scale2D, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
 Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)

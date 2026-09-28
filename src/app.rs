@@ -156,6 +156,7 @@ mod point_input;
 mod points;
 mod preferences;
 mod radius;
+mod set_point;
 mod snapping;
 mod toolbar;
 mod viewport_layout;
@@ -569,6 +570,9 @@ enum InteractiveCommand {
     Move {
         start: Option<Point3>,
     },
+    SetPoint {
+        options: viboceros_command::set_point::SetPointOptions,
+    },
     Copy {
         start: Option<Point3>,
     },
@@ -713,6 +717,7 @@ impl InteractiveCommand {
             }
             Self::TrimCurve => "Trim",
             Self::Move { .. } => "Move",
+            Self::SetPoint { .. } => "SetPt",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
             Self::Distribute { .. } => "Distribute",
@@ -1265,6 +1270,9 @@ impl InteractiveCommand {
             Self::Move { start: Some(_) } => {
                 "Move: pick the destination point in the viewport (Esc to cancel)"
             }
+            Self::SetPoint { .. } => {
+                "SetPt: pick a target point; XSet/YSet/ZSet=Yes|No, Alignment=World|CPlane, Copy=Yes|No (Enter finishes copies; Esc cancels)"
+            }
             Self::Copy { start: None } => {
                 "Copy: pick the base point in the viewport (Esc to cancel)"
             }
@@ -1490,6 +1498,7 @@ impl InteractiveCommand {
             | Self::SplitSurfaceIsocurve { .. }
             | Self::TrimCurve
             | Self::Move { start: None }
+            | Self::SetPoint { .. }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
             | Self::Distribute { start: None, .. }
@@ -2017,6 +2026,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_point_grid_height(&input) {
+            return;
+        }
+        if self.try_continue_set_point_option(&input) || self.try_finish_set_point(&input) {
             return;
         }
         if input.is_empty() {
@@ -2584,6 +2596,12 @@ impl VibocerosApp {
                 return false;
             };
             command
+        } else if normalized == "setpt" && arguments.iter().all(|argument| argument.contains('=')) {
+            let Ok(options) = viboceros_command::set_point::SetPointOptions::parse(&arguments)
+            else {
+                return false;
+            };
+            InteractiveCommand::SetPoint { options }
         } else if matches!(normalized.as_str(), "circle" | "c")
             && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("2Point"))
         {
@@ -4436,6 +4454,7 @@ impl VibocerosApp {
         if matches!(
             command,
             InteractiveCommand::Move { .. }
+                | InteractiveCommand::SetPoint { .. }
                 | InteractiveCommand::Copy { .. }
                 | InteractiveCommand::Array { .. }
                 | InteractiveCommand::ArrayLinear { .. }
@@ -4494,6 +4513,9 @@ impl VibocerosApp {
         }
         if let InteractiveCommand::EvaluateUv { options } = command {
             self.push_log(options.command_line());
+        }
+        if let InteractiveCommand::SetPoint { options } = command {
+            self.push_log(format!("SetPt options: {}", options.command_options()));
         }
         self.push_log(command.prompt().to_owned());
         self.point_filter = None;
@@ -6642,6 +6664,22 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::SetPoint { options } => {
+                let succeeded = self.try_execute_command(&format!(
+                    "SetPt {} {}",
+                    format_model_point(point),
+                    options.command_options()
+                ));
+                if !succeeded {
+                    self.active_command = Some(InteractiveCommand::SetPoint { options });
+                    return false;
+                }
+                if options.copy {
+                    let command = InteractiveCommand::SetPoint { options };
+                    self.active_command = Some(command);
+                    self.push_log(command.prompt().to_owned());
+                }
+            }
             InteractiveCommand::Copy { start: Some(start) } => {
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -8348,6 +8386,7 @@ mod tests {
     mod points;
     mod radius;
     mod rhino_curve_prompt;
+    mod set_point;
     mod single_span_selection;
     mod split_edge;
     use super::*;
