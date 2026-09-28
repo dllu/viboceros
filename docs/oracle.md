@@ -117,6 +117,24 @@ python3 -m tools.rhino_oracle replay \
 All four mesh-face captures replay at these tolerances; the largest component
 difference is `4.44e-16`.
 
+The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
+records 15 private-Xvfb cases for lines, open and closed polylines, and
+polynomial or rational NURBS curves. Linear curves use an axis-aligned
+supporting plane when possible; nonlinear planar curves use their start tangent
+and an oriented plane through their control points. The separate
+[nonplanar fixture](../tools/rhino_oracle/fixtures/construction_plane_object_nonplanar.json)
+records Rhino's start frames for a nonplanar polyline and NURBS curve. The
+[saved observations](../tools/rhino_oracle/observations/construction_plane_object_curve.json)
+and [nonplanar observations](../tools/rhino_oracle/observations/construction_plane_object_nonplanar.json)
+were captured without using the shared desktop. Replay the curve cases with:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/construction_plane_object_curve.json --observations tools/rhino_oracle/observations/construction_plane_object_curve.json --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All 15 curve cases replay within `1.12e-16` component error. Both nonplanar
+cases replay exactly using the same tolerances.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

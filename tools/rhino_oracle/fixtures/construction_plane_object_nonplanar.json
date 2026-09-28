@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "nonplanar-polyline",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 1], [0, 1, 0]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "nonplanar-nurbs",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_nurbs", "definition": {
+        "degree": 3,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [1, 0, 0]}, {"point": [1, 1, 1]}, {"point": [0, 1, 0]}],
+        "knots": [0, 0, 0, 0, 1, 1, 1, 1]
+      }}]
+    }
+  ]
+}

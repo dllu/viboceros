@@ -61,9 +61,7 @@ impl PlanePrompt {
                 "CPlane Rotate: type an angle or pick the first reference point"
             }
             (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
-            (PlanePromptKind::Object, _) => {
-                "CPlane Object: select a circle, arc, ellipse, surface, or mesh face"
-            }
+            (PlanePromptKind::Object, _) => "CPlane Object: select a curve, surface, or mesh face",
         }
     }
 }

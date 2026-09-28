@@ -1,0 +1,138 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "line-world-x",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [2, 3, 4], "end": [7, 3, 4]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-diagonal",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [1, 2, 3], "end": [4, 6, 3]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-vertical",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [1, 2, 3], "end": [1, 2, 8]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-front-cplane",
+      "origin": [10, 20, 30],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 0, 1],
+      "steps": [{"kind": "object_line", "start": [1, 2, 3], "end": [4, 6, 3]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-sloped-z",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [1, 2, 3], "end": [4, 6, 8]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-reversed-sloped-z",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [4, 6, 8], "end": [1, 2, 3]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "line-world-y",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_line", "start": [1, 2, 3], "end": [1, 7, 3]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "polyline-top",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[1, 2, 3], [4, 2, 3], [4, 6, 3]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "polyline-top-reversed",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[4, 6, 3], [4, 2, 3], [1, 2, 3]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "polyline-tilted",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[1, 2, 3], [4, 2, 3], [4, 6, 8]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "polyline-closed-ccw",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[1, 2, 3], [4, 2, 3], [4, 6, 3], [1, 2, 3]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "polyline-closed-cw",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polyline", "vertices": [[1, 2, 3], [4, 6, 3], [4, 2, 3], [1, 2, 3]]}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "nurbs-quadratic-top",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_nurbs", "definition": {
+        "degree": 2,
+        "control_points": [{"point": [1, 2, 3]}, {"point": [4, 2, 3]}, {"point": [4, 6, 3]}],
+        "knots": [0, 0, 0, 1, 1, 1]
+      }}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "nurbs-quadratic-tilted",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_nurbs", "definition": {
+        "degree": 2,
+        "control_points": [{"point": [1, 2, 3], "weight": 1}, {"point": [4, 2, 3], "weight": 0.5}, {"point": [4, 6, 8], "weight": 1}],
+        "knots": [0, 0, 0, 1, 1, 1]
+      }}]
+    },
+    {
+      "op": "construction_plane",
+      "id": "nurbs-linear",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_nurbs", "definition": {
+        "degree": 1,
+        "control_points": [{"point": [1, 2, 3]}, {"point": [4, 6, 8]}],
+        "knots": [0, 0, 1, 1]
+      }}]
+    }
+  ]
+}

@@ -48,6 +48,16 @@ pub enum PlaneStep {
         axis: [[f64; 3]; 2],
         references: [[f64; 3]; 2],
     },
+    ObjectLine {
+        start: [f64; 3],
+        end: [f64; 3],
+    },
+    ObjectPolyline {
+        vertices: Vec<[f64; 3]>,
+    },
+    ObjectNurbs {
+        definition: NurbsCurveDefinition,
+    },
     ObjectCircle {
         center: [f64; 3],
         x_axis: [f64; 3],
@@ -111,6 +121,36 @@ fn apply_step(
     previous: Option<Point3>,
     tolerance: Tolerance,
 ) -> Result<(), ProbeError> {
+    if let PlaneStep::ObjectLine { start, end } = step {
+        let line = LineSegment::try_new(
+            Point3::try_from(*start)?,
+            Point3::try_from(*end)?,
+            tolerance,
+        )?;
+        let frame = cplane::frame_from_object(&Geometry::Line(line), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane line fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectPolyline { vertices } = step {
+        let vertices = vertices
+            .iter()
+            .copied()
+            .map(Point3::try_from)
+            .collect::<Result<Vec<_>, _>>()?;
+        let polyline = Polyline3::try_new(vertices, tolerance)?;
+        let frame = cplane::frame_from_object(&Geometry::Polyline(polyline), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane polyline fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectNurbs { definition } = step {
+        let curve = nurbs_curve_from_definition(definition)?;
+        let frame = cplane::frame_from_object(&Geometry::NurbsCurve(curve), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane NURBS fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     if let PlaneStep::ObjectCircle {
         center,
         x_axis,
@@ -259,7 +299,10 @@ fn apply_step(
             point(c),
             point(d)
         ),
-        PlaneStep::ObjectCircle { .. }
+        PlaneStep::ObjectLine { .. }
+        | PlaneStep::ObjectPolyline { .. }
+        | PlaneStep::ObjectNurbs { .. }
+        | PlaneStep::ObjectCircle { .. }
         | PlaneStep::ObjectArc { .. }
         | PlaneStep::ObjectEllipse { .. }
         | PlaneStep::ObjectSurface { .. }
@@ -437,6 +480,32 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 4);
+    }
+
+    #[test]
+    fn object_lines_polylines_and_nurbs_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_curve.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_curve.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 15);
+    }
+
+    #[test]
+    fn object_nonplanar_curves_match_saved_rhino_start_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_nonplanar.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_nonplanar.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 2);
     }
 
     fn assert_saved_plane_frames(request: ProbeRequest, recorded: Value, count: usize) {

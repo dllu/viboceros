@@ -84,6 +84,12 @@ At the bare `CPlane` origin prompt, type `Object` to enter the same selection
 prompt.
 Circles and arcs place the origin at their center with X toward the curve start.
 Ellipses put the origin at their start point, with X along the start tangent.
+Lines use their start point and an OpenNURBS-style supporting plane: a line
+parallel to a world coordinate plane uses that plane, while an oblique line
+uses its direction for X. Polylines and NURBS curves use their start point and
+starting tangent for X. Planar curves derive Z from their oriented control
+plane; nonplanar curves use the start curvature direction when available, with
+a deterministic perpendicular when the start curvature vanishes.
 NURBS surfaces and single-face B-reps use the midpoint of the
 underlying U/V domains, the U tangent for X, and the surface normal for Z.
 Mesh faces use the average of their three or four vertices for the origin,
@@ -162,7 +168,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object alignment for general planar curves, Surface/Curve/Gumball
+Object alignment for polycurves, Surface/Curve/Gumball
 options, universal/automatic planes, the named-plane
 panel, and CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input

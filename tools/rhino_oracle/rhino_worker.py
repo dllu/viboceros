@@ -4673,10 +4673,13 @@ def _independent_construction_planes():
 def _construction_plane(operation):
     if not 1 <= len(operation["steps"]) <= 128:
         raise ValueError("expected 1 to 128 CPlane steps")
-    has_objects = any(step["kind"] in ("object_circle", "object_arc", "object_ellipse", "object_surface", "object_mesh_face")
-                      for step in operation["steps"])
+    object_kinds = (
+        "object_line", "object_polyline", "object_nurbs", "object_circle",
+        "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
+    )
+    has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
     for step in operation["steps"]:
-        if step["kind"] not in ("object_circle", "object_arc", "object_ellipse", "object_surface", "object_mesh_face"):
+        if step["kind"] not in object_kinds:
             _construction_plane_script(step)
     plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
     if not plane.IsValid:
@@ -4693,7 +4696,36 @@ def _construction_plane(operation):
             viewport.SetConstructionPlane(plane)
             states = [record()]
             for step in operation["steps"]:
-                if step["kind"] == "object_circle":
+                if step["kind"] == "object_line":
+                    object_id = document.Objects.AddLine(
+                        _point(step["start"]), _point(step["end"]))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object line")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_polyline":
+                    vertices = step["vertices"]
+                    if len(vertices) < 2:
+                        raise ValueError("CPlane object polyline needs at least two vertices")
+                    object_id = document.Objects.AddPolyline([_point(p) for p in vertices])
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object polyline")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_nurbs":
+                    curve = _nurbs_curve_from_definition(step["definition"])
+                    try:
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object NURBS")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_circle":
                     frame = Rhino.Geometry.Plane(_point(step["center"]),
                                                  _vector(step["x_axis"]), _vector(step["y_axis"]))
                     radius = _finite(step["radius"], "CPlane object circle radius")

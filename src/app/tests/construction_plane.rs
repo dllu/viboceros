@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::Vector3;
+use viboceros_geometry::{LineSegment, Polyline3, Vector3};
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.to_owned();
@@ -361,6 +361,46 @@ fn cplane_object_aligns_to_a_typed_or_picked_mesh_face() {
             .unwrap()
             > 1.0 - 1e-14
     );
+}
+
+#[test]
+fn cplane_object_aligns_to_a_line_and_a_picked_planar_polyline() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let line = LineSegment::try_new(point(1., 2., 3.), point(4., 6., 8.), tolerance).unwrap();
+    let line_id = app.document.add_geometry(Geometry::Line(line)).unwrap();
+    let original = app.viewports[0].construction_plane();
+    enter(&mut app, &format!("CPlane Object {line_id}"));
+    let aligned = app.viewports[0].construction_plane();
+    assert_eq!(aligned.origin(), point(1., 2., 3.));
+    assert!((aligned.x_axis().as_vector().x() - 3.0 / 50.0_f64.sqrt()).abs() < 1e-14);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    let polyline = Polyline3::try_new(
+        vec![
+            point(1., 2., 3.),
+            point(4., 6., 3.),
+            point(4., 2., 3.),
+            point(1., 2., 3.),
+        ],
+        tolerance,
+    )
+    .unwrap();
+    let polyline_id = app
+        .document
+        .add_geometry(Geometry::Polyline(polyline))
+        .unwrap();
+    enter(&mut app, "CPlane Object");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(polyline_id),
+        mode: SelectionMode::Replace,
+    });
+    let aligned = app.viewports[0].construction_plane();
+    assert_eq!(aligned.origin(), point(1., 2., 3.));
+    assert!((aligned.z_axis().as_vector().z() + 1.0).abs() < 1e-14);
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
 }
 
 #[test]

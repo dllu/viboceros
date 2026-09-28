@@ -4,7 +4,8 @@ use std::collections::VecDeque;
 use viboceros_document::{Geometry, ObjectId};
 use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{
-    AffineTransform3, Frame3, GeometryError, NurbsSurface, Point3, Tolerance, TriangleMesh, Vector3,
+    AffineTransform3, CurveRef, Frame3, GeometryError, LineSegment, NurbsSurface, Point3,
+    Tolerance, TriangleMesh, Vector3,
 };
 
 const HISTORY_LIMIT: usize = 50;
@@ -108,7 +109,7 @@ pub enum PlaneCommandError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
     #[error(
-        "CPlane Object requires a circle, arc, ellipse, surface, or single-face polysurface; a mesh requires Face=index"
+        "CPlane Object requires a line, polyline, NURBS curve, conic, surface, or single-face polysurface; a mesh requires Face=index"
     )]
     UnsupportedObject,
 }
@@ -386,6 +387,7 @@ pub fn frame_from_object(
     tolerance: Tolerance,
 ) -> Result<Frame3, PlaneCommandError> {
     Ok(match geometry {
+        Geometry::Line(line) => line_object_frame(*line, tolerance)?,
         Geometry::Circle(circle) => Frame3::try_from_directions(
             circle.center(),
             circle.x_axis().as_vector(),
@@ -404,6 +406,9 @@ pub fn frame_from_object(
             ellipse.x_axis().as_vector().scaled(-1.0)?,
             tolerance,
         )?,
+        Geometry::Polyline(_) | Geometry::NurbsCurve(_) => {
+            curve_object_frame(geometry.curve_ref().unwrap(), tolerance)?
+        }
         Geometry::NurbsSurface(surface) => surface_mid_frame(surface, false, tolerance)?,
         Geometry::Brep(brep) if brep.faces().len() == 1 => {
             let face = &brep.faces()[0];
@@ -411,6 +416,96 @@ pub fn frame_from_object(
         }
         _ => return Err(PlaneCommandError::UnsupportedObject),
     })
+}
+
+fn line_object_frame(line: LineSegment, tolerance: Tolerance) -> Result<Frame3, PlaneCommandError> {
+    // OpenNURBS ON_Line::InPlane prefers XY, YZ, then ZX before using the
+    // line direction and its deterministic perpendicular.
+    let direction = line.start().vector_to(line.end())?;
+    let [x, y, z] = direction.to_array();
+    let small = [x, y, z].map(|value| value.abs() <= tolerance.absolute());
+    let (x_axis, y_axis) = if small[2] && (!small[0] || !small[1]) {
+        (
+            Vector3::try_new(1.0, 0.0, 0.0)?,
+            Vector3::try_new(0.0, 1.0, 0.0)?,
+        )
+    } else if small[0] && (!small[1] || !small[2]) {
+        (
+            Vector3::try_new(0.0, 1.0, 0.0)?,
+            Vector3::try_new(0.0, 0.0, 1.0)?,
+        )
+    } else if small[1] && (!small[2] || !small[0]) {
+        (
+            Vector3::try_new(0.0, 0.0, 1.0)?,
+            Vector3::try_new(1.0, 0.0, 0.0)?,
+        )
+    } else {
+        let perpendicular = Frame3::try_from_normal(line.start(), direction, tolerance)?;
+        (direction, perpendicular.x_axis().as_vector())
+    };
+    Ok(Frame3::try_from_directions(
+        line.start(),
+        x_axis,
+        y_axis,
+        tolerance,
+    )?)
+}
+
+fn curve_object_frame(
+    curve: CurveRef<'_>,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let nurbs = curve.to_nurbs()?;
+    if nurbs.is_linear(tolerance)? {
+        return line_object_frame(
+            LineSegment::try_new(curve.start_point()?, curve.end_point()?, tolerance)?,
+            tolerance,
+        );
+    }
+    let origin = curve.start_point()?;
+    let tangent = curve
+        .evaluate_with_tangent(*curve.domain().start())?
+        .tangent()
+        .as_vector();
+    if !curve.is_planar(tolerance)? {
+        let (_, _, curvature) = curve.evaluate_with_second_derivative(*curve.domain().start())?;
+        let curvature_length = curvature.length()?;
+        let y = if curvature_length > 0.0
+            && tangent.cross(curvature)?.length()? > tolerance.angular() * curvature_length
+        {
+            curvature
+        } else {
+            Frame3::try_from_normal(origin, tangent, tolerance)?
+                .x_axis()
+                .as_vector()
+        };
+        return Ok(Frame3::try_from_directions(origin, tangent, y, tolerance)?);
+    }
+    let controls = nurbs.control_points();
+    // ON_NurbsCurve::IsPlanar tests the largest triangle anchored at the
+    // start point. Its orientation supplies Z; the start tangent supplies X.
+    let stride = (controls.len() / 64).max(1);
+    let mut best_area = 0.0;
+    let mut normal = None;
+    for first_index in (1..controls.len()).step_by(stride) {
+        let first = origin.vector_to(controls[first_index].point())?;
+        for second in ((first_index + stride)..controls.len()).step_by(stride) {
+            let second = origin.vector_to(controls[second].point())?;
+            let cross = first.cross(second)?;
+            let area = cross.length()?;
+            if area > best_area {
+                best_area = area;
+                normal = Some(cross);
+            }
+        }
+    }
+    let normal = normal.ok_or(PlaneCommandError::UnsupportedObject)?;
+    Ok(Frame3::try_from_directions(
+        origin,
+        tangent,
+        normal.cross(tangent)?,
+        tolerance,
+    )?)
 }
 
 pub fn frame_from_mesh_face(
