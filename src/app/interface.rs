@@ -1003,6 +1003,8 @@ impl VibocerosApp {
                     let mut names = self.commands.command_names();
                     names.extend(interface::COMMAND_NAMES);
                     names.push("CPlane");
+                    names.push("CopyCPlaneToAll");
+                    names.push("CopyCPlaneSettingsToAll");
                     names.push("NamedView");
                     names.push("NamedCPlane");
                     names.push("ReadViewportsFromFile");
@@ -1018,6 +1020,7 @@ impl VibocerosApp {
                     self.push_log(interface::HELP.into());
                     self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
+                    self.push_log("CopyCPlaneToAll [source name|number]; CopyCPlaneSettingsToAll [source name|number]: copy the active or specified viewport's plane or grid settings to all viewports".into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
                     self.push_log(viboceros_command::named_view::NAMED_CPLANE_USAGE.into());
                     self.push_log("ReadViewportsFromFile path.3dm: copy saved model viewports and their layout from a 3DM file".into());
@@ -1069,27 +1072,7 @@ impl VibocerosApp {
             if argument.is_empty() {
                 return Err(format!("Usage: {usage}"));
             }
-            let index = if let Ok(number) = argument.parse::<usize>() {
-                number
-                    .checked_sub(1)
-                    .filter(|index| *index < self.viewports.len())
-            } else {
-                let mut matches = self
-                    .viewports
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, view)| view.view_label().eq_ignore_ascii_case(argument))
-                    .map(|(index, _)| index);
-                let first = matches.next();
-                if matches.next().is_some() {
-                    return Err(format!(
-                        "Viewport name '{argument}' is ambiguous; use a number from 1 to {}",
-                        self.viewports.len()
-                    ));
-                }
-                first
-            }
-            .ok_or_else(|| format!("No viewport named '{argument}'"))?;
+            let index = self.resolve_viewport_reference(argument)?;
             self.active_viewport = index;
             if maximize || self.maximized_viewport.is_some() {
                 self.maximized_viewport = Some(index);
@@ -1109,6 +1092,29 @@ impl VibocerosApp {
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         true
+    }
+
+    pub(super) fn resolve_viewport_reference(&self, argument: &str) -> Result<usize, String> {
+        if let Ok(number) = argument.parse::<usize>() {
+            return number
+                .checked_sub(1)
+                .filter(|index| *index < self.viewports.len())
+                .ok_or_else(|| format!("No viewport numbered '{argument}'"));
+        }
+        let mut matches = self
+            .viewports
+            .iter()
+            .enumerate()
+            .filter(|(_, view)| view.view_label().eq_ignore_ascii_case(argument))
+            .map(|(index, _)| index);
+        let first = matches.next();
+        if matches.next().is_some() {
+            return Err(format!(
+                "Viewport name '{argument}' is ambiguous; use a number from 1 to {}",
+                self.viewports.len()
+            ));
+        }
+        first.ok_or_else(|| format!("No viewport named '{argument}'"))
     }
 
     pub(super) fn handle_interface_shortcuts(&mut self, ui: &mut egui::Ui) {

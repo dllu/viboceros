@@ -50,6 +50,65 @@ impl PlanePrompt {
 }
 
 impl VibocerosApp {
+    pub(super) fn try_run_copy_cplane_command(&mut self, input: &str) -> bool {
+        let (command, argument) = input.split_once(char::is_whitespace).unwrap_or((input, ""));
+        let command = command.trim_start_matches(['\'', '_', '-']);
+        let copy_plane = command.eq_ignore_ascii_case("CopyCPlaneToAll");
+        if !copy_plane && !command.eq_ignore_ascii_case("CopyCPlaneSettingsToAll") {
+            return false;
+        }
+        self.push_log(format!("> {input}"));
+        let result = (|| -> Result<String, String> {
+            let argument = argument.trim();
+            let source = if argument.is_empty() {
+                self.active_viewport
+            } else {
+                let argument = if argument.starts_with('"')
+                    && argument.ends_with('"')
+                    && argument.len() >= 2
+                {
+                    &argument[1..argument.len() - 1]
+                } else {
+                    argument
+                };
+                self.resolve_viewport_reference(argument)?
+            };
+            if copy_plane {
+                let frame = self.viewports[source].construction_plane();
+                for (index, viewport) in self.viewports.iter_mut().enumerate() {
+                    if index != source {
+                        viewport.plane.set(frame);
+                    }
+                }
+            } else {
+                let grid = self.viewports[source].grid_settings();
+                for (index, viewport) in self.viewports.iter_mut().enumerate() {
+                    if index != source {
+                        viewport.set_grid_settings(grid);
+                    }
+                }
+            }
+            Ok(format!(
+                "Copied {} from viewport {} ({}) to all viewports",
+                if copy_plane {
+                    "construction plane"
+                } else {
+                    "grid and snap settings"
+                },
+                source + 1,
+                self.viewports[source].view_label()
+            ))
+        })();
+        match result {
+            Ok(message) => {
+                self.push_log(message);
+                self.command_input.clear();
+            }
+            Err(message) => self.push_log(format!("Error: {message}")),
+        }
+        true
+    }
+
     pub(super) fn handle_plane_shortcuts(&mut self, ui: &mut egui::Ui) {
         // Shift+Home/End select text in editors. Keep those editing operations
         // intact; CPlane Undo/Redo can also be entered at any command prompt.

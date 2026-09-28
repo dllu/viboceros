@@ -81,6 +81,8 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
         .chain(viboceros_command::interface::COMMAND_NAMES)
         .chain([
             "CPlane",
+            "CopyCPlaneToAll",
+            "CopyCPlaneSettingsToAll",
             "NamedView",
             "NamedCPlane",
             "ReadViewportsFromFile",

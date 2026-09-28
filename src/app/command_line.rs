@@ -55,7 +55,10 @@ impl VibocerosApp {
         let command_name = name.trim_start_matches(['\'', '_', '-']);
         let explicit_command = self.commands.recognizes(command_name)
             || command_name.eq_ignore_ascii_case("CPlane")
+            || command_name.eq_ignore_ascii_case("CopyCPlaneToAll")
+            || command_name.eq_ignore_ascii_case("CopyCPlaneSettingsToAll")
             || command_name.eq_ignore_ascii_case("NamedView")
+            || command_name.eq_ignore_ascii_case("NamedCPlane")
             || command_name.eq_ignore_ascii_case("ReadViewportsFromFile")
             || command_name.eq_ignore_ascii_case("SetActiveViewport")
             || command_name.eq_ignore_ascii_case("SetMaximizedViewport")

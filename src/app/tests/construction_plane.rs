@@ -6,6 +6,79 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn copy_cplane_and_grid_settings_to_all_keep_their_domains_separate() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "w1,2,3");
+    let pending = app.active_command;
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
+    let original_planes = app
+        .viewports
+        .iter()
+        .map(Viewport::construction_plane)
+        .collect::<Vec<_>>();
+    let source_plane = viboceros_command::construction_plane::WorldPlane::Right
+        .frame()
+        .with_origin(point(7., 8., 9.));
+    app.viewports[2].plane.set(source_plane);
+    let source_grid = GridSettings {
+        minor_spacing: 2.5,
+        snap_spacing: 0.25,
+        major_interval: 0,
+        line_count: 30,
+        show_grid: false,
+        show_axes: false,
+        show_world_axes: true,
+    };
+    app.viewports[2].set_grid_settings(source_grid);
+    let original_grid = app.viewports[0].grid_settings();
+
+    enter(&mut app, "CopyCPlaneToAll Front");
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.construction_plane() == source_plane)
+    );
+    assert_eq!(app.viewports[0].grid_settings(), original_grid);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.active_viewport, 0);
+    assert_eq!(
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
+        cameras
+    );
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original_planes[0]);
+    enter(&mut app, "CPlane Redo");
+    assert_eq!(app.viewports[0].construction_plane(), source_plane);
+
+    enter(&mut app, "CopyCPlaneSettingsToAll 3");
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.grid_settings() == source_grid)
+    );
+    app.active_viewport = 1;
+    app.viewports[1].set_grid_settings(original_grid);
+    enter(&mut app, "CopyCPlaneSettingsToAll");
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.grid_settings() == original_grid)
+    );
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "CopyCPlaneToAll Missing");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.active_command, pending);
+}
+
+#[test]
 fn cplane_edits_are_view_local_and_model_undo_does_not_change_them() {
     let mut app = test_app();
     for input in [

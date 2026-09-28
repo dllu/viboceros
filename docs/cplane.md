@@ -19,6 +19,12 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
+| `CopyCPlaneToAll [source]` | Copy a viewport's construction plane to every other viewport. |
+| `CopyCPlaneSettingsToAll [source]` | Copy its grid display and snap settings to every other viewport. |
+
+For the copy commands, `source` is a viewport name or its one-based number;
+omitting it uses the active viewport. The plane command records each target's
+plane history. Both commands leave camera views and model undo unchanged.
 
 Points accept the regular local/world/relative coordinate syntax; prefix `w`
 for world coordinates. Angles are degrees. For example:
@@ -104,6 +110,6 @@ and Ghosted retain the edited plane without changing the other viewports.
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
 All/View/Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
 rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
-commands remain unimplemented. General scalar point-input
+commands with a picked source viewport remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.
