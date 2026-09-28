@@ -2,8 +2,9 @@
 
 [Transform commands](commands/transforms.md) · [Construction-plane primitives](construction-planes.md)
 
-`Rotate`, `Mirror`, `Scale2D`, `Shear`, and `ProjectToCPlane` use the active
-construction plane through the explicit `CommandContext`. One-line point
+`Rotate`, `Mirror`, `Scale2D`, `Shear`, `ProjectToCPlane`, and CPlane-aligned
+`SetPt` use the active construction plane through the explicit `CommandContext`.
+One-line point
 arguments remain world coordinates; interactive typed points resolve in the
 viewport receiving them. The default Rust command context is World XY.
 
@@ -21,6 +22,7 @@ The numeric angle or scale-factor forms remain available as one-line commands.
 | Scale2D | Scale along plane X/Y about the supplied center; retain normal displacement. Picked factors use the ratio of full **3D** distances, including normal-only references. |
 | Shear | Shear tangentially to the plane; retain normal displacement. The picked angle is spatial, signed by the plane normal. A tilted reference contributes an additional obliquity factor. |
 | ProjectToCPlane | Project onto the actual plane, including its translated origin. |
+| SetPt | Replace selected local X/Y/Z coordinates with the target's coordinates; leave unselected axes unchanged. |
 
 For Shear, let `u` be the unit spatial reference vector and `h` the length of
 its projection onto the construction plane. The effective shear coefficient
@@ -51,6 +53,11 @@ The maximum measured coordinate difference is `7.11e-15`.
 These are transform-map comparisons, not exhaustive representation comparisons
 for every curve, surface, mesh, or collapsed B-rep. Native tests separately
 cover command transactions, groups, attributes, rejected picks, and view changes.
+The separate [SetPt fixture](../tools/rhino_oracle/fixtures/plane_transforms_setpt.json)
+compares seven World and CPlane cases, including tilted frames and copies, with
+its [Rhino observation](../tools/rhino_oracle/observations/plane_transforms_setpt.json).
+All point witnesses agree at `1e-9` absolute and `1e-12` relative tolerance;
+the largest coordinate difference is `2.28e-15`.
 The oracle restores its plane/selection and deletes only owned objects on
 success, insertion failure, command failure, and recording failure.
 
@@ -70,3 +77,5 @@ copies, rigid Shear, scalar constraints during point prompts, and singular
 projections that collapse validated geometry remain incomplete. Other transforms
 retain their individually documented coordinate policies; rectangular and polar
 arrays now have a separate [construction-plane policy](plane-arrays.md).
+`SetPt` currently edits whole selected objects; selecting and editing individual
+control-point grips is not yet available in the UI.

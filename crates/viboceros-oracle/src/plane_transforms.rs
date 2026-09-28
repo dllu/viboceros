@@ -11,6 +11,10 @@ pub struct PlaneTransformFixture {
     pub references: Vec<[f64; 3]>,
     pub value: Option<f64>,
     pub copy: bool,
+    #[serde(default)]
+    pub axes: Option<[bool; 3]>,
+    #[serde(default)]
+    pub alignment: Option<String>,
     pub sources: Vec<[f64; 3]>,
 }
 
@@ -41,6 +45,7 @@ pub(super) fn run(
         }
         "Mirror" if f.value.is_none() => 2,
         "ProjectToCPlane" if f.value.is_none() => 0,
+        "SetPt" if f.value.is_none() => 1,
         _ => return Err(ProbeError::FixtureInvariant("unsupported plane transform")),
     };
     if f.references.len() != expected || f.sources.is_empty() || f.sources.len() > 256 {
@@ -58,6 +63,24 @@ pub(super) fn run(
             return Err(ProbeError::FixtureInvariant("nonfinite transform value"));
         }
         command.push_str(&format!(" {value}"));
+    }
+    if f.command == "SetPt" {
+        let axes = f.axes.unwrap_or([true; 3]);
+        if !axes.contains(&true) {
+            return Err(ProbeError::FixtureInvariant(
+                "SetPt requires an enabled axis",
+            ));
+        }
+        for (axis, enabled) in ["XSet", "YSet", "ZSet"].into_iter().zip(axes) {
+            command.push_str(&format!(" {axis}={}", if enabled { "Yes" } else { "No" }));
+        }
+        let alignment = f.alignment.as_deref().unwrap_or("World");
+        if !matches!(alignment, "World" | "CPlane") {
+            return Err(ProbeError::FixtureInvariant("invalid SetPt alignment"));
+        }
+        command.push_str(&format!(" Alignment={alignment}"));
+    } else if f.axes.is_some() || f.alignment.is_some() {
+        return Err(ProbeError::FixtureInvariant("unexpected SetPt options"));
     }
     command.push_str(&if f.command == "ProjectToCPlane" {
         format!(" DeleteInput={}", if f.copy { "No" } else { "Yes" })
@@ -102,6 +125,7 @@ mod tests {
         for data in [
             include_str!("../../../tools/rhino_oracle/fixtures/plane_transforms.json"),
             include_str!("../../../tools/rhino_oracle/fixtures/plane_transform_diagnostics.json"),
+            include_str!("../../../tools/rhino_oracle/fixtures/plane_transforms_setpt.json"),
         ] {
             let request: ProbeRequest = serde_json::from_str(data).unwrap();
             let response = run_request(&request).unwrap();

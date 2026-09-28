@@ -1,0 +1,410 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-12
+  },
+  "operations": [
+    {
+      "op": "plane_transform",
+      "id": "setpt-world-z-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "axes": [
+        false,
+        false,
+        true
+      ],
+      "alignment": "World",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-world-x-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "axes": [
+        true,
+        false,
+        false
+      ],
+      "alignment": "World",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-world-xyz-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "axes": [
+        true,
+        true,
+        true
+      ],
+      "alignment": "World",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-front-y-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "axes": [
+        false,
+        true,
+        false
+      ],
+      "alignment": "CPlane",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-right-x-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "axes": [
+        true,
+        false,
+        false
+      ],
+      "alignment": "CPlane",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-oblique-xz-inplace",
+      "origin": [
+        7,
+        -3,
+        11
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "axes": [
+        true,
+        false,
+        true
+      ],
+      "alignment": "CPlane",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "setpt-oblique-y-copy",
+      "origin": [
+        7,
+        -3,
+        11
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "command": "SetPt",
+      "references": [
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "axes": [
+        false,
+        true,
+        false
+      ],
+      "alignment": "CPlane",
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    }
+  ]
+}

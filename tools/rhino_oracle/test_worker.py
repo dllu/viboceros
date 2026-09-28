@@ -1219,6 +1219,12 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(self.worker._plane_transform_script(operation), "_Rotate _Copy=Yes w1,2,3 37 _Enter")
             self.assertEqual(self.worker._plane_transform_script(dict(operation, copy=False)), "_Rotate _Copy=No w1,2,3 37")
             self.assertEqual(self.worker._plane_transform_script(dict(operation, command="Mirror", value=None, references=[[0,0,0],[1,0,0]])), "_Mirror _Copy=Yes w1,2,3 w1,2,3")
+            set_point = dict(operation, command="SetPt", value=None,
+                             axes=[False, True, False], alignment="CPlane")
+            self.assertEqual(self.worker._plane_transform_script(set_point),
+                             "_-SetPt _XSet=_No _YSet=_Yes _ZSet=_No _Alignment=_CPlane _Copy=_Yes w1,2,3 _Enter")
+            with self.assertRaises(ValueError):
+                self.worker._plane_transform_script(dict(set_point, axes=[False]*3))
         for copy, option in [(True, "No"), (False, "Yes")]:
             self.assertEqual(self.worker._plane_transform_script(dict(operation, command="ProjectToCPlane", value=None, references=[], copy=copy)), "_ProjectToCPlane _" + option)
         for invalid in [dict(operation, command="Rotate _Delete"), dict(operation, references=[]),

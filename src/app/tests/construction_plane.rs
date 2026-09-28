@@ -418,6 +418,10 @@ fn front_view_transform_prompts_use_their_plane_and_undo_atomically() {
             vec!["ProjectToCPlane DeleteInput=Yes"],
             point(1.0, 0.0, 3.0),
         ),
+        (
+            vec!["SetPt 5,7,-2 XSet=No YSet=Yes ZSet=No Alignment=CPlane"],
+            point(1.0, 2.0, -2.0),
+        ),
     ] {
         let mut app = test_app();
         app.active_viewport = 2;

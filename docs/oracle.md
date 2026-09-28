@@ -2,6 +2,16 @@
 
 [Project overview](../README.md)
 
+The [SetPt transform fixture](../tools/rhino_oracle/fixtures/plane_transforms_setpt.json)
+compares seven world/CPlane axis combinations, including copy mode, with a
+[Rhino 8 observation](../tools/rhino_oracle/observations/plane_transforms_setpt.json)
+captured on a separate Xvfb display. The maximum point-coordinate difference
+is `2.28e-15` at `1e-9` absolute and `1e-12` relative tolerance. Replay it with:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/plane_transforms_setpt.json --observations tools/rhino_oracle/observations/plane_transforms_setpt.json --absolute-epsilon 1e-9 --relative-epsilon 1e-12
+```
+
 The [two-face UV reference](surface-face-uv-rhino-reference.json) records four
 RhinoCommon projections onto explicitly indexed B-rep underlying surfaces.
 The matching [fixture](../tools/rhino_oracle/fixtures/surface-face-uv-api.json)

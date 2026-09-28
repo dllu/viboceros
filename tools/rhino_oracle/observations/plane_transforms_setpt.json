@@ -1,0 +1,464 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-world-z-inplace",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              2.0,
+              3.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              -1.0,
+              5.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-world-x-copy",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": false,
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": false,
+            "point": [
+              3.0,
+              3.0,
+              4.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              -1.0,
+              5.0,
+              2.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": false,
+            "point": [
+              3.0,
+              5.0,
+              2.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              7.0,
+              -2.0,
+              9.0
+            ],
+            "selected": true,
+            "source": 3
+          },
+          {
+            "original": false,
+            "point": [
+              3.0,
+              -2.0,
+              9.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-world-xyz-inplace",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              3.0,
+              4.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              3.0,
+              4.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              3.0,
+              4.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              3.0,
+              4.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-front-y-inplace",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              2.0,
+              3.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              -1.0,
+              5.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              7.0,
+              -2.0,
+              5.0
+            ],
+            "selected": true,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-right-x-copy",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": false,
+            "point": [
+              0.0,
+              4.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": false,
+            "point": [
+              2.0,
+              4.0,
+              4.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              -1.0,
+              5.0,
+              2.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": false,
+            "point": [
+              -1.0,
+              4.0,
+              2.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              7.0,
+              -2.0,
+              9.0
+            ],
+            "selected": true,
+            "source": 3
+          },
+          {
+            "original": false,
+            "point": [
+              7.0,
+              4.0,
+              9.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-oblique-xz-inplace",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              5.000000000000001,
+              2.0000000000000004,
+              2.9999999999999996
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              3.333333333333334,
+              3.666666666666667,
+              4.666666666666666
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              2.333333333333334,
+              4.666666666666668,
+              5.666666666666666
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              5.0,
+              2.000000000000001,
+              3.0
+            ],
+            "selected": true,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "setpt-oblique-y-copy",
+      "value": {
+        "objects": [
+          {
+            "original": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "original": false,
+            "point": [
+              -1.9999999999999982,
+              2.0,
+              2.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "original": true,
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "original": false,
+            "point": [
+              1.6666666666666679,
+              3.333333333333334,
+              4.333333333333333
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "original": true,
+            "point": [
+              -1.0,
+              5.0,
+              2.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "original": false,
+            "point": [
+              -0.33333333333333126,
+              4.333333333333333,
+              1.3333333333333335
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "original": true,
+            "point": [
+              7.0,
+              -2.0,
+              9.0
+            ],
+            "selected": true,
+            "source": 3
+          },
+          {
+            "original": false,
+            "point": [
+              5.000000000000001,
+              2.220446049250313e-16,
+              11.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ]
+      }
+    }
+  ]
+}

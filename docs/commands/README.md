@@ -233,6 +233,7 @@ Rotate3D 0,0,0 0,0,1 90 Copy=Yes
 Mirror 0,-5 0,5
 Shear 0,0,0 1,0,0 45 Copy=Yes
 ProjectToCPlane DeleteInput=Yes
+SetPt 0,0,5 XSet=No YSet=No ZSet=Yes Alignment=World
 ToNURBS DeleteInputObjects=Yes
 ExtrudeCrv 5 BothSides=No DeleteInput=No
 ExtrudeCrvToPoint 0,0,10 DeleteInput=No

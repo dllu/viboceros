@@ -26,7 +26,14 @@ its third argument can instead be a numeric angle, and it accepts
 It retains the inputs by default; use `DeleteInput=Yes` to project
 them in place.
 
-Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane are construction-plane aware.
+`SetPt target-point` sets selected objects' defining coordinates to the
+target. `XSet=`, `YSet=`, and `ZSet=` choose the axes (all enabled by default);
+`Alignment=World|CPlane` selects their frame, and `Copy=Yes` keeps the
+original objects. For example, `SetPt 0,0,5 XSet=No YSet=No ZSet=Yes` flattens
+selected geometry to world Z=5. A CPlane aligned edit uses the active
+viewport's construction plane.
+
+Rotate, Mirror, Scale2D, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
 Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)
 for geometry policy, viewport changes, verification, and remaining limitations.
 

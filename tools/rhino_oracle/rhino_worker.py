@@ -3738,16 +3738,28 @@ def _plane_transform_script(operation):
     expected = {"Rotate": 1 if value is not None else 3,
                 "Scale2D": 1 if value is not None else 3,
                 "Mirror": 2, "Shear": 2 if value is not None else 3,
-                "ProjectToCPlane": 0}
+                "ProjectToCPlane": 0, "SetPt": 1}
     if name not in expected or len(refs) != expected[name]:
         raise ValueError("unsupported plane transform or reference count")
-    if name in ("Mirror", "ProjectToCPlane") and value is not None:
+    if name in ("Mirror", "ProjectToCPlane", "SetPt") and value is not None:
         raise ValueError("unexpected transform value")
     copy = operation["copy"]
     if not isinstance(copy, bool):
         raise ValueError("copy must be boolean")
     if name == "ProjectToCPlane":
         return "_ProjectToCPlane _" + ("No" if copy else "Yes")
+    if name == "SetPt":
+        axes = operation.get("axes", [True, True, True])
+        alignment = operation.get("alignment", "World")
+        if (not isinstance(axes, list) or len(axes) != 3
+                or any(type(enabled) is not bool for enabled in axes)
+                or not any(axes) or alignment not in ("World", "CPlane")):
+            raise ValueError("invalid SetPt axes or alignment")
+        options = " ".join("_%sSet=_%s" % (axis, "Yes" if enabled else "No")
+                           for axis, enabled in zip("XYZ", axes))
+        return "_-SetPt %s _Alignment=_%s _Copy=_%s w%s%s" % (
+            options, alignment, "Yes" if copy else "No", _command_point(refs[0]),
+            " _Enter" if copy else "")
     script = "_" + name + " _Copy=" + ("Yes" if copy else "No")
     if name == "Shear":
         script += " _Rigid=No"
