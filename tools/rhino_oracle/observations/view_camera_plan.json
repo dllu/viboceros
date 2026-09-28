@@ -51,13 +51,19 @@
             0.5773502691896258
           ],
           "direction": "Plan",
+          "frustum_near": 120.50535531728079,
+          "frustum_near_before": 99.56410544297705,
           "frustum_width": 92.30820077233815,
           "frustum_width_before": 92.30820077233815,
           "perspective": false,
           "projection": "Top",
           "screen_scale": 7.637457930078799,
           "screen_scale_at_target_before": 7.637457930078799,
-          "screen_scale_before": 7.637457930078799
+          "screen_scale_before": 7.637457930078799,
+          "viewport_size": [
+            705,
+            365
+          ]
         },
         {
           "camera_direction": [
@@ -102,13 +108,19 @@
             0.5773502691896258
           ],
           "direction": "Plan",
+          "frustum_near": 120.50535531728083,
+          "frustum_near_before": 120.50535531728079,
           "frustum_width": 111.72332120374747,
           "frustum_width_before": 111.72332120374747,
           "perspective": false,
           "projection": "Perspective",
           "screen_scale": 6.3102313143225155,
           "screen_scale_at_target_before": 7.438586237898106,
-          "screen_scale_before": 7.438586237898106
+          "screen_scale_before": 7.438586237898106,
+          "viewport_size": [
+            705,
+            365
+          ]
         }
       ]
     }

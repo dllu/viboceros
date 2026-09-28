@@ -29,6 +29,8 @@ class CameraProbeTests(unittest.TestCase):
         self.assertEqual(comparison["views"][0]["plan_parallel_scale_error"], 0.0)
         self.assertFalse(comparison["views"][1]["zoom_checked"])
         self.assertLess(comparison["views"][1]["plan_perspective_scale_ratio"], 1.0)
+        self.assertLess(comparison["views"][1]["plan_perspective_ratio_error"], 1e-12)
+        self.assertAlmostEqual(rows[1]["frustum_near_before"], rows[1]["frustum_near"])
 
     def test_comparison_checks_each_camera_and_cplane_property(self):
         operation = fixture()

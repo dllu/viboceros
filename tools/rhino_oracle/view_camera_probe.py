@@ -83,6 +83,17 @@ def _frustum_width(viewport, Rhino):
         info.Dispose()
 
 
+def _frustum_near(viewport, Rhino):
+    info = Rhino.DocObjects.ViewportInfo(viewport)
+    try:
+        near = float(info.FrustumNear)
+        if not _finite(near) or near <= 0.0:
+            raise ValueError("invalid viewport frustum near distance")
+        return near
+    finally:
+        info.Dispose()
+
+
 def _screen_scale(viewport, Rhino, point):
     success, scale = viewport.GetWorldToScreenScale(Rhino.Geometry.Point3d(*point))
     scale = float(scale)
@@ -92,7 +103,7 @@ def _screen_scale(viewport, Rhino, point):
 
 
 def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before,
-              scale_before, target_scale_before, target_before, origin):
+              scale_before, target_scale_before, target_before, near_before, origin):
     plane = viewport.ConstructionPlane()
     result = dict(
         projection=projection, direction=direction,
@@ -113,6 +124,9 @@ def _snapshot(viewport, Rhino, projection, direction, distance_before, width_bef
         result["screen_scale"] = _screen_scale(viewport, Rhino, origin)
         result["camera_target_before"] = target_before
         result["screen_scale_at_target_before"] = target_scale_before
+        result["frustum_near_before"] = near_before
+        result["frustum_near"] = _frustum_near(viewport, Rhino)
+        result["viewport_size"] = [int(viewport.Size.Width), int(viewport.Size.Height)]
     return result
 
 
@@ -149,12 +163,14 @@ def run(operation, viewport, host):
                                  if direction == "Plan" else None)
                 target_scale_before = (_screen_scale(viewport, Rhino, target_before)
                                        if direction == "Plan" else None)
+                near_before = (_frustum_near(viewport, Rhino)
+                               if direction == "Plan" else None)
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("SetView CPlane command failed")
                 results.append(_snapshot(viewport, Rhino, projection, direction,
                                          distance_before, width_before,
                                          scale_before, target_scale_before,
-                                         target_before, origin))
+                                         target_before, near_before, origin))
         return results
     finally:
         errors = []
@@ -261,6 +277,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
         parallel_width_error = (abs(widths[1] - widths[0])
                                 if projection == "Top" else None)
         plan_scale_error = None
+        plan_perspective_ratio_error = None
+        plan_expected_scale_ratio = None
         if direction == "Plan":
             scale_before = row.get("screen_scale_before")
             scale_after = row.get("screen_scale")
@@ -270,6 +288,18 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
                 raise ValueError("invalid Plan screen scale")
             if projection == "Top":
                 plan_scale_error = abs(scale_after - scale_before)
+            else:
+                near_before = row.get("frustum_near_before")
+                near_after = row.get("frustum_near")
+                if any(isinstance(value, bool) or not isinstance(value, (int, float))
+                       or not _finite(float(value)) or value <= 0.0
+                       for value in (near_before, near_after)):
+                    raise ValueError("invalid Plan frustum near distance")
+                target_before = _point(row.get("camera_target_before"), "camera_target_before")
+                if _maximum_difference(target_before, vectors["cplane_origin"]) <= epsilon:
+                    plan_expected_scale_ratio = distance_before / near_before
+                    plan_perspective_ratio_error = abs(
+                        scale_after / scale_before - plan_expected_scale_ratio)
         passed = (projection_matches and orientation_error <= epsilon
                   and plane_error <= epsilon and axes_error <= epsilon
                   and target_error <= epsilon
@@ -289,6 +319,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             plan_parallel_scale_error=plan_scale_error,
             plan_perspective_scale_ratio=(row["screen_scale"] / row["screen_scale_before"]
                                           if direction == "Plan" and projection == "Perspective" else None),
+            plan_perspective_expected_ratio=plan_expected_scale_ratio,
+            plan_perspective_ratio_error=plan_perspective_ratio_error,
             zoom_checked=direction != "Plan" or projection == "Top",
             projection_matches=projection_matches,
         ))

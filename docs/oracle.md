@@ -1453,10 +1453,14 @@ projection. The parallel source retains its frustum width and screen scale
 exactly; the native `Plan` command now retains its parallel drawing scale too.
 The perspective source also retains raw frustum width in Rhino, but its screen
 scale at the CPlane origin changes by a factor of `0.8483105677` during the
-projection switch. The comparator marks that zoom transition as unchecked for
-native parity; the native viewport does not yet model Rhino's perspective
-frustum-width transfer. The generic oracle `compare` mode has no native camera
-operation for either fixture.
+projection switch. Its
+[frustum near distance](https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.viewportinfo/frustumnear)
+also remains unchanged at `120.5053553` model units. The ratio equals the recorded camera distance
+`102.2259664` divided by that near distance, to floating-point precision.
+The comparator checks this Rhino relation but marks native zoom parity as
+unchecked: the native viewport does not retain an equivalent projection
+frustum state for this transfer. The generic oracle `compare` mode has no native
+camera operation for either fixture.
 
 ## Timing interpretation
 
