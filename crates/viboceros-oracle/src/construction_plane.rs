@@ -98,6 +98,7 @@ pub enum PlaneStep {
         corners: [[f64; 3]; 4],
         pick_origin: Option<[f64; 3]>,
         pick_x: Option<[f64; 3]>,
+        flip: Option<bool>,
     },
     Undo,
     Redo,
@@ -363,6 +364,7 @@ fn apply_step(
         corners,
         pick_origin,
         pick_x,
+        flip,
     } = step
     {
         let corners = corners
@@ -370,11 +372,12 @@ fn apply_step(
             .into_iter()
             .collect::<Result<Vec<_>, _>>()?;
         let surface = NurbsSurface::try_bilinear([corners[0], corners[1], corners[2], corners[3]])?;
-        let frame = cplane::surface_frame(
+        let frame = cplane::surface_frame_with_flip(
             &surface,
             false,
             pick_origin.map(Point3::try_from).transpose()?,
             pick_x.map(Point3::try_from).transpose()?,
+            flip.unwrap_or(false),
             tolerance,
         )
         .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane Surface fixture"))?;
@@ -623,6 +626,19 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 6);
+    }
+
+    #[test]
+    fn surface_flip_matches_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_surface_options.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_surface_options.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 10);
     }
 
     #[test]

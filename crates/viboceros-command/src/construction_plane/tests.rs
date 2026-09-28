@@ -361,11 +361,38 @@ fn surface_option_parses_face_and_tangent_point_inputs() {
             face: Some(2),
             origin: Some(point(1., 2., 3.)),
             x_point: Some(point(4., 5., 6.)),
+            flip: false,
+        })
+    );
+    assert_eq!(
+        parse(
+            &format!("CPlane Surface {id} Face=2 Flip=Yes w1,2,3"),
+            top,
+            None,
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+        Ok(PlaneAction::Surface {
+            id,
+            face: Some(2),
+            origin: Some(point(1., 2., 3.)),
+            x_point: None,
+            flip: true,
         })
     );
     assert!(
         parse(
             &format!("CPlane Surface {id} Face=-1"),
+            top,
+            None,
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .is_err()
+    );
+    assert!(
+        parse(
+            &format!("CPlane Surface {id} Flip=Maybe"),
             top,
             None,
             Tolerance::DEFAULT,

@@ -528,6 +528,61 @@ fn cplane_surface_accepts_a_polysurface_face_without_changing_selection() {
 }
 
 #[test]
+fn cplane_surface_flip_follows_rhinos_picked_origin_rule() {
+    let mut app = test_app();
+    let surface = NurbsSurface::try_bilinear([
+        point(1., 2., 3.),
+        point(5., 2., 3.),
+        point(5., 6., 3.),
+        point(1., 6., 3.),
+    ])
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(surface))
+        .unwrap();
+    enter(
+        &mut app,
+        &format!("CPlane Surface {id} Flip=Yes w4,3,3 w4,5,3"),
+    );
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(4., 3., 3.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [0., 1., 0.]);
+    assert_eq!(frame.y_axis().as_vector().to_array(), [1., 0., 0.]);
+    assert_eq!(frame.z_axis().as_vector().to_array(), [0., 0., -1.]);
+
+    enter(&mut app, &format!("CPlane Surface {id}"));
+    enter(&mut app, "Flip=Yes");
+    enter(&mut app, "");
+    enter(&mut app, "");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(3., 4., 3.)
+    );
+    assert_eq!(
+        app.viewports[0]
+            .construction_plane()
+            .z_axis()
+            .as_vector()
+            .to_array(),
+        [0., 0., 1.]
+    );
+
+    enter(&mut app, &format!("CPlane Surface {id}"));
+    enter(&mut app, "Flip");
+    app.accept_plane_prompt_point(point(4., 3., 3.));
+    app.accept_plane_prompt_point(point(4., 5., 3.));
+    assert_eq!(
+        app.viewports[0]
+            .construction_plane()
+            .z_axis()
+            .as_vector()
+            .to_array(),
+        [0., 0., -1.]
+    );
+}
+
+#[test]
 fn cplane_object_aligns_to_a_line_and_a_picked_planar_polyline() {
     let mut app = test_app();
     let tolerance = app.document.tolerance();

@@ -9,7 +9,7 @@ use viboceros_geometry::{
 };
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [origin [x-point]]] | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [origin [x-point]]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -89,6 +89,7 @@ pub enum PlaneAction {
         face: Option<usize>,
         origin: Option<Point3>,
         x_point: Option<Point3>,
+        flip: bool,
     },
     Undo,
     Redo,
@@ -269,6 +270,22 @@ fn parse_arguments(
             } else {
                 (None, tail)
             };
+            let (flip, tail) = if let Some((_, value)) = tail
+                .first()
+                .and_then(|arg| arg.split_once('='))
+                .filter(|(option, _)| keyword(option, "Flip"))
+            {
+                let flip = if keyword(value, "Yes") {
+                    true
+                } else if keyword(value, "No") {
+                    false
+                } else {
+                    return Err(PlaneCommandError::Usage);
+                };
+                (flip, &tail[1..])
+            } else {
+                (false, tail)
+            };
             let (origin, x_point) = match tail {
                 [] => (None, None),
                 [a] => (Some(point(a)?), None),
@@ -280,6 +297,7 @@ fn parse_arguments(
                 face,
                 origin,
                 x_point,
+                flip,
             }
         }
         [name, id] if keyword(name, "Object") => PlaneAction::Object(
@@ -434,6 +452,19 @@ pub fn surface_frame(
     x_pick: Option<Point3>,
     tolerance: Tolerance,
 ) -> Result<Frame3, PlaneCommandError> {
+    surface_frame_with_flip(surface, reversed, origin_pick, x_pick, false, tolerance)
+}
+
+/// Rhino applies Surface Flip only after a picked origin. Accepting the
+/// default UV midpoint leaves the natural face orientation unchanged.
+pub fn surface_frame_with_flip(
+    surface: &NurbsSurface,
+    reversed: bool,
+    origin_pick: Option<Point3>,
+    x_pick: Option<Point3>,
+    flip: bool,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
     let (u, v) = if let Some(pick) = origin_pick {
         surface.closest_parameters(pick, tolerance)?
     } else {
@@ -445,7 +476,11 @@ pub fn surface_frame(
         )
     };
     let (origin, x, y) = surface.evaluate_with_derivatives(u, v)?;
-    let y = if reversed { y.scaled(-1.0)? } else { y };
+    let y = if reversed ^ (flip && origin_pick.is_some()) {
+        y.scaled(-1.0)?
+    } else {
+        y
+    };
     let default = Frame3::try_from_directions(origin, x, y, tolerance)?;
     x_pick.map_or(Ok(default), |pick| {
         surface_frame_with_x(default, pick, tolerance)

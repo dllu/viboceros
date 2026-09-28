@@ -153,6 +153,25 @@ python3 -m tools.rhino_oracle replay \
 
 All six Surface cases replay; the largest component difference is `4.44e-16`.
 
+The [Surface option fixture](../tools/rhino_oracle/fixtures/construction_plane_surface_options.json)
+adds ten private-Xvfb cases for `Flip=Yes|No`, with default and picked
+origins, chosen X directions, and a warped surface. Its
+[saved observation](../tools/rhino_oracle/observations/construction_plane_surface_options.json)
+shows that Rhino applies Flip after a picked origin; accepting the default UV
+midpoint leaves the natural orientation even when an X direction is chosen.
+Replay with:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_surface_options.json \
+  --observations tools/rhino_oracle/observations/construction_plane_surface_options.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All ten cases replay with a largest component difference of `4.44e-16`.
+The IgnoreTrims case uses an untrimmed surface and establishes the option's
+no-op behavior there; trim-aware placement remains separate work.
+
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
 polynomial or rational NURBS curves. Linear curves use an axis-aligned

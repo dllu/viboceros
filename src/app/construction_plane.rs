@@ -15,6 +15,7 @@ pub(super) struct PlanePrompt {
     previous: Option<Point3>,
     surface_target: Option<(viboceros_document::ObjectId, Option<usize>)>,
     surface_frame: Option<Frame3>,
+    surface_flip: bool,
 }
 
 impl PlanePrompt {
@@ -83,7 +84,7 @@ impl PlanePrompt {
                 "CPlane Surface: select a surface or polysurface face"
             }
             (PlanePromptKind::SurfaceOrigin, _) => {
-                "CPlane Surface: pick an origin on the surface (Enter uses the UV midpoint)"
+                "CPlane Surface: pick an origin (Enter uses UV midpoint; Flip=Yes|No)"
             }
             (PlanePromptKind::SurfaceX, _) => {
                 "CPlane Surface: pick an X direction (Enter uses surface U)"
@@ -297,7 +298,7 @@ impl VibocerosApp {
                             || matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
                     });
                     if can_start {
-                        return self.begin_surface_prompt(*id, None, None, viewport);
+                        return self.begin_surface_prompt(*id, None, None, false, viewport);
                     }
                 }
             }
@@ -310,6 +311,7 @@ impl VibocerosApp {
                 previous: self.last_point,
                 surface_target: None,
                 surface_frame: None,
+                surface_flip: false,
             };
             self.push_log(prompt.message().into());
             self.plane_prompt = Some(prompt);
@@ -382,11 +384,12 @@ impl VibocerosApp {
                 face,
                 origin,
                 x_point,
+                flip,
             } => {
                 if x_point.is_none() {
-                    return self.begin_surface_prompt(id, face, origin, viewport);
+                    return self.begin_surface_prompt(id, face, origin, flip, viewport);
                 }
-                self.surface_target_frame(id, face, origin, x_point)
+                self.surface_target_frame(id, face, origin, x_point, flip)
                     .map(PlaneAction::Set)
             }
             other => Ok(other),
@@ -435,6 +438,7 @@ impl VibocerosApp {
         face_index: Option<usize>,
         origin: Option<Point3>,
         x_point: Option<Point3>,
+        flip: bool,
     ) -> Result<Frame3, String> {
         let object = self
             .document
@@ -465,11 +469,12 @@ impl VibocerosApp {
             }
             _ => return Err("CPlane Surface requires a surface or polysurface face".into()),
         };
-        cplane::surface_frame(
+        cplane::surface_frame_with_flip(
             surface,
             reversed,
             origin,
             x_point,
+            flip,
             self.document.tolerance(),
         )
         .map_err(|error| error.to_string())
@@ -480,9 +485,10 @@ impl VibocerosApp {
         id: viboceros_document::ObjectId,
         face: Option<usize>,
         origin: Option<Point3>,
+        flip: bool,
         viewport: usize,
     ) -> bool {
-        let frame = match self.surface_target_frame(id, face, origin, None) {
+        let frame = match self.surface_target_frame(id, face, origin, None, flip) {
             Ok(frame) => frame,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -502,6 +508,7 @@ impl VibocerosApp {
             previous: origin.or(self.last_point),
             surface_target: Some((id, face)),
             surface_frame: Some(frame),
+            surface_flip: flip,
         };
         self.push_log(prompt.message().into());
         self.plane_prompt = Some(prompt);
@@ -515,6 +522,8 @@ impl VibocerosApp {
         if self
             .commands
             .recognizes(input.split_whitespace().next().unwrap_or(""))
+            && !(prompt.kind == PlanePromptKind::SurfaceOrigin
+                && input.trim_start_matches('_').eq_ignore_ascii_case("Flip"))
         {
             self.cancel_plane_prompt();
             return false;
@@ -531,9 +540,10 @@ impl VibocerosApp {
                     face,
                     origin,
                     x_point,
+                    flip,
                 })) if surface => {
                     if let Some(x_point) = x_point {
-                        match self.surface_target_frame(id, face, origin, Some(x_point)) {
+                        match self.surface_target_frame(id, face, origin, Some(x_point), flip) {
                             Ok(frame) => {
                                 let viewport = prompt.viewport;
                                 self.plane_prompt = None;
@@ -543,7 +553,7 @@ impl VibocerosApp {
                             Err(error) => self.push_log(format!("Error: {error}")),
                         }
                     } else {
-                        self.begin_surface_prompt(id, face, origin, prompt.viewport);
+                        self.begin_surface_prompt(id, face, origin, flip, prompt.viewport);
                     }
                 }
                 Some(Ok(PlaneAction::Object(id))) => {
@@ -596,6 +606,36 @@ impl VibocerosApp {
             );
             self.command_input.clear();
             return true;
+        }
+        if prompt.kind == PlanePromptKind::SurfaceOrigin {
+            let option = input.trim_start_matches('_');
+            let flip = if option.eq_ignore_ascii_case("Flip") {
+                Some(!prompt.surface_flip)
+            } else if let Some((name, value)) = option.split_once('=') {
+                if name.eq_ignore_ascii_case("Flip") {
+                    if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                        Some(true)
+                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                        Some(false)
+                    } else {
+                        self.push_log("Error: Flip must be Yes or No".into());
+                        return true;
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            if let Some(flip) = flip {
+                self.plane_prompt.as_mut().unwrap().surface_flip = flip;
+                self.push_log(format!(
+                    "CPlane Surface Flip={}",
+                    if flip { "Yes" } else { "No" }
+                ));
+                self.command_input.clear();
+                return true;
+            }
         }
         if input.is_empty() && prompt.kind == PlanePromptKind::SurfaceOrigin {
             let prompt = self.plane_prompt.as_mut().unwrap();
@@ -699,7 +739,7 @@ impl VibocerosApp {
         };
         if prompt.kind == PlanePromptKind::SurfaceOrigin {
             let (id, face) = prompt.surface_target.unwrap();
-            match self.surface_target_frame(id, face, Some(point), None) {
+            match self.surface_target_frame(id, face, Some(point), None, prompt.surface_flip) {
                 Ok(frame) => {
                     prompt.surface_frame = Some(frame);
                     prompt.kind = PlanePromptKind::SurfaceX;
@@ -856,7 +896,7 @@ impl VibocerosApp {
         else {
             return false;
         };
-        self.begin_surface_prompt(id, face, None, prompt.viewport)
+        self.begin_surface_prompt(id, face, None, false, prompt.viewport)
     }
 
     fn accept_plane_prompt_object_action(&mut self, action: PlaneAction) -> bool {

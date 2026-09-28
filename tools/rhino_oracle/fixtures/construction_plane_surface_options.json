@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "planar-flip-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": true}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-flip-x",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": true, "pick_origin": [4, 3, 3], "pick_x": [4, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "warped-flip",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 4], [1, 6, 3]], "flip": true, "pick_origin": [4, 3, 3.5]}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-ignore-trims",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "ignore_trims": true}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-no-flip-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": false}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-no-flip-x",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": false, "pick_origin": [4, 3, 3], "pick_x": [4, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "warped-no-flip",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 4], [1, 6, 3]], "flip": false, "pick_origin": [4, 3, 3.5]}]
+    },
+    {
+      "op": "construction_plane", "id": "warped-flip-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 4], [1, 6, 3]], "flip": true}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-flip-front-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 0, 1],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": true}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-flip-default-origin-picked-x",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "flip": true, "pick_x": [3, 5, 3]}]
+    }
+  ]
+}

@@ -23,7 +23,7 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Rotate axis-start axis-end reference-point target-point` | Rotate by the signed angle between two directions from the axis. |
 | `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object, mesh face, or B-rep face. |
-| `CPlane Surface [object-id [Face=index] [origin [x-point]]]` | Place a tangent plane on a surface or B-rep face, then choose its X direction. |
+| `CPlane Surface [object-id [Face=index] [Flip=Yes\|No] [origin [x-point]]]` | Place a tangent plane on a surface or B-rep face, then choose its X direction. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
@@ -107,6 +107,10 @@ or press Enter for the untrimmed UV midpoint. Pick an X direction in world
 space, or press Enter for the U tangent. The X point is projected into the
 surface tangent plane. The full command also accepts typed origin and X points,
 for example `CPlane Surface object-id Face=2 w1,2,3 w2,2,3`.
+At the origin prompt, `Flip` toggles the surface normal, and `Flip=Yes` or
+`Flip=No` sets it explicitly. The typed command accepts the same option after
+`Face=index`. Rhino applies Flip when an origin is picked; accepting the default
+UV midpoint retains the original orientation.
 
 `CPlane All` and `CPlane Through All` also accept a picked point. Typed points
 use the active viewport's CPlane for local coordinates; the resolved world
@@ -180,7 +184,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Curve/Gumball options, Surface Flip and IgnoreTrims options, trim-aware Surface
+Curve/Gumball options, Surface IgnoreTrims, trim-aware Surface
 origin picks, universal/automatic planes, the named-plane panel, and
 CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input

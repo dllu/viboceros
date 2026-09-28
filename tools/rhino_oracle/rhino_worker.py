@@ -4815,8 +4815,15 @@ def _construction_plane(operation):
                     document.Objects.UnselectAll()
                     origin = step.get("pick_origin")
                     direction = step.get("pick_x")
-                    script = "_CPlane _Surface _SelID %s %s %s" % (
+                    options = ""
+                    for key, name in (("flip", "Flip"), ("ignore_trims", "IgnoreTrims")):
+                        if key in step:
+                            if type(step[key]) is not bool:
+                                raise ValueError("CPlane Surface %s must be Boolean" % name)
+                            options += " _%s=_%s" % (name, "Yes" if step[key] else "No")
+                    script = "_CPlane _Surface _SelID %s%s %s %s" % (
                         object_id,
+                        options,
                         "w" + _command_point(origin) if origin is not None else "_Enter",
                         "w" + _command_point(direction) if direction is not None else "_Enter")
                 elif step["kind"] == "object_mesh_face":
