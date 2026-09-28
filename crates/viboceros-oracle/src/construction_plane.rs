@@ -48,6 +48,29 @@ pub enum PlaneStep {
         axis: [[f64; 3]; 2],
         references: [[f64; 3]; 2],
     },
+    ObjectCircle {
+        center: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+    },
+    ObjectArc {
+        center: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        sweep_radians: f64,
+    },
+    ObjectEllipse {
+        center: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius_x: f64,
+        radius_y: f64,
+    },
+    ObjectSurface {
+        corners: [[f64; 3]; 4],
+    },
     Undo,
     Redo,
 }
@@ -83,6 +106,96 @@ fn apply_step(
     previous: Option<Point3>,
     tolerance: Tolerance,
 ) -> Result<(), ProbeError> {
+    if let PlaneStep::ObjectCircle {
+        center,
+        x_axis,
+        y_axis,
+        radius,
+    } = step
+    {
+        let frame = Frame3::try_from_directions(
+            Point3::try_from(*center)?,
+            Vector3::try_from(*x_axis)?,
+            Vector3::try_from(*y_axis)?,
+            tolerance,
+        )?;
+        let circle = Circle3::try_from_frame(
+            frame.origin(),
+            *radius,
+            frame.x_axis(),
+            frame.z_axis(),
+            tolerance,
+        )?;
+        let frame = cplane::frame_from_object(&Geometry::Circle(circle), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane object fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectArc {
+        center,
+        x_axis,
+        y_axis,
+        radius,
+        sweep_radians,
+    } = step
+    {
+        let frame = Frame3::try_from_directions(
+            Point3::try_from(*center)?,
+            Vector3::try_from(*x_axis)?,
+            Vector3::try_from(*y_axis)?,
+            tolerance,
+        )?;
+        let circle = Circle3::try_from_frame(
+            frame.origin(),
+            *radius,
+            frame.x_axis(),
+            frame.z_axis(),
+            tolerance,
+        )?;
+        let arc = CircularArc3::try_from_circle_sweep(circle, *sweep_radians)?;
+        let frame = cplane::frame_from_object(&Geometry::Arc(arc), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane object fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectEllipse {
+        center,
+        x_axis,
+        y_axis,
+        radius_x,
+        radius_y,
+    } = step
+    {
+        let frame = Frame3::try_from_directions(
+            Point3::try_from(*center)?,
+            Vector3::try_from(*x_axis)?,
+            Vector3::try_from(*y_axis)?,
+            tolerance,
+        )?;
+        let ellipse = Ellipse3::try_new(
+            frame.origin(),
+            *radius_x,
+            *radius_y,
+            frame.x_axis(),
+            frame.y_axis(),
+            tolerance,
+        )?;
+        let frame = cplane::frame_from_object(&Geometry::Ellipse(ellipse), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane object fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectSurface { corners } = step {
+        let corners = corners
+            .map(Point3::try_from)
+            .into_iter()
+            .collect::<Result<Vec<_>, _>>()?;
+        let surface = NurbsSurface::try_bilinear([corners[0], corners[1], corners[2], corners[3]])?;
+        let frame = cplane::frame_from_object(&Geometry::NurbsSurface(surface), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane object fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     let point = |p: &[f64; 3]| format!("w{},{},{}", p[0], p[1], p[2]);
     let command = match step {
         PlaneStep::World { view } => format!("CPlane World {view}"),
@@ -114,6 +227,10 @@ fn apply_step(
             point(c),
             point(d)
         ),
+        PlaneStep::ObjectCircle { .. }
+        | PlaneStep::ObjectArc { .. }
+        | PlaneStep::ObjectEllipse { .. }
+        | PlaneStep::ObjectSurface { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -133,7 +250,10 @@ fn apply_step(
         PlaneAction::Prompt(_) => {
             return Err(ProbeError::FixtureInvariant("incomplete CPlane fixture"));
         }
-        PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) | PlaneAction::AlignToView => {
+        PlaneAction::SetAllOrigin(_)
+        | PlaneAction::SetThroughAll(_)
+        | PlaneAction::AlignToView
+        | PlaneAction::Object(_) => {
             return Err(ProbeError::FixtureInvariant(
                 "CPlane fixture requires a viewport-specific action",
             ));
@@ -218,6 +338,58 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 4);
+    }
+
+    #[test]
+    fn object_circles_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_circle.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_circle.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 3);
+    }
+
+    #[test]
+    fn object_arcs_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_arc.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_arc.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 2);
+    }
+
+    #[test]
+    fn object_ellipses_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_ellipse.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_ellipse.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 2);
+    }
+
+    #[test]
+    fn object_surfaces_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_surface.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_surface.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 3);
     }
 
     fn assert_saved_plane_frames(request: ProbeRequest, recorded: Value, count: usize) {

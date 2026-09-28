@@ -7156,6 +7156,16 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self
+            .plane_prompt
+            .as_ref()
+            .is_some_and(construction_plane::PlanePrompt::requests_object)
+        {
+            if let Some(id) = click.object_id {
+                self.accept_plane_prompt_object(id);
+            }
+            return;
+        }
         if self.end_analysis_pick.is_some() {
             if let Some(id) = click.object_id {
                 self.apply_end_analysis_pick_ids(vec![id]);
@@ -7900,17 +7910,21 @@ impl eframe::App for VibocerosApp {
         let end_analysis_picking = self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
-                && ((self.active_command.is_some()
-                    && !self.picking_alignment_curve()
-                    && !matches!(
-                        self.active_command,
-                        Some(
-                            InteractiveCommand::SelVolumePipe { source: None, .. }
-                                | InteractiveCommand::Pipe { source: None, .. }
-                                | InteractiveCommand::SelVolumeObject { .. }
-                        )
-                    ))
-                    || self.plane_prompt.is_some()),
+                && self.plane_prompt.as_ref().map_or_else(
+                    || {
+                        self.active_command.is_some()
+                            && !self.picking_alignment_curve()
+                            && !matches!(
+                                self.active_command,
+                                Some(
+                                    InteractiveCommand::SelVolumePipe { source: None, .. }
+                                        | InteractiveCommand::Pipe { source: None, .. }
+                                        | InteractiveCommand::SelVolumeObject { .. }
+                                )
+                            )
+                    },
+                    construction_plane::PlanePrompt::requests_point,
+                ),
             osnap: self.effective_snap_modes(),
             mesh_edges: self.snaps.mesh_edges,
             smart_track: self.smart_track,

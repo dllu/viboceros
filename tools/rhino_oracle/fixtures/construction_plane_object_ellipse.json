@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "ellipse-world-top",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_ellipse", "center": [2, 3, 4], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0], "radius_x": 5, "radius_y": 2}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "ellipse-vertical",
+      "origin": [7, 8, 9],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_ellipse", "center": [2, 3, 4], "x_axis": [0, 1, 0], "y_axis": [0, 0, 1], "radius_x": 5, "radius_y": 2}
+      ]
+    }
+  ]
+}

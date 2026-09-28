@@ -75,6 +75,28 @@ python3 -m tools.rhino_oracle replay \
 All four transitions replay, with a largest component difference of `8.88e-16`.
 A Rust oracle test checks the same frames at `1e-10`.
 
+The CPlane Object fixtures for
+[circles](../tools/rhino_oracle/fixtures/construction_plane_object_circle.json),
+[arcs](../tools/rhino_oracle/fixtures/construction_plane_object_arc.json),
+[ellipses](../tools/rhino_oracle/fixtures/construction_plane_object_ellipse.json), and
+[surfaces](../tools/rhino_oracle/fixtures/construction_plane_object_surface.json)
+record ten actual Rhino 8.32 `_CPlane _Object` transitions. Their saved
+observations are beside the fixtures in `tools/rhino_oracle/observations/`.
+All live commands ran in private Xvfb. Circle and arc origins are at the center;
+ellipse origins are at the curve start, with X tangent there. A surface uses its
+untrimmed UV midpoint and U tangent, including on a warped bilinear patch.
+Native replay matches all ten transitions at `1e-10` absolute and `1e-12`
+relative tolerance; the largest component difference is `1.33e-15`.
+The following replays circles; substitute `arc`, `ellipse`, or `surface` in both
+filenames to replay the other cases:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_object_circle.json \
+  --observations tools/rhino_oracle/observations/construction_plane_object_circle.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

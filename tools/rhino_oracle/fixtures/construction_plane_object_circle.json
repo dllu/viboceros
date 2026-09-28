@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "circle-world-top",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_circle", "center": [2, 3, 4], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0], "radius": 5}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "circle-vertical",
+      "origin": [7, 8, 9],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_circle", "center": [2, 3, 4], "x_axis": [0, 1, 0], "y_axis": [0, 0, 1], "radius": 5}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "circle-oblique",
+      "origin": [10, 20, 30],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_circle", "center": [2, 3, 4], "x_axis": [1, 1, 0], "y_axis": [-1, 1, 1], "radius": 5}
+      ]
+    }
+  ]
+}

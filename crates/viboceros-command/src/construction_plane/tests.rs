@@ -292,6 +292,35 @@ fn picked_rotation_references_project_to_the_axis_normal_plane() {
 }
 
 #[test]
+fn object_option_accepts_a_pick_or_an_explicit_object_id() {
+    let top = WorldPlane::Top.frame();
+    let id: ObjectId = "00000000-0000-0000-0000-000000000001".parse().unwrap();
+    assert_eq!(
+        parse("CPlane Object", top, None, Tolerance::DEFAULT).unwrap(),
+        Ok(PlaneAction::Prompt(PlanePromptKind::Object))
+    );
+    assert_eq!(
+        parse(
+            &format!("CPlane Object {id}"),
+            top,
+            None,
+            Tolerance::DEFAULT
+        )
+        .unwrap(),
+        Ok(PlaneAction::Object(id))
+    );
+    assert!(
+        parse("CPlane Object bad-id", top, None, Tolerance::DEFAULT)
+            .unwrap()
+            .is_err()
+    );
+    assert_eq!(
+        frame_from_object(&Geometry::Point(point(1., 2., 3.)), Tolerance::DEFAULT),
+        Err(PlaneCommandError::UnsupportedObject)
+    );
+}
+
+#[test]
 fn invalid_commands_and_degenerate_frames_cannot_mutate_plane_history() {
     let initial = WorldPlane::Top.frame();
     let state = ConstructionPlaneState::new(initial);

@@ -4673,26 +4673,103 @@ def _independent_construction_planes():
 def _construction_plane(operation):
     if not 1 <= len(operation["steps"]) <= 128:
         raise ValueError("expected 1 to 128 CPlane steps")
-    scripts = [_construction_plane_script(step) for step in operation["steps"]]
+    has_objects = any(step["kind"] in ("object_circle", "object_arc", "object_ellipse", "object_surface")
+                      for step in operation["steps"])
+    for step in operation["steps"]:
+        if step["kind"] not in ("object_circle", "object_arc", "object_ellipse", "object_surface"):
+            _construction_plane_script(step)
     plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
     if not plane.IsValid:
         raise ValueError("invalid initial CPlane")
+    document = Rhino.RhinoDoc.ActiveDoc
     def record():
         current = viewport.ConstructionPlane()
         return {"origin": _xyz(current.Origin), "axes": [_xyz(current.XAxis), _xyz(current.YAxis), _xyz(current.ZAxis)]}
     with _independent_construction_planes() as viewport:
-        viewport.SetConstructionPlane(plane)
-        states = [record()]
-        for script in scripts:
-            _record_progress("CPlane command: " + script)
-            history_before = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
-            if not _run_surface_script(script, True):
-                history_after = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
-                history = (history_after[len(history_before):] if history_after.startswith(history_before)
-                           else history_after[-1500:])
-                raise ValueError("CPlane command failed: %s; history: %s" % (script, history[-1500:]))
-            states.append(record())
-        return {"states": states}, 0
+        selected = ([obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+                    if has_objects else [])
+        owned = []
+        try:
+            viewport.SetConstructionPlane(plane)
+            states = [record()]
+            for step in operation["steps"]:
+                if step["kind"] == "object_circle":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane object circle radius")
+                    if not frame.IsValid or radius <= 0:
+                        raise ValueError("invalid CPlane object circle")
+                    object_id = document.Objects.AddCircle(Rhino.Geometry.Circle(frame, radius))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object circle")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_arc":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane object arc radius")
+                    sweep = _finite(step["sweep_radians"], "CPlane object arc sweep")
+                    if not frame.IsValid or radius <= 0 or not 0 < sweep < math.pi * 2:
+                        raise ValueError("invalid CPlane object arc")
+                    circle = Rhino.Geometry.Circle(frame, radius)
+                    arc = Rhino.Geometry.Arc(circle.PointAt(0), circle.PointAt(sweep / 2),
+                                             circle.PointAt(sweep))
+                    if not arc.IsValid:
+                        raise ValueError("invalid CPlane object arc")
+                    object_id = document.Objects.AddArc(arc)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object arc")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_ellipse":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius_x = _finite(step["radius_x"], "CPlane object ellipse X radius")
+                    radius_y = _finite(step["radius_y"], "CPlane object ellipse Y radius")
+                    if not frame.IsValid or radius_x <= 0 or radius_y <= 0:
+                        raise ValueError("invalid CPlane object ellipse")
+                    ellipse = Rhino.Geometry.Ellipse(frame, radius_x, radius_y).ToNurbsCurve()
+                    if ellipse is None or not ellipse.IsValid:
+                        raise ValueError("invalid CPlane object ellipse curve")
+                    object_id = document.Objects.AddCurve(ellipse)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object ellipse")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_surface":
+                    if len(step["corners"]) != 4:
+                        raise ValueError("CPlane object surface requires four corners")
+                    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                        *[_point(corner) for corner in step["corners"]])
+                    if surface is None or not surface.IsValid:
+                        raise ValueError("invalid CPlane object surface")
+                    object_id = document.Objects.AddSurface(surface)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object surface")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                else:
+                    script = _construction_plane_script(step)
+                _record_progress("CPlane command: " + script)
+                history_before = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
+                if not _run_surface_script(script, True):
+                    history_after = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
+                    history = (history_after[len(history_before):] if history_after.startswith(history_before)
+                               else history_after[-1500:])
+                    raise ValueError("CPlane command failed: %s; history: %s" % (script, history[-1500:]))
+                states.append(record())
+            return {"states": states}, 0
+        finally:
+            if has_objects:
+                document.Objects.UnselectAll()
+                for object_id in owned:
+                    document.Objects.Delete(object_id, True)
+                for object_id in selected:
+                    document.Objects.Select(object_id)
 
 
 def _construction_plane_input(operation):

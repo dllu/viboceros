@@ -1075,6 +1075,37 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.assertTrue(aid.UniversalConstructionPlaneMode)
                 self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
 
+    def test_cplane_object_probe_deletes_owned_geometry_and_restores_selection_on_failure(self):
+        from contextlib import nullcontext
+        plane = SimpleNamespace(IsValid=True, Origin=[0,0,0], XAxis=[1,0,0],
+                                YAxis=[0,1,0], ZAxis=[0,0,1])
+        viewport = SimpleNamespace(ConstructionPlane=lambda: plane,
+                                   SetConstructionPlane=Mock(return_value=True))
+        objects = SimpleNamespace(
+            GetSelectedObjects=Mock(return_value=[SimpleNamespace(Id="prior")]),
+            AddCircle=Mock(return_value="owned"), UnselectAll=Mock(),
+            Delete=Mock(), Select=Mock())
+        self.document.Objects = objects
+        self.worker.Rhino.Geometry = SimpleNamespace(
+            Plane=lambda *args: plane, Circle=lambda *args: SimpleNamespace(IsValid=True))
+        self.worker.Rhino.RhinoApp.CommandHistoryWindowText = ""
+        self.worker.System.Guid = SimpleNamespace(Empty="empty")
+        operation = {"origin":[0,0,0], "x_axis":[1,0,0], "y_axis":[0,1,0],
+                     "steps":[{"kind":"object_circle", "center":[2,3,4],
+                               "x_axis":[1,0,0], "y_axis":[0,1,0], "radius":5}]}
+        with patch.object(self.worker, "_independent_construction_planes",
+                          return_value=nullcontext(viewport)), \
+             patch.object(self.worker, "_point", side_effect=lambda p:p), \
+             patch.object(self.worker, "_vector", side_effect=lambda v:v), \
+             patch.object(self.worker, "_xyz", side_effect=lambda v:v), \
+             patch.object(self.worker, "_record_progress"), \
+             patch.object(self.worker, "_run_surface_script", return_value=False):
+            with self.assertRaisesRegex(ValueError, "CPlane command failed"):
+                self.worker._construction_plane(operation)
+        objects.Delete.assert_called_once_with("owned", True)
+        objects.Select.assert_called_once_with("prior")
+        self.assertEqual(objects.UnselectAll.call_count, 2)
+
     def test_nested_cplane_probe_builds_a_transparent_macro_and_uses_owned_geometry_cleanup(self):
         operation = {"before":["w1,2,3", "w4,5,6"], "after":["r2,3"], "step":{"kind":"world", "view":"Front"}}
         from contextlib import nullcontext

@@ -1,11 +1,14 @@
 //! Construction-plane commands and viewport-local history, independent of cameras
 //! and document undo. A parsed edit is fully validated before it can be applied.
 use std::collections::VecDeque;
+use viboceros_document::{Geometry, ObjectId};
 use viboceros_drafting::{PointInput, PointInputError};
-use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
+use viboceros_geometry::{
+    AffineTransform3, Frame3, GeometryError, NurbsSurface, Point3, Tolerance, Vector3,
+};
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -66,6 +69,7 @@ pub enum PlanePromptKind {
     Through,
     ThroughAll,
     Rotate,
+    Object,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -74,6 +78,7 @@ pub enum PlaneAction {
     SetAllOrigin(Point3),
     SetThroughAll(Point3),
     AlignToView,
+    Object(ObjectId),
     Undo,
     Redo,
     Prompt(PlanePromptKind),
@@ -101,6 +106,8 @@ pub enum PlaneCommandError {
     Point(#[from] PointInputError),
     #[error(transparent)]
     Geometry(#[from] GeometryError),
+    #[error("CPlane Object requires a circle, arc, ellipse, surface, or single-face polysurface")]
+    UnsupportedObject,
 }
 
 fn keyword(input: &str, expected: &str) -> bool {
@@ -227,6 +234,11 @@ fn parse_arguments(
             })
         }
         [name] if keyword(name, "Rotate") => PlaneAction::Prompt(PlanePromptKind::Rotate),
+        [name] if keyword(name, "Object") => PlaneAction::Prompt(PlanePromptKind::Object),
+        [name, id] if keyword(name, "Object") => PlaneAction::Object(
+            id.parse::<ObjectId>()
+                .map_err(|_| PlaneCommandError::Usage)?,
+        ),
         [name, view] if keyword(name, "World") => PlaneAction::Set(
             WorldPlane::ALL
                 .into_iter()
@@ -335,6 +347,54 @@ pub fn three_point_z_axis(
     tolerance: Tolerance,
 ) -> Result<Frame3, GeometryError> {
     Frame3::try_from_normal(origin, origin.vector_to(z_point)?, tolerance)
+}
+
+fn surface_mid_frame(
+    surface: &NurbsSurface,
+    reversed: bool,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let u = surface.domain_u();
+    let v = surface.domain_v();
+    let midpoint = |a: f64, b: f64| 0.5 * a + 0.5 * b;
+    let (origin, x, y) = surface.evaluate_with_derivatives(
+        midpoint(*u.start(), *u.end()),
+        midpoint(*v.start(), *v.end()),
+    )?;
+    let y = if reversed { y.scaled(-1.0)? } else { y };
+    Ok(Frame3::try_from_directions(origin, x, y, tolerance)?)
+}
+
+pub fn frame_from_object(
+    geometry: &Geometry,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    Ok(match geometry {
+        Geometry::Circle(circle) => Frame3::try_from_directions(
+            circle.center(),
+            circle.x_axis().as_vector(),
+            circle.y_axis().as_vector(),
+            tolerance,
+        )?,
+        Geometry::Arc(arc) => Frame3::try_from_directions(
+            arc.center(),
+            arc.x_axis().as_vector(),
+            arc.y_axis().as_vector(),
+            tolerance,
+        )?,
+        Geometry::Ellipse(ellipse) => Frame3::try_from_directions(
+            ellipse.point_at_angle(0.0)?,
+            ellipse.y_axis().as_vector(),
+            ellipse.x_axis().as_vector().scaled(-1.0)?,
+            tolerance,
+        )?,
+        Geometry::NurbsSurface(surface) => surface_mid_frame(surface, false, tolerance)?,
+        Geometry::Brep(brep) if brep.faces().len() == 1 => {
+            let face = &brep.faces()[0];
+            surface_mid_frame(face.surface(), face.is_reversed(), tolerance)?
+        }
+        _ => return Err(PlaneCommandError::UnsupportedObject),
+    })
 }
 
 pub fn rotated(

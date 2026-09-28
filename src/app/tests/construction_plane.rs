@@ -220,6 +220,98 @@ fn cplane_rotate_rejects_axis_aligned_references_without_losing_the_prompt() {
 }
 
 #[test]
+fn cplane_object_uses_typed_ids_preselection_and_viewport_picks() {
+    let mut app = test_app();
+    let original = app.viewports[0].construction_plane();
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, "Circle 2,3,4 5");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, &format!("CPlane Object {id}"));
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(2., 3., 4.)
+    );
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "CPlane Object");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(2., 3., 4.)
+    );
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![id]
+    );
+
+    enter(&mut app, "CPlane Undo");
+    app.document.clear_selection();
+    enter(&mut app, "CPlane Object");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_object());
+    assert!(!app.plane_prompt.as_ref().unwrap().requests_point());
+    let missing = "00000000-0000-0000-0000-000000000001".parse().unwrap();
+    assert!(!app.accept_plane_prompt_object(missing));
+    assert!(app.plane_prompt.is_some());
+    assert_eq!(app.viewports[0].construction_plane(), original);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(2., 3., 4.)
+    );
+    assert_eq!(app.document.selected_object_count(), 0);
+
+    enter(&mut app, "CPlane Undo");
+    enter(&mut app, "CPlane");
+    enter(&mut app, "Object");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_object());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(2., 3., 4.)
+    );
+}
+
+#[test]
+fn cplane_object_pick_returns_to_the_suspended_polyline() {
+    let mut app = test_app();
+    enter(&mut app, "Circle 2,3,4 5");
+    let id = app.document.objects().next().unwrap().id();
+    enter(&mut app, "Polyline");
+    enter(&mut app, "0,0");
+    enter(&mut app, "1,0");
+    let prior = app.curve_points.clone();
+    enter(&mut app, "CPlane Object");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_object());
+    assert_eq!(app.curve_points, prior);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
+    assert_eq!(app.curve_points, prior);
+    enter(&mut app, "0,1");
+    enter(&mut app, "");
+    let Geometry::Polyline(polyline) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected a polyline");
+    };
+    assert_eq!(polyline.vertices()[0], point(0., 0., 0.));
+    assert_eq!(polyline.vertices()[1], point(1., 0., 0.));
+    assert_eq!(polyline.vertices()[2], point(2., 4., 4.));
+}
+
+#[test]
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");
