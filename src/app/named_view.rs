@@ -164,7 +164,7 @@ impl VibocerosApp {
         for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
             if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
                 viewport.restore_named_view(snapshot);
-                viewport.set_view_title(&source.camera.name);
+                viewport.restore_working_view_title(&source.camera.name);
             }
             viewport.display_mode = match source.display_mode {
                 ThreeDmDisplayMode::Wireframe => DisplayMode::Wireframe,

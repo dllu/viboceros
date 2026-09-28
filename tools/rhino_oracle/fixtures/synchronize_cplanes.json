@@ -1,0 +1,52 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-no-view",
+      "set_view": "No"
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-with-view",
+      "set_view": "Yes"
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-world-top",
+      "set_view": "No",
+      "axes": [[1, 0, 0], [0, 1, 0]]
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-oblique",
+      "set_view": "No",
+      "axes": [[1, 1, 0], [-1, 1, 1]]
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-world-front",
+      "set_view": "No",
+      "axes": [[1, 0, 0], [0, 0, 1]]
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-world-bottom",
+      "set_view": "No",
+      "axes": [[1, 0, 0], [0, -1, 0]]
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-world-left",
+      "set_view": "No",
+      "axes": [[0, -1, 0], [0, 0, 1]]
+    },
+    {
+      "op": "synchronize_cplanes_probe",
+      "id": "sync-cplanes-world-back",
+      "set_view": "No",
+      "axes": [[-1, 0, 0], [0, 0, 1]]
+    }
+  ]
+}

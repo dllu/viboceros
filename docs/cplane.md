@@ -21,10 +21,21 @@ primitives, and plane-aware transforms use that frame.
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
 | `CopyCPlaneToAll [source]` | Copy a viewport's construction plane to every other viewport. |
 | `CopyCPlaneSettingsToAll [source]` | Copy its grid display and snap settings to every other viewport. |
+| `SynchronizeCPlanes [source] [SetView=Yes\|No]` | Orient standard Top, Front, Right, and Perspective construction planes to a source plane. |
 
 For the copy commands, `source` is a viewport name or its one-based number;
 omitting it uses the active viewport. The plane command records each target's
 plane history. Both commands leave camera views and model undo unchanged.
+
+`SynchronizeCPlanes` uses the active viewport unless `source` names a viewport
+or gives its one-based number. Perspective receives the source plane; Front and
+Right receive its corresponding 90-degree rotations. Top receives the source
+plane for an oblique source. When a standard parallel viewport already has an
+exact world-preset plane, Rhino uses that preset as the viewport's rotation
+role; this also applies to Top. Renamed user views are left alone.
+`SetView=No` updates only construction planes; `SetView=Yes` also points the
+parallel cameras along those planes. Perspective's camera stays in place. The
+default is `SetView=Yes`.
 
 Points accept the regular local/world/relative coordinate syntax; prefix `w`
 for world coordinates. Angles are degrees. For example:

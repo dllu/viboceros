@@ -83,6 +83,7 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
             "CPlane",
             "CopyCPlaneToAll",
             "CopyCPlaneSettingsToAll",
+            "SynchronizeCPlanes",
             "NamedView",
             "NamedCPlane",
             "ReadViewportsFromFile",

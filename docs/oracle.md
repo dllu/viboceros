@@ -2,6 +2,25 @@
 
 [Project overview](../README.md)
 
+The [SynchronizeCPlanes fixture](../tools/rhino_oracle/fixtures/synchronize_cplanes.json)
+records eight Rhino 8.32 cases for world-preset and oblique source planes,
+including both `SetView` settings. Its
+[observation](../tools/rhino_oracle/observations/synchronize_cplanes.json)
+was captured by clicking only the Rhino window launched in a private Xvfb
+display. Regenerate it with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/synchronize_cplanes.json --timeout 240
+```
+
+The captures show that Perspective copies the source CPlane while its camera
+stays fixed. Parallel cameras move only with `SetView=Yes`. For an oblique
+source, Top copies the source plane, and Front and Right rotate from it. When a
+standard parallel view already has an exact world-preset CPlane, Rhino uses
+that preset as the rotation role; this is visible when Top starts with World
+Right, Front, Bottom, Left, or Back. Applying those roles to the saved source
+frames reproduces all recorded CPlane axes within `1.12e-16` component error.
+
 The [SetPt transform fixture](../tools/rhino_oracle/fixtures/plane_transforms_setpt.json)
 compares seven world/CPlane axis combinations, including copy mode, with a
 [Rhino 8 observation](../tools/rhino_oracle/observations/plane_transforms_setpt.json)

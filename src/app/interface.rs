@@ -1005,6 +1005,7 @@ impl VibocerosApp {
                     names.push("CPlane");
                     names.push("CopyCPlaneToAll");
                     names.push("CopyCPlaneSettingsToAll");
+                    names.push("SynchronizeCPlanes");
                     names.push("NamedView");
                     names.push("NamedCPlane");
                     names.push("ReadViewportsFromFile");
@@ -1021,6 +1022,7 @@ impl VibocerosApp {
                     self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.push_log("CopyCPlaneToAll [source name|number]; CopyCPlaneSettingsToAll [source name|number]: copy the active or specified viewport's plane or grid settings to all viewports".into());
+                    self.push_log("SynchronizeCPlanes [source name|number] [SetView=Yes|No]: orient the standard views to a source construction plane".into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
                     self.push_log(viboceros_command::named_view::NAMED_CPLANE_USAGE.into());
                     self.push_log("ReadViewportsFromFile path.3dm: copy saved model viewports and their layout from a 3DM file".into());

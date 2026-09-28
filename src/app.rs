@@ -1977,6 +1977,7 @@ impl VibocerosApp {
         if !input.is_empty()
             && (self.try_run_plane_command(&input)
                 || self.try_run_copy_cplane_command(&input)
+                || self.try_run_synchronize_cplanes_command(&input)
                 || self.try_run_named_view_command(&input)
                 || self.try_run_named_cplane_command(&input)
                 || self.try_run_read_viewports_command(&input)

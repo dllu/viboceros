@@ -109,6 +109,7 @@ pub(crate) struct CameraSnapshot {
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
+    synchronized_role: Option<WorldPlane>,
     pixels_per_unit: f32,
     pan: Vec2,
     orbit_yaw: Real,
@@ -390,6 +391,7 @@ pub struct Viewport {
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
+    synchronized_role: Option<WorldPlane>,
     pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
@@ -434,6 +436,7 @@ impl Viewport {
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
             cplane_direction: None,
+            synchronized_role: None,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
@@ -467,6 +470,7 @@ impl Viewport {
             plan_frame: self.plan_frame,
             perspective_frame: self.perspective_frame,
             cplane_direction: self.cplane_direction,
+            synchronized_role: self.synchronized_role,
             pixels_per_unit: self.pixels_per_unit,
             pan: self.pan,
             orbit_yaw: self.orbit_yaw,
@@ -520,6 +524,7 @@ impl Viewport {
         self.plan_frame = camera.plan_frame;
         self.perspective_frame = camera.perspective_frame;
         self.cplane_direction = camera.cplane_direction;
+        self.synchronized_role = camera.synchronized_role;
         self.pixels_per_unit = camera.pixels_per_unit;
         self.pan = camera.pan;
         self.orbit_yaw = camera.orbit_yaw;
@@ -585,9 +590,82 @@ impl Viewport {
         self.kind
     }
 
+    /// Only the four standard views participate in SynchronizeCPlanes. A
+    /// renamed viewport is a user view, even when it came from a preset.
+    pub(crate) fn synchronization_role(&self) -> Option<WorldPlane> {
+        if self.title.is_some() {
+            return None;
+        }
+        if let Some(role) = self.synchronized_role {
+            return Some(role);
+        }
+        match self.kind {
+            ViewKind::Top => Some(WorldPlane::Top),
+            ViewKind::Front => Some(WorldPlane::Front),
+            ViewKind::Right => Some(WorldPlane::Right),
+            ViewKind::Perspective => Some(WorldPlane::Top),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn synchronization_plane_role(&self) -> Option<(WorldPlane, WorldPlane)> {
+        let named_role = self.synchronization_role()?;
+        if self.kind == ViewKind::Perspective {
+            return Some((named_role, WorldPlane::Top));
+        }
+        let current = self.construction_plane();
+        let plane_role = WorldPlane::ALL
+            .into_iter()
+            .find(|direction| {
+                let preset = direction.frame();
+                [current.x_axis(), current.y_axis()]
+                    .into_iter()
+                    .zip([preset.x_axis(), preset.y_axis()])
+                    .all(|(actual, reference)| {
+                        actual
+                            .as_vector()
+                            .to_array()
+                            .into_iter()
+                            .zip(reference.as_vector().to_array())
+                            .all(|(a, b)| (a - b).abs() <= 1.0e-12)
+                    })
+            })
+            .unwrap_or(named_role);
+        Some((named_role, plane_role))
+    }
+
+    pub(crate) fn synchronize_cplane(
+        &mut self,
+        source: Frame3,
+        named_role: WorldPlane,
+        plane_role: WorldPlane,
+        set_view: bool,
+    ) {
+        if set_view && self.kind != ViewKind::Perspective {
+            self.set_cplane_camera_from_frame(source, plane_role, Some(named_role));
+        }
+        let local = plane_role.frame();
+        let right = source
+            .vector_at(local.x_axis().as_vector().to_array())
+            .expect("finite synchronized plane axis");
+        let up = source
+            .vector_at(local.y_axis().as_vector().to_array())
+            .expect("finite synchronized plane axis");
+        let target = Frame3::try_from_directions(source.origin(), right, up, Tolerance::DEFAULT)
+            .expect("orthonormal synchronized construction plane");
+        self.plane.set(target);
+    }
+
     pub(crate) fn view_label(&self) -> &str {
         if let Some(title) = &self.title {
             return title;
+        }
+        if let Some(role) = self.synchronized_role {
+            return if self.kind == ViewKind::Perspective {
+                "Perspective"
+            } else {
+                role.label()
+            };
         }
         match (self.kind, self.cplane_direction) {
             (ViewKind::Plan, Some(WorldPlane::Top)) => "CPlane Top",
@@ -613,6 +691,27 @@ impl Viewport {
         } else {
             self.title = Some(title.to_owned());
             self.title_reference = Some((self.camera_snapshot(), self.construction_plane()));
+        }
+    }
+
+    pub(crate) fn restore_working_view_title(&mut self, title: &str) {
+        let standard = match title {
+            "Top" => Some(WorldPlane::Top),
+            "Front" => Some(WorldPlane::Front),
+            "Right" => Some(WorldPlane::Right),
+            _ => None,
+        };
+        if self.kind == ViewKind::Plan
+            && let Some(role) = standard
+        {
+            self.title = None;
+            self.title_reference = None;
+            self.synchronized_role = Some(role);
+        } else if self.kind == ViewKind::Perspective && title == "Perspective" {
+            self.title = None;
+            self.title_reference = None;
+        } else {
+            self.set_view_title(title);
         }
     }
 
@@ -651,6 +750,7 @@ impl Viewport {
         self.kind = kind;
         self.perspective_frame = None;
         self.cplane_direction = None;
+        self.synchronized_role = None;
         self.plane.set(Self::default_plane(kind));
         self.record_camera_change(previous);
     }
@@ -660,6 +760,7 @@ impl Viewport {
         self.kind = kind;
         self.perspective_frame = None;
         self.cplane_direction = None;
+        self.synchronized_role = None;
         self.target = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = 40.0;
@@ -694,14 +795,23 @@ impl Viewport {
         self.kind = ViewKind::Plan;
         self.perspective_frame = None;
         self.cplane_direction = None;
+        self.synchronized_role = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
         self.pan = Vec2::ZERO;
         self.record_camera_change(previous);
     }
 
     pub(crate) fn set_cplane_view(&mut self, direction: WorldPlane) {
+        self.set_cplane_camera_from_frame(self.construction_plane(), direction, None);
+    }
+
+    fn set_cplane_camera_from_frame(
+        &mut self,
+        plane: Frame3,
+        direction: WorldPlane,
+        synchronized_name: Option<WorldPlane>,
+    ) {
         let previous = self.camera_snapshot();
-        let plane = self.construction_plane();
         let local = direction.frame();
         let right = plane
             .vector_at(local.x_axis().as_vector().to_array())
@@ -714,6 +824,7 @@ impl Viewport {
                 .expect("orthonormal CPlane camera frame");
         self.plan_frame = camera_frame;
         self.cplane_direction = Some(direction);
+        self.synchronized_role = synchronized_name;
         if self.kind == ViewKind::Perspective {
             self.perspective_frame = Some(camera_frame);
         } else {

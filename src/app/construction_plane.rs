@@ -50,6 +50,66 @@ impl PlanePrompt {
 }
 
 impl VibocerosApp {
+    pub(super) fn try_run_synchronize_cplanes_command(&mut self, input: &str) -> bool {
+        let (command, argument) = input.split_once(char::is_whitespace).unwrap_or((input, ""));
+        if !command
+            .trim_start_matches(['\'', '_', '-'])
+            .eq_ignore_ascii_case("SynchronizeCPlanes")
+        {
+            return false;
+        }
+        self.push_log(format!("> {input}"));
+        let result = (|| -> Result<String, String> {
+            let mut set_view = true;
+            let mut source_words = Vec::new();
+            for word in argument.split_whitespace() {
+                if let Some(value) = word.strip_prefix("SetView=").or_else(|| {
+                    word.get(..8)
+                        .filter(|prefix| prefix.eq_ignore_ascii_case("SetView="))
+                        .map(|_| &word[8..])
+                }) {
+                    set_view = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return Err("SetView must be Yes or No".into());
+                    };
+                } else {
+                    source_words.push(word);
+                }
+            }
+            let source_name = source_words.join(" ");
+            let source_name = source_name.trim_matches('"');
+            let source_index = if source_name.is_empty() {
+                self.active_viewport
+            } else {
+                self.resolve_viewport_reference(source_name)?
+            };
+            let source = self.viewports[source_index].construction_plane();
+            let mut updated = 0;
+            for viewport in &mut self.viewports {
+                if let Some((named_role, plane_role)) = viewport.synchronization_plane_role() {
+                    viewport.synchronize_cplane(source, named_role, plane_role, set_view);
+                    updated += 1;
+                }
+            }
+            Ok(format!(
+                "Synchronized {updated} standard viewports from viewport {} ({})",
+                source_index + 1,
+                self.viewports[source_index].view_label()
+            ))
+        })();
+        match result {
+            Ok(message) => {
+                self.push_log(message);
+                self.command_input.clear();
+            }
+            Err(message) => self.push_log(format!("Error: {message}")),
+        }
+        true
+    }
+
     pub(super) fn try_run_copy_cplane_command(&mut self, input: &str) -> bool {
         let (command, argument) = input.split_once(char::is_whitespace).unwrap_or((input, ""));
         let command = command.trim_start_matches(['\'', '_', '-']);

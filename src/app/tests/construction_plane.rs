@@ -1,8 +1,141 @@
 use super::*;
+use viboceros_geometry::Vector3;
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.to_owned();
     app.run_command();
+}
+
+#[test]
+fn synchronize_cplanes_rotates_standard_planes_without_moving_cameras() {
+    use viboceros_command::construction_plane::WorldPlane;
+
+    let mut app = test_app();
+    let source = Frame3::try_from_directions(
+        point(7., 8., 9.),
+        Vector3::try_from([0., 1., 0.]).unwrap(),
+        Vector3::try_from([0., 0., 1.]).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    app.viewports[0].plane.set(source);
+    let mut custom_view = Viewport::new(ViewKind::Right);
+    custom_view.set_view_title("My detail");
+    app.viewports.push(custom_view);
+    let mut custom_plan = Viewport::new(ViewKind::Top);
+    custom_plan.set_cplane_view(WorldPlane::Top);
+    assert_eq!(custom_plan.synchronization_role(), None);
+    app.viewports.push(custom_plan);
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
+    let old_planes = app
+        .viewports
+        .iter()
+        .map(Viewport::construction_plane)
+        .collect::<Vec<_>>();
+    enter(&mut app, "SynchronizeCPlanes 1 SetView=No");
+    let synchronized_top = app.viewports[0].construction_plane();
+    let synchronized_front = app.viewports[2].construction_plane();
+    assert_eq!(synchronized_top.origin(), source.origin());
+    assert_eq!(
+        synchronized_top.x_axis().as_vector(),
+        source.y_axis().as_vector()
+    );
+    assert_eq!(
+        synchronized_top.y_axis().as_vector(),
+        source.z_axis().as_vector()
+    );
+    assert_eq!(app.viewports[1].construction_plane(), source);
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        source.origin()
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().x_axis().as_vector(),
+        source.x_axis().as_vector()
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().y_axis().as_vector(),
+        source.z_axis().as_vector()
+    );
+    assert_eq!(app.viewports[3].construction_plane(), synchronized_top);
+    assert_eq!(app.viewports[4].construction_plane(), old_planes[4]);
+    assert_eq!(app.viewports[5].construction_plane(), old_planes[5]);
+    assert_eq!(
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
+        cameras
+    );
+    app.active_viewport = 2;
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[2].construction_plane(), old_planes[2]);
+    enter(&mut app, "CPlane Redo");
+    assert_eq!(app.viewports[2].construction_plane(), synchronized_front);
+    assert_eq!(
+        app.viewports[2].synchronization_role(),
+        Some(WorldPlane::Front)
+    );
+}
+
+#[test]
+fn synchronize_cplanes_set_view_records_camera_and_plane_history() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "w1,2,3");
+    let pending = app.active_command;
+    let source = viboceros_command::construction_plane::WorldPlane::Right
+        .frame()
+        .with_origin(point(3., 4., 5.));
+    app.viewports[0].plane.set(source);
+    let old_camera = app.viewports[2].camera_snapshot();
+    let perspective_camera = app.viewports[1].camera_snapshot();
+    let old_plane = app.viewports[2].construction_plane();
+    enter(&mut app, "SynchronizeCPlanes SetView=Yes");
+    let new_camera = app.viewports[2].camera_snapshot();
+    let new_plane = app.viewports[2].construction_plane();
+    assert_ne!(new_camera, old_camera);
+    assert_eq!(app.viewports[1].camera_snapshot(), perspective_camera);
+    assert_ne!(new_plane, old_plane);
+    assert_eq!(app.viewports[0].view_label(), "Top");
+    assert_eq!(app.viewports[1].view_label(), "Perspective");
+    assert_eq!(app.viewports[2].view_label(), "Front");
+    assert_eq!(app.viewports[3].view_label(), "Right");
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.undo_label(), None);
+    app.active_viewport = 2;
+    enter(&mut app, "UndoView");
+    assert_eq!(app.viewports[2].camera_snapshot(), old_camera);
+    assert_eq!(app.viewports[2].construction_plane(), new_plane);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[2].construction_plane(), old_plane);
+    enter(&mut app, "CPlane Redo");
+    enter(&mut app, "RedoView");
+    assert_eq!(app.viewports[2].construction_plane(), new_plane);
+    assert_eq!(app.viewports[2].camera_snapshot(), new_camera);
+    enter(&mut app, "SynchronizeCPlanes Missing");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert_eq!(app.viewports[2].construction_plane(), new_plane);
+    enter(&mut app, "SynchronizeCPlanes Top SetView=No");
+    assert!(app.command_log.back().unwrap().starts_with("Synchronized"));
+}
+
+#[test]
+fn synchronize_cplanes_uses_native_world_preset_role_for_parallel_source() {
+    use viboceros_command::construction_plane::WorldPlane;
+
+    let mut view = Viewport::new(ViewKind::Top);
+    for direction in WorldPlane::ALL {
+        view.plane.set(direction.frame());
+        assert_eq!(
+            view.synchronization_plane_role(),
+            Some((WorldPlane::Top, direction))
+        );
+    }
 }
 
 #[test]

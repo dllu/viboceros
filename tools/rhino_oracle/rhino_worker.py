@@ -4486,6 +4486,65 @@ def _viewport_arrangement_probe(operation):
     return {"commands": commands, "states": states}, 0
 
 
+def _synchronize_cplanes_probe(operation):
+    """Record native standard-view CPlanes and cameras after a private click."""
+    if operation.get("set_view") not in ("Yes", "No"):
+        raise ValueError("SetView must be Yes or No")
+    if operation.get("id") is None:
+        raise ValueError("synchronization probe needs an id")
+    document = Rhino.RhinoDoc.ActiveDoc
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four standard viewports")
+    views = list(document.Views.GetViewList(True, False))
+    matching = [view for view in views if view.ActiveViewport.Name == "Top"]
+    if len(matching) != 1:
+        raise ValueError("expected one Top viewport")
+    source = matching[0]
+    document.Views.ActiveView = source
+    axes = operation.get("axes", [[0, 1, 0], [0, 0, 1]])
+    if not isinstance(axes, list) or len(axes) != 2:
+        raise ValueError("expected two construction plane axes")
+    frame = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(7, 8, 9),
+                                 _vector(axes[0]), _vector(axes[1]))
+    if not frame.IsValid or source.ActiveViewport.SetConstructionPlane(frame) is False:
+        raise ValueError("could not set source CPlane")
+
+    def state():
+        result = {}
+        for view in document.Views.GetViewList(True, False):
+            viewport = view.ActiveViewport
+            plane = viewport.ConstructionPlane()
+            plane_record = viewport.GetConstructionPlane()
+            rectangle = view.ScreenRectangle
+            result[viewport.Name] = {
+                "screen_rectangle": [int(rectangle.Left), int(rectangle.Top),
+                                     int(rectangle.Right), int(rectangle.Bottom)],
+                "plane": {
+                    "name": str(getattr(plane_record, "Name", "")),
+                    "origin": _xyz(plane.Origin),
+                    "x": _xyz(plane.XAxis),
+                    "y": _xyz(plane.YAxis),
+                    "z": _xyz(plane.ZAxis),
+                },
+                "perspective": bool(viewport.IsPerspectiveProjection),
+                "camera_direction": _xyz(viewport.CameraDirection),
+                "camera_up": _xyz(viewport.CameraUp),
+                "camera_target": _xyz(viewport.CameraTarget),
+            }
+        return result
+
+    before = state()
+    bounds = source.ScreenRectangle
+    x = int((bounds.Left + bounds.Right) / 2)
+    y = int((bounds.Top + bounds.Bottom) / 2)
+    _record_progress("PICK %s %d %d" % (operation["id"], x, y))
+    script = "_SynchronizeCPlanes _SetView=_%s _Pause" % operation["set_view"]
+    if not _run_surface_script(script, True):
+        raise ValueError("SynchronizeCPlanes failed")
+    return {"before": before, "after": state(), "set_view": operation["set_view"],
+            "pick": [x, y], "active_after": document.Views.ActiveView.ActiveViewport.Name}, 0
+
+
 def _construction_plane_script(step):
     kind = step["kind"]
     def point(value):
@@ -6146,6 +6205,8 @@ def _execute(operation, iterations, tolerance):
         return _interface_commands(operation)
     if kind == "viewport_arrangement_probe":
         return _viewport_arrangement_probe(operation)
+    if kind == "synchronize_cplanes_probe":
+        return _synchronize_cplanes_probe(operation)
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

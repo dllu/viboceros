@@ -689,6 +689,45 @@ fn split_viewport_layout_round_trips_through_3dm() {
 }
 
 #[test]
+fn synchronized_standard_views_remain_standard_after_3dm_round_trip() {
+    let path = std::env::temp_dir().join(format!(
+        "viboceros-synchronized-view-{}-{}.3dm",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let mut source = test_app();
+    source.viewports[0].plane.set(
+        viboceros_command::construction_plane::WorldPlane::Right
+            .frame()
+            .with_origin(point(3., 4., 5.)),
+    );
+    enter(&mut source, "SynchronizeCPlanes SetView=Yes");
+    enter(&mut source, &format!("Export3dm \"{}\"", path.display()));
+
+    let mut opened = test_app();
+    enter(&mut opened, &format!("Open \"{}\"", path.display()));
+    for (index, label) in ["Top", "Perspective", "Front", "Right"]
+        .into_iter()
+        .enumerate()
+    {
+        assert_eq!(opened.viewports[index].view_label(), label);
+        assert!(opened.viewports[index].synchronization_role().is_some());
+    }
+    enter(&mut opened, "SynchronizeCPlanes Top SetView=No");
+    assert!(
+        opened
+            .command_log
+            .back()
+            .unwrap()
+            .starts_with("Synchronized 4")
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn new_overlapping_viewport_round_trips_through_3dm() {
     let path = std::env::temp_dir().join(format!(
         "viboceros-new-viewport-{}-{}.3dm",

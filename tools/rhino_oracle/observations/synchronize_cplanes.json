@@ -1,0 +1,3144 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-no-view",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-with-view",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "camera_target": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "camera_up": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -0.0,
+              -1.0,
+              -0.0
+            ],
+            "camera_target": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "camera_up": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              -0.0,
+              -1.0,
+              -0.0
+            ],
+            "camera_target": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "camera_up": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "Yes"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-world-top",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-oblique",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.7071067811865475,
+                0.7071067811865475,
+                0.0
+              ],
+              "y": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "z": [
+                0.5773502691896258,
+                -0.5773502691896258,
+                -0.5773502691896258
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.7071067811865475,
+                0.7071067811865475,
+                0.0
+              ],
+              "y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "z": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "y": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "z": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.7071067811865475,
+                0.7071067811865475,
+                0.0
+              ],
+              "y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "z": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.7071067811865475,
+                0.7071067811865475,
+                0.0
+              ],
+              "y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "z": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-world-front",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                -0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-world-bottom",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "z": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                -0.0
+              ],
+              "z": [
+                -0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-world-left",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "y": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                -0.0,
+                -0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "y": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                -0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "sync-cplanes-world-back",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                -0.0
+              ],
+              "z": [
+                -0.0,
+                0.0,
+                -1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                -0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                -0.0
+              ],
+              "z": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                1.0,
+                -0.0,
+                -0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                -0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "before": {
+          "Front": {
+            "camera_direction": [
+              0.0,
+              100.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Front",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              674,
+              897,
+              1038
+            ]
+          },
+          "Perspective": {
+            "camera_direction": [
+              -43.3,
+              75.0,
+              -50.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": true,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "z": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              303,
+              1608,
+              668
+            ]
+          },
+          "Right": {
+            "camera_direction": [
+              -100.0,
+              0.0,
+              0.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Right",
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                1.0,
+                0.0,
+                0.0
+              ]
+            },
+            "screen_rectangle": [
+              903,
+              674,
+              1608,
+              1038
+            ]
+          },
+          "Top": {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -100.0
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "perspective": false,
+            "plane": {
+              "name": "Top",
+              "origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "x": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "z": [
+                0.0,
+                1.0,
+                -0.0
+              ]
+            },
+            "screen_rectangle": [
+              192,
+              303,
+              897,
+              668
+            ]
+          }
+        },
+        "pick": [
+          544,
+          485
+        ],
+        "set_view": "No"
+      }
+    }
+  ]
+}
