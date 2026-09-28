@@ -7,6 +7,8 @@ Attribute and geometry user text can be edited with commands and retained in 3DM
 files; attribute text can also be searched. `NamedView Save`, `NamedView Restore`,
 `NamedView List`, and `NamedView Import path.3dm` manage camera views.
 `Export3dm` and `Import3dm` preserve them with their construction planes.
+`NamedCPlane Save`, `Restore`, and `Import path.3dm` manage reusable construction
+planes through 3DM files.
 `Open3dm path` (or `Open path`) replaces
 the current document; `Import3dm path` merges a 3DM into it.
 `SaveAs path.3dm` names the current file; `Save` writes later changes to it and

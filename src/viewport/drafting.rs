@@ -269,7 +269,8 @@ impl Viewport {
                         continue;
                     }
                     let coordinate = index as Real * spacing;
-                    let stroke = if index.unsigned_abs() % u64::from(self.grid.major_interval) == 0
+                    let stroke = if self.grid.major_interval != 0
+                        && index.unsigned_abs() % u64::from(self.grid.major_interval) == 0
                     {
                         major_stroke
                     } else {
@@ -611,6 +612,15 @@ mod grid_tests {
                 .filter(|color| **color == Color32::from_gray(170))
                 .count(),
             4
+        );
+        view.grid.major_interval = 0;
+        assert!(view.grid.valid());
+        assert_eq!(
+            grid_shapes(&view)
+                .iter()
+                .filter(|shape| matches!(shape, egui::Shape::LineSegment { stroke, .. } if stroke.color == Color32::from_gray(170)))
+                .count(),
+            0
         );
         view.grid.show_grid = false;
         assert!(grid_shapes(&view).is_empty());

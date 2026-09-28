@@ -82,6 +82,7 @@ pub(crate) fn command_completions(commands: &CommandRegistry, input: &str) -> Ve
         .chain([
             "CPlane",
             "NamedView",
+            "NamedCPlane",
             "ReadViewportsFromFile",
             "SetActiveViewport",
             "SetMaximizedViewport",
@@ -167,7 +168,7 @@ fn path_argument(input: &str) -> Option<(&str, &str)> {
     let command = input[start..end]
         .trim_start_matches(['\'', '_', '-'])
         .to_ascii_lowercase();
-    if command == "namedview" {
+    if matches!(command.as_str(), "namedview" | "namedcplane") {
         let offset = input.len() - input[end..].trim_start().len();
         let rest = &input[offset..];
         let token_end = rest.find(char::is_whitespace).unwrap_or(rest.len());
@@ -355,6 +356,7 @@ mod tests {
         for command in [
             "ReadViewportsFromFile",
             "NamedView Import",
+            "NamedCPlane Import",
             "ExportStl Binary",
             "ExportStl Ascii",
             "ImportStep Native=Yes",

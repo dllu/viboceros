@@ -1004,6 +1004,7 @@ impl VibocerosApp {
                     names.extend(interface::COMMAND_NAMES);
                     names.push("CPlane");
                     names.push("NamedView");
+                    names.push("NamedCPlane");
                     names.push("ReadViewportsFromFile");
                     names.push("SetActiveViewport");
                     names.push("SetMaximizedViewport");
@@ -1018,6 +1019,7 @@ impl VibocerosApp {
                     self.push_log(snapping::HELP.into());
                     self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.push_log(viboceros_command::named_view::USAGE.into());
+                    self.push_log(viboceros_command::named_view::NAMED_CPLANE_USAGE.into());
                     self.push_log("ReadViewportsFromFile path.3dm: copy saved model viewports and their layout from a 3DM file".into());
                     self.push_log("SetActiveViewport name|number; SetMaximizedViewport name|number: select a displayed viewport".into());
                     self.command_input.clear();

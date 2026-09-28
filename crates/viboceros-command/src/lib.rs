@@ -11,9 +11,10 @@ pub use align::{AlignmentMode, AlignmentOptions};
 mod curve_options;
 mod interchange;
 pub use interchange::{
-    export_3dm_with_named_views, export_3dm_with_viewports, import_3dm_with_named_views,
-    open_3dm_with_named_views, open_3dm_with_views, parse_3dm_path, save_3dm_with_named_views,
-    save_3dm_with_viewports,
+    export_3dm_with_named_views, export_3dm_with_viewports, export_3dm_with_viewports_and_cplanes,
+    import_3dm_with_named_views, import_3dm_with_views_and_cplanes, open_3dm_with_named_views,
+    open_3dm_with_views, open_3dm_with_views_and_cplanes, parse_3dm_path,
+    save_3dm_with_named_views, save_3dm_with_viewports, save_3dm_with_viewports_and_cplanes,
 };
 mod interpolation_options;
 use interpolation_options::parse_interp_curve_arguments;

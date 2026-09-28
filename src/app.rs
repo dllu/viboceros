@@ -1736,6 +1736,7 @@ pub struct VibocerosApp {
     command_line: command_line::CommandLineState,
     viewports: Vec<Viewport>,
     named_views: viboceros_command::named_view::NamedViews<NamedViewSnapshot>,
+    named_cplanes: viboceros_command::named_view::NamedViews<viboceros_io::ThreeDmNamedCPlane>,
     active_viewport: usize,
     maximized_viewport: Option<usize>,
     viewport_positions: Vec<[f64; 4]>,
@@ -1815,6 +1816,7 @@ impl VibocerosApp {
             command_log,
             viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
+            named_cplanes: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),
@@ -1966,6 +1968,7 @@ impl VibocerosApp {
         if !input.is_empty()
             && (self.try_run_plane_command(&input)
                 || self.try_run_named_view_command(&input)
+                || self.try_run_named_cplane_command(&input)
                 || self.try_run_read_viewports_command(&input)
                 || self.try_run_viewport_properties_command(&input)
                 || self.try_run_interface_command(&input))
@@ -8334,6 +8337,7 @@ mod tests {
     mod length;
     mod merge_edge;
     mod mesh_face_prompt;
+    mod named_cplane;
     mod named_view;
     mod nurbs_selection;
     mod object_selection;
@@ -8360,6 +8364,7 @@ mod tests {
             command_line: Default::default(),
             viewports: Viewport::standard_views().into(),
             named_views: Default::default(),
+            named_cplanes: Default::default(),
             active_viewport: 0,
             maximized_viewport: None,
             viewport_positions: DEFAULT_VIEWPORT_POSITIONS.to_vec(),

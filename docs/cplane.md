@@ -17,6 +17,8 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Through point` | Move only along the normal until the plane passes through the point. |
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
+| `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
+| `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
 
 Points accept the regular local/world/relative coordinate syntax; prefix `w`
 for world coordinates. Angles are degrees. For example:
@@ -57,6 +59,17 @@ editors these keys retain their text-selection behavior. The view-preset menu
 explicitly resets the chosen viewport's plane, including when reselecting the
 same preset. Camera orbit, pan, zoom, and display-mode changes do not reset it.
 
+`NamedCPlane List`, `Update`, `Delete`, `Rename old | new`, `Duplicate source |
+new`, `MoveUp`, and `MoveDown` manage the ordered named-plane list. Restore
+changes the active viewport's CPlane through its plane history and applies the
+saved grid line count, minor spacing, snap spacing, and thick-line interval.
+Set the thick-line interval to zero to show only thin grid lines.
+Show-grid and axis toggles remain viewport settings. Save, Export3dm, Open3dm,
+and Import3dm persist the OpenNURBS named-CPlane table; `NamedCPlane Import`
+reads that table only, converts lengths to the current document units, and
+resolves duplicate names with numbered suffixes. The 3DM depth-buffer flag is
+retained in the named-plane table but is not exposed as a viewport control.
+
 Grid X/Y axes are red/green in local plane coordinates. Grid snapping retains
 the picked elevation, and tracking uses the plane axes through the first
 reference point with a screen-space capture radius. An edge-on construction
@@ -90,7 +103,7 @@ and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
 All/View/Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
-rotation, universal/automatic planes, named planes, CopyCPlane commands, and
-saved viewport settings in 3DM remain unimplemented. General scalar point-input
+rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
+commands remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.

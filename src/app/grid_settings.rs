@@ -57,8 +57,8 @@ impl VibocerosApp {
                 if ui
                     .add(
                         egui::DragValue::new(&mut major_interval)
-                            .range(1..=100_000)
-                            .prefix("Major every "),
+                            .range(0..=100_000)
+                            .prefix("Major every (0: none) "),
                     )
                     .changed()
                 {

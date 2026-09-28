@@ -2,6 +2,7 @@
 //! The saved camera type belongs to the host (GUI or headless viewport).
 
 pub const USAGE: &str = "NamedView [List | Save name | Update name | Restore name | Import path.3dm | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
+pub const NAMED_CPLANE_USAGE: &str = "NamedCPlane [List | Save name | Update name | Restore name | Import path.3dm | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamedViewAction {
@@ -27,6 +28,8 @@ pub enum NamedViewError {
     Duplicate(String),
     #[error("named view import failed: {0}")]
     ImportFile(String),
+    #[error("named construction plane grid is not representable: {0}")]
+    InvalidGrid(String),
 }
 
 fn keyword(input: &str, expected: &str) -> bool {
@@ -49,11 +52,19 @@ fn name(input: &str) -> Result<String, NamedViewError> {
 }
 
 pub fn parse(input: &str) -> Option<Result<NamedViewAction, NamedViewError>> {
+    parse_for(input, "NamedView")
+}
+
+/// Shared list and edit grammar for the named view and named CPlane tables.
+pub fn parse_for(
+    input: &str,
+    command_name: &str,
+) -> Option<Result<NamedViewAction, NamedViewError>> {
     let input = input.trim();
     let (command, rest) = input.split_once(char::is_whitespace).unwrap_or((input, ""));
     if !command
         .trim_start_matches(['\'', '_', '-'])
-        .eq_ignore_ascii_case("NamedView")
+        .eq_ignore_ascii_case(command_name)
     {
         return None;
     }

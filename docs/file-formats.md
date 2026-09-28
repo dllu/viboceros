@@ -47,8 +47,12 @@ definitions and ordered membership survive round trips, including overlapping
 and empty groups.
 The low-level `ThreeDmModel` reader and writer also retain named model views,
 including projection, camera, target, CPlane, and frustum. Unit-converted reads
-scale their positions and frustum distances along with model geometry. The GUI's
-session `NamedView` list is included in `Import3dm` and `Export3dm`; Save and
+scale their positions and frustum distances along with model geometry. The
+named construction-plane table retains plane frames, grid and snap spacing, line
+counts, thick-line frequency, and the 3DM depth-buffer flag. It is saved with the
+model and can be imported alone with `NamedCPlane Import path.3dm`; unit-converted
+reads scale plane origins and spacing. The GUI's session `NamedView` list is
+included in `Import3dm` and `Export3dm`; Save and
 Open also preserve current model viewports, including their grid and snap settings
 and the active viewport. Saved viewport titles are displayed and used by
 `SetActiveViewport` and `SetMaximizedViewport` after Open or

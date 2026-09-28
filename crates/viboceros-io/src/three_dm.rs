@@ -65,6 +65,18 @@ pub struct ThreeDmNamedView {
     pub screen_port: [i32; 4],
 }
 
+/// Named construction plane and its OpenNURBS grid appearance settings.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmNamedCPlane {
+    pub name: String,
+    pub plane: Frame3,
+    pub grid_spacing: f64,
+    pub snap_spacing: f64,
+    pub grid_line_count: i32,
+    pub grid_thick_frequency: i32,
+    pub depth_buffer: bool,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(u8)]
 pub enum ThreeDmDisplayMode {
@@ -180,6 +192,7 @@ pub struct ThreeDmModel {
     pub current_layer_index: Option<usize>,
     pub groups: Vec<ThreeDmGroup>,
     pub named_views: Vec<ThreeDmNamedView>,
+    pub named_cplanes: Vec<ThreeDmNamedCPlane>,
     pub viewports: Vec<ThreeDmViewport>,
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
@@ -199,6 +212,7 @@ impl ThreeDmModel {
             current_layer_index,
             groups,
             named_views: Vec::new(),
+            named_cplanes: Vec::new(),
             viewports: Vec::new(),
             objects,
             unsupported_object_count: 0,
@@ -300,6 +314,20 @@ pub fn read_3dm_named_views_file_in_units(
     Ok(views)
 }
 
+/// Reads named construction planes in destination units without model geometry.
+pub fn read_3dm_named_cplanes_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmNamedCPlane>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut planes = decode_named_cplanes(&handle)?;
+    for plane in &mut planes {
+        scale_named_cplane(plane, scale)?;
+    }
+    Ok(planes)
+}
+
 /// Reads coordinates into target units. The supplied tolerance is expressed
 /// in target units; B-rep topology matching uses a converted source tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
@@ -333,6 +361,9 @@ pub fn read_3dm_file_in_units(
         ) {
             scale_view(view, scale)?;
         }
+        for plane in &mut model.named_cplanes {
+            scale_named_cplane(plane, scale)?;
+        }
         for viewport in &mut model.viewports {
             scale_viewport_grid(viewport, scale)?;
         }
@@ -360,6 +391,36 @@ fn scale_view(view: &mut ThreeDmNamedView, scale: f64) -> Result<(), ThreeDmErro
         Tolerance::NUMERICAL_VALIDATION,
     )?;
     view.frustum = view.frustum.map(|coordinate| coordinate * scale);
+    Ok(())
+}
+
+fn scale_named_cplane(plane: &mut ThreeDmNamedCPlane, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    plane.plane = Frame3::try_from_directions(
+        Point3::try_from(
+            plane
+                .plane
+                .origin()
+                .to_array()
+                .map(|coordinate| coordinate * scale),
+        )?,
+        plane.plane.x_axis().as_vector(),
+        plane.plane.y_axis().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )?;
+    plane.grid_spacing *= scale;
+    plane.snap_spacing *= scale;
+    if !plane.grid_spacing.is_finite()
+        || plane.grid_spacing <= 0.0
+        || !plane.snap_spacing.is_finite()
+        || plane.snap_spacing <= 0.0
+    {
+        return Err(ThreeDmError::InvalidModel(
+            "named construction plane spacing is not representable in target units".into(),
+        ));
+    }
     Ok(())
 }
 
@@ -491,6 +552,27 @@ pub fn write_3dm_file(
             cplane_y: view.construction_plane.y_axis().as_vector().to_array(),
             frustum: view.frustum,
             screen_port: view.screen_port,
+        })
+        .collect::<Vec<_>>();
+    let named_cplane_names = model
+        .named_cplanes
+        .iter()
+        .map(|plane| c_string(&plane.name, "named construction plane name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let named_cplanes = model
+        .named_cplanes
+        .iter()
+        .zip(&named_cplane_names)
+        .map(|(plane, name)| ffi::ViboNamedCPlane {
+            name: name.as_ptr(),
+            origin: plane.plane.origin().to_array(),
+            x_axis: plane.plane.x_axis().as_vector().to_array(),
+            y_axis: plane.plane.y_axis().as_vector().to_array(),
+            grid_spacing: plane.grid_spacing,
+            snap_spacing: plane.snap_spacing,
+            grid_line_count: plane.grid_line_count,
+            grid_thick_frequency: plane.grid_thick_frequency,
+            depth_buffer: u8::from(plane.depth_buffer),
         })
         .collect::<Vec<_>>();
     let current_view_names = model
@@ -674,6 +756,8 @@ pub fn write_3dm_file(
             groups.len(),
             pointer_or_null(&named_views),
             named_views.len(),
+            pointer_or_null(&named_cplanes),
+            named_cplanes.len(),
             pointer_or_null(&current_views),
             current_views.len(),
             pointer_or_null(&objects),
@@ -817,6 +901,7 @@ fn decode_model(
     }
 
     let named_views = decode_named_views(handle)?;
+    let named_cplanes = decode_named_cplanes(handle)?;
     let viewports = decode_viewports(handle)?;
 
     // SAFETY: the handle owns a live bridge model.
@@ -845,6 +930,7 @@ fn decode_model(
         current_layer_index,
         groups,
         named_views,
+        named_cplanes,
         viewports,
         objects,
         unsupported_object_count: unsupported,
@@ -864,6 +950,36 @@ fn decode_named_views(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedView>, Thr
         views.push(decode_view(&raw)?);
     }
     Ok(views)
+}
+
+fn decode_named_cplanes(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedCPlane>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let count = unsafe { ffi::vibo_3dm_named_cplane_count(handle.0.as_ptr()) };
+    let mut planes = Vec::with_capacity(count);
+    for index in 0..count {
+        let mut raw = ffi::ViboNamedCPlane::default();
+        // SAFETY: the handle is live, the index is in range, and output is writable.
+        if unsafe { ffi::vibo_3dm_named_cplane(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge(
+                "invalid named construction plane record",
+            ));
+        }
+        planes.push(ThreeDmNamedCPlane {
+            name: c_text(raw.name)?,
+            plane: Frame3::try_from_directions(
+                Point3::try_from(raw.origin)?,
+                Vector3::try_from(raw.x_axis)?,
+                Vector3::try_from(raw.y_axis)?,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?,
+            grid_spacing: raw.grid_spacing,
+            snap_spacing: raw.snap_spacing,
+            grid_line_count: raw.grid_line_count,
+            grid_thick_frequency: raw.grid_thick_frequency,
+            depth_buffer: raw.depth_buffer != 0,
+        });
+    }
+    Ok(planes)
 }
 
 fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
@@ -1315,6 +1431,23 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
             )));
         }
         validate_view_camera(view, &format!("named view {index}"))?;
+    }
+    let mut named_cplane_names = BTreeSet::new();
+    for (index, plane) in model.named_cplanes.iter().enumerate() {
+        let name = plane.name.trim();
+        if name.is_empty()
+            || !named_cplane_names.insert(name.to_lowercase())
+            || !plane.grid_spacing.is_finite()
+            || plane.grid_spacing <= 0.0
+            || !plane.snap_spacing.is_finite()
+            || plane.snap_spacing <= 0.0
+            || plane.grid_line_count < 0
+            || plane.grid_thick_frequency < 0
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named construction plane {index} has invalid metadata"
+            )));
+        }
     }
     let mut active_count = 0;
     for (index, viewport) in model.viewports.iter().enumerate() {
@@ -1780,6 +1913,36 @@ mod ffi {
     }
 
     #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct ViboNamedCPlane {
+        pub name: *const c_char,
+        pub origin: [f64; 3],
+        pub x_axis: [f64; 3],
+        pub y_axis: [f64; 3],
+        pub grid_spacing: f64,
+        pub snap_spacing: f64,
+        pub grid_line_count: i32,
+        pub grid_thick_frequency: i32,
+        pub depth_buffer: u8,
+    }
+
+    impl Default for ViboNamedCPlane {
+        fn default() -> Self {
+            Self {
+                name: std::ptr::null(),
+                origin: [0.0; 3],
+                x_axis: [0.0; 3],
+                y_axis: [0.0; 3],
+                grid_spacing: 0.0,
+                snap_spacing: 0.0,
+                grid_line_count: 0,
+                grid_thick_frequency: 0,
+                depth_buffer: 0,
+            }
+        }
+    }
+
+    #[repr(C)]
     #[derive(Clone, Copy, Default)]
     pub struct ViboCurrentView {
         pub camera: ViboNamedView,
@@ -1876,6 +2039,12 @@ mod ffi {
             index: usize,
             view: *mut ViboNamedView,
         ) -> c_int;
+        pub fn vibo_3dm_named_cplane_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_named_cplane(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            plane: *mut ViboNamedCPlane,
+        ) -> c_int;
         pub fn vibo_3dm_current_view_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_current_view(
             model: *const ViboThreeDmModel,
@@ -1932,6 +2101,8 @@ mod ffi {
             group_count: usize,
             named_views: *const ViboNamedView,
             named_view_count: usize,
+            named_cplanes: *const ViboNamedCPlane,
+            named_cplane_count: usize,
             current_views: *const ViboCurrentView,
             current_view_count: usize,
             objects: *const ViboWriteObject,
@@ -3498,6 +3669,46 @@ mod tests {
         assert_eq!(meters.viewports[0].grid.snap_spacing, 0.0025);
         assert_eq!(meters.viewports[0].grid.minor_spacing, 0.004);
         assert_eq!(meters.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn named_construction_planes_round_trip_and_scale_without_model_geometry() {
+        let path = temporary_path("named-cplanes.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        model.units = LengthUnitSystem::Millimeters;
+        let plane = Frame3::try_from_directions(
+            Point3::try_new(2000.0, 3000.0, 4000.0).unwrap(),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        model.named_cplanes.push(ThreeDmNamedCPlane {
+            name: "Fixture plane".into(),
+            plane,
+            grid_spacing: 250.0,
+            snap_spacing: 50.0,
+            grid_line_count: 31,
+            grid_thick_frequency: 0,
+            depth_buffer: true,
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.named_cplanes, model.named_cplanes);
+        let converted =
+            read_3dm_named_cplanes_file_in_units(&path, &LengthUnitSystem::Meters).unwrap();
+        assert_eq!(converted.len(), 1);
+        assert_eq!(converted[0].name, "Fixture plane");
+        assert_eq!(converted[0].grid_spacing, 0.25);
+        assert_eq!(converted[0].snap_spacing, 0.05);
+        assert_eq!(converted[0].grid_line_count, 31);
+        assert_eq!(converted[0].grid_thick_frequency, 0);
+        assert!(converted[0].depth_buffer);
+        assert_eq!(
+            converted[0].plane.origin(),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
         fs::remove_file(path).unwrap();
     }
 

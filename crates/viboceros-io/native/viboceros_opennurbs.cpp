@@ -37,6 +37,11 @@ struct BridgeNamedView {
   ViboNamedView data{};
 };
 
+struct BridgeNamedCPlane {
+  std::string name;
+  ViboNamedCPlane data{};
+};
+
 struct BridgeCurrentView {
   std::string name;
   ViboCurrentView data{};
@@ -1806,6 +1811,7 @@ struct ViboThreeDmModel {
   int32_t current_layer_index = -1;
   std::vector<BridgeGroup> groups;
   std::vector<BridgeNamedView> named_views;
+  std::vector<BridgeNamedCPlane> named_cplanes;
   std::vector<BridgeCurrentView> current_views;
   std::vector<BridgeObject> objects;
   size_t unsupported_object_count = 0;
@@ -1890,6 +1896,29 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         continue;
       }
       decoded->named_views.push_back(std::move(view));
+    }
+
+    for (int index = 0; index < source.m_settings.m_named_cplanes.Count(); ++index) {
+      const ON_3dmConstructionPlane& source_plane = source.m_settings.m_named_cplanes[index];
+      if (source_plane.m_name.IsEmpty() || !source_plane.m_plane.IsValid()) {
+        continue;
+      }
+      BridgeNamedCPlane plane;
+      plane.name = utf8(source_plane.m_name);
+      const auto fill3 = [](double (&destination)[3], const auto& value) {
+        destination[0] = value.x;
+        destination[1] = value.y;
+        destination[2] = value.z;
+      };
+      fill3(plane.data.origin, source_plane.m_plane.origin);
+      fill3(plane.data.x_axis, source_plane.m_plane.xaxis);
+      fill3(plane.data.y_axis, source_plane.m_plane.yaxis);
+      plane.data.grid_spacing = source_plane.m_grid_spacing;
+      plane.data.snap_spacing = source_plane.m_snap_spacing;
+      plane.data.grid_line_count = source_plane.m_grid_line_count;
+      plane.data.grid_thick_frequency = source_plane.m_grid_thick_frequency;
+      plane.data.depth_buffer = static_cast<uint8_t>(source_plane.m_bDepthBuffer);
+      decoded->named_cplanes.push_back(std::move(plane));
     }
 
     for (int index = 0; index < source.m_settings.m_views.Count(); ++index) {
@@ -2079,6 +2108,21 @@ extern "C" int32_t vibo_3dm_named_view(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" size_t vibo_3dm_named_cplane_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->named_cplanes.size();
+}
+
+extern "C" int32_t vibo_3dm_named_cplane(const ViboThreeDmModel* model,
+                                          size_t index, ViboNamedCPlane* plane) {
+  if (model == nullptr || index >= model->named_cplanes.size() || plane == nullptr) {
+    return 0;
+  }
+  const BridgeNamedCPlane& source = model->named_cplanes[index];
+  *plane = source.data;
+  plane->name = source.name.c_str();
+  return 1;
+}
+
 extern "C" size_t vibo_3dm_current_view_count(const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->current_views.size();
 }
@@ -2214,6 +2258,7 @@ extern "C" int32_t vibo_3dm_write(
     int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
     const ViboNamedView* named_views, size_t named_view_count,
+    const ViboNamedCPlane* named_cplanes, size_t named_cplane_count,
     const ViboCurrentView* current_views, size_t current_view_count,
     const ViboWriteObject* objects, size_t object_count, char* error,
     size_t error_capacity) {
@@ -2224,6 +2269,7 @@ extern "C" int32_t vibo_3dm_write(
        static_cast<size_t>(current_layer_index) >= layer_count) ||
       (group_count != 0 && groups == nullptr) ||
       (named_view_count != 0 && named_views == nullptr) ||
+      (named_cplane_count != 0 && named_cplanes == nullptr) ||
       (current_view_count != 0 && current_views == nullptr) ||
       (object_count != 0 && objects == nullptr)) {
     set_error(error, error_capacity, "path and input arrays are required");
@@ -2277,6 +2323,32 @@ extern "C" int32_t vibo_3dm_write(
         return 0;
       }
       model.m_settings.m_named_views.Append(view);
+    }
+
+    for (size_t index = 0; index < named_cplane_count; ++index) {
+      const ViboNamedCPlane& source = named_cplanes[index];
+      if (source.name == nullptr || source.name[0] == '\0' ||
+          !std::isfinite(source.grid_spacing) || source.grid_spacing <= 0.0 ||
+          !std::isfinite(source.snap_spacing) || source.snap_spacing <= 0.0 ||
+          source.grid_line_count < 0 || source.grid_thick_frequency < 0) {
+        set_error(error, error_capacity, "invalid named construction plane");
+        return 0;
+      }
+      ON_3dmConstructionPlane plane;
+      plane.m_name = ON_wString(source.name);
+      plane.m_plane = ON_Plane(ON_3dPoint(source.origin),
+                               ON_3dVector(source.x_axis),
+                               ON_3dVector(source.y_axis));
+      if (!plane.m_plane.IsValid()) {
+        set_error(error, error_capacity, "invalid named construction plane frame");
+        return 0;
+      }
+      plane.m_grid_spacing = source.grid_spacing;
+      plane.m_snap_spacing = source.snap_spacing;
+      plane.m_grid_line_count = source.grid_line_count;
+      plane.m_grid_thick_frequency = source.grid_thick_frequency;
+      plane.m_bDepthBuffer = source.depth_buffer != 0;
+      model.m_settings.m_named_cplanes.Append(plane);
     }
 
     for (size_t index = 0; index < current_view_count; ++index) {

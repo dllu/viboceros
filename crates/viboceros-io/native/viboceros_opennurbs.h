@@ -74,6 +74,18 @@ typedef struct ViboNamedView {
   int32_t screen_port[4]; // left, right, bottom, top
 } ViboNamedView;
 
+typedef struct ViboNamedCPlane {
+  const char* name;
+  double origin[3];
+  double x_axis[3];
+  double y_axis[3];
+  double grid_spacing;
+  double snap_spacing;
+  int32_t grid_line_count;
+  int32_t grid_thick_frequency;
+  uint8_t depth_buffer;
+} ViboNamedCPlane;
+
 typedef struct ViboCurrentView {
   ViboNamedView camera;
   uint8_t display_mode; // 0 other, 1 wireframe, 2 shaded, 3 ghosted
@@ -146,6 +158,9 @@ int32_t vibo_3dm_group(const ViboThreeDmModel* model, size_t index,
 size_t vibo_3dm_named_view_count(const ViboThreeDmModel* model);
 int32_t vibo_3dm_named_view(const ViboThreeDmModel* model, size_t index,
                             ViboNamedView* view);
+size_t vibo_3dm_named_cplane_count(const ViboThreeDmModel* model);
+int32_t vibo_3dm_named_cplane(const ViboThreeDmModel* model, size_t index,
+                              ViboNamedCPlane* plane);
 size_t vibo_3dm_current_view_count(const ViboThreeDmModel* model);
 int32_t vibo_3dm_current_view(const ViboThreeDmModel* model, size_t index,
                               ViboCurrentView* view);
@@ -177,7 +192,8 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        size_t layer_count, int32_t current_layer_index,
                        const ViboWriteGroup* groups,
                        size_t group_count, const ViboNamedView* named_views,
-                       size_t named_view_count, const ViboCurrentView* current_views,
+                       size_t named_view_count, const ViboNamedCPlane* named_cplanes,
+                       size_t named_cplane_count, const ViboCurrentView* current_views,
                        size_t current_view_count, const ViboWriteObject* objects,
                        size_t object_count, char* error,
                        size_t error_capacity);

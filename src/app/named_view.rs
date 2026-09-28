@@ -2,7 +2,9 @@ use super::*;
 use crate::viewport::GridSettings;
 use viboceros_command::named_view::NamedViews;
 use viboceros_command::named_view::{self, NamedViewAction, NamedViewError};
-use viboceros_io::{ThreeDmDisplayMode, ThreeDmGridSettings, ThreeDmNamedView, ThreeDmViewport};
+use viboceros_io::{
+    ThreeDmDisplayMode, ThreeDmGridSettings, ThreeDmNamedCPlane, ThreeDmNamedView, ThreeDmViewport,
+};
 
 fn add_file_views(
     named_views: &mut NamedViews<NamedViewSnapshot>,
@@ -27,6 +29,42 @@ fn add_file_views(
             candidate = format!("{base} ({index})");
         }
         if named_views.save(candidate, snapshot).is_ok() {
+            imported += 1;
+        }
+    }
+    imported
+}
+
+fn add_file_cplanes(
+    named_cplanes: &mut NamedViews<ThreeDmNamedCPlane>,
+    planes: Vec<ThreeDmNamedCPlane>,
+) -> usize {
+    let mut imported = 0;
+    for mut plane in planes {
+        if !plane.grid_spacing.is_finite()
+            || plane.grid_spacing <= 0.0
+            || !plane.snap_spacing.is_finite()
+            || plane.snap_spacing <= 0.0
+            || !(0..=100_000).contains(&plane.grid_line_count)
+            || plane.grid_thick_frequency < 0
+        {
+            continue;
+        }
+        let base = plane.name.replace('|', " ").trim().to_owned();
+        let base = if base.is_empty() {
+            "Imported CPlane"
+        } else {
+            &base
+        };
+        let mut candidate = base.to_owned();
+        for index in 2.. {
+            if named_cplanes.get(&candidate).is_err() {
+                break;
+            }
+            candidate = format!("{base} ({index})");
+        }
+        plane.name = candidate.clone();
+        if named_cplanes.save(candidate, plane).is_ok() {
             imported += 1;
         }
     }
@@ -105,6 +143,15 @@ fn file_viewport_positions(views: &[ThreeDmViewport]) -> Vec<[f64; 4]> {
 }
 
 impl VibocerosApp {
+    fn three_dm_named_cplanes(&self) -> Vec<ThreeDmNamedCPlane> {
+        self.named_cplanes
+            .entries()
+            .map(|(name, plane)| ThreeDmNamedCPlane {
+                name: name.to_owned(),
+                ..plane.clone()
+            })
+            .collect()
+    }
     fn restore_file_viewports(&mut self, current_views: Vec<ThreeDmViewport>) {
         let current_views = views_in_grid_order(current_views);
         self.viewport_positions = file_viewport_positions(&current_views);
@@ -239,28 +286,36 @@ impl VibocerosApp {
         if name.eq_ignore_ascii_case("Open3dm") || name.eq_ignore_ascii_case("Open") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
-                let (document, message, views, current_views) =
-                    viboceros_command::open_3dm_with_views(path)?;
+                let (document, message, views, current_views, cplanes) =
+                    viboceros_command::open_3dm_with_views_and_cplanes(path)?;
                 let mut named_views = NamedViews::default();
                 let imported = add_file_views(&mut named_views, views);
+                let mut named_cplanes = NamedViews::default();
+                let imported_cplanes = add_file_cplanes(&mut named_cplanes, cplanes);
                 self.document = document;
                 self.document_path = Some(
                     std::fs::canonicalize(path).unwrap_or_else(|_| std::path::PathBuf::from(path)),
                 );
                 self.named_views = named_views;
+                self.named_cplanes = named_cplanes;
                 self.restore_file_viewports(current_views);
                 self.last_point = None;
                 self.sidebar = DocumentSidebar::default();
-                Ok(format!("{message}; opened {imported} named view(s)"))
+                Ok(format!(
+                    "{message}; opened {imported} named view(s) and {imported_cplanes} named CPlane(s)"
+                ))
             })());
         }
         if name.eq_ignore_ascii_case("Import3dm") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
-                let (message, views) =
-                    viboceros_command::import_3dm_with_named_views(&mut self.document, path)?;
+                let (message, views, cplanes) =
+                    viboceros_command::import_3dm_with_views_and_cplanes(&mut self.document, path)?;
                 let imported = add_file_views(&mut self.named_views, views);
-                Ok(format!("{message}; imported {imported} named view(s)"))
+                let imported_cplanes = add_file_cplanes(&mut self.named_cplanes, cplanes);
+                Ok(format!(
+                    "{message}; imported {imported} named view(s) and {imported_cplanes} named CPlane(s)"
+                ))
             })());
         }
         if name.eq_ignore_ascii_case("Export3dm") {
@@ -268,11 +323,12 @@ impl VibocerosApp {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let views = self.three_dm_views()?;
                 let current_views = self.three_dm_viewports()?;
-                let message = viboceros_command::export_3dm_with_viewports(
+                let message = viboceros_command::export_3dm_with_viewports_and_cplanes(
                     &self.document,
                     path,
                     &views,
                     &current_views,
+                    &self.three_dm_named_cplanes(),
                 )?;
                 Ok(format!("{message}; exported {} named view(s)", views.len()))
             })());
@@ -297,11 +353,12 @@ impl VibocerosApp {
                 ))?;
                 let views = self.three_dm_views()?;
                 let current_views = self.three_dm_viewports()?;
-                let message = viboceros_command::save_3dm_with_viewports(
+                let message = viboceros_command::save_3dm_with_viewports_and_cplanes(
                     &self.document,
                     path_text,
                     &views,
                     &current_views,
+                    &self.three_dm_named_cplanes(),
                 )?;
                 self.document_path = Some(std::fs::canonicalize(&path).unwrap_or(path));
                 Ok(format!("{message}; saved {} named view(s)", views.len()))
@@ -380,5 +437,126 @@ impl VibocerosApp {
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         true
+    }
+
+    fn current_named_cplane(&self, name: String) -> Result<ThreeDmNamedCPlane, NamedViewError> {
+        let viewport = &self.viewports[self.active_viewport];
+        let grid = viewport.grid_settings();
+        let grid_thick_frequency = i32::try_from(grid.major_interval).map_err(|_| {
+            NamedViewError::InvalidGrid("major line interval exceeds 3DM range".into())
+        })?;
+        Ok(ThreeDmNamedCPlane {
+            name,
+            plane: viewport.construction_plane(),
+            grid_spacing: grid.minor_spacing,
+            snap_spacing: grid.snap_spacing,
+            grid_line_count: grid.line_count as i32,
+            grid_thick_frequency,
+            depth_buffer: false,
+        })
+    }
+
+    pub(super) fn try_run_named_cplane_command(&mut self, input: &str) -> bool {
+        let Some(parsed) = named_view::parse_for(input, "NamedCPlane") else {
+            return false;
+        };
+        self.push_log(format!("> {input}"));
+        let result = parsed.map_err(named_cplane_error).and_then(|action| {
+            let result = (|| -> Result<String, NamedViewError> {
+                match action {
+                    NamedViewAction::List => {
+                        let names = self.named_cplanes.names().collect::<Vec<_>>();
+                        Ok(if names.is_empty() {
+                            "Named CPlanes: none".to_owned()
+                        } else {
+                            format!("Named CPlanes: {}", names.join(", "))
+                        })
+                    }
+                    NamedViewAction::Save(name) => {
+                        let saved = self.current_named_cplane(name.clone())?;
+                        self.named_cplanes.save(name.clone(), saved)?;
+                        Ok(format!("Saved named CPlane '{name}'"))
+                    }
+                    NamedViewAction::Update(name) => {
+                        let depth_buffer = self.named_cplanes.get(&name)?.depth_buffer;
+                        let mut saved = self.current_named_cplane(name.clone())?;
+                        saved.depth_buffer = depth_buffer;
+                        self.named_cplanes.update(&name, saved)?;
+                        Ok(format!("Updated named CPlane '{name}'"))
+                    }
+                    NamedViewAction::Restore(name) => {
+                        let (saved_name, saved) = self.named_cplanes.get_entry(&name)?;
+                        let saved_name = saved_name.to_owned();
+                        let saved = saved.clone();
+                        let viewport = &mut self.viewports[self.active_viewport];
+                        let mut grid = viewport.grid_settings();
+                        grid.minor_spacing = saved.grid_spacing;
+                        grid.snap_spacing = saved.snap_spacing;
+                        grid.line_count = saved.grid_line_count as u32;
+                        grid.major_interval = saved.grid_thick_frequency as u32;
+                        if !grid.valid() {
+                            return Err(NamedViewError::InvalidGrid(
+                                "saved grid settings are invalid".into(),
+                            ));
+                        }
+                        viewport.plane.set(saved.plane);
+                        viewport.set_grid_settings(grid);
+                        Ok(format!(
+                            "Restored named CPlane '{saved_name}' in active viewport"
+                        ))
+                    }
+                    NamedViewAction::Import(path) => {
+                        let planes = viboceros_io::read_3dm_named_cplanes_file_in_units(
+                            &path,
+                            self.document.units(),
+                        )
+                        .map_err(|error| NamedViewError::ImportFile(error.to_string()))?;
+                        let count = add_file_cplanes(&mut self.named_cplanes, planes);
+                        Ok(format!("Imported {count} named CPlane(s) from {path}"))
+                    }
+                    NamedViewAction::Delete(name) => {
+                        self.named_cplanes.delete(&name)?;
+                        Ok(format!("Deleted named CPlane '{name}'"))
+                    }
+                    NamedViewAction::Rename { old, new } => {
+                        self.named_cplanes.rename(&old, new.clone())?;
+                        Ok(format!("Renamed named CPlane '{old}' to '{new}'"))
+                    }
+                    NamedViewAction::Duplicate { source, new } => {
+                        self.named_cplanes.duplicate(&source, new.clone())?;
+                        Ok(format!("Duplicated named CPlane '{source}' as '{new}'"))
+                    }
+                    NamedViewAction::MoveUp(name) => {
+                        self.named_cplanes.move_by(&name, -1)?;
+                        Ok(format!("Moved named CPlane '{name}' up"))
+                    }
+                    NamedViewAction::MoveDown(name) => {
+                        self.named_cplanes.move_by(&name, 1)?;
+                        Ok(format!("Moved named CPlane '{name}' down"))
+                    }
+                }
+            })();
+            result.map_err(named_cplane_error)
+        });
+        match result {
+            Ok(message) => {
+                self.push_log(message);
+                self.command_input.clear();
+            }
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        true
+    }
+}
+
+fn named_cplane_error(error: NamedViewError) -> String {
+    match error {
+        NamedViewError::Usage => format!("Usage: {}", named_view::NAMED_CPLANE_USAGE),
+        NamedViewError::Missing(name) => format!("named CPlane '{name}' does not exist"),
+        NamedViewError::Duplicate(name) => format!("named CPlane '{name}' already exists"),
+        NamedViewError::ImportFile(message) => format!("named CPlane import failed: {message}"),
+        NamedViewError::InvalidGrid(message) => {
+            format!("named CPlane grid is not representable: {message}")
+        }
     }
 }

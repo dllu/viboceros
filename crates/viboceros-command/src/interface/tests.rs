@@ -105,10 +105,20 @@ fn grid_options_parse_atomically_and_leave_reducer_state_unchanged() {
             apply_to: ViewportTarget::Active
         }))
     );
+    assert_eq!(
+        parse("Grid MajorLineInterval=0"),
+        Some(Ok(InterfaceCommand::Grid {
+            update: GridUpdate {
+                major_interval: Some(0),
+                ..GridUpdate::default()
+            },
+            apply_to: ViewportTarget::Active,
+        }))
+    );
     for input in [
         "Grid SnapSpacing=0",
         "Grid MinorLineSpacing=-1",
-        "Grid MajorLineInterval=0",
+        "Grid MajorLineInterval=-1",
         "Grid GridLineCount=100001",
         "Grid ShowGrid=Maybe",
         "Grid ShowGrid=Yes ShowGrid=No",

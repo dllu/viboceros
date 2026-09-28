@@ -37,6 +37,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `ReadViewportsFromFile path.3dm` | Copy saved model views and their layout into the current document, converting view coordinates to its units. |
 | `SetActiveViewport name\|number` | Activate a displayed viewport by title or number. |
 | `SetMaximizedViewport name\|number` | Activate and maximize a displayed viewport by title or number. |
+| `NamedCPlane Save\|Restore\|Import ...` | Manage reusable construction planes and their 3DM table; [details](../cplane.md). |
 | `Snap` | Toggle grid snapping. |
 | `SetSnap On\|Off\|Toggle` | Set or toggle grid snapping. |
 | `Ortho` / `SetOrtho On\|Off\|Toggle` | Toggle or explicitly set the cursor's angular constraint from the last picked point. |
@@ -44,7 +45,7 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Planar` / `SetPlanar On\|Off\|Toggle` | Toggle or explicitly set whether successive free picks keep the previous point's CPlane elevation. |
 | `OrthoAngle <degrees>` | Set the angular increment from the active construction plane's X axis; accepts values above 0 through 180 degrees. |
 | `SnapSize [positive number] [ApplyTo=ActiveViewport\|AllViewports]` | Set grid snap spacing for the active viewport (default) or all viewports; bare `SnapSize` prompts for a value. |
-| `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=positive integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
+| `Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=nonnegative integer] [GridLineCount=0..100000] [ShowGrid=Yes\|No] [ShowGridAxes=Yes\|No] [ShowWorldAxes=Yes\|No] [ApplyTo=ActiveViewport\|AllViewports]` | Edit grid properties for one or all viewports. Bare `Grid` opens the settings panel. |
 | `DisableOsnap Enable\|Disable\|Toggle` | Enable, suspend, or toggle object snaps. |
 | `SnapToMeshes Enable\|Disable\|Toggle` | Admit mesh Near/Mid/Int wires independently of feature modes; initially disabled. |
 | `SmartTrack On\|Off\|Toggle` | Set or toggle reference-point axis tracking. |

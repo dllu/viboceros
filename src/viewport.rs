@@ -93,7 +93,6 @@ impl GridSettings {
             && self.snap_spacing > 0.0
             && self.minor_spacing.is_finite()
             && self.minor_spacing > 0.0
-            && self.major_interval > 0
             && self.line_count <= 100_000
             && (self.line_count as Real * self.minor_spacing).is_finite()
     }
