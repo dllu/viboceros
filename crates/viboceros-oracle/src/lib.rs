@@ -81,6 +81,7 @@ mod group_picking;
 mod join_command;
 mod merge_edge;
 mod merge_edges_command;
+mod mesh_picking;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
@@ -393,6 +394,16 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: group_picking::GroupPickingFixture,
+    },
+    MeshSplitPicking {
+        id: String,
+        #[serde(flatten)]
+        fixture: mesh_picking::MeshPickingFixture,
+    },
+    MeshExplodePicking {
+        id: String,
+        #[serde(flatten)]
+        fixture: mesh_picking::MeshPickingFixture,
     },
     UndoSelection {
         id: String,
@@ -2005,6 +2016,8 @@ impl Operation {
             | Self::JoinCommand { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::GroupPicking { id, .. }
+            | Self::MeshSplitPicking { id, .. }
+            | Self::MeshExplodePicking { id, .. }
             | Self::UndoSelection { id, .. }
             | Self::DocumentUnits { id, .. }
             | Self::BezierConversion { id, .. }
@@ -2321,19 +2334,26 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
     if !(1..=MAX_ITERATIONS).contains(&request.iterations) {
         return Err(ProbeError::InvalidIterations(request.iterations));
     }
-    if request
-        .operations
-        .iter()
-        .any(|operation| matches!(operation, Operation::GroupPicking { .. }))
-        && (request.iterations != 1
-            || request.operations.len() > 128
-            || request
-                .operations
-                .iter()
-                .any(|operation| !matches!(operation, Operation::GroupPicking { .. })))
+    if request.operations.iter().any(|operation| {
+        matches!(
+            operation,
+            Operation::GroupPicking { .. }
+                | Operation::MeshSplitPicking { .. }
+                | Operation::MeshExplodePicking { .. }
+        )
+    }) && (request.iterations != 1
+        || request.operations.len() > 128
+        || request.operations.iter().any(|operation| {
+            !matches!(
+                operation,
+                Operation::GroupPicking { .. }
+                    | Operation::MeshSplitPicking { .. }
+                    | Operation::MeshExplodePicking { .. }
+            )
+        }))
     {
         return Err(ProbeError::FixtureInvariant(
-            "group picking requires a dedicated one-iteration batch of at most 128 cases",
+            "group and mesh picking require a dedicated one-iteration batch of at most 128 cases",
         ));
     }
     let mut ids = BTreeSet::new();
@@ -2371,7 +2391,10 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         }
         if matches!(
             operation,
-            Operation::GroupPicking { .. } | Operation::UndoSelection { .. }
+            Operation::GroupPicking { .. }
+                | Operation::MeshSplitPicking { .. }
+                | Operation::MeshExplodePicking { .. }
+                | Operation::UndoSelection { .. }
         ) && (id.len() > 100
             || !id
                 .bytes()
@@ -2500,6 +2523,12 @@ fn execute(
         Operation::JoinCommand { fixture, .. } => join_command::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::GroupPicking { fixture, .. } => group_picking::run(fixture, tolerance)?,
+        Operation::MeshSplitPicking { fixture, .. } => {
+            mesh_picking::run(fixture, tolerance, false)?
+        }
+        Operation::MeshExplodePicking { fixture, .. } => {
+            mesh_picking::run(fixture, tolerance, true)?
+        }
         Operation::UndoSelection { fixture, .. } => undo_selection::run(fixture, tolerance)?,
         Operation::DocumentUnits { fixture, .. } => document_units::run(fixture)?,
         Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,

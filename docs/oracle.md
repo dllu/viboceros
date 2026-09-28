@@ -349,9 +349,10 @@ averages from area/bounds centers, retain collinear/repeated curve corners,
 exclude internal subdivisions of straight surface edges, and include nonplanar
 curve captures alongside warped-surface misses.
 The [44 circular NURBS records](circular-center-snaps.md) add 34 complete capture
-replays and four admission-only misses. Four unsupported elliptical captures and
-two negative-weight recognition differences remain explicit. Both outside-arc
-controls fail to split; the other 42 records include actual Undo/Redo.
+replays and four admission-only misses. The
+[elliptical follow-up](elliptic-center-snaps.md) resolves four more captures;
+two negative-weight recognition differences remain. Both outside-arc controls
+fail to split; the other 42 records include actual Undo/Redo.
 
 The shared `serde_json` dependency explicitly enables round-trip float parsing.
 Standalone oracle/document builds must not depend on app or test dependencies
@@ -583,31 +584,32 @@ This matters for command macros, which read document settings rather than an API
 tolerance argument. See [Rhino's document tolerance API](https://developer.rhino3d.com/api/rhinocommon/rhino.rhinodoc/modelabsolutetolerance).
 Older command comparisons made before this synchronization need revalidation.
 
-`mesh_split_picking.json` is a **Rhino-only diagnostic**, not yet a native compare
-operation. It uses the same owned-window idle-click mechanism with three disjoint
-meshes, then invokes the actual `SplitDisjointMesh` command. Sixteen cases cover
-ordinary and overlapping groups, ordered bridge memberships, hidden/locked
-objects, hidden/locked layers, and connected meshes mixed with splittable peers.
-Run it with:
+`mesh_split_picking.json` uses the owned-window idle-click mechanism with three
+disjoint meshes, then invokes the actual `SplitDisjointMesh` command. Sixteen
+cases cover ordinary and overlapping groups, ordered bridge memberships,
+hidden/locked objects, hidden/locked layers, and connected meshes mixed with
+splittable peers. The native oracle builds the same documents and runs the
+registered command. All 16 cases replay against the
+[saved observations](../tools/rhino_oracle/observations/mesh_split_picking.json).
+Run a read-only replay with:
 
 ```sh
-tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/mesh_split_picking.json --timeout 240
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/mesh_split_picking.json --observations tools/rhino_oracle/observations/mesh_split_picking.json
 ```
 
 The checked-in `tools/rhino_oracle/observations/mesh_split_picking.json` records
 Rhino 8.32.26160.13001 on 2026-09-12: source identity, selection, object mode,
 group memberships, layer modes, vertices and face counts, including untouched peers.
-A native command regression compares those 16 recorded output sets exactly;
-see the [verified fields and remaining limits](commands/meshes.md). The oracle CLI
-still has no native `mesh_split_picking` operation; this is an offline observation
-comparison in `cargo test -p viboceros-command split_disjoint_mesh_matches_live`.
+A native command regression also compares those 16 recorded output sets exactly;
+see the [verified fields and remaining limits](commands/meshes.md).
 Deleted sources are removed from cleanup tracking; surviving original and newly
 created mesh IDs are explicitly tracked and cleaned up in the private document.
 
-`mesh_explode_picking.json` is another Rhino-only diagnostic, using the same 16
-mesh setups but invoking `Explode`. Run it with the preceding `rhino` command,
-substituting this fixture name. Its checked-in observations record retained
-restricted decomposed sources as **unselected**, unlike SplitDisjointMesh.
+`mesh_explode_picking.json` uses the same 16 mesh setups but invokes `Explode`.
+All 16 cases also replay against its
+[saved observations](../tools/rhino_oracle/observations/mesh_explode_picking.json).
+Its observations record retained restricted decomposed sources as
+**unselected**, unlike SplitDisjointMesh.
 Connected sources remain selected in both commands. Python tests compare their
 output records, allowing only the command success field name and decomposed
 original-source selection difference. One mixed locked-connected case per
