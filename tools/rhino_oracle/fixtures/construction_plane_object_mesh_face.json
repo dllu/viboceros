@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "triangle-top",
+      "origin": [10, 20, 30],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_mesh_face", "vertices": [[0, 0, 0], [4, 0, 0], [0, 2, 0]], "faces": [[0, 1, 2]], "face": 0}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "tilted-quad",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_mesh_face", "vertices": [[1, 2, 3], [4, 2, 3], [4, 5, 5], [1, 5, 5]], "faces": [[0, 1, 2, 3]], "face": 0}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "second-face",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_mesh_face", "vertices": [[0, 0, 0], [4, 0, 0], [0, 2, 0], [0, 0, 3]], "faces": [[0, 1, 2], [0, 3, 1]], "face": 1}
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "fractional-triangle",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "steps": [
+        {"kind": "object_mesh_face", "vertices": [[0.1, 0.2, 0.3], [4.1, 0.2, 0.3], [0.1, 2.2, 0.3]], "faces": [[0, 1, 2]], "face": 0}
+      ]
+    }
+  ]
+}

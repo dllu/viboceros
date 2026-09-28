@@ -312,6 +312,58 @@ fn cplane_object_pick_returns_to_the_suspended_polyline() {
 }
 
 #[test]
+fn cplane_object_aligns_to_a_typed_or_picked_mesh_face() {
+    let mut app = test_app();
+    let mesh = TriangleMesh::try_new_faces(
+        vec![
+            point(0., 0., 0.),
+            point(4., 0., 0.),
+            point(0., 2., 0.),
+            point(0., 0., 3.),
+        ],
+        vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 3, 1])],
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let id = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    let original = app.viewports[0].construction_plane();
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, &format!("CPlane Object {id} Face=1"));
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .distance_to(point(4. / 3., 0., 1.))
+            .unwrap()
+            < 1e-14
+    );
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    enter(&mut app, "CPlane Object");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_object());
+    assert!(!app.accept_plane_prompt_object_face(id, 99));
+    assert!(app.plane_prompt.is_some());
+    assert_eq!(app.viewports[0].construction_plane(), original);
+    assert!(app.handle_viewport_action(ViewportOutput {
+        face_click: Some((id, 1)),
+        ..Default::default()
+    }));
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .z_axis()
+            .as_vector()
+            .dot(Vector3::try_new(0., 1., 0.).unwrap())
+            .unwrap()
+            > 1.0 - 1e-14
+    );
+}
+
+#[test]
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");

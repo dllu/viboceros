@@ -62,7 +62,7 @@ impl PlanePrompt {
             }
             (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
             (PlanePromptKind::Object, _) => {
-                "CPlane Object: select a circle, arc, ellipse, or surface"
+                "CPlane Object: select a circle, arc, ellipse, surface, or mesh face"
             }
         }
     }
@@ -256,7 +256,13 @@ impl VibocerosApp {
             if kind == PlanePromptKind::Object {
                 let selected = self.document.selected_object_ids().collect::<Vec<_>>();
                 if let [id] = selected.as_slice() {
-                    return self.apply_plane_action(PlaneAction::Object(*id), viewport);
+                    if !self
+                        .document
+                        .object(*id)
+                        .is_some_and(|object| matches!(object.geometry(), Geometry::Mesh(_)))
+                    {
+                        return self.apply_plane_action(PlaneAction::Object(*id), viewport);
+                    }
                 }
             }
             self.snaps.plane_override = None;
@@ -315,6 +321,19 @@ impl VibocerosApp {
                         .map(PlaneAction::Set)
                         .map_err(|error| error.to_string())
                 }),
+            PlaneAction::ObjectFace(id, face) => self
+                .document
+                .object(id)
+                .filter(|_| self.document.is_object_selectable(id))
+                .ok_or_else(|| format!("object {id} is missing or cannot be selected"))
+                .and_then(|object| match object.geometry() {
+                    Geometry::Mesh(mesh) => {
+                        cplane::frame_from_mesh_face(mesh, face, self.document.tolerance())
+                            .map(PlaneAction::Set)
+                            .map_err(|error| error.to_string())
+                    }
+                    _ => Err("Face=index requires a mesh object".into()),
+                }),
             other => Ok(other),
         };
         let action = match action {
@@ -333,6 +352,7 @@ impl VibocerosApp {
             PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) => unreachable!(),
             PlaneAction::AlignToView => unreachable!(),
             PlaneAction::Object(_) => unreachable!(),
+            PlaneAction::ObjectFace(_, _) => unreachable!(),
         };
         self.push_log(
             if changed {
@@ -365,11 +385,18 @@ impl VibocerosApp {
             return false;
         }
         if prompt.requests_object() {
-            match input.parse() {
-                Ok(id) => {
+            let command = format!("CPlane Object {input}");
+            match cplane::parse(&command, prompt.frame, None, self.document.tolerance()) {
+                Some(Ok(PlaneAction::Object(id))) => {
                     self.accept_plane_prompt_object(id);
                 }
-                Err(_) => self.push_log("Error: enter an object ID or click an object".into()),
+                Some(Ok(PlaneAction::ObjectFace(id, face))) => {
+                    self.accept_plane_prompt_object_face(id, face);
+                }
+                _ => self.push_log(
+                    "Error: enter an object ID, object ID with Face=index, or click an object"
+                        .into(),
+                ),
             }
             return true;
         }
@@ -588,6 +615,18 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_plane_prompt_object(&mut self, id: viboceros_document::ObjectId) -> bool {
+        self.accept_plane_prompt_object_action(PlaneAction::Object(id))
+    }
+
+    pub(super) fn accept_plane_prompt_object_face(
+        &mut self,
+        id: viboceros_document::ObjectId,
+        face: usize,
+    ) -> bool {
+        self.accept_plane_prompt_object_action(PlaneAction::ObjectFace(id, face))
+    }
+
+    fn accept_plane_prompt_object_action(&mut self, action: PlaneAction) -> bool {
         let Some(prompt) = self
             .plane_prompt
             .as_ref()
@@ -596,7 +635,7 @@ impl VibocerosApp {
             return false;
         };
         let viewport = prompt.viewport;
-        if self.apply_plane_action(PlaneAction::Object(id), viewport) {
+        if self.apply_plane_action(action, viewport) {
             self.plane_prompt = None;
             self.command_input.clear();
             true

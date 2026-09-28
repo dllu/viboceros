@@ -4,11 +4,11 @@ use std::collections::VecDeque;
 use viboceros_document::{Geometry, ObjectId};
 use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{
-    AffineTransform3, Frame3, GeometryError, NurbsSurface, Point3, Tolerance, Vector3,
+    AffineTransform3, Frame3, GeometryError, NurbsSurface, Point3, Tolerance, TriangleMesh, Vector3,
 };
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id] | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -79,6 +79,7 @@ pub enum PlaneAction {
     SetThroughAll(Point3),
     AlignToView,
     Object(ObjectId),
+    ObjectFace(ObjectId, usize),
     Undo,
     Redo,
     Prompt(PlanePromptKind),
@@ -106,7 +107,9 @@ pub enum PlaneCommandError {
     Point(#[from] PointInputError),
     #[error(transparent)]
     Geometry(#[from] GeometryError),
-    #[error("CPlane Object requires a circle, arc, ellipse, surface, or single-face polysurface")]
+    #[error(
+        "CPlane Object requires a circle, arc, ellipse, surface, or single-face polysurface; a mesh requires Face=index"
+    )]
     UnsupportedObject,
 }
 
@@ -239,6 +242,19 @@ fn parse_arguments(
             id.parse::<ObjectId>()
                 .map_err(|_| PlaneCommandError::Usage)?,
         ),
+        [name, id, face] if keyword(name, "Object") => {
+            let (option, index) = face.split_once('=').ok_or(PlaneCommandError::Usage)?;
+            if !keyword(option, "Face") {
+                return Err(PlaneCommandError::Usage);
+            }
+            PlaneAction::ObjectFace(
+                id.parse::<ObjectId>()
+                    .map_err(|_| PlaneCommandError::Usage)?,
+                index
+                    .parse::<usize>()
+                    .map_err(|_| PlaneCommandError::Usage)?,
+            )
+        }
         [name, view] if keyword(name, "World") => PlaneAction::Set(
             WorldPlane::ALL
                 .into_iter()
@@ -395,6 +411,37 @@ pub fn frame_from_object(
         }
         _ => return Err(PlaneCommandError::UnsupportedObject),
     })
+}
+
+pub fn frame_from_mesh_face(
+    mesh: &TriangleMesh,
+    face_index: usize,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let face = mesh
+        .faces()
+        .get(face_index)
+        .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+            face: face_index,
+            face_count: mesh.face_count(),
+        })?;
+    let mut center = [0.0; 3];
+    let divisor = face.vertex_count() as f64;
+    for &index in face.indices() {
+        let point = mesh.vertices()[index as usize].to_array();
+        for (coordinate, value) in center.iter_mut().zip(point) {
+            *coordinate += value / divisor;
+        }
+    }
+    // Rhino's captured mesh-face CPlanes use the unit face normal after it has
+    // been stored as f32, then normalize that stored direction for the frame.
+    let normal = mesh.polygon_face_normal(face_index)?.as_vector().to_array();
+    let stored_normal = Vector3::try_from(normal.map(|component| (component as f32) as f64))?;
+    Ok(Frame3::try_from_normal(
+        Point3::try_from(center)?,
+        stored_normal,
+        tolerance,
+    )?)
 }
 
 pub fn rotated(

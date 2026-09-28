@@ -10,6 +10,14 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self
+            .plane_prompt
+            .as_ref()
+            .is_some_and(super::construction_plane::PlanePrompt::requests_object)
+        {
+            self.accept_plane_prompt_object_face(object, face);
+            return;
+        }
         match self.active_command {
             Some(InteractiveCommand::DomainFace) => {
                 self.finish_domain_face_index(face);

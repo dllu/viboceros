@@ -309,10 +309,30 @@ fn object_option_accepts_a_pick_or_an_explicit_object_id() {
         .unwrap(),
         Ok(PlaneAction::Object(id))
     );
+    assert_eq!(
+        parse(
+            &format!("CPlane Object {id} Face=2"),
+            top,
+            None,
+            Tolerance::DEFAULT
+        )
+        .unwrap(),
+        Ok(PlaneAction::ObjectFace(id, 2))
+    );
     assert!(
         parse("CPlane Object bad-id", top, None, Tolerance::DEFAULT)
             .unwrap()
             .is_err()
+    );
+    assert!(
+        parse(
+            &format!("CPlane Object {id} Face=-1"),
+            top,
+            None,
+            Tolerance::DEFAULT
+        )
+        .unwrap()
+        .is_err()
     );
     assert_eq!(
         frame_from_object(&Geometry::Point(point(1., 2., 3.)), Tolerance::DEFAULT),

@@ -5,6 +5,19 @@ use super::{GeometryError, MeshFace, TriangleMesh, UnitVector3};
 mod tests;
 
 impl TriangleMesh {
+    /// Unit normal of a stored triangle or quad, indexed in polygon-face order.
+    pub fn polygon_face_normal(&self, index: usize) -> Result<UnitVector3, GeometryError> {
+        let face =
+            self.faces
+                .get(index)
+                .copied()
+                .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+                    face: index,
+                    face_count: self.faces.len(),
+                })?;
+        self.normal_for_face(face)
+    }
+
     /// Unit normals in stored polygon-face order (one per triangle or quad).
     /// Non-planar quads use the oriented cross product of their diagonals,
     /// not an unweighted average of their triangulation's unit normals.

@@ -71,6 +71,11 @@ pub enum PlaneStep {
     ObjectSurface {
         corners: [[f64; 3]; 4],
     },
+    ObjectMeshFace {
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        face: usize,
+    },
     Undo,
     Redo,
 }
@@ -196,6 +201,33 @@ fn apply_step(
         state.set(frame);
         return Ok(());
     }
+    if let PlaneStep::ObjectMeshFace {
+        vertices,
+        faces,
+        face,
+    } = step
+    {
+        let vertices = vertices
+            .iter()
+            .copied()
+            .map(Point3::try_from)
+            .collect::<Result<Vec<_>, _>>()?;
+        let faces = faces
+            .iter()
+            .map(|indices| match indices.as_slice() {
+                &[a, b, c] => Ok(MeshFace::Triangle([a, b, c])),
+                &[a, b, c, d] => Ok(MeshFace::Quad([a, b, c, d])),
+                _ => Err(ProbeError::FixtureInvariant(
+                    "mesh face needs three or four vertices",
+                )),
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        let frame = cplane::frame_from_mesh_face(&mesh, *face, tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane mesh face fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     let point = |p: &[f64; 3]| format!("w{},{},{}", p[0], p[1], p[2]);
     let command = match step {
         PlaneStep::World { view } => format!("CPlane World {view}"),
@@ -230,7 +262,8 @@ fn apply_step(
         PlaneStep::ObjectCircle { .. }
         | PlaneStep::ObjectArc { .. }
         | PlaneStep::ObjectEllipse { .. }
-        | PlaneStep::ObjectSurface { .. } => unreachable!(),
+        | PlaneStep::ObjectSurface { .. }
+        | PlaneStep::ObjectMeshFace { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -253,7 +286,8 @@ fn apply_step(
         PlaneAction::SetAllOrigin(_)
         | PlaneAction::SetThroughAll(_)
         | PlaneAction::AlignToView
-        | PlaneAction::Object(_) => {
+        | PlaneAction::Object(_)
+        | PlaneAction::ObjectFace(_, _) => {
             return Err(ProbeError::FixtureInvariant(
                 "CPlane fixture requires a viewport-specific action",
             ));
@@ -390,6 +424,19 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 3);
+    }
+
+    #[test]
+    fn object_mesh_faces_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_mesh_face.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_mesh_face.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 4);
     }
 
     fn assert_saved_plane_frames(request: ProbeRequest, recorded: Value, count: usize) {

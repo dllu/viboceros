@@ -97,6 +97,26 @@ python3 -m tools.rhino_oracle replay \
   --absolute-epsilon 1e-10 --relative-epsilon 1e-12
 ```
 
+The [mesh face fixture](../tools/rhino_oracle/fixtures/construction_plane_object_mesh_face.json)
+adds four private-Xvfb captures: a triangle, a tilted quad, an indexed second
+face, and fractional vertex coordinates. Its
+[Rhino observation](../tools/rhino_oracle/observations/construction_plane_object_mesh_face.json)
+places the CPlane at the face vertex average, with Z along the face normal and
+X from the normal-frame rule. The tilted-quad axes match a normal whose
+components were rounded to 32-bit floats before frame construction; the native
+command reproduces that rounding. Regenerate and replay with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_object_mesh_face.json --timeout 180
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_object_mesh_face.json \
+  --observations tools/rhino_oracle/observations/construction_plane_object_mesh_face.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All four mesh-face captures replay at these tolerances; the largest component
+difference is `4.44e-16`.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

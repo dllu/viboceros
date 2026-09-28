@@ -22,7 +22,7 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Through All point` | Move every viewport's plane along its own normal until it passes through the point. |
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Rotate axis-start axis-end reference-point target-point` | Rotate by the signed angle between two directions from the axis. |
-| `CPlane Object [object-id]` | Align the active plane to one supported object. |
+| `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object or mesh face. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
@@ -77,12 +77,17 @@ ZAxis uses the normal-only OpenNURBS frame rule.
 
 `CPlane Object` uses a single preselected object, or prompts for a viewport
 object pick or typed UUID. An explicit UUID also works in the full command.
+For a mesh, use `CPlane Object object-id Face=index` or pick a face in a
+viewport; mesh face indices are zero based. A single preselected mesh waits for
+a face pick.
 At the bare `CPlane` origin prompt, type `Object` to enter the same selection
 prompt.
 Circles and arcs place the origin at their center with X toward the curve start.
 Ellipses put the origin at their start point, with X along the start tangent.
 NURBS surfaces and single-face B-reps use the midpoint of the
 underlying U/V domains, the U tangent for X, and the surface normal for Z.
+Mesh faces use the average of their three or four vertices for the origin,
+their polygon normal for Z, and deterministic normal-derived X and Y axes.
 The command does not change object selection or the camera.
 
 `CPlane All` and `CPlane Through All` also accept a picked point. Typed points
@@ -157,7 +162,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object alignment for mesh faces and general planar curves, Surface/Curve/Gumball
+Object alignment for general planar curves, Surface/Curve/Gumball
 options, universal/automatic planes, the named-plane
 panel, and CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input

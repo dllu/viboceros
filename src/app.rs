@@ -8014,7 +8014,13 @@ impl eframe::App for VibocerosApp {
                 .selected_objects()
                 .next()
                 .is_some_and(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)));
-        let face_pick = if matches!(
+        let plane_object_pick = self
+            .plane_prompt
+            .as_ref()
+            .is_some_and(construction_plane::PlanePrompt::requests_object);
+        let face_pick = if plane_object_pick {
+            Some(FacePickMode::MeshAny)
+        } else if matches!(
             self.active_command,
             Some(
                 InteractiveCommand::ExtractMeshFaces { .. }
@@ -8043,7 +8049,7 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         }
-        .filter(|_| self.plane_prompt.is_none());
+        .filter(|_| self.plane_prompt.is_none() || plane_object_pick);
         let edge_pick = self
             .edge_prompt
             .as_ref()
@@ -8216,14 +8222,17 @@ impl eframe::App for VibocerosApp {
                                 }
                                 None => None,
                             },
-                            object_filter: if end_analysis_picking || curve_region_pick {
+                            object_filter: if plane_object_pick {
+                                Some(viboceros_command::ObjectSelectionFilter::Any)
+                            } else if end_analysis_picking || curve_region_pick {
                                 Some(viboceros_command::ObjectSelectionFilter::Curves)
                             } else if volume_object_pick {
                                 Some(viboceros_command::ObjectSelectionFilter::Any)
                             } else {
                                 object_filter
                             },
-                            selection_preview: if end_analysis_picking
+                            selection_preview: if plane_object_pick
+                                || end_analysis_picking
                                 || curve_region_pick
                                 || volume_object_pick
                             {

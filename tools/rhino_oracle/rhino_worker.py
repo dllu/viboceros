@@ -4673,10 +4673,10 @@ def _independent_construction_planes():
 def _construction_plane(operation):
     if not 1 <= len(operation["steps"]) <= 128:
         raise ValueError("expected 1 to 128 CPlane steps")
-    has_objects = any(step["kind"] in ("object_circle", "object_arc", "object_ellipse", "object_surface")
+    has_objects = any(step["kind"] in ("object_circle", "object_arc", "object_ellipse", "object_surface", "object_mesh_face")
                       for step in operation["steps"])
     for step in operation["steps"]:
-        if step["kind"] not in ("object_circle", "object_arc", "object_ellipse", "object_surface"):
+        if step["kind"] not in ("object_circle", "object_arc", "object_ellipse", "object_surface", "object_mesh_face"):
             _construction_plane_script(step)
     plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
     if not plane.IsValid:
@@ -4752,6 +4752,26 @@ def _construction_plane(operation):
                     owned.append(object_id)
                     document.Objects.UnselectAll()
                     script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_mesh_face":
+                    mesh = _polygon_mesh(step["vertices"], step["faces"])
+                    try:
+                        object_id = document.Objects.AddMesh(mesh)
+                    finally:
+                        mesh.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object mesh")
+                    owned.append(object_id)
+                    face_index = step["face"]
+                    if (type(face_index) is not int or face_index < 0
+                            or face_index >= len(step["faces"])):
+                        raise ValueError("invalid CPlane object mesh face index")
+                    document.Objects.UnselectAll()
+                    mesh_object = document.Objects.FindId(object_id)
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshFace, face_index)
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select CPlane object mesh face")
+                    script = "_CPlane _Object _Enter"
                 else:
                     script = _construction_plane_script(step)
                 _record_progress("CPlane command: " + script)

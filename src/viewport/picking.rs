@@ -218,7 +218,13 @@ impl Viewport {
         mode: FacePickMode,
     ) -> Option<(ObjectId, usize, Option<Point3>)> {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
-        for object in document.selected_objects() {
+        let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> =
+            if mode == FacePickMode::MeshAny {
+                Box::new(document.selectable_objects())
+            } else {
+                Box::new(document.selected_objects())
+            };
+        for object in candidates {
             if !selection_candidate(document, object, None) {
                 continue;
             }
@@ -239,7 +245,9 @@ impl Viewport {
             };
             let (mesh, sources, single_surface) = match object.geometry() {
                 Geometry::Mesh(mesh) if mode != FacePickMode::SurfaceAndBrep => (mesh, None, false),
-                Geometry::Brep(_) if mode != FacePickMode::Mesh => {
+                Geometry::Brep(_)
+                    if !matches!(mode, FacePickMode::Mesh | FacePickMode::MeshAny) =>
+                {
                     let Some(display) = display.as_ref() else {
                         continue;
                     };
@@ -507,6 +515,12 @@ mod tests {
             Some((front, 0))
         );
 
+        document.clear_selection();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAny),
+            Some((front, 0))
+        );
+
         document
             .select_objects_direct([back], SelectionMode::Replace)
             .unwrap();
@@ -731,6 +745,70 @@ mod tests {
         assert_eq!(output.face_click, Some((id, 0)));
         assert!(output.picked_point.is_none());
         assert!(output.selection_click.is_none());
+    }
+
+    #[test]
+    fn mesh_face_mode_keeps_regular_object_clicks_available() {
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let center = Point3::try_new(4.0, 0.0, 0.0).unwrap();
+        let circle = viboceros_geometry::Circle3::try_new(
+            center,
+            1.0,
+            Vector3::try_new(0.0, 0.0, 1.0)
+                .unwrap()
+                .normalized(document.tolerance())
+                .unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Circle(circle)).unwrap();
+        let pointer = viewport
+            .project(Point3::try_new(5.0, 0.0, 0.0).unwrap(), rect)
+            .unwrap();
+        let context = egui::Context::default();
+        let mut frame = |events| {
+            let mut output = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(rect),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        output = viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                face_pick: Some(FacePickMode::MeshAny),
+                                object_filter: Some(ObjectSelectionFilter::Any),
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            output
+        };
+        let event = |pressed| egui::Event::PointerButton {
+            pos: pointer,
+            pressed,
+            button: PointerButton::Primary,
+            modifiers: egui::Modifiers::NONE,
+        };
+        frame(vec![]);
+        frame(vec![egui::Event::PointerMoved(pointer), event(true)]);
+        let output = frame(vec![event(false)]);
+        assert_eq!(
+            output.selection_click.and_then(|click| click.object_id),
+            Some(id)
+        );
+        assert!(output.face_click.is_none());
     }
 
     #[test]
