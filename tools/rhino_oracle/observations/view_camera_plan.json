@@ -1,0 +1,116 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "oblique-cplane-plan",
+      "value": [
+        {
+          "camera_direction": [
+            -0.4082482904638631,
+            0.4082482904638631,
+            -0.8164965809277261
+          ],
+          "camera_distance_before": 102.22596637953806,
+          "camera_location": [
+            51.73357601546276,
+            -21.73357601546276,
+            113.46715203092552
+          ],
+          "camera_target": [
+            10.0,
+            20.0,
+            30.0
+          ],
+          "camera_target_before": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "camera_up": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "cplane_origin": [
+            10.0,
+            20.0,
+            30.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "direction": "Plan",
+          "frustum_width": 92.30820077233815,
+          "frustum_width_before": 92.30820077233815,
+          "perspective": false,
+          "projection": "Top",
+          "screen_scale": 7.637457930078799,
+          "screen_scale_at_target_before": 7.637457930078799,
+          "screen_scale_before": 7.637457930078799
+        },
+        {
+          "camera_direction": [
+            -0.4082482904638631,
+            0.4082482904638631,
+            -0.8164965809277261
+          ],
+          "camera_distance_before": 102.2259663795381,
+          "camera_location": [
+            51.73357601546277,
+            -21.733576015462774,
+            113.46715203092555
+          ],
+          "camera_target": [
+            10.0,
+            20.0,
+            30.0
+          ],
+          "camera_target_before": [
+            10.0,
+            20.0,
+            30.0
+          ],
+          "camera_up": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "cplane_origin": [
+            10.0,
+            20.0,
+            30.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "direction": "Plan",
+          "frustum_width": 111.72332120374747,
+          "frustum_width_before": 111.72332120374747,
+          "perspective": false,
+          "projection": "Perspective",
+          "screen_scale": 6.3102313143225155,
+          "screen_scale_at_target_before": 7.438586237898106,
+          "screen_scale_before": 7.438586237898106
+        }
+      ]
+    }
+  ]
+}

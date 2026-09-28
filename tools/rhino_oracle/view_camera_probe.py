@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Bounded public-RhinoCommon camera probe for SetView CPlane directions."""
+"""Bounded public-RhinoCommon camera probe for SetView CPlane and Plan."""
 import math
 
 
@@ -36,12 +36,16 @@ def validate(operation):
             or len(set(projections)) != len(projections):
         raise ValueError("camera probe projections must be distinct Top/Perspective values")
     if not isinstance(directions, list) or not directions or len(directions) > 6 \
-            or any(not isinstance(value, string_types) or value not in DIRECTIONS for value in directions) \
-            or len(set(directions)) != len(directions):
-        raise ValueError("camera probe directions must be distinct standard CPlane views")
+            or any(not isinstance(value, string_types) for value in directions) \
+            or (directions != ["Plan"] and
+                (any(value not in DIRECTIONS for value in directions)
+                 or len(set(directions)) != len(directions))):
+        raise ValueError("camera probe directions must be Plan or distinct standard CPlane views")
 
 
 def script(direction):
+    if direction == "Plan":
+        return "_Plan"
     if direction not in DIRECTIONS:
         raise ValueError("unsupported CPlane view")
     return "_SetView _CPlane _" + direction
@@ -79,9 +83,18 @@ def _frustum_width(viewport, Rhino):
         info.Dispose()
 
 
-def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before):
+def _screen_scale(viewport, Rhino, point):
+    success, scale = viewport.GetWorldToScreenScale(Rhino.Geometry.Point3d(*point))
+    scale = float(scale)
+    if not success or not _finite(scale) or scale <= 0.0:
+        raise ValueError("invalid screen scale at CPlane origin")
+    return scale
+
+
+def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before,
+              scale_before, target_scale_before, target_before, origin):
     plane = viewport.ConstructionPlane()
-    return dict(
+    result = dict(
         projection=projection, direction=direction,
         perspective=bool(viewport.IsPerspectiveProjection),
         camera_location=_xyz(viewport.CameraLocation),
@@ -95,6 +108,12 @@ def _snapshot(viewport, Rhino, projection, direction, distance_before, width_bef
         cplane_x=_unit(plane.XAxis),
         cplane_y=_unit(plane.YAxis),
     )
+    if scale_before is not None:
+        result["screen_scale_before"] = scale_before
+        result["screen_scale"] = _screen_scale(viewport, Rhino, origin)
+        result["camera_target_before"] = target_before
+        result["screen_scale_at_target_before"] = target_scale_before
+    return result
 
 
 def run(operation, viewport, host):
@@ -124,10 +143,18 @@ def run(operation, viewport, host):
                     raise ValueError("could not set camera probe CPlane")
                 distance_before = _camera_distance(viewport)
                 width_before = _frustum_width(viewport, Rhino)
+                scale_before = (_screen_scale(viewport, Rhino, origin)
+                                if direction == "Plan" else None)
+                target_before = (_xyz(viewport.CameraTarget)
+                                 if direction == "Plan" else None)
+                target_scale_before = (_screen_scale(viewport, Rhino, target_before)
+                                       if direction == "Plan" else None)
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("SetView CPlane command failed")
                 results.append(_snapshot(viewport, Rhino, projection, direction,
-                                         distance_before, width_before))
+                                         distance_before, width_before,
+                                         scale_before, target_scale_before,
+                                         target_before, origin))
         return results
     finally:
         errors = []
@@ -170,6 +197,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     location is diagnostic because Viboceros represents parallel views without
     a finite camera location. Parallel SetView preserves frustum width, while
     perspective SetView preserves camera distance, independent of startup zoom.
+    Plan from perspective checks orientation and projection; its changed zoom
+    remains diagnostic until native frustum conversion is represented.
     """
     validate(operation)
     if not _finite(float(epsilon)) or epsilon < 0.0:
@@ -196,6 +225,7 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
         neg = lambda vector: [-value for value in vector]
         expected = {
             "Top": (neg(z), y),
+            "Plan": (neg(z), y),
             "Bottom": (z, neg(y)),
             "Front": (y, z),
             "Back": (neg(y), z),
@@ -212,7 +242,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             _maximum_difference(vectors["cplane_y"], expected_y),
         )
         target_error = _maximum_difference(vectors["camera_target"], vectors["cplane_origin"])
-        projection_matches = bool(row["perspective"]) == (projection == "Perspective")
+        projection_matches = bool(row["perspective"]) == (
+            projection == "Perspective" and direction != "Plan")
         distance = math.sqrt(sum(
             (location - target) ** 2
             for location, target in zip(vectors["camera_location"], vectors["camera_target"])
@@ -225,13 +256,26 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
         if any(isinstance(width, bool) or not isinstance(width, (int, float))
                or not _finite(float(width)) or width <= 0.0 for width in widths):
             raise ValueError("invalid camera frustum width")
-        distance_error = abs(distance - distance_before) if projection == "Perspective" else None
-        parallel_width_error = abs(widths[1] - widths[0]) if projection == "Top" else None
+        distance_error = (abs(distance - distance_before)
+                          if projection == "Perspective" and direction != "Plan" else None)
+        parallel_width_error = (abs(widths[1] - widths[0])
+                                if projection == "Top" else None)
+        plan_scale_error = None
+        if direction == "Plan":
+            scale_before = row.get("screen_scale_before")
+            scale_after = row.get("screen_scale")
+            if any(isinstance(value, bool) or not isinstance(value, (int, float))
+                   or not _finite(float(value)) or value <= 0.0
+                   for value in (scale_before, scale_after)):
+                raise ValueError("invalid Plan screen scale")
+            if projection == "Top":
+                plan_scale_error = abs(scale_after - scale_before)
         passed = (projection_matches and orientation_error <= epsilon
                   and plane_error <= epsilon and axes_error <= epsilon
                   and target_error <= epsilon
                   and (distance_error is None or distance_error <= epsilon)
-                  and (parallel_width_error is None or parallel_width_error <= epsilon))
+                  and (parallel_width_error is None or parallel_width_error <= epsilon)
+                  and (plan_scale_error is None or plan_scale_error <= epsilon))
         results.append(dict(
             projection=projection, direction=direction, passed=passed,
             orientation_error=orientation_error, cplane_origin_error=plane_error,
@@ -242,6 +286,10 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             parallel_frustum_width_before=widths[0] if projection == "Top" else None,
             parallel_frustum_width=widths[1] if projection == "Top" else None,
             parallel_frustum_width_error=parallel_width_error,
+            plan_parallel_scale_error=plan_scale_error,
+            plan_perspective_scale_ratio=(row["screen_scale"] / row["screen_scale_before"]
+                                          if direction == "Plan" and projection == "Perspective" else None),
+            zoom_checked=direction != "Plan" or projection == "Top",
             projection_matches=projection_matches,
         ))
     return dict(passed=all(row["passed"] for row in results), views=results)

@@ -1,6 +1,8 @@
 """Whitelist and cleanup checks for the SetView CPlane camera oracle."""
 from copy import deepcopy
+import json
 from math import sqrt
+from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
@@ -17,6 +19,17 @@ def fixture():
 
 
 class CameraProbeTests(unittest.TestCase):
+    def test_recorded_plan_probe_checks_parallel_zoom_and_marks_perspective_limit(self):
+        root = Path(__file__).parent
+        operation = json.loads((root / "fixtures/view_camera_plan.json").read_text())["operations"][0]
+        rows = json.loads((root / "observations/view_camera_plan.json").read_text())["results"][0]["value"]
+        comparison = view_camera_probe.compare_to_viboceros(operation, rows)
+        self.assertTrue(comparison["passed"])
+        self.assertTrue(comparison["views"][0]["zoom_checked"])
+        self.assertEqual(comparison["views"][0]["plan_parallel_scale_error"], 0.0)
+        self.assertFalse(comparison["views"][1]["zoom_checked"])
+        self.assertLess(comparison["views"][1]["plan_perspective_scale_ratio"], 1.0)
+
     def test_comparison_checks_each_camera_and_cplane_property(self):
         operation = fixture()
         origin = operation["origin"]
@@ -66,12 +79,14 @@ class CameraProbeTests(unittest.TestCase):
 
     def test_whitelist_rejects_unbounded_or_malformed_input(self):
         view_camera_probe.validate(fixture())
+        view_camera_probe.validate(dict(fixture(), directions=["Plan"]))
         for mutation in [
             dict(origin=[0, 0, float("nan")]),
             dict(origin=[True, 0, 0]),
             dict(projections=["Top", "Top"]),
             dict(projections=["_Delete"]),
             dict(directions=["Top", "Top"]),
+            dict(directions=["Plan", "Top"]),
             dict(directions=["Perspective"]),
         ]:
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
@@ -79,6 +94,7 @@ class CameraProbeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             view_camera_probe.script("_Delete")
         self.assertEqual(view_camera_probe.script("Back"), "_SetView _CPlane _Back")
+        self.assertEqual(view_camera_probe.script("Plan"), "_Plan")
 
     def test_probe_restores_projection_target_and_name_after_command_failure(self):
         class Vector:

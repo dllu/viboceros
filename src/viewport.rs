@@ -665,7 +665,6 @@ impl Viewport {
         self.cplane_direction = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
         self.pan = Vec2::ZERO;
-        self.pixels_per_unit = 40.0;
         self.record_camera_change(previous);
     }
 
@@ -3309,6 +3308,19 @@ mod tests {
         assert!(view.redo_view());
         assert_eq!(view.kind(), ViewKind::Plan);
         assert_eq!(view.project(model, rect), Some(screen));
+    }
+
+    #[test]
+    fn plan_view_preserves_parallel_zoom() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.pixels_per_unit = 125.0;
+        view.set_plan_view();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
     }
 
     #[test]

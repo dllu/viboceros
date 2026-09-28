@@ -1435,6 +1435,29 @@ generic `compare` mode is unavailable for this fixture. The independent Rust
 viewport tests cover all six directions in both projections and preservation of
 nondefault parallel zoom and perspective camera distance.
 
+### Plan camera probe
+
+The same bounded probe records `Plan` from parallel and perspective views with
+an oblique CPlane. It measures
+[frustum width](https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.viewportinfo/frustumwidth)
+and [world-to-screen scale](https://developer.rhino3d.com/api/rhinocommon/rhino.display.rhinoviewport/getworldtoscreenscale)
+before and after the command. The [saved Rhino 8.32 observation](../tools/rhino_oracle/observations/view_camera_plan.json)
+was captured in a separate Xvfb display. Replay its focused comparison with:
+
+```sh
+python3 -m tools.rhino_oracle.view_camera_probe tools/rhino_oracle/fixtures/view_camera_plan.json tools/rhino_oracle/observations/view_camera_plan.json
+```
+
+Both cases match the expected camera orientation, target, CPlane, and parallel
+projection. The parallel source retains its frustum width and screen scale
+exactly; the native `Plan` command now retains its parallel drawing scale too.
+The perspective source also retains raw frustum width in Rhino, but its screen
+scale at the CPlane origin changes by a factor of `0.8483105677` during the
+projection switch. The comparator marks that zoom transition as unchecked for
+native parity; the native viewport does not yet model Rhino's perspective
+frustum-width transfer. The generic oracle `compare` mode has no native camera
+operation for either fixture.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

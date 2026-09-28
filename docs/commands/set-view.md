@@ -23,8 +23,8 @@ viewport projection remain unchanged: a parallel viewport stays parallel and
 keeps its drawing scale, while a perspective viewport keeps its field of view
 and camera distance. The camera captures the plane orientation, so later CPlane
 edits do not rotate it. View history restores the captured orientation, and
-perspective orbit continues from
-it. The [live camera probe](../oracle.md#setview-cplane-camera-probe) confirms
+perspective orbit continues from it. The
+[live camera probe](../oracle.md#setview-cplane-camera-probe) confirms
 that Rhino also preserves parallel frustum width through all six directions.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
@@ -40,10 +40,12 @@ the time of the command; later CPlane edits leave the camera alone. The plane
 itself is unchanged. Projection, drawing, picking, snapping, Zoom Extents, and
 UndoView/RedoView use this orientation. Rotated Plan views use the cloud's shared
 tree with lazy three-dimensional subtree bounds for picking and snapping. The
-command preserves unfinished modeling prompts and document undo/redo. The
-[live camera comparison](../oracle.md#setview-cplane-camera-probe) checks all six
-SetView CPlane directions in parallel and perspective projection. Other SetView
-forms and Plan still need live camera comparisons.
+command preserves unfinished modeling prompts and document undo/redo. It keeps
+the drawing scale when the source view is parallel, matching the
+[live Plan probe](../oracle.md#plan-camera-probe). Rhino's perspective-to-parallel
+Plan conversion preserves raw frustum width but changes the visible scale; that
+conversion remains to be implemented. Other SetView forms still need live camera
+comparisons.
 
 `NextViewport` and `PrevViewport` cycle through the four viewports, wrapping at
 the ends. Ctrl/Cmd+Tab and Ctrl/Cmd+Shift+Tab run them without moving focus out
