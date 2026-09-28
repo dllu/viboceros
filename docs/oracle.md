@@ -135,6 +135,22 @@ python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/construction_pl
 All 15 curve cases replay within `1.12e-16` component error. Both nonplanar
 cases replay exactly using the same tolerances.
 
+The [polycurve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_polycurve.json)
+adds six private-Xvfb captures for open, reversed, tilted, closed, nonplanar,
+and mixed NURBS/line joins. Its
+[edge fixture](../tools/rhino_oracle/fixtures/construction_plane_object_polycurve_edges.json)
+adds one-segment and collinear joins. The corresponding
+[saved frames](../tools/rhino_oracle/observations/construction_plane_object_polycurve.json)
+and [edge frames](../tools/rhino_oracle/observations/construction_plane_object_polycurve_edges.json)
+were produced by `_CPlane _Object` on a separate display. Replay the main set:
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/construction_plane_object_polycurve.json --observations tools/rhino_oracle/observations/construction_plane_object_polycurve.json --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All nine polycurve cases replay at the same tolerances, with a largest axis
+component difference of `1.12e-16`.
+
 The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
 and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
 capture a discrepancy in Rhino 8.32's typed command path: after a command-level

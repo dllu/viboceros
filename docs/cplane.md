@@ -90,6 +90,8 @@ uses its direction for X. Polylines and NURBS curves use their start point and
 starting tangent for X. Planar curves derive Z from their oriented control
 plane; nonplanar curves use the start curvature direction when available, with
 a deterministic perpendicular when the start curvature vanishes.
+Joined polycurves use the same start tangent and sample their full path to
+find a supporting plane; nonplanar joins use their start frame.
 NURBS surfaces and single-face B-reps use the midpoint of the
 underlying U/V domains, the U tangent for X, and the surface normal for Z.
 Mesh faces use the average of their three or four vertices for the origin,
@@ -168,7 +170,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object alignment for polycurves, Surface/Curve/Gumball
+Object alignment for faces in multi-face polysurfaces, Surface/Curve/Gumball
 options, universal/automatic planes, the named-plane
 panel, and CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input

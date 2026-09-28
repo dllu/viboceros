@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{LineSegment, Polyline3, Vector3};
+use viboceros_geometry::{LineSegment, PolyCurve3, Polyline3, Vector3};
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.to_owned();
@@ -400,6 +400,29 @@ fn cplane_object_aligns_to_a_line_and_a_picked_planar_polyline() {
     assert_eq!(aligned.origin(), point(1., 2., 3.));
     assert!((aligned.z_axis().as_vector().z() + 1.0).abs() < 1e-14);
     assert!(app.plane_prompt.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+}
+
+#[test]
+fn cplane_object_aligns_to_a_joined_polycurve() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let polycurve = PolyCurve3::try_new(vec![
+        LineSegment::try_new(point(0., 0., 0.), point(2., 0., 0.), tolerance).unwrap(),
+        LineSegment::try_new(point(2., 0., 0.), point(2., 3., 4.), tolerance).unwrap(),
+    ])
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::PolyCurve(polycurve))
+        .unwrap();
+    let camera = app.viewports[0].camera_snapshot();
+    enter(&mut app, &format!("CPlane Object {id}"));
+    let plane = app.viewports[0].construction_plane();
+    assert_eq!(plane.origin(), point(0., 0., 0.));
+    assert!((plane.y_axis().as_vector().y() - 0.6).abs() < 1e-14);
+    assert!((plane.y_axis().as_vector().z() - 0.8).abs() < 1e-14);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
     assert_eq!(app.document.selected_object_count(), 0);
 }
 

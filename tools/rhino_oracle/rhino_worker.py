@@ -4674,7 +4674,7 @@ def _construction_plane(operation):
     if not 1 <= len(operation["steps"]) <= 128:
         raise ValueError("expected 1 to 128 CPlane steps")
     object_kinds = (
-        "object_line", "object_polyline", "object_nurbs", "object_circle",
+        "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
         "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
     )
     has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
@@ -4711,6 +4711,19 @@ def _construction_plane(operation):
                     object_id = document.Objects.AddPolyline([_point(p) for p in vertices])
                     if object_id == System.Guid.Empty:
                         raise ValueError("could not add CPlane object polyline")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_polycurve":
+                    curve = _join_close_input({"type": "polycurve", "segments": step["segments"]})
+                    try:
+                        if not curve.IsValid:
+                            raise ValueError("invalid CPlane object polycurve")
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object polycurve")
                     owned.append(object_id)
                     document.Objects.UnselectAll()
                     script = "_CPlane _Object _SelID %s _Enter" % object_id

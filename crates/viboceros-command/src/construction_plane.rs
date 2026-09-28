@@ -4,8 +4,8 @@ use std::collections::VecDeque;
 use viboceros_document::{Geometry, ObjectId};
 use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{
-    AffineTransform3, CurveRef, Frame3, GeometryError, LineSegment, NurbsSurface, Point3,
-    Tolerance, TriangleMesh, Vector3,
+    AffineTransform3, CurveRef, CurveSegment3, Frame3, GeometryError, LineSegment, NurbsSurface,
+    Point3, PolyCurve3, Tolerance, TriangleMesh, Vector3,
 };
 
 const HISTORY_LIMIT: usize = 50;
@@ -109,7 +109,7 @@ pub enum PlaneCommandError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
     #[error(
-        "CPlane Object requires a line, polyline, NURBS curve, conic, surface, or single-face polysurface; a mesh requires Face=index"
+        "CPlane Object requires a line, polyline, polycurve, NURBS curve, conic, surface, or single-face polysurface; a mesh requires Face=index"
     )]
     UnsupportedObject,
 }
@@ -409,6 +409,7 @@ pub fn frame_from_object(
         Geometry::Polyline(_) | Geometry::NurbsCurve(_) => {
             curve_object_frame(geometry.curve_ref().unwrap(), tolerance)?
         }
+        Geometry::PolyCurve(polycurve) => polycurve_object_frame(polycurve, tolerance)?,
         Geometry::NurbsSurface(surface) => surface_mid_frame(surface, false, tolerance)?,
         Geometry::Brep(brep) if brep.faces().len() == 1 => {
             let face = &brep.faces()[0];
@@ -506,6 +507,82 @@ fn curve_object_frame(
         normal.cross(tangent)?,
         tolerance,
     )?)
+}
+
+fn polycurve_object_frame(
+    polycurve: &PolyCurve3,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    if let [segment] = polycurve.segments() {
+        return match segment {
+            CurveSegment3::Line(line) => line_object_frame(*line, tolerance),
+            CurveSegment3::Arc(arc) => frame_from_object(&Geometry::Arc(*arc), tolerance),
+            CurveSegment3::Polyline(polyline) => {
+                curve_object_frame(CurveRef::Polyline(polyline), tolerance)
+            }
+            CurveSegment3::NurbsCurve(curve) => {
+                curve_object_frame(CurveRef::NurbsCurve(curve), tolerance)
+            }
+        };
+    }
+    let curve = CurveRef::PolyCurve(polycurve);
+    if curve.to_nurbs()?.is_linear(tolerance)? {
+        return line_object_frame(
+            LineSegment::try_new(curve.start_point()?, curve.end_point()?, tolerance)?,
+            tolerance,
+        );
+    }
+    if !curve.is_planar(tolerance)? {
+        return curve_object_frame(curve, tolerance);
+    }
+    let origin = curve.start_point()?;
+    let tangent = curve
+        .evaluate_with_tangent(*curve.domain().start())?
+        .tangent()
+        .as_vector();
+    // ON_PolyCurve::GetTestPlane probes dyadic stations in this order. The
+    // first direction away from the tangent establishes the plane's sign.
+    let parallel_cosine = (std::f64::consts::PI / 180.0).cos();
+    let mut best_parallel = None;
+    let mut best_dot = 1.0;
+    for denominator in (2..=16).step_by(2) {
+        for numerator in (1..denominator).step_by(2) {
+            let parameter = curve.parameter_at(numerator as f64 / denominator as f64)?;
+            let offset = origin.vector_to(curve.evaluate(parameter)?)?;
+            let length = offset.length()?;
+            if length == 0.0 {
+                continue;
+            }
+            let dot = (tangent.dot(offset)? / length).abs();
+            if dot < parallel_cosine {
+                return Ok(Frame3::try_from_directions(
+                    origin, tangent, offset, tolerance,
+                )?);
+            }
+            if dot < best_dot {
+                best_parallel = Some(offset);
+                best_dot = dot;
+            }
+        }
+    }
+    if let Some(offset) = best_parallel {
+        return Ok(Frame3::try_from_directions(
+            origin, tangent, offset, tolerance,
+        )?);
+    }
+    for segment in polycurve.segments().iter().skip(1) {
+        let domain = segment.domain();
+        let midpoint = 0.5 * *domain.start() + 0.5 * *domain.end();
+        let offset = origin.vector_to(segment.evaluate(midpoint)?)?;
+        if offset.length()? > 0.0
+            && tangent.cross(offset)?.length()? > tolerance.angular() * offset.length()?
+        {
+            return Ok(Frame3::try_from_directions(
+                origin, tangent, offset, tolerance,
+            )?);
+        }
+    }
+    Err(PlaneCommandError::UnsupportedObject)
 }
 
 pub fn frame_from_mesh_face(

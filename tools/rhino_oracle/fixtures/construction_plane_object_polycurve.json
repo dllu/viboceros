@@ -1,0 +1,59 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "polycurve-open-top",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]},
+        {"type": "line", "start": [2, 0, 0], "end": [2, 3, 0]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "polycurve-open-reversed",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [2, 3, 0], "end": [2, 0, 0]},
+        {"type": "line", "start": [2, 0, 0], "end": [0, 0, 0]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "polycurve-open-tilted",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]},
+        {"type": "line", "start": [2, 0, 0], "end": [2, 3, 4]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "polycurve-closed-clockwise",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [0, 0, 0], "end": [0, 3, 0]},
+        {"type": "line", "start": [0, 3, 0], "end": [2, 3, 0]},
+        {"type": "line", "start": [2, 3, 0], "end": [2, 0, 0]},
+        {"type": "line", "start": [2, 0, 0], "end": [0, 0, 0]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "polycurve-nonplanar",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [0, 0, 0], "end": [2, 0, 0]},
+        {"type": "line", "start": [2, 0, 0], "end": [2, 3, 0]},
+        {"type": "line", "start": [2, 3, 0], "end": [2, 3, 4]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "polycurve-quadratic-and-line",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "nurbs", "degree": 2,
+         "control_points": [{"point": [0, 0, 0]}, {"point": [1, 0, 0]}, {"point": [2, 1, 0]}],
+         "knots": [0, 0, 0, 1, 1, 1]},
+        {"type": "line", "start": [2, 1, 0], "end": [2, 3, 0]}
+      ]}]
+    }
+  ]
+}

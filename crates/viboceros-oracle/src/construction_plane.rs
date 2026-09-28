@@ -1,6 +1,7 @@
 //! CPlane history and basis probes through the application's command parser.
 use super::*;
 use viboceros_command::construction_plane::{self as cplane, ConstructionPlaneState, PlaneAction};
+use viboceros_geometry::{CurveSegment3, PolyCurve3};
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct ConstructionPlaneFixture {
@@ -58,6 +59,9 @@ pub enum PlaneStep {
     ObjectNurbs {
         definition: NurbsCurveDefinition,
     },
+    ObjectPolycurve {
+        segments: Vec<PlanePolycurveSegment>,
+    },
     ObjectCircle {
         center: [f64; 3],
         x_axis: [f64; 3],
@@ -88,6 +92,25 @@ pub enum PlaneStep {
     },
     Undo,
     Redo,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum PlanePolycurveSegment {
+    Line {
+        start: [f64; 3],
+        end: [f64; 3],
+    },
+    Arc {
+        points: [[f64; 3]; 3],
+    },
+    Nurbs {
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+        #[serde(default)]
+        domain: Option<[f64; 2]>,
+    },
 }
 
 pub(super) fn run(
@@ -148,6 +171,48 @@ fn apply_step(
         let curve = nurbs_curve_from_definition(definition)?;
         let frame = cplane::frame_from_object(&Geometry::NurbsCurve(curve), tolerance)
             .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane NURBS fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
+    if let PlaneStep::ObjectPolycurve { segments } = step {
+        let segments = segments
+            .iter()
+            .map(|segment| -> Result<CurveSegment3, ProbeError> {
+                Ok(match segment {
+                    PlanePolycurveSegment::Line { start, end } => {
+                        CurveSegment3::Line(LineSegment::try_new(
+                            Point3::try_from(*start)?,
+                            Point3::try_from(*end)?,
+                            tolerance,
+                        )?)
+                    }
+                    PlanePolycurveSegment::Arc { points } => {
+                        CurveSegment3::Arc(CircularArc3::try_from_three_points(
+                            Point3::try_from(points[0])?,
+                            Point3::try_from(points[1])?,
+                            Point3::try_from(points[2])?,
+                            tolerance,
+                        )?)
+                    }
+                    PlanePolycurveSegment::Nurbs {
+                        degree,
+                        control_points,
+                        knots,
+                        domain,
+                    } => CurveSegment3::NurbsCurve(nurbs_curve_from_definition(
+                        &NurbsCurveDefinition {
+                            degree: *degree,
+                            control_points: control_points.clone(),
+                            knots: knots.clone(),
+                            domain: *domain,
+                        },
+                    )?),
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let polycurve = PolyCurve3::try_new(segments)?;
+        let frame = cplane::frame_from_object(&Geometry::PolyCurve(polycurve), tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane polycurve fixture"))?;
         state.set(frame);
         return Ok(());
     }
@@ -302,6 +367,7 @@ fn apply_step(
         PlaneStep::ObjectLine { .. }
         | PlaneStep::ObjectPolyline { .. }
         | PlaneStep::ObjectNurbs { .. }
+        | PlaneStep::ObjectPolycurve { .. }
         | PlaneStep::ObjectCircle { .. }
         | PlaneStep::ObjectArc { .. }
         | PlaneStep::ObjectEllipse { .. }
@@ -506,6 +572,32 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 2);
+    }
+
+    #[test]
+    fn object_polycurves_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_polycurve.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_polycurve.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 6);
+    }
+
+    #[test]
+    fn object_polycurve_single_and_linear_segments_match_saved_rhino_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_polycurve_edges.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_polycurve_edges.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 3);
     }
 
     fn assert_saved_plane_frames(request: ProbeRequest, recorded: Value, count: usize) {

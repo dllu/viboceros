@@ -23,7 +23,7 @@ source viewport's construction plane.
 `CPlane All point` and `CPlane Through All point` move every viewport's
 construction plane origin while retaining its own axes.
 `CPlane View` aligns the active plane to its camera without moving the view.
-`CPlane Object` aligns it to a line, polyline, NURBS curve, circle, arc,
+`CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh face.
 Plain `4View` restores the most recently selected projection and resets its views.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.

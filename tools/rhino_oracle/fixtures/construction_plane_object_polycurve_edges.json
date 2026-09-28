@@ -1,0 +1,28 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "one-line-segment",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [1, 2, 3], "end": [4, 6, 8]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "one-arc-segment",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "arc", "points": [[1, 0, 0], [0, 1, 0], [-1, 0, 0]]}
+      ]}]
+    },
+    {
+      "op": "construction_plane", "id": "two-collinear-segments",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_polycurve", "segments": [
+        {"type": "line", "start": [1, 2, 3], "end": [4, 6, 8]},
+        {"type": "line", "start": [4, 6, 8], "end": [7, 10, 13]}
+      ]}]
+    }
+  ]
+}
