@@ -117,6 +117,25 @@ python3 -m tools.rhino_oracle replay \
 All four mesh-face captures replay at these tolerances; the largest component
 difference is `4.44e-16`.
 
+The [B-rep face fixture](../tools/rhino_oracle/fixtures/construction_plane_object_brep_face.json)
+captures `_CPlane _Object` for all six faces of a box created by Rhino, with one
+case starting from an offset Front CPlane. Its
+[saved observations](../tools/rhino_oracle/observations/construction_plane_object_brep_face.json)
+were recorded in private Xvfb. The Rust probe maps Rhino's box face numbering
+to the native box builder's face numbering, then compares each face's untrimmed
+UV midpoint and axes. Regenerate or replay with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_object_brep_face.json --timeout 180
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_object_brep_face.json \
+  --observations tools/rhino_oracle/observations/construction_plane_object_brep_face.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All six B-rep face cases replay, with a largest axis component difference of
+`1.11e-16`.
+
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
 polynomial or rational NURBS curves. Linear curves use an axis-aligned

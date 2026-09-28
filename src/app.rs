@@ -8019,7 +8019,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_object);
         let face_pick = if plane_object_pick {
-            Some(FacePickMode::MeshAny)
+            Some(FacePickMode::MeshAndBrepAny)
         } else if matches!(
             self.active_command,
             Some(

@@ -240,7 +240,7 @@ pub enum LassoSelectionInput<'a> {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FacePickMode {
     Mesh,
-    MeshAny,
+    MeshAndBrepAny,
     MeshAndBrep,
     SurfaceAndBrep,
 }
@@ -1143,7 +1143,7 @@ impl Viewport {
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
-        let object_prompt_selecting = input.face_pick == Some(FacePickMode::MeshAny)
+        let object_prompt_selecting = input.face_pick == Some(FacePickMode::MeshAndBrepAny)
             && !input.zoom_window
             && input.zoom_target.is_none()
             && !drafting.active;

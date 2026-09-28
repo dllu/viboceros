@@ -4,8 +4,8 @@ use std::collections::VecDeque;
 use viboceros_document::{Geometry, ObjectId};
 use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{
-    AffineTransform3, CurveRef, CurveSegment3, Frame3, GeometryError, LineSegment, NurbsSurface,
-    Point3, PolyCurve3, Tolerance, TriangleMesh, Vector3,
+    AffineTransform3, Brep, CurveRef, CurveSegment3, Frame3, GeometryError, LineSegment,
+    NurbsSurface, Point3, PolyCurve3, Tolerance, TriangleMesh, Vector3,
 };
 
 const HISTORY_LIMIT: usize = 50;
@@ -109,7 +109,7 @@ pub enum PlaneCommandError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
     #[error(
-        "CPlane Object requires a line, polyline, polycurve, NURBS curve, conic, surface, or single-face polysurface; a mesh requires Face=index"
+        "CPlane Object requires a curve or surface; a mesh or multi-face polysurface requires Face=index"
     )]
     UnsupportedObject,
 }
@@ -412,11 +412,25 @@ pub fn frame_from_object(
         Geometry::PolyCurve(polycurve) => polycurve_object_frame(polycurve, tolerance)?,
         Geometry::NurbsSurface(surface) => surface_mid_frame(surface, false, tolerance)?,
         Geometry::Brep(brep) if brep.faces().len() == 1 => {
-            let face = &brep.faces()[0];
-            surface_mid_frame(face.surface(), face.is_reversed(), tolerance)?
+            frame_from_brep_face(brep, 0, tolerance)?
         }
         _ => return Err(PlaneCommandError::UnsupportedObject),
     })
+}
+
+pub fn frame_from_brep_face(
+    brep: &Brep,
+    face_index: usize,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let face = brep
+        .faces()
+        .get(face_index)
+        .ok_or(GeometryError::BrepFaceIndexOutOfRange {
+            face: face_index,
+            face_count: brep.faces().len(),
+        })?;
+    surface_mid_frame(face.surface(), face.is_reversed(), tolerance)
 }
 
 fn line_object_frame(line: LineSegment, tolerance: Tolerance) -> Result<Frame3, PlaneCommandError> {

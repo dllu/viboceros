@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{LineSegment, PolyCurve3, Polyline3, Vector3};
+use viboceros_geometry::{Brep, LineSegment, PolyCurve3, Polyline3, Vector3};
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.to_owned();
@@ -361,6 +361,52 @@ fn cplane_object_aligns_to_a_typed_or_picked_mesh_face() {
             .unwrap()
             > 1.0 - 1e-14
     );
+}
+
+#[test]
+fn cplane_object_aligns_to_a_typed_or_picked_polysurface_face() {
+    let mut app = test_app();
+    let brep = Brep::try_box(
+        viboceros_command::construction_plane::WorldPlane::Top.frame(),
+        [[1., 5.], [2., 7.], [3., 9.]],
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    let original = app.viewports[0].construction_plane();
+    let camera = app.viewports[0].camera_snapshot();
+
+    enter(&mut app, &format!("CPlane Object {id} Face=3"));
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(3., 7., 6.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [-1., 0., 0.]);
+    assert_eq!(frame.y_axis().as_vector().to_array(), [0., 0., 1.]);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "CPlane Object");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_object());
+    assert!(!app.accept_plane_prompt_object_face(id, 99));
+    assert!(app.plane_prompt.is_some());
+    assert_eq!(app.viewports[0].construction_plane(), original);
+    assert!(app.handle_viewport_action(ViewportOutput {
+        face_click: Some((id, 4)),
+        ..Default::default()
+    }));
+    assert!(app.plane_prompt.is_none());
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(1., 4.5, 6.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [0., -1., 0.]);
+    assert_eq!(frame.y_axis().as_vector().to_array(), [0., 0., 1.]);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![id]
+    );
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
 }
 
 #[test]

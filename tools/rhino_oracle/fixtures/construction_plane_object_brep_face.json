@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "box-face-0",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 0}]
+    },
+    {
+      "op": "construction_plane", "id": "box-face-1",
+      "origin": [10, 20, 30], "x_axis": [1, 0, 0], "y_axis": [0, 0, 1],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 1}]
+    },
+    {
+      "op": "construction_plane", "id": "box-face-2",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 2}]
+    },
+    {
+      "op": "construction_plane", "id": "box-face-3",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 3}]
+    },
+    {
+      "op": "construction_plane", "id": "box-face-4",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 4}]
+    },
+    {
+      "op": "construction_plane", "id": "box-face-5",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "object_brep_face", "box": [[1, 2, 3], [5, 7, 9]], "face": 5}]
+    }
+  ]
+}

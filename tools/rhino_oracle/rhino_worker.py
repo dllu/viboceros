@@ -4676,6 +4676,7 @@ def _construction_plane(operation):
     object_kinds = (
         "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
         "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
+        "object_brep_face",
     )
     has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
     for step in operation["steps"]:
@@ -4816,6 +4817,32 @@ def _construction_plane(operation):
                         Rhino.Geometry.ComponentIndexType.MeshFace, face_index)
                     if mesh_object.SelectSubObject(component, True, True, False) == 0:
                         raise ValueError("could not select CPlane object mesh face")
+                    script = "_CPlane _Object _Enter"
+                elif step["kind"] == "object_brep_face":
+                    corners = step["box"]
+                    if len(corners) != 2:
+                        raise ValueError("CPlane object B-rep box needs two corners")
+                    brep = Rhino.Geometry.Brep.CreateFromBox(
+                        Rhino.Geometry.BoundingBox(_point(corners[0]), _point(corners[1])))
+                    if brep is None or not brep.IsValid:
+                        raise ValueError("invalid CPlane object B-rep box")
+                    try:
+                        face_index = step["face"]
+                        if (type(face_index) is not int or face_index < 0
+                                or face_index >= brep.Faces.Count):
+                            raise ValueError("invalid CPlane object B-rep face index")
+                        object_id = document.Objects.AddBrep(brep)
+                    finally:
+                        brep.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object B-rep")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    brep_object = document.Objects.FindId(object_id)
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.BrepFace, face_index)
+                    if brep_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select CPlane object B-rep face")
                     script = "_CPlane _Object _Enter"
                 else:
                     script = _construction_plane_script(step)

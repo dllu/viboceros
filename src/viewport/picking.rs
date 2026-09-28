@@ -219,7 +219,7 @@ impl Viewport {
     ) -> Option<(ObjectId, usize, Option<Point3>)> {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> =
-            if mode == FacePickMode::MeshAny {
+            if mode == FacePickMode::MeshAndBrepAny {
                 Box::new(document.selectable_objects())
             } else {
                 Box::new(document.selected_objects())
@@ -230,7 +230,9 @@ impl Viewport {
             }
             let display = if matches!(
                 mode,
-                FacePickMode::MeshAndBrep | FacePickMode::SurfaceAndBrep
+                FacePickMode::MeshAndBrep
+                    | FacePickMode::MeshAndBrepAny
+                    | FacePickMode::SurfaceAndBrep
             ) && matches!(object.geometry(), Geometry::Brep(_))
                 || mode == FacePickMode::SurfaceAndBrep
                     && matches!(object.geometry(), Geometry::NurbsSurface(_))
@@ -245,9 +247,7 @@ impl Viewport {
             };
             let (mesh, sources, single_surface) = match object.geometry() {
                 Geometry::Mesh(mesh) if mode != FacePickMode::SurfaceAndBrep => (mesh, None, false),
-                Geometry::Brep(_)
-                    if !matches!(mode, FacePickMode::Mesh | FacePickMode::MeshAny) =>
-                {
+                Geometry::Brep(_) if mode != FacePickMode::Mesh => {
                     let Some(display) = display.as_ref() else {
                         continue;
                     };
@@ -517,7 +517,7 @@ mod tests {
 
         document.clear_selection();
         assert_eq!(
-            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAny),
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrepAny),
             Some((front, 0))
         );
 
@@ -655,6 +655,12 @@ mod tests {
         assert!(empty_output.picked_point.is_none());
         drop(frame);
 
+        document.clear_selection();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrepAny),
+            Some((brep, top_face))
+        );
+
         let front = TriangleMesh::try_new_faces(
             vec![
                 Point3::try_new(0.0, 0.0, 4.0).unwrap(),
@@ -782,7 +788,7 @@ mod tests {
                             ui,
                             &document,
                             ViewportInput {
-                                face_pick: Some(FacePickMode::MeshAny),
+                                face_pick: Some(FacePickMode::MeshAndBrepAny),
                                 object_filter: Some(ObjectSelectionFilter::Any),
                                 ..Default::default()
                             },

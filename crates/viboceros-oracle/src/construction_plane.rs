@@ -1,7 +1,7 @@
 //! CPlane history and basis probes through the application's command parser.
 use super::*;
 use viboceros_command::construction_plane::{self as cplane, ConstructionPlaneState, PlaneAction};
-use viboceros_geometry::{CurveSegment3, PolyCurve3};
+use viboceros_geometry::{Brep, CurveSegment3, PolyCurve3};
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct ConstructionPlaneFixture {
@@ -88,6 +88,10 @@ pub enum PlaneStep {
     ObjectMeshFace {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
+        face: usize,
+    },
+    ObjectBrepFace {
+        r#box: [[f64; 3]; 2],
         face: usize,
     },
     Undo,
@@ -333,6 +337,23 @@ fn apply_step(
         state.set(frame);
         return Ok(());
     }
+    if let PlaneStep::ObjectBrepFace { r#box, face } = step {
+        // Rhino's CreateFromBox and our box builder enumerate the same physical
+        // faces in different orders. Keep this mapping in the fixture adapter.
+        let native_face = *[2, 5, 3, 4, 0, 1]
+            .get(*face)
+            .ok_or(ProbeError::FixtureInvariant("invalid Rhino box face index"))?;
+        let bounds = [
+            [r#box[0][0], r#box[1][0]],
+            [r#box[0][1], r#box[1][1]],
+            [r#box[0][2], r#box[1][2]],
+        ];
+        let brep = Brep::try_box(cplane::WorldPlane::Top.frame(), bounds, tolerance)?;
+        let frame = cplane::frame_from_brep_face(&brep, native_face, tolerance)
+            .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane B-rep face fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     let point = |p: &[f64; 3]| format!("w{},{},{}", p[0], p[1], p[2]);
     let command = match step {
         PlaneStep::World { view } => format!("CPlane World {view}"),
@@ -372,7 +393,8 @@ fn apply_step(
         | PlaneStep::ObjectArc { .. }
         | PlaneStep::ObjectEllipse { .. }
         | PlaneStep::ObjectSurface { .. }
-        | PlaneStep::ObjectMeshFace { .. } => unreachable!(),
+        | PlaneStep::ObjectMeshFace { .. }
+        | PlaneStep::ObjectBrepFace { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -546,6 +568,19 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 4);
+    }
+
+    #[test]
+    fn object_brep_faces_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_object_brep_face.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_object_brep_face.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 6);
     }
 
     #[test]

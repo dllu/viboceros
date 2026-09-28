@@ -61,7 +61,9 @@ impl PlanePrompt {
                 "CPlane Rotate: type an angle or pick the first reference point"
             }
             (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
-            (PlanePromptKind::Object, _) => "CPlane Object: select a curve, surface, or mesh face",
+            (PlanePromptKind::Object, _) => {
+                "CPlane Object: select a curve, surface, mesh face, or polysurface face"
+            }
         }
     }
 }
@@ -254,11 +256,11 @@ impl VibocerosApp {
             if kind == PlanePromptKind::Object {
                 let selected = self.document.selected_object_ids().collect::<Vec<_>>();
                 if let [id] = selected.as_slice() {
-                    if !self
-                        .document
-                        .object(*id)
-                        .is_some_and(|object| matches!(object.geometry(), Geometry::Mesh(_)))
-                    {
+                    let needs_face = self.document.object(*id).is_some_and(|object| {
+                        matches!(object.geometry(), Geometry::Mesh(_))
+                            || matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() > 1)
+                    });
+                    if !needs_face {
                         return self.apply_plane_action(PlaneAction::Object(*id), viewport);
                     }
                 }
@@ -330,7 +332,12 @@ impl VibocerosApp {
                             .map(PlaneAction::Set)
                             .map_err(|error| error.to_string())
                     }
-                    _ => Err("Face=index requires a mesh object".into()),
+                    Geometry::Brep(brep) => {
+                        cplane::frame_from_brep_face(brep, face, self.document.tolerance())
+                            .map(PlaneAction::Set)
+                            .map_err(|error| error.to_string())
+                    }
+                    _ => Err("Face=index requires a mesh or polysurface object".into()),
                 }),
             other => Ok(other),
         };
@@ -392,7 +399,7 @@ impl VibocerosApp {
                     self.accept_plane_prompt_object_face(id, face);
                 }
                 _ => self.push_log(
-                    "Error: enter an object ID, object ID with Face=index, or click an object"
+                    "Error: enter an object ID, object ID with Face=index, or click an object or face"
                         .into(),
                 ),
             }

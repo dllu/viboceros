@@ -22,7 +22,7 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Through All point` | Move every viewport's plane along its own normal until it passes through the point. |
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Rotate axis-start axis-end reference-point target-point` | Rotate by the signed angle between two directions from the axis. |
-| `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object or mesh face. |
+| `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object, mesh face, or B-rep face. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
@@ -77,9 +77,9 @@ ZAxis uses the normal-only OpenNURBS frame rule.
 
 `CPlane Object` uses a single preselected object, or prompts for a viewport
 object pick or typed UUID. An explicit UUID also works in the full command.
-For a mesh, use `CPlane Object object-id Face=index` or pick a face in a
-viewport; mesh face indices are zero based. A single preselected mesh waits for
-a face pick.
+For a mesh or multi-face polysurface, use `CPlane Object object-id Face=index`
+or pick a face in a viewport; face indices are zero based. A single preselected
+mesh or multi-face polysurface waits for a face pick.
 At the bare `CPlane` origin prompt, type `Object` to enter the same selection
 prompt.
 Circles and arcs place the origin at their center with X toward the curve start.
@@ -92,8 +92,9 @@ plane; nonplanar curves use the start curvature direction when available, with
 a deterministic perpendicular when the start curvature vanishes.
 Joined polycurves use the same start tangent and sample their full path to
 find a supporting plane; nonplanar joins use their start frame.
-NURBS surfaces and single-face B-reps use the midpoint of the
-underlying U/V domains, the U tangent for X, and the surface normal for Z.
+NURBS surfaces and B-rep faces use the midpoint of the underlying U/V domains,
+the U tangent for X, and the surface normal for Z. Single-face B-reps align
+directly; multi-face polysurfaces require a face index or pick.
 Mesh faces use the average of their three or four vertices for the origin,
 their polygon normal for Z, and deterministic normal-derived X and Y axes.
 The command does not change object selection or the camera.
@@ -170,8 +171,7 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Object alignment for faces in multi-face polysurfaces, Surface/Curve/Gumball
-options, universal/automatic planes, the named-plane
+Surface/Curve/Gumball options, universal/automatic planes, the named-plane
 panel, and CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction

@@ -1893,8 +1893,8 @@ impl Brep {
             ([0, 2, 3, 1], [3, 2, 1, 0], [false, false, true, true]),
             ([4, 5, 7, 6], [4, 5, 6, 7], [false, false, true, true]),
             ([0, 1, 5, 4], [0, 9, 4, 8], [false, false, true, true]),
-            ([2, 6, 7, 3], [10, 6, 11, 2], [false, false, true, true]),
-            ([0, 4, 6, 2], [8, 7, 10, 3], [false, false, true, true]),
+            ([3, 2, 6, 7], [2, 10, 6, 11], [true, false, false, true]),
+            ([2, 0, 4, 6], [3, 8, 7, 10], [true, false, false, true]),
             ([1, 3, 7, 5], [1, 11, 5, 9], [false, false, true, true]),
         ];
         let parameter_corners = [

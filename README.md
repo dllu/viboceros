@@ -24,7 +24,7 @@ source viewport's construction plane.
 construction plane origin while retaining its own axes.
 `CPlane View` aligns the active plane to its camera without moving the view.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
-ellipse, surface, or picked mesh face.
+ellipse, surface, or picked mesh/B-rep face.
 Plain `4View` restores the most recently selected projection and resets its views.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `NewViewport` opens a centered Top view over the model viewport area.
