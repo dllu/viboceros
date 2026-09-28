@@ -7162,7 +7162,15 @@ impl VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_object)
         {
             if let Some(id) = click.object_id {
-                self.accept_plane_prompt_object(id);
+                if self
+                    .plane_prompt
+                    .as_ref()
+                    .is_some_and(construction_plane::PlanePrompt::requests_surface)
+                {
+                    self.accept_plane_prompt_surface(id, None);
+                } else {
+                    self.accept_plane_prompt_object(id);
+                }
             }
             return;
         }
@@ -8018,8 +8026,16 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_object);
+        let plane_surface_pick = self
+            .plane_prompt
+            .as_ref()
+            .is_some_and(construction_plane::PlanePrompt::requests_surface);
         let face_pick = if plane_object_pick {
-            Some(FacePickMode::MeshAndBrepAny)
+            Some(if plane_surface_pick {
+                FacePickMode::SurfaceAndBrepAny
+            } else {
+                FacePickMode::MeshAndBrepAny
+            })
         } else if matches!(
             self.active_command,
             Some(

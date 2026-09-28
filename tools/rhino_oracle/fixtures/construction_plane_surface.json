@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "planar-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]]}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-picked-origin",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "pick_origin": [4, 3, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-picked-x",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "pick_origin": [4, 3, 3], "pick_x": [4, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "warped-default",
+      "origin": [10, 20, 30], "x_axis": [1, 0, 0], "y_axis": [0, 0, 1],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 4], [1, 6, 3]]}]
+    },
+    {
+      "op": "construction_plane", "id": "warped-picked-origin",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 4], [1, 6, 3]], "pick_origin": [4, 3, 3.5]}]
+    },
+    {
+      "op": "construction_plane", "id": "planar-projected-picks",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane", "corners": [[1, 2, 3], [5, 2, 3], [5, 6, 3], [1, 6, 3]], "pick_origin": [4, 3, 8], "pick_x": [4, 5, 6]}]
+    }
+  ]
+}

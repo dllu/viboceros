@@ -23,6 +23,7 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Rotate axis-start axis-end reference-point target-point` | Rotate by the signed angle between two directions from the axis. |
 | `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object, mesh face, or B-rep face. |
+| `CPlane Surface [object-id [Face=index] [origin [x-point]]]` | Place a tangent plane on a surface or B-rep face, then choose its X direction. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
@@ -99,6 +100,14 @@ Mesh faces use the average of their three or four vertices for the origin,
 their polygon normal for Z, and deterministic normal-derived X and Y axes.
 The command does not change object selection or the camera.
 
+`CPlane Surface` accepts a surface or a picked B-rep face. A typed UUID may be
+followed by a zero-based `Face=index` for a polysurface. At the next prompt,
+pick a point to place the origin at its closest point on the underlying surface,
+or press Enter for the untrimmed UV midpoint. Pick an X direction in world
+space, or press Enter for the U tangent. The X point is projected into the
+surface tangent plane. The full command also accepts typed origin and X points,
+for example `CPlane Surface object-id Face=2 w1,2,3 w2,2,3`.
+
 `CPlane All` and `CPlane Through All` also accept a picked point. Typed points
 use the active viewport's CPlane for local coordinates; the resolved world
 point is then applied to every viewport. Each viewport records its own plane
@@ -171,8 +180,9 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Surface/Curve/Gumball options, universal/automatic planes, the named-plane
-panel, and CopyCPlane commands with a picked source viewport remain
+Curve/Gumball options, Surface Flip and IgnoreTrims options, trim-aware Surface
+origin picks, universal/automatic planes, the named-plane panel, and
+CopyCPlane commands with a picked source viewport remain
 unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.

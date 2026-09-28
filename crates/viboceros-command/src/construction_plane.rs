@@ -9,7 +9,7 @@ use viboceros_geometry::{
 };
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [origin [x-point]]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -71,6 +71,9 @@ pub enum PlanePromptKind {
     ThroughAll,
     Rotate,
     Object,
+    SurfaceSelect,
+    SurfaceOrigin,
+    SurfaceX,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -81,6 +84,12 @@ pub enum PlaneAction {
     AlignToView,
     Object(ObjectId),
     ObjectFace(ObjectId, usize),
+    Surface {
+        id: ObjectId,
+        face: Option<usize>,
+        origin: Option<Point3>,
+        x_point: Option<Point3>,
+    },
     Undo,
     Redo,
     Prompt(PlanePromptKind),
@@ -239,6 +248,40 @@ fn parse_arguments(
         }
         [name] if keyword(name, "Rotate") => PlaneAction::Prompt(PlanePromptKind::Rotate),
         [name] if keyword(name, "Object") => PlaneAction::Prompt(PlanePromptKind::Object),
+        [name] if keyword(name, "Surface") => PlaneAction::Prompt(PlanePromptKind::SurfaceSelect),
+        [name, id, tail @ ..] if keyword(name, "Surface") => {
+            let id = id
+                .parse::<ObjectId>()
+                .map_err(|_| PlaneCommandError::Usage)?;
+            let (face, tail) = if let Some((_, index)) = tail
+                .first()
+                .and_then(|arg| arg.split_once('='))
+                .filter(|(option, _)| keyword(option, "Face"))
+            {
+                (
+                    Some(
+                        index
+                            .parse::<usize>()
+                            .map_err(|_| PlaneCommandError::Usage)?,
+                    ),
+                    &tail[1..],
+                )
+            } else {
+                (None, tail)
+            };
+            let (origin, x_point) = match tail {
+                [] => (None, None),
+                [a] => (Some(point(a)?), None),
+                [a, b] => (Some(point(a)?), Some(point(b)?)),
+                _ => return Err(PlaneCommandError::Usage),
+            };
+            PlaneAction::Surface {
+                id,
+                face,
+                origin,
+                x_point,
+            }
+        }
         [name, id] if keyword(name, "Object") => PlaneAction::Object(
             id.parse::<ObjectId>()
                 .map_err(|_| PlaneCommandError::Usage)?,
@@ -380,6 +423,49 @@ fn surface_mid_frame(
     )?;
     let y = if reversed { y.scaled(-1.0)? } else { y };
     Ok(Frame3::try_from_directions(origin, x, y, tolerance)?)
+}
+
+/// Tangent construction plane on a NURBS surface, using its natural U direction
+/// unless a point is supplied for the projected X direction.
+pub fn surface_frame(
+    surface: &NurbsSurface,
+    reversed: bool,
+    origin_pick: Option<Point3>,
+    x_pick: Option<Point3>,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let (u, v) = if let Some(pick) = origin_pick {
+        surface.closest_parameters(pick, tolerance)?
+    } else {
+        let u = surface.domain_u();
+        let v = surface.domain_v();
+        (
+            0.5 * *u.start() + 0.5 * *u.end(),
+            0.5 * *v.start() + 0.5 * *v.end(),
+        )
+    };
+    let (origin, x, y) = surface.evaluate_with_derivatives(u, v)?;
+    let y = if reversed { y.scaled(-1.0)? } else { y };
+    let default = Frame3::try_from_directions(origin, x, y, tolerance)?;
+    x_pick.map_or(Ok(default), |pick| {
+        surface_frame_with_x(default, pick, tolerance)
+    })
+}
+
+pub fn surface_frame_with_x(
+    frame: Frame3,
+    x_pick: Point3,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let [x, y] = frame.projected_coordinates_of(x_pick)?;
+    let direction = frame.vector_at([x, y, 0.])?;
+    let tangent_y = frame.z_axis().as_vector().cross(direction)?;
+    Ok(Frame3::try_from_directions(
+        frame.origin(),
+        direction,
+        tangent_y,
+        tolerance,
+    )?)
 }
 
 pub fn frame_from_object(

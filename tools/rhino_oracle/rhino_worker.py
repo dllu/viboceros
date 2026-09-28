@@ -4676,7 +4676,7 @@ def _construction_plane(operation):
     object_kinds = (
         "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
         "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
-        "object_brep_face",
+        "object_brep_face", "surface_cplane",
     )
     has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
     for step in operation["steps"]:
@@ -4798,6 +4798,27 @@ def _construction_plane(operation):
                     owned.append(object_id)
                     document.Objects.UnselectAll()
                     script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "surface_cplane":
+                    if len(step["corners"]) != 4:
+                        raise ValueError("CPlane Surface requires four corners")
+                    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                        *[_point(corner) for corner in step["corners"]])
+                    if surface is None or not surface.IsValid:
+                        raise ValueError("invalid CPlane Surface geometry")
+                    try:
+                        object_id = document.Objects.AddSurface(surface)
+                    finally:
+                        surface.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Surface geometry")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    origin = step.get("pick_origin")
+                    direction = step.get("pick_x")
+                    script = "_CPlane _Surface _SelID %s %s %s" % (
+                        object_id,
+                        "w" + _command_point(origin) if origin is not None else "_Enter",
+                        "w" + _command_point(direction) if direction is not None else "_Enter")
                 elif step["kind"] == "object_mesh_face":
                     mesh = _polygon_mesh(step["vertices"], step["faces"])
                     try:

@@ -136,6 +136,23 @@ python3 -m tools.rhino_oracle replay \
 All six B-rep face cases replay, with a largest axis component difference of
 `1.11e-16`.
 
+The [CPlane Surface fixture](../tools/rhino_oracle/fixtures/construction_plane_surface.json)
+records six private-Xvfb Rhino 8.32 transitions on planar and warped surfaces.
+It covers the default UV midpoint/U direction, chosen origin and X points,
+and world points outside the tangent plane. Its
+[saved observation](../tools/rhino_oracle/observations/construction_plane_surface.json)
+is compared with the native closest-point and tangent-frame calculation:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_surface.json --timeout 180
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_surface.json \
+  --observations tools/rhino_oracle/observations/construction_plane_surface.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All six Surface cases replay; the largest component difference is `4.44e-16`.
+
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
 polynomial or rational NURBS curves. Linear curves use an axis-aligned

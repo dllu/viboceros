@@ -341,6 +341,41 @@ fn object_option_accepts_a_pick_or_an_explicit_object_id() {
 }
 
 #[test]
+fn surface_option_parses_face_and_tangent_point_inputs() {
+    let top = WorldPlane::Top.frame();
+    let id: ObjectId = "00000000-0000-0000-0000-000000000001".parse().unwrap();
+    assert_eq!(
+        parse("CPlane Surface", top, None, Tolerance::DEFAULT).unwrap(),
+        Ok(PlaneAction::Prompt(PlanePromptKind::SurfaceSelect))
+    );
+    assert_eq!(
+        parse(
+            &format!("CPlane Surface {id} Face=2 w1,2,3 w4,5,6"),
+            top,
+            None,
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+        Ok(PlaneAction::Surface {
+            id,
+            face: Some(2),
+            origin: Some(point(1., 2., 3.)),
+            x_point: Some(point(4., 5., 6.)),
+        })
+    );
+    assert!(
+        parse(
+            &format!("CPlane Surface {id} Face=-1"),
+            top,
+            None,
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .is_err()
+    );
+}
+
+#[test]
 fn invalid_commands_and_degenerate_frames_cannot_mutate_plane_history() {
     let initial = WorldPlane::Top.frame();
     let state = ConstructionPlaneState::new(initial);
@@ -405,6 +440,7 @@ fn incomplete_commands_start_their_own_typed_prompts() {
         ("CPlane Elevation", PlanePromptKind::Elevation),
         ("CPlane Through", PlanePromptKind::Through),
         ("CPlane Rotate", PlanePromptKind::Rotate),
+        ("CPlane Surface", PlanePromptKind::SurfaceSelect),
     ] {
         assert_eq!(
             parse_action(input, WorldPlane::Top.frame()),

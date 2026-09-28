@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{Brep, LineSegment, PolyCurve3, Polyline3, Vector3};
+use viboceros_geometry::{Brep, LineSegment, NurbsSurface, PolyCurve3, Polyline3, Vector3};
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.to_owned();
@@ -406,6 +406,124 @@ fn cplane_object_aligns_to_a_typed_or_picked_polysurface_face() {
         app.document.selected_object_ids().collect::<Vec<_>>(),
         vec![id]
     );
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+}
+
+#[test]
+fn cplane_surface_supports_default_and_picked_tangent_frames() {
+    let mut app = test_app();
+    let surface = NurbsSurface::try_bilinear([
+        point(1., 2., 3.),
+        point(5., 2., 3.),
+        point(5., 6., 3.),
+        point(1., 6., 3.),
+    ])
+    .unwrap();
+    let id = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(surface))
+        .unwrap();
+    let original = app.viewports[0].construction_plane();
+    let camera = app.viewports[0].camera_snapshot();
+
+    enter(&mut app, &format!("CPlane Surface {id}"));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(3., 4., 3.)
+    );
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    enter(&mut app, &format!("CPlane Surface {id} w4,3,3 w4,5,3"));
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(4., 3., 3.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [0., 1., 0.]);
+    assert_eq!(frame.y_axis().as_vector().to_array(), [-1., 0., 0.]);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+
+    enter(&mut app, "CPlane Surface");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_surface());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    app.accept_plane_prompt_point(point(4., 3., 8.));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    assert!(!app.accept_plane_prompt_point(point(4., 3., 9.)));
+    assert!(app.plane_prompt.is_some());
+    app.accept_plane_prompt_point(point(4., 5., 6.));
+    assert!(app.plane_prompt.is_none());
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(4., 3., 3.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [0., 1., 0.]);
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+
+    enter(&mut app, "CPlane Undo");
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "CPlane");
+    enter(&mut app, "Surface");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    enter(&mut app, "");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(3., 4., 3.)
+    );
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![id]
+    );
+}
+
+#[test]
+fn cplane_surface_accepts_a_polysurface_face_without_changing_selection() {
+    let mut app = test_app();
+    let brep = Brep::try_box(
+        viboceros_command::construction_plane::WorldPlane::Top.frame(),
+        [[1., 5.], [2., 7.], [3., 9.]],
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    let original = app.viewports[0].construction_plane();
+    let camera = app.viewports[0].camera_snapshot();
+
+    enter(&mut app, &format!("CPlane Surface {id} Face=3"));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    enter(&mut app, "");
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(3., 7., 6.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [-1., 0., 0.]);
+    assert_eq!(app.viewports[0].camera_snapshot(), camera);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(app.viewports[0].construction_plane(), original);
+
+    enter(&mut app, "CPlane Surface");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_surface());
+    assert!(!app.accept_plane_prompt_surface(id, Some(99)));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_surface());
+    assert!(app.handle_viewport_action(ViewportOutput {
+        face_click: Some((id, 4)),
+        ..Default::default()
+    }));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    enter(&mut app, "");
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(1., 4.5, 6.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [0., -1., 0.]);
+    assert_eq!(app.document.selected_object_count(), 0);
     assert_eq!(app.viewports[0].camera_snapshot(), camera);
 }
 

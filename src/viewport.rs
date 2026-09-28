@@ -242,6 +242,7 @@ pub enum FacePickMode {
     Mesh,
     MeshAndBrepAny,
     MeshAndBrep,
+    SurfaceAndBrepAny,
     SurfaceAndBrep,
 }
 
@@ -1143,8 +1144,10 @@ impl Viewport {
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
-        let object_prompt_selecting = input.face_pick == Some(FacePickMode::MeshAndBrepAny)
-            && !input.zoom_window
+        let object_prompt_selecting = matches!(
+            input.face_pick,
+            Some(FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny)
+        ) && !input.zoom_window
             && input.zoom_target.is_none()
             && !drafting.active;
         let selection_pick = if (selecting || object_prompt_selecting)

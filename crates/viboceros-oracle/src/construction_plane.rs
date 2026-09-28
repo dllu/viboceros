@@ -94,6 +94,11 @@ pub enum PlaneStep {
         r#box: [[f64; 3]; 2],
         face: usize,
     },
+    SurfaceCplane {
+        corners: [[f64; 3]; 4],
+        pick_origin: Option<[f64; 3]>,
+        pick_x: Option<[f64; 3]>,
+    },
     Undo,
     Redo,
 }
@@ -354,6 +359,28 @@ fn apply_step(
         state.set(frame);
         return Ok(());
     }
+    if let PlaneStep::SurfaceCplane {
+        corners,
+        pick_origin,
+        pick_x,
+    } = step
+    {
+        let corners = corners
+            .map(Point3::try_from)
+            .into_iter()
+            .collect::<Result<Vec<_>, _>>()?;
+        let surface = NurbsSurface::try_bilinear([corners[0], corners[1], corners[2], corners[3]])?;
+        let frame = cplane::surface_frame(
+            &surface,
+            false,
+            pick_origin.map(Point3::try_from).transpose()?,
+            pick_x.map(Point3::try_from).transpose()?,
+            tolerance,
+        )
+        .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane Surface fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     let point = |p: &[f64; 3]| format!("w{},{},{}", p[0], p[1], p[2]);
     let command = match step {
         PlaneStep::World { view } => format!("CPlane World {view}"),
@@ -395,6 +422,7 @@ fn apply_step(
         | PlaneStep::ObjectSurface { .. }
         | PlaneStep::ObjectMeshFace { .. }
         | PlaneStep::ObjectBrepFace { .. } => unreachable!(),
+        PlaneStep::SurfaceCplane { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -418,7 +446,8 @@ fn apply_step(
         | PlaneAction::SetThroughAll(_)
         | PlaneAction::AlignToView
         | PlaneAction::Object(_)
-        | PlaneAction::ObjectFace(_, _) => {
+        | PlaneAction::ObjectFace(_, _)
+        | PlaneAction::Surface { .. } => {
             return Err(ProbeError::FixtureInvariant(
                 "CPlane fixture requires a viewport-specific action",
             ));
@@ -578,6 +607,19 @@ mod tests {
         .unwrap();
         let recorded: Value = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/observations/construction_plane_object_brep_face.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 6);
+    }
+
+    #[test]
+    fn surface_option_matches_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_surface.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_surface.json"
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 6);

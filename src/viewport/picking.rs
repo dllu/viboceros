@@ -218,12 +218,14 @@ impl Viewport {
         mode: FacePickMode,
     ) -> Option<(ObjectId, usize, Option<Point3>)> {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
-        let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> =
-            if mode == FacePickMode::MeshAndBrepAny {
-                Box::new(document.selectable_objects())
-            } else {
-                Box::new(document.selected_objects())
-            };
+        let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> = if matches!(
+            mode,
+            FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny
+        ) {
+            Box::new(document.selectable_objects())
+        } else {
+            Box::new(document.selected_objects())
+        };
         for object in candidates {
             if !selection_candidate(document, object, None) {
                 continue;
@@ -232,10 +234,13 @@ impl Viewport {
                 mode,
                 FacePickMode::MeshAndBrep
                     | FacePickMode::MeshAndBrepAny
+                    | FacePickMode::SurfaceAndBrepAny
                     | FacePickMode::SurfaceAndBrep
             ) && matches!(object.geometry(), Geometry::Brep(_))
-                || mode == FacePickMode::SurfaceAndBrep
-                    && matches!(object.geometry(), Geometry::NurbsSurface(_))
+                || matches!(
+                    mode,
+                    FacePickMode::SurfaceAndBrep | FacePickMode::SurfaceAndBrepAny
+                ) && matches!(object.geometry(), Geometry::NurbsSurface(_))
             {
                 Some(
                     self.display_cache
@@ -246,7 +251,14 @@ impl Viewport {
                 None
             };
             let (mesh, sources, single_surface) = match object.geometry() {
-                Geometry::Mesh(mesh) if mode != FacePickMode::SurfaceAndBrep => (mesh, None, false),
+                Geometry::Mesh(mesh)
+                    if !matches!(
+                        mode,
+                        FacePickMode::SurfaceAndBrep | FacePickMode::SurfaceAndBrepAny
+                    ) =>
+                {
+                    (mesh, None, false)
+                }
                 Geometry::Brep(_) if mode != FacePickMode::Mesh => {
                     let Some(display) = display.as_ref() else {
                         continue;
@@ -257,7 +269,12 @@ impl Viewport {
                     };
                     (mesh, Some(sources), false)
                 }
-                Geometry::NurbsSurface(_) if mode == FacePickMode::SurfaceAndBrep => {
+                Geometry::NurbsSurface(_)
+                    if matches!(
+                        mode,
+                        FacePickMode::SurfaceAndBrep | FacePickMode::SurfaceAndBrepAny
+                    ) =>
+                {
                     let Some(mesh) = display.as_ref().and_then(|display| display.mesh()) else {
                         continue;
                     };
@@ -478,6 +495,11 @@ mod tests {
             view.pick_selected_face(pointer, rect, &document, FacePickMode::Mesh),
             Some((mesh_id, 0))
         );
+        document.clear_selection();
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrepAny),
+            Some((surface_id, 0))
+        );
     }
 
     #[test]
@@ -658,6 +680,10 @@ mod tests {
         document.clear_selection();
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrepAny),
+            Some((brep, top_face))
+        );
+        assert_eq!(
+            view.pick_selected_face(pointer, rect, &document, FacePickMode::SurfaceAndBrepAny),
             Some((brep, top_face))
         );
 

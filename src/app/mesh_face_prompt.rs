@@ -15,7 +15,15 @@ impl VibocerosApp {
             .as_ref()
             .is_some_and(super::construction_plane::PlanePrompt::requests_object)
         {
-            self.accept_plane_prompt_object_face(object, face);
+            if self
+                .plane_prompt
+                .as_ref()
+                .is_some_and(super::construction_plane::PlanePrompt::requests_surface)
+            {
+                self.accept_plane_prompt_surface(object, Some(face));
+            } else {
+                self.accept_plane_prompt_object_face(object, face);
+            }
             return;
         }
         match self.active_command {
