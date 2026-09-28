@@ -1,0 +1,23 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane_all_probe",
+      "id": "world-through-fresh",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ]
+    }
+  ]
+}

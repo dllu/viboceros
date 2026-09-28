@@ -20,6 +20,8 @@ the current document. `3View`, `4View`, and `MaxViewport` change the layout;
 `4View Projection=FirstAngle|ThirdAngle` restores either standard arrangement.
 `SynchronizeCPlanes [source] [SetView=Yes|No]` aligns standard view planes to a
 source viewport's construction plane.
+`CPlane All point` and `CPlane Through All point` move every viewport's
+construction plane origin while retaining its own axes.
 Plain `4View` restores the most recently selected projection and resets its views.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `NewViewport` opens a centered Top view over the model viewport area.

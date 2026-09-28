@@ -27,6 +27,7 @@ impl PlanePrompt {
             (PlanePromptKind::Origin, _) => {
                 "CPlane: pick a new origin (Enter keeps the current origin)"
             }
+            (PlanePromptKind::AllOrigin, _) => "CPlane All: pick the new origin for every viewport",
             (PlanePromptKind::ThreePoint, 0) => {
                 "CPlane 3Point: pick the origin (Enter keeps the current origin)"
             }
@@ -41,6 +42,9 @@ impl PlanePrompt {
             }
             (PlanePromptKind::Through, _) => {
                 "CPlane Through: pick a point for the plane to pass through"
+            }
+            (PlanePromptKind::ThroughAll, _) => {
+                "CPlane Through All: pick a point for every plane to pass through"
             }
             (PlanePromptKind::Rotate, 0) => "CPlane Rotate: pick the rotation axis start",
             (PlanePromptKind::Rotate, 1) => "CPlane Rotate: pick the rotation axis end",
@@ -217,15 +221,16 @@ impl VibocerosApp {
         match action {
             Ok(action) => {
                 self.plane_prompt = None;
-                self.apply_plane_action(action, self.active_viewport);
-                self.command_input.clear();
+                if self.apply_plane_action(action, self.active_viewport) {
+                    self.command_input.clear();
+                }
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         true
     }
 
-    pub(super) fn apply_plane_action(&mut self, action: PlaneAction, viewport: usize) {
+    pub(super) fn apply_plane_action(&mut self, action: PlaneAction, viewport: usize) -> bool {
         if let PlaneAction::Prompt(kind) = action {
             self.snaps.plane_override = None;
             let prompt = PlanePrompt {
@@ -237,7 +242,36 @@ impl VibocerosApp {
             };
             self.push_log(prompt.message().into());
             self.plane_prompt = Some(prompt);
-            return;
+            return true;
+        }
+        if let PlaneAction::SetAllOrigin(point) | PlaneAction::SetThroughAll(point) = action {
+            let frames = self
+                .viewports
+                .iter()
+                .map(|view| {
+                    let frame = view.construction_plane();
+                    if matches!(action, PlaneAction::SetAllOrigin(_)) {
+                        Ok(frame.with_origin(point))
+                    } else {
+                        cplane::through(frame, point)
+                    }
+                })
+                .collect::<Result<Vec<_>, _>>();
+            let frames = match frames {
+                Ok(frames) => frames,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            };
+            for (view, frame) in self.viewports.iter_mut().zip(frames) {
+                view.plane.set(frame);
+            }
+            self.push_log(format!(
+                "Updated construction planes in {} viewports",
+                self.viewports.len()
+            ));
+            return true;
         }
         let state = &mut self.viewports[viewport].plane;
         let changed = match action {
@@ -245,6 +279,7 @@ impl VibocerosApp {
             PlaneAction::Undo => state.undo(),
             PlaneAction::Redo => state.redo(),
             PlaneAction::Prompt(_) => unreachable!(),
+            PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) => unreachable!(),
         };
         self.push_log(
             if changed {
@@ -254,6 +289,7 @@ impl VibocerosApp {
             }
             .into(),
         );
+        true
     }
 
     pub(super) fn cancel_plane_prompt(&mut self) {
@@ -279,7 +315,7 @@ impl VibocerosApp {
             && prompt.points.is_empty()
             && matches!(
                 prompt.kind,
-                PlanePromptKind::Origin | PlanePromptKind::ThreePoint
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin | PlanePromptKind::ThreePoint
             )
         {
             self.accept_plane_prompt_point(prompt.frame.origin());
@@ -339,11 +375,13 @@ impl VibocerosApp {
             return false;
         };
         let tolerance = self.document.tolerance();
-        let result = (|| -> Result<Option<Frame3>, PlaneCommandError> {
+        let result = (|| -> Result<Option<PlaneAction>, PlaneCommandError> {
             Ok(match prompt.kind {
-                PlanePromptKind::Origin => Some(prompt.frame.with_origin(point)),
+                PlanePromptKind::Origin => Some(PlaneAction::Set(prompt.frame.with_origin(point))),
+                PlanePromptKind::AllOrigin => Some(PlaneAction::SetAllOrigin(point)),
+                PlanePromptKind::ThroughAll => Some(PlaneAction::SetThroughAll(point)),
                 PlanePromptKind::Through | PlanePromptKind::Elevation => {
-                    Some(cplane::through(prompt.frame, point)?)
+                    Some(PlaneAction::Set(cplane::through(prompt.frame, point)?))
                 }
                 PlanePromptKind::ThreePoint => match prompt.points.as_slice() {
                     [] => {
@@ -355,7 +393,9 @@ impl VibocerosApp {
                         prompt.points.push(point);
                         None
                     }
-                    [origin, x] => Some(Frame3::try_from_points(*origin, *x, point, tolerance)?),
+                    [origin, x] => Some(PlaneAction::Set(Frame3::try_from_points(
+                        *origin, *x, point, tolerance,
+                    )?)),
                     _ => unreachable!(),
                 },
                 PlanePromptKind::Rotate => match prompt.points.as_slice() {
@@ -373,11 +413,15 @@ impl VibocerosApp {
             })
         })();
         match result {
-            Ok(Some(frame)) => {
+            Ok(Some(action)) => {
                 self.snaps.plane_override = None;
-                self.apply_plane_action(PlaneAction::Set(frame), prompt.viewport);
-                self.command_input.clear();
-                true
+                if self.apply_plane_action(action, prompt.viewport) {
+                    self.command_input.clear();
+                    true
+                } else {
+                    self.plane_prompt = Some(prompt);
+                    false
+                }
             }
             Ok(None) => {
                 self.snaps.plane_override = None;

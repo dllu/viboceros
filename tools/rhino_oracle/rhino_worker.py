@@ -4572,6 +4572,77 @@ def _construction_plane_script(step):
     raise ValueError("unsupported CPlane step")
 
 
+def _construction_plane_all_probe(operation):
+    """Record independent viewport planes after the two multi-view options."""
+    origin = operation.get("origin")
+    through = operation.get("through")
+    if (not isinstance(origin, list) or len(origin) != 3
+            or not isinstance(through, list) or len(through) != 3):
+        raise ValueError("CPlane All probe requires origin and through points")
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four-view baseline")
+    document = Rhino.RhinoDoc.ActiveDoc
+    matching = [view for view in document.Views.GetViewList(True, False)
+                if view.ActiveViewport.Name == "Top"]
+    if len(matching) != 1:
+        raise ValueError("expected one Top viewport")
+    document.Views.ActiveView = matching[0]
+    _run_surface_script("_SetActiveViewport _Top", True)
+    if document.Views.ActiveView.ActiveViewport.Name != "Top":
+        raise ValueError("could not activate Top viewport")
+    steps = operation.get("steps", ["all", "through_all"])
+    if not isinstance(steps, list) or not steps or any(
+            step not in ("all", "through", "through_all") for step in steps):
+        raise ValueError("invalid CPlane All probe steps")
+    with _independent_construction_planes():
+        if not _run_surface_script("_CPlane _World _Top", True):
+            raise ValueError("could not reset Top CPlane through command")
+        axes = operation.get("top_axes")
+        if axes is not None:
+            if not isinstance(axes, list) or len(axes) != 2:
+                raise ValueError("expected two Top construction plane axes")
+            frame = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(0, 0, 0),
+                                         _vector(axes[0]), _vector(axes[1]))
+            if not frame.IsValid:
+                raise ValueError("invalid oblique Top plane")
+            script = "_CPlane _3Point w0,0,0 w%s w%s" % (
+                _command_point(axes[0]), _command_point(axes[1]))
+            if not _run_surface_script(script, True):
+                raise ValueError("could not set oblique Top plane")
+
+        def state():
+            result = {}
+            for view in document.Views.GetViewList(True, False):
+                viewport = view.ActiveViewport
+                plane = viewport.ConstructionPlane()
+                result[viewport.Name] = {
+                    "origin": _xyz(plane.Origin),
+                    "x": _xyz(plane.XAxis),
+                    "y": _xyz(plane.YAxis),
+                    "z": _xyz(plane.ZAxis),
+                    "camera_target": _xyz(viewport.CameraTarget),
+                }
+            return {"active": document.Views.ActiveView.ActiveViewport.Name,
+                    "views": result}
+
+        states = [state()]
+        histories = []
+        for step in steps:
+            script = ("_CPlane _All=_Yes w" + _command_point(origin) if step == "all"
+                      else "_CPlane _Through w" + _command_point(through)
+                      if step == "through" else
+                      "_CPlane _Through _All=_Yes w" + _command_point(through))
+            _record_progress("CPlane multi-view: " + script)
+            before = Rhino.RhinoApp.CommandHistoryWindowText
+            if not _run_surface_script(script, True):
+                raise ValueError("CPlane multi-view command failed: " + script)
+            after = Rhino.RhinoApp.CommandHistoryWindowText
+            histories.append(after[len(before):][-1500:] if after.startswith(before)
+                             else after[-1500:])
+            states.append(state())
+        return {"states": states, "steps": steps, "histories": histories}, 0
+
+
 @contextmanager
 def _independent_construction_planes():
     document = Rhino.RhinoDoc.ActiveDoc
@@ -6201,6 +6272,8 @@ def _execute(operation, iterations, tolerance):
         return _construction_plane_input(operation)
     if kind == "construction_plane":
         return _construction_plane(operation)
+    if kind == "construction_plane_all_probe":
+        return _construction_plane_all_probe(operation)
     if kind == "interface_commands":
         return _interface_commands(operation)
     if kind == "viewport_arrangement_probe":

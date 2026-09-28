@@ -53,6 +53,39 @@ fn plane_edits_resolve_local_world_and_relative_points_before_changing_the_frame
 }
 
 #[test]
+fn all_viewport_actions_resolve_the_active_plane_input_once() {
+    let plane = WorldPlane::Front.frame().with_origin(point(10., 20., 30.));
+    assert_eq!(
+        parse_action("CPlane All 1,2,3", plane),
+        PlaneAction::SetAllOrigin(point(11., 17., 32.))
+    );
+    assert_eq!(
+        parse_action("CPlane Through All w4,5,6", plane),
+        PlaneAction::SetThroughAll(point(4., 5., 6.))
+    );
+    assert_eq!(
+        parse_action("CPlane All", plane),
+        PlaneAction::Prompt(PlanePromptKind::AllOrigin)
+    );
+    assert_eq!(
+        parse_action("CPlane Through All", plane),
+        PlaneAction::Prompt(PlanePromptKind::ThroughAll)
+    );
+    assert_eq!(
+        parse_action("_CPlane _All=_Yes w4,5,6", plane),
+        PlaneAction::SetAllOrigin(point(4., 5., 6.))
+    );
+    assert_eq!(
+        parse_action("CPlane Through All=No w4,5,6", plane),
+        PlaneAction::Set(through(plane, point(4., 5., 6.)).unwrap())
+    );
+    assert_eq!(
+        parse_action("CPlane Through All=Yes", plane),
+        PlaneAction::Prompt(PlanePromptKind::ThroughAll)
+    );
+}
+
+#[test]
 fn rotation_moves_the_origin_and_axes_and_keeps_a_right_handed_frame() {
     let initial = WorldPlane::Top.frame().with_origin(point(2., 0., 3.));
     let result = edited("CPlane Rotate w0,0,0 w0,0,2 90", initial);

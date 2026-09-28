@@ -5,7 +5,7 @@ use viboceros_drafting::{PointInput, PointInputError};
 use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance, Vector3};
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | World Top|Bottom|Front|Back|Right|Left | 3Point origin x-point y-point | Elevation distance | Through point | Rotate axis-start axis-end degrees | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | World Top|Bottom|Front|Back|Right|Left | 3Point origin x-point y-point | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end degrees | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -58,15 +58,19 @@ impl WorldPlane {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PlanePromptKind {
     Origin,
+    AllOrigin,
     ThreePoint,
     Elevation,
     Through,
+    ThroughAll,
     Rotate,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum PlaneAction {
     Set(Frame3),
+    SetAllOrigin(Point3),
+    SetThroughAll(Point3),
     Undo,
     Redo,
     Prompt(PlanePromptKind),
@@ -86,6 +90,23 @@ pub enum PlaneCommandError {
 
 fn keyword(input: &str, expected: &str) -> bool {
     input.trim_start_matches('_').eq_ignore_ascii_case(expected)
+}
+
+fn all_option(input: &str) -> Option<bool> {
+    if keyword(input, "All") {
+        return Some(true);
+    }
+    let (name, value) = input.split_once('=')?;
+    if !keyword(name, "All") {
+        return None;
+    }
+    if keyword(value, "Yes") {
+        Some(true)
+    } else if keyword(value, "No") {
+        Some(false)
+    } else {
+        None
+    }
 }
 
 pub fn parse(
@@ -135,6 +156,14 @@ fn parse_arguments(
         [name] if keyword(name, "3Point") => PlaneAction::Prompt(PlanePromptKind::ThreePoint),
         [name] if keyword(name, "Elevation") => PlaneAction::Prompt(PlanePromptKind::Elevation),
         [name] if keyword(name, "Through") => PlaneAction::Prompt(PlanePromptKind::Through),
+        [name] if all_option(name) == Some(true) => PlaneAction::Prompt(PlanePromptKind::AllOrigin),
+        [name] if all_option(name) == Some(false) => PlaneAction::Prompt(PlanePromptKind::Origin),
+        [name, option] if keyword(name, "Through") && all_option(option) == Some(true) => {
+            PlaneAction::Prompt(PlanePromptKind::ThroughAll)
+        }
+        [name, option] if keyword(name, "Through") && all_option(option) == Some(false) => {
+            PlaneAction::Prompt(PlanePromptKind::Through)
+        }
         [name] if keyword(name, "Rotate") => PlaneAction::Prompt(PlanePromptKind::Rotate),
         [name, view] if keyword(name, "World") => PlaneAction::Set(
             WorldPlane::ALL
@@ -153,6 +182,16 @@ fn parse_arguments(
             PlaneAction::Set(elevated(plane, number(value)?)?)
         }
         [name, value] if keyword(name, "Through") => {
+            PlaneAction::Set(through(plane, point(value)?)?)
+        }
+        [name, value] if all_option(name) == Some(true) => PlaneAction::SetAllOrigin(point(value)?),
+        [name, value] if all_option(name) == Some(false) => {
+            PlaneAction::Set(plane.with_origin(point(value)?))
+        }
+        [name, option, value] if keyword(name, "Through") && all_option(option) == Some(true) => {
+            PlaneAction::SetThroughAll(point(value)?)
+        }
+        [name, option, value] if keyword(name, "Through") && all_option(option) == Some(false) => {
             PlaneAction::Set(through(plane, point(value)?)?)
         }
         [name, a, b, angle] if keyword(name, "Rotate") => PlaneAction::Set(rotated(

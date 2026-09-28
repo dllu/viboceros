@@ -11,10 +11,12 @@ primitives, and plane-aware transforms use that frame.
 | Command | Result |
 | --- | --- |
 | `CPlane point` | Move the origin, retaining all axes. |
+| `CPlane All point` | Move every viewport's plane origin to the same world point, retaining each viewport's axes. |
 | `CPlane World Top\|Bottom\|Front\|Back\|Right\|Left` | Restore a world preset at the world origin. |
 | `CPlane 3Point origin x-point y-point` | Set X toward the second point; the third determines the positive XY half-plane. |
 | `CPlane Elevation distance` | Move along the plane's normal by a signed distance. |
 | `CPlane Through point` | Move only along the normal until the plane passes through the point. |
+| `CPlane Through All point` | Move every viewport's plane along its own normal until it passes through the point. |
 | `CPlane Rotate axis-start axis-end degrees` | Rotate the origin and axes about a world-space axis. |
 | `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
@@ -56,6 +58,13 @@ point; Rotate accepts two axis points followed by a typed angle. Enter at the
 origin prompt retains the starting plane origin. Degenerate axes, collinear
 three-point definitions, nonfinite values, and unrepresentable results remain
 correctable errors; they do not partially change the plane.
+
+`CPlane All` and `CPlane Through All` also accept a picked point. Typed points
+use the active viewport's CPlane for local coordinates; the resolved world
+point is then applied to every viewport. Each viewport records its own plane
+history. Through All computes every new plane before applying any of them, so
+an invalid result leaves all planes unchanged. Explicit `All=Yes` and `All=No`
+forms are accepted in command macros.
 
 Plane prompts are separate from model prompts: start `Polyline`, accept two
 points, run `CPlane 3Point`, define the frame, then continue the same polyline.
@@ -119,8 +128,12 @@ Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-All/View/Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
+View/Object/Surface/Curve/Gumball options, 3Point Vertical/ZAxis, picked-angle
 rotation, universal/automatic planes, the named-plane panel, and CopyCPlane
 commands with a picked source viewport remain unimplemented. General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.
+Rhino remembers the `All=Yes|No` option between CPlane commands; the explicit
+Viboceros `All` forms do not yet reproduce that option memory. The typed
+`Through All` macro has a documented/native discrepancy described in the
+[oracle notes](oracle.md), so its exact Rhino parity remains unverified.

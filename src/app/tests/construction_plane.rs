@@ -7,6 +7,114 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn cplane_all_and_through_all_preserve_each_views_axes_and_history() {
+    let mut app = test_app();
+    enter(&mut app, "Line");
+    enter(&mut app, "w1,2,3");
+    let pending = app.active_command;
+    let cameras = app
+        .viewports
+        .iter()
+        .map(Viewport::camera_snapshot)
+        .collect::<Vec<_>>();
+    let axes = app
+        .viewports
+        .iter()
+        .map(|view| view.construction_plane().axes())
+        .collect::<Vec<_>>();
+    enter(&mut app, "CPlane All w4,5,6");
+    for (index, view) in app.viewports.iter().enumerate() {
+        assert_eq!(view.construction_plane().origin(), point(4., 5., 6.));
+        assert_eq!(view.construction_plane().axes(), axes[index]);
+    }
+    enter(&mut app, "CPlane Through All w7,8,9");
+    let expected = [
+        point(4., 5., 9.),
+        point(4., 5., 9.),
+        point(4., 8., 6.),
+        point(7., 5., 6.),
+    ];
+    for (index, view) in app.viewports.iter().enumerate() {
+        assert_eq!(view.construction_plane().origin(), expected[index]);
+        assert_eq!(view.construction_plane().axes(), axes[index]);
+    }
+    assert_eq!(
+        app.viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>(),
+        cameras
+    );
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.undo_label(), None);
+    app.active_viewport = 2;
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(4., 5., 6.)
+    );
+    assert_eq!(app.viewports[0].construction_plane().origin(), expected[0]);
+    enter(&mut app, "CPlane Redo");
+    assert_eq!(app.viewports[2].construction_plane().origin(), expected[2]);
+}
+
+#[test]
+fn cplane_all_prompts_resolve_typed_world_points() {
+    let mut app = test_app();
+    enter(&mut app, "CPlane All");
+    assert!(app.plane_prompt.is_some());
+    enter(&mut app, "w3,4,5");
+    assert!(app.plane_prompt.is_none());
+    assert!(
+        app.viewports
+            .iter()
+            .all(|view| view.construction_plane().origin() == point(3., 4., 5.))
+    );
+    enter(&mut app, "CPlane Through All");
+    assert!(app.plane_prompt.is_some());
+    enter(&mut app, "w7,8,9");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(3., 4., 9.)
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(3., 8., 5.)
+    );
+    assert_eq!(
+        app.viewports[3].construction_plane().origin(),
+        point(7., 4., 5.)
+    );
+}
+
+#[test]
+fn cplane_through_all_rejects_unrepresentable_target_atomically() {
+    let mut app = test_app();
+    let extreme = app.viewports[3]
+        .construction_plane()
+        .with_origin(point(f64::MAX, 0., 0.));
+    app.viewports[3].plane.set(extreme);
+    let before = app
+        .viewports
+        .iter()
+        .map(Viewport::construction_plane)
+        .collect::<Vec<_>>();
+    assert!(!app.apply_plane_action(
+        viboceros_command::construction_plane::PlaneAction::SetThroughAll(point(-f64::MAX, 0., 0.)),
+        0,
+    ));
+    assert_eq!(
+        app.viewports
+            .iter()
+            .map(Viewport::construction_plane)
+            .collect::<Vec<_>>(),
+        before
+    );
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+}
+
+#[test]
 fn synchronize_cplanes_rotates_standard_planes_without_moving_cameras() {
     use viboceros_command::construction_plane::WorldPlane;
 

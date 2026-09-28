@@ -2,6 +2,25 @@
 
 [Project overview](../README.md)
 
+The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
+records standard and oblique starting planes with four independent viewports.
+Its [private-Xvfb Rhino 8.32 observation](../tools/rhino_oracle/observations/construction_plane_all.json)
+shows that `All=Yes` moves every origin to the picked world point while leaving
+all plane axes and camera targets unchanged. Regenerate it with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/construction_plane_all.json --timeout 180
+```
+
+The separate [Through All diagnostic](../tools/rhino_oracle/fixtures/construction_plane_through_all_diagnostic.json)
+and [observation](../tools/rhino_oracle/observations/construction_plane_through_all_diagnostic.json)
+capture a discrepancy in Rhino 8.32's typed command path: after a command-level
+World Top reset, `_CPlane _Through _All=_Yes w7,8,9` changed only the active
+Top plane to a Right-oriented plane through world X=7. Rhino's published CPlane
+help says the option moves each viewport's plane along its own normal. The
+Viboceros implementation follows that documented geometry rule; parity for
+this typed Rhino path remains unresolved.
+
 The [SynchronizeCPlanes fixture](../tools/rhino_oracle/fixtures/synchronize_cplanes.json)
 records eight Rhino 8.32 cases for world-preset and oblique source planes,
 including both `SetView` settings. Its
