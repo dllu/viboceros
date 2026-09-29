@@ -13,6 +13,7 @@ pub(super) struct PlanePrompt {
     frame: Frame3,
     pub(super) points: Vec<Point3>,
     previous: Option<Point3>,
+    curve_target: Option<viboceros_document::ObjectId>,
     surface_target: Option<(viboceros_document::ObjectId, Option<usize>)>,
     surface_frame: Option<Frame3>,
     surface_flip: bool,
@@ -23,17 +24,20 @@ impl PlanePrompt {
     pub(super) fn requests_point(&self) -> bool {
         !matches!(
             self.kind,
-            PlanePromptKind::Object | PlanePromptKind::SurfaceSelect
+            PlanePromptKind::Object | PlanePromptKind::SurfaceSelect | PlanePromptKind::CurveSelect
         )
     }
     pub(super) fn requests_object(&self) -> bool {
         matches!(
             self.kind,
-            PlanePromptKind::Object | PlanePromptKind::SurfaceSelect
+            PlanePromptKind::Object | PlanePromptKind::SurfaceSelect | PlanePromptKind::CurveSelect
         )
     }
     pub(super) fn requests_surface(&self) -> bool {
         self.kind == PlanePromptKind::SurfaceSelect
+    }
+    pub(super) fn requests_curve(&self) -> bool {
+        self.kind == PlanePromptKind::CurveSelect
     }
     pub(super) fn anchor(&self) -> Option<Point3> {
         self.points.first().copied().or_else(|| {
@@ -80,6 +84,10 @@ impl PlanePrompt {
             (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
             (PlanePromptKind::Object, _) => {
                 "CPlane Object: select a curve, surface, mesh face, or polysurface face"
+            }
+            (PlanePromptKind::CurveSelect, _) => "CPlane Curve: select a curve",
+            (PlanePromptKind::CurveOrigin, _) => {
+                "CPlane Curve: pick an origin on the curve (Enter uses its start)"
             }
             (PlanePromptKind::SurfaceSelect, _) => {
                 "CPlane Surface: select a surface or polysurface face"
@@ -303,6 +311,17 @@ impl VibocerosApp {
                     }
                 }
             }
+            if kind == PlanePromptKind::CurveSelect {
+                let selected = self.document.selected_object_ids().collect::<Vec<_>>();
+                if let [id] = selected.as_slice()
+                    && self
+                        .document
+                        .object(*id)
+                        .is_some_and(|object| object.geometry().curve_ref().is_some())
+                {
+                    return self.begin_curve_prompt(*id, viewport);
+                }
+            }
             self.snaps.plane_override = None;
             let prompt = PlanePrompt {
                 kind,
@@ -310,6 +329,7 @@ impl VibocerosApp {
                 frame: self.viewports[viewport].construction_plane(),
                 points: Vec::new(),
                 previous: self.last_point,
+                curve_target: None,
                 surface_target: None,
                 surface_frame: None,
                 surface_flip: false,
@@ -381,6 +401,12 @@ impl VibocerosApp {
                     }
                     _ => Err("Face=index requires a mesh or polysurface object".into()),
                 }),
+            PlaneAction::Curve { id, point } => {
+                if point.is_none() {
+                    return self.begin_curve_prompt(id, viewport);
+                }
+                self.curve_target_frame(id, point).map(PlaneAction::Set)
+            }
             PlaneAction::Surface {
                 id,
                 face,
@@ -421,6 +447,7 @@ impl VibocerosApp {
             PlaneAction::AlignToView => unreachable!(),
             PlaneAction::Object(_) => unreachable!(),
             PlaneAction::ObjectFace(_, _) => unreachable!(),
+            PlaneAction::Curve { .. } => unreachable!(),
             PlaneAction::Surface { .. } => unreachable!(),
         };
         self.push_log(
@@ -440,6 +467,52 @@ impl VibocerosApp {
             self.command_input.clear();
             self.push_log("CPlane cancelled; previous modeling prompt retained".into());
         }
+    }
+
+    fn curve_target_frame(
+        &self,
+        id: viboceros_document::ObjectId,
+        point: Option<Point3>,
+    ) -> Result<Frame3, String> {
+        let object = self
+            .document
+            .object(id)
+            .filter(|_| self.document.is_object_selectable(id))
+            .ok_or_else(|| format!("object {id} is missing or cannot be selected"))?;
+        let curve = object
+            .geometry()
+            .curve_ref()
+            .ok_or_else(|| "CPlane Curve requires a curve".to_owned())?;
+        cplane::curve_perpendicular_frame(curve, point, self.document.tolerance())
+            .map_err(|error| error.to_string())
+    }
+
+    fn begin_curve_prompt(&mut self, id: viboceros_document::ObjectId, viewport: usize) -> bool {
+        let selectable_curve = self.document.object(id).is_some_and(|object| {
+            self.document.is_object_selectable(id) && object.geometry().curve_ref().is_some()
+        });
+        if !selectable_curve {
+            self.push_log(format!(
+                "Error: object {id} is missing, cannot be selected, or is not a curve"
+            ));
+            return false;
+        }
+        self.snaps.plane_override = None;
+        let prompt = PlanePrompt {
+            kind: PlanePromptKind::CurveOrigin,
+            viewport,
+            frame: self.viewports[viewport].construction_plane(),
+            points: Vec::new(),
+            previous: self.last_point,
+            curve_target: Some(id),
+            surface_target: None,
+            surface_frame: None,
+            surface_flip: false,
+            surface_ignore_trims: false,
+        };
+        self.push_log(prompt.message().into());
+        self.plane_prompt = Some(prompt);
+        true
     }
 
     fn surface_target_frame(
@@ -527,6 +600,7 @@ impl VibocerosApp {
             frame: self.viewports[viewport].construction_plane(),
             points: Vec::new(),
             previous: origin.or(self.last_point),
+            curve_target: None,
             surface_target: Some((id, face)),
             surface_frame: Some(frame),
             surface_flip: flip,
@@ -549,17 +623,43 @@ impl VibocerosApp {
                     input.trim_start_matches('_').to_ascii_lowercase().as_str(),
                     "flip" | "ignoretrims"
                 ))
+            && !(matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            ) && input.trim_start_matches('_').eq_ignore_ascii_case("Curve"))
         {
             self.cancel_plane_prompt();
             return false;
         }
         if prompt.requests_object() {
             let surface = prompt.requests_surface();
+            let curve = prompt.requests_curve();
             let command = format!(
                 "CPlane {} {input}",
-                if surface { "Surface" } else { "Object" }
+                if surface {
+                    "Surface"
+                } else if curve {
+                    "Curve"
+                } else {
+                    "Object"
+                }
             );
             match cplane::parse(&command, prompt.frame, None, self.document.tolerance()) {
+                Some(Ok(PlaneAction::Curve { id, point })) if curve => {
+                    if let Some(point) = point {
+                        match self.curve_target_frame(id, Some(point)) {
+                            Ok(frame) => {
+                                let viewport = prompt.viewport;
+                                self.plane_prompt = None;
+                                self.apply_plane_action(PlaneAction::Set(frame), viewport);
+                                self.command_input.clear();
+                            }
+                            Err(error) => self.push_log(format!("Error: {error}")),
+                        }
+                    } else {
+                        self.begin_curve_prompt(id, prompt.viewport);
+                    }
+                }
                 Some(Ok(PlaneAction::Surface {
                     id,
                     face,
@@ -614,6 +714,17 @@ impl VibocerosApp {
             let viewport = prompt.viewport;
             self.plane_prompt = None;
             self.apply_plane_action(PlaneAction::Prompt(PlanePromptKind::Object), viewport);
+            self.command_input.clear();
+            return true;
+        }
+        if matches!(
+            prompt.kind,
+            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+        ) && input.trim_start_matches('_').eq_ignore_ascii_case("Curve")
+        {
+            let viewport = prompt.viewport;
+            self.plane_prompt = None;
+            self.apply_plane_action(PlaneAction::Prompt(PlanePromptKind::CurveSelect), viewport);
             self.command_input.clear();
             return true;
         }
@@ -705,6 +816,19 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if input.is_empty() && prompt.kind == PlanePromptKind::CurveOrigin {
+            let id = prompt.curve_target.unwrap();
+            match self.curve_target_frame(id, None) {
+                Ok(frame) => {
+                    let viewport = prompt.viewport;
+                    self.plane_prompt = None;
+                    self.apply_plane_action(PlaneAction::Set(frame), viewport);
+                    self.command_input.clear();
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            return true;
+        }
         if prompt.kind == PlanePromptKind::ThreePoint && prompt.points.len() == 1 {
             let kind = if input
                 .trim_start_matches('_')
@@ -790,6 +914,21 @@ impl VibocerosApp {
         let Some(mut prompt) = self.plane_prompt.take() else {
             return false;
         };
+        if prompt.kind == PlanePromptKind::CurveOrigin {
+            let id = prompt.curve_target.unwrap();
+            match self.curve_target_frame(id, Some(point)) {
+                Ok(frame) => {
+                    self.apply_plane_action(PlaneAction::Set(frame), prompt.viewport);
+                    self.command_input.clear();
+                    return true;
+                }
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.plane_prompt = Some(prompt);
+                    return false;
+                }
+            }
+        }
         if prompt.kind == PlanePromptKind::SurfaceOrigin {
             let (id, face) = prompt.surface_target.unwrap();
             match self.surface_target_frame(
@@ -900,7 +1039,10 @@ impl VibocerosApp {
                     point,
                     tolerance,
                 )?)),
-                PlanePromptKind::Object | PlanePromptKind::SurfaceSelect => {
+                PlanePromptKind::Object
+                | PlanePromptKind::SurfaceSelect
+                | PlanePromptKind::CurveSelect
+                | PlanePromptKind::CurveOrigin => {
                     return Err(PlaneCommandError::Usage);
                 }
             })
@@ -934,6 +1076,17 @@ impl VibocerosApp {
 
     pub(super) fn accept_plane_prompt_object(&mut self, id: viboceros_document::ObjectId) -> bool {
         self.accept_plane_prompt_object_action(PlaneAction::Object(id))
+    }
+
+    pub(super) fn accept_plane_prompt_curve(&mut self, id: viboceros_document::ObjectId) -> bool {
+        let Some(prompt) = self
+            .plane_prompt
+            .as_ref()
+            .filter(|prompt| prompt.requests_curve())
+        else {
+            return false;
+        };
+        self.begin_curve_prompt(id, prompt.viewport)
     }
 
     pub(super) fn accept_plane_prompt_object_face(

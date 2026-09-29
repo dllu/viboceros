@@ -4676,7 +4676,8 @@ def _construction_plane(operation):
     object_kinds = (
         "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
         "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
-        "object_brep_face", "surface_cplane", "surface_cplane_trimmed",
+        "object_brep_face", "surface_cplane", "surface_cplane_trimmed", "curve_cplane_line",
+        "curve_cplane_polyline", "curve_cplane_circle", "curve_cplane_nurbs",
     )
     has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
     for step in operation["steps"]:
@@ -4705,6 +4706,55 @@ def _construction_plane(operation):
                     owned.append(object_id)
                     document.Objects.UnselectAll()
                     script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "curve_cplane_line":
+                    object_id = document.Objects.AddLine(
+                        _point(step["start"]), _point(step["end"]))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve line")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_polyline":
+                    vertices = step["vertices"]
+                    if len(vertices) < 2:
+                        raise ValueError("CPlane Curve polyline needs two vertices")
+                    object_id = document.Objects.AddPolyline([_point(p) for p in vertices])
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve polyline")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_circle":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane Curve circle radius")
+                    if not frame.IsValid or radius <= 0:
+                        raise ValueError("invalid CPlane Curve circle")
+                    object_id = document.Objects.AddCircle(Rhino.Geometry.Circle(frame, radius))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve circle")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_nurbs":
+                    curve = _nurbs_curve_from_definition(step["definition"])
+                    try:
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve NURBS")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
                 elif step["kind"] == "object_polyline":
                     vertices = step["vertices"]
                     if len(vertices) < 2:

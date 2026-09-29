@@ -191,6 +191,23 @@ python3 -m tools.rhino_oracle replay \
 All six trimmed Surface cases replay; the largest component difference is
 `1.42e-14`.
 
+The [Curve CPlane fixture](../tools/rhino_oracle/fixtures/construction_plane_curve.json)
+records 18 private-Xvfb Rhino 8.32 cases: horizontal, vertical, oblique, and
+reversed lines; off-curve and endpoint picks; a different initial CPlane; the
+default start station; a polyline segment and corner; horizontal and vertical
+circle stations; and planar and spatial quadratic NURBS stations. The
+[saved observation](../tools/rhino_oracle/observations/construction_plane_curve.json)
+is replayed with:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_curve.json \
+  --observations tools/rhino_oracle/observations/construction_plane_curve.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All 18 Curve cases replay; the largest component difference is `3.06e-16`.
+
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
 polynomial or rational NURBS curves. Linear curves use an axis-aligned

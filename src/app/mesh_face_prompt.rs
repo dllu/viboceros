@@ -18,6 +18,13 @@ impl VibocerosApp {
             if self
                 .plane_prompt
                 .as_ref()
+                .is_some_and(super::construction_plane::PlanePrompt::requests_curve)
+            {
+                return;
+            }
+            if self
+                .plane_prompt
+                .as_ref()
                 .is_some_and(super::construction_plane::PlanePrompt::requests_surface)
             {
                 self.accept_plane_prompt_surface(object, Some(face));

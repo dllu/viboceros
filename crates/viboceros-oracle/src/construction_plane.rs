@@ -94,6 +94,26 @@ pub enum PlaneStep {
         r#box: [[f64; 3]; 2],
         face: usize,
     },
+    CurveCplaneLine {
+        start: [f64; 3],
+        end: [f64; 3],
+        pick: Option<[f64; 3]>,
+    },
+    CurveCplanePolyline {
+        vertices: Vec<[f64; 3]>,
+        pick: Option<[f64; 3]>,
+    },
+    CurveCplaneCircle {
+        center: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        pick: Option<[f64; 3]>,
+    },
+    CurveCplaneNurbs {
+        definition: NurbsCurveDefinition,
+        pick: Option<[f64; 3]>,
+    },
     SurfaceCplane {
         corners: [[f64; 3]; 4],
         pick_origin: Option<[f64; 3]>,
@@ -368,6 +388,69 @@ fn apply_step(
         state.set(frame);
         return Ok(());
     }
+    let curve_fixture: Option<(Geometry, Option<[f64; 3]>)> = match step {
+        PlaneStep::CurveCplaneLine { start, end, pick } => Some((
+            Geometry::Line(LineSegment::try_new(
+                Point3::try_from(*start)?,
+                Point3::try_from(*end)?,
+                tolerance,
+            )?),
+            *pick,
+        )),
+        PlaneStep::CurveCplanePolyline { vertices, pick } => Some((
+            Geometry::Polyline(Polyline3::try_new(
+                vertices
+                    .iter()
+                    .copied()
+                    .map(Point3::try_from)
+                    .collect::<Result<Vec<_>, _>>()?,
+                tolerance,
+            )?),
+            *pick,
+        )),
+        PlaneStep::CurveCplaneCircle {
+            center,
+            x_axis,
+            y_axis,
+            radius,
+            pick,
+        } => {
+            let frame = Frame3::try_from_directions(
+                Point3::try_from(*center)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            Some((
+                Geometry::Circle(Circle3::try_from_frame(
+                    frame.origin(),
+                    *radius,
+                    frame.x_axis(),
+                    frame.z_axis(),
+                    tolerance,
+                )?),
+                *pick,
+            ))
+        }
+        PlaneStep::CurveCplaneNurbs { definition, pick } => Some((
+            Geometry::NurbsCurve(nurbs_curve_from_definition(definition)?),
+            *pick,
+        )),
+        _ => None,
+    };
+    if let Some((geometry, pick)) = curve_fixture {
+        let curve = geometry
+            .curve_ref()
+            .ok_or(ProbeError::FixtureInvariant("invalid CPlane Curve fixture"))?;
+        let frame = cplane::curve_perpendicular_frame(
+            curve,
+            pick.map(Point3::try_from).transpose()?,
+            tolerance,
+        )
+        .map_err(|_| ProbeError::FixtureInvariant("invalid CPlane Curve fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     if let PlaneStep::SurfaceCplane {
         corners,
         pick_origin,
@@ -471,6 +554,10 @@ fn apply_step(
         | PlaneStep::ObjectMeshFace { .. }
         | PlaneStep::ObjectBrepFace { .. } => unreachable!(),
         PlaneStep::SurfaceCplane { .. } | PlaneStep::SurfaceCplaneTrimmed { .. } => unreachable!(),
+        PlaneStep::CurveCplaneLine { .. }
+        | PlaneStep::CurveCplanePolyline { .. }
+        | PlaneStep::CurveCplaneCircle { .. }
+        | PlaneStep::CurveCplaneNurbs { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -495,6 +582,7 @@ fn apply_step(
         | PlaneAction::AlignToView
         | PlaneAction::Object(_)
         | PlaneAction::ObjectFace(_, _)
+        | PlaneAction::Curve { .. }
         | PlaneAction::Surface { .. } => {
             return Err(ProbeError::FixtureInvariant(
                 "CPlane fixture requires a viewport-specific action",
@@ -697,6 +785,19 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 6);
+    }
+
+    #[test]
+    fn curve_option_matches_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_curve.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_curve.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 18);
     }
 
     #[test]

@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "line-x-middle",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [0, 0, 0], "end": [10, 0, 0], "pick": [3, 0, 0]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-y-middle",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 3], "end": [1, 12, 3], "pick": [1, 6, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-z-middle",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 3], "end": [1, 2, 13], "pick": [1, 2, 8]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-diagonal",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 3], "end": [4, 6, 3], "pick": [2.5, 4, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-oblique",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 3], "end": [4, 6, 8], "pick": [2.5, 4, 5.5]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-reversed",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [4, 6, 8], "end": [1, 2, 3], "pick": [2.5, 4, 5.5]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-off-curve",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [0, 0, 0], "end": [10, 0, 0], "pick": [3, 2, 0]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-front-cplane",
+      "origin": [10, 20, 30], "x_axis": [1, 0, 0], "y_axis": [0, 0, 1],
+      "steps": [{"kind": "curve_cplane_line", "start": [0, 0, 0], "end": [10, 0, 0], "pick": [3, 0, 0]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 3], "end": [11, 2, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "polyline-second-edge",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_polyline", "vertices": [[1, 2, 3], [4, 2, 3], [4, 6, 3]], "pick": [4, 4, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "circle-start",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_circle", "center": [0, 0, 3], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0], "radius": 5, "pick": [5, 0, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "circle-quarter",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_circle", "center": [0, 0, 3], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0], "radius": 5, "pick": [0, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "nurbs-quadratic",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_nurbs", "definition": {"degree": 2, "control_points": [{"point": [1, 2, 3]}, {"point": [4, 2, 3]}, {"point": [4, 6, 3]}], "knots": [0, 0, 0, 1, 1, 1]}, "pick": [3.25, 3, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-beyond-end",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [0, 0, 0], "end": [10, 0, 0], "pick": [15, 2, 0]}]
+    },
+    {
+      "op": "construction_plane", "id": "line-reversed-vertical",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_line", "start": [1, 2, 13], "end": [1, 2, 3], "pick": [1, 2, 8]}]
+    },
+    {
+      "op": "construction_plane", "id": "polyline-corner",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_polyline", "vertices": [[1, 2, 3], [4, 2, 3], [4, 6, 3]], "pick": [4, 2, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "vertical-circle-start",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_circle", "center": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 0, 1], "radius": 5, "pick": [5, 0, 0]}]
+    },
+    {
+      "op": "construction_plane", "id": "nurbs-spatial",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "curve_cplane_nurbs", "definition": {"degree": 2, "control_points": [{"point": [1, 2, 3]}, {"point": [4, 2, 3]}, {"point": [4, 6, 8]}], "knots": [0, 0, 0, 1, 1, 1]}, "pick": [3.25, 3, 4.25]}]
+    }
+  ]
+}

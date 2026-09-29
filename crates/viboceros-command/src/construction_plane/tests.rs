@@ -419,6 +419,27 @@ fn surface_option_parses_face_and_tangent_point_inputs() {
 }
 
 #[test]
+fn curve_option_parses_selection_and_world_station() {
+    let top = WorldPlane::Top.frame();
+    let id: ObjectId = "00000000-0000-0000-0000-000000000001".parse().unwrap();
+    assert_eq!(
+        parse_action("CPlane Curve", top),
+        PlaneAction::Prompt(PlanePromptKind::CurveSelect)
+    );
+    assert_eq!(
+        parse_action(&format!("CPlane Curve {id}"), top),
+        PlaneAction::Curve { id, point: None }
+    );
+    assert_eq!(
+        parse_action(&format!("CPlane Curve {id} w3,4,5"), top),
+        PlaneAction::Curve {
+            id,
+            point: Some(point(3., 4., 5.))
+        }
+    );
+}
+
+#[test]
 fn invalid_commands_and_degenerate_frames_cannot_mutate_plane_history() {
     let initial = WorldPlane::Top.frame();
     let state = ConstructionPlaneState::new(initial);

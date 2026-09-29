@@ -9,7 +9,7 @@ use viboceros_geometry::{
 };
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [IgnoreTrims=Yes|No] [origin [x-point]]] | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Curve [object-id [point]] | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [IgnoreTrims=Yes|No] [origin [x-point]]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -70,6 +70,8 @@ pub enum PlanePromptKind {
     Through,
     ThroughAll,
     Rotate,
+    CurveSelect,
+    CurveOrigin,
     Object,
     SurfaceSelect,
     SurfaceOrigin,
@@ -82,6 +84,10 @@ pub enum PlaneAction {
     SetAllOrigin(Point3),
     SetThroughAll(Point3),
     AlignToView,
+    Curve {
+        id: ObjectId,
+        point: Option<Point3>,
+    },
     Object(ObjectId),
     ObjectFace(ObjectId, usize),
     Surface {
@@ -249,6 +255,19 @@ fn parse_arguments(
             })
         }
         [name] if keyword(name, "Rotate") => PlaneAction::Prompt(PlanePromptKind::Rotate),
+        [name] if keyword(name, "Curve") => PlaneAction::Prompt(PlanePromptKind::CurveSelect),
+        [name, id] if keyword(name, "Curve") => PlaneAction::Curve {
+            id: id
+                .parse::<ObjectId>()
+                .map_err(|_| PlaneCommandError::Usage)?,
+            point: None,
+        },
+        [name, id, location] if keyword(name, "Curve") => PlaneAction::Curve {
+            id: id
+                .parse::<ObjectId>()
+                .map_err(|_| PlaneCommandError::Usage)?,
+            point: Some(point(location)?),
+        },
         [name] if keyword(name, "Object") => PlaneAction::Prompt(PlanePromptKind::Object),
         [name] if keyword(name, "Surface") => PlaneAction::Prompt(PlanePromptKind::SurfaceSelect),
         [name, id, tail @ ..] if keyword(name, "Surface") => {
@@ -571,6 +590,35 @@ pub fn surface_frame_with_x(
         frame.origin(),
         direction,
         tangent_y,
+        tolerance,
+    )?)
+}
+
+/// A plane normal to the curve tangent at the nearest point to a pick.
+/// Rhino uses world Z as the frame's up direction; exact vertical tangents
+/// use a canonical +Z normal even when the curve points downward.
+pub fn curve_perpendicular_frame(
+    curve: CurveRef<'_>,
+    pick: Option<Point3>,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let parameter = if let Some(pick) = pick {
+        curve.closest_parameter(pick, tolerance)?
+    } else {
+        *curve.domain().start()
+    };
+    let sample = curve.evaluate_with_tangent(parameter)?;
+    let origin = sample.point();
+    let tangent = sample.tangent().as_vector();
+    let up = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let x = up.cross(tangent)?;
+    if x.length()? <= tolerance.angular() {
+        return Ok(Frame3::try_from_normal(origin, up, tolerance)?);
+    }
+    Ok(Frame3::try_from_directions(
+        origin,
+        x,
+        tangent.cross(x)?,
         tolerance,
     )?)
 }

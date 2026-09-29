@@ -646,6 +646,68 @@ fn cplane_surface_respects_trims_and_ignore_trims_in_typed_and_prompt_inputs() {
 }
 
 #[test]
+fn cplane_curve_uses_the_picked_station_and_world_up() {
+    let mut app = test_app();
+    let line = LineSegment::try_new(
+        point(1., 2., 3.),
+        point(1., 12., 3.),
+        app.document.tolerance(),
+    )
+    .unwrap();
+    let id = app.document.add_geometry(Geometry::Line(line)).unwrap();
+
+    enter(&mut app, &format!("CPlane Curve {id} w1,6,3"));
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(frame.origin(), point(1., 6., 3.));
+    assert_eq!(frame.x_axis().as_vector().to_array(), [-1., 0., 0.]);
+    assert_eq!(frame.y_axis().as_vector().to_array(), [0., 0., 1.]);
+    assert_eq!(frame.z_axis().as_vector().to_array(), [0., 1., 0.]);
+
+    enter(&mut app, &format!("CPlane Curve {id}"));
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    enter(&mut app, "");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(1., 2., 3.)
+    );
+
+    enter(&mut app, "CPlane Curve");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_curve());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    app.accept_plane_prompt_point(point(1., 8., 3.));
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(1., 8., 3.)
+    );
+
+    enter(&mut app, "CPlane");
+    enter(&mut app, "Curve");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_curve());
+    enter(&mut app, &id.to_string());
+    enter(&mut app, "");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(1., 2., 3.)
+    );
+
+    app.document
+        .select_object(id, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "CPlane Curve");
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    app.accept_plane_prompt_point(point(1., 9., 3.));
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(1., 9., 3.)
+    );
+}
+
+#[test]
 fn cplane_object_aligns_to_a_line_and_a_picked_planar_polyline() {
     let mut app = test_app();
     let tolerance = app.document.tolerance();
