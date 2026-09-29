@@ -100,6 +100,14 @@ pub enum PlaneStep {
         pick_x: Option<[f64; 3]>,
         flip: Option<bool>,
     },
+    SurfaceCplaneTrimmed {
+        outer: Vec<[f64; 3]>,
+        holes: Vec<Vec<[f64; 3]>>,
+        pick_origin: Option<[f64; 3]>,
+        pick_x: Option<[f64; 3]>,
+        flip: Option<bool>,
+        ignore_trims: Option<bool>,
+    },
     Undo,
     Redo,
 }
@@ -384,6 +392,43 @@ fn apply_step(
         state.set(frame);
         return Ok(());
     }
+    if let PlaneStep::SurfaceCplaneTrimmed {
+        outer,
+        holes,
+        pick_origin,
+        pick_x,
+        flip,
+        ignore_trims,
+    } = step
+    {
+        let curve = |vertices: &Vec<[f64; 3]>| -> Result<_, ProbeError> {
+            let mut points = vertices
+                .iter()
+                .copied()
+                .map(Point3::try_from)
+                .collect::<Result<Vec<_>, _>>()?;
+            let first = *points
+                .first()
+                .ok_or(ProbeError::FixtureInvariant("empty CPlane trim"))?;
+            points.push(first);
+            Ok(Polyline3::try_new(points, tolerance)?.to_nurbs()?)
+        };
+        let outer = curve(outer)?;
+        let holes = holes.iter().map(curve).collect::<Result<Vec<_>, _>>()?;
+        let brep = Brep::try_planar_face_with_holes(&outer, &holes, tolerance)?;
+        let frame = cplane::surface_frame_on_brep_face(
+            &brep,
+            0,
+            pick_origin.map(Point3::try_from).transpose()?,
+            pick_x.map(Point3::try_from).transpose()?,
+            flip.unwrap_or(false),
+            ignore_trims.unwrap_or(false),
+            tolerance,
+        )
+        .map_err(|_| ProbeError::FixtureInvariant("invalid trimmed CPlane Surface fixture"))?;
+        state.set(frame);
+        return Ok(());
+    }
     let point = |p: &[f64; 3]| format!("w{},{},{}", p[0], p[1], p[2]);
     let command = match step {
         PlaneStep::World { view } => format!("CPlane World {view}"),
@@ -425,7 +470,7 @@ fn apply_step(
         | PlaneStep::ObjectSurface { .. }
         | PlaneStep::ObjectMeshFace { .. }
         | PlaneStep::ObjectBrepFace { .. } => unreachable!(),
-        PlaneStep::SurfaceCplane { .. } => unreachable!(),
+        PlaneStep::SurfaceCplane { .. } | PlaneStep::SurfaceCplaneTrimmed { .. } => unreachable!(),
         PlaneStep::Undo => "CPlane Undo".into(),
         PlaneStep::Redo => "CPlane Redo".into(),
     };
@@ -639,6 +684,19 @@ mod tests {
         ))
         .unwrap();
         assert_saved_plane_frames(request, recorded, 10);
+    }
+
+    #[test]
+    fn surface_trims_match_saved_rhino_plane_frames() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/construction_plane_surface_trimmed.json"
+        ))
+        .unwrap();
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/construction_plane_surface_trimmed.json"
+        ))
+        .unwrap();
+        assert_saved_plane_frames(request, recorded, 6);
     }
 
     #[test]

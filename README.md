@@ -25,7 +25,7 @@ construction plane origin while retaining its own axes.
 `CPlane View` aligns the active plane to its camera without moving the view.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh/B-rep face.
-`CPlane Surface` places a tangent plane at a chosen point on a surface or B-rep face.
+`CPlane Surface` places a tangent plane at a chosen point on a surface or B-rep face, with `IgnoreTrims` for underlying-surface picks.
 Plain `4View` restores the most recently selected projection and resets its views.
 `SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
 `NewViewport` opens a centered Top view over the model viewport area.

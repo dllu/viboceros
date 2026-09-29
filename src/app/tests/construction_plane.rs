@@ -583,6 +583,69 @@ fn cplane_surface_flip_follows_rhinos_picked_origin_rule() {
 }
 
 #[test]
+fn cplane_surface_respects_trims_and_ignore_trims_in_typed_and_prompt_inputs() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let outline = |corners: &[[f64; 3]]| {
+        let mut points = corners
+            .iter()
+            .copied()
+            .map(|coords| Point3::try_from(coords).unwrap())
+            .collect::<Vec<_>>();
+        points.push(points[0]);
+        Polyline3::try_new(points, tolerance)
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+    };
+    let outer = outline(&[[0., 0., 3.], [10., 0., 3.], [10., 10., 3.], [0., 10., 3.]]);
+    let hole = outline(&[[4., 4., 3.], [6., 4., 3.], [6., 6., 3.], [4., 6., 3.]]);
+    let brep = Brep::try_planar_face_with_holes(&outer, &[hole], tolerance).unwrap();
+    let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+
+    enter(&mut app, &format!("CPlane Surface {id} w5,5,3 w7,5,3"));
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .is_near(point(6., 5., 3.), tolerance)
+    );
+
+    enter(
+        &mut app,
+        &format!("CPlane Surface {id} IgnoreTrims=Yes w5,5,3 w7,5,3"),
+    );
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .is_near(point(5., 5., 3.), tolerance)
+    );
+
+    enter(&mut app, &format!("CPlane Surface {id}"));
+    enter(&mut app, "IgnoreTrims=No");
+    app.accept_plane_prompt_point(point(5., 5., 3.));
+    enter(&mut app, "");
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .is_near(point(6., 5., 3.), tolerance)
+    );
+
+    enter(&mut app, &format!("CPlane Surface {id}"));
+    enter(&mut app, "IgnoreTrims");
+    app.accept_plane_prompt_point(point(5., 5., 3.));
+    enter(&mut app, "");
+    assert!(
+        app.viewports[0]
+            .construction_plane()
+            .origin()
+            .is_near(point(5., 5., 3.), tolerance)
+    );
+}
+
+#[test]
 fn cplane_object_aligns_to_a_line_and_a_picked_planar_polyline() {
     let mut app = test_app();
     let tolerance = app.document.tolerance();

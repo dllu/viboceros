@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane", "id": "trimmed-interior",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]], "pick_origin": [2, 3, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "trimmed-hole",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]], "pick_origin": [5, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "ignore-hole",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]], "ignore_trims": true, "pick_origin": [5, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "trimmed-outside",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]], "pick_origin": [12, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "ignore-outside",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]], "ignore_trims": true, "pick_origin": [12, 5, 3]}]
+    },
+    {
+      "op": "construction_plane", "id": "trimmed-default",
+      "origin": [0, 0, 0], "x_axis": [1, 0, 0], "y_axis": [0, 1, 0],
+      "steps": [{"kind": "surface_cplane_trimmed", "outer": [[0, 0, 3], [10, 0, 3], [10, 10, 3], [0, 10, 3]], "holes": [[[4, 4, 3], [6, 4, 3], [6, 6, 3], [4, 6, 3]]]}]
+    }
+  ]
+}

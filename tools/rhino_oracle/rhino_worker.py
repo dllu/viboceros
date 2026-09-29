@@ -4676,7 +4676,7 @@ def _construction_plane(operation):
     object_kinds = (
         "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
         "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
-        "object_brep_face", "surface_cplane",
+        "object_brep_face", "surface_cplane", "surface_cplane_trimmed",
     )
     has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
     for step in operation["steps"]:
@@ -4821,6 +4821,45 @@ def _construction_plane(operation):
                             if type(step[key]) is not bool:
                                 raise ValueError("CPlane Surface %s must be Boolean" % name)
                             options += " _%s=_%s" % (name, "Yes" if step[key] else "No")
+                    script = "_CPlane _Surface _SelID %s%s %s %s" % (
+                        object_id,
+                        options,
+                        "w" + _command_point(origin) if origin is not None else "_Enter",
+                        "w" + _command_point(direction) if direction is not None else "_Enter")
+                elif step["kind"] == "surface_cplane_trimmed":
+                    outlines = [step["outer"]] + step.get("holes", [])
+                    curves = []
+                    try:
+                        for outline in outlines:
+                            if len(outline) < 3:
+                                raise ValueError("CPlane trimmed surface outline needs three points")
+                            points = [_point(p) for p in outline]
+                            curves.append(Rhino.Geometry.PolylineCurve(points + [points[0]]))
+                        breps = Rhino.Geometry.Brep.CreatePlanarBreps(curves, 1e-7)
+                        if breps is None or len(breps) != 1 or not breps[0].IsValid:
+                            if breps is not None:
+                                for brep in breps:
+                                    brep.Dispose()
+                            raise ValueError("could not create CPlane trimmed surface")
+                        try:
+                            object_id = document.Objects.AddBrep(breps[0])
+                        finally:
+                            for brep in breps:
+                                brep.Dispose()
+                    finally:
+                        for curve in curves:
+                            curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane trimmed surface")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    options = ""
+                    if "ignore_trims" in step:
+                        if type(step["ignore_trims"]) is not bool:
+                            raise ValueError("CPlane Surface IgnoreTrims must be Boolean")
+                        options = " _IgnoreTrims=_%s" % ("Yes" if step["ignore_trims"] else "No")
+                    origin = step.get("pick_origin")
+                    direction = step.get("pick_x")
                     script = "_CPlane _Surface _SelID %s%s %s %s" % (
                         object_id,
                         options,

@@ -9,7 +9,7 @@ use viboceros_geometry::{
 };
 
 const HISTORY_LIMIT: usize = 50;
-pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [origin [x-point]]] | Undo | Redo]";
+pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [IgnoreTrims=Yes|No] [origin [x-point]]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WorldPlane {
@@ -90,6 +90,7 @@ pub enum PlaneAction {
         origin: Option<Point3>,
         x_point: Option<Point3>,
         flip: bool,
+        ignore_trims: bool,
     },
     Undo,
     Redo,
@@ -270,22 +271,30 @@ fn parse_arguments(
             } else {
                 (None, tail)
             };
-            let (flip, tail) = if let Some((_, value)) = tail
-                .first()
-                .and_then(|arg| arg.split_once('='))
-                .filter(|(option, _)| keyword(option, "Flip"))
-            {
-                let flip = if keyword(value, "Yes") {
+            let mut flip = false;
+            let mut ignore_trims = false;
+            let mut tail = tail;
+            for _ in 0..2 {
+                let Some((name, value)) = tail.first().and_then(|arg| arg.split_once('=')) else {
+                    break;
+                };
+                if !keyword(name, "Flip") && !keyword(name, "IgnoreTrims") {
+                    break;
+                }
+                let value = if keyword(value, "Yes") {
                     true
                 } else if keyword(value, "No") {
                     false
                 } else {
                     return Err(PlaneCommandError::Usage);
                 };
-                (flip, &tail[1..])
-            } else {
-                (false, tail)
-            };
+                if keyword(name, "Flip") {
+                    flip = value;
+                } else {
+                    ignore_trims = value;
+                }
+                tail = &tail[1..];
+            }
             let (origin, x_point) = match tail {
                 [] => (None, None),
                 [a] => (Some(point(a)?), None),
@@ -298,6 +307,7 @@ fn parse_arguments(
                 origin,
                 x_point,
                 flip,
+                ignore_trims,
             }
         }
         [name, id] if keyword(name, "Object") => PlaneAction::Object(
@@ -475,8 +485,70 @@ pub fn surface_frame_with_flip(
             0.5 * *v.start() + 0.5 * *v.end(),
         )
     };
+    surface_frame_at_parameters(
+        surface,
+        reversed,
+        u,
+        v,
+        origin_pick.is_some(),
+        x_pick,
+        flip,
+        tolerance,
+    )
+}
+
+/// Tangent frame on one B-rep face. Picked origins honor trims unless
+/// IgnoreTrims is selected; the default UV midpoint always uses the support.
+pub fn surface_frame_on_brep_face(
+    brep: &Brep,
+    face_index: usize,
+    origin_pick: Option<Point3>,
+    x_pick: Option<Point3>,
+    flip: bool,
+    ignore_trims: bool,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    let face = brep
+        .faces()
+        .get(face_index)
+        .ok_or(PlaneCommandError::Usage)?;
+    if ignore_trims || origin_pick.is_none() {
+        return surface_frame_with_flip(
+            face.surface(),
+            face.is_reversed(),
+            origin_pick,
+            x_pick,
+            flip,
+            tolerance,
+        );
+    }
+    let (u, v) = brep
+        .closest_parameters_on_face(face_index, origin_pick.unwrap(), tolerance)?
+        .ok_or(PlaneCommandError::Usage)?;
+    surface_frame_at_parameters(
+        face.surface(),
+        face.is_reversed(),
+        u,
+        v,
+        true,
+        x_pick,
+        flip,
+        tolerance,
+    )
+}
+
+fn surface_frame_at_parameters(
+    surface: &NurbsSurface,
+    reversed: bool,
+    u: f64,
+    v: f64,
+    picked_origin: bool,
+    x_pick: Option<Point3>,
+    flip: bool,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
     let (origin, x, y) = surface.evaluate_with_derivatives(u, v)?;
-    let y = if reversed ^ (flip && origin_pick.is_some()) {
+    let y = if reversed ^ (flip && picked_origin) {
         y.scaled(-1.0)?
     } else {
         y

@@ -362,6 +362,7 @@ fn surface_option_parses_face_and_tangent_point_inputs() {
             origin: Some(point(1., 2., 3.)),
             x_point: Some(point(4., 5., 6.)),
             flip: false,
+            ignore_trims: false,
         })
     );
     assert_eq!(
@@ -378,7 +379,22 @@ fn surface_option_parses_face_and_tangent_point_inputs() {
             origin: Some(point(1., 2., 3.)),
             x_point: None,
             flip: true,
+            ignore_trims: false,
         })
+    );
+    assert_eq!(
+        parse_action(
+            &format!("CPlane Surface {id} IgnoreTrims=Yes Flip=No w5,5,3"),
+            top,
+        ),
+        PlaneAction::Surface {
+            id,
+            face: None,
+            origin: Some(point(5., 5., 3.)),
+            x_point: None,
+            flip: false,
+            ignore_trims: true,
+        }
     );
     assert!(
         parse(

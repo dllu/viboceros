@@ -3353,6 +3353,64 @@ impl Brep {
         Ok(best.map(|(_, face, u, v)| (face, u, v)))
     }
 
+    /// Nearest point on a particular trimmed face. A pick over a hole or
+    /// outside the outer loop is projected onto the nearest trim boundary.
+    pub fn closest_parameters_on_face(
+        &self,
+        face_index: usize,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Option<(Real, Real)>, GeometryError> {
+        let Some(face) = self.faces.get(face_index) else {
+            return Ok(None);
+        };
+        let (u, v) = face.surface.closest_parameters(target, tolerance)?;
+        if face.contains_parameters(u, v, tolerance)? {
+            return Ok(Some((u, v)));
+        }
+        let mut best: Option<(Real, Point3, Real, Real)> = None;
+        for face_loop in face.loops() {
+            for trim in face_loop.trims() {
+                let Some(edge_index) = trim.edge() else {
+                    continue;
+                };
+                let edge = self.edges[edge_index].curve();
+                let parameter = edge.closest_parameter(target, tolerance)?;
+                let mut candidates = vec![edge.evaluate(parameter)?];
+                // A degree-one closed edge can have several equally close
+                // segments. Include each segment so the tie is deterministic.
+                if edge.degree() == 1 {
+                    for (start, end) in edge.spans() {
+                        let Ok(segment) = LineSegment::try_new(
+                            edge.evaluate(start)?,
+                            edge.evaluate(end)?,
+                            tolerance,
+                        ) else {
+                            continue;
+                        };
+                        candidates.push(segment.closest_point(target, tolerance)?);
+                    }
+                }
+                for candidate in candidates {
+                    let distance = candidate.distance_to(target)?;
+                    let tie_epsilon = best.as_ref().map_or(0.0, |(d, _, _, _)| {
+                        16.0 * Real::EPSILON * distance.max(*d).max(1.0)
+                    });
+                    let tie = best
+                        .as_ref()
+                        .is_some_and(|(d, _, _, _)| (distance - *d).abs() <= tie_epsilon);
+                    if best.as_ref().is_none_or(|(d, previous, _, _)| {
+                        distance < *d - tie_epsilon || (tie && candidate.x() > previous.x())
+                    }) {
+                        let (u, v) = face.surface.closest_parameters(candidate, tolerance)?;
+                        best = Some((distance, candidate, u, v));
+                    }
+                }
+            }
+        }
+        Ok(best.map(|(_, _, u, v)| (u, v)))
+    }
+
     /// Finds the model-space point's nearest parameters on any underlying face
     /// surface without testing the face's parameter-space trim region. Ties
     /// retain face order.
@@ -14460,6 +14518,44 @@ mod tests {
         assert!(
             face.contains_parameters(closest.1, closest.2, Tolerance::DEFAULT)
                 .unwrap()
+        );
+    }
+
+    #[test]
+    fn closest_point_on_trimmed_face_projects_hole_and_outer_picks() {
+        let brep = planar_polygon_brep(&[
+            vec![
+                point(0., 0., 3.),
+                point(10., 0., 3.),
+                point(10., 10., 3.),
+                point(0., 10., 3.),
+            ],
+            vec![
+                point(4., 4., 3.),
+                point(4., 6., 3.),
+                point(6., 6., 3.),
+                point(6., 4., 3.),
+            ],
+        ]);
+        for (pick, expected) in [
+            (point(2., 3., 3.), point(2., 3., 3.)),
+            (point(5., 5., 3.), point(6., 5., 3.)),
+            (point(12., 5., 3.), point(10., 5., 3.)),
+        ] {
+            let (u, v) = brep
+                .closest_parameters_on_face(0, pick, Tolerance::DEFAULT)
+                .unwrap()
+                .unwrap();
+            let actual = brep.faces()[0].surface().evaluate(u, v).unwrap();
+            assert!(
+                actual.is_near(expected, Tolerance::DEFAULT),
+                "{pick:?} -> {actual:?}"
+            );
+        }
+        assert_eq!(
+            brep.closest_parameters_on_face(1, point(5., 5., 3.), Tolerance::DEFAULT)
+                .unwrap(),
+            None
         );
     }
 

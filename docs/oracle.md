@@ -170,7 +170,26 @@ python3 -m tools.rhino_oracle replay \
 
 All ten cases replay with a largest component difference of `4.44e-16`.
 The IgnoreTrims case uses an untrimmed surface and establishes the option's
-no-op behavior there; trim-aware placement remains separate work.
+no-op behavior there.
+
+The [trimmed Surface fixture](../tools/rhino_oracle/fixtures/construction_plane_surface_trimmed.json)
+records six private-Xvfb Rhino 8.32 cases on a planar face with a square hole.
+Picked origins inside the hole snap to the nearest hole boundary; `IgnoreTrims`
+uses the underlying surface. Picks outside the face clamp to its outer edge
+even with `IgnoreTrims`, because the supporting surface is bounded. Enter at
+the origin prompt uses the untrimmed UV midpoint. The
+[saved observation](../tools/rhino_oracle/observations/construction_plane_surface_trimmed.json)
+is replayed with:
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/construction_plane_surface_trimmed.json \
+  --observations tools/rhino_oracle/observations/construction_plane_surface_trimmed.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-12
+```
+
+All six trimmed Surface cases replay; the largest component difference is
+`1.42e-14`.
 
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
