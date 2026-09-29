@@ -111,7 +111,11 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
         assert!(!document.is_selected(peer));
         return;
     }
-    result.unwrap();
+    result.unwrap_or_else(|error| {
+        panic!(
+            "absolute={absolute} origin={origin} ratio={ratio} copy={copy} post={post}: {error:?}"
+        )
+    });
     let outputs = document
         .objects()
         .filter(|o| !ids.contains(&o.id()) && o.id() != peer)

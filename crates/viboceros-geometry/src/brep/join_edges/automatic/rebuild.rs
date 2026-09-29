@@ -8,6 +8,8 @@ pub(in crate::brep::join_edges) mod image;
 #[cfg(test)]
 mod tests;
 
+const BOUND_EVALUATION_MARGIN: Real = 1.001;
+
 pub(super) fn apply(
     source: &Brep,
     contacts: &[(usize, usize)],
@@ -147,7 +149,12 @@ pub(super) fn tighten_joined_edges(
         if requested[i]
             && let Some(bound) = certified[i]
         {
-            e.tolerance = e.tolerance.min(bound.max(floors[i]));
+            // Tightening must retain the same sampled-validation margin as
+            // the rebuilt edge; an exact image bound alone can round below
+            // the distance reported by a later floating evaluation.
+            let validated =
+                crate::brep::tolerance::scaled_tolerance(bound, BOUND_EVALUATION_MARGIN)?;
+            e.tolerance = e.tolerance.min(validated.max(floors[i]));
         }
     }
     joined.validate(tolerance)

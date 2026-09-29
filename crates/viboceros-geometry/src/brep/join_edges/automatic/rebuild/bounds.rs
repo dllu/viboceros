@@ -66,7 +66,10 @@ pub(super) fn update(
         };
         vertex.tolerance = vertex
             .tolerance
-            .max(crate::brep::tolerance::scaled_tolerance(bound, 1.001)?);
+            .max(crate::brep::tolerance::scaled_tolerance(
+                bound,
+                BOUND_EVALUATION_MARGIN,
+            )?);
     }
     for (i, edge) in result.edges.iter_mut().enumerate() {
         if !changed_edges[i] {
@@ -83,7 +86,13 @@ pub(super) fn update(
                 movement,
             )?
         };
-        edge.tolerance = edge.tolerance.max(bound);
+        // The exact surface-image certificate can be a few model-space ULPs
+        // below a later sampled surface evaluation. Rebuilt vertices already
+        // reserve this small validation margin; do the same for rebuilt edges.
+        edge.tolerance = edge.tolerance.max(crate::brep::tolerance::scaled_tolerance(
+            bound,
+            BOUND_EVALUATION_MARGIN,
+        )?);
     }
     Ok(())
 }
