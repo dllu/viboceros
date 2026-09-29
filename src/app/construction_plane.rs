@@ -6,6 +6,12 @@ use viboceros_command::construction_plane::{
 };
 use viboceros_drafting::PointInput;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) enum CopyCPlaneKind {
+    Plane,
+    Settings,
+}
+
 #[derive(Clone, Debug)]
 pub(super) struct PlanePrompt {
     kind: PlanePromptKind,
@@ -171,55 +177,74 @@ impl VibocerosApp {
             return false;
         }
         self.push_log(format!("> {input}"));
-        let result = (|| -> Result<String, String> {
-            let argument = argument.trim();
-            let source = if argument.is_empty() {
-                self.active_viewport
+        let kind = if copy_plane {
+            CopyCPlaneKind::Plane
+        } else {
+            CopyCPlaneKind::Settings
+        };
+        let argument = argument.trim();
+        if argument.is_empty() {
+            self.copy_cplane_source = Some(kind);
+            self.push_log(
+                "Pick the source viewport (Enter uses the active viewport; Esc cancels)".into(),
+            );
+            self.command_input.clear();
+            return true;
+        }
+        let argument =
+            if argument.starts_with('"') && argument.ends_with('"') && argument.len() >= 2 {
+                &argument[1..argument.len() - 1]
             } else {
-                let argument = if argument.starts_with('"')
-                    && argument.ends_with('"')
-                    && argument.len() >= 2
-                {
-                    &argument[1..argument.len() - 1]
-                } else {
-                    argument
-                };
-                self.resolve_viewport_reference(argument)?
+                argument
             };
-            if copy_plane {
-                let frame = self.viewports[source].construction_plane();
-                for (index, viewport) in self.viewports.iter_mut().enumerate() {
-                    if index != source {
-                        viewport.plane.set(frame);
-                    }
-                }
-            } else {
-                let grid = self.viewports[source].grid_settings();
-                for (index, viewport) in self.viewports.iter_mut().enumerate() {
-                    if index != source {
-                        viewport.set_grid_settings(grid);
-                    }
-                }
-            }
-            Ok(format!(
-                "Copied {} from viewport {} ({}) to all viewports",
-                if copy_plane {
-                    "construction plane"
-                } else {
-                    "grid and snap settings"
-                },
-                source + 1,
-                self.viewports[source].view_label()
-            ))
-        })();
-        match result {
-            Ok(message) => {
-                self.push_log(message);
-                self.command_input.clear();
-            }
+        match self.resolve_viewport_reference(argument) {
+            Ok(source) => self.copy_cplane_from(source, kind),
             Err(message) => self.push_log(format!("Error: {message}")),
         }
         true
+    }
+
+    pub(super) fn accept_copy_cplane_source(&mut self, source: usize) -> bool {
+        let Some(kind) = self.copy_cplane_source.take() else {
+            return false;
+        };
+        self.copy_cplane_from(source, kind);
+        true
+    }
+
+    fn copy_cplane_from(&mut self, source: usize, kind: CopyCPlaneKind) {
+        let frame = self.viewports[source].construction_plane();
+        let source_grid = self.viewports[source].grid_settings();
+        for (index, viewport) in self.viewports.iter_mut().enumerate() {
+            if index == source {
+                continue;
+            }
+            if kind == CopyCPlaneKind::Plane {
+                viewport.set_construction_plane(frame);
+                let mut grid = viewport.grid_settings();
+                grid.snap_spacing = source_grid.snap_spacing;
+                grid.minor_spacing = source_grid.minor_spacing;
+                grid.major_interval = source_grid.major_interval;
+                grid.line_count = source_grid.line_count;
+                grid.show_grid = source_grid.show_grid;
+                grid.show_axes = source_grid.show_axes;
+                viewport.set_grid_settings(grid);
+            } else {
+                viewport.set_grid_settings(source_grid);
+            }
+        }
+        self.copy_cplane_source = None;
+        self.push_log(format!(
+            "Copied {} from viewport {} ({}) to all viewports",
+            if kind == CopyCPlaneKind::Plane {
+                "construction plane and grid settings"
+            } else {
+                "grid and snap settings"
+            },
+            source + 1,
+            self.viewports[source].view_label()
+        ));
+        self.command_input.clear();
     }
 
     pub(super) fn handle_plane_shortcuts(&mut self, ui: &mut egui::Ui) {
@@ -360,7 +385,7 @@ impl VibocerosApp {
                 }
             };
             for (view, frame) in self.viewports.iter_mut().zip(frames) {
-                view.plane.set(frame);
+                view.set_construction_plane(frame);
             }
             self.push_log(format!(
                 "Updated construction planes in {} viewports",
@@ -437,11 +462,11 @@ impl VibocerosApp {
                 return false;
             }
         };
-        let state = &mut self.viewports[viewport].plane;
+        let view = &mut self.viewports[viewport];
         let changed = match action {
-            PlaneAction::Set(frame) => state.set(frame),
-            PlaneAction::Undo => state.undo(),
-            PlaneAction::Redo => state.redo(),
+            PlaneAction::Set(frame) => view.set_construction_plane(frame),
+            PlaneAction::Undo => view.undo_construction_plane(),
+            PlaneAction::Redo => view.redo_construction_plane(),
             PlaneAction::Prompt(_) => unreachable!(),
             PlaneAction::SetAllOrigin(_) | PlaneAction::SetThroughAll(_) => unreachable!(),
             PlaneAction::AlignToView => unreachable!(),

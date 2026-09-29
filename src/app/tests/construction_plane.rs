@@ -977,7 +977,7 @@ fn synchronize_cplanes_uses_native_world_preset_role_for_parallel_source() {
 }
 
 #[test]
-fn copy_cplane_and_grid_settings_to_all_keep_their_domains_separate() {
+fn copy_cplane_and_grid_settings_to_all_match_picked_source_behavior() {
     let mut app = test_app();
     enter(&mut app, "Line");
     enter(&mut app, "w1,2,3");
@@ -1014,7 +1014,14 @@ fn copy_cplane_and_grid_settings_to_all_keep_their_domains_separate() {
             .iter()
             .all(|view| view.construction_plane() == source_plane)
     );
-    assert_eq!(app.viewports[0].grid_settings(), original_grid);
+    let copied_grid = app.viewports[0].grid_settings();
+    assert_eq!(copied_grid.snap_spacing, source_grid.snap_spacing);
+    assert_eq!(copied_grid.minor_spacing, source_grid.minor_spacing);
+    assert_eq!(copied_grid.major_interval, source_grid.major_interval);
+    assert_eq!(copied_grid.line_count, source_grid.line_count);
+    assert_eq!(copied_grid.show_grid, source_grid.show_grid);
+    assert_eq!(copied_grid.show_axes, source_grid.show_axes);
+    assert_eq!(copied_grid.show_world_axes, original_grid.show_world_axes);
     assert_eq!(app.active_command, pending);
     assert_eq!(app.active_viewport, 0);
     assert_eq!(
@@ -1026,8 +1033,20 @@ fn copy_cplane_and_grid_settings_to_all_keep_their_domains_separate() {
     );
     enter(&mut app, "CPlane Undo");
     assert_eq!(app.viewports[0].construction_plane(), original_planes[0]);
+    let undone_grid = app.viewports[0].grid_settings();
+    assert_eq!(undone_grid.snap_spacing, original_grid.snap_spacing);
+    assert_eq!(undone_grid.minor_spacing, original_grid.minor_spacing);
+    assert_eq!(undone_grid.major_interval, original_grid.major_interval);
+    assert_eq!(undone_grid.line_count, original_grid.line_count);
+    assert_eq!(undone_grid.show_grid, source_grid.show_grid);
+    assert_eq!(undone_grid.show_axes, source_grid.show_axes);
     enter(&mut app, "CPlane Redo");
     assert_eq!(app.viewports[0].construction_plane(), source_plane);
+    let redone_grid = app.viewports[0].grid_settings();
+    assert_eq!(redone_grid.snap_spacing, source_grid.snap_spacing);
+    assert_eq!(redone_grid.minor_spacing, source_grid.minor_spacing);
+    assert_eq!(redone_grid.major_interval, source_grid.major_interval);
+    assert_eq!(redone_grid.line_count, source_grid.line_count);
 
     enter(&mut app, "CopyCPlaneSettingsToAll 3");
     assert!(
@@ -1038,15 +1057,217 @@ fn copy_cplane_and_grid_settings_to_all_keep_their_domains_separate() {
     app.active_viewport = 1;
     app.viewports[1].set_grid_settings(original_grid);
     enter(&mut app, "CopyCPlaneSettingsToAll");
+    assert!(app.copy_cplane_source.is_some());
+    assert!(app.handle_viewport_action(ViewportOutput {
+        source_viewport_click: true,
+        ..Default::default()
+    }));
     assert!(
         app.viewports
             .iter()
             .all(|view| view.grid_settings() == original_grid)
     );
+    assert!(app.copy_cplane_source.is_none());
     assert_eq!(app.document.undo_label(), None);
     enter(&mut app, "CopyCPlaneToAll Missing");
     assert!(app.command_log.back().unwrap().starts_with("Error:"));
     assert_eq!(app.active_command, pending);
+}
+
+#[test]
+fn copy_cplane_to_all_waits_for_a_viewport_click_and_preserves_view_flags() {
+    let mut app = test_app();
+    let source = 2;
+    let target = 0;
+    let source_plane = viboceros_command::construction_plane::WorldPlane::Right
+        .frame()
+        .with_origin(point(7., 8., 9.));
+    app.viewports[source].plane.set(source_plane);
+    let source_grid = GridSettings {
+        snap_spacing: 0.25,
+        minor_spacing: 3.5,
+        major_interval: 3,
+        line_count: 30,
+        show_grid: false,
+        show_axes: false,
+        show_world_axes: true,
+    };
+    app.viewports[source].set_grid_settings(source_grid);
+    let original_target_grid = app.viewports[target].grid_settings();
+    let original_target_plane = app.viewports[target].construction_plane();
+
+    enter(&mut app, "CopyCPlaneToAll");
+    assert!(app.copy_cplane_source.is_some());
+    assert_eq!(
+        app.viewports[target].construction_plane(),
+        original_target_plane
+    );
+    app.active_viewport = source;
+    assert!(app.handle_viewport_action(ViewportOutput {
+        source_viewport_click: true,
+        selection_click: Some(SelectionClick {
+            object_id: None,
+            mode: SelectionMode::Replace,
+        }),
+        ..Default::default()
+    }));
+    assert!(app.copy_cplane_source.is_none());
+    assert_eq!(app.viewports[target].construction_plane(), source_plane);
+    let grid = app.viewports[target].grid_settings();
+    assert_eq!(grid.snap_spacing, source_grid.snap_spacing);
+    assert_eq!(grid.minor_spacing, source_grid.minor_spacing);
+    assert_eq!(grid.major_interval, source_grid.major_interval);
+    assert_eq!(grid.line_count, source_grid.line_count);
+    assert_eq!(grid.show_grid, source_grid.show_grid);
+    assert_eq!(grid.show_axes, source_grid.show_axes);
+    assert_eq!(grid.show_world_axes, original_target_grid.show_world_axes);
+}
+
+#[test]
+fn copy_cplane_source_prompt_accepts_enter_on_the_active_viewport() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    let source_plane = viboceros_command::construction_plane::WorldPlane::Right
+        .frame()
+        .with_origin(point(4., 5., 6.));
+    app.viewports[2].set_construction_plane(source_plane);
+    enter(&mut app, "CopyCPlaneToAll");
+    assert!(app.copy_cplane_source.is_some());
+    enter(&mut app, "");
+    assert!(app.copy_cplane_source.is_none());
+    assert!(
+        app.viewports
+            .iter()
+            .all(|viewport| viewport.construction_plane() == source_plane)
+    );
+    assert_eq!(app.active_viewport, 2);
+}
+
+#[test]
+fn picked_copy_cplane_commands_match_saved_rhino_viewport_states() {
+    let recorded: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/copy_cplane_pick.json"
+    ))
+    .unwrap();
+    assert_eq!(recorded["results"].as_array().unwrap().len(), 2);
+    for result in recorded["results"].as_array().unwrap() {
+        let command = if result["id"] == "copy-plane-picked-top" {
+            "CopyCPlaneToAll"
+        } else {
+            "CopyCPlaneSettingsToAll"
+        };
+        let mut app = test_app();
+        let source_plane = Frame3::try_from_directions(
+            point(7., 8., 9.),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            app.document.tolerance(),
+        )
+        .unwrap();
+        app.viewports[0].plane.set(source_plane);
+        app.viewports[0].set_grid_settings(GridSettings {
+            minor_spacing: 3.5,
+            snap_spacing: 0.25,
+            line_count: 30,
+            major_interval: 3,
+            show_grid: false,
+            show_axes: false,
+            show_world_axes: true,
+        });
+        let cameras = app
+            .viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>();
+        app.active_viewport = 1;
+        enter(&mut app, command);
+        assert!(app.copy_cplane_source.is_some());
+        app.active_viewport = 0;
+        app.handle_viewport_action(ViewportOutput {
+            source_viewport_click: true,
+            ..Default::default()
+        });
+        assert!(app.copy_cplane_source.is_none());
+        assert_eq!(app.active_viewport, 0);
+        assert_eq!(
+            app.viewports
+                .iter()
+                .map(Viewport::camera_snapshot)
+                .collect::<Vec<_>>(),
+            cameras
+        );
+        for viewport in &app.viewports {
+            let expected = &result["value"]["after"][viewport.view_label()];
+            let frame = viewport.construction_plane();
+            let origin = serde_json::from_value::<[f64; 3]>(expected["origin"].clone()).unwrap();
+            assert!(
+                frame
+                    .origin()
+                    .is_near(Point3::try_from(origin).unwrap(), app.document.tolerance())
+            );
+            let axes = serde_json::from_value::<[[f64; 3]; 3]>(expected["axes"].clone()).unwrap();
+            for (actual, expected) in frame.axes().iter().zip(axes) {
+                for (a, e) in actual.as_vector().to_array().iter().zip(expected) {
+                    assert!((a - e).abs() < 1e-10);
+                }
+            }
+            let grid = viewport.grid_settings();
+            assert_eq!(
+                grid.minor_spacing,
+                expected["grid_spacing"].as_f64().unwrap()
+            );
+            assert_eq!(
+                grid.snap_spacing,
+                expected["snap_spacing"].as_f64().unwrap()
+            );
+            assert_eq!(
+                grid.line_count,
+                expected["grid_line_count"].as_u64().unwrap() as u32
+            );
+            assert_eq!(
+                grid.major_interval,
+                expected["thick_line_frequency"].as_u64().unwrap() as u32
+            );
+            assert_eq!(grid.show_grid, expected["show_grid"].as_bool().unwrap());
+            assert_eq!(grid.show_axes, expected["show_axes"].as_bool().unwrap());
+            assert_eq!(
+                grid.show_world_axes,
+                expected["show_world_axes"].as_bool().unwrap()
+            );
+        }
+        if result["value"]["after_undo"].is_object() {
+            app.active_viewport = 2;
+            enter(&mut app, "CPlane Undo");
+            let actual = &app.viewports[2];
+            let expected = &result["value"]["after_undo"]["Front"];
+            let frame = actual.construction_plane();
+            let origin = serde_json::from_value::<[f64; 3]>(expected["origin"].clone()).unwrap();
+            assert!(
+                frame
+                    .origin()
+                    .is_near(Point3::try_from(origin).unwrap(), app.document.tolerance())
+            );
+            let grid = actual.grid_settings();
+            assert_eq!(
+                grid.minor_spacing,
+                expected["grid_spacing"].as_f64().unwrap()
+            );
+            assert_eq!(
+                grid.snap_spacing,
+                expected["snap_spacing"].as_f64().unwrap()
+            );
+            assert_eq!(
+                grid.line_count,
+                expected["grid_line_count"].as_u64().unwrap() as u32
+            );
+            assert_eq!(
+                grid.major_interval,
+                expected["thick_line_frequency"].as_u64().unwrap() as u32
+            );
+            assert_eq!(grid.show_grid, expected["show_grid"].as_bool().unwrap());
+            assert_eq!(grid.show_axes, expected["show_axes"].as_bool().unwrap());
+        }
+    }
 }
 
 #[test]

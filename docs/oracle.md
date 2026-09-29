@@ -208,6 +208,18 @@ python3 -m tools.rhino_oracle replay \
 
 All 18 Curve cases replay; the largest component difference is `3.06e-16`.
 
+The [CPlane copy-pick fixture](../tools/rhino_oracle/fixtures/copy_cplane_pick.json)
+records private-Xvfb clicks in the Top viewport for `CopyCPlaneToAll` and
+`CopyCPlaneSettingsToAll`, with the Perspective viewport initially active.
+The [saved observation](../tools/rhino_oracle/observations/copy_cplane_pick.json)
+shows that the plane command copies the frame, numeric grid settings, grid
+visibility, and construction-axis visibility while preserving each target's
+world-axis icon setting. The settings command copies all grid settings and
+leaves target frames intact. Both make the clicked source viewport active.
+The plane command's `CPlane Undo` restores the selected target's old frame and
+numeric grid settings, one viewport at a time, while its visibility settings
+stay copied. An app regression checks the saved viewport states and cameras.
+
 The [curve Object fixture](../tools/rhino_oracle/fixtures/construction_plane_object_curve.json)
 records 15 private-Xvfb cases for lines, open and closed polylines, and
 polynomial or rational NURBS curves. Linear curves use an axis-aligned

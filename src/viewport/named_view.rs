@@ -136,7 +136,7 @@ impl Viewport {
             50.0
         };
         let mut view = Self::new(ViewKind::Plan);
-        view.plane.set(source.construction_plane);
+        view.set_construction_plane(source.construction_plane);
         view.cplane_direction = None;
         view.pan = Vec2::ZERO;
         view.frustum_near = near;

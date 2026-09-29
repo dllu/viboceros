@@ -499,7 +499,7 @@ impl VibocerosApp {
                                 "saved grid settings are invalid".into(),
                             ));
                         }
-                        viewport.plane.set(saved.plane);
+                        viewport.set_construction_plane(saved.plane);
                         viewport.set_grid_settings(grid);
                         Ok(format!(
                             "Restored named CPlane '{saved_name}' in active viewport"

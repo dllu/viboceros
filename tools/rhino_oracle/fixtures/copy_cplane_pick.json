@@ -1,0 +1,8 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {"op": "copy_cplane_probe", "id": "copy-plane-picked-top", "command": "CopyCPlaneToAll"},
+    {"op": "copy_cplane_probe", "id": "copy-settings-picked-top", "command": "CopyCPlaneSettingsToAll"}
+  ]
+}

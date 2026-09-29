@@ -20,6 +20,8 @@ the current document. `3View`, `4View`, and `MaxViewport` change the layout;
 `4View Projection=FirstAngle|ThirdAngle` restores either standard arrangement.
 `SynchronizeCPlanes [source] [SetView=Yes|No]` aligns standard view planes to a
 source viewport's construction plane.
+`CopyCPlaneToAll` and `CopyCPlaneSettingsToAll` copy from a picked viewport;
+press Enter to use the active viewport.
 `CPlane All point` and `CPlane Through All point` move every viewport's
 construction plane origin while retaining its own axes.
 `CPlane View` aligns the active plane to its camera without moving the view.

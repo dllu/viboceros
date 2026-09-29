@@ -1,0 +1,755 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "copy-plane-picked-top",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              -80.2123006609122,
+              0.0
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Perspective": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              43.11149477068236,
+              -74.67348978755606,
+              49.78232652503737
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Right": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              80.2123006609122,
+              0.0,
+              0.0
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Top": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              80.2123006609122
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          }
+        },
+        "after_undo": {
+          "Front": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              -80.2123006609122,
+              0.0
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Perspective": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              43.11149477068236,
+              -74.67348978755606,
+              49.78232652503737
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Right": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              80.2123006609122,
+              0.0,
+              0.0
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": false,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Top": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              80.2123006609122
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          }
+        },
+        "before": {
+          "Front": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              -80.2123006609122,
+              0.0
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Perspective": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_location": [
+              43.11149477068236,
+              -74.67348978755606,
+              49.78232652503737
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Right": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              80.2123006609122,
+              0.0,
+              0.0
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Top": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              80.2123006609122
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          }
+        },
+        "source": "Top"
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "copy-settings-picked-top",
+      "value": {
+        "active_after": "Top",
+        "after": {
+          "Front": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              -80.2123006609122,
+              0.0
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Perspective": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_location": [
+              43.11149477068236,
+              -74.67348978755606,
+              49.78232652503737
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Right": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              80.2123006609122,
+              0.0,
+              0.0
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          },
+          "Top": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              80.2123006609122
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          }
+        },
+        "after_undo": null,
+        "before": {
+          "Front": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              -80.2123006609122,
+              0.0
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Perspective": {
+            "axes": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_location": [
+              43.11149477068236,
+              -74.67348978755606,
+              49.78232652503737
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Right": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              80.2123006609122,
+              0.0,
+              0.0
+            ],
+            "grid_line_count": 70,
+            "grid_spacing": 1.0,
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "show_axes": true,
+            "show_grid": true,
+            "show_world_axes": false,
+            "snap_spacing": 1.0,
+            "thick_line_frequency": 5
+          },
+          "Top": {
+            "axes": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              80.2123006609122
+            ],
+            "grid_line_count": 30,
+            "grid_spacing": 3.5,
+            "origin": [
+              7.0,
+              8.0,
+              9.0
+            ],
+            "show_axes": false,
+            "show_grid": false,
+            "show_world_axes": true,
+            "snap_spacing": 0.25,
+            "thick_line_frequency": 3
+          }
+        },
+        "source": "Top"
+      }
+    }
+  ]
+}

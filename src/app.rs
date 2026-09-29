@@ -1784,6 +1784,7 @@ pub struct VibocerosApp {
     point_filter: Option<viboceros_drafting::PointFilterSession>,
     point_constraint: Option<viboceros_drafting::PointConstraintState>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
+    copy_cplane_source: Option<construction_plane::CopyCPlaneKind>,
     cplane_options: viboceros_command::construction_plane::PlaneOptions,
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
@@ -1865,6 +1866,7 @@ impl VibocerosApp {
             point_filter: None,
             point_constraint: None,
             plane_prompt: None,
+            copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
             group_prompt: None,
@@ -1887,6 +1889,14 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.copy_cplane_source.is_some() {
+            if input.is_empty() {
+                self.accept_copy_cplane_source(self.active_viewport);
+                return;
+            }
+            self.copy_cplane_source = None;
+            self.push_log("CopyCPlane source pick canceled".into());
+        }
         if input.is_empty() && self.end_analysis_pick.is_some() {
             self.finish_end_analysis_pick();
             self.command_input.clear();
@@ -7669,7 +7679,9 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, output: ViewportOutput) -> bool {
-        if output.zoom_target_cancelled {
+        if output.source_viewport_click && self.copy_cplane_source.is_some() {
+            self.accept_copy_cplane_source(self.active_viewport);
+        } else if output.zoom_target_cancelled {
             self.zoom_target = None;
             self.push_log("Zoom Target canceled".into());
         } else if let Some((target, viewport)) = output.zoom_target_pick {
@@ -7857,6 +7869,8 @@ impl eframe::App for VibocerosApp {
                 // Escape dismisses the rename editor without canceling a modeling prompt.
             } else if self.selection_menu.take().is_some() {
                 // Escape dismisses the choice without changing the selection.
+            } else if self.copy_cplane_source.take().is_some() {
+                self.push_log("CopyCPlane source pick canceled".into());
             } else if self.end_analysis_pick.is_some() {
                 self.cancel_end_analysis_pick(true);
             } else if self.zoom_target.take().is_some() {
@@ -8495,6 +8509,7 @@ mod tests {
             point_filter: None,
             point_constraint: None,
             plane_prompt: None,
+            copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
             curve_points: Vec::new(),

@@ -8,7 +8,7 @@ use viboceros_geometry::{
     NurbsSurface, Point3, PolyCurve3, Tolerance, TriangleMesh, Vector3,
 };
 
-const HISTORY_LIMIT: usize = 50;
+pub const HISTORY_LIMIT: usize = 50;
 pub const USAGE: &str = "CPlane [point | All[=Yes|No] point | View | World Top|Bottom|Front|Back|Right|Left | 3Point origin (x-point y-point | Vertical x-point | ZAxis z-point) | Elevation distance | Through [All[=Yes|No]] point | Rotate axis-start axis-end (degrees | reference-point target-point) | Curve [object-id [point]] | Object [object-id [Face=index]] | Surface [object-id [Face=index] [Flip=Yes|No] [IgnoreTrims=Yes|No] [origin [x-point]]] | Undo | Redo]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

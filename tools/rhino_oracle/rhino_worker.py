@@ -4545,6 +4545,89 @@ def _synchronize_cplanes_probe(operation):
             "pick": [x, y], "active_after": document.Views.ActiveView.ActiveViewport.Name}, 0
 
 
+def _copy_cplane_probe(operation):
+    command = operation.get("command")
+    if command not in ("CopyCPlaneToAll", "CopyCPlaneSettingsToAll"):
+        raise ValueError("unknown CPlane copy command")
+    document = Rhino.RhinoDoc.ActiveDoc
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four standard viewports")
+    views = list(document.Views.GetViewList(True, False))
+    matching = [view for view in views if view.ActiveViewport.Name == "Top"]
+    if len(matching) != 1:
+        raise ValueError("expected one Top viewport")
+    source = matching[0]
+    plane = source.ActiveViewport.GetConstructionPlane()
+    plane.Plane = Rhino.Geometry.Plane(
+        Rhino.Geometry.Point3d(7, 8, 9), Rhino.Geometry.Vector3d(0, 1, 0),
+        Rhino.Geometry.Vector3d(0, 0, 1))
+    plane.GridSpacing = 3.5
+    plane.SnapSpacing = 0.25
+    plane.GridLineCount = 30
+    plane.ThickLineFrequency = 3
+    plane.ShowGrid = False
+    plane.ShowAxes = False
+    if source.ActiveViewport.SetConstructionPlane(plane) is False:
+        raise ValueError("could not set source CPlane")
+    source.ActiveViewport.ConstructionGridVisible = False
+    source.ActiveViewport.ConstructionAxesVisible = False
+    source.ActiveViewport.WorldAxesVisible = True
+    for view in views:
+        if view is source:
+            continue
+        settings = view.ActiveViewport.GetConstructionPlane()
+        settings.GridSpacing = 1.0
+        settings.SnapSpacing = 1.0
+        settings.GridLineCount = 70
+        settings.ThickLineFrequency = 5
+        settings.ShowGrid = True
+        settings.ShowAxes = True
+        if view.ActiveViewport.SetConstructionPlane(settings) is False:
+            raise ValueError("could not reset target CPlane settings")
+        view.ActiveViewport.ConstructionGridVisible = True
+        view.ActiveViewport.ConstructionAxesVisible = True
+        view.ActiveViewport.WorldAxesVisible = False
+    active = next(view for view in views if view.ActiveViewport.Name == "Perspective")
+    document.Views.ActiveView = active
+
+    def state():
+        return {
+            view.ActiveViewport.Name: {
+                "origin": _xyz(view.ActiveViewport.ConstructionPlane().Origin),
+                "axes": [_xyz(view.ActiveViewport.ConstructionPlane().XAxis),
+                         _xyz(view.ActiveViewport.ConstructionPlane().YAxis),
+                         _xyz(view.ActiveViewport.ConstructionPlane().ZAxis)],
+                "grid_spacing": float(view.ActiveViewport.GetConstructionPlane().GridSpacing),
+                "snap_spacing": float(view.ActiveViewport.GetConstructionPlane().SnapSpacing),
+                "grid_line_count": int(view.ActiveViewport.GetConstructionPlane().GridLineCount),
+                "thick_line_frequency": int(view.ActiveViewport.GetConstructionPlane().ThickLineFrequency),
+                "show_grid": bool(view.ActiveViewport.ConstructionGridVisible),
+                "show_axes": bool(view.ActiveViewport.ConstructionAxesVisible),
+                "show_world_axes": bool(view.ActiveViewport.WorldAxesVisible),
+                "camera_location": _xyz(view.ActiveViewport.CameraLocation),
+            } for view in views
+        }
+
+    before = state()
+    bounds = source.ScreenRectangle
+    x, y = int((bounds.Left + bounds.Right) / 2), int((bounds.Top + bounds.Bottom) / 2)
+    _record_progress("PICK %s %d %d" % (operation["id"], x, y))
+    script = "_%s _Pause" % command
+    if not _run_surface_script(script, True):
+        raise ValueError("CPlane copy command failed: " + script)
+    after = state()
+    active_after = document.Views.ActiveView.ActiveViewport.Name
+    after_undo = None
+    if command == "CopyCPlaneToAll":
+        target = next(view for view in views if view.ActiveViewport.Name == "Front")
+        document.Views.ActiveView = target
+        if not _run_surface_script("_CPlane _Undo", True):
+            raise ValueError("CPlane Undo after copy failed")
+        after_undo = state()
+    return {"before": before, "after": after, "after_undo": after_undo,
+            "active_after": active_after, "source": source.ActiveViewport.Name}, 0
+
+
 def _construction_plane_script(step):
     kind = step["kind"]
     def point(value):
@@ -6580,6 +6663,8 @@ def _execute(operation, iterations, tolerance):
         return _viewport_arrangement_probe(operation)
     if kind == "synchronize_cplanes_probe":
         return _synchronize_cplanes_probe(operation)
+    if kind == "copy_cplane_probe":
+        return _copy_cplane_probe(operation)
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

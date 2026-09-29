@@ -225,7 +225,8 @@ class OracleClient:
             for operation in request["operations"]:
                 if operation.get("op") == "view_camera_probe":
                     validate(operation)
-        if any(op.get("op") == "synchronize_cplanes_probe" for op in request.get("operations", [])):
+        if any(op.get("op") in ("synchronize_cplanes_probe", "copy_cplane_probe")
+               for op in request.get("operations", [])):
             from .group_picking import IdlePicker
             interaction = IdlePicker()
         if any(op.get("op") in ("area_centroid_command", "volume_centroid_command", "volume_command") for op in request.get("operations", [])):

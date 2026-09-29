@@ -25,16 +25,22 @@ primitives, and plane-aware transforms use that frame.
 | `CPlane Curve [object-id [point]]` | Place a plane perpendicular to a curve at a chosen station. |
 | `CPlane Object [object-id [Face=index]]` | Align the active plane to a supported object, mesh face, or B-rep face. |
 | `CPlane Surface [object-id [Face=index] [Flip=Yes\|No] [IgnoreTrims=Yes\|No] [origin [x-point]]]` | Place a tangent plane on a surface or B-rep face, then choose its X direction. |
-| `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane history. |
+| `CPlane Undo` / `CPlane Redo` | Navigate viewport-local plane and numeric grid history. |
 | `NamedCPlane Save name` / `Restore name` | Save or restore a reusable construction plane with grid and snap spacing. |
 | `NamedCPlane Import path.3dm` | Import named construction planes without importing model objects. |
-| `CopyCPlaneToAll [source]` | Copy a viewport's construction plane to every other viewport. |
+| `CopyCPlaneToAll [source]` | Copy a viewport's construction plane and grid settings to every other viewport. |
 | `CopyCPlaneSettingsToAll [source]` | Copy its grid display and snap settings to every other viewport. |
 | `SynchronizeCPlanes [source] [SetView=Yes\|No]` | Orient standard Top, Front, Right, and Perspective construction planes to a source plane. |
 
-For the copy commands, `source` is a viewport name or its one-based number;
-omitting it uses the active viewport. The plane command records each target's
-plane history. Both commands leave camera views and model undo unchanged.
+For the copy commands, `source` is a viewport name or its one-based number.
+Omitting it prompts for a click in the source viewport; Enter uses the active
+viewport. Clicking makes the source viewport active. `CopyCPlaneToAll` also
+copies grid and snap spacing, line count, thick-line interval, grid visibility,
+and construction-axis visibility. It retains each target's world-axis icon
+visibility. The plane command records each target's plane and numeric grid
+history; Undo restores numeric settings but keeps grid and axis visibility.
+Both commands leave camera views and
+model undo unchanged.
 
 `SynchronizeCPlanes` uses the active viewport unless `source` names a viewport
 or gives its one-based number. Perspective receives the source plane; Front and
@@ -197,8 +203,7 @@ and Ghosted retain the edited plane without changing the other viewports.
 
 This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
 Gumball, universal/automatic planes, the named-plane panel, and
-CopyCPlane commands with a picked source viewport remain
-unimplemented. General scalar point-input
+General scalar point-input
 constraints and converting every remaining modeling command to construction
 planes are separate ongoing work. The existing view menu is not full `SetView`.
 The typed `Through All` macro has a documented/native discrepancy described in the

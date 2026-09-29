@@ -73,6 +73,34 @@ pub(crate) struct GridSettings {
     pub show_world_axes: bool,
 }
 
+#[derive(Clone, Copy, Debug)]
+struct GridMetrics {
+    snap_spacing: Real,
+    minor_spacing: Real,
+    major_interval: u32,
+    line_count: u32,
+}
+
+impl From<GridSettings> for GridMetrics {
+    fn from(grid: GridSettings) -> Self {
+        Self {
+            snap_spacing: grid.snap_spacing,
+            minor_spacing: grid.minor_spacing,
+            major_interval: grid.major_interval,
+            line_count: grid.line_count,
+        }
+    }
+}
+
+impl GridMetrics {
+    fn restore(self, grid: &mut GridSettings) {
+        grid.snap_spacing = self.snap_spacing;
+        grid.minor_spacing = self.minor_spacing;
+        grid.major_interval = self.major_interval;
+        grid.line_count = self.line_count;
+    }
+}
+
 impl Default for GridSettings {
     fn default() -> Self {
         Self {
@@ -346,6 +374,7 @@ pub struct ViewportOutput {
     pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub enter_pressed: bool,
+    pub source_viewport_click: bool,
     pub activated: bool,
     pub toggle_maximized: bool,
 }
@@ -395,6 +424,8 @@ pub struct Viewport {
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
     pub(crate) plane: ConstructionPlaneState,
+    grid_undo: std::collections::VecDeque<GridMetrics>,
+    grid_redo: Vec<GridMetrics>,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
     grid: GridSettings,
@@ -440,6 +471,8 @@ impl Viewport {
             cplane_direction: None,
             synchronized_role: None,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
+            grid_undo: Default::default(),
+            grid_redo: Vec::new(),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
             grid: GridSettings::default(),
@@ -497,7 +530,7 @@ impl Viewport {
     pub(crate) fn restore_named_view(&mut self, saved: NamedViewSnapshot) {
         let previous = self.camera_snapshot();
         if self.construction_plane() != saved.plane {
-            self.plane.set(saved.plane);
+            self.set_construction_plane(saved.plane);
         }
         self.restore_camera(saved.camera);
         self.record_camera_change(previous);
@@ -519,6 +552,37 @@ impl Viewport {
     pub(crate) fn set_grid_settings(&mut self, grid: GridSettings) {
         debug_assert!(grid.valid());
         self.grid = grid;
+    }
+
+    pub(crate) fn set_construction_plane(&mut self, frame: Frame3) -> bool {
+        if self.grid_undo.len() == viboceros_command::construction_plane::HISTORY_LIMIT {
+            self.grid_undo.pop_front();
+        }
+        self.grid_undo.push_back(self.grid.into());
+        self.grid_redo.clear();
+        self.plane.set(frame)
+    }
+
+    pub(crate) fn undo_construction_plane(&mut self) -> bool {
+        if !self.plane.undo() {
+            return false;
+        }
+        if let Some(previous) = self.grid_undo.pop_back() {
+            self.grid_redo.push(self.grid.into());
+            previous.restore(&mut self.grid);
+        }
+        true
+    }
+
+    pub(crate) fn redo_construction_plane(&mut self) -> bool {
+        if !self.plane.redo() {
+            return false;
+        }
+        if let Some(next) = self.grid_redo.pop() {
+            self.grid_undo.push_back(self.grid.into());
+            next.restore(&mut self.grid);
+        }
+        true
     }
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {
@@ -655,7 +719,7 @@ impl Viewport {
             .expect("finite synchronized plane axis");
         let target = Frame3::try_from_directions(source.origin(), right, up, Tolerance::DEFAULT)
             .expect("orthonormal synchronized construction plane");
-        self.plane.set(target);
+        self.set_construction_plane(target);
     }
 
     pub(crate) fn view_label(&self) -> &str {
@@ -753,7 +817,7 @@ impl Viewport {
         self.perspective_frame = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
-        self.plane.set(Self::default_plane(kind));
+        self.set_construction_plane(Self::default_plane(kind));
         self.record_camera_change(previous);
     }
 
@@ -778,7 +842,7 @@ impl Viewport {
         self.orbit_yaw = -std::f64::consts::FRAC_PI_4;
         self.orbit_pitch = std::f64::consts::FRAC_PI_6;
         if kind.is_parallel() {
-            self.plane.set(Self::default_plane(kind));
+            self.set_construction_plane(Self::default_plane(kind));
         }
         self.record_camera_change(previous);
     }
@@ -1483,6 +1547,7 @@ impl Viewport {
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Secondary),
+            source_viewport_click: response.clicked_by(PointerButton::Primary),
             activated: response.clicked_by(PointerButton::Primary)
                 || response.clicked_by(PointerButton::Secondary)
                 || response.clicked_by(PointerButton::Middle)
