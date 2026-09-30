@@ -64,6 +64,32 @@ def validate(operation):
             raise ValueError("depth_query_before requires depth bounds")
         if case.get("display_mode", "Wireframe") not in ("Wireframe", "Shaded", "Ghosted"):
             raise ValueError("unsupported clipping display mode")
+        if "redraw_sequence" in case:
+            sequence = case["redraw_sequence"]
+            if not isinstance(sequence, list) or not 1 <= len(sequence) <= 8:
+                raise ValueError("redraw_sequence requires one to eight bounded actions")
+            for action in sequence:
+                if not isinstance(action, dict) or len(action) != 1:
+                    raise ValueError("expected one redraw action")
+                field = next(iter(action))
+                value = action[field]
+                if field in ("zoom_factor", "camera_distance_scale"):
+                    if (isinstance(value, bool) or not isinstance(value, (int, float))
+                            or not _finite(float(value)) or not 0.1 <= value <= 10.0):
+                        raise ValueError("invalid redraw camera scale")
+                elif field == "camera_pan":
+                    if (not isinstance(value, list) or len(value) != 2
+                            or any(isinstance(v, bool) or not isinstance(v, (int, float))
+                                   or not _finite(float(v)) or abs(v) > 1e6 for v in value)):
+                        raise ValueError("invalid redraw camera pan")
+                elif field in ("visible", "delete_geometry", "redraw"):
+                    if type(value) is not bool or (field != "visible" and value is not True):
+                        raise ValueError("invalid redraw geometry action")
+                elif field == "world_view":
+                    if value not in ZOOM_PROJECTIONS:
+                        raise ValueError("unsupported redraw world view")
+                else:
+                    raise ValueError("unsupported redraw action")
 
 
 def info_snapshot(info):
@@ -103,9 +129,12 @@ def run(operation, viewport, host):
     original_name = viewport.Name
     original_display_mode = viewport.DisplayMode if any("display_mode" in case for case in operation["cases"]) else None
     owned = []
+    show_before_delete = any(case.get("context_hidden") or any(
+        action.get("visible") is False for action in case.get("redraw_sequence", []))
+        for case in operation["cases"])
 
     def delete_owned(object_id):
-        if any(case.get("context_hidden") for case in operation["cases"]):
+        if show_before_delete:
             # Hidden job-owned geometry must be shown before the ordinary
             # Delete overload can remove it. No foreign IDs enter this list.
             document.Objects.Show(object_id, True)
@@ -215,6 +244,44 @@ def run(operation, viewport, host):
                     document.Views.Redraw()
                     Rhino.RhinoApp.Wait()
                     clipping["after_redraw"] = snapshot(viewport, Rhino)
+            if "redraw_sequence" in case:
+                clipping = clipping or {}
+                clipping["redraw_steps"] = []
+                for action in case["redraw_sequence"]:
+                    if "zoom_factor" in action:
+                        if not Rhino.RhinoApp.RunScript("_Zoom _Factor %.17g" % action["zoom_factor"], False):
+                            raise ValueError("could not run redraw zoom")
+                    elif "camera_distance_scale" in action:
+                        location, target = _xyz(viewport.CameraLocation), _xyz(viewport.CameraTarget)
+                        location = [b + (a - b) * action["camera_distance_scale"]
+                                    for a, b in zip(location, target)]
+                        viewport.SetCameraLocation(Rhino.Geometry.Point3d(*location), False)
+                    elif "camera_pan" in action:
+                        right, up = _unit(viewport.CameraX), _unit(viewport.CameraY)
+                        x, y = action["camera_pan"]
+                        delta = [x * a + y * b for a, b in zip(right, up)]
+                        location = [a + b for a, b in zip(_xyz(viewport.CameraLocation), delta)]
+                        target = [a + b for a, b in zip(_xyz(viewport.CameraTarget), delta)]
+                        viewport.SetCameraLocations(Rhino.Geometry.Point3d(*target),
+                                                    Rhino.Geometry.Point3d(*location))
+                    elif "visible" in action:
+                        method = document.Objects.Show if action["visible"] else document.Objects.Hide
+                        for object_id in owned:
+                            if method(object_id, True) is False:
+                                raise ValueError("could not change owned point visibility")
+                    elif "delete_geometry" in action:
+                        while owned:
+                            if not delete_owned(owned[-1]):
+                                raise ValueError("could not delete owned redraw point")
+                            owned.pop()
+                    elif "world_view" in action:
+                        if not Rhino.RhinoApp.RunScript("_SetView _World _" + action["world_view"], False):
+                            raise ValueError("could not run redraw world view")
+                    before_redraw = snapshot(viewport, Rhino)
+                    document.Views.Redraw()
+                    Rhino.RhinoApp.Wait()
+                    clipping["redraw_steps"].append(dict(action=action, before=before_redraw,
+                        after=snapshot(viewport, Rhino)))
             after["projected_points"] = []
             for point in corners:
                 screen = viewport.WorldToClient(point)

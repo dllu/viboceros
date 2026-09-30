@@ -1,0 +1,1956 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "redraw",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-Wireframe-refresh",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-zoom",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-dolly",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-pan",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-hidden",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-deleted",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-world",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Top-Wireframe-depth",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-refresh",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-zoom",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-dolly",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-pan",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-hidden",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-deleted",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-world",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Top-Shaded-depth",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-refresh",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-zoom",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-dolly",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-pan",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-hidden",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-deleted",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-world",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Top-Ghosted-depth",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-refresh",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-zoom",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-dolly",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-pan",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-hidden",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-deleted",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-world",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Wireframe-depth",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-refresh",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-zoom",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-dolly",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-pan",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-hidden",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-deleted",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-world",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Shaded-depth",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-refresh",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-zoom",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-dolly",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-pan",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-hidden",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-deleted",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-world",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "Perspective-Ghosted-depth",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-refresh",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-zoom",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-dolly",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-pan",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-hidden",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-deleted",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-world",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-depth",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-refresh",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-zoom",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-dolly",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-pan",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-hidden",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-deleted",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-world",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-depth",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-refresh",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "redraw": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-zoom",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "zoom_factor": 2
+            },
+            {
+              "zoom_factor": 0.25
+            },
+            {
+              "zoom_factor": 2
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-dolly",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.1
+            },
+            {
+              "camera_distance_scale": 10
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-pan",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_pan": [
+                10,
+                2
+              ]
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "camera_pan": [
+                -210,
+                -102
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-hidden",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "redraw": true
+            },
+            {
+              "visible": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-deleted",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "delete_geometry": true
+            },
+            {
+              "redraw": true
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-world",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "world_view": "Front"
+            },
+            {
+              "world_view": "Perspective"
+            },
+            {
+              "world_view": "TwoPointPerspective"
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-depth",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "camera_distance_scale": 0.5
+            },
+            {
+              "zoom_factor": 2
+            },
+            {
+              "redraw": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

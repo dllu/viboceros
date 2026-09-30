@@ -43,7 +43,7 @@ impl Viewport {
                 },
                 location,
                 forward,
-                up,
+                camera.camera_up_hint.unwrap_or(up),
                 camera.target + camera.camera_target_offset,
                 [
                     (shift_x - 1.0) * half_width,
@@ -77,7 +77,7 @@ impl Viewport {
                 ThreeDmProjection::Parallel,
                 axis_target - forward * camera.perspective_camera_distance,
                 forward,
-                up,
+                camera.camera_up_hint.unwrap_or(up),
                 axis_target + camera.camera_target_offset,
                 [
                     (shift_x - 1.0) * half_width,
@@ -153,6 +153,7 @@ impl Viewport {
         view.perspective_camera_distance = distance;
         let axis_target = location + forward * distance;
         view.camera_target_offset = nominal_target - axis_target;
+        view.camera_up_hint = Some(up_hint.normalize());
         if !view
             .camera_target_offset
             .iter()

@@ -89,6 +89,7 @@ impl Viewport {
         self.camera_target_offset = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.perspective_frame = None;
+        self.camera_up_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         // The public OpenNURBS default world perspective direction is
@@ -530,6 +531,9 @@ impl Viewport {
                     return;
                 };
                 self.perspective_frame = Some(frame);
+                self.camera_up_hint = self
+                    .camera_up_hint
+                    .map(|hint| rotation.transform_vector(&hint));
             } else {
                 self.orbit_yaw += yaw;
             }
@@ -558,6 +562,9 @@ impl Viewport {
                     Tolerance::DEFAULT,
                 ) {
                     self.perspective_frame = Some(camera_frame);
+                    self.camera_up_hint = self
+                        .camera_up_hint
+                        .map(|hint| rotation.transform_vector(&hint));
                     self.cplane_direction = None;
                 }
             } else {

@@ -1,0 +1,222 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "fallback",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-empty-False",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Top-empty-True",
+          "projection": "Top",
+          "min": [
+            100,
+            200,
+            300
+          ],
+          "max": [
+            120,
+            210,
+            306
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Perspective-empty-False",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Perspective-empty-True",
+          "projection": "Perspective",
+          "min": [
+            100,
+            200,
+            300
+          ],
+          "max": [
+            120,
+            210,
+            306
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-empty-False",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-empty-True",
+          "projection": "TwoPointPerspective",
+          "min": [
+            100,
+            200,
+            300
+          ],
+          "max": [
+            120,
+            210,
+            306
+          ],
+          "method": "BoundingBox",
+          "redraw_sequence": [
+            {
+              "visible": false
+            },
+            {
+              "camera_pan": [
+                200,
+                100
+              ]
+            },
+            {
+              "redraw": true
+            },
+            {
+              "camera_pan": [
+                -200,
+                -100
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

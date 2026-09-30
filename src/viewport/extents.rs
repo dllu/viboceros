@@ -46,6 +46,7 @@ impl CameraFit {
         rect: Rect,
     ) -> Result<Self, &'static str> {
         let mut staged = Viewport::new(viewport.kind);
+        staged.display_cache = std::rc::Rc::clone(&viewport.display_cache);
         staged.restore_camera(self.camera);
         staged.update_clipping_from_document(document, rect)?;
         Ok(Self {

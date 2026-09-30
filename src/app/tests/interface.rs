@@ -2205,8 +2205,8 @@ fn zoom_target_two_clicks_preserve_the_modeling_prompt_and_redo() {
     let redo = app.document.redo_label().map(str::to_owned);
     let context = egui::Context::default();
     enter(&mut app, "ZT");
-    let initial = app.viewports[0].camera_snapshot();
     zoom_target_frame(&context, &mut app, ZoomTargetInput::PickTarget, vec![]);
+    let initial = app.viewports[0].camera_snapshot();
     let click = |pos, pressed| egui::Event::PointerButton {
         pos,
         pressed,

@@ -138,6 +138,7 @@ pub(crate) struct CameraSnapshot {
     two_point_perspective: bool,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
+    camera_up_hint: Option<NaVector3<Real>>,
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
     pixels_per_unit: Real,
@@ -414,6 +415,7 @@ pub struct SelectionWindow {
 pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
+    cached_clipping: Option<clipping::ClipRefreshKey>,
     edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
     object_snap_cache: std::cell::RefCell<viboceros_drafting::ObjectSnapCache>,
     #[cfg(test)]
@@ -426,6 +428,8 @@ pub struct Viewport {
     two_point_perspective: bool,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
+    /// Preserve imported CameraUp independently of the orthonormal screen axes.
+    camera_up_hint: Option<NaVector3<Real>>,
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
     pub(crate) plane: ConstructionPlaneState,
@@ -466,6 +470,7 @@ impl Viewport {
         Self {
             display_cache: Default::default(),
             cached_scene: Default::default(),
+            cached_clipping: None,
             edge_snap_cache: Default::default(),
             object_snap_cache: Default::default(),
             #[cfg(test)]
@@ -477,6 +482,7 @@ impl Viewport {
             two_point_perspective: false,
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
+            camera_up_hint: None,
             cplane_direction: None,
             synchronized_role: None,
             plane: ConstructionPlaneState::new(Self::default_plane(kind)),
@@ -516,6 +522,7 @@ impl Viewport {
             two_point_perspective: self.two_point_perspective,
             plan_frame: self.plan_frame,
             perspective_frame: self.perspective_frame,
+            camera_up_hint: self.camera_up_hint,
             cplane_direction: self.cplane_direction,
             synchronized_role: self.synchronized_role,
             pixels_per_unit: self.pixels_per_unit,
@@ -630,6 +637,7 @@ impl Viewport {
         self.two_point_perspective = camera.two_point_perspective;
         self.plan_frame = camera.plan_frame;
         self.perspective_frame = camera.perspective_frame;
+        self.camera_up_hint = camera.camera_up_hint;
         self.cplane_direction = camera.cplane_direction;
         self.synchronized_role = camera.synchronized_role;
         self.pixels_per_unit = camera.pixels_per_unit;
@@ -893,6 +901,7 @@ impl Viewport {
         self.two_point_perspective = false;
         self.perspective_frame =
             keep_perspective.then(|| Self::default_plane(kind).with_origin(target));
+        self.camera_up_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(target.to_array());
@@ -932,6 +941,7 @@ impl Viewport {
         self.kind = ViewKind::Plan;
         self.two_point_perspective = false;
         self.perspective_frame = None;
+        self.camera_up_hint = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
@@ -963,6 +973,7 @@ impl Viewport {
             Frame3::try_from_directions(plane.origin(), right, up, Tolerance::DEFAULT)
                 .expect("orthonormal CPlane camera frame");
         self.plan_frame = camera_frame;
+        self.camera_up_hint = None;
         self.cplane_direction = Some(direction);
         self.synchronized_role = synchronized_name;
         if self.kind == ViewKind::Perspective {
@@ -1011,6 +1022,9 @@ impl Viewport {
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
         let rect = response.rect;
         self.last_rect = Some(rect);
+        // Redraw refreshes saved clip metadata without entering camera history.
+        let _ = self.refresh_clipping(document, rect);
+        let redraw_camera = self.camera_snapshot();
 
         let modifiers = ui.input(|input| input.modifiers);
         if response.drag_started_by(PointerButton::Middle)
@@ -1258,6 +1272,9 @@ impl Viewport {
             }
         });
 
+        if self.camera_snapshot() != redraw_camera {
+            let _ = self.refresh_clipping(document, rect);
+        }
         let drafting_cursor = if drafting.active
             && !component_input
             && !input.zoom_window
@@ -2268,7 +2285,10 @@ mod tests {
 
     #[test]
     fn navigation_drag_accumulates_frame_deltas_once_and_stops_on_release() {
-        let document = Document::default();
+        let mut document = Document::default();
+        for p in [point(99., 199., 299.), point(101., 201., 301.)] {
+            document.add_geometry(Geometry::Point(p)).unwrap();
+        }
         let start = Pos2::new(200.0, 150.0);
         let finish = Pos2::new(240.0, 180.0);
         for kind in [
@@ -2289,7 +2309,6 @@ mod tests {
                 let mut viewport = Viewport::new(kind);
                 viewport.target = NaVector3::new(100.0, 200.0, 300.0);
                 let target = viewport.target;
-                let initial_camera = viewport.camera_snapshot();
                 let plane = viewport.construction_plane();
                 let angles = (viewport.orbit_yaw, viewport.orbit_pitch);
                 let button_event = |position, pressed| egui::Event::PointerButton {
@@ -2312,6 +2331,9 @@ mod tests {
                     &document,
                     vec![egui::Event::PointerMoved(start), button_event(start, true)],
                 );
+                // The press frame has refreshed clipping before capturing the
+                // drag's starting state. Later redraws add no history entries.
+                let initial_camera = viewport.camera_snapshot();
                 for position in [
                     Pos2::new(220.0, 160.0),
                     Pos2::new(230.0, 175.0),

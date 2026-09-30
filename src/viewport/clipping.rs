@@ -17,6 +17,13 @@ const DOCUMENT_RELATIVE_BIAS: Real = 7.592899120744e-6;
 mod constraints;
 pub(super) use constraints::{ClipAdjustment, ClipRequest};
 
+#[derive(PartialEq)]
+pub(super) struct ClipRefreshKey {
+    camera: CameraSnapshot,
+    size: [f32; 2],
+    bounds: Option<BoundingBox3>,
+}
+
 impl ClipAdjustment {
     fn document(
         minimum: Real,
@@ -60,9 +67,9 @@ impl ClipAdjustment {
                 0.0,
             )?;
             let bias = 1.001 * DOCUMENT_RELATIVE_BIAS * (result.far - result.near);
-            if result.near - bias >= DOCUMENT_MIN_RATIO * result.far {
-                result.near = (result.near - bias).max(DOCUMENT_MIN_NEAR);
-            }
+            result.near = (result.near - bias)
+                .max(0.99 * DOCUMENT_MIN_RATIO * result.far)
+                .max(DOCUMENT_MIN_NEAR);
             Ok(result)
         } else {
             let span = far - near;
@@ -345,7 +352,12 @@ impl Viewport {
         document: &Document,
         rect: Rect,
     ) -> Result<(), &'static str> {
-        let bounds = document
+        self.update_clipping_from_bounds(self.visible_document_bounds(document), rect)
+    }
+
+    fn visible_document_bounds(&self, document: &Document) -> Option<BoundingBox3> {
+        let mut cache = self.display_cache.borrow_mut();
+        document
             .objects()
             .filter(|object| {
                 object.attributes().is_visible()
@@ -355,25 +367,64 @@ impl Viewport {
             })
             // Keep unsupported unselected geometry from invalidating a valid
             // fit. The renderer likewise omits unrepresentable local vertices.
-            .map(|object| object.geometry().bounds())
+            .map(|object| cache.get(object, document.tolerance()).bounds())
             .filter(|bounds| {
                 self.gpu_position(bounds.min()).is_some()
                     && self.gpu_position(bounds.max()).is_some()
             })
-            .reduce(|a, b| a.union(b).expect("finite document bounds"));
+            .reduce(|a, b| a.union(b).expect("finite document bounds"))
+    }
+
+    pub(super) fn refresh_clipping(
+        &mut self,
+        document: &Document,
+        rect: Rect,
+    ) -> Result<bool, &'static str> {
+        let bounds = self.visible_document_bounds(document);
+        let key = ClipRefreshKey {
+            camera: self.camera_snapshot(),
+            size: [rect.width(), rect.height()],
+            bounds,
+        };
+        if self.cached_clipping.as_ref() == Some(&key) {
+            return Ok(false);
+        }
+        self.update_clipping_from_bounds(bounds, rect)?;
+        // Retain the input pose: a parallel dolly changes the tolerance used
+        // on the following redraw. Reusing that result prematurely loses the
+        // small far-plane update measured in Rhino.
+        self.cached_clipping = Some(key);
+        Ok(true)
+    }
+
+    fn update_clipping_from_bounds(
+        &mut self,
+        bounds: Option<BoundingBox3>,
+        rect: Rect,
+    ) -> Result<(), &'static str> {
+        if !rect.is_finite() || !rect.is_positive() {
+            return Err("invalid viewport dimensions");
+        }
+        // With no visible geometry Rhino uses a unit box at the world origin.
+        let bounds = bounds.unwrap_or_else(|| {
+            BoundingBox3::from_points([
+                Point3::try_new(-1., -1., -1.).unwrap(),
+                Point3::try_new(1., 1., 1.).unwrap(),
+            ])
+            .unwrap()
+        });
         // Rhino intersects the combined scene box with the infinite frustum;
         // an off-screen object can therefore alter the resulting clip interval.
-        if let Some((minimum, maximum)) =
-            bounds.and_then(|bounds| self.bounding_box_depth(bounds, rect))
-        {
-            let update = ClipAdjustment::document(
-                minimum,
-                maximum,
-                self.kind == ViewKind::Perspective,
-                self.perspective_camera_distance,
-            )?;
-            self.apply_clip_adjustment(update)?;
-        }
+        let (minimum, maximum) = self
+            .bounding_box_depth(bounds, rect)
+            .unwrap_or((DOCUMENT_MIN_NEAR, 1000.));
+        let update = ClipAdjustment::document(
+            minimum,
+            maximum,
+            self.kind == ViewKind::Perspective,
+            self.perspective_camera_distance,
+        )?;
+        self.apply_clip_adjustment(update)?;
         Ok(())
     }
 }

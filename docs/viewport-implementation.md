@@ -189,9 +189,26 @@ three display modes, and 48 bounding-box depth queries. Camera poses and
 initial/redraw clip intervals use tolerance `2e-12`; refreshing metadata adds
 no camera history entry. Zoom All still preflights every view atomically.
 
-Stored clipping updates currently apply to Extents/Selected fits. General
-redraw/navigation, World view transitions, and curve-end fits remain outside
-this calibration. GPU rendering retains its independent dynamic depth range.
+Drawing refreshes stored clipping before interaction and again when that
+frame's navigation changes the camera. It also handles document edits,
+visibility/layer changes, projection changes, and layout resize. The empty
+visible scene fallback is a unit world-origin box. A box outside the view uses
+the measured default depth interval; in parallel views this may dolly the
+camera on successive redraws. Refresh never adds model/CPlane/camera history.
+Two more fixtures replay 213 redraws in 78 cases, including translated empty
+scenes, zoom/dolly/pan, World presets, hide/show/delete, and all three display
+modes. Camera components use `2e-12`, projected points `1e-8` pixels.
+
+Immutable display geometry now caches bounds once. Shared caches reuse them
+across views; the clipping key compares camera, viewport dimensions, and the
+combined eligible bounds. Selection/color edits reuse clipping. Its input
+camera is retained so a parallel depth relocation can correctly update the
+intersection tolerance on the next draw. GPU rendering still uses an
+independent dynamic depth range rather than these stored clip planes.
+
+Imported nonorthogonal `CameraUp` hints are retained separately from the
+orthonormal rendering frame, including through clipping refresh and 3DM
+encoding. Orientation changes update or replace the hint.
 
 ## Related behavior and limits
 

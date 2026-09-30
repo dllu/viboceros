@@ -2040,11 +2040,46 @@ to a combined world bounding box before frustum intersection; clipping each
 object separately does not match these captures. Tests also retain screen
 framing, construction planes, selection, and model/view history.
 
-Viboceros applies this clipping calculation to Extents/Selected and their All
-variants. Stored intervals are not yet refreshed during general navigation or
-redraw, World view changes, or curve-end fitting. GPU depth ranges remain
-independently computed. These fixtures run native viewport tests, not the
-generic geometry `compare` operation.
+Viboceros stages this clipping calculation for Extents/Selected and their All
+variants, and refreshes it during drawing after navigation and scene edits.
+GPU depth ranges remain independently computed. These fixtures run native
+viewport tests, not the generic geometry `compare` operation.
+
+### Redraw after navigation and document edits
+
+The [redraw fixture](../tools/rhino_oracle/fixtures/viewport_clipping_redraw.json)
+and [Rhino capture](../tools/rhino_oracle/observations/viewport_clipping_redraw.json)
+record 189 redraws across 72 cases: parallel/perspective/two-point cameras,
+Wireframe/Shaded/Ghosted, Zoom Factor, public dolly/pan API calls, World
+presets, hidden/restored geometry, deleted geometry, and repeated redraws.
+The [fallback fixture](../tools/rhino_oracle/fixtures/viewport_clipping_fallback.json)
+and [capture](../tools/rhino_oracle/observations/viewport_clipping_fallback.json)
+add 24 redraws from six origin/translated empty-scene cases. Run with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_clipping_redraw.json --timeout 360
+cargo test --release -p viboceros redraw_clipping
+```
+
+Each bounded action records snapshots immediately before and after public
+`Views.Redraw`/`RhinoApp.Wait`. The native replay imports the measured input
+camera, reconstructs the visible document, and refreshes clipping. It checks
+full camera/frustum output at `2e-12` and projected points at `1e-8` pixels,
+with camera history unchanged. A separate egui regression verifies the actual
+drawing hook. Shared cached bounds and invalidation tests cover layout/camera
+changes and retained results for selection changes.
+
+An empty scene uses a unit box at the world origin, including when the camera
+target is translated. A box outside the view uses default depths 0.005 and
+1000 before projection-specific padding and constraints. This can retreat a
+parallel camera on every redraw while preserving screen framing. Constrained
+perspective near distances retain Rhino's final 0.99 ratio allowance after
+applying the measured bias.
+
+Public pan calls can retain a nonorthogonal CameraUp hint. Native cameras keep
+that hint separately from perpendicular screen axes so clipping does not
+silently change the saved camera. GPU near/far rendering equivalence remains
+outside these metadata/projection comparisons.
 
 ## Timing interpretation
 

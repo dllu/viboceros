@@ -198,9 +198,16 @@ add 72 Selected fits with visible/hidden unselected geometry in Wireframe,
 Shaded, and Ghosted modes. Replay checks initial and redraw near/far distances
 separately at relative tolerance `2e-12`. The document clipping calculation
 handles thin and tiny models, minimum distances, and near/far ratio constraints.
-General navigation/redraw does not yet refresh the stored clip interval;
-rendering continues to use its separate dynamic depth range. Curve-end fitting
-also retains the explicit bounds fit rather than calibrated document clipping.
+Viewport redraw refreshes the stored interval after navigation, projection
+changes, and scene edits, without creating camera or model history steps.
+An empty visible scene uses a unit bounding box at the world origin; bounds
+outside the infinite frustum use a default depth interval. The latter can dolly
+a parallel camera backward on successive redraws, matching Rhino. Geometry
+bounds are cached per immutable source and shared between views. Unchanged
+camera/bounds/layout inputs reuse the clipping result; selection/color changes
+do not require recalculation. Rendering retains its separate dynamic depth range.
+Curve-end fitting initially stores its explicit bounds interval; redraw then
+refreshes document clipping.
 Twenty additional [border captures](../../tools/rhino_oracle/observations/zoom_extents_borders.json)
 verify factors 0.1, 0.8, 1, 1.5, and 10 through both the public settings API and
 `SetZoomExtentsBorder`. Settings retain the requested value; the minimum fit

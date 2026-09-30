@@ -311,7 +311,7 @@ fn unrepresentable_named_projection_conversion_leaves_camera_and_histories_intac
 }
 
 #[test]
-fn restored_shifted_frusta_survive_actual_3dm_files() {
+fn restored_shifted_frusta_and_raw_up_hints_survive_actual_3dm_files() {
     let capture: serde_json::Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/observations/named_view_policy.json"
     ))
@@ -329,6 +329,27 @@ fn restored_shifted_frusta_survive_actual_3dm_files() {
             );
         }
     }
+    let redraw: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/viewport_clipping_redraw.json"
+    ))
+    .unwrap();
+    let mut hints = 0;
+    for row in redraw["results"][0]["value"].as_array().unwrap() {
+        for step in row["clipping"]["redraw_steps"].as_array().unwrap() {
+            let record = from_row(&step["after"]);
+            if record.camera_direction.dot(record.camera_up).unwrap().abs() <= 0.1 {
+                continue;
+            }
+            let view = viewport_from_row(&step["after"]);
+            let actual =
+                Viewport::named_view_to_3dm(view.named_view_snapshot(), format!("Raw up {hints}"))
+                    .unwrap();
+            check_view(&actual, &record, true);
+            model.named_views.push(actual);
+            hints += 1;
+        }
+    }
+    assert_eq!(hints, 9);
     let path = std::env::temp_dir().join(format!(
         "viboceros-policy-frusta-{}-{}.3dm",
         std::process::id(),

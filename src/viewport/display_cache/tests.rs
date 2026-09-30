@@ -45,6 +45,48 @@ fn assert_same_scene(a: &GpuViewportScene, b: &GpuViewportScene) {
 }
 
 #[test]
+fn clipping_bounds_are_shared_and_refresh_only_for_relevant_changes() {
+    let mut document = fixture();
+    let mut views = Viewport::standard_views();
+    for view in &mut views {
+        view.refresh_clipping(&document, rect()).unwrap();
+        view.refresh_clipping(&document, rect()).unwrap();
+        assert!(!view.refresh_clipping(&document, rect()).unwrap());
+    }
+    let entries = views[0].display_cache.borrow().entries.clone();
+    assert_eq!(entries.len(), document.objects().len());
+    assert!(entries.values().all(|entry| entry.bounds.get().is_some()));
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects(ids, SelectionMode::Replace)
+        .unwrap();
+    assert!(!views[0].refresh_clipping(&document, rect()).unwrap());
+    let outer = document
+        .objects()
+        .find(|o| o.geometry().bounds().max().x() > 6.)
+        .unwrap()
+        .id();
+    document.set_objects_visibility([outer], false).unwrap();
+    assert!(views[0].refresh_clipping(&document, rect()).unwrap());
+    for (id, old) in &entries {
+        assert!(Rc::ptr_eq(
+            old,
+            &views[0].display_cache.borrow().entries[id]
+        ));
+    }
+    views[0].pan.x += 20.;
+    assert!(views[0].refresh_clipping(&document, rect()).unwrap());
+    assert!(
+        views[0]
+            .refresh_clipping(
+                &document,
+                Rect::from_min_size(Pos2::ZERO, Vec2::new(300., 200.))
+            )
+            .unwrap()
+    );
+}
+
+#[test]
 fn four_views_share_geometry_and_reuse_unchanged_scenes() {
     let document = fixture();
     let mut views = Viewport::standard_views();

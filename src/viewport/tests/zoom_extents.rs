@@ -122,6 +122,149 @@ fn perspective_box_depth_rejects_boxes_on_or_behind_the_camera_plane() {
     assert!((far - (1. + tolerance)).abs() < 1e-12);
 }
 
+#[test]
+fn redraw_clipping_matches_navigation_visibility_and_empty_scene_captures() {
+    check_redraw_capture(
+        include_str!("../../../tools/rhino_oracle/observations/viewport_clipping_redraw.json"),
+        189,
+    );
+    check_redraw_capture(
+        include_str!("../../../tools/rhino_oracle/observations/viewport_clipping_fallback.json"),
+        24,
+    );
+}
+
+fn check_redraw_capture(capture: &str, expected_count: usize) {
+    let capture: serde_json::Value = serde_json::from_str(capture).unwrap();
+    let mut checked = 0;
+    for row in capture["results"][0]["value"].as_array().unwrap() {
+        let mut document = Document::default();
+        let minimum: [f64; 3] = serde_json::from_value(row["case"]["min"].clone()).unwrap();
+        let maximum: [f64; 3] = serde_json::from_value(row["case"]["max"].clone()).unwrap();
+        for index in 0..8 {
+            document
+                .add_geometry(Geometry::Point(
+                    Point3::try_from(std::array::from_fn(|axis| {
+                        if index & (1 << axis) == 0 {
+                            minimum[axis]
+                        } else {
+                            maximum[axis]
+                        }
+                    }))
+                    .unwrap(),
+                ))
+                .unwrap();
+        }
+        for step in row["clipping"]["redraw_steps"].as_array().unwrap() {
+            if let Some(visible) = step["action"].get("visible") {
+                let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+                document
+                    .set_objects_visibility(ids, visible.as_bool().unwrap())
+                    .unwrap();
+            } else if step["action"].get("delete_geometry").is_some() {
+                let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+                for id in ids {
+                    document.delete_object(id).unwrap();
+                }
+            }
+            let mut view = viewport_from_row(&step["before"]);
+            let before = view.camera_snapshot();
+            view.view_undo.push(before);
+            view.view_redo.push(before);
+            let histories = (view.view_undo.clone(), view.view_redo.clone());
+            assert!(
+                view.refresh_clipping(&document, view.last_rect.unwrap())
+                    .unwrap()
+            );
+            let actual =
+                Viewport::named_view_to_3dm(view.named_view_snapshot(), String::new()).unwrap();
+            let expected = from_row(&step["after"]);
+            check_view(&actual, &expected, true);
+            for (a, b) in actual.frustum.into_iter().zip(expected.frustum) {
+                assert!(
+                    (a - b).abs() < 2e-12 * b.abs().max(1.),
+                    "{} {:?}: {a} vs {b}",
+                    row["case"]["id"],
+                    step["action"]
+                );
+            }
+            assert_eq!(view.view_undo, histories.0);
+            assert_eq!(view.view_redo, histories.1);
+            for query in step["after"]["projected_points"].as_array().unwrap() {
+                let point = Point3::try_from(
+                    serde_json::from_value::<[f64; 3]>(query["point"].clone()).unwrap(),
+                )
+                .unwrap();
+                let Some(actual) = view.project_precise(point, view.last_rect.unwrap()) else {
+                    // WorldToClient returns coordinates behind the camera;
+                    // display projection intentionally culls those points.
+                    assert_eq!(view.kind, ViewKind::Perspective);
+                    assert!(view.view_depth(point) <= 0.);
+                    continue;
+                };
+                let expected: [f64; 2] = serde_json::from_value(query["screen"].clone()).unwrap();
+                for (a, b) in actual.into_iter().zip(expected) {
+                    assert!(
+                        (a - b).abs() < 1e-8,
+                        "{} screen: {a} vs {b}",
+                        row["case"]["id"]
+                    );
+                }
+            }
+            checked += 1;
+        }
+    }
+    assert_eq!(checked, expected_count);
+}
+
+#[test]
+fn drawing_refreshes_clipping_and_keeps_camera_model_and_plane_history_separate() {
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/viewport_clipping_redraw.json"
+    ))
+    .unwrap();
+    let row = &capture["results"][0]["value"][0];
+    let mut view = viewport_from_row(&row["clipping"]["redraw_steps"][0]["before"]);
+    let mut document = Document::default();
+    for p in [point(-10., -5., -3.), point(10., 5., 3.)] {
+        document.add_geometry(Geometry::Point(p)).unwrap();
+    }
+    let objects = document.objects().cloned().collect::<Vec<_>>();
+    let history = document.undo_label().map(str::to_owned);
+    let before = view.camera_snapshot();
+    view.view_undo.push(before);
+    view.view_redo.push(before);
+    let histories = (view.view_undo.clone(), view.view_redo.clone());
+    let context = egui::Context::default();
+    let size = view.last_rect.unwrap().size();
+    let _ = context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(Rect::from_min_size(Pos2::ZERO, size)),
+            ..Default::default()
+        },
+        |ui| {
+            view.show(ui, &document, ViewportInput::default(), &[], 0, false);
+        },
+    );
+    assert_eq!(
+        view.frustum_near,
+        row["clipping"]["redraw_steps"][0]["after"]["frustum"][4]
+            .as_f64()
+            .unwrap()
+    );
+    assert_eq!(
+        view.frustum_far,
+        row["clipping"]["redraw_steps"][0]["after"]["frustum"][5]
+            .as_f64()
+            .unwrap()
+    );
+    assert_eq!(view.view_undo, histories.0);
+    assert_eq!(view.view_redo, histories.1);
+    assert!(view.grid_undo.is_empty() && view.grid_redo.is_empty());
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(document.undo_label(), history.as_deref());
+}
+
 fn check_capture(request: &str, capture: &str, expected_count: usize, expected_small: usize) {
     let capture: serde_json::Value = serde_json::from_str(capture).unwrap();
     let request: serde_json::Value = serde_json::from_str(request).unwrap();

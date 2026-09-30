@@ -47,6 +47,7 @@ impl DisplayCache {
 
 pub(super) struct DisplayGeometry {
     pub(super) geometry: GeometrySnapshot,
+    bounds: OnceCell<viboceros_geometry::BoundingBox3>,
     wire_density: i32,
     tolerance: Tolerance,
     wires: OnceCell<Vec<[Point3; 2]>>,
@@ -64,6 +65,7 @@ impl DisplayGeometry {
     pub(super) fn new(geometry: GeometrySnapshot, wire_density: i32, tolerance: Tolerance) -> Self {
         Self {
             geometry,
+            bounds: OnceCell::new(),
             wire_density,
             tolerance,
             wires: OnceCell::new(),
@@ -71,6 +73,10 @@ impl DisplayGeometry {
             normals: OnceCell::new(),
             edges: OnceCell::new(),
         }
+    }
+
+    pub(super) fn bounds(&self) -> viboceros_geometry::BoundingBox3 {
+        *self.bounds.get_or_init(|| self.geometry.bounds())
     }
 
     pub(super) fn wires(&self) -> &[[Point3; 2]] {
