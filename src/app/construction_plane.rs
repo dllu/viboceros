@@ -24,6 +24,15 @@ pub(super) struct PlanePrompt {
     surface_frame: Option<Frame3>,
     surface_flip: bool,
     surface_ignore_trims: bool,
+    // Choosing All narrows the origin prompt even when the new setting is No.
+    origin_options_available: bool,
+}
+
+fn is_all_option_word(word: &str) -> bool {
+    word.trim_start_matches('_')
+        .split('=')
+        .next()
+        .is_some_and(|name| name.eq_ignore_ascii_case("All"))
 }
 
 impl PlanePrompt {
@@ -302,6 +311,14 @@ impl VibocerosApp {
             Ok(action) => {
                 self.plane_prompt = None;
                 if self.apply_plane_action(action, self.active_viewport) {
+                    if input
+                        .split_whitespace()
+                        .nth(1)
+                        .is_some_and(is_all_option_word)
+                        && let Some(prompt) = &mut self.plane_prompt
+                    {
+                        prompt.origin_options_available = false;
+                    }
                     self.command_input.clear();
                 }
             }
@@ -359,6 +376,7 @@ impl VibocerosApp {
                 surface_frame: None,
                 surface_flip: false,
                 surface_ignore_trims: false,
+                origin_options_available: true,
             };
             self.push_log(prompt.message().into());
             self.plane_prompt = Some(prompt);
@@ -534,6 +552,7 @@ impl VibocerosApp {
             surface_frame: None,
             surface_flip: false,
             surface_ignore_trims: false,
+            origin_options_available: true,
         };
         self.push_log(prompt.message().into());
         self.plane_prompt = Some(prompt);
@@ -630,6 +649,7 @@ impl VibocerosApp {
             surface_frame: Some(frame),
             surface_flip: flip,
             surface_ignore_trims: ignore_trims,
+            origin_options_available: true,
         };
         self.push_log(prompt.message().into());
         self.plane_prompt = Some(prompt);
@@ -637,9 +657,60 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_plane_prompt(&mut self, input: &str) -> bool {
-        let Some(prompt) = &self.plane_prompt else {
-            return false;
-        };
+        let mut input = input;
+        loop {
+            let Some(prompt) = &self.plane_prompt else {
+                return false;
+            };
+            if !matches!(
+                prompt.kind,
+                PlanePromptKind::Origin
+                    | PlanePromptKind::AllOrigin
+                    | PlanePromptKind::Through
+                    | PlanePromptKind::ThroughAll
+            ) || !input
+                .split_whitespace()
+                .next()
+                .is_some_and(is_all_option_word)
+            {
+                break;
+            }
+            let (option, tail) = input.split_once(char::is_whitespace).unwrap_or((input, ""));
+            let through = matches!(
+                prompt.kind,
+                PlanePromptKind::Through | PlanePromptKind::ThroughAll
+            );
+            let command = format!("CPlane {}{option}", if through { "Through " } else { "" });
+            let parsed = cplane::parse_with_options(
+                &command,
+                prompt.frame,
+                prompt.previous,
+                self.document.tolerance(),
+                self.cplane_options,
+            )
+            .expect("constructed CPlane command");
+            self.cplane_options = parsed.options;
+            match parsed.action {
+                Ok(PlaneAction::Prompt(kind)) => {
+                    let prompt = self.plane_prompt.as_mut().unwrap();
+                    prompt.kind = kind;
+                    prompt.origin_options_available = false;
+                    let message = prompt.message();
+                    self.push_log(message.into());
+                    self.command_input.clear();
+                }
+                Ok(_) => unreachable!("an All option alone keeps the point prompt"),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return true;
+                }
+            }
+            input = tail.trim();
+            if input.is_empty() {
+                return true;
+            }
+        }
+        let prompt = self.plane_prompt.as_ref().unwrap();
         if self
             .commands
             .recognizes(input.split_whitespace().next().unwrap_or(""))
@@ -720,10 +791,12 @@ impl VibocerosApp {
             }
             return true;
         }
-        if matches!(
-            prompt.kind,
-            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
-        ) && input.trim_start_matches('_').eq_ignore_ascii_case("View")
+        if prompt.origin_options_available
+            && matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            )
+            && input.trim_start_matches('_').eq_ignore_ascii_case("View")
         {
             let viewport = prompt.viewport;
             self.plane_prompt = None;
@@ -731,10 +804,12 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if matches!(
-            prompt.kind,
-            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
-        ) && input.trim_start_matches('_').eq_ignore_ascii_case("Object")
+        if prompt.origin_options_available
+            && matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            )
+            && input.trim_start_matches('_').eq_ignore_ascii_case("Object")
         {
             let viewport = prompt.viewport;
             self.plane_prompt = None;
@@ -742,10 +817,12 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if matches!(
-            prompt.kind,
-            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
-        ) && input.trim_start_matches('_').eq_ignore_ascii_case("Curve")
+        if prompt.origin_options_available
+            && matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            )
+            && input.trim_start_matches('_').eq_ignore_ascii_case("Curve")
         {
             let viewport = prompt.viewport;
             self.plane_prompt = None;
@@ -753,12 +830,14 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if matches!(
-            prompt.kind,
-            PlanePromptKind::Origin | PlanePromptKind::AllOrigin
-        ) && input
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case("Surface")
+        if prompt.origin_options_available
+            && matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            )
+            && input
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Surface")
         {
             let viewport = prompt.viewport;
             self.plane_prompt = None;

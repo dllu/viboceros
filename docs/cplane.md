@@ -138,7 +138,10 @@ an invalid result leaves all planes unchanged. Explicit `All=Yes` and `All=No`
 forms are accepted in command macros. Origin and Through remember their own
 `All` setting for the current session. A bare `All` toggles its setting;
 `All=Yes` and `All=No` select it explicitly. The setting survives a canceled
-point prompt.
+point prompt. These options also work when entered at either point prompt,
+without restarting CPlane. After choosing All at the origin prompt, the same
+command accepts origin points and further All changes; other CPlane options
+become available again on the next invocation.
 
 Plane prompts are separate from model prompts: start `Polyline`, accept two
 points, run `CPlane 3Point`, define the frame, then continue the same polyline.
@@ -201,10 +204,10 @@ shifted/oblique mouse-grid picks, nested relative Polyline input, plane-aligned
 Circle/Rectangle/Box geometry, and a rotated plane origin. Wireframe, Shaded,
 and Ghosted retain the edited plane without changing the other viewports.
 
-This is not the complete [Rhino CPlane command](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm):
-Gumball, universal/automatic planes, the named-plane panel, and
-General scalar point-input
-constraints and converting every remaining modeling command to construction
-planes are separate ongoing work. The existing view menu is not full `SetView`.
+Remaining [CPlane work](https://docs.mcneel.com/rhino/8/help/en-us/commands/cplane.htm)
+includes Gumball alignment, universal/automatic planes, and the named-plane
+panel. General scalar point-input constraints and converting every remaining
+modeling command to construction planes are separate ongoing work. The
+existing view menu is not full `SetView`.
 The typed `Through All` macro has a documented/native discrepancy described in the
 [oracle notes](oracle.md), so its exact Rhino parity remains unverified.

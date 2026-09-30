@@ -263,6 +263,28 @@ help says the option moves each viewport's plane along its own normal. The
 Viboceros implementation follows that documented geometry rule; parity for
 this typed Rhino path remains unresolved.
 
+The [Through All paths fixture](../tools/rhino_oracle/fixtures/construction_plane_through_all_paths.json)
+and [raw observation](../tools/rhino_oracle/observations/construction_plane_through_all_paths.json)
+reproduce that discrepancy on a private Xvfb display for seven cases: every
+standard active viewport, local input, an oblique active plane, and an explicit
+Through All=No followed by All=Yes. Top, Front, and Perspective acquire the
+Right plane through X=7; the active Right viewport instead acquires the Front
+plane through Y=8. Other viewport planes remain unchanged. The All=No step
+correctly preserves the active Top axes and moves its origin to Z=9. These
+diagnostics do not establish Through All parity.
+
+The [All options fixture](../tools/rhino_oracle/fixtures/construction_plane_all_options.json)
+and [raw observation](../tools/rhino_oracle/observations/construction_plane_all_options.json)
+capture twelve command workflows in a private Xvfb display. Both origin and
+Through All settings persist through completion and cancellation; bare All
+toggles the corresponding setting. After selecting origin All, Rhino accepts
+further All changes and origin points but rejects View in that same command.
+An app regression runs the options as separate prompt entries and compares all
+four viewport frames exactly in nine workflows, also checking that cameras,
+pending model input, and model undo stay intact. The three workflows that
+actually apply Through All=Yes retain the discrepancy above and are diagnostic
+captures, not passing parity assertions.
+
 The [SynchronizeCPlanes fixture](../tools/rhino_oracle/fixtures/synchronize_cplanes.json)
 records eight Rhino 8.32 cases for world-preset and oblique source planes,
 including both `SetView` settings. Its

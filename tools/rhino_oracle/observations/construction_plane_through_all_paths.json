@@ -1,0 +1,1803 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "top-through-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=No ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-through-all-local",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): 7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all_local"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "front-through-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Front",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Front",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "right-through-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Right",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Right",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  8.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "perspective-through-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Perspective",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Perspective",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "oblique-through-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.7071067811865475,
+                  0.7071067811865475,
+                  0.0
+                ],
+                "y": [
+                  -0.5773502691896258,
+                  0.5773502691896258,
+                  0.5773502691896258
+                ],
+                "z": [
+                  0.4082482904638631,
+                  -0.4082482904638631,
+                  0.8164965809277261
+                ]
+              }
+            }
+          },
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all"
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "top-through-no-then-all",
+      "value": {
+        "histories": [
+          "Command: _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=Yes ): _All=_No\nPoint for CPlane to pass through ( All=No ): w7,8,9\n",
+          "Command: _CPlane\nCPlane origin <0.000,0.000,9.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _Through\nPoint for CPlane to pass through ( All=No ): _All=_Yes\nPoint for CPlane to pass through ( All=Yes ): w7,8,9\n"
+        ],
+        "states": [
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  9.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              }
+            }
+          },
+          {
+            "active": "Top",
+            "views": {
+              "Front": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ]
+              },
+              "Perspective": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "z": [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "Right": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "Top": {
+                "camera_target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "origin": [
+                  7.0,
+                  0.0,
+                  0.0
+                ],
+                "x": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "y": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "z": [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            }
+          }
+        ],
+        "steps": [
+          "through_all_no",
+          "through_all"
+        ]
+      }
+    }
+  ]
+}

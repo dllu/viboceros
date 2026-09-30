@@ -819,6 +819,159 @@ fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
 }
 
 #[test]
+fn cplane_all_options_at_point_prompts_match_saved_rhino_states() {
+    let observation: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/construction_plane_all_options.json"
+    ))
+    .unwrap();
+    let cases: &[(&str, &[&[&str]])] = &[
+        (
+            "origin-all-completion-retained",
+            &[&["CPlane", "_All=_Yes", "w4,5,6"], &["CPlane", "w7,8,9"]],
+        ),
+        (
+            "origin-all-cancel-retained",
+            &[&["CPlane", "All=Yes", "CANCEL"], &["CPlane", "w7,8,9"]],
+        ),
+        (
+            "origin-all-repeat-toggle",
+            &[
+                &["CPlane", "All=Yes", "w4,5,6"],
+                &["CPlane", "All", "w4,5,6"],
+            ],
+        ),
+        (
+            "origin-all-prompt-toggle-on",
+            &[&["CPlane", "All=No", "All", "w4,5,6"]],
+        ),
+        (
+            "origin-all-prompt-toggle-twice",
+            &[&["CPlane", "All=No", "All", "All", "w4,5,6"]],
+        ),
+        (
+            "through-all-no-retained",
+            &[
+                &["CPlane Through", "_All=_No", "w7,8,9"],
+                &["CPlane Through", "w7,8,9"],
+            ],
+        ),
+        (
+            "through-all-prompt-toggle-off",
+            &[&["CPlane Through", "All=Yes", "All", "w7,8,9"]],
+        ),
+        (
+            "origin-all-reject-view",
+            &[&["CPlane", "All=Yes", "View", "w4,5,6"]],
+        ),
+        (
+            "origin-all-no-reject-curve",
+            &[&["CPlane", "All=No", "Curve", "w4,5,6"]],
+        ),
+    ];
+    for &(id, steps) in cases {
+        let observed = observation["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|result| result["id"] == id)
+            .unwrap();
+        assert_eq!(
+            observed["value"]["steps"].as_array().unwrap().len(),
+            steps.len()
+        );
+        let mut app = test_app();
+        enter(&mut app, "Line");
+        enter(&mut app, "w1,2,3");
+        let pending = app.active_command;
+        let cameras = app
+            .viewports
+            .iter()
+            .map(Viewport::camera_snapshot)
+            .collect::<Vec<_>>();
+        for (index, inputs) in steps.iter().enumerate() {
+            for &input in *inputs {
+                if input == "CANCEL" {
+                    app.cancel_plane_prompt();
+                } else {
+                    enter(&mut app, input);
+                }
+            }
+            assert!(app.plane_prompt.is_none(), "{id}: {:?}", app.command_log);
+            let state = &observed["value"]["states"][index + 1];
+            for view in &app.viewports {
+                let saved = &state["views"][view.view_label()];
+                let frame = view.construction_plane();
+                assert_eq!(
+                    serde_json::json!(frame.origin().to_array()),
+                    saved["origin"],
+                    "{id}"
+                );
+                for (axis, name) in frame.axes().iter().zip(["x", "y", "z"]) {
+                    assert_eq!(
+                        serde_json::json!(axis.as_vector().to_array()),
+                        saved[name],
+                        "{id}: {name}"
+                    );
+                }
+            }
+        }
+        assert_eq!(app.active_command, pending, "{id}");
+        assert_eq!(app.document.undo_label(), None, "{id}");
+        assert_eq!(
+            app.viewports
+                .iter()
+                .map(Viewport::camera_snapshot)
+                .collect::<Vec<_>>(),
+            cameras,
+            "{id}"
+        );
+    }
+}
+
+#[test]
+fn invalid_all_prompt_input_keeps_its_viewport_and_independent_options() {
+    let mut app = test_app();
+    enter(&mut app, "CPlane All=Yes");
+    enter(&mut app, "All=Maybe");
+    assert!(app.command_log.back().unwrap().starts_with("Error:"));
+    assert!(app.cplane_options.origin_all);
+    assert!(!app.cplane_options.through_all);
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    app.cancel_plane_prompt();
+    enter(&mut app, "CPlane Through");
+    app.active_viewport = 2;
+    enter(&mut app, "All");
+    assert_eq!(app.plane_prompt.as_ref().unwrap().viewport, 0);
+    assert!(app.plane_prompt.as_ref().unwrap().requests_point());
+    assert!(app.cplane_options.origin_all);
+    assert!(app.cplane_options.through_all);
+    enter(&mut app, "All=No w7,8,9");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(0., 0., 9.)
+    );
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(0., 0., 0.)
+    );
+    assert!(app.cplane_options.origin_all);
+    assert!(!app.cplane_options.through_all);
+    enter(&mut app, "CPlane Through");
+    app.active_viewport = 3;
+    enter(&mut app, "All=No 1,2,3");
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[2].construction_plane().origin(),
+        point(0., 1., 0.)
+    );
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(0., 0., 9.)
+    );
+}
+
+#[test]
 fn cplane_through_all_rejects_unrepresentable_target_atomically() {
     let mut app = test_app();
     let extreme = app.viewports[3]

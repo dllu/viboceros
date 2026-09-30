@@ -4675,25 +4675,34 @@ def _construction_plane_all_probe(operation):
     if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
         raise ValueError("could not establish four-view baseline")
     document = Rhino.RhinoDoc.ActiveDoc
+    active_name = operation.get("active_view", "Top")
+    if active_name not in ("Top", "Front", "Right", "Perspective"):
+        raise ValueError("invalid CPlane All active viewport")
     matching = [view for view in document.Views.GetViewList(True, False)
-                if view.ActiveViewport.Name == "Top"]
+                if view.ActiveViewport.Name == active_name]
     if len(matching) != 1:
-        raise ValueError("expected one Top viewport")
+        raise ValueError("expected one active viewport")
     document.Views.ActiveView = matching[0]
-    _run_surface_script("_SetActiveViewport _Top", True)
-    if document.Views.ActiveView.ActiveViewport.Name != "Top":
-        raise ValueError("could not activate Top viewport")
+    _run_surface_script("_SetActiveViewport _" + active_name, True)
+    if document.Views.ActiveView.ActiveViewport.Name != active_name:
+        raise ValueError("could not activate requested viewport")
     steps = operation.get("steps", ["all", "through_all"])
     if not isinstance(steps, list) or not steps or any(
-            step not in ("all", "through", "through_all") for step in steps):
+            step not in ("origin", "all", "all_toggle", "all_toggle_on",
+                         "all_toggle_twice", "all_cancel", "all_reject_view",
+                         "all_no_reject_curve", "through", "through_all",
+                         "through_all_toggle", "through_all_toggle_off",
+                         "through_all_cancel", "through_all_local", "through_all_no")
+            for step in steps):
         raise ValueError("invalid CPlane All probe steps")
     with _independent_construction_planes():
-        if not _run_surface_script("_CPlane _World _Top", True):
-            raise ValueError("could not reset Top CPlane through command")
+        if not _run_surface_script("_CPlane _World _" + (
+                "Top" if active_name == "Perspective" else active_name), True):
+            raise ValueError("could not reset active CPlane through command")
         axes = operation.get("top_axes")
         if axes is not None:
             if not isinstance(axes, list) or len(axes) != 2:
-                raise ValueError("expected two Top construction plane axes")
+                raise ValueError("expected two active construction plane axes")
             frame = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(0, 0, 0),
                                          _vector(axes[0]), _vector(axes[1]))
             if not frame.IsValid:
@@ -4701,7 +4710,7 @@ def _construction_plane_all_probe(operation):
             script = "_CPlane _3Point w0,0,0 w%s w%s" % (
                 _command_point(axes[0]), _command_point(axes[1]))
             if not _run_surface_script(script, True):
-                raise ValueError("could not set oblique Top plane")
+                raise ValueError("could not set oblique active plane")
 
         def state():
             result = {}
@@ -4721,13 +4730,32 @@ def _construction_plane_all_probe(operation):
         states = [state()]
         histories = []
         for step in steps:
-            script = ("_CPlane _All=_Yes w" + _command_point(origin) if step == "all"
-                      else "_CPlane _Through w" + _command_point(through)
-                      if step == "through" else
-                      "_CPlane _Through _All=_Yes w" + _command_point(through))
+            scripts = {
+                "origin": "_CPlane w" + _command_point(through),
+                "all": "_CPlane _All=_Yes w" + _command_point(origin),
+                "all_toggle": "_CPlane _All w" + _command_point(origin),
+                "all_toggle_on": "_CPlane _All=_No _All w" + _command_point(origin),
+                "all_toggle_twice": "_CPlane _All=_No _All _All w" + _command_point(origin),
+                "all_cancel": "_CPlane _All=_Yes !",
+                "all_reject_view": "_CPlane _All=_Yes _View w" + _command_point(origin),
+                "all_no_reject_curve": "_CPlane _All=_No _Curve w" + _command_point(origin),
+                "through": "_CPlane _Through w" + _command_point(through),
+                "through_all": "_CPlane _Through _All=_Yes w" + _command_point(through),
+                "through_all_toggle": "_CPlane _Through _All w" + _command_point(through),
+                "through_all_toggle_off": "_CPlane _Through _All=_Yes _All w" + _command_point(through),
+                "through_all_cancel": "_CPlane _Through _All=_Yes !",
+                "through_all_local": "_CPlane _Through _All=_Yes " + _command_point(through),
+                "through_all_no": "_CPlane _Through _All=_No w" + _command_point(through),
+            }
+            script = scripts[step]
             _record_progress("CPlane multi-view: " + script)
             before = Rhino.RhinoApp.CommandHistoryWindowText
-            if not _run_surface_script(script, True):
+            # These two diagnostic paths deliberately submit an unavailable
+            # option, then finish the point prompt. Preserve the raw rejection.
+            succeeded = (bool(Rhino.RhinoApp.RunScript(script, True))
+                         if step in ("all_reject_view", "all_no_reject_curve")
+                         else _run_surface_script(script, True))
+            if not succeeded and not step.endswith("_cancel"):
                 raise ValueError("CPlane multi-view command failed: " + script)
             after = Rhino.RhinoApp.CommandHistoryWindowText
             histories.append(after[len(before):][-1500:] if after.startswith(before)

@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane_all_probe",
+      "id": "top-through-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ]
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "top-through-all-local",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all_local"
+      ]
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "front-through-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ],
+      "active_view": "Front"
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "right-through-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ],
+      "active_view": "Right"
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "perspective-through-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ],
+      "active_view": "Perspective"
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "oblique-through-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all"
+      ],
+      "top_axes": [
+        [
+          1,
+          1,
+          0
+        ],
+        [
+          -1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "construction_plane_all_probe",
+      "id": "top-through-no-then-all",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "through": [
+        7,
+        8,
+        9
+      ],
+      "steps": [
+        "through_all_no",
+        "through_all"
+      ]
+    }
+  ]
+}

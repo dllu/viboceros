@@ -24,6 +24,7 @@ source viewport's construction plane.
 press Enter to use the active viewport.
 `CPlane All point` and `CPlane Through All point` move every viewport's
 construction plane origin while retaining its own axes.
+At either point prompt, `All` toggles its setting; `All=Yes|No` selects it.
 `CPlane View` aligns the active plane to its camera without moving the view.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh/B-rep face.
