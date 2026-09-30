@@ -30,7 +30,7 @@ including off-axis targets imported from 3DM.
 `SetView World TwoPointPerspective` enables a level perspective camera;
 named and working 3DM views retain its projection and shifted frustum.
 `Zoom Extents` and `Zoom Selected` fit parallel, perspective, and two-point
-views with Rhino-matched framing and clear shifted frusta.
+views with Rhino-matched framing, document clipping, and cleared shifted frusta.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
 Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
 the view prompt and resumes the unfinished command.

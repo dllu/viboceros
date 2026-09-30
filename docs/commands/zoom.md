@@ -165,7 +165,14 @@ mutation. GPU vertices are rebased around the fitted target in f64 before
 conversion to f32. This does not recover detail already lost in the model's f64
 coordinates; see [GPU tests](../gpu-tests.md).
 
-`src/viewport/extents.rs` owns fitting. A model-space target is shared by CPU
+`src/viewport/extents.rs` owns fitting; `src/viewport/clipping.rs` computes
+document near/far distances and any parallel camera depth adjustment. After
+Extents, Selected, and their All variants, clipping uses the combined visible
+scene bounds, including unselected geometry. Hidden objects and hidden layers
+are excluded. This can move a parallel camera along its view direction while
+preserving its target and screen framing. Fitting and clipping are staged
+together before any camera or history changes.
+A model-space target is shared by CPU
 projection, unprojection, drafting rays, perspective depth, and GPU matrices.
 Tests fit translated boxes in the four default viewports, compare GPU and CPU projections,
 check picking and unprojection, reject unsupported ranges, exclude hidden
@@ -182,11 +189,18 @@ perspective, shifted frusta, varying lenses and borders, translated boxes,
 elongated/thin geometry, isolated points, and tiny models. Native replay checks
 camera targets, axes, projection, and optical frusta to `2e-12`, CPU screen
 coordinates to `1e-8` pixels, GPU agreement within f32 rounding, and retained
-selection/model/CPlane history. Perspective camera locations also match; all
-explicit public ZoomBoundingBox cases match camera locations and clipping distances.
-The implementation stores the explicit bounding-box fit's near/far distances.
-Rhino subsequently recomputes document clipping and may additionally dolly a
-parallel camera; those document clipping transitions remain unimplemented.
+selection/model/CPlane history. Parallel and perspective camera locations match;
+all explicit public ZoomBoundingBox cases also match clipping distances.
+The [clipping captures](../../tools/rhino_oracle/observations/viewport_clipping.json)
+add 42 document fits and 39 public constrained near/far setter cases.
+[Context captures](../../tools/rhino_oracle/observations/viewport_clipping_context.json)
+add 72 Selected fits with visible/hidden unselected geometry in Wireframe,
+Shaded, and Ghosted modes. Replay checks initial and redraw near/far distances
+separately at relative tolerance `2e-12`. The document clipping calculation
+handles thin and tiny models, minimum distances, and near/far ratio constraints.
+General navigation/redraw does not yet refresh the stored clip interval;
+rendering continues to use its separate dynamic depth range. Curve-end fitting
+also retains the explicit bounds fit rather than calibrated document clipping.
 Twenty additional [border captures](../../tools/rhino_oracle/observations/zoom_extents_borders.json)
 verify factors 0.1, 0.8, 1, 1.5, and 10 through both the public settings API and
 `SetZoomExtentsBorder`. Settings retain the requested value; the minimum fit

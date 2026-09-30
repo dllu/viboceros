@@ -1,0 +1,1500 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "clipping",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-depth-0",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            0
+          ],
+          "max": [
+            10,
+            5,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-1e-08",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -1e-08
+          ],
+          "max": [
+            10,
+            5,
+            1e-08
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-0.0001",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -0.0001
+          ],
+          "max": [
+            10,
+            5,
+            0.0001
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-0.01",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -0.01
+          ],
+          "max": [
+            10,
+            5,
+            0.01
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-0.1",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -0.1
+          ],
+          "max": [
+            10,
+            5,
+            0.1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-1",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -1
+          ],
+          "max": [
+            10,
+            5,
+            1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-5",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -5
+          ],
+          "max": [
+            10,
+            5,
+            5
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-20",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -20
+          ],
+          "max": [
+            10,
+            5,
+            20
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-depth-100",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -100
+          ],
+          "max": [
+            10,
+            5,
+            100
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-square-0.0001",
+          "projection": "Top",
+          "min": [
+            -0.0001,
+            -0.0001,
+            0
+          ],
+          "max": [
+            0.0001,
+            0.0001,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-square-0.01",
+          "projection": "Top",
+          "min": [
+            -0.01,
+            -0.01,
+            0
+          ],
+          "max": [
+            0.01,
+            0.01,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-square-1",
+          "projection": "Top",
+          "min": [
+            -1,
+            -1,
+            0
+          ],
+          "max": [
+            1,
+            1,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-square-10",
+          "projection": "Top",
+          "min": [
+            -10,
+            -10,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-square-100",
+          "projection": "Top",
+          "min": [
+            -100,
+            -100,
+            0
+          ],
+          "max": [
+            100,
+            100,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-constraints-14",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-15",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-16",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-17",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-05,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-18",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-19",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-20",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            -1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-21",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            100,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Top-constraints-22",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            -1
+          ]
+        },
+        {
+          "id": "Top-constraints-23",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            1000000000.0
+          ]
+        },
+        {
+          "id": "Top-constraints-24",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            100000000.0
+          ]
+        },
+        {
+          "id": "Top-constraints-25",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "id": "Top-constraints-26",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            2,
+            -1
+          ]
+        },
+        {
+          "id": "Perspective-depth-0",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            0
+          ],
+          "max": [
+            10,
+            5,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-1e-08",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -1e-08
+          ],
+          "max": [
+            10,
+            5,
+            1e-08
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-0.0001",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -0.0001
+          ],
+          "max": [
+            10,
+            5,
+            0.0001
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-0.01",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -0.01
+          ],
+          "max": [
+            10,
+            5,
+            0.01
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-0.1",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -0.1
+          ],
+          "max": [
+            10,
+            5,
+            0.1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-1",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -1
+          ],
+          "max": [
+            10,
+            5,
+            1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-5",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -5
+          ],
+          "max": [
+            10,
+            5,
+            5
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-20",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -20
+          ],
+          "max": [
+            10,
+            5,
+            20
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-depth-100",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -100
+          ],
+          "max": [
+            10,
+            5,
+            100
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-square-0.0001",
+          "projection": "Perspective",
+          "min": [
+            -0.0001,
+            -0.0001,
+            0
+          ],
+          "max": [
+            0.0001,
+            0.0001,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-square-0.01",
+          "projection": "Perspective",
+          "min": [
+            -0.01,
+            -0.01,
+            0
+          ],
+          "max": [
+            0.01,
+            0.01,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-square-1",
+          "projection": "Perspective",
+          "min": [
+            -1,
+            -1,
+            0
+          ],
+          "max": [
+            1,
+            1,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-square-10",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -10,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-square-100",
+          "projection": "Perspective",
+          "min": [
+            -100,
+            -100,
+            0
+          ],
+          "max": [
+            100,
+            100,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-constraints-41",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-42",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-43",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-44",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-05,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-45",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-46",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-47",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            -1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-48",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            100,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "Perspective-constraints-49",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            -1
+          ]
+        },
+        {
+          "id": "Perspective-constraints-50",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            1000000000.0
+          ]
+        },
+        {
+          "id": "Perspective-constraints-51",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            100000000.0
+          ]
+        },
+        {
+          "id": "Perspective-constraints-52",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "id": "Perspective-constraints-53",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            2,
+            -1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-depth-0",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            0
+          ],
+          "max": [
+            10,
+            5,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-1e-08",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -1e-08
+          ],
+          "max": [
+            10,
+            5,
+            1e-08
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-0.0001",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -0.0001
+          ],
+          "max": [
+            10,
+            5,
+            0.0001
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-0.01",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -0.01
+          ],
+          "max": [
+            10,
+            5,
+            0.01
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-0.1",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -0.1
+          ],
+          "max": [
+            10,
+            5,
+            0.1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-1",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -1
+          ],
+          "max": [
+            10,
+            5,
+            1
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-5",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -5
+          ],
+          "max": [
+            10,
+            5,
+            5
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-20",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -20
+          ],
+          "max": [
+            10,
+            5,
+            20
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-depth-100",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -100
+          ],
+          "max": [
+            10,
+            5,
+            100
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-square-0.0001",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -0.0001,
+            -0.0001,
+            0
+          ],
+          "max": [
+            0.0001,
+            0.0001,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-square-0.01",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -0.01,
+            -0.01,
+            0
+          ],
+          "max": [
+            0.01,
+            0.01,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-square-1",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -1,
+            -1,
+            0
+          ],
+          "max": [
+            1,
+            1,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-square-10",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -10,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-square-100",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -100,
+            -100,
+            0
+          ],
+          "max": [
+            100,
+            100,
+            0
+          ],
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-constraints-68",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-69",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-70",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            0.001,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-71",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-05,
+            100000000.0,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-72",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-73",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            100,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-74",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            -1,
+            -1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            100,
+            1,
+            0.005,
+            0.0005,
+            50
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-76",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            -1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-77",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            1000000000.0
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-78",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1,
+            10000000000.0,
+            0.005,
+            0.0005,
+            100000000.0
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-79",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-constraints-80",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "clip_constraints": [
+            1e-06,
+            3,
+            -1,
+            2,
+            -1
+          ]
+        }
+      ]
+    }
+  ]
+}

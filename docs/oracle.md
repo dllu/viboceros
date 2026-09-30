@@ -1997,11 +1997,10 @@ cargo test --release -p viboceros zoom_extents
 
 Native replay checks optical framing, targets, axes and projection at `2e-12`,
 CPU screen coordinates at `1e-8` pixels, GPU agreement within f32 rounding, and
-selection/model/CPlane history plus view undo/redo. Perspective locations match
-the captures; explicit bounding-box fits additionally match parallel camera
-locations and all six frustum values. Automatic document clipping may change
-parallel camera depth and near/far values after command-based fits; those
-transitions are excluded from this replay. This camera fixture is exercised by
+selection/model/CPlane history plus view undo/redo. Parallel and perspective
+locations match the captures; explicit bounding-box fits also match all six
+frustum values. Command fits include document-driven parallel camera depth
+relocation. This camera fixture is exercised by
 native viewport tests, not the generic geometry `compare` command.
 The separate [border request](../tools/rhino_oracle/fixtures/zoom_extents_borders.json)
 and [capture](../tools/rhino_oracle/observations/zoom_extents_borders.json) add
@@ -2010,6 +2009,42 @@ settings writes and `SetZoomExtentsBorder` retain values below one, but actual
 Extents fits use one. Command cases begin with a distinct 1.3 setting and record
 the resulting settings and command history, so a command that silently ignores
 the requested value cannot pass this check.
+
+### Document clipping and infinite-frustum bounds
+
+Three additional private-Xvfb requests/captures exercise the same bounded helper:
+
+| Fixture | Cases | Coverage |
+| --- | ---: | --- |
+| [viewport_clipping](../tools/rhino_oracle/fixtures/viewport_clipping.json) / [capture](../tools/rhino_oracle/observations/viewport_clipping.json) | 81 | 42 document fits and 39 public constrained `ViewportInfo.SetFrustumNearFar` calls, including rejected reversed intervals |
+| [viewport_clipping_context](../tools/rhino_oracle/fixtures/viewport_clipping_context.json) / [capture](../tools/rhino_oracle/observations/viewport_clipping_context.json) | 72 | Selected fits with unselected visible/hidden boxes, in Wireframe/Shaded/Ghosted |
+| [viewport_box_depth](../tools/rhino_oracle/fixtures/viewport_box_depth.json) / [capture](../tools/rhino_oracle/observations/viewport_box_depth.json) | 48 | Public `ViewportInfo.GetBoundingBoxDepth` before fitting, with shifted parallel/perspective/two-point frusta and inside/outside/crossing boxes |
+
+All captures use Rhino 8.32.26160.13001. The helper adds only owned point
+objects to an empty document, shows owned hidden points before deleting them,
+and restores camera, target, CPlane, title, display mode, and application
+settings independently. Public clipping constraints operate on a disposable
+`ViewportInfo` copy. Depth queries ignore current near/far planes, as documented
+by [McNeel](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_DocObjects_ViewportInfo_GetBoundingBoxDepth.htm).
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_clipping.json --timeout 300
+cargo test --release -p viboceros viewport::tests::zoom_extents
+```
+
+Native replay checks all six frustum values at relative tolerance `2e-12` and
+camera components at absolute tolerance `2e-12`. Initial and redraw clipping
+are checked separately: a parallel fit can relocate its camera, changing the
+box-intersection tolerance used on the next redraw. Visible geometry contributes
+to a combined world bounding box before frustum intersection; clipping each
+object separately does not match these captures. Tests also retain screen
+framing, construction planes, selection, and model/view history.
+
+Viboceros applies this clipping calculation to Extents/Selected and their All
+variants. Stored intervals are not yet refreshed during general navigation or
+redraw, World view changes, or curve-end fitting. GPU depth ranges remain
+independently computed. These fixtures run native viewport tests, not the
+generic geometry `compare` operation.
 
 ## Timing interpretation
 

@@ -25,6 +25,7 @@ use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
+mod clipping;
 mod drafting;
 mod named_view;
 #[cfg(test)]
@@ -2965,7 +2966,19 @@ mod tests {
             ),
             Ok(true)
         );
-        assert_eq!(camera_states(&viewports), fitted);
+        // Selected bounds still determine framing. Visible unselected scene
+        // bounds additionally determine clipping and can relocate parallel
+        // cameras along their view direction.
+        let selected_fit = camera_states(&viewports);
+        for (index, (after, before)) in selected_fit.iter().zip(&fitted).enumerate() {
+            assert_eq!((after.0, after.1, after.2), (before.0, before.1, before.2));
+            if index == 3 {
+                assert_eq!(after.3, before.3);
+            } else {
+                assert!(after.3 > before.3);
+            }
+        }
+        let fitted = selected_fit;
         viewports[3].last_rect = None;
         assert!(
             Viewport::zoom_all(

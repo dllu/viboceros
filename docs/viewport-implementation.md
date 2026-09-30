@@ -160,15 +160,38 @@ It provides [`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view act
 one bounds query and prepare every `CameraFit` before applying any camera changes.
 The fit stages a complete camera snapshot, retaining its lens and projection
 locks while clearing shifts. Screen spans, aspect fitting, and depth padding
-match public OpenNURBS `ON_DollyExtents` and 105 Rhino camera captures; the
-near/far values describe that explicit fit. Automatic document clipping remains
-separate work. Degenerate screen boxes use a one-unit square; small models do
+match public OpenNURBS `ON_DollyExtents` and 105 Rhino camera captures.
+`viewport/clipping` then computes the document near/far interval and parallel
+camera relocation before committing the fit. Degenerate screen boxes use a
+one-unit square; small models do
 not inherit the interactive navigation scale/distance limits.
 Border settings below one remain stored but fit as one, matching Rhino 8.32.
 The model-space camera target is shared by
 CPU/GPU projection and drafting rays; fitting does not edit construction planes
 or model history. The interface parser emits a host action rather than putting
 viewport navigation into document transactions.
+
+## Clipping after document fits
+
+Extents/Selected and their All variants intersect the combined visible world
+bounding box with the infinite view frustum. Off-screen unselected geometry
+can influence clipping through that combined box; hidden objects and layers
+are excluded. The depth query ignores stored near/far planes, retains shifted
+frusta, and follows the public OpenNURBS camera-coordinate tolerance and
+frustum corner-ray rules. Fully contained or excluded boxes have fast paths.
+
+Near/far constraints use the attributed public `ON_Viewport::SetFrustumNearFar`
+adaptation in `third_party/opennurbs_rust/viewport_clipping.rs`.
+Document padding and bias are calibrated independently from Rhino 8.32 public
+command/API outputs. Tests replay 201 additional clipping captures: 42 fits,
+39 constrained setter calls, 72 Selected fits with context/visibility across
+three display modes, and 48 bounding-box depth queries. Camera poses and
+initial/redraw clip intervals use tolerance `2e-12`; refreshing metadata adds
+no camera history entry. Zoom All still preflights every view atomically.
+
+Stored clipping updates currently apply to Extents/Selected fits. General
+redraw/navigation, World view transitions, and curve-end fits remain outside
+this calibration. GPU rendering retains its independent dynamic depth range.
 
 ## Related behavior and limits
 

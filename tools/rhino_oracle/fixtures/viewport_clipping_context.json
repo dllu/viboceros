@@ -1,0 +1,2028 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "clipping-context",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-Wireframe-inside-False",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-inside-True",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-outside-False",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-outside-True",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-camera-False",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-camera-True",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-diagonal-False",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Wireframe-diagonal-True",
+          "projection": "Top",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-inside-False",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-inside-True",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-outside-False",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-outside-True",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-camera-False",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-camera-True",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-diagonal-False",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Shaded-diagonal-True",
+          "projection": "Top",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-inside-False",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-inside-True",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-outside-False",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-outside-True",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-camera-False",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-camera-True",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-diagonal-False",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Top-Ghosted-diagonal-True",
+          "projection": "Top",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-inside-False",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-inside-True",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-outside-False",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-outside-True",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-camera-False",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-camera-True",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-diagonal-False",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Wireframe-diagonal-True",
+          "projection": "Perspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-inside-False",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-inside-True",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-outside-False",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-outside-True",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-camera-False",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-camera-True",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-diagonal-False",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Shaded-diagonal-True",
+          "projection": "Perspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-inside-False",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-inside-True",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-outside-False",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-outside-True",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-camera-False",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-camera-True",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-diagonal-False",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "Perspective-Ghosted-diagonal-True",
+          "projection": "Perspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-inside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-inside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-outside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-outside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-camera-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-camera-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-diagonal-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Wireframe-diagonal-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Wireframe",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-inside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-inside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-outside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-outside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-camera-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-camera-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-diagonal-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Shaded-diagonal-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Shaded",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-inside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-inside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            -80
+          ],
+          "context_max": [
+            1,
+            1,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-outside-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-outside-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            500,
+            500,
+            -80
+          ],
+          "context_max": [
+            501,
+            501,
+            -79
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-camera-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-camera-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            0,
+            0,
+            100
+          ],
+          "context_max": [
+            1,
+            1,
+            101
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-diagonal-False",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": false,
+          "clipping_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-Ghosted-diagonal-True",
+          "projection": "TwoPointPerspective",
+          "display_mode": "Ghosted",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "context_min": [
+            -30,
+            60,
+            -40
+          ],
+          "context_max": [
+            -29,
+            61,
+            -39
+          ],
+          "context_hidden": true,
+          "clipping_probe": true
+        }
+      ]
+    }
+  ]
+}

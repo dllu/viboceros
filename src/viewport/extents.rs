@@ -39,6 +39,20 @@ struct CameraFit {
 }
 
 impl CameraFit {
+    fn with_document_clipping(
+        self,
+        viewport: &Viewport,
+        document: &Document,
+        rect: Rect,
+    ) -> Result<Self, &'static str> {
+        let mut staged = Viewport::new(viewport.kind);
+        staged.restore_camera(self.camera);
+        staged.update_clipping_from_document(document, rect)?;
+        Ok(Self {
+            camera: staged.camera_snapshot(),
+        })
+    }
+
     fn apply(self, viewport: &mut Viewport) {
         let previous = viewport.camera_snapshot();
         viewport.restore_camera(self.camera);
@@ -47,6 +61,13 @@ impl CameraFit {
 }
 
 impl Viewport {
+    #[cfg(test)]
+    pub(super) fn zoom_bounding_box(&mut self, bounds: BoundingBox3) -> Result<(), &'static str> {
+        let rect = self.last_rect.ok_or("viewport has not been laid out")?;
+        self.fit_bounds(bounds, rect, 1.0)?.apply(self);
+        Ok(())
+    }
+
     pub(crate) fn zoom_all(
         viewports: &mut [Self],
         document: &Document,
@@ -63,7 +84,9 @@ impl Viewport {
             .iter()
             .map(|viewport| {
                 let rect = viewport.last_rect.ok_or("viewport has not been laid out")?;
-                viewport.fit_bounds(bounds, rect, borders.for_kind(viewport.kind))
+                viewport
+                    .fit_bounds(bounds, rect, borders.for_kind(viewport.kind))?
+                    .with_document_clipping(viewport, document, rect)
             })
             .collect::<Result<Vec<_>, _>>()?;
         for (viewport, fit) in viewports.iter_mut().zip(fits) {
@@ -140,6 +163,7 @@ impl Viewport {
             return Ok(false);
         };
         self.fit_bounds(bounds, rect, borders.for_kind(self.kind))?
+            .with_document_clipping(self, document, rect)?
             .apply(self);
         Ok(true)
     }

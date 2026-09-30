@@ -21,6 +21,107 @@ fn zoom_extents_border_settings_below_one_match_rhino_api_and_command_captures()
     );
 }
 
+#[test]
+fn document_clipping_and_public_constraints_match_rhino_captures() {
+    check_capture(
+        include_str!("../../../tools/rhino_oracle/fixtures/viewport_clipping.json"),
+        include_str!("../../../tools/rhino_oracle/observations/viewport_clipping.json"),
+        81,
+        2,
+    );
+}
+
+#[test]
+fn selected_fits_include_visible_document_context_in_all_display_modes() {
+    check_capture(
+        include_str!("../../../tools/rhino_oracle/fixtures/viewport_clipping_context.json"),
+        include_str!("../../../tools/rhino_oracle/observations/viewport_clipping_context.json"),
+        72,
+        0,
+    );
+}
+
+#[test]
+fn box_depths_match_48_rhino_queries_including_clipped_and_shifted_frusta() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/viewport_box_depth.json"
+    ))
+    .unwrap();
+    let capture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/viewport_box_depth.json"
+    ))
+    .unwrap();
+    let rows = capture["results"][0]["value"].as_array().unwrap();
+    assert_eq!(rows.len(), 48);
+    let mut misses = 0;
+    for (row, case) in rows
+        .iter()
+        .zip(request["operations"][0]["cases"].as_array().unwrap())
+    {
+        assert_eq!(row["case"], *case);
+        let view = viewport_from_row(&row["before"]);
+        let bounds = viboceros_geometry::BoundingBox3::from_points([
+            Point3::try_from(
+                serde_json::from_value::<[f64; 3]>(case["depth_min"].clone()).unwrap(),
+            )
+            .unwrap(),
+            Point3::try_from(
+                serde_json::from_value::<[f64; 3]>(case["depth_max"].clone()).unwrap(),
+            )
+            .unwrap(),
+        ])
+        .unwrap();
+        let actual = view.bounding_box_depth(bounds, view.last_rect.unwrap());
+        let expected = &row["clipping"]["depth_query"];
+        assert_eq!(
+            actual.is_some(),
+            expected["intersects"].as_bool().unwrap(),
+            "{}",
+            case["id"]
+        );
+        if let Some((near, far)) = actual {
+            for (a, b) in [
+                (near, expected["near"].as_f64().unwrap()),
+                (far, expected["far"].as_f64().unwrap()),
+            ] {
+                assert!(
+                    (a - b).abs() <= 2e-12 * b.abs().max(1.),
+                    "{} box depth: {a} vs {b}",
+                    case["id"]
+                );
+            }
+        } else {
+            misses += 1;
+        }
+    }
+    assert!(misses >= 6);
+}
+
+#[test]
+fn perspective_box_depth_rejects_boxes_on_or_behind_the_camera_plane() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    let mut view = Viewport::new(ViewKind::Perspective);
+    view.perspective_frame = Some(WorldPlane::Top.frame());
+    view.perspective_camera_distance = 10.;
+    for (low, high) in [(10., 10.), (10., 11.), (11., 12.)] {
+        let bounds = viboceros_geometry::BoundingBox3::from_points([
+            point(-1., -1., low),
+            point(1., 1., high),
+        ])
+        .unwrap();
+        assert_eq!(view.bounding_box_depth(bounds, rect), None);
+    }
+    let bounds =
+        viboceros_geometry::BoundingBox3::from_points([point(-1., -1., 9.), point(1., 1., 10.)])
+            .unwrap();
+    let (near, far) = view.bounding_box_depth(bounds, rect).unwrap();
+    assert_eq!(near, 0.);
+    // Corner-ray intersection conservatively expands the far endpoint using
+    // the public camera-coordinate tolerance.
+    let tolerance = Real::EPSILON.sqrt() * 11.;
+    assert!((far - (1. + tolerance)).abs() < 1e-12);
+}
+
 fn check_capture(request: &str, capture: &str, expected_count: usize, expected_small: usize) {
     let capture: serde_json::Value = serde_json::from_str(capture).unwrap();
     let request: serde_json::Value = serde_json::from_str(request).unwrap();
@@ -59,6 +160,33 @@ fn check_capture(request: &str, capture: &str, expected_count: usize, expected_s
         document
             .select_objects(ids, SelectionMode::Replace)
             .unwrap();
+        if let Some(minimum) = case.get("context_min") {
+            let minimum: [f64; 3] = serde_json::from_value(minimum.clone()).unwrap();
+            let maximum: [f64; 3] = serde_json::from_value(case["context_max"].clone()).unwrap();
+            for index in 0..8 {
+                let corner = Point3::try_from(std::array::from_fn(|axis| {
+                    if index & (1 << axis) == 0 {
+                        minimum[axis]
+                    } else {
+                        maximum[axis]
+                    }
+                }))
+                .unwrap();
+                document
+                    .add_geometry_with_attributes(
+                        Geometry::Point(corner),
+                        ObjectAttributes::on_layer(document.current_layer_id())
+                            .with_visibility(!case["context_hidden"].as_bool().unwrap()),
+                    )
+                    .unwrap();
+            }
+            view.display_mode = match case["display_mode"].as_str().unwrap() {
+                "Wireframe" => DisplayMode::Wireframe,
+                "Shaded" => DisplayMode::Shaded,
+                "Ghosted" => DisplayMode::Ghosted,
+                _ => unreachable!(),
+            };
+        }
         let objects = document.objects().cloned().collect::<Vec<_>>();
         let selected = document.selected_object_ids().collect::<Vec<_>>();
         let document_undo = document.undo_label().map(str::to_owned);
@@ -69,19 +197,104 @@ fn check_capture(request: &str, capture: &str, expected_count: usize, expected_s
         };
         if case["method"] == "Selected" {
             assert_eq!(view.zoom_selected(&document, borders), Ok(true));
+        } else if case["method"] == "BoundingBox" {
+            // Exercise the explicit fit independently of document clipping,
+            // just as RhinoViewport.ZoomBoundingBox does.
+            let bounds = viboceros_geometry::BoundingBox3::from_points([
+                Point3::try_from(minimum).unwrap(),
+                Point3::try_from(maximum).unwrap(),
+            ])
+            .unwrap();
+            view.zoom_bounding_box(bounds).unwrap();
         } else {
             assert_eq!(view.zoom_extents(&document, borders), Ok(true));
         }
         let actual =
             Viewport::named_view_to_3dm(view.named_view_snapshot(), String::new()).unwrap();
         let expected = from_row(&row["after"]);
-        // Automatic document clipping may additionally dolly parallel views.
-        // Explicit bounding-box fits match the public camera and clip distances.
-        check_view(
-            &actual,
-            &expected,
-            view.kind == ViewKind::Perspective || case["method"] == "BoundingBox",
-        );
+        check_view(&actual, &expected, true);
+        if let Some(redraw) = row["clipping"].get("after_redraw") {
+            for (a, b) in actual.frustum.into_iter().zip(expected.frustum) {
+                assert!(
+                    (a - b).abs() <= 2e-12 * b.abs().max(1.),
+                    "{} initial document clip: {a} vs {b}",
+                    case["id"]
+                );
+            }
+            // Redraw recalculates the box/frustum tolerance using the relocated
+            // parallel camera. Compare this second stage separately from the
+            // command's initial camera fit, without adding a history entry.
+            let mut refreshed = view.duplicate_for_layout("clip refresh");
+            refreshed.last_rect = view.last_rect;
+            let histories = (refreshed.view_undo.clone(), refreshed.view_redo.clone());
+            refreshed
+                .update_clipping_from_document(&document, view.last_rect.unwrap())
+                .unwrap();
+            let info = Viewport::named_view_to_3dm(refreshed.named_view_snapshot(), String::new())
+                .unwrap();
+            let expected = from_row(redraw);
+            check_view(&info, &expected, true);
+            for (a, b) in info.frustum.into_iter().zip(expected.frustum) {
+                assert!(
+                    (a - b).abs() <= 2e-12 * b.abs().max(1.),
+                    "{} redraw document clip: {a} vs {b}",
+                    case["id"]
+                );
+            }
+            assert_eq!(refreshed.view_undo, histories.0);
+            assert_eq!(refreshed.view_redo, histories.1);
+        }
+        if let Some(values) = case.get("clip_constraints") {
+            use crate::viewport::clipping::{ClipAdjustment, ClipRequest};
+            let [near, far, min_near, min_ratio, target_distance]: [f64; 5] =
+                serde_json::from_value(values.clone()).unwrap();
+            let previous = view.camera_snapshot();
+            let half_width = (actual.frustum[1] - actual.frustum[0]) * 0.5;
+            let half_height = (actual.frustum[3] - actual.frustum[2]) * 0.5;
+            let update = ClipAdjustment::constrained(
+                ClipRequest {
+                    near,
+                    far,
+                    min_near,
+                    min_ratio,
+                    target_distance,
+                },
+                view.kind == ViewKind::Perspective,
+                half_width,
+                half_height,
+            );
+            assert_eq!(
+                update.is_ok(),
+                row["clipping"]["succeeded"].as_bool().unwrap(),
+                "{}",
+                case["id"]
+            );
+            if let Ok(update) = update {
+                view.apply_clip_adjustment(update).unwrap();
+                let info =
+                    Viewport::named_view_to_3dm(view.named_view_snapshot(), String::new()).unwrap();
+                let expected = &row["clipping"]["after"];
+                for (a, b) in info
+                    .frustum
+                    .into_iter()
+                    .zip(serde_json::from_value::<[f64; 6]>(expected["frustum"].clone()).unwrap())
+                {
+                    assert!(
+                        (a - b).abs() <= 2e-12 * b.abs().max(1.),
+                        "{} constraint clip: {a} vs {b}",
+                        case["id"]
+                    );
+                }
+                for (a, b) in info.camera_location.to_array().into_iter().zip(
+                    serde_json::from_value::<[f64; 3]>(expected["camera_location"].clone())
+                        .unwrap(),
+                ) {
+                    assert!((a - b).abs() < 2e-12, "{} dolly: {a} vs {b}", case["id"]);
+                }
+                assert_eq!(info.target.unwrap(), actual.target.unwrap());
+            }
+            view.restore_camera(previous);
+        }
         for index in 0..4 {
             let (a, b) = if view.kind == ViewKind::Perspective {
                 (

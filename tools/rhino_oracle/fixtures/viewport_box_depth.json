@@ -1,0 +1,1308 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "box-depths",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-inside-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-inside-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-outside-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-outside-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-camera-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-camera-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-behind-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-behind-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-intersect-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-intersect-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-slice-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-slice-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-cross-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-cross-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-point-shift-0",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Top-point-shift-0.75",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-inside-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-inside-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-outside-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-outside-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-camera-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-camera-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-behind-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-behind-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-intersect-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-intersect-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-slice-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-slice-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-cross-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-cross-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-point-shift-0",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "Perspective-point-shift-0.75",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-inside-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-inside-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -1,
+            -1,
+            -1
+          ],
+          "depth_max": [
+            1,
+            1,
+            1
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-outside-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-outside-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            500,
+            500,
+            -80
+          ],
+          "depth_max": [
+            510,
+            510,
+            -70
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-camera-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-camera-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -200,
+            -200,
+            -200
+          ],
+          "depth_max": [
+            200,
+            200,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-behind-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-behind-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -5,
+            -5,
+            80
+          ],
+          "depth_max": [
+            5,
+            5,
+            200
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-intersect-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-intersect-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -50,
+            -50,
+            -5
+          ],
+          "depth_max": [
+            50,
+            50,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-slice-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-slice-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -60,
+            -1,
+            -60
+          ],
+          "depth_max": [
+            60,
+            1,
+            60
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-cross-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-cross-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            -100,
+            -10,
+            -100
+          ],
+          "depth_max": [
+            -10,
+            100,
+            10
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-point-shift-0",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        },
+        {
+          "id": "TwoPointPerspective-point-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "vertical_shift": 0.75,
+          "depth_min": [
+            3,
+            4,
+            5
+          ],
+          "depth_max": [
+            3,
+            4,
+            5
+          ],
+          "depth_query_before": true
+        }
+      ]
+    }
+  ]
+}
