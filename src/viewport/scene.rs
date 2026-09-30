@@ -108,14 +108,9 @@ impl PartialEq for DisplayObject {
 
 #[derive(PartialEq)]
 struct SceneKey {
-    kind: ViewKind,
+    camera: CameraSnapshot,
     mode: DisplayMode,
     rect: Rect,
-    pixels_per_unit: Real,
-    pan: Vec2,
-    orbit: [Real; 2],
-    distance: Real,
-    target: NaVector3<Real>,
     objects: Vec<DisplayObject>,
 }
 
@@ -310,14 +305,9 @@ impl Viewport {
         cache.retain_visible(&visible);
         drop(cache);
         let key = SceneKey {
-            kind: self.kind,
+            camera: self.camera_snapshot(),
             mode: self.display_mode,
             rect,
-            pixels_per_unit: self.pixels_per_unit,
-            pan: self.pan,
-            orbit: [self.orbit_yaw, self.orbit_pitch],
-            distance: self.perspective_camera_distance,
-            target: self.target,
             objects,
         };
         let mut cached = self.cached_scene.borrow_mut();

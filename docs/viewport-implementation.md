@@ -203,8 +203,26 @@ Immutable display geometry now caches bounds once. Shared caches reuse them
 across views; the clipping key compares camera, viewport dimensions, and the
 combined eligible bounds. Selection/color edits reuse clipping. Its input
 camera is retained so a parallel depth relocation can correctly update the
-intersection tolerance on the next draw. GPU rendering still uses an
-independent dynamic depth range rather than these stored clip planes.
+intersection tolerance on the next draw.
+
+GPU faces, wires, and points now obey the stored near/far planes. Perspective
+projection constrains its depth interval to those planes. Parallel scenes keep
+their local depth encoding for precision and transform the stored plane depths
+into fragment bounds; discarded fragments write neither color nor depth.
+This preserves nearby-face ordering even at large absolute depths. Scene keys
+include the complete camera snapshot, including imported axes and lens settings.
+
+Another private-Xvfb capture records 1,200 public World-to-Clip/IsVisible point
+queries across 48 standard, perspective, and two-point camera cases, with tiny
+and translated models and shifted-view input. Ordinary tests check GPU XY
+projection within `2e-5` in clip coordinates and visibility away from exact
+plane contacts. The opt-in GPU test checks face/wire/point coverage near both
+depth planes in shaded and ghosted modes, with both target formats (192 renders).
+Parallel encoded depth coordinates intentionally differ from Rhino's clip Z;
+the clipping region is compared. This establishes specific frustum cases,
+not complete display parity or behavior at every numeric boundary.
+CPU drafting/picking still uses its camera-plane projection rules; matching
+selection filtering to the display near/far planes remains separate work.
 
 Imported nonorthogonal `CameraUp` hints are retained separately from the
 orthonormal rendering frame, including through clipping refresh and 3DM

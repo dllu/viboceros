@@ -31,7 +31,8 @@ including off-axis targets imported from 3DM.
 named and working 3DM views retain its projection and shifted frustum.
 `Zoom Extents` and `Zoom Selected` fit parallel, perspective, and two-point
 views with Rhino-matched framing and cleared shifted frusta. Viewport redraw
-refreshes stored document clipping after navigation and scene edits.
+refreshes document clipping after navigation and scene edits; GPU faces, wires,
+and points obey those near/far planes.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
 Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
 the view prompt and resumes the unfinished command.

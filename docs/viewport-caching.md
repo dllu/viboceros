@@ -10,7 +10,9 @@ its existing spatial index.
 
 Each viewport also retains its last prepared GPU scene. Unchanged geometry,
 styles, camera, viewport rectangle, and display mode reuse that scene. The GPU
-renderer retains the scene identity alongside its buffers and skips all buffer
+camera key includes restored screen axes, lens settings, frustum shifts, and
+near/far planes, so imported views cannot retain a previous camera's buffers.
+The GPU renderer retains the scene identity alongside its buffers and skips all buffer
 uploads when it receives the same scene again. Orbiting one view rebuilds only
 that view's scene, while sharing the existing tessellation and curve samples.
 Drafting/grid/selection overlays still update independently through egui.
@@ -56,6 +58,7 @@ cargo fmt --all -- --check
 ```
 
 Ordinary tests cover four-view sharing, stationary scene identity, navigation,
+restored camera axes/lenses/shifts,
 edits/undo/redo/rollback, cloned documents, layer and style changes, tolerance, deletion,
 lazy wireframe behavior, and selection against the original uncached projection
 in every view and display mode. Snapshot tests additionally cover equal replacements,
@@ -89,3 +92,9 @@ Verification checkpoint: 3,088 release-mode workspace tests passed (26 opt-in
 exclusions), plus all seven explicit GPU tests on NVIDIA GB10/Vulkan, driver
 610.43.02. The 290 Python tests, formatting, and warnings-denied Clippy/Rustdoc
 checks also passed. No new Rhino timing or viewport comparison is claimed.
+
+Camera restoration/clipping follow-up: 752 ordinary application tests, 484 Python
+tests, and all nine explicit offscreen raster tests passed on NVIDIA GB10/Vulkan,
+driver 610.57.04. Formatting and application all-target Clippy passed with the
+existing warnings. The new [public clip captures](oracle.md#gpu-frustum-clipping)
+were taken entirely on private Xvfb; no new performance comparison is claimed.

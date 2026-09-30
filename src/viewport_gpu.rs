@@ -15,7 +15,7 @@ const INITIAL_BUFFER_SIZE: wgpu::BufferAddress = 4;
 pub(crate) struct ViewUniform {
     pub view_projection: [[f32; 4]; 4],
     pub viewport_size: [f32; 2],
-    pub padding: [f32; 2],
+    pub clip_depth: [f32; 2],
 }
 
 #[repr(C)]
@@ -484,11 +484,17 @@ const VIEWPORT_SHADER: &str = r#"
 struct ViewUniform {
     view_projection: mat4x4<f32>,
     viewport_size: vec2<f32>,
-    padding: vec2<f32>,
+    clip_depth: vec2<f32>,
 };
 
 @group(0) @binding(0)
 var<uniform> view: ViewUniform;
+
+fn discard_clipped(depth: f32) {
+    if depth < view.clip_depth.x || depth > view.clip_depth.y {
+        discard;
+    }
+}
 
 fn srgb_to_linear(value: vec3<f32>) -> vec3<f32> {
     let low = value / 12.92;
@@ -533,12 +539,14 @@ fn shaded_triangle(input: TriangleOutput) -> vec4<f32> {
 
 @fragment
 fn fs_triangle_linear(input: TriangleOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     let color = shaded_triangle(input);
     return vec4<f32>(srgb_to_linear(color.rgb) * color.a, color.a);
 }
 
 @fragment
 fn fs_triangle_gamma(input: TriangleOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     let color = shaded_triangle(input);
     return vec4<f32>(color.rgb * color.a, color.a);
 }
@@ -589,12 +597,14 @@ fn flat_linear_color(input: FlatOutput) -> vec4<f32> {
 
 @fragment
 fn fs_line_linear(input: FlatOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     let color = flat_linear_color(input);
     return vec4<f32>(color.rgb * color.a, color.a);
 }
 
 @fragment
 fn fs_line_gamma(input: FlatOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     let color = flat_linear_color(input);
     return vec4<f32>(linear_to_srgb(color.rgb) * color.a, color.a);
 }
@@ -634,6 +644,7 @@ fn vs_point(input: PointInput, @builtin(vertex_index) vertex_index: u32) -> Poin
 
 @fragment
 fn fs_point_linear(input: PointOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     if dot(input.local_position, input.local_position) > 1.0 {
         discard;
     }
@@ -643,6 +654,7 @@ fn fs_point_linear(input: PointOutput) -> @location(0) vec4<f32> {
 
 @fragment
 fn fs_point_gamma(input: PointOutput) -> @location(0) vec4<f32> {
+    discard_clipped(input.position.z);
     if dot(input.local_position, input.local_position) > 1.0 {
         discard;
     }

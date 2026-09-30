@@ -24,6 +24,11 @@ class ZoomExtentsProbeTests(unittest.TestCase):
                        dict(min=[1e9, 0, 0]), dict(min=[100, 0, 0]), dict(border=0),
                        dict(border=True), dict(frustum_scale=float("inf")),
                        dict(vertical_shift=4), dict(border_command=1), dict(clipping_probe=1),
+                       dict(projection_probe=1),
+                       dict(projection_shift=[0., 0.]), dict(projection_probe=True, projection_shift=[0.]),
+                       dict(projection_probe=True, projection_shift=[True, 0.]),
+                       dict(projection_probe=True, projection_shift=[0., float("inf")]),
+                       dict(projection_probe=True, projection_shift=[0., 4.]),
                        dict(clip_constraints=[1,2]), dict(clip_constraints=[1,2,True,0,0]),
                        dict(clip_constraints=[1,2,0,float("nan"),0]), dict(clip_constraints=[1,1e13,0,0,0]),
                        dict(context_min=[0,0,0]), dict(context_min=[0,0,0],context_max=[-1,0,0]),
@@ -218,6 +223,27 @@ class ZoomExtentsProbeTests(unittest.TestCase):
                     near, far = step["after"]["frustum"][4:]
                     self.assertGreater(near, 0)
                     self.assertGreater(far, near)
+
+    def test_clip_transform_captures_record_shift_normalization_and_public_visibility(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/viewport_clip_transform.json").read_text())
+        capture = json.loads((root / "observations/viewport_clip_transform.json").read_text())
+        probe.validate(request["operations"][0])
+        rows = capture["results"][0]["value"]
+        self.assertEqual([row["case"] for row in rows], request["operations"][0]["cases"])
+        self.assertEqual(len(rows), 48)
+        self.assertEqual(sum(len(row["projection"]["queries"]) for row in rows), 1200)
+        for row in rows:
+            left, right, bottom, top, near, far = row["projection"]["camera"]["frustum"]
+            # SetViewProjection normalizes ordinary live-view frusta and
+            # retains only the vertical shift for two-point perspective.
+            sy = row["case"]["projection_shift"][1] if row["case"]["projection"] == "TwoPointPerspective" else 0.
+            self.assertAlmostEqual((left + right) / (right - left), 0., places=10)
+            self.assertAlmostEqual((bottom + top) / (top - bottom), sy, places=10)
+            for query in row["projection"]["queries"]:
+                clip = query["clip"]
+                if all(abs(abs(value) - 1) > 2e-7 for value in clip):
+                    self.assertEqual(query["visible"], all(abs(value) <= 1 for value in clip))
 
 
 if __name__ == "__main__":

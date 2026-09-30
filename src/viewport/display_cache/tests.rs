@@ -45,6 +45,42 @@ fn assert_same_scene(a: &GpuViewportScene, b: &GpuViewportScene) {
 }
 
 #[test]
+fn imported_camera_axes_lenses_shifts_and_clip_planes_never_reuse_a_stale_scene() {
+    let document = fixture();
+    let mut view = Viewport::new(ViewKind::Perspective);
+    view.display_mode = DisplayMode::Shaded;
+    let original = view.camera_snapshot();
+    for change in 0..6 {
+        view.restore_camera(original);
+        let previous = view.object_scene(rect(), &document);
+        match change {
+            0 => view.perspective_fov_radians *= 1.5,
+            1 => view.perspective_lens_shift = [0.2, -0.4],
+            2 => view.perspective_frame = Some(WorldPlane::Top.frame()),
+            3 => {
+                view.kind = ViewKind::Plan;
+                view.plan_frame = WorldPlane::Right.frame();
+            }
+            4 => view.frustum_near = 1.,
+            _ => {
+                view.frustum_near = 1.;
+                view.frustum_far = 40.;
+            }
+        }
+        let current = view.object_scene(rect(), &document);
+        let fresh = view.duplicate_for_layout("Fresh");
+        let expected = fresh.object_scene(rect(), &document);
+        assert!(!Arc::ptr_eq(&previous, &current));
+        assert_ne!(
+            bytemuck::bytes_of(&previous.uniform),
+            bytemuck::bytes_of(&current.uniform)
+        );
+        assert_same_scene(&current, &expected);
+        assert!(Arc::ptr_eq(&current, &view.object_scene(rect(), &document)));
+    }
+}
+
+#[test]
 fn clipping_bounds_are_shared_and_refresh_only_for_relevant_changes() {
     let mut document = fixture();
     let mut views = Viewport::standard_views();

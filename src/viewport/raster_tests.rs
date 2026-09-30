@@ -2,6 +2,115 @@ use super::*;
 use crate::viewport_gpu::readback::{OffscreenRenderer, SIZE};
 use eframe::wgpu;
 
+// These fixtures isolate rasterization/depth precision. Their fixed display
+// frustum includes the supplied geometry; document-driven clipping is covered
+// independently by the saved public Rhino visibility cases below.
+fn raster_view(kind: ViewKind) -> Viewport {
+    let mut view = Viewport::new(kind);
+    view.frustum_near = 1e-6;
+    view.frustum_far = Real::MAX;
+    view
+}
+
+#[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_faces_wires_and_points_obey_saved_rhino_clip_planes() {
+    let capture = super::clip_tests::captures();
+    let rows = capture["results"][0]["value"].as_array().unwrap();
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    let mut renders = 0;
+    for format in [
+        wgpu::TextureFormat::Rgba8Unorm,
+        wgpu::TextureFormat::Rgba8UnormSrgb,
+    ] {
+        let mut renderer = OffscreenRenderer::new(format);
+        for row in rows {
+            let mut view = super::clip_tests::captured_view(&row["projection"]["camera"]);
+            let (right, up, forward) = if view.kind == ViewKind::Perspective {
+                view.perspective_basis()
+            } else {
+                (
+                    NaVector3::from(view.plan_frame.x_axis().as_vector().to_array()),
+                    NaVector3::from(view.plan_frame.y_axis().as_vector().to_array()),
+                    -NaVector3::from(view.plan_frame.z_axis().as_vector().to_array()),
+                )
+            };
+            for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+                view.display_mode = mode;
+                let mut scene = GpuSceneBuilder::new();
+                let mut expected = Vec::new();
+                for (column, index) in [0, 1, 3, 4, 5, 7, 8].into_iter().enumerate() {
+                    let query = &row["projection"]["queries"][index];
+                    let query_point = Point3::try_from(
+                        serde_json::from_value::<[f64; 3]>(query["point"].clone()).unwrap(),
+                    )
+                    .unwrap();
+                    let depth = view.view_depth(query_point);
+                    let scale = if view.kind.is_parallel() {
+                        1. / view.pixels_per_unit
+                    } else {
+                        depth / view.perspective_focal_length_pixels(rect)
+                    };
+                    let mut center = view.target
+                        + forward
+                            * if view.kind.is_parallel() {
+                                depth
+                            } else {
+                                depth - view.perspective_camera_distance
+                            };
+                    if view.kind == ViewKind::Perspective {
+                        center += right
+                            * (view.perspective_lens_shift[0] * f64::from(SIZE) * 0.5 * scale)
+                            + up * (view.perspective_lens_shift[1] * f64::from(SIZE) * 0.5 * scale);
+                    }
+                    let x = -90. + column as f64 * 30.;
+                    let point = |dx: f64, y: f64| {
+                        let p = center + right * ((x + dx) * scale) + up * (y * scale);
+                        Point3::try_new(p.x, p.y, p.z).unwrap()
+                    };
+                    let mesh = TriangleMesh::try_new(
+                        vec![point(-6., 34.), point(6., 34.), point(0., 48.)],
+                        vec![[0, 1, 2]],
+                        Tolerance::try_new(1e-20, 1e-12, 1e-12).unwrap(),
+                    )
+                    .unwrap();
+                    view.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+                    view.add_gpu_line(
+                        &mut scene,
+                        rect,
+                        point(-6., 0.),
+                        point(6., 0.),
+                        3.,
+                        Color32::WHITE,
+                    );
+                    view.add_gpu_point(&mut scene, rect, point(0., -40.), 3., Color32::GREEN);
+                    expected.push((128 + x as i32, query["visible"].as_bool().unwrap()));
+                }
+                let pixels =
+                    renderer.render(&scene.finish(&view, rect, mode == DisplayMode::Ghosted));
+                for (x, visible) in expected {
+                    for y in [88, 128, 168] {
+                        let mut covered = false;
+                        for dy in -1..=1 {
+                            for dx in -1..=1 {
+                                covered |=
+                                    pixels[((y + dy) * SIZE as i32 + x + dx) as usize][3] > 0;
+                            }
+                        }
+                        assert_eq!(
+                            covered, visible,
+                            "{} {mode:?} {format:?} at {x},{y}",
+                            row["case"]["id"]
+                        );
+                    }
+                }
+                renders += 1;
+            }
+        }
+    }
+    assert_eq!(renders, 192);
+}
+
 #[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_parallel_depth_translation_preserves_pixels() {
@@ -20,7 +129,7 @@ fn gpu_parallel_depth_translation_preserves_pixels() {
             ViewKind::Left,
         ] {
             let mut baseline = None;
-            let mut viewport = Viewport::new(kind);
+            let mut viewport = raster_view(kind);
             viewport.display_mode = DisplayMode::Shaded;
             let (right, up, forward) = match kind {
                 ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
@@ -120,10 +229,11 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
         ] {
             let mut baseline = None;
             for model_scale in [1.0, 2.0_f64.powi(126)] {
-                let mut viewport = Viewport::new(kind);
+                let mut viewport = raster_view(kind);
                 viewport.display_mode = DisplayMode::Shaded;
                 viewport.last_rect = Some(rect);
                 viewport.zoom_factor(1.0 / model_scale).unwrap();
+                viewport.perspective_camera_distance *= model_scale;
                 let (right, up, forward) = match kind {
                     ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
                     ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
@@ -180,7 +290,7 @@ fn gpu_parallel_zoom_preserves_pixels_at_extreme_model_scales() {
                     baseline = Some(pixels);
                 }
             }
-            let mut viewport = Viewport::new(kind);
+            let mut viewport = raster_view(kind);
             viewport.last_rect = Some(rect);
             viewport.zoom_factor(Real::from_bits(1)).unwrap();
             let mut scene = GpuSceneBuilder::new();
@@ -224,7 +334,7 @@ fn gpu_camera_relative_geometry_preserves_large_translation_pixels() {
                 NaVector3::zeros(),
                 NaVector3::new(1073741824.0, -2147483648.0, 4294967296.0),
             ] {
-                let mut viewport = Viewport::new(kind);
+                let mut viewport = raster_view(kind);
                 viewport.target = translation;
                 viewport.orbit_yaw = 0.0;
                 viewport.orbit_pitch = 0.0;
@@ -309,7 +419,7 @@ fn face_click_selection_uses_depth_not_insertion_order() {
         ViewKind::Left,
         ViewKind::Perspective,
     ] {
-        let mut viewport = Viewport::new(kind);
+        let mut viewport = raster_view(kind);
         let (right, up, forward) = match kind {
             ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
             ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
@@ -394,7 +504,7 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
             ViewKind::Left,
             ViewKind::Perspective,
         ] {
-            let mut viewport = Viewport::new(kind);
+            let mut viewport = raster_view(kind);
             let (right, up, forward) = match kind {
                 ViewKind::Top => (NaVector3::x(), NaVector3::y(), -NaVector3::z()),
                 ViewKind::Bottom => (NaVector3::x(), -NaVector3::y(), NaVector3::z()),
@@ -490,7 +600,7 @@ fn gpu_depth_and_ghosted_compositing_ignore_object_insertion_order() {
 
 #[test]
 fn sloped_and_camera_crossing_face_picks_match_independent_rays() {
-    let mut viewport = Viewport::new(ViewKind::Perspective);
+    let mut viewport = raster_view(ViewKind::Perspective);
     viewport.display_mode = DisplayMode::Shaded;
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     let (right, up, forward) = viewport.perspective_basis();
@@ -609,8 +719,119 @@ fn independent_ray_reference_handles_winding_misses_and_unnormalized_directions(
 
 #[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
+fn gpu_faces_crossing_both_clip_planes_match_independent_rays() {
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
+    let mut renders = 0;
+    for format in [
+        wgpu::TextureFormat::Rgba8Unorm,
+        wgpu::TextureFormat::Rgba8UnormSrgb,
+    ] {
+        let mut renderer = OffscreenRenderer::new(format);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Plan,
+            ViewKind::Perspective,
+        ] {
+            let mut view = raster_view(kind);
+            view.frustum_near = 4.;
+            view.frustum_far = 12.;
+            if kind == ViewKind::Plan {
+                view.plan_frame = Frame3::try_from_directions(
+                    Point3::try_new(0., 0., 0.).unwrap(),
+                    Vector3::try_new(1., 1., 0.).unwrap(),
+                    Vector3::try_new(-1., 1., 1.).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+            }
+            let (right, up, forward) = if kind == ViewKind::Perspective {
+                view.perspective_basis()
+            } else {
+                let frame = if kind == ViewKind::Plan {
+                    view.plan_frame
+                } else {
+                    Viewport::default_plane(kind)
+                };
+                (
+                    NaVector3::from(frame.x_axis().as_vector().to_array()),
+                    NaVector3::from(frame.y_axis().as_vector().to_array()),
+                    -NaVector3::from(frame.z_axis().as_vector().to_array()),
+                )
+            };
+            let camera = view.target - forward * view.perspective_camera_distance;
+            let points = [(-4., -3., 1.), (4., -3., 8.), (0., 4., 16.)].map(|(x, y, depth)| {
+                let p = camera + right * x + up * y + forward * depth;
+                Point3::try_new(p.x, p.y, p.z).unwrap()
+            });
+            for indices in [[0, 1, 2], [2, 1, 0]] {
+                let points = indices.map(|i| points[i]);
+                let mesh =
+                    TriangleMesh::try_new(points.to_vec(), vec![[0, 1, 2]], Tolerance::DEFAULT)
+                        .unwrap();
+                for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+                    view.display_mode = mode;
+                    let mut scene = GpuSceneBuilder::new();
+                    view.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+                    let pixels =
+                        renderer.render(&scene.finish(&view, rect, mode == DisplayMode::Ghosted));
+                    let mut covered = 0;
+                    let mut clipped = 0;
+                    for y in (0..SIZE).step_by(4) {
+                        for x in (0..SIZE).step_by(4) {
+                            let dx = f64::from(x) + 0.5 - f64::from(SIZE) * 0.5;
+                            let dy = f64::from(SIZE) * 0.5 - f64::from(y) - 0.5;
+                            let (origin, direction) = if kind.is_parallel() {
+                                (
+                                    camera + (right * dx + up * dy) / view.pixels_per_unit,
+                                    forward,
+                                )
+                            } else {
+                                (
+                                    camera,
+                                    forward
+                                        + (right * dx + up * dy)
+                                            / view.perspective_focal_length_pixels(rect),
+                                )
+                            };
+                            let Some([depth, a, b, c]) = ray_triangle(origin, direction, points)
+                            else {
+                                continue;
+                            };
+                            if a.min(b).min(c).abs() < 0.02
+                                || (depth - 4.).abs() < 0.01
+                                || (depth - 12.).abs() < 0.01
+                            {
+                                continue;
+                            }
+                            let in_face = depth > 0. && a.min(b).min(c) > 0.;
+                            let expected = in_face && (4. ..=12.).contains(&depth);
+                            let actual = pixels[(y * SIZE + x) as usize][3] > 0;
+                            assert_eq!(
+                                actual, expected,
+                                "{kind:?} {mode:?} {format:?} at {x},{y} depth={depth}"
+                            );
+                            covered += usize::from(expected);
+                            clipped += usize::from(in_face && !expected);
+                        }
+                    }
+                    assert!(
+                        covered > 0 && clipped > 0,
+                        "both visible and clipped coverage required: {kind:?}"
+                    );
+                    renders += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(renders, 40);
+}
+
+#[test]
+#[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_camera_crossing_faces_match_independent_ray_coverage() {
-    let mut viewport = Viewport::new(ViewKind::Perspective);
+    let mut viewport = raster_view(ViewKind::Perspective);
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     let (right, up, forward) = viewport.perspective_basis();
     let camera = viewport.target - forward * viewport.perspective_camera_distance;
@@ -680,7 +901,7 @@ fn gpu_camera_crossing_faces_match_independent_ray_coverage() {
 #[test]
 #[ignore = "requires a graphics adapter; run explicitly with --ignored --nocapture"]
 fn gpu_camera_crossing_wires_rasterize_in_both_endpoint_orders() {
-    let viewport = Viewport::new(ViewKind::Perspective);
+    let viewport = raster_view(ViewKind::Perspective);
     let rect = Rect::from_min_size(Pos2::ZERO, Vec2::splat(SIZE as f32));
     let (right, _, forward) = viewport.perspective_basis();
     let camera = viewport.target - forward * viewport.perspective_camera_distance;
@@ -739,7 +960,7 @@ fn gpu_cached_scene_reuses_uploads_and_updates_after_edit_and_undo() {
         .execute(&mut document, "Box -1,-1,0 1,1,0 2")
         .unwrap();
     commands.execute(&mut document, "SelNone").unwrap();
-    let mut view = Viewport::new(ViewKind::Top);
+    let mut view = raster_view(ViewKind::Top);
     view.display_mode = DisplayMode::Shaded;
     let mut renderer = OffscreenRenderer::new(wgpu::TextureFormat::Rgba8Unorm);
     let first = view.object_scene(rect, &document);

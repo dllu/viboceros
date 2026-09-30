@@ -30,8 +30,8 @@ corners, both windings, shaded and ghosted display, and sRGB/non-sRGB targets
 (32 rendered cases). Each nonempty case must contain tested covered pixels.
 The wire test checks visible samples in both endpoint orders, adjacent clear
 pixels, and entirely hidden segments, with both target formats (6 cases).
-The depth/compositing test checks center pixels in all four views with both
-target formats (80 renders). A nearer opaque face must hide a farther face
+The depth/compositing test checks center pixels in all six standard parallel
+views and perspective with both target formats. A nearer opaque face must hide a farther face
 regardless of insertion order, hide rear wires, and admit front wires. Ghosted
 faces must combine two distinct depth-separated layers with the expected alpha
 and near-layer color dominance, in either insertion order, while keeping rear
@@ -39,25 +39,25 @@ wires visible. These are nonintersecting, constant-depth faces; sorting general
 intersecting transparent geometry is not established by these fixtures.
 The translation test renders a small face, wire, and point at the origin and
 again with the camera target and geometry translated by `(2^30, -2^31, 2^32)`.
-It requires exact pixel equality in all four views and both target formats
-(16 renders); each primitive has a distinct visible color in the baseline.
+It requires exact pixel equality in all six standard parallel views, perspective,
+and both target formats (28 renders); each primitive has a distinct visible color in the baseline.
 The perspective case uses an axis-aligned camera so local fixture coordinates
 remain exactly representable in f64 after translation. Before target-relative
 GPU coordinates, the Top/non-sRGB case differed at 13,072 pixels.
 The parallel-scale test enlarges the same face/wire/point scene by `2^126` and
-applies the inverse `Zoom Factor`, requiring exact pixel equality in Top, Front,
-and Right views with both target formats (12 renders). It also renders a lone
-point at the minimum parallel zoom scale (6 renders). Parallel GPU vertices now
+applies the inverse `Zoom Factor`, requiring exact pixel equality in all six
+standard parallel views with both target formats (24 renders). It also renders a lone
+point at the minimum parallel zoom scale (12 renders). Parallel GPU vertices now
 include the zoom scale, applied in f64; otherwise horizontal/vertical matrix
 coefficients become subnormal at this model size. Parallel depth is encoded after
 the complete scene range is known; zero-depth scenes use the interval midpoint.
 An ordinary CPU test checks normal (or zero) matrix coefficients and CPU/GPU
 projection agreement at these scales.
 The depth-translation test moves the scene along the view-depth axis to `2^80`
-and `2^1020`, requiring exact pixel equality with the origin scene (18 renders).
+and `2^1020`, requiring exact pixel equality with the origin scene (36 renders).
 It also checks nearer-face occlusion in either insertion order at depth `2^80`
-with separation `2^40`, below absolute f32 resolution there (12 renders).
-These cover all three parallel views and both target formats. Unit tests cover
+with separation `2^40`, below absolute f32 resolution there (24 renders).
+These cover all six standard parallel views and both target formats. Unit tests cover
 singleton, subnormal, and overflowing depth spans, unchanged perspective encoding,
 and finite face-sort depth at the f64 model-coordinate limit.
 The cache test renders an actual document before/after an edit, undo, and
@@ -65,14 +65,27 @@ deletion, and after hiding/showing its layer. It checks pixel changes/restoratio
 and counts upload preparations: stationary redraws, including an empty scene and
 an unchanged document clone, must issue no buffer uploads.
 See [display caching](viewport-caching.md) for invalidation and CPU timing checks.
-The full GPU suite now performs 191 renders.
-All seven tests use the application's camera, scene submission, shaders, pipelines,
+Those precision fixtures configure a wide frustum containing the test geometry;
+the parallel scale fixture also scales camera distance so its geometry remains
+in front of the near plane.
+
+The saved Rhino clipping test imports 48 public camera records and checks seven
+depths on both sides of the near/far planes. Faces, wires, and points occupy
+separate screen patches, checked against public `IsVisible` results in shaded
+and ghosted display, with both target formats (192 renders, 4,032 coverage checks).
+The independent ray test adds triangles crossing both stored clip planes,
+including an oblique Plan frame and perspective, both windings/modes/formats
+(40 renders). It requires both visible and clipped interior samples; numeric
+plane contacts and rasterizer edge bands are excluded.
+See [oracle coverage](oracle.md#gpu-frustum-clipping) for capture details.
+
+All nine tests use the application's camera, scene submission, shaders, pipelines,
 depth attachment, and buffer-upload code.
 An ordinary non-GPU test checks the independent ray reference against analytic
 hits, reversed winding, behind-origin intersections, outside barycentric weights,
 parallel rays, and an unnormalized ray direction.
 
-Verified on NVIDIA GB10, Vulkan, driver 610.43.02. This does not establish
+Verified on NVIDIA GB10, Vulkan, driver 610.57.04. This does not establish
 other-backend parity, exact colors/lighting, intersecting transparency order,
-unrestricted large-coordinate accuracy, or agreement with Rhino. The tests deliberately
+unrestricted large-coordinate accuracy, or complete agreement with Rhino. The tests deliberately
 avoid platform-specific golden screenshots; they check geometric coverage.

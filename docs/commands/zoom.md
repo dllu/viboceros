@@ -205,7 +205,8 @@ outside the infinite frustum use a default depth interval. The latter can dolly
 a parallel camera backward on successive redraws, matching Rhino. Geometry
 bounds are cached per immutable source and shared between views. Unchanged
 camera/bounds/layout inputs reuse the clipping result; selection/color changes
-do not require recalculation. Rendering retains its separate dynamic depth range.
+do not require recalculation. GPU faces, wires, and points obey the stored planes
+while retaining a local depth range for precision.
 Curve-end fitting initially stores its explicit bounds interval; redraw then
 refreshes document clipping.
 Twenty additional [border captures](../../tools/rhino_oracle/observations/zoom_extents_borders.json)

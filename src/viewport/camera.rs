@@ -291,6 +291,68 @@ impl Viewport {
         (self.perspective_camera_distance * 1e-6).max(1e-6)
     }
 
+    fn perspective_gpu_depth_range(&self, range: Option<(Real, Real)>) -> (Real, Real) {
+        let (minimum, maximum) = range.unwrap_or((
+            self.perspective_camera_distance * 0.5,
+            self.perspective_camera_distance * 1.5,
+        ));
+        let near = (minimum * 0.5)
+            .max(self.perspective_near_floor())
+            .max(self.frustum_near);
+        let far = (maximum * 1.5)
+            .max(self.perspective_camera_distance * 2.0)
+            .max(near + 1.0)
+            .min(self.frustum_far);
+        if near < far {
+            (near, far)
+        } else {
+            (self.frustum_near, self.frustum_far)
+        }
+    }
+
+    /// Keep depth-buffer precision local to the submitted geometry, while
+    /// testing the document's actual near/far planes in fragment coordinates.
+    /// This avoids subtracting large absolute camera coordinates in f32.
+    fn gpu_clip_depth_range(&self, range: Option<(Real, Real)>) -> [f32; 2] {
+        let Some((minimum, maximum)) = range else {
+            return [0.0, 1.0];
+        };
+        let (near, far) = if self.kind.is_parallel() {
+            (
+                self.frustum_near - self.perspective_camera_distance,
+                self.frustum_far - self.perspective_camera_distance,
+            )
+        } else {
+            (self.frustum_near, self.frustum_far)
+        };
+        if maximum < near || minimum > far {
+            return [1.0, -1.0];
+        }
+        if self.kind.is_parallel() {
+            if minimum == maximum {
+                return [0.0, 1.0];
+            }
+            let encode = |depth| {
+                let mut position = [0.; 3];
+                self.encode_gpu_depth(&mut position, depth, range);
+                let (axis, sign) = self.parallel_depth_axis().expect("parallel view");
+                sign * position[axis]
+            };
+            [
+                if near <= minimum { 0. } else { encode(near) },
+                if far >= maximum { 1. } else { encode(far) },
+            ]
+        } else {
+            let (gpu_near, gpu_far) = self.perspective_gpu_depth_range(range);
+            let a = gpu_far / (gpu_far - gpu_near);
+            let b = a * gpu_near;
+            [
+                (a - b / near).clamp(0., 1.) as f32,
+                (a - b / far).clamp(0., 1.) as f32,
+            ]
+        }
+    }
+
     /// Clip the invisible part of a perspective segment before projecting its
     /// endpoints. The guard covers rounding when reconstructing a model point
     /// close to the camera plane; it is not a model-space geometry edit.
@@ -1036,14 +1098,7 @@ impl Viewport {
                     0.0,
                     1.0,
                 );
-                let (minimum_depth, maximum_depth) = depth_range.unwrap_or((
-                    self.perspective_camera_distance * 0.5,
-                    self.perspective_camera_distance * 1.5,
-                ));
-                let near = (minimum_depth * 0.5).max(self.perspective_near_floor());
-                let far = (maximum_depth * 1.5)
-                    .max(self.perspective_camera_distance * 2.0)
-                    .max(near + 1.0);
+                let (near, far) = self.perspective_gpu_depth_range(depth_range);
                 let focal_length = self.perspective_focal_length_pixels(rect);
                 let projection = NaMatrix4::new(
                     2.0 * focal_length / width,
@@ -1125,7 +1180,7 @@ impl Viewport {
         GpuViewUniform {
             view_projection: matrix_to_gpu(view_projection),
             viewport_size: [rect.width().max(1.0), rect.height().max(1.0)],
-            padding: [0.0; 2],
+            clip_depth: self.gpu_clip_depth_range(depth_range),
         }
     }
 

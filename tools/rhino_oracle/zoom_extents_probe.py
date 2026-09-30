@@ -40,6 +40,14 @@ def validate(operation):
             raise ValueError("border_command must be boolean")
         if "clipping_probe" in case and type(case["clipping_probe"]) is not bool:
             raise ValueError("clipping_probe must be boolean")
+        if "projection_probe" in case and type(case["projection_probe"]) is not bool:
+            raise ValueError("projection_probe must be boolean")
+        if "projection_shift" in case:
+            shift = case["projection_shift"]
+            if (not case.get("projection_probe") or not isinstance(shift, list) or len(shift) != 2
+                    or any(isinstance(value, bool) or not isinstance(value, (int, float))
+                           or not _finite(float(value)) or abs(value) > 3. for value in shift)):
+                raise ValueError("projection_shift requires a projection probe and two bounded numbers")
         if "clip_constraints" in case:
             values = case["clip_constraints"]
             if (not isinstance(values, list) or len(values) != 5
@@ -110,6 +118,43 @@ def depth_snapshot(info, case, Rhino):
     intersects, near, far = info.GetBoundingBoxDepth(box)
     return dict(intersects=bool(intersects), near=float(near) if intersects else None,
                 far=float(far) if intersects else None)
+
+
+def projection_snapshot(viewport, corners, Rhino):
+    """Read public clip transforms and point visibility without adding geometry."""
+    camera = snapshot(viewport, Rhino)
+    left, right, bottom, top, near, far = camera["frustum"]
+    axes = [_unit(viewport.CameraX), _unit(viewport.CameraY),
+            [-v for v in _unit(viewport.CameraZ)]]
+    location = camera["camera_location"]
+    middle = near ** 0.5 * far ** 0.5
+    samples = [("depth-" + str(i), depth, 0., 0.) for i, depth in enumerate(
+        [0.5 * near, 0.999 * near, near, 1.001 * near, middle,
+         0.999 * far, far, 1.001 * far, 2. * far])]
+    for label, x, y in [("left", -1., 0.), ("right", 1., 0.),
+                        ("bottom", 0., -1.), ("top", 0., 1.)]:
+        for factor in (0.999, 1.001):
+            samples.append((label + "-" + str(factor), middle, x * factor, y * factor))
+    queries = []
+    for label, depth, x, y in samples:
+        scale = depth / near if camera["perspective"] else 1.
+        x = (0.5 * (left + right) + x * 0.5 * (right - left)) * scale
+        y = (0.5 * (bottom + top) + y * 0.5 * (top - bottom)) * scale
+        point = [location[i] + axes[0][i] * x + axes[1][i] * y + axes[2][i] * depth
+                 for i in range(3)]
+        queries.append((label, Rhino.Geometry.Point3d(*point)))
+    queries.extend(("corner-" + str(i), point) for i, point in enumerate(corners))
+    transform = viewport.GetTransform(Rhino.DocObjects.CoordinateSystem.World,
+                                      Rhino.DocObjects.CoordinateSystem.Clip)
+    rows = []
+    for label, point in queries:
+        clip = Rhino.Geometry.Point3d(point)
+        clip.Transform(transform)
+        screen = viewport.WorldToClient(point)
+        rows.append(dict(id=label, point=_xyz(point), clip=_xyz(clip),
+                         screen=[float(screen.X), float(screen.Y)],
+                         visible=bool(viewport.IsVisible(point))))
+    return dict(camera=camera, queries=rows)
 
 
 def run(operation, viewport, host):
@@ -287,9 +332,28 @@ def run(operation, viewport, host):
                 screen = viewport.WorldToClient(point)
                 after["projected_points"].append(dict(point=[float(point.X), float(point.Y), float(point.Z)],
                                                        screen=[float(screen.X), float(screen.Y)]))
-            rows.append(dict(case=case, before=before, after=after,
-                             effective_border=effective_border, border_history=border_history,
-                             clipping=clipping))
+            row = dict(case=case, before=before, after=after,
+                       effective_border=effective_border, border_history=border_history,
+                       clipping=clipping)
+            if case.get("projection_probe"):
+                if "projection_shift" in case:
+                    info = Rhino.DocObjects.ViewportInfo(viewport)
+                    try:
+                        x, y = case["projection_shift"]
+                        dx = x * (info.FrustumRight - info.FrustumLeft) * 0.5
+                        dy = y * (info.FrustumTop - info.FrustumBottom) * 0.5
+                        if not info.SetFrustum(info.FrustumLeft + dx, info.FrustumRight + dx,
+                                               info.FrustumBottom + dy, info.FrustumTop + dy,
+                                               info.FrustumNear, info.FrustumFar):
+                            raise ValueError("could not shift projection probe frustum")
+                        if not viewport.SetViewProjection(info, False):
+                            raise ValueError("could not apply shifted projection probe camera")
+                    finally:
+                        info.Dispose()
+                document.Views.Redraw()
+                Rhino.RhinoApp.Wait()
+                row["projection"] = projection_snapshot(viewport, corners, Rhino)
+            rows.append(row)
         return rows
     finally:
         cleanup = [("point %s" % object_id, lambda object_id=object_id: delete_owned(object_id))

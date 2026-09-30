@@ -2042,7 +2042,8 @@ framing, construction planes, selection, and model/view history.
 
 Viboceros stages this clipping calculation for Extents/Selected and their All
 variants, and refreshes it during drawing after navigation and scene edits.
-GPU depth ranges remain independently computed. These fixtures run native
+GPU depth encoding retains a local range but rendering obeys stored clip planes.
+These fixtures run native
 viewport tests, not the generic geometry `compare` operation.
 
 ### Redraw after navigation and document edits
@@ -2078,8 +2079,34 @@ applying the measured bias.
 
 Public pan calls can retain a nonorthogonal CameraUp hint. Native cameras keep
 that hint separately from perpendicular screen axes so clipping does not
-silently change the saved camera. GPU near/far rendering equivalence remains
-outside these metadata/projection comparisons.
+silently change the saved camera. The following fixture checks display clipping.
+
+### GPU frustum clipping
+
+The [clip-transform fixture](../tools/rhino_oracle/fixtures/viewport_clip_transform.json)
+and [capture](../tools/rhino_oracle/observations/viewport_clip_transform.json) record
+1,200 point queries in 48 camera cases using public
+[GetTransform](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Display_RhinoViewport_GetTransform.htm)
+and [IsVisible](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Display_RhinoViewport_IsVisible.htm).
+All six standard parallel directions, perspective, and two-point perspective
+cover normal/tiny/translated boxes and centered/shifted source frusta. Applying
+the shifted source through public `SetViewProjection` normalizes ordinary live
+frusta and retains only vertical shift in two-point perspective; the measured
+output camera is the reference. Query generation adds no document geometry.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_clip_transform.json --timeout 300
+cargo test --release -p viboceros gpu_projection_and_clip_intervals
+cargo test --release -p viboceros gpu_faces_wires_and_points_obey_saved_rhino_clip_planes -- --ignored --nocapture
+```
+
+The ordinary test checks GPU XY projection within `2e-5` in normalized clip
+coordinates, perspective Z with the OpenNURBS-to-wgpu range conversion, and
+visibility outside a `2e-7` band around exact plane contacts. Parallel depth
+remains encoded relative to scene bounds; transformed fragment bounds enforce
+the actual near/far planes. The offscreen test checks 4,032 face/wire/point
+coverage samples in 192 renders, in shaded/ghosted and both target formats.
+These are public-API geometric comparisons, not Rhino screenshot/color matches.
 
 ## Timing interpretation
 

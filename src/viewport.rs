@@ -45,6 +45,8 @@ mod screen;
 mod selection;
 use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
 #[cfg(test)]
+mod clip_tests;
+#[cfg(test)]
 mod imported_shading_tests;
 #[cfg(test)]
 mod raster_tests;
@@ -1987,6 +1989,8 @@ mod tests {
     #[test]
     fn camera_crossing_faces_remain_visible_and_selectable() {
         let mut viewport = Viewport::new(ViewKind::Perspective);
+        viewport.frustum_near = 1e-6;
+        viewport.frustum_far = 1000.;
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let (right, up, forward) = viewport.perspective_basis();
         let camera = viewport.target - forward * viewport.perspective_camera_distance;
@@ -2116,6 +2120,7 @@ mod tests {
             ViewKind::Perspective,
         ] {
             let mut viewport = Viewport::new(kind);
+            viewport.frustum_near = 0.005;
             viewport.target = NaVector3::new(1e12, -2e12, 3e12);
             viewport.pan = Vec2::new(17.0, -23.0);
             let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
@@ -3725,6 +3730,7 @@ mod tests {
             let model = plane.point_at(local_camera_point.to_array()).unwrap();
             for starting_kind in [ViewKind::Top, ViewKind::Perspective] {
                 let mut view = Viewport::new(starting_kind);
+                view.frustum_near = 0.005;
                 view.plane.set(plane);
                 let previous = view.camera_snapshot();
                 view.set_cplane_view(direction);
