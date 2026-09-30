@@ -8,6 +8,15 @@ updates its construction-plane history. It leaves model geometry, selection,
 model undo, and display mode alone. The restored name becomes the viewport title;
 an asterisk marks later camera or construction-plane changes.
 
+The **View options** menu's **Named views set CPlane** and **Named views set
+projection** settings are enabled by default and persist between app launches.
+Disable the former to keep the destination CPlane; disable the latter to keep
+its parallel/perspective projection family. Restoration copies the saved camera
+pose and raw frustum in either case. Saved two-point locks apply only when the
+destination is perspective. Shifted parallel frusta survive projection changes,
+view history, and 3DM round trips. Working viewport restoration on file open
+always uses the file's saved state. See the [policy probes](../oracle.md#named-view-and-world-preset-policy-probes).
+
 `NamedView` or `NamedView List` lists saved names in their current order.
 `NamedView Update Front detail` replaces an existing snapshot; Save rejects a
 duplicate name regardless of case. `Delete`, `MoveUp`, and `MoveDown` accept one

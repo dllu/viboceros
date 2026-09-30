@@ -395,7 +395,9 @@ impl VibocerosApp {
                 let (saved_name, snapshot) = self.named_views.get_entry(&name)?;
                 let saved_name = saved_name.to_owned();
                 let snapshot = *snapshot;
-                self.viewports[self.active_viewport].restore_named_view(snapshot);
+                self.viewports[self.active_viewport]
+                    .restore_named_view_with_policy(snapshot, self.named_view_policy)
+                    .map_err(|error| NamedViewError::InvalidView(error.to_string()))?;
                 self.viewports[self.active_viewport].set_view_title(&saved_name);
                 Ok(format!(
                     "Restored named view '{saved_name}' in active viewport"
@@ -558,5 +560,6 @@ fn named_cplane_error(error: NamedViewError) -> String {
         NamedViewError::InvalidGrid(message) => {
             format!("named CPlane grid is not representable: {message}")
         }
+        NamedViewError::InvalidView(message) => format!("named CPlane restore failed: {message}"),
     }
 }

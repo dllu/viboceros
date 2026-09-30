@@ -31,6 +31,8 @@ named and working 3DM views retain its projection and shifted frustum.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
 Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
 the view prompt and resumes the unfinished command.
+View options persist the `Named views set CPlane` and `Named views set projection`
+settings for named-view restoration and World presets.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh/B-rep face.
 `CPlane Curve` places it perpendicular to a curve at a picked station.

@@ -4,6 +4,7 @@ use viboceros_command::interface::{FourViewProjection, ViewportTabAlignment, Zoo
 
 use super::DEFAULT_ZOOM_SCALE;
 use crate::viewport::ZoomExtentsBorders;
+use viboceros_command::named_view::NamedViewPolicy;
 
 const ZOOM_SCALE_KEY: &str = "viboceros.view.zoom_scale.v1";
 const PARALLEL_BORDER_KEY: &str = "viboceros.view.zoom_extents_parallel_border.v1";
@@ -11,6 +12,26 @@ const PERSPECTIVE_BORDER_KEY: &str = "viboceros.view.zoom_extents_perspective_bo
 const VIEWPORT_TABS_KEY: &str = "viboceros.view.viewport_tabs_visible.v1";
 const VIEWPORT_TAB_ALIGNMENT_KEY: &str = "viboceros.view.viewport_tab_alignment.v1";
 const FOUR_VIEW_PROJECTION_KEY: &str = "viboceros.view.four_view_projection.v1";
+const NAMED_VIEW_CPLANE_KEY: &str = "viboceros.view.named_views_set_cplane.v1";
+const NAMED_VIEW_PROJECTION_KEY: &str = "viboceros.view.named_views_set_projection.v1";
+
+pub(super) fn load_named_view_policy(storage: Option<&dyn eframe::Storage>) -> NamedViewPolicy {
+    let enabled = |key| {
+        storage
+            .and_then(|storage| storage.get_string(key))
+            .and_then(|value| value.parse::<bool>().ok())
+            .unwrap_or(true)
+    };
+    NamedViewPolicy {
+        set_cplane: enabled(NAMED_VIEW_CPLANE_KEY),
+        set_projection: enabled(NAMED_VIEW_PROJECTION_KEY),
+    }
+}
+
+pub(super) fn save_named_view_policy(storage: &mut dyn eframe::Storage, policy: NamedViewPolicy) {
+    storage.set_string(NAMED_VIEW_CPLANE_KEY, policy.set_cplane.to_string());
+    storage.set_string(NAMED_VIEW_PROJECTION_KEY, policy.set_projection.to_string());
+}
 
 pub(super) fn load_four_view_projection(
     storage: Option<&dyn eframe::Storage>,
@@ -117,6 +138,37 @@ mod tests {
         }
 
         fn flush(&mut self) {}
+    }
+
+    #[test]
+    fn named_view_policy_persists_each_setting_and_defaults_invalid_values() {
+        let mut storage = MemoryStorage::default();
+        assert_eq!(load_named_view_policy(None), NamedViewPolicy::default());
+        let mut app = super::super::tests::test_app();
+        for set_cplane in [true, false] {
+            for set_projection in [true, false] {
+                let policy = NamedViewPolicy {
+                    set_cplane,
+                    set_projection,
+                };
+                app.named_view_policy = policy;
+                eframe::App::save(&mut app, &mut storage);
+                assert_eq!(load_named_view_policy(Some(&storage)), policy);
+            }
+        }
+        storage.set_string(NAMED_VIEW_CPLANE_KEY, "invalid".into());
+        assert_eq!(
+            load_named_view_policy(Some(&storage)),
+            NamedViewPolicy {
+                set_cplane: true,
+                set_projection: false,
+            }
+        );
+        storage.set_string(NAMED_VIEW_PROJECTION_KEY, "0".into());
+        assert_eq!(
+            load_named_view_policy(Some(&storage)),
+            NamedViewPolicy::default()
+        );
     }
 
     #[test]

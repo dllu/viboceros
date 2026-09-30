@@ -1759,6 +1759,45 @@ location. The following camera probes cover framing independently; document
 clipping and parallel camera depth relocation remain pending. The generic
 oracle `compare` mode does not execute these interactive application prompts.
 
+### Named-view and World preset policy probes
+
+The [World policy fixture](../tools/rhino_oracle/fixtures/view_camera_world_policy.json)
+and [Rhino 8.32 capture](../tools/rhino_oracle/observations/view_camera_world_policy.json)
+cover all four combinations of **Named views set CPlane** and **Named views set
+projection**, with eight World choices from parallel, perspective, and two-point
+inputs: 96 transitions. The [named-view fixture](../tools/rhino_oracle/fixtures/named_view_policy.json)
+and [capture](../tools/rhino_oracle/observations/named_view_policy.json) cover 72
+restores: four policies, every saved/current projection pair, and centered versus
+rescaled, vertically shifted saved frusta. All live captures use private Xvfb:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_world_policy.json --timeout 300
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/named_view_policy.json --timeout 300
+cargo test --release -p viboceros named_view_policy
+```
+
+The bounded `named_view_policy_probe` creates disposable named views using
+public RhinoCommon APIs. Cleanup deletes only its own records and independently
+restores camera, target, CPlane, name, and both application settings, including
+after failure. Source initialization forces both settings on before setting the
+requested source projection: Rhino's public `SetProjection` also honors the
+projection policy. The tested settings are applied afterward.
+
+With projection restoration disabled, named views keep the destination's binary
+parallel/perspective family but copy the saved pose and raw frustum, including
+near/far distances. Saved two-point locks return only in a perspective destination.
+World presets instead use their existing scale conversion rules; World
+TwoPointPerspective always forces two-point projection. CPlane restoration is
+independent, and World Perspective always keeps the CPlane.
+
+Native replays check camera and CPlane components at `2e-12` and captured screen
+coordinates at `1e-8` pixels, plus independent camera/CPlane histories, failed
+conversion atomicity, and 3DM named-view encoding. Precise screen queries retain
+lens shift in `f64`. World comparisons exclude document-driven near/far changes
+and parallel camera depth relocation; named-view restoration compares all six
+saved frustum dimensions and camera location. The generic oracle `compare`
+mode does not execute these application-level operations.
+
 ### SetView CPlane camera probe
 
 The bounded `view_camera_probe` operation uses public RhinoCommon viewport

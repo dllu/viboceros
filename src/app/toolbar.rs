@@ -69,9 +69,9 @@ impl VibocerosApp {
                     })
                     .response
                     .on_hover_text("View preset for the active viewport");
-                if preset_picked {
-                    viewport.set_view_kind(kind);
-                }
+                let preset_error = preset_picked
+                    .then(|| viewport.set_world_view_with_policy(kind, self.named_view_policy))
+                    .and_then(Result::err);
                 let mut mode = viewport.display_mode;
                 egui::ComboBox::from_id_salt("display_mode")
                     .width(95.0)
@@ -83,13 +83,28 @@ impl VibocerosApp {
                     })
                     .response
                     .on_hover_text("Display mode for the active viewport · Ctrl/Cmd+Alt+W/S/G");
-                if mode != viewport.display_mode {
+                let mode_changed = mode != viewport.display_mode;
+                if let Some(error) = preset_error {
+                    self.push_log(format!("Error: {error}"));
+                }
+                if mode_changed {
                     self.apply_interface_command(InterfaceCommand::SetDisplayMode {
                         viewport: ViewportTarget::Active,
                         mode,
                     });
                 }
                 egui::containers::menu::MenuButton::new("View options").ui(ui, |ui| {
+                    ui.checkbox(
+                        &mut self.named_view_policy.set_cplane,
+                        "Named views set CPlane",
+                    )
+                    .on_hover_text("Restore saved CPlanes and apply World preset CPlanes");
+                    ui.checkbox(
+                        &mut self.named_view_policy.set_projection,
+                        "Named views set projection",
+                    )
+                    .on_hover_text("Restore saved projections and apply World preset projections");
+                    ui.separator();
                     let mut scale = self.zoom_scale;
                     if ui
                         .add(

@@ -786,8 +786,10 @@ impl VibocerosApp {
                         WorldView::Perspective | WorldView::TwoPointPerspective
                     ) {
                         match self.viewports[self.active_viewport]
-                            .set_world_perspective_view(view == WorldView::TwoPointPerspective)
-                        {
+                            .set_world_perspective_view_with_policy(
+                                view == WorldView::TwoPointPerspective,
+                                self.named_view_policy,
+                            ) {
                             Ok(()) => self
                                 .push_log(format!("World {} view (active viewport)", view.label())),
                             Err(error) => self.push_log(format!("Error: {error}")),
@@ -805,7 +807,9 @@ impl VibocerosApp {
                             unreachable!("handled above")
                         }
                     };
-                    match self.viewports[self.active_viewport].set_world_view(kind) {
+                    match self.viewports[self.active_viewport]
+                        .set_world_view_with_policy(kind, self.named_view_policy)
+                    {
                         Ok(()) => {
                             self.push_log(format!("World {} view (active viewport)", view.label()))
                         }

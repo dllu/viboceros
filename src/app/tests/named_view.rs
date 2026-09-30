@@ -33,6 +33,59 @@ fn named_view_restores_camera_projection_and_cplane_in_another_viewport() {
 }
 
 #[test]
+fn named_view_policy_and_world_commands_preserve_pending_model_work() {
+    use viboceros_command::named_view::NamedViewPolicy;
+    use viboceros_io::ThreeDmProjection;
+
+    let mut app = test_app();
+    enter(&mut app, "SetView World TwoPointPerspective");
+    enter(&mut app, "CPlane World Left");
+    enter(&mut app, "NamedView Save Level");
+    app.active_viewport = 2;
+    enter(&mut app, "CPlane World Front");
+    let plane = app.viewports[2].construction_plane();
+    app.named_view_policy = NamedViewPolicy {
+        set_cplane: false,
+        set_projection: false,
+    };
+    for input in ["Point 1,2,3", "SelAll", "Line", "0"] {
+        enter(&mut app, input);
+    }
+    let pending = app.active_command;
+    let points = app.curve_points.clone();
+    let undo = app.document.undo_label().map(str::to_owned);
+    let selected = app.document.selected_object_ids().collect::<Vec<_>>();
+    for input in [
+        "NamedView Restore Level",
+        "SetView World Perspective",
+        "SetView World Right",
+    ] {
+        enter(&mut app, input);
+        assert_eq!(app.active_command, pending);
+        assert_eq!(app.curve_points, points);
+        assert_eq!(app.document.undo_label(), undo.as_deref());
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            selected
+        );
+        let view =
+            Viewport::named_view_to_3dm(app.viewports[2].named_view_snapshot(), String::new())
+                .unwrap();
+        assert_eq!(view.projection, ThreeDmProjection::Parallel);
+        assert_eq!(view.construction_plane, plane);
+    }
+    enter(&mut app, "SetView World TwoPointPerspective");
+    let view =
+        Viewport::named_view_to_3dm(app.viewports[2].named_view_snapshot(), String::new()).unwrap();
+    assert_eq!(view.projection, ThreeDmProjection::TwoPointPerspective);
+    assert_eq!(view.construction_plane, plane);
+    assert_eq!(app.active_command, pending);
+    enter(&mut app, "1,2,3");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), Some("Line"));
+}
+
+#[test]
 fn named_view_edits_preserve_snapshot_and_reject_duplicate_names() {
     let mut app = test_app();
     enter(&mut app, "NamedView Save Front detail");

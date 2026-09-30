@@ -4,6 +4,22 @@
 pub const USAGE: &str = "NamedView [List | Save name | Update name | Restore name | Import path.3dm | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
 pub const NAMED_CPLANE_USAGE: &str = "NamedCPlane [List | Save name | Update name | Restore name | Import path.3dm | Delete name | Rename old | new | Duplicate source | new | MoveUp name | MoveDown name]";
 
+/// Application view options shared by named restoration and World presets.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NamedViewPolicy {
+    pub set_cplane: bool,
+    pub set_projection: bool,
+}
+
+impl Default for NamedViewPolicy {
+    fn default() -> Self {
+        Self {
+            set_cplane: true,
+            set_projection: true,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamedViewAction {
     List,
@@ -28,6 +44,8 @@ pub enum NamedViewError {
     Duplicate(String),
     #[error("named view import failed: {0}")]
     ImportFile(String),
+    #[error("named view restore failed: {0}")]
+    InvalidView(String),
     #[error("named construction plane grid is not representable: {0}")]
     InvalidGrid(String),
 }

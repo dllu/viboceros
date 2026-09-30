@@ -54,13 +54,23 @@ fn real_to_gpu(value: Real) -> Option<f32> {
 }
 
 impl Viewport {
+    #[cfg(test)]
     pub(crate) fn set_world_perspective_view(
         &mut self,
         two_point: bool,
     ) -> Result<(), GeometryError> {
+        self.set_world_perspective_view_with_policy(two_point, Default::default())
+    }
+
+    pub(crate) fn set_world_perspective_view_with_policy(
+        &mut self,
+        two_point: bool,
+        policy: viboceros_command::named_view::NamedViewPolicy,
+    ) -> Result<(), GeometryError> {
         let previous = self.camera_snapshot();
         let target = self.construction_plane_aligned_to_view()?.origin();
-        if self.kind.is_parallel() || !two_point {
+        let keep_parallel = !two_point && !policy.set_projection && self.kind.is_parallel();
+        if !keep_parallel && (self.kind.is_parallel() || !two_point) {
             let [width, height] = self.named_view_port_size();
             // OpenNURBS's parallel-to-perspective default is a 20 mm lens;
             // World Perspective sets a 50 mm lens. The smaller frustum
@@ -69,7 +79,11 @@ impl Viewport {
             self.perspective_fov_radians =
                 2.0 * (12.0 / lens * (f64::from(height) / f64::from(width)).max(1.0)).atan();
         }
-        self.kind = ViewKind::Perspective;
+        self.kind = if keep_parallel {
+            ViewKind::Plan
+        } else {
+            ViewKind::Perspective
+        };
         self.two_point_perspective = two_point;
         self.target = NaVector3::from(target.to_array());
         self.pan = Vec2::ZERO;
@@ -85,7 +99,17 @@ impl Viewport {
             std::f64::consts::FRAC_PI_6
         };
         self.perspective_lens_shift = [0.0; 2];
-        if two_point {
+        self.parallel_frustum_shift = [0.0; 2];
+        if keep_parallel {
+            let (right, up, _) = self.perspective_basis();
+            self.plan_frame = Frame3::try_from_directions(
+                target,
+                Vector3::try_from([right.x, right.y, right.z])?,
+                Vector3::try_from([up.x, up.y, up.z])?,
+                Tolerance::DEFAULT,
+            )?;
+        }
+        if two_point && policy.set_cplane {
             self.set_construction_plane(
                 WorldPlane::Top
                     .frame()
@@ -606,7 +630,20 @@ impl Viewport {
 
     /// Keep model-point query minimization independent of egui's f32 raster coordinates.
     pub(super) fn project_precise(&self, point: Point3, rect: Rect) -> Option<[Real; 2]> {
-        let origin = self.world_origin(rect);
+        let center = rect.center();
+        let origin = if self.kind == ViewKind::Perspective {
+            [
+                Real::from(center.x)
+                    - self.perspective_lens_shift[0] * Real::from(rect.width()) * 0.5,
+                Real::from(center.y)
+                    + self.perspective_lens_shift[1] * Real::from(rect.height()) * 0.5,
+            ]
+        } else {
+            [
+                Real::from(center.x) + Real::from(self.pan.x),
+                Real::from(center.y) + Real::from(self.pan.y),
+            ]
+        };
         let (horizontal_pixels, vertical_pixels) = match self.kind {
             ViewKind::Plan => {
                 let coordinates = self
@@ -640,8 +677,8 @@ impl Viewport {
                 )
             }
         };
-        let x = f64::from(origin.x) + horizontal_pixels;
-        let y = f64::from(origin.y) - vertical_pixels;
+        let x = origin[0] + horizontal_pixels;
+        let y = origin[1] - vertical_pixels;
         if !x.is_finite()
             || !y.is_finite()
             || x.abs() > f64::from(f32::MAX)

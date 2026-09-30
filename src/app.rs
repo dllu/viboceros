@@ -1764,6 +1764,7 @@ pub struct VibocerosApp {
     ortho_angle: viboceros_command::interface::OrthoAngle,
     zoom_scale: f64,
     zoom_extents_borders: ZoomExtentsBorders,
+    named_view_policy: viboceros_command::named_view::NamedViewPolicy,
     zoom_window_pending: bool,
     zoom_factor_pending: Option<usize>,
     snap_size_pending: Option<(viboceros_command::interface::ViewportTarget, usize)>,
@@ -1815,6 +1816,7 @@ impl VibocerosApp {
         }
         let zoom_scale = preferences::load_zoom_scale(creation_context.storage);
         let zoom_extents_borders = preferences::load_zoom_extents_borders(creation_context.storage);
+        let named_view_policy = preferences::load_named_view_policy(creation_context.storage);
         let viewport_tabs_visible =
             preferences::load_viewport_tabs_visible(creation_context.storage);
         let viewport_tab_alignment =
@@ -1847,6 +1849,7 @@ impl VibocerosApp {
             ortho_angle: viboceros_command::interface::OrthoAngle::try_new(90.0).unwrap(),
             zoom_scale,
             zoom_extents_borders,
+            named_view_policy,
             zoom_window_pending: false,
             zoom_factor_pending: None,
             snap_size_pending: None,
@@ -7910,6 +7913,7 @@ impl eframe::App for VibocerosApp {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         preferences::save_zoom_scale(storage, self.zoom_scale);
         preferences::save_zoom_extents_borders(storage, self.zoom_extents_borders);
+        preferences::save_named_view_policy(storage, self.named_view_policy);
         preferences::save_viewport_tabs_visible(storage, self.viewport_tabs_visible);
         preferences::save_viewport_tab_alignment(storage, self.viewport_tab_alignment);
         preferences::save_four_view_projection(storage, self.four_view_projection);
@@ -8514,6 +8518,7 @@ mod tests {
             ortho_angle: viboceros_command::interface::OrthoAngle::try_new(90.0).unwrap(),
             zoom_scale: DEFAULT_ZOOM_SCALE,
             zoom_extents_borders: ZoomExtentsBorders::default(),
+            named_view_policy: Default::default(),
             zoom_window_pending: false,
             zoom_factor_pending: None,
             snap_size_pending: None,

@@ -33,9 +33,8 @@ checks all six presets from parallel, perspective, and two-point inputs at
 different zooms and with shifted frusta. `World Perspective` preserves
 the camera target and distance, uses a 50 mm lens and the standard world camera
 direction, and keeps the current construction plane. View undo restores the
-prior camera and projection; construction-plane history remains independent. Switching through
-the viewport menu preserves the current camera target and zoom while changing
-the view direction and construction plane.
+prior camera and projection; construction-plane history remains independent.
+The viewport preset menu uses the same World transitions and settings.
 
 `World TwoPointPerspective` levels the standard camera with World Z as its up
 direction. It preserves the camera target and distance and keeps the perspective
@@ -63,9 +62,27 @@ that Rhino also preserves parallel frustum width through all six directions.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
 unfinished modeling prompt. [Named views](named-view.md) save and restore
-camera and CPlane state and persist them in 3DM files. Rhino's configurable
-named-view projection/CPlane policy remains pending. See
+camera and CPlane state and persist them in 3DM files. See
 [Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
+
+### View settings
+
+The **View options** menu has two persistent application settings, enabled by
+default, matching [Rhino's View options](https://docs.mcneel.com/rhino/8/help/en-us/options/view.htm):
+
+- **Named views set CPlane** controls CPlane restoration and World preset axes.
+  When disabled, World presets keep the current CPlane. World Perspective keeps
+  it with either setting.
+- **Named views set projection** controls saved projection restoration and World
+  preset conversion. When disabled, parallel/perspective projection is retained.
+  World Top/Bottom/Front/Back/Right/Left still change direction; a two-point source
+  becomes ordinary perspective. World Perspective can produce an oblique
+  parallel view. World TwoPointPerspective always enables two-point projection.
+
+These settings do not enter model undo history and do not affect SetView CPlane,
+Plan, or restoration of working viewports when opening a file. The
+[policy probes](../oracle.md#named-view-and-world-preset-policy-probes) check 96
+World transitions and 72 named-view restores against private-Xvfb Rhino captures.
 
 `Plan` changes the active viewport to a parallel view looking down the current
 construction plane at its origin. Its camera keeps the plane axes captured at

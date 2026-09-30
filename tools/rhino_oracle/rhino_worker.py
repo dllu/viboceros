@@ -6697,6 +6697,10 @@ def _execute(operation, iterations, tolerance):
         from set_view_prompt_probe import run
         with _independent_construction_planes() as viewport:
             return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
+    if kind == "named_view_policy_probe":
+        from named_view_policy_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

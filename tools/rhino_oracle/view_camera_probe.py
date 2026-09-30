@@ -31,6 +31,11 @@ def validate(operation):
         raise ValueError("unsupported camera probe operation")
     for name in ("origin", "x_axis", "y_axis"):
         _point(operation.get(name), name)
+    if "view_policy" in operation:
+        policy = operation["view_policy"]
+        if (not isinstance(policy, dict) or set(policy) != set(("set_cplane", "set_projection"))
+                or any(type(value) is not bool for value in policy.values())):
+            raise ValueError("view_policy requires boolean set_cplane and set_projection")
     if "camera_target" in operation:
         _point(operation["camera_target"], "camera_target")
     if "zoom_factor" in operation:
@@ -193,11 +198,20 @@ def run(operation, viewport, host):
     original = Rhino.DocObjects.ViewportInfo(viewport)
     original_target = viewport.CameraTarget
     original_name = viewport.Name
+    policy_settings = Rhino.ApplicationSettings.ViewSettings if "view_policy" in operation else None
+    original_policy = (dict(set_cplane=bool(policy_settings.DefinedViewSetCPlane),
+                            set_projection=bool(policy_settings.DefinedViewSetProjection))
+                       if policy_settings is not None else None)
     try:
         results = []
         for projection in operation["projections"]:
             defined = getattr(Rhino.Display.DefinedViewportProjection, projection)
             for direction in operation["directions"]:
+                if policy_settings is not None:
+                    # SetProjection itself honors this application setting;
+                    # force the requested source before testing its policy.
+                    policy_settings.DefinedViewSetProjection = True
+                    policy_settings.DefinedViewSetCPlane = True
                 if not viewport.SetProjection(defined, "SetView camera probe", False):
                     raise ValueError("could not set camera probe projection")
                 if "camera_target" in operation:
@@ -238,12 +252,17 @@ def run(operation, viewport, host):
                 ) if direction == "CPlaneView" or direction in WORLD_DIRECTIONS else None)
                 if direction in WORLD_DIRECTIONS:
                     camera_before["camera_target_before"] = _xyz(viewport.CameraTarget)
+                    camera_before["perspective_before"] = bool(viewport.IsPerspectiveProjection)
+                    camera_before["two_point_perspective_before"] = bool(viewport.IsTwoPointPerspectiveProjection)
                     info = Rhino.DocObjects.ViewportInfo(viewport)
                     try:
                         camera_before["frustum_before"] = [float(getattr(info, "Frustum" + name))
                                                            for name in ("Left", "Right", "Bottom", "Top", "Near", "Far")]
                     finally:
                         info.Dispose()
+                if policy_settings is not None:
+                    policy_settings.DefinedViewSetCPlane = operation["view_policy"]["set_cplane"]
+                    policy_settings.DefinedViewSetProjection = operation["view_policy"]["set_projection"]
                 history_before = Rhino.RhinoApp.CommandHistoryWindowText if direction in WORLD_DIRECTIONS else None
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("%s command failed" % (
@@ -253,6 +272,9 @@ def run(operation, viewport, host):
                                          scale_before, target_scale_before,
                                          target_before, near_before, origin,
                                          camera_before))
+                if original_policy is not None:
+                    results[-1]["view_policy"] = operation["view_policy"]
+                    results[-1]["view_policy_before"] = original_policy
                 if history_before is not None:
                     history_after = Rhino.RhinoApp.CommandHistoryWindowText
                     results[-1]["history"] = (history_after[len(history_before):]
@@ -273,12 +295,18 @@ def run(operation, viewport, host):
         return results
     finally:
         errors = []
-        for label, action in [
+        cleanup = [
             ("projection", lambda: viewport.SetViewProjection(original, False)),
             ("target", lambda: viewport.SetCameraTarget(original_target, False)),
             ("name", lambda: setattr(viewport, "Name", original_name)),
             ("viewport info", original.Dispose),
-        ]:
+        ]
+        if original_policy is not None:
+            cleanup.extend([
+                ("CPlane restore policy", lambda: setattr(policy_settings, "DefinedViewSetCPlane", original_policy["set_cplane"])),
+                ("projection restore policy", lambda: setattr(policy_settings, "DefinedViewSetProjection", original_policy["set_projection"])),
+            ])
+        for label, action in cleanup:
             try:
                 if action() is False:
                     raise ValueError("API returned false")

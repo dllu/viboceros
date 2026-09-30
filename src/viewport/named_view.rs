@@ -68,17 +68,22 @@ impl Viewport {
                 + up * (f64::from(camera.pan.y) / scale);
             let half_width = f64::from(width) / (2.0 * scale);
             let half_height = f64::from(height) / (2.0 * scale);
+            let [shift_x, shift_y] = camera.parallel_frustum_shift;
+            // Rendering uses the effective center. Keep the original frustum
+            // offset and camera pose for projection changes and 3DM records.
+            let nominal_target =
+                center - right * (shift_x * half_width) - up * (shift_y * half_height);
             (
                 ThreeDmProjection::Parallel,
-                center - forward * camera.perspective_camera_distance,
+                nominal_target - forward * camera.perspective_camera_distance,
                 forward,
                 up,
-                center,
+                nominal_target,
                 [
-                    -half_width,
-                    half_width,
-                    -half_height,
-                    half_height,
+                    (shift_x - 1.0) * half_width,
+                    (shift_x + 1.0) * half_width,
+                    (shift_y - 1.0) * half_height,
+                    (shift_y + 1.0) * half_height,
                     camera.frustum_near,
                     camera.frustum_far,
                 ],
@@ -163,6 +168,7 @@ impl Viewport {
             view.perspective_lens_shift = [(left + right) / width, (bottom + top) / height];
         } else {
             view.kind = ViewKind::Plan;
+            view.parallel_frustum_shift = [(left + right) / width, (bottom + top) / height];
             view.target = nominal_target
                 + right_axis * ((left + right) * 0.5)
                 + up_axis * ((bottom + top) * 0.5);

@@ -19,6 +19,15 @@ def fixture():
 
 
 class CameraProbeTests(unittest.TestCase):
+    def test_view_policy_requires_exact_boolean_settings(self):
+        view_camera_probe.validate(dict(fixture(), view_policy=dict(set_cplane=False, set_projection=False)))
+        for policy in [None, {}, {"set_cplane": True},
+                       dict(set_cplane=1, set_projection=True),
+                       dict(set_cplane=True, set_projection="False"),
+                       dict(set_cplane=True, set_projection=True, extra=True)]:
+            with self.subTest(policy=policy), self.assertRaises(ValueError):
+                view_camera_probe.validate(dict(fixture(), view_policy=policy))
+
     def test_recorded_cplane_view_uses_camera_target_and_right_up_axes(self):
         root = Path(__file__).parent
         request = json.loads((root / "fixtures/construction_plane_view.json").read_text())

@@ -148,6 +148,7 @@ pub(crate) struct CameraSnapshot {
     frustum_near: Real,
     frustum_far: Real,
     perspective_lens_shift: [Real; 2],
+    parallel_frustum_shift: [Real; 2],
     pub(crate) target: NaVector3<Real>,
 }
 
@@ -439,6 +440,7 @@ pub struct Viewport {
     frustum_near: Real,
     frustum_far: Real,
     perspective_lens_shift: [Real; 2],
+    parallel_frustum_shift: [Real; 2],
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
@@ -491,6 +493,7 @@ impl Viewport {
             },
             frustum_far: 1.0e9,
             perspective_lens_shift: [0.0; 2],
+            parallel_frustum_shift: [0.0; 2],
             target: NaVector3::zeros(),
             last_rect: None,
             selection_drag_start: None,
@@ -519,6 +522,7 @@ impl Viewport {
             frustum_near: self.frustum_near,
             frustum_far: self.frustum_far,
             perspective_lens_shift: self.perspective_lens_shift,
+            parallel_frustum_shift: self.parallel_frustum_shift,
             target: self.target,
         }
     }
@@ -538,6 +542,32 @@ impl Viewport {
         }
         self.restore_camera(saved.camera);
         self.record_camera_change(previous);
+    }
+
+    pub(crate) fn restore_named_view_with_policy(
+        &mut self,
+        mut saved: NamedViewSnapshot,
+        policy: viboceros_command::named_view::NamedViewPolicy,
+    ) -> Result<(), GeometryError> {
+        if !policy.set_projection
+            && (saved.camera.kind == ViewKind::Perspective) != (self.kind == ViewKind::Perspective)
+        {
+            // Rhino copies the saved pose and raw frustum, then keeps the
+            // destination's parallel/perspective family. World presets use a
+            // different conversion that preserves the target-plane scale.
+            let mut source = Self::named_view_to_3dm(saved, String::new())?;
+            source.projection = if self.kind == ViewKind::Perspective {
+                viboceros_io::ThreeDmProjection::Perspective
+            } else {
+                viboceros_io::ThreeDmProjection::Parallel
+            };
+            saved = Self::named_view_from_3dm(&source)?;
+        }
+        if !policy.set_cplane {
+            saved.plane = self.construction_plane();
+        }
+        self.restore_named_view(saved);
+        Ok(())
     }
 
     pub(crate) fn snap_spacing(&self) -> Real {
@@ -605,6 +635,7 @@ impl Viewport {
         self.frustum_near = camera.frustum_near;
         self.frustum_far = camera.frustum_far;
         self.perspective_lens_shift = camera.perspective_lens_shift;
+        self.parallel_frustum_shift = camera.parallel_frustum_shift;
         self.target = camera.target;
     }
 
@@ -813,31 +844,24 @@ impl Viewport {
         viewport
     }
 
-    /// The preset menu resets the plane explicitly. CPlane edits never change
-    /// camera projection, navigation, or geometry display.
-    pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {
-        let previous = self.camera_snapshot();
-        if kind == ViewKind::Perspective && self.kind != ViewKind::Perspective {
-            self.frustum_near = self.perspective_camera_distance;
-            self.frustum_far = self.frustum_far.max(self.frustum_near * 2.0);
-        }
-        self.kind = kind;
-        self.perspective_frame = None;
-        self.two_point_perspective = false;
-        self.cplane_direction = None;
-        self.synchronized_role = None;
-        self.set_construction_plane(Self::default_plane(kind));
-        self.record_camera_change(previous);
+    #[cfg(test)]
+    pub(crate) fn set_world_view(&mut self, kind: ViewKind) -> Result<(), GeometryError> {
+        self.set_world_view_with_policy(kind, Default::default())
     }
 
-    pub(crate) fn set_world_view(&mut self, kind: ViewKind) -> Result<(), GeometryError> {
+    pub(crate) fn set_world_view_with_policy(
+        &mut self,
+        kind: ViewKind,
+        policy: viboceros_command::named_view::NamedViewPolicy,
+    ) -> Result<(), GeometryError> {
         if kind == ViewKind::Perspective {
-            return self.set_world_perspective_view(false);
+            return self.set_world_perspective_view_with_policy(false, policy);
         }
         let previous = self.camera_snapshot();
         let target = self.construction_plane_aligned_to_view()?.origin();
         let plane_origin = self.construction_plane().origin();
-        let scale = if self.kind == ViewKind::Perspective {
+        let keep_perspective = self.kind == ViewKind::Perspective && !policy.set_projection;
+        let scale = if self.kind == ViewKind::Perspective && !keep_perspective {
             // World parallel views preserve the perspective frustum at the
             // target depth, clamped to the current clipping interval. Unlike
             // Plan, they do not simply keep the raw near-plane width.
@@ -855,16 +879,22 @@ impl Viewport {
                 context: "world parallel view scale",
             });
         }
-        self.kind = kind;
+        self.kind = if keep_perspective {
+            ViewKind::Perspective
+        } else {
+            kind
+        };
         self.two_point_perspective = false;
-        self.perspective_frame = None;
+        self.perspective_frame =
+            keep_perspective.then(|| Self::default_plane(kind).with_origin(target));
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(target.to_array());
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = scale;
         self.perspective_lens_shift = [0.0; 2];
-        if kind.is_parallel() {
+        self.parallel_frustum_shift = [0.0; 2];
+        if kind.is_parallel() && policy.set_cplane {
             self.set_construction_plane(Self::default_plane(kind).with_origin(plane_origin));
         }
         self.record_camera_change(previous);
@@ -882,6 +912,7 @@ impl Viewport {
             }
         }
         self.plan_frame = self.construction_plane();
+        self.parallel_frustum_shift = [0.0; 2];
         self.kind = ViewKind::Plan;
         self.two_point_perspective = false;
         self.perspective_frame = None;
@@ -924,6 +955,7 @@ impl Viewport {
         }
         self.target = NaVector3::from(plane.origin().to_array());
         self.pan = Vec2::ZERO;
+        self.parallel_frustum_shift = [0.0; 2];
         self.record_camera_change(previous);
     }
 
@@ -1602,6 +1634,7 @@ fn circular_arc_samples(arc: CircularArc3) -> usize {
 #[cfg(test)]
 mod tests {
     mod construction_plane;
+    mod named_view_policy;
     mod object_selection;
     mod two_point;
     mod world_parallel;

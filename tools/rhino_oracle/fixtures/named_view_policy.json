@@ -1,0 +1,490 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-True-projection-True",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-True-projection-False",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": false
+      }
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-False-projection-True",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-False-projection-False",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": false
+      }
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-True-projection-True-shifted",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "saved_frustum_scale": 0.57,
+      "saved_frustum_shift": [
+        0.2,
+        -0.35
+      ]
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-True-projection-False-shifted",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": false
+      },
+      "saved_frustum_scale": 0.57,
+      "saved_frustum_shift": [
+        0.2,
+        -0.35
+      ]
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-False-projection-True-shifted",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": true
+      },
+      "saved_frustum_scale": 0.57,
+      "saved_frustum_shift": [
+        0.2,
+        -0.35
+      ]
+    },
+    {
+      "op": "named_view_policy_probe",
+      "id": "restore-cp-False-projection-False-shifted",
+      "saved_origin": [
+        10,
+        20,
+        30
+      ],
+      "saved_x_axis": [
+        1,
+        0,
+        1
+      ],
+      "saved_y_axis": [
+        0,
+        1,
+        0
+      ],
+      "saved_target": [
+        21,
+        -13,
+        17
+      ],
+      "current_origin": [
+        7,
+        8,
+        9
+      ],
+      "current_x_axis": [
+        1,
+        1,
+        0
+      ],
+      "current_y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "current_target": [
+        -11,
+        25,
+        8
+      ],
+      "saved_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "current_projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": false
+      },
+      "saved_frustum_scale": 0.57,
+      "saved_frustum_shift": [
+        0.2,
+        -0.35
+      ]
+    }
+  ]
+}

@@ -233,6 +233,8 @@ camera, with horizontal rotation and vertical camera-height navigation.
 without changing its projection. See [view commands](commands/set-view.md).
 `NamedView Save name` and `NamedView Restore name` reuse a camera and
 construction plane in the active viewport; see [named views](commands/named-view.md).
+The View options menu's persistent **Named views set CPlane** and **Named views
+set projection** settings control named restoration and World presets.
 `MaxViewport` fills the workspace with the active viewport and toggles back to
 the current layout. Double-click a viewport title for the same action, or use
 Ctrl+M (Cmd+Alt+M on macOS). `3View` creates Top, Perspective, and Front views

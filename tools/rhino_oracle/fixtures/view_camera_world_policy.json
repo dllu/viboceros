@@ -1,0 +1,318 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-True-projection-True-parallel",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-True-projection-True-perspective",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldPerspective",
+        "WorldTwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-True-projection-False-parallel",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": false
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-True-projection-False-perspective",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldPerspective",
+        "WorldTwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": false
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-False-projection-True-parallel",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-False-projection-True-perspective",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldPerspective",
+        "WorldTwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": true
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-False-projection-False-parallel",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": false
+      }
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "policy-cp-False-projection-False-perspective",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldPerspective",
+        "WorldTwoPointPerspective"
+      ],
+      "view_policy": {
+        "set_cplane": false,
+        "set_projection": false
+      }
+    }
+  ]
+}

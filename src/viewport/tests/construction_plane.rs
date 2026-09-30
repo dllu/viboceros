@@ -375,8 +375,11 @@ fn view_presets_reset_the_plane_explicitly_and_plane_undo_retains_the_new_camera
     let mut view = Viewport::new(ViewKind::Top);
     let plane = oblique_plane();
     view.plane.set(plane);
-    view.set_view_kind(ViewKind::Front);
-    assert_eq!(view.construction_plane(), WorldPlane::Front.frame());
+    view.set_world_view(ViewKind::Front).unwrap();
+    assert_eq!(
+        view.construction_plane(),
+        WorldPlane::Front.frame().with_origin(plane.origin())
+    );
     assert!(view.plane.undo());
     assert_eq!(view.construction_plane(), plane);
     assert_eq!(view.kind(), ViewKind::Front);

@@ -87,12 +87,13 @@ active-view extents; Ctrl/Cmd+Alt+E zooms all viewports to extents.
 Holding Shift temporarily reverses Ortho while picking a point. These shortcuts work while
 editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
-switches among seven standard world directions while retaining its camera
-target and zoom. `SetView World` resets the camera; see the [view reference](set-view.md).
+uses the same seven World view transitions as `SetView World`; see the
+[view reference](set-view.md), including projection and CPlane settings.
 `Plan` and `SetView CPlane` align the camera to the active CPlane.
 `NamedView` saves and restores camera and CPlane state by name, persists it in
 3DM files, and imports named views without model objects; see the
-[named-view reference](named-view.md). Two-point perspective remains pending.
+[named-view reference](named-view.md). World TwoPointPerspective enables a level
+perspective camera with a shifted frustum during vertical navigation.
 
 ## Scope and validation
 

@@ -158,9 +158,11 @@ Plane history retains up to 50 entries per viewport. Successful no-op edits
 also create history entries, as observed in Rhino. Editing after undo clears
 the plane redo branch; model Undo/Redo remains separate. Shift+Home and
 Shift+End navigate plane history when a text editor is not focused; in text
-editors these keys retain their text-selection behavior. The view-preset menu
-explicitly resets the chosen viewport's plane, including when reselecting the
-same preset. Camera orbit, pan, zoom, and display-mode changes do not reset it.
+editors these keys retain their text-selection behavior. World presets in the
+view menu use the **Named views set CPlane** setting: parallel choices apply
+matching axes and retain the origin, Perspective keeps the plane, and two-point
+perspective applies World Top axes. Disable the setting to retain the plane.
+Camera orbit, pan, zoom, and display-mode changes do not reset it.
 
 `NamedCPlane List`, `Update`, `Delete`, `Rename old | new`, `Duplicate source |
 new`, `MoveUp`, and `MoveDown` manage the ordered named-plane list. Restore
