@@ -39,7 +39,10 @@ impl PlanePrompt {
     pub(super) fn requests_point(&self) -> bool {
         !matches!(
             self.kind,
-            PlanePromptKind::Object | PlanePromptKind::SurfaceSelect | PlanePromptKind::CurveSelect
+            PlanePromptKind::World
+                | PlanePromptKind::Object
+                | PlanePromptKind::SurfaceSelect
+                | PlanePromptKind::CurveSelect
         )
     }
     pub(super) fn requests_object(&self) -> bool {
@@ -67,6 +70,9 @@ impl PlanePrompt {
                 "CPlane: pick a new origin (Enter keeps the current origin)"
             }
             (PlanePromptKind::AllOrigin, _) => "CPlane All: pick the new origin for every viewport",
+            (PlanePromptKind::World, _) => {
+                "CPlane World: choose Top/Bottom/Left/Right/Front/Back (Enter/Esc cancels)"
+            }
             (PlanePromptKind::ThreePoint, 0) => {
                 "CPlane 3Point: pick the origin (Enter keeps the current origin)"
             }
@@ -711,6 +717,29 @@ impl VibocerosApp {
             }
         }
         let prompt = self.plane_prompt.as_ref().unwrap();
+        if prompt.kind == PlanePromptKind::World {
+            if input.is_empty() || input == "!" {
+                self.cancel_plane_prompt();
+                return true;
+            }
+            if let Some(plane) = cplane::WorldPlane::ALL.into_iter().find(|plane| {
+                input
+                    .trim_start_matches('_')
+                    .eq_ignore_ascii_case(plane.label())
+            }) {
+                let viewport = prompt.viewport;
+                self.plane_prompt = None;
+                self.apply_plane_action(PlaneAction::Set(plane.frame()), viewport);
+                self.command_input.clear();
+                return true;
+            }
+            if viboceros_command::interface::parse(input).is_none() {
+                self.command_input.clear();
+                self.push_log("Error: choose a World construction plane".into());
+                return true;
+            }
+            return false;
+        }
         if self
             .commands
             .recognizes(input.split_whitespace().next().unwrap_or(""))
@@ -789,6 +818,19 @@ impl VibocerosApp {
                         .into(),
                 ),
             }
+            return true;
+        }
+        if prompt.origin_options_available
+            && matches!(
+                prompt.kind,
+                PlanePromptKind::Origin | PlanePromptKind::AllOrigin
+            )
+            && input.trim_start_matches('_').eq_ignore_ascii_case("World")
+        {
+            let viewport = prompt.viewport;
+            self.plane_prompt = None;
+            self.apply_plane_action(PlaneAction::Prompt(PlanePromptKind::World), viewport);
+            self.command_input.clear();
             return true;
         }
         if prompt.origin_options_available
@@ -1143,7 +1185,8 @@ impl VibocerosApp {
                     point,
                     tolerance,
                 )?)),
-                PlanePromptKind::Object
+                PlanePromptKind::World
+                | PlanePromptKind::Object
                 | PlanePromptKind::SurfaceSelect
                 | PlanePromptKind::CurveSelect
                 | PlanePromptKind::CurveOrigin => {

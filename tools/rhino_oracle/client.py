@@ -225,6 +225,13 @@ class OracleClient:
             for operation in request["operations"]:
                 if operation.get("op") == "view_camera_probe":
                     validate(operation)
+        if any(op.get("op") == "set_view_prompt_probe" for op in request.get("operations", [])):
+            from .set_view_prompt_probe import validate
+            if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
+                raise OracleProtocolError("SetView prompt probes require one iteration")
+            for operation in request["operations"]:
+                if operation.get("op") == "set_view_prompt_probe":
+                    validate(operation)
         if any(op.get("op") in ("synchronize_cplanes_probe", "copy_cplane_probe")
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
@@ -331,6 +338,10 @@ class OracleClient:
             if any(op.get("op") == "view_camera_probe" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("view_camera_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "set_view_prompt_probe" for op in request.get("operations", [])):
+                for name in ("set_view_prompt_probe.py", "view_camera_probe.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("area_centroid_command", "volume_centroid_command", "volume_command") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("area_centroid_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)

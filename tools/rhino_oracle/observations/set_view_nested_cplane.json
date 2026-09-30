@@ -1,0 +1,209 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "nested-cplane-world-options",
+      "value": {
+        "before": {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_location": [
+            64.11252230934531,
+            -87.67307908223279,
+            66.78205272148853
+          ],
+          "camera_target": [
+            21.0,
+            -13.0,
+            17.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            7.0,
+            8.0,
+            9.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "perspective": true,
+          "two_point_perspective": false
+        },
+        "steps": [
+          {
+            "history": "Python Script ( ResetEngine ): _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _CPlane\nCPlane origin <7.000,8.000,9.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _World\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top ): _Enter\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top )\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Bottom\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _CPlane _World _Enter _Bottom !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -0.0,
+                1.0
+              ],
+              "camera_location": [
+                21.0,
+                -13.0,
+                -85.22596637953806
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "CPlane",
+              "World",
+              "",
+              "Bottom"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _CPlane\nCPlane origin <7.000,8.000,9.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _World\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top ): _Invalid\nUnknown command: _Invalid\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top ): _Front\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Left\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _CPlane _World _Invalid _Front _Left !",
+            "state": {
+              "camera_direction": [
+                1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                -81.22596637953806,
+                -13.0,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cplane_x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "CPlane",
+              "World",
+              "Invalid",
+              "Front",
+              "Left"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _CPlane\nCPlane origin <0.000,0.000,0.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _World\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top ): _Back\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Right\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _CPlane _World _Back _Right !",
+            "state": {
+              "camera_direction": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                123.22596637953806,
+                -13.0,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cplane_x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "CPlane",
+              "World",
+              "Back",
+              "Right"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

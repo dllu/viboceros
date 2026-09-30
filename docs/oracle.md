@@ -1721,6 +1721,44 @@ response after a two-second exit grace period. If no owned Rhino process ever
 appears, it reports startup failure after 30 seconds; an active process keeps
 the full requested probe timeout.
 
+### SetView option prompt probe
+
+The bounded `set_view_prompt_probe` operation runs whitelisted option macros
+and records public camera/CPlane properties and Rhino command history. Its
+[fixture](../tools/rhino_oracle/fixtures/set_view_prompt.json) covers 30
+transitions in three workflows: all World and CPlane choices, Enter/cancel at
+both stages, rejected choices, and nested CPlane/Plan commands. The
+[Rhino 8.32 observation](../tools/rhino_oracle/observations/set_view_prompt.json)
+was captured on a private Xvfb display:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/set_view_prompt.json --timeout 300
+```
+
+Each macro ends with a cancel to bound incomplete input. The recorded history
+may contain `Unknown command: !` after an already completed command; the raw
+capture is retained. `succeeded` reports macro termination, not a camera
+comparison verdict. Enter exits either SetView stage without choosing a view.
+At the World view stage, `CPlane World Top` runs transparently and returns to
+the outstanding World choices. At the CPlane view stage, `World` is rejected.
+A [supplemental fixture](../tools/rhino_oracle/fixtures/set_view_nested_cplane.json)
+and [private-display observation](../tools/rhino_oracle/observations/set_view_nested_cplane.json)
+check three additional nested CPlane World transitions, including Enter and an
+invalid choice. Enter cancels that child prompt and returns to SetView.
+
+The native application regression replays the tokens through the command bar's
+command handler and checks all 33 camera directions, up vectors, targets,
+construction-plane frames, and projection flags at component epsilon `2e-12`:
+
+```sh
+cargo test --release -p viboceros app::tests::set_view
+```
+
+This fixture omits frusta, so it does not compare optical framing or camera
+location. The following camera probes cover framing independently; document
+clipping and parallel camera depth relocation remain pending. The generic
+oracle `compare` mode does not execute these interactive application prompts.
+
 ### SetView CPlane camera probe
 
 The bounded `view_camera_probe` operation uses public RhinoCommon viewport

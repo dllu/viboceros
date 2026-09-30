@@ -636,6 +636,9 @@ impl VibocerosApp {
             prompt.viewport = remap_viewport_index(prompt.viewport, removed)?;
             Some(prompt)
         });
+        if let Some(session) = &mut self.set_view_prompt {
+            session.viewport_closed(removed);
+        }
         self.push_log(format!(
             "Closed viewport {closed_title}; {} viewport(s) remain",
             self.viewports.len()

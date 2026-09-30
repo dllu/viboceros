@@ -183,7 +183,7 @@ fn three_point_circle_radius_prompt_accepts_number_or_location() {
     ));
 }
 
-fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
+pub(super) fn layout_viewports(context: &egui::Context, app: &mut VibocerosApp) {
     for index in 0..app.viewports.len() {
         context
             .run_ui(

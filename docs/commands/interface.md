@@ -24,7 +24,8 @@ its own nested origin, three-point, elevation, through-point, and rotation promp
 | `Zoom All Extents` / `ZEA` | Fit all views, applying only after every fit succeeds. |
 | `Zoom All Selected` / `ZSA` | Fit visible selected geometry in all views with the same all-or-nothing policy. |
 | `UndoView` / `RedoView` | Step backward or forward through camera changes in the active viewport, separately from model undo. |
-| `SetView World Top\|Bottom\|Front\|Back\|Right\|Left\|Perspective` | Reset the active viewport to a [standard world view](set-view.md). |
+| `SetView [CPlane\|World]` | Prompt for typed or clickable [view choices](set-view.md); Enter/Esc cancels. |
+| `SetView World Top\|Bottom\|Front\|Back\|Right\|Left\|Perspective\|TwoPointPerspective` | Reset the active viewport to a [standard world view](set-view.md). |
 | `SetView CPlane Top\|Bottom\|Front\|Back\|Right\|Left` | Align the camera to a standard direction of the active CPlane while keeping projection and CPlane; [details](set-view.md). |
 | `Plan` | Look down the active construction plane from its origin in a parallel view; [details](set-view.md). |
 | `3View` | Set up Top, Perspective, and Front viewports in a three-panel layout. |

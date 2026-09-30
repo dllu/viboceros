@@ -266,6 +266,7 @@ impl VibocerosApp {
         self.viewport_object_filter().is_some()
             && self.active_command.is_none()
             && self.plane_prompt.is_none()
+            && self.set_view_prompt.is_none()
             && self.group_prompt != Some(group_prompt::GroupPrompt::Target)
     }
 
@@ -367,6 +368,24 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_interface_command(&mut self, command: InterfaceCommand) {
+        // Apply the view transition before restoring prompts it suspended;
+        // ordinary view commands clear their own zoom interaction state.
+        let suspended = if matches!(
+            command,
+            InterfaceCommand::SetViewWorld(_) | InterfaceCommand::SetViewCPlane(_)
+        ) && self.set_view_options_active()
+        {
+            self.set_view_prompt.take()
+        } else {
+            None
+        };
+        self.apply_interface_command_inner(command);
+        if let Some(session) = suspended {
+            session.restore(self);
+        }
+    }
+
+    fn apply_interface_command_inner(&mut self, command: InterfaceCommand) {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
@@ -498,6 +517,10 @@ impl VibocerosApp {
                     self.push_log(
                         "Zoom Factor: enter a positive number; Enter or Esc to cancel".into(),
                     );
+                    return;
+                }
+                if let InterfaceCommand::SetViewPrompt(prompt) = command {
+                    self.start_set_view_prompt(prompt);
                     return;
                 }
                 self.zoom_factor_pending = None;

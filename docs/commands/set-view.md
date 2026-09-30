@@ -2,6 +2,21 @@
 
 [Interface commands](interface.md) · [Viewport controls](../interface.md)
 
+`SetView` prompts for `CPlane` or `World`, then a view direction. Type a choice
+or click it in the command bar. `SetView World` and `SetView CPlane` start at
+the direction prompt. Enter or Esc cancels either stage; neither has a default
+or remembers the previous choice. Invalid choices keep the prompt open.
+The CPlane stage offers six parallel directions; only the World stage offers
+Perspective and TwoPointPerspective.
+
+The view prompt suspends unfinished modeling input and any prior CPlane or
+zoom prompt. It accepts transparent view commands: for example, `CPlane`
+inside the World stage opens a construction-plane prompt, then returns to the
+World choices when that prompt finishes or is canceled. Canceling SetView
+resumes the suspended command and preserves its one-pick snap setting.
+The [saved option probe](../oracle.md#setview-option-prompt-probe) checks
+33 transitions, including cancellation, rejected choices, and nested commands.
+
 `SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective`
 sets the active viewport to a standard world view. The six parallel views share
 checked CPU/GPU projection, depth ordering, grid and point drafting, object picking, and indexed
@@ -49,8 +64,7 @@ that Rhino also preserves parallel frustum width through all six directions.
 Both SetView forms preserve the model, selection, model undo/redo, and any
 unfinished modeling prompt. [Named views](named-view.md) save and restore
 camera and CPlane state and persist them in 3DM files. Rhino's configurable
-named-view projection/CPlane policy and bare `SetView` option prompts remain
-pending. See
+named-view projection/CPlane policy remains pending. See
 [Rhino's SetView documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/setview.htm).
 
 `Plan` changes the active viewport to a parallel view looking down the current

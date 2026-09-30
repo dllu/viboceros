@@ -6693,6 +6693,10 @@ def _execute(operation, iterations, tolerance):
         return _synchronize_cplanes_probe(operation)
     if kind == "copy_cplane_probe":
         return _copy_cplane_probe(operation)
+    if kind == "set_view_prompt_probe":
+        from set_view_prompt_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

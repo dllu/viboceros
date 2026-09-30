@@ -109,6 +109,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_filtered_drafting_point(&mut self, point: Point3, typed: bool) -> bool {
+        if self.set_view_prompt.is_some() {
+            return false;
+        }
         let point = if let Some(session) = self.point_filter.as_mut() {
             match session.offer_point(point) {
                 Ok(None) => {
@@ -143,6 +146,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_drafting_point(&mut self, point: Point3) -> bool {
+        if self.set_view_prompt.is_some() {
+            return false;
+        }
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point(point) {
             self.snaps.model_override = None;

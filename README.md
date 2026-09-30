@@ -29,6 +29,8 @@ At either point prompt, `All` toggles its setting; `All=Yes|No` selects it.
 `SetView World TwoPointPerspective` enables a level perspective camera;
 named and working 3DM views retain its projection and shifted frustum.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
+Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
+the view prompt and resumes the unfinished command.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh/B-rep face.
 `CPlane Curve` places it perpendicular to a curve at a picked station.

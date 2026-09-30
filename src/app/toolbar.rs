@@ -24,6 +24,7 @@ impl VibocerosApp {
             ui.horizontal_wrapped(|ui| {
                 let idle = self.active_command.is_none()
                     && self.plane_prompt.is_none()
+                    && self.set_view_prompt.is_none()
                     && self.object_prompt.is_none()
                     && self.group_prompt.is_none()
                     && self.intersection_prompt.is_none()

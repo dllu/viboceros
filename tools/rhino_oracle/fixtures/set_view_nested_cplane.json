@@ -1,0 +1,54 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "set_view_prompt_probe",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "id": "nested-cplane-world-options",
+      "steps": [
+        [
+          "World",
+          "CPlane",
+          "World",
+          "",
+          "Bottom"
+        ],
+        [
+          "World",
+          "CPlane",
+          "World",
+          "Invalid",
+          "Front",
+          "Left"
+        ],
+        [
+          "World",
+          "CPlane",
+          "World",
+          "Back",
+          "Right"
+        ]
+      ]
+    }
+  ]
+}

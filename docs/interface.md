@@ -61,6 +61,9 @@ The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Ortho, Planar, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
 a modeling prompt is unfinished.
+`SetView` adds CPlane/World and direction buttons to the command bar. Typed
+choices follow the same path. Enter/Esc cancels the view prompt and resumes
+the suspended command; a nested CPlane or zoom prompt finishes first.
 The model-view tab strip sits above the command line and lists every viewport
 with its number and title. Click a tab to activate its view, including one
 covered by an overlapping viewport; double-click to rename it.

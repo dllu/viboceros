@@ -324,6 +324,7 @@ pub enum InterfaceCommand {
     ViewportTabs(SwitchAction),
     ViewportTabsAlign(ViewportTabAlignment),
     Plan,
+    SetViewPrompt(crate::set_view::SetViewPrompt),
     SetViewWorld(WorldView),
     SetViewCPlane(WorldPlane),
     SetSnap(SwitchAction),
@@ -402,7 +403,7 @@ pub const COMMAND_NAMES: [&str; 50] = [
     "C",
 ];
 
-pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View [Projection=FirstAngle|ThirdAngle]; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=nonnegative-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
+pub const HELP: &str = "Interface: Zoom [Window]|Target|[All] Extents|Selected (ZE, ZS, ZEA, ZSA, ZT); Zoom In|Out|Factor [positive number]; ZoomEnds [All|Current|Next|Previous|Mark]; ShowEnds; ShowEndsOff; SelWindow (W); SelCrossing (C); SelRectangular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; Lasso [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelCircular [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelBoundary [SelectionMode=Window|Crossing|InvertWindow|InvertCrossing]; SelFence [Curve]; MaxViewport; 3View; 4View [Projection=FirstAngle|ThirdAngle]; NewViewport; SplitViewportHorizontal; SplitViewportVertical; CloseViewport; ViewportTabs [Show|Hide|Toggle|Align=Bottom|Top|Left|Right]; -ViewportProperties Title=<name>; UndoView; RedoView; NextViewport; PrevViewport; NextOrthoViewport; NextPerspectiveViewport; SetView [CPlane|World] (prompts for a view; Enter/Esc cancels); SetView World Top|Bottom|Front|Back|Right|Left|Perspective|TwoPointPerspective; SetView CPlane Top|Bottom|Front|Back|Right|Left; Plan; Options View Zoom ScaleFactor=<positive number>; SetZoomExtentsBorder [ParallelView=<positive number>] [PerspectiveView=<positive number>]; Snap; SetSnap On|Off|Toggle; Ortho; SetOrtho On|Off|Toggle; OrthoSnapToCPlaneZ Enable|Disable|Toggle; Planar; SetPlanar On|Off|Toggle; OrthoAngle <degrees (0,180]>; SnapSize [positive-number] [ApplyTo=ActiveViewport|AllViewports]; Grid [SnapSpacing=positive] [MinorLineSpacing=positive] [MajorLineInterval=nonnegative-integer] [GridLineCount=0..100000] [ShowGrid=Yes|No] [ShowGridAxes=Yes|No] [ShowWorldAxes=Yes|No] [ApplyTo=ActiveViewport|AllViewports]; DisableOsnap Enable|Disable|Toggle; SnapToMeshes Enable|Disable|Toggle; SmartTrack On|Off|Toggle; SetDisplayMode [Viewport=Active|All] Mode=Wireframe|Shaded|Ghosted. These commands preserve unfinished modeling commands. Double-click a viewport title to maximize or restore it. Shortcuts: Ctrl+M (Cmd+Alt+M on macOS) MaxViewport, Ctrl/Cmd+Tab next viewport, Ctrl/Cmd+Shift+Tab previous viewport, Home/End view history, Ctrl/Cmd+W zoom window, Ctrl/Cmd+Shift+E active extents, Ctrl/Cmd+Alt+E all extents, F7 grid display, F8 Ortho, F9 grid snap, F4 object snaps, Ctrl/Cmd+Alt+W/S/G display mode.";
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum InterfaceError {
@@ -578,6 +579,15 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
             }
         } else if name.eq_ignore_ascii_case("SetView") {
             match args.as_slice() {
+                [] => Ok(InterfaceCommand::SetViewPrompt(
+                    crate::set_view::SetViewPrompt::CoordinateSystem,
+                )),
+                [world] if keyword(world, "World") => Ok(InterfaceCommand::SetViewPrompt(
+                    crate::set_view::SetViewPrompt::World,
+                )),
+                [cplane] if keyword(cplane, "CPlane") => Ok(InterfaceCommand::SetViewPrompt(
+                    crate::set_view::SetViewPrompt::CPlane,
+                )),
                 [world, view] if keyword(world, "World") => WorldView::parse(view)
                     .map(InterfaceCommand::SetViewWorld)
                     .ok_or(InterfaceError::Usage(
@@ -1111,6 +1121,7 @@ impl InterfaceState {
                 format!("Viewport tab alignment requested: {}", alignment.label())
             }
             InterfaceCommand::Plan => "Plan view requested (active viewport)".into(),
+            InterfaceCommand::SetViewPrompt(prompt) => prompt.message().into(),
             InterfaceCommand::SetViewWorld(view) => format!(
                 "Set world {} view requested (active viewport)",
                 view.label()

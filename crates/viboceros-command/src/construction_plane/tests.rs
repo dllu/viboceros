@@ -18,6 +18,10 @@ fn edited(input: &str, frame: Frame3) -> Frame3 {
 #[test]
 fn world_plane_axes_are_exact_oriented_and_reset_the_origin() {
     let initial = WorldPlane::Right.frame().with_origin(point(7., 8., 9.));
+    assert_eq!(
+        parse_action("'_CPlane _World", initial),
+        PlaneAction::Prompt(PlanePromptKind::World)
+    );
     for (preset, expected) in [
         ("Top", [[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]),
         ("Bottom", [[1., 0., 0.], [0., -1., 0.], [0., 0., -1.]]),
@@ -444,7 +448,6 @@ fn invalid_commands_and_degenerate_frames_cannot_mutate_plane_history() {
     let initial = WorldPlane::Top.frame();
     let state = ConstructionPlaneState::new(initial);
     for input in [
-        "CPlane World",
         "CPlane World Camera",
         "CPlane World Top Extra",
         "CPlane Unknown",

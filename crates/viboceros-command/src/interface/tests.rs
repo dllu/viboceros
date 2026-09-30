@@ -515,8 +515,6 @@ fn set_view_world_parses_all_standard_directions_without_mutating_model_state() 
         assert_eq!(current, before);
     }
     for input in [
-        "SetView",
-        "SetView World",
         "SetView CPlane Perspective",
         "SetView World Isometric",
         "SetView World Top extra",
@@ -536,11 +534,7 @@ fn set_view_cplane_parses_six_directions_and_preserves_interface_state() {
         current.apply(action).unwrap();
         assert_eq!(current, original);
     }
-    for input in [
-        "SetView CPlane",
-        "SetView CPlane Perspective",
-        "SetView CPlane Top extra",
-    ] {
+    for input in ["SetView CPlane Perspective", "SetView CPlane Top extra"] {
         assert!(matches!(parse(input), Some(Err(InterfaceError::Usage(_)))));
     }
 }
@@ -808,7 +802,6 @@ fn malformed_known_commands_are_not_treated_as_modeling_input() {
         "SetDisplayMode Viewport=All",
         "SetDisplayMode Rendered",
         "SetDisplayMode Shaded Wireframe",
-        "SetView",
         "SetDisplayMode Viewport=All Viewport=Active Shaded",
         "SetDisplayMode Mode=Shaded Wrong=All",
         "SetDisplayMode Viewport=Top Wireframe",

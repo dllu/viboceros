@@ -146,6 +146,14 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.set_view_prompt.is_some()
+            && !self
+                .plane_prompt
+                .as_ref()
+                .is_some_and(construction_plane::PlanePrompt::requests_object)
+        {
+            return None;
+        }
         if self.edge_prompt.is_some() {
             return None;
         }

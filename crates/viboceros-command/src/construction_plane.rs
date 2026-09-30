@@ -63,6 +63,7 @@ impl WorldPlane {
 pub enum PlanePromptKind {
     Origin,
     AllOrigin,
+    World,
     ThreePoint,
     ThreePointVertical,
     ThreePointZAxis,
@@ -346,6 +347,7 @@ fn parse_arguments(
                     .map_err(|_| PlaneCommandError::Usage)?,
             )
         }
+        [name] if keyword(name, "World") => PlaneAction::Prompt(PlanePromptKind::World),
         [name, view] if keyword(name, "World") => PlaneAction::Set(
             WorldPlane::ALL
                 .into_iter()

@@ -1,0 +1,210 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "set_view_prompt_probe",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "id": "world-option-workflow",
+      "steps": [
+        [
+          "!"
+        ],
+        [
+          "World",
+          "Top"
+        ],
+        [
+          "World",
+          "Bottom"
+        ],
+        [
+          "World",
+          "Front"
+        ],
+        [
+          "World",
+          "Back"
+        ],
+        [
+          "World",
+          "Right"
+        ],
+        [
+          "World",
+          "Left"
+        ],
+        [
+          "World",
+          "Perspective"
+        ],
+        [
+          "World",
+          "TwoPointPerspective"
+        ],
+        [
+          "World",
+          ""
+        ],
+        [
+          ""
+        ],
+        [
+          "World",
+          "!"
+        ],
+        [
+          "CPlane",
+          "!"
+        ],
+        [
+          "CPlane",
+          ""
+        ],
+        [
+          "World",
+          "Invalid",
+          "Bottom"
+        ],
+        [
+          "World",
+          "Plan",
+          "Left"
+        ]
+      ]
+    },
+    {
+      "op": "set_view_prompt_probe",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "id": "cplane-option-workflow",
+      "steps": [
+        [
+          "CPlane",
+          "Top"
+        ],
+        [
+          "CPlane",
+          "Bottom"
+        ],
+        [
+          "CPlane",
+          "Front"
+        ],
+        [
+          "CPlane",
+          "Back"
+        ],
+        [
+          "CPlane",
+          "Right"
+        ],
+        [
+          "CPlane",
+          "Left"
+        ],
+        [
+          "CPlane",
+          "World",
+          "Back"
+        ],
+        [
+          "CPlane",
+          "Invalid",
+          "Front"
+        ],
+        [
+          "CPlane",
+          ""
+        ],
+        [
+          "CPlane",
+          "!"
+        ],
+        [
+          "!"
+        ]
+      ]
+    },
+    {
+      "op": "set_view_prompt_probe",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "id": "nested-option-workflow",
+      "steps": [
+        [
+          "World",
+          "CPlane",
+          "World",
+          "Top",
+          "Bottom"
+        ],
+        [
+          "CPlane",
+          "World",
+          "Right"
+        ],
+        [
+          "World",
+          "Plan",
+          "Right"
+        ]
+      ]
+    }
+  ]
+}

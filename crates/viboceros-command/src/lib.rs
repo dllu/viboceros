@@ -155,6 +155,7 @@ pub mod interface;
 mod plane_primitives;
 mod plane_transforms;
 pub mod set_point;
+pub mod set_view;
 use plane_transforms::{
     MirrorCommand, ProjectToConstructionPlaneCommand, RotateCommand, ScaleTwoDimensionalCommand,
     ShearCommand,

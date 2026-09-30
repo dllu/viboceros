@@ -1,0 +1,1595 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "world-option-workflow",
+      "value": {
+        "before": {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_location": [
+            64.11252230934531,
+            -87.67307908223279,
+            66.78205272148853
+          ],
+          "camera_target": [
+            21.0,
+            -13.0,
+            17.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            7.0,
+            8.0,
+            9.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "perspective": true,
+          "two_point_perspective": false
+        },
+        "steps": [
+          {
+            "history": "Python Script ( ResetEngine ): _SetView\n\nCANCEL\nChoose coordinate system ( CPlane  World )\n",
+            "macro": "_SetView ! !",
+            "state": {
+              "camera_direction": [
+                -0.4330127018922193,
+                0.75,
+                -0.5
+              ],
+              "camera_location": [
+                64.11252230934531,
+                -87.67307908223279,
+                66.78205272148853
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.25000000000000006,
+                0.4330127018922194,
+                0.8660254037844387
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "!"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Top\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Top !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "camera_location": [
+                21.0,
+                -13.0,
+                119.22596637953806
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Top"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Bottom\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Bottom !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -0.0,
+                1.0
+              ],
+              "camera_location": [
+                21.0,
+                -13.0,
+                -85.22596637953806
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Bottom"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Front\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Front !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                1.0,
+                -0.0
+              ],
+              "camera_location": [
+                21.0,
+                -115.22596637953806,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Front"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Back\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Back !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -1.0,
+                0.0
+              ],
+              "camera_location": [
+                21.0,
+                89.22596637953806,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Back"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Right\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Right !",
+            "state": {
+              "camera_direction": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                123.22596637953806,
+                -13.0,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Right"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Left\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Left !",
+            "state": {
+              "camera_direction": [
+                1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                -81.22596637953806,
+                -13.0,
+                17.0
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Left"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Perspective\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Perspective !",
+            "state": {
+              "camera_direction": [
+                -0.4330127018922193,
+                0.75,
+                -0.5
+              ],
+              "camera_location": [
+                65.26514190554695,
+                -89.66947478465354,
+                68.11298318976904
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.25000000000000006,
+                0.4330127018922194,
+                0.8660254037844387
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Perspective"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _TwoPointPerspective\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _TwoPointPerspective !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "TwoPointPerspective"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Enter\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective )\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Enter !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              ""
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _Enter\nChoose coordinate system ( CPlane  World )\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _Enter !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              ""
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\n\nCANCEL\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective )\n",
+            "macro": "_SetView _World ! !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "!"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\n\nCANCEL\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back )\n",
+            "macro": "_SetView _CPlane ! !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "!"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Enter\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back )\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Enter !",
+            "state": {
+              "camera_direction": [
+                -0.5,
+                0.8660254037844387,
+                0.0
+              ],
+              "camera_location": [
+                72.11298318976904,
+                -101.53028381109391,
+                17.000000000000007
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "perspective": true,
+              "two_point_perspective": true
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              ""
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Invalid\nUnknown command: _Invalid\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Bottom\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Invalid _Bottom !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -0.0,
+                1.0
+              ],
+              "camera_location": [
+                21.0,
+                -13.0,
+                -85.22596637953808
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Invalid",
+              "Bottom"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Plan\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Left\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Plan _Left !",
+            "state": {
+              "camera_direction": [
+                1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                -95.22596637953808,
+                8.0,
+                9.0
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Plan",
+              "Left"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cplane-option-workflow",
+      "value": {
+        "before": {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_location": [
+            64.11252230934531,
+            -87.67307908223279,
+            66.78205272148853
+          ],
+          "camera_target": [
+            21.0,
+            -13.0,
+            17.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            7.0,
+            8.0,
+            9.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "perspective": true,
+          "two_point_perspective": false
+        },
+        "steps": [
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Top\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Top !",
+            "state": {
+              "camera_direction": [
+                -0.4082482904638631,
+                0.4082482904638631,
+                -0.8164965809277261
+              ],
+              "camera_location": [
+                47.646875838659184,
+                -32.646875838659184,
+                90.29375167731837
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Top"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Bottom\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Bottom !",
+            "state": {
+              "camera_direction": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "camera_location": [
+                -33.64687583865919,
+                48.64687583865919,
+                -72.29375167731838
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.5773502691896258,
+                -0.5773502691896258,
+                -0.5773502691896258
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Bottom"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Front\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Front !",
+            "state": {
+              "camera_direction": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "camera_location": [
+                64.48336307912712,
+                -49.48336307912711,
+                -48.48336307912711
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Front"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Back\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Back !",
+            "state": {
+              "camera_direction": [
+                0.5773502691896258,
+                -0.5773502691896258,
+                -0.5773502691896258
+              ],
+              "camera_location": [
+                -50.48336307912712,
+                65.48336307912712,
+                66.48336307912712
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Back"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Right\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Right !",
+            "state": {
+              "camera_direction": [
+                -0.7071067811865476,
+                -0.7071067811865476,
+                -0.0
+              ],
+              "camera_location": [
+                77.40245412150159,
+                78.40245412150159,
+                9.0
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Right"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Left\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Left !",
+            "state": {
+              "camera_direction": [
+                0.7071067811865476,
+                0.7071067811865476,
+                -0.0
+              ],
+              "camera_location": [
+                -63.40245412150159,
+                -62.40245412150159,
+                9.0
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Left"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _World\nUnknown command: _World\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Back\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _World _Back !",
+            "state": {
+              "camera_direction": [
+                0.5773502691896258,
+                -0.5773502691896258,
+                -0.5773502691896258
+              ],
+              "camera_location": [
+                -50.48336307912715,
+                65.48336307912714,
+                66.48336307912714
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "World",
+              "Back"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Invalid\nUnknown command: _Invalid\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Front\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Invalid _Front !",
+            "state": {
+              "camera_direction": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "camera_location": [
+                64.48336307912716,
+                -49.48336307912716,
+                -48.48336307912716
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "Invalid",
+              "Front"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Enter\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back )\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _Enter !",
+            "state": {
+              "camera_direction": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "camera_location": [
+                64.48336307912716,
+                -49.48336307912716,
+                -48.48336307912716
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              ""
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\n\nCANCEL\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back )\n",
+            "macro": "_SetView _CPlane ! !",
+            "state": {
+              "camera_direction": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "camera_location": [
+                64.48336307912716,
+                -49.48336307912716,
+                -48.48336307912716
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "!"
+            ]
+          },
+          {
+            "history": "Command: _SetView\n\nCANCEL\nChoose coordinate system ( CPlane  World )\n",
+            "macro": "_SetView ! !",
+            "state": {
+              "camera_direction": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "camera_location": [
+                64.48336307912716,
+                -49.48336307912716,
+                -48.48336307912716
+              ],
+              "camera_target": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "camera_up": [
+                0.4082482904638631,
+                -0.4082482904638631,
+                0.8164965809277261
+              ],
+              "cplane_origin": [
+                7.0,
+                8.0,
+                9.0
+              ],
+              "cplane_x": [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ],
+              "cplane_y": [
+                -0.5773502691896258,
+                0.5773502691896258,
+                0.5773502691896258
+              ],
+              "perspective": true,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "!"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nested-option-workflow",
+      "value": {
+        "before": {
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "camera_location": [
+            64.11252230934531,
+            -87.67307908223279,
+            66.78205272148853
+          ],
+          "camera_target": [
+            21.0,
+            -13.0,
+            17.0
+          ],
+          "camera_up": [
+            -0.25000000000000006,
+            0.4330127018922194,
+            0.8660254037844387
+          ],
+          "cplane_origin": [
+            7.0,
+            8.0,
+            9.0
+          ],
+          "cplane_x": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0.0
+          ],
+          "cplane_y": [
+            -0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "perspective": true,
+          "two_point_perspective": false
+        },
+        "steps": [
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _CPlane\nCPlane origin <7.000,8.000,9.000> ( All=No  Curve  Elevation  Gumball  Object  Rotate  Surface  Through  View  World  3Point  Undo  Redo ): _World\nChoose world CPlane ( Back  Bottom  Front  Left  Right  Top ): _Top\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Bottom\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _CPlane _World _Top _Bottom !",
+            "state": {
+              "camera_direction": [
+                -0.0,
+                -0.0,
+                1.0
+              ],
+              "camera_location": [
+                21.0,
+                -13.0,
+                -85.22596637953806
+              ],
+              "camera_target": [
+                21.0,
+                -13.0,
+                17.0
+              ],
+              "camera_up": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "cplane_origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "CPlane",
+              "World",
+              "Top",
+              "Bottom"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _CPlane\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _World\nUnknown command: _World\nChoose CPlane view ( Top  Bottom  Left  Right  Front  Back ): _Right\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _CPlane _World _Right !",
+            "state": {
+              "camera_direction": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                102.22596637953806,
+                0.0,
+                0.0
+              ],
+              "camera_target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "cplane_origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cplane_x": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "cplane_y": [
+                -0.0,
+                -1.0,
+                -0.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "CPlane",
+              "World",
+              "Right"
+            ]
+          },
+          {
+            "history": "Command: _SetView\nChoose coordinate system ( CPlane  World ): _World\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Plan\nChoose world view ( Top  Bottom  Left  Right  Front  Back  Perspective  TwoPointPerspective ): _Right\nCommand: !\nUnknown command: !\n",
+            "macro": "_SetView _World _Plan _Right !",
+            "state": {
+              "camera_direction": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "camera_location": [
+                102.22596637953806,
+                0.0,
+                0.0
+              ],
+              "camera_target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "camera_up": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "cplane_origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cplane_x": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "cplane_y": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "perspective": false,
+              "two_point_perspective": false
+            },
+            "succeeded": false,
+            "tokens": [
+              "World",
+              "Plan",
+              "Right"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -45,10 +45,22 @@ impl VibocerosApp {
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.plane_prompt.is_none()
+            && self.set_view_prompt.is_none()
     }
 
     pub(super) fn remember_command_input(&mut self, input: &str) {
         if input.is_empty() {
+            return;
+        }
+        if self.set_view_options_active()
+            && self
+                .set_view_prompt
+                .as_ref()
+                .unwrap()
+                .prompt
+                .answer(input)
+                .is_ok()
+        {
             return;
         }
         let name = input.split_whitespace().next().unwrap_or("");
@@ -138,6 +150,11 @@ impl VibocerosApp {
                     });
                 ui.separator();
                 let idle = self.command_line_idle();
+                let set_view_prompt = self
+                    .set_view_prompt
+                    .as_ref()
+                    .filter(|_| self.set_view_options_active())
+                    .map(|session| session.prompt);
                 self.command_line
                     .completion
                     .refresh(&self.commands, &self.command_input, idle);
@@ -146,6 +163,8 @@ impl VibocerosApp {
                         "Zoom Factor"
                     } else if self.plane_prompt.is_some() {
                         "CPlane"
+                    } else if set_view_prompt.is_some() {
+                        "SetView"
                     } else if let Some(prompt) = &self.object_prompt {
                         prompt.label()
                     } else if self.group_prompt.is_some() {
@@ -211,6 +230,8 @@ impl VibocerosApp {
                                 "Enter a positive factor; Enter or Esc cancels"
                             } else if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
+                            } else if let Some(prompt) = set_view_prompt {
+                                prompt.message()
                             } else if let Some(prompt) = &self.object_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.group_prompt {
@@ -256,7 +277,10 @@ impl VibocerosApp {
                         );
                     }
                 });
-                self.show_edge_choices(ui);
+                if self.set_view_prompt.is_none() {
+                    self.show_edge_choices(ui);
+                }
+                self.show_set_view_choices(ui);
                 let idle = self.command_line_idle();
                 self.command_line
                     .completion

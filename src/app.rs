@@ -157,6 +157,7 @@ mod points;
 mod preferences;
 mod radius;
 mod set_point;
+mod set_view;
 mod snapping;
 mod toolbar;
 mod viewport_layout;
@@ -1784,6 +1785,7 @@ pub struct VibocerosApp {
     point_filter: Option<viboceros_drafting::PointFilterSession>,
     point_constraint: Option<viboceros_drafting::PointConstraintState>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
+    set_view_prompt: Option<set_view::SetViewSession>,
     copy_cplane_source: Option<construction_plane::CopyCPlaneKind>,
     cplane_options: viboceros_command::construction_plane::PlaneOptions,
     object_prompt: Option<object_selection::PendingObjectCommand>,
@@ -1866,6 +1868,7 @@ impl VibocerosApp {
             point_filter: None,
             point_constraint: None,
             plane_prompt: None,
+            set_view_prompt: None,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
@@ -1889,6 +1892,9 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.try_continue_set_view(&input) {
+            return;
+        }
         if self.copy_cplane_source.is_some() {
             if input.is_empty() {
                 self.accept_copy_cplane_source(self.active_viewport);
@@ -1986,16 +1992,7 @@ impl VibocerosApp {
         if self.try_one_shot_snap(&input) {
             return;
         }
-        if !input.is_empty()
-            && (self.try_run_plane_command(&input)
-                || self.try_run_copy_cplane_command(&input)
-                || self.try_run_synchronize_cplanes_command(&input)
-                || self.try_run_named_view_command(&input)
-                || self.try_run_named_cplane_command(&input)
-                || self.try_run_read_viewports_command(&input)
-                || self.try_run_viewport_properties_command(&input)
-                || self.try_run_interface_command(&input))
-        {
+        if !input.is_empty() && self.try_run_view_command(&input) {
             return;
         }
         if self.end_analysis_pick.is_some() && !input.is_empty() {
@@ -4538,6 +4535,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.set_view_prompt = None;
         self.cancel_end_analysis_pick(false);
         self.snaps.model_override = None;
         self.point_filter = None;
@@ -7853,6 +7851,61 @@ impl VibocerosApp {
     }
 }
 
+impl VibocerosApp {
+    fn cancel_current_prompt_or_selection(&mut self) {
+        if self.viewport_tab_rename.take().is_some() {
+            // Escape dismisses the rename editor without canceling a modeling prompt.
+        } else if self.selection_menu.take().is_some() {
+            // Escape dismisses the choice without changing the selection.
+        } else if self.copy_cplane_source.take().is_some() {
+            self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
+            self.cancel_end_analysis_pick(true);
+        } else if self.zoom_target.take().is_some() {
+            self.push_log("Zoom Target canceled".into());
+        } else if self.zoom_factor_pending.take().is_some() {
+            self.push_log("Zoom Factor canceled".into());
+        } else if self.snap_size_pending.take().is_some() {
+            self.push_log("SnapSize canceled".into());
+        } else if self.zoom_window_pending {
+            self.zoom_window_pending = false;
+            self.push_log("Zoom window canceled".into());
+        } else if self.set_view_prompt.is_some() {
+            if self.plane_prompt.is_some() {
+                self.cancel_plane_prompt();
+            } else {
+                self.cancel_set_view_prompt();
+            }
+        } else if self.selection_window_override.take().is_some() {
+            self.push_log("Selection window canceled".into());
+        } else if self.circular_selection.take().is_some() {
+            self.push_log("Circular selection canceled".into());
+        } else if self.boundary_selection.take().is_some() {
+            self.push_log("Boundary selection canceled".into());
+        } else if self.fence_selection.take().is_some() {
+            self.push_log("Fence selection canceled".into());
+        } else if self.lasso_selection.take().is_some() {
+            self.push_log("Lasso selection canceled".into());
+        } else if self.answer_object_prompt_escape() {
+            // A command-owned warning consumed this Escape key.
+        } else if self.plane_prompt.is_some() {
+            self.cancel_plane_prompt();
+        } else if self.active_command.is_some()
+            || self.object_prompt.is_some()
+            || self.group_prompt.is_some()
+            || self.intersection_prompt.is_some()
+            || self.edge_prompt.is_some()
+        {
+            self.cancel_interactive_command(true);
+        } else {
+            let count = self.document.clear_selection();
+            if count > 0 {
+                self.push_log(format!("Deselected {count} object(s)"));
+            }
+        }
+    }
+}
+
 impl eframe::App for VibocerosApp {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         preferences::save_zoom_scale(storage, self.zoom_scale);
@@ -7865,50 +7918,7 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.viewport_tab_rename.take().is_some() {
-                // Escape dismisses the rename editor without canceling a modeling prompt.
-            } else if self.selection_menu.take().is_some() {
-                // Escape dismisses the choice without changing the selection.
-            } else if self.copy_cplane_source.take().is_some() {
-                self.push_log("CopyCPlane source pick canceled".into());
-            } else if self.end_analysis_pick.is_some() {
-                self.cancel_end_analysis_pick(true);
-            } else if self.zoom_target.take().is_some() {
-                self.push_log("Zoom Target canceled".into());
-            } else if self.zoom_factor_pending.take().is_some() {
-                self.push_log("Zoom Factor canceled".into());
-            } else if self.snap_size_pending.take().is_some() {
-                self.push_log("SnapSize canceled".into());
-            } else if self.zoom_window_pending {
-                self.zoom_window_pending = false;
-                self.push_log("Zoom window canceled".into());
-            } else if self.selection_window_override.take().is_some() {
-                self.push_log("Selection window canceled".into());
-            } else if self.circular_selection.take().is_some() {
-                self.push_log("Circular selection canceled".into());
-            } else if self.boundary_selection.take().is_some() {
-                self.push_log("Boundary selection canceled".into());
-            } else if self.fence_selection.take().is_some() {
-                self.push_log("Fence selection canceled".into());
-            } else if self.lasso_selection.take().is_some() {
-                self.push_log("Lasso selection canceled".into());
-            } else if self.answer_object_prompt_escape() {
-                // A command-owned warning consumed this Escape key.
-            } else if self.plane_prompt.is_some() {
-                self.cancel_plane_prompt();
-            } else if self.active_command.is_some()
-                || self.object_prompt.is_some()
-                || self.group_prompt.is_some()
-                || self.intersection_prompt.is_some()
-                || self.edge_prompt.is_some()
-            {
-                self.cancel_interactive_command(true);
-            } else {
-                let count = self.document.clear_selection();
-                if count > 0 {
-                    self.push_log(format!("Deselected {count} object(s)"));
-                }
-            }
+            self.cancel_current_prompt_or_selection();
         }
         if self.selection_menu.is_none()
             && !ui.ctx().egui_wants_keyboard_input()
@@ -7923,6 +7933,7 @@ impl eframe::App for VibocerosApp {
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.plane_prompt.is_none()
+            && self.set_view_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Delete))
@@ -7935,9 +7946,11 @@ impl eframe::App for VibocerosApp {
         self.show_layers(ui);
         self.show_command_line(ui);
         let _ = self.show_viewport_tabs(ui);
-        let end_analysis_picking = self.end_analysis_pick.is_some();
+        let model_input_active = self.set_view_prompt.is_none();
+        let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
+                && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
                 && self.plane_prompt.as_ref().map_or_else(
                     || {
                         self.active_command.is_some()
@@ -7984,10 +7997,10 @@ impl eframe::App for VibocerosApp {
         let active_viewport = self.active_viewport;
         let maximized_viewport = self.maximized_viewport;
         let zoom_window_pending = self.zoom_window_pending && !end_analysis_picking;
-        let selection_window_override = (!end_analysis_picking)
+        let selection_window_override = (model_input_active && !end_analysis_picking)
             .then_some(self.selection_window_override)
             .flatten();
-        let circular_selection = if end_analysis_picking {
+        let circular_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
             self.circular_selection
@@ -7997,7 +8010,7 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.end_analysis_pick.is_some() {
+        let object_filter = if end_analysis_picking {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
         } else {
             self.viewport_object_filter()
@@ -8024,7 +8037,7 @@ impl eframe::App for VibocerosApp {
             .object_prompt
             .as_ref()
             .and_then(|prompt| prompt.cloud_removal.as_ref());
-        let point_cloud_remove_target = if end_analysis_picking {
+        let point_cloud_remove_target = if end_analysis_picking || !model_input_active {
             None
         } else {
             cloud_removal.map(|removal| removal.target)
@@ -8032,11 +8045,17 @@ impl eframe::App for VibocerosApp {
         let point_cloud_highlights = cloud_removal
             .map(|removal| removal.indices.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
-        let preview_curve = self.curve_draft_preview();
-        let insert_surface_pick = matches!(
-            self.active_command,
-            Some(InteractiveCommand::InsertControlPoint { .. })
-        ) && self.document.selected_object_count() == 1
+        let preview_curve = if model_input_active {
+            self.curve_draft_preview()
+        } else {
+            None
+        };
+        let insert_surface_pick = model_input_active
+            && matches!(
+                self.active_command,
+                Some(InteractiveCommand::InsertControlPoint { .. })
+            )
+            && self.document.selected_object_count() == 1
             && self
                 .document
                 .selected_objects()
@@ -8089,18 +8108,22 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         }
-        .filter(|_| self.plane_prompt.is_none() || plane_object_pick);
+        .filter(|_| {
+            (model_input_active || plane_object_pick)
+                && (self.plane_prompt.is_none() || plane_object_pick)
+        });
         let edge_pick = self
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
             && self.plane_prompt.is_none()
+            && model_input_active
             && !end_analysis_picking;
         let split_selection = self
             .edge_prompt
             .as_ref()
             .and_then(edge_commands::EdgePrompt::split_selection)
-            .filter(|_| self.plane_prompt.is_none() && !end_analysis_picking);
+            .filter(|_| model_input_active && self.plane_prompt.is_none() && !end_analysis_picking);
         let edge_curve = split_selection.map(viboceros_command::SplitEdgeSelection::curve);
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
@@ -8116,30 +8139,32 @@ impl eframe::App for VibocerosApp {
             .edge_prompt
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
-        let fence_selection = if end_analysis_picking {
+        let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
             self.fence_selection.as_ref()
         };
-        let lasso_selection = if end_analysis_picking {
+        let lasso_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
             self.lasso_selection.as_ref()
         };
         let fence_curve_pick = fence_selection.is_some_and(|state| state.curve_pick);
-        let curve_region_pick = fence_curve_pick
-            || self.boundary_selection.is_some()
-            || matches!(
+        let curve_region_pick = model_input_active
+            && (fence_curve_pick
+                || self.boundary_selection.is_some()
+                || matches!(
+                    self.active_command,
+                    Some(
+                        InteractiveCommand::SelVolumePipe { source: None, .. }
+                            | InteractiveCommand::Pipe { source: None, .. }
+                    )
+                ));
+        let volume_object_pick = model_input_active
+            && matches!(
                 self.active_command,
-                Some(
-                    InteractiveCommand::SelVolumePipe { source: None, .. }
-                        | InteractiveCommand::Pipe { source: None, .. }
-                )
+                Some(InteractiveCommand::SelVolumeObject { .. })
             );
-        let volume_object_pick = matches!(
-            self.active_command,
-            Some(InteractiveCommand::SelVolumeObject { .. })
-        );
         let end_markers = self
             .end_analysis
             .as_ref()
@@ -8170,12 +8195,12 @@ impl eframe::App for VibocerosApp {
         let point_filter = self
             .plane_prompt
             .is_none()
-            .then_some(self.point_filter)
+            .then_some(self.point_filter.filter(|_| model_input_active))
             .flatten();
         let point_constraint = self
             .plane_prompt
             .is_none()
-            .then_some(self.point_constraint)
+            .then_some(self.point_constraint.filter(|_| model_input_active))
             .flatten();
         let viewport_positions = &self.viewport_positions;
         let viewports = &mut self.viewports;
@@ -8453,6 +8478,7 @@ mod tests {
     mod radius;
     mod rhino_curve_prompt;
     mod set_point;
+    mod set_view;
     mod single_span_selection;
     mod split_edge;
     use super::*;
@@ -8509,6 +8535,7 @@ mod tests {
             point_filter: None,
             point_constraint: None,
             plane_prompt: None,
+            set_view_prompt: None,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
