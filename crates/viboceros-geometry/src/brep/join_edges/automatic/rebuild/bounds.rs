@@ -6,7 +6,7 @@ pub(super) fn update(
     result: &mut Brep,
     tolerance: Tolerance,
     budget: &mut Budget,
-) -> Result<(), GeometryError> {
+) -> Result<Vec<usize>, GeometryError> {
     let changed_vertices = source
         .vertices
         .iter()
@@ -71,9 +71,13 @@ pub(super) fn update(
                 BOUND_EVALUATION_MARGIN,
             )?);
     }
+    let mut certified_edges = Vec::new();
     for (i, edge) in result.edges.iter_mut().enumerate() {
         if !changed_edges[i] {
             continue;
+        }
+        if edges[i].is_some() {
+            certified_edges.push(i);
         }
         let bound = if let Some(bound) = edges[i] {
             bound
@@ -86,13 +90,7 @@ pub(super) fn update(
                 movement,
             )?
         };
-        // The exact surface-image certificate can be a few model-space ULPs
-        // below a later sampled surface evaluation. Rebuilt vertices already
-        // reserve this small validation margin; do the same for rebuilt edges.
-        edge.tolerance = edge.tolerance.max(crate::brep::tolerance::scaled_tolerance(
-            bound,
-            BOUND_EVALUATION_MARGIN,
-        )?);
+        edge.tolerance = edge.tolerance.max(bound);
     }
-    Ok(())
+    Ok(certified_edges)
 }

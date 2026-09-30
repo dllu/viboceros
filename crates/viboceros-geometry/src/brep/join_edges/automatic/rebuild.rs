@@ -10,6 +10,35 @@ mod tests;
 
 const BOUND_EVALUATION_MARGIN: Real = 1.001;
 
+fn sampled_boundary_error(error: &GeometryError) -> bool {
+    matches!(
+        error,
+        GeometryError::InvalidBrepTopology { context }
+            if *context == "a p-curve interior leaves its model-space edge"
+                || *context == "a model-space edge interior leaves its lifted p-curve"
+    )
+}
+
+fn edge_evaluation_margin(brep: &Brep, edge_index: usize) -> Result<Real, GeometryError> {
+    let mut scale: Real = 0.0;
+    let mut include = |point: Point3| {
+        for coordinate in point.to_array() {
+            scale = scale.max(coordinate.abs());
+        }
+    };
+    for control in brep.edges[edge_index].curve.control_points() {
+        include(control.point());
+    }
+    for usage in brep.trim_uses() {
+        if usage.trim.edge == Some(edge_index) {
+            for control in brep.faces[usage.face].surface.control_points() {
+                include(control.point());
+            }
+        }
+    }
+    crate::brep::tolerance::scaled_tolerance(scale, 64.0 * Real::EPSILON)
+}
+
 pub(super) fn apply(
     source: &Brep,
     contacts: &[(usize, usize)],
@@ -87,8 +116,21 @@ pub(super) fn apply(
             .ok_or_else(|| invalid("adjusted edge exceeds the join distance"))?;
         edge.curve = curve;
     }
-    bounds::update(source, &mut result, tolerance, budget)?;
-    result.validate(tolerance)?;
+    let certified_edges = bounds::update(source, &mut result, tolerance, budget)?;
+    if let Err(error) = result.validate(tolerance) {
+        if !sampled_boundary_error(&error) || certified_edges.is_empty() {
+            return Err(error);
+        }
+        // Keep exact tolerances for ordinary joins. A later sampled evaluator
+        // can round a certified boundary distance upward by model-coordinate
+        // ULPs, so retry that case with a local numerical allowance.
+        for edge in certified_edges {
+            let margin = edge_evaluation_margin(&result, edge)?;
+            result.edges[edge].tolerance =
+                certificate::add_bound(result.edges[edge].tolerance, margin)?;
+        }
+        result.validate(tolerance)?;
+    }
     Ok(Some(result))
 }
 
@@ -145,19 +187,30 @@ pub(super) fn tighten_joined_edges(
         };
         certified[e] = certified[e].zip(bound).map(|(a, b)| a.max(b));
     }
+    let prior = joined.edges.iter().map(|e| e.tolerance).collect::<Vec<_>>();
+    let mut tightened = Vec::new();
     for (i, e) in joined.edges.iter_mut().enumerate() {
         if requested[i]
             && let Some(bound) = certified[i]
         {
-            // Tightening must retain the same sampled-validation margin as
-            // the rebuilt edge; an exact image bound alone can round below
-            // the distance reported by a later floating evaluation.
-            let validated =
-                crate::brep::tolerance::scaled_tolerance(bound, BOUND_EVALUATION_MARGIN)?;
-            e.tolerance = e.tolerance.min(validated.max(floors[i]));
+            e.tolerance = e.tolerance.min(bound.max(floors[i]));
+            if e.tolerance < prior[i] {
+                tightened.push(i);
+            }
         }
     }
-    joined.validate(tolerance)
+    if let Err(error) = joined.validate(tolerance) {
+        if !sampled_boundary_error(&error) || tightened.is_empty() {
+            return Err(error);
+        }
+        for edge in tightened {
+            let margin = edge_evaluation_margin(joined, edge)?;
+            let padded = certificate::add_bound(joined.edges[edge].tolerance, margin)?;
+            joined.edges[edge].tolerance = padded.min(prior[edge]);
+        }
+        joined.validate(tolerance)?;
+    }
+    Ok(())
 }
 
 fn mean(points: impl Iterator<Item = Point3>) -> Result<Point3, GeometryError> {
