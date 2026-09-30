@@ -35,23 +35,13 @@ impl ZoomExtentsBorders {
 }
 
 struct CameraFit {
-    target: NaVector3<Real>,
-    scale: Real,
-    distance: Real,
+    camera: CameraSnapshot,
 }
 
 impl CameraFit {
     fn apply(self, viewport: &mut Viewport) {
         let previous = viewport.camera_snapshot();
-        viewport.target = self.target;
-        viewport.camera_target_offset = NaVector3::zeros();
-        viewport.pan = Vec2::ZERO;
-        if viewport.kind == ViewKind::Perspective {
-            viewport.perspective_camera_distance = self.distance;
-        } else {
-            viewport.pixels_per_unit = self.scale;
-            viewport.parallel_frustum_shift = [0.0; 2];
-        }
+        viewport.restore_camera(self.camera);
         viewport.record_camera_change(previous);
     }
 }
@@ -184,7 +174,15 @@ impl Viewport {
         if !border.is_finite() || border <= 0.0 || !border.recip().is_finite() {
             return Err("invalid zoom extents border scale");
         }
-        let available_half = 0.5 / border;
+        if self.kind == ViewKind::Perspective
+            && (!self.perspective_fov_radians.is_finite()
+                || self.perspective_fov_radians <= 0.0
+                || self.perspective_fov_radians >= std::f64::consts::PI)
+        {
+            return Err("invalid perspective field of view");
+        }
+        // Rhino retains smaller border settings but does not shrink the fit.
+        let border = border.max(1.0);
         let center = bounds.center().map_err(|_| "invalid model bounds")?;
         let target = NaVector3::from(center.to_array());
         let plan_frame = self.plan_frame.with_origin(center);
@@ -192,9 +190,8 @@ impl Viewport {
         let maximum = bounds.max().to_array();
         let mut horizontal = 0.0_f64;
         let mut vertical = 0.0_f64;
-        let mut distance = MIN_PERSPECTIVE_CAMERA_DISTANCE;
+        let mut half_depth = 0.0_f64;
         let (right, up, forward) = self.perspective_basis();
-        let focal = self.perspective_focal_length_pixels(rect);
         for index in 0..8 {
             let corner = NaVector3::from(std::array::from_fn(|axis| {
                 if index & (1 << axis) == 0 {
@@ -204,13 +201,13 @@ impl Viewport {
                 }
             }));
             let local = corner - target;
-            let (x, y) = match self.kind {
-                ViewKind::Top => (local.x, local.y),
-                ViewKind::Bottom => (local.x, -local.y),
-                ViewKind::Front => (local.x, local.z),
-                ViewKind::Back => (-local.x, local.z),
-                ViewKind::Right => (local.y, local.z),
-                ViewKind::Left => (-local.y, local.z),
+            let (x, y, z) = match self.kind {
+                ViewKind::Top => (local.x, local.y, -local.z),
+                ViewKind::Bottom => (local.x, -local.y, local.z),
+                ViewKind::Front => (local.x, local.z, local.y),
+                ViewKind::Back => (-local.x, local.z, -local.y),
+                ViewKind::Right => (local.y, local.z, -local.x),
+                ViewKind::Left => (-local.y, local.z, local.x),
                 ViewKind::Plan => {
                     let coordinates = plan_frame
                         .projected_coordinates_of(
@@ -218,49 +215,84 @@ impl Viewport {
                                 .map_err(|_| "invalid model bounds")?,
                         )
                         .map_err(|_| "model extents exceed the supported camera range")?;
-                    (coordinates[0], coordinates[1])
+                    (
+                        coordinates[0],
+                        coordinates[1],
+                        local.dot(&NaVector3::from(plan_frame.z_axis().as_vector().to_array())),
+                    )
                 }
-                ViewKind::Perspective => {
-                    let x = local.dot(&right);
-                    let y = local.dot(&up);
-                    let z = local.dot(&forward);
-                    distance = distance.max(
-                        (x.abs() * focal / (Real::from(rect.width()) * available_half))
-                            .max(y.abs() * focal / (Real::from(rect.height()) * available_half))
-                            - z,
-                    );
-                    distance = distance.max(-z + MIN_PERSPECTIVE_CAMERA_DISTANCE);
-                    (x, y)
-                }
+                ViewKind::Perspective => (local.dot(&right), local.dot(&up), local.dot(&forward)),
             };
+            if ![x, y, z].into_iter().all(Real::is_finite) {
+                return Err("model extents exceed the supported camera range");
+            }
             horizontal = horizontal.max(x.abs());
             vertical = vertical.max(y.abs());
+            half_depth = half_depth.max(z.abs());
         }
-        if bounds.min() == bounds.max() {
-            distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
-        }
-        let scale = (Real::from(rect.width()) * available_half / horizontal)
-            .min(Real::from(rect.height()) * available_half / vertical);
-        let scale = if scale.is_infinite() {
-            40.0
+        // Rhino fits the bounding box in camera coordinates. This matches the
+        // public OpenNURBS ON_DollyExtents algorithm and saved Rhino captures.
+        // The border expands its screen dimensions; depth padding is separate.
+        // A degenerate screen box receives a one-unit square before aspect fit.
+        if horizontal <= Real::EPSILON.sqrt() && vertical <= Real::EPSILON.sqrt() {
+            horizontal = 0.5;
+            vertical = 0.5;
         } else {
-            scale.min(2_000.0)
+            horizontal *= border;
+            vertical *= border;
+        }
+        let aspect = Real::from(rect.width()) / Real::from(rect.height());
+        horizontal = horizontal.max(vertical * aspect);
+        vertical = horizontal / aspect;
+        let near_padding = (2.0 * half_depth / 256.0).max(if self.kind.is_parallel() {
+            0.125
+        } else {
+            1.0e-6
+        });
+        let far_padding = near_padding.max(0.125);
+        let depth_span = 2.0 * half_depth + near_padding + far_padding;
+        let near = if self.kind.is_parallel() {
+            0.125 * depth_span
+        } else {
+            vertical / (self.perspective_fov_radians * 0.5).tan()
         };
-        if !scale.is_finite()
-            || scale < Real::from(f32::MIN_POSITIVE)
-            || !distance.is_finite()
+        let near = if near <= Real::EPSILON.sqrt() {
+            1.0
+        } else {
+            near
+        };
+        let distance = near + half_depth + near_padding;
+        let far = near + depth_span;
+        let scale = Real::from(rect.height()) / (2.0 * vertical);
+        if ![horizontal, vertical, near, far, distance, scale]
+            .into_iter()
+            .all(|value| value.is_finite() && value > 0.0)
+            || far <= near
+            || (self.kind.is_parallel()
+                && (scale < Real::from(f32::MIN_POSITIVE) || !(scale as f32).is_finite()))
             || (self.kind == ViewKind::Perspective && distance > MAX_PERSPECTIVE_CAMERA_DISTANCE)
         {
             return Err("model extents exceed the supported camera range");
         }
+        // Stage the complete current camera, so validation uses the same lens,
+        // axes, and projection locks that will be committed after fitting.
         let mut staged = Viewport::new(self.kind);
-        staged.plan_frame = self.plan_frame;
-        staged.perspective_frame = self.perspective_frame;
+        staged.restore_camera(self.camera_snapshot());
         staged.target = target;
-        staged.orbit_yaw = self.orbit_yaw;
-        staged.orbit_pitch = self.orbit_pitch;
-        staged.pixels_per_unit = scale;
+        staged.camera_target_offset = NaVector3::zeros();
+        staged.pan = Vec2::ZERO;
+        staged.perspective_lens_shift = [0.0; 2];
+        staged.parallel_frustum_shift = [0.0; 2];
+        staged.pixels_per_unit = if self.kind.is_parallel() {
+            scale
+        } else {
+            self.pixels_per_unit
+        };
         staged.perspective_camera_distance = distance;
+        // These are the explicit bounding-box fit's clipping distances. Rhino
+        // may subsequently update document clipping using other displayed data.
+        staged.frustum_near = near;
+        staged.frustum_far = far;
         if staged
             .gpu_view_uniform(rect, None)
             .view_projection
@@ -284,15 +316,13 @@ impl Viewport {
             }
             if !staged
                 .project(corner, rect)
-                .is_some_and(|point| border < 1.0 || rect.expand(1.0).contains(point))
+                .is_some_and(|point| rect.expand(1.0).contains(point))
             {
                 return Err("model extents cannot be represented by this camera");
             }
         }
         Ok(CameraFit {
-            target,
-            scale,
-            distance,
+            camera: staged.camera_snapshot(),
         })
     }
 }

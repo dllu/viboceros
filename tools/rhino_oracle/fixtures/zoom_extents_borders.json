@@ -1,0 +1,332 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "border-settings",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-0.1-False",
+          "projection": "Top",
+          "border": 0.1,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-0.1-True",
+          "projection": "Top",
+          "border": 0.1,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-0.8-False",
+          "projection": "Top",
+          "border": 0.8,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-0.8-True",
+          "projection": "Top",
+          "border": 0.8,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-1-False",
+          "projection": "Top",
+          "border": 1,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-1-True",
+          "projection": "Top",
+          "border": 1,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-1.5-False",
+          "projection": "Top",
+          "border": 1.5,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-1.5-True",
+          "projection": "Top",
+          "border": 1.5,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-10-False",
+          "projection": "Top",
+          "border": 10,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Top-10-True",
+          "projection": "Top",
+          "border": 10,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-0.1-False",
+          "projection": "Perspective",
+          "border": 0.1,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-0.1-True",
+          "projection": "Perspective",
+          "border": 0.1,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-0.8-False",
+          "projection": "Perspective",
+          "border": 0.8,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-0.8-True",
+          "projection": "Perspective",
+          "border": 0.8,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-1-False",
+          "projection": "Perspective",
+          "border": 1,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-1-True",
+          "projection": "Perspective",
+          "border": 1,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-1.5-False",
+          "projection": "Perspective",
+          "border": 1.5,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-1.5-True",
+          "projection": "Perspective",
+          "border": 1.5,
+          "border_command": true
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-10-False",
+          "projection": "Perspective",
+          "border": 10,
+          "border_command": false
+        },
+        {
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "id": "Perspective-10-True",
+          "projection": "Perspective",
+          "border": 10,
+          "border_command": true
+        }
+      ]
+    }
+  ]
+}

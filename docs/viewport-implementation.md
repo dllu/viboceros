@@ -158,6 +158,13 @@ Tests include finite points at the f64 limit and small parallel-view screen
 extents at extreme depth, alongside genuinely unrepresentable-span failures.
 It provides [`Zoom Extents` and `Zoom Selected`](commands/zoom.md). All-view actions reuse
 one bounds query and prepare every `CameraFit` before applying any camera changes.
+The fit stages a complete camera snapshot, retaining its lens and projection
+locks while clearing shifts. Screen spans, aspect fitting, and depth padding
+match public OpenNURBS `ON_DollyExtents` and 105 Rhino camera captures; the
+near/far values describe that explicit fit. Automatic document clipping remains
+separate work. Degenerate screen boxes use a one-unit square; small models do
+not inherit the interactive navigation scale/distance limits.
+Border settings below one remain stored but fit as one, matching Rhino 8.32.
 The model-space camera target is shared by
 CPU/GPU projection and drafting rays; fitting does not edit construction planes
 or model history. The interface parser emits a host action rather than putting

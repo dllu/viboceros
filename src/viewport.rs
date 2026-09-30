@@ -1659,6 +1659,7 @@ mod tests {
     mod object_selection;
     mod two_point;
     mod world_parallel;
+    mod zoom_extents;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
@@ -2682,7 +2683,7 @@ mod tests {
     }
 
     #[test]
-    fn zoom_extents_border_controls_fit_and_can_intentionally_crop() {
+    fn zoom_extents_border_controls_fit_and_values_below_one_fit_as_one() {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
         let mut points = Vec::new();
@@ -2707,13 +2708,14 @@ mod tests {
             };
             let mut default = make_view();
             let mut wide = make_view();
-            let mut cropped = make_view();
+            let mut small_border = make_view();
+            let mut unit_border = make_view();
             let mut selected = make_view();
             let wide_border = ZoomExtentsBorders {
                 parallel: 1.5,
                 perspective: 1.5,
             };
-            let crop_border = ZoomExtentsBorders {
+            let small_border_settings = ZoomExtentsBorders {
                 parallel: 0.8,
                 perspective: 0.8,
             };
@@ -2722,29 +2724,44 @@ mod tests {
                 Ok(true)
             );
             assert_eq!(wide.zoom_extents(&document, wide_border), Ok(true));
-            assert_eq!(cropped.zoom_extents(&document, crop_border), Ok(true));
-            assert_eq!(selected.zoom_selected(&document, crop_border), Ok(true));
-            assert_eq!(selected.target, cropped.target);
+            assert_eq!(
+                small_border.zoom_extents(&document, small_border_settings),
+                Ok(true)
+            );
+            assert_eq!(
+                unit_border.zoom_extents(
+                    &document,
+                    ZoomExtentsBorders {
+                        parallel: 1.,
+                        perspective: 1.
+                    }
+                ),
+                Ok(true)
+            );
+            assert_eq!(
+                selected.zoom_selected(&document, small_border_settings),
+                Ok(true)
+            );
+            assert_eq!(selected.camera_snapshot(), small_border.camera_snapshot());
+            assert_eq!(
+                unit_border.camera_snapshot(),
+                small_border.camera_snapshot()
+            );
             if kind.is_parallel() {
                 assert!(wide.pixels_per_unit < default.pixels_per_unit);
-                assert!(default.pixels_per_unit < cropped.pixels_per_unit);
+                assert!(default.pixels_per_unit < small_border.pixels_per_unit);
                 assert!(
-                    ((default.pixels_per_unit / cropped.pixels_per_unit) - 0.8 / 1.1).abs() < 1e-6
+                    ((default.pixels_per_unit / small_border.pixels_per_unit) - 1. / 1.1).abs()
+                        < 1e-6
                 );
-                assert_eq!(selected.pixels_per_unit, cropped.pixels_per_unit);
             } else {
                 assert!(wide.perspective_camera_distance > default.perspective_camera_distance);
-                assert!(default.perspective_camera_distance > cropped.perspective_camera_distance);
-                assert_eq!(
-                    selected.perspective_camera_distance,
-                    cropped.perspective_camera_distance
-                );
+                assert_eq!(default.camera_snapshot(), small_border.camera_snapshot());
             }
-            assert!(
-                points
-                    .iter()
-                    .any(|p| !rect.contains(cropped.project(*p, rect).unwrap()))
-            );
+            assert!(points.iter().all(|p| {
+                rect.expand(1e-3)
+                    .contains(small_border.project(*p, rect).unwrap())
+            }));
         }
         let mut views = [
             Viewport::new(ViewKind::Top),

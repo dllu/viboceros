@@ -1,0 +1,5014 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "border-settings",
+      "value": [
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              100.725943578062,
+              103.72596637953806
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 0.1,
+            "border_command": false,
+            "id": "Top-0.1-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=0.10000000000000001\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=1.3 ): _PerspectiveView=0.10000000000000001\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=0.1 ): _Enter\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=0.1 )\n",
+          "case": {
+            "border": 0.1,
+            "border_command": true,
+            "id": "Top-0.1-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 0.8,
+            "border_command": false,
+            "id": "Top-0.8-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=0.80000000000000004\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=1.3 ): _PerspectiveView=0.80000000000000004\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=0.8 ): _Enter\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=0.8 )\n",
+          "case": {
+            "border": 0.8,
+            "border_command": true,
+            "id": "Top-0.8-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 1,
+            "border_command": false,
+            "id": "Top-1-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -10.0,
+              10.0,
+              -5.177304964539006,
+              5.177304964539006,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  358.75
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  0.0,
+                  6.249999999999972
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  705.0,
+                  6.249999999999972
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=1\nZoom extents border scale ( ParallelView=1  PerspectiveView=1.3 ): _PerspectiveView=1\nZoom extents border scale ( ParallelView=1  PerspectiveView=1 ): _Enter\nZoom extents border scale ( ParallelView=1  PerspectiveView=1 )\n",
+          "case": {
+            "border": 1,
+            "border_command": true,
+            "id": "Top-1-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -15.0,
+              15.0,
+              -7.7659574468085095,
+              7.7659574468085095,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  117.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  587.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  117.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  587.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  117.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  587.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  117.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  587.5,
+                  64.99999999999999
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 1.5,
+            "border_command": false,
+            "id": "Top-1.5-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            1.5,
+            1.5
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -15.0,
+              15.0,
+              -7.7659574468085095,
+              7.7659574468085095,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  117.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  587.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  117.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  587.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  117.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  587.5,
+                  300.0
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  117.5,
+                  64.99999999999999
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  587.5,
+                  64.99999999999999
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=1.5\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.3 ): _PerspectiveView=1.5\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.5 ): _Enter\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.5 )\n",
+          "case": {
+            "border": 1.5,
+            "border_command": true,
+            "id": "Top-1.5-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            1.5,
+            1.5
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -100.0,
+              100.0,
+              -51.77304964539007,
+              51.77304964539007,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  317.25,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  387.75,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  317.25,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  387.75,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  317.25,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  387.75,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  317.25,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  387.75,
+                  164.875
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 10,
+            "border_command": false,
+            "id": "Top-10-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            10.0,
+            10.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              3.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -100.0,
+              100.0,
+              -51.77304964539007,
+              51.77304964539007,
+              0.40619679655586094,
+              7.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  317.25,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  387.75,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  317.25,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  387.75,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  317.25,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  387.75,
+                  200.125
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  317.25,
+                  164.875
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  387.75,
+                  164.875
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              102.22596637953806
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -46.15410038616908,
+              46.15410038616908,
+              -23.895385306314484,
+              23.895385306314484,
+              99.56410544297705,
+              104.92144678310997
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  375.4123737902364,
+                  197.7749158601576
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  314.312710349606,
+                  129.0377944894484
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=10\nZoom extents border scale ( ParallelView=10  PerspectiveView=1.3 ): _PerspectiveView=10\nZoom extents border scale ( ParallelView=10  PerspectiveView=10 ): _Enter\nZoom extents border scale ( ParallelView=10  PerspectiveView=10 )\n",
+          "case": {
+            "border": 10,
+            "border_command": true,
+            "id": "Top-10-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Top"
+          },
+          "effective_border": [
+            10.0,
+            10.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  365.3233305780417,
+                  167.6706120000813
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  346.6809803049329,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 0.1,
+            "border_command": false,
+            "id": "Perspective-0.1-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=0.10000000000000001\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=1.3 ): _PerspectiveView=0.10000000000000001\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=0.1 ): _Enter\nZoom extents border scale ( ParallelView=0.1  PerspectiveView=0.1 )\n",
+          "case": {
+            "border": 0.1,
+            "border_command": true,
+            "id": "Perspective-0.1-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 0.8,
+            "border_command": false,
+            "id": "Perspective-0.8-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=0.80000000000000004\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=1.3 ): _PerspectiveView=0.80000000000000004\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=0.8 ): _Enter\nZoom extents border scale ( ParallelView=0.8  PerspectiveView=0.8 )\n",
+          "case": {
+            "border": 0.8,
+            "border_command": true,
+            "id": "Perspective-0.8-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 1,
+            "border_command": false,
+            "id": "Perspective-1-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              17.285024387079147,
+              -29.93854044848819,
+              19.959026965658794
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -13.922793957253768,
+              13.922793957253768,
+              -7.208255027514361,
+              7.208255027514361,
+              30.034395947976513,
+              49.99316275974218
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  150.43307751433977,
+                  223.4762785855325
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  493.01143172720236,
+                  348.1675446721449
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  257.86299008671335,
+                  150.74587164426205
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  560.3078839020347,
+                  237.11373558085586
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  134.8887430688314,
+                  125.30985195412914
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  506.90606257652973,
+                  234.30880011373725
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  251.75713768694555,
+                  63.72089115816307
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  576.7840416246682,
+                  137.01840776882358
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=1\nZoom extents border scale ( ParallelView=1  PerspectiveView=1.3 ): _PerspectiveView=1\nZoom extents border scale ( ParallelView=1  PerspectiveView=1 ): _Enter\nZoom extents border scale ( ParallelView=1  PerspectiveView=1 )\n",
+          "case": {
+            "border": 1,
+            "border_command": true,
+            "id": "Perspective-1-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              23.837173876101126,
+              -41.287196262260714,
+              27.52479750817381
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -20.867050929546892,
+              20.867050929546892,
+              -10.80350863728314,
+              10.80350863728314,
+              45.0146193220131,
+              65.2760192556225
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  203.95309880255303,
+                  212.6231845945301
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  449.14557988394523,
+                  296.448279694948
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  280.0200373177971,
+                  158.18035972038206
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  504.1262969482079,
+                  222.3487214880526
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  195.72027057369255,
+                  141.29691123093795
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  455.522094772315,
+                  217.06762659634495
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  276.491871347453,
+                  92.88394603053344
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  512.713864617695,
+                  150.0109222772207
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 1.5,
+            "border_command": false,
+            "id": "Perspective-1.5-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            1.5,
+            1.5
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              23.837173876101126,
+              -41.287196262260714,
+              27.52479750817381
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -20.867050929546892,
+              20.867050929546892,
+              -10.80350863728314,
+              10.80350863728314,
+              45.0146193220131,
+              65.2760192556225
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  203.95309880255303,
+                  212.6231845945301
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  449.14557988394523,
+                  296.448279694948
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  280.0200373177971,
+                  158.18035972038206
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  504.1262969482079,
+                  222.3487214880526
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  195.72027057369255,
+                  141.29691123093795
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  455.522094772315,
+                  217.06762659634495
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  276.491871347453,
+                  92.88394603053344
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  512.713864617695,
+                  150.0109222772207
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=1.5\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.3 ): _PerspectiveView=1.5\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.5 ): _Enter\nZoom extents border scale ( ParallelView=1.5  PerspectiveView=1.5 )\n",
+          "case": {
+            "border": 1.5,
+            "border_command": true,
+            "id": "Perspective-1.5-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            1.5,
+            1.5
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              135.22371518947472,
+              -234.21434509639357,
+              156.14289673092904
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -138.91941945852994,
+              138.91941945852994,
+              -71.92282000335237,
+              71.92282000335237,
+              299.67841668063494,
+              325.0845796855881
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  325.5045700830676,
+                  187.97428665318014
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  367.82310439575025,
+                  200.5664380883071
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  337.9462385011736,
+                  177.6166883747069
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  379.59543307753995,
+                  189.6209175983099
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  325.2444700386384,
+                  175.33700753563508
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  367.97496581852255,
+                  187.69240888265884
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  337.8093117188111,
+                  165.17920106448358
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  379.8574730981647,
+                  176.9522961735801
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              -3.552713678800501e-15,
+              -7.105427357601002e-15,
+              3.552713678800501e-15
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -3.552713678800501e-15,
+                  -7.105427357601002e-15,
+                  3.552713678800501e-15
+                ],
+                "screen": [
+                  352.49999999999994,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  2.9999999999999964,
+                  -2.000000000000007,
+                  4.0000000000000036
+                ],
+                "screen": [
+                  365.32333057804163,
+                  167.67061200008126
+                ]
+              },
+              {
+                "point": [
+                  -5.0000000000000036,
+                  6.999999999999993,
+                  -2.9999999999999964
+                ],
+                "screen": [
+                  346.68098030493286,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": null,
+          "case": {
+            "border": 10,
+            "border_command": false,
+            "id": "Perspective-10-False",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            10.0,
+            10.0
+          ]
+        },
+        {
+          "after": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              135.22371518947472,
+              -234.21434509639357,
+              156.14289673092904
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -138.91941945852994,
+              138.91941945852994,
+              -71.92282000335237,
+              71.92282000335237,
+              299.67841668063494,
+              325.0845796855881
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  325.5045700830676,
+                  187.97428665318014
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  -3.0
+                ],
+                "screen": [
+                  367.82310439575025,
+                  200.5664380883071
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  337.9462385011736,
+                  177.6166883747069
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  -3.0
+                ],
+                "screen": [
+                  379.59543307753995,
+                  189.6209175983099
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  325.2444700386384,
+                  175.33700753563508
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  -5.0,
+                  3.0
+                ],
+                "screen": [
+                  367.97496581852255,
+                  187.69240888265884
+                ]
+              },
+              {
+                "point": [
+                  -10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  337.8093117188111,
+                  165.17920106448358
+                ]
+              },
+              {
+                "point": [
+                  10.0,
+                  5.0,
+                  3.0
+                ],
+                "screen": [
+                  379.8574730981647,
+                  176.9522961735801
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "before": {
+            "camera_direction": [
+              -0.4330127018922193,
+              0.75,
+              -0.5
+            ],
+            "camera_location": [
+              43.11252230934531,
+              -74.67307908223279,
+              49.782052721488526
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              -0.25000000000000006,
+              0.4330127018922194,
+              0.8660254037844387
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -44.920163754755045,
+              44.920163754755045,
+              -23.256538681539844,
+              23.256538681539844,
+              96.90224450641604,
+              102.25958584654896
+            ],
+            "perspective": true,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  352.5,
+                  182.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  365.3233305780417,
+                  167.6706120000813
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  346.6809803049329,
+                  170.7024270549892
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              705,
+              365
+            ]
+          },
+          "border_history": "Command: _SetZoomExtentsBorder\nZoom extents border scale ( ParallelView=1.3  PerspectiveView=1.3 ): _ParallelView=10\nZoom extents border scale ( ParallelView=10  PerspectiveView=1.3 ): _PerspectiveView=10\nZoom extents border scale ( ParallelView=10  PerspectiveView=10 ): _Enter\nZoom extents border scale ( ParallelView=10  PerspectiveView=10 )\n",
+          "case": {
+            "border": 10,
+            "border_command": true,
+            "id": "Perspective-10-True",
+            "max": [
+              10,
+              5,
+              3
+            ],
+            "min": [
+              -10,
+              -5,
+              -3
+            ],
+            "projection": "Perspective"
+          },
+          "effective_border": [
+            10.0,
+            10.0
+          ]
+        }
+      ]
+    }
+  ]
+}

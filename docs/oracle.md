@@ -1977,6 +1977,40 @@ Viboceros currently retains its existing distances, so clipping parity is
 excluded from this comparison. The generic oracle `compare` operation and the
 Python CPlane comparator do not run these native camera transitions.
 
+## Zoom fitting cameras
+
+The [Zoom fitting request](../tools/rhino_oracle/fixtures/zoom_extents_camera.json)
+and [Rhino 8.32 capture](../tools/rhino_oracle/observations/zoom_extents_camera.json)
+contain 85 public `_Zoom _Extents`, `_Zoom _Selected`, and
+`RhinoViewport.ZoomBoundingBox` fits, all recorded in private Xvfb. The bounded
+helper refuses a nonempty document, adds only its own point objects, and restores
+camera, target, CPlane, title, and application settings independently on failure.
+It deletes only its owned objects. Captures include all six standard parallel
+directions, perspective and two-point projection, varying lens width, vertical
+shift beyond the screen center, borders above and below one, translated and thin
+boxes, isolated points, tiny models, and a depth-aligned line.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/zoom_extents_camera.json --timeout 300
+cargo test --release -p viboceros zoom_extents
+```
+
+Native replay checks optical framing, targets, axes and projection at `2e-12`,
+CPU screen coordinates at `1e-8` pixels, GPU agreement within f32 rounding, and
+selection/model/CPlane history plus view undo/redo. Perspective locations match
+the captures; explicit bounding-box fits additionally match parallel camera
+locations and all six frustum values. Automatic document clipping may change
+parallel camera depth and near/far values after command-based fits; those
+transitions are excluded from this replay. This camera fixture is exercised by
+native viewport tests, not the generic geometry `compare` command.
+The separate [border request](../tools/rhino_oracle/fixtures/zoom_extents_borders.json)
+and [capture](../tools/rhino_oracle/observations/zoom_extents_borders.json) add
+20 private-Xvfb cases with factors 0.1, 0.8, 1, 1.5, and 10. Both direct public
+settings writes and `SetZoomExtentsBorder` retain values below one, but actual
+Extents fits use one. Command cases begin with a distinct 1.3 setting and record
+the resulting settings and command history, so a command that silently ignores
+the requested value cannot pass this check.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

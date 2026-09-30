@@ -2,9 +2,9 @@
 
 [Interface commands](interface.md) · [Viewport controls](../interface.md)
 
-`Zoom Extents` or `ZE` fits visible geometry in the active Top, Front, Right,
-or Perspective viewport. Names and options accept case-insensitive Rhino-style
-prefixes. This implements the active-view Extents action described in
+`Zoom Extents` or `ZE` fits visible geometry in the active standard parallel,
+CPlane Plan, Perspective, or TwoPointPerspective viewport. Names and options
+accept case-insensitive Rhino-style prefixes. This implements the active-view Extents action described in
 [Rhino's Zoom documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm).
 
 `Zoom Selected` or `ZS` uses the same fitting policy but only includes visible
@@ -128,23 +128,30 @@ Tests cover translated targets, positive/negative/zero camera pitch, zoom in/out
 and large intermediate screen-coordinate differences.
 
 The camera target moves to the center of the combined visible-object bounds,
-pan resets, and the existing view orientation is retained. Parallel views change
-scale; Perspective changes camera distance without changing its lens. The default
+pan resets, and the existing view orientation is retained. Imported off-axis target
+offsets and shifted frusta are cleared. Two-point projection locks remain active.
+Parallel views change scale; Perspective changes camera distance without changing
+its lens. Fitting uses the full box in camera coordinates, adds a small depth
+allowance, and expands screen dimensions to the viewport aspect ratio. The default
 `SetZoomExtentsBorder` factors are `ParallelView=1.1` and `PerspectiveView=1`:
 the parallel factor leaves about 4.55% of the viewport's limiting dimension on
 each side,
-while perspective fits the bounding box up to the viewport edges. Set either
+while perspective fits the camera-coordinate box ahead of its nearest face.
+World-space corners can therefore leave extra room in an oblique view. Set either
 factor independently with `SetZoomExtentsBorder ParallelView=<number>` or
-`PerspectiveView=<number>`, or use the View options menu. A value below 1 crops
-the fitted bounds. The settings apply to Extents and Selected in active and all
-viewports and persist between sessions. See [Rhino's border option](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm#setzoomextentsborder)
+`PerspectiveView=<number>`, or use the View options menu. Values below 1 are
+retained but fit as 1, matching Rhino 8.32 captures despite the help page's
+description of smaller borders. The settings apply to Extents and Selected in
+active and all viewports and persist between sessions. See [Rhino's border option](https://docs.mcneel.com/rhino/8/help/en-us/commands/zoom.htm#setzoomextentsborder)
 and [McNeel's default setting example](https://discourse.mcneel.com/t/zoom-problems-in-parallel-views-v7-src21/146152/13).
 
 Hidden objects/layers are excluded; visible locked geometry is included. Fits use
 the existing conservative display bounds, so NURBS control hulls can leave extra
-space. Degenerate/small bounds may leave more space because parallel scale is
-capped at 2,000 pixels per model unit and perspective distance is at least 0.01.
-A point-sized scene uses the default scale/distance after centering.
+space. A screen-space box with both half-extents at most `sqrt(f64::EPSILON)`
+uses a one-unit square before aspect fitting, independently of the border factor.
+Small nondegenerate models can fit above 2,000 pixels per model unit or below
+0.01 perspective camera distance. Other navigation actions still have their own
+documented limits.
 
 The action preserves geometry, selection, model undo/redo, construction planes,
 and unfinished modeling prompts. An empty visible scene leaves the camera alone.
@@ -168,7 +175,22 @@ missing layout, successful independent fits, and all four command spellings
 during an unfinished modeling prompt. Selection-fitting tests exercise the four
 default viewport kinds, irrelevant unsupported geometry, empty-selection
 no-ops, and retained selection/model history.
-No live Rhino camera comparison has been performed for this implementation.
+The [Zoom camera fixture](../../tools/rhino_oracle/fixtures/zoom_extents_camera.json)
+and [Rhino 8.32 capture](../../tools/rhino_oracle/observations/zoom_extents_camera.json)
+cover 85 private-Xvfb fits: all six parallel directions, ordinary and two-point
+perspective, shifted frusta, varying lenses and borders, translated boxes,
+elongated/thin geometry, isolated points, and tiny models. Native replay checks
+camera targets, axes, projection, and optical frusta to `2e-12`, CPU screen
+coordinates to `1e-8` pixels, GPU agreement within f32 rounding, and retained
+selection/model/CPlane history. Perspective camera locations also match; all
+explicit public ZoomBoundingBox cases match camera locations and clipping distances.
+The implementation stores the explicit bounding-box fit's near/far distances.
+Rhino subsequently recomputes document clipping and may additionally dolly a
+parallel camera; those document clipping transitions remain unimplemented.
+Twenty additional [border captures](../../tools/rhino_oracle/observations/zoom_extents_borders.json)
+verify factors 0.1, 0.8, 1, 1.5, and 10 through both the public settings API and
+`SetZoomExtentsBorder`. Settings retain the requested value; the minimum fit
+factor is 1.
 
 `UndoView` and `RedoView` step through the active viewport's camera history,
 separately from document undo and construction-plane undo. Home and End trigger

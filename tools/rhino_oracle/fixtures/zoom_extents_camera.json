@@ -1,0 +1,1281 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "zoom_extents_probe",
+      "id": "zoom-fitting",
+      "cases": [
+        {
+          "id": "Top-1-box",
+          "projection": "Top",
+          "border": 1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-1-long",
+          "projection": "Top",
+          "border": 1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Top-1-thin",
+          "projection": "Top",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Top-1-point",
+          "projection": "Top",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Top-1.1-box",
+          "projection": "Top",
+          "border": 1.1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-1.1-long",
+          "projection": "Top",
+          "border": 1.1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Top-1.1-thin",
+          "projection": "Top",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Top-1.1-point",
+          "projection": "Top",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Top-1.4-box",
+          "projection": "Top",
+          "border": 1.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-1.4-long",
+          "projection": "Top",
+          "border": 1.4,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Top-1.4-thin",
+          "projection": "Top",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Top-1.4-point",
+          "projection": "Top",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1-box",
+          "projection": "Perspective",
+          "border": 1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-1-long",
+          "projection": "Perspective",
+          "border": 1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Perspective-1-thin",
+          "projection": "Perspective",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1-point",
+          "projection": "Perspective",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1.1-box",
+          "projection": "Perspective",
+          "border": 1.1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-1.1-long",
+          "projection": "Perspective",
+          "border": 1.1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Perspective-1.1-thin",
+          "projection": "Perspective",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1.1-point",
+          "projection": "Perspective",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1.4-box",
+          "projection": "Perspective",
+          "border": 1.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-1.4-long",
+          "projection": "Perspective",
+          "border": 1.4,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Perspective-1.4-thin",
+          "projection": "Perspective",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-1.4-point",
+          "projection": "Perspective",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1-box",
+          "projection": "TwoPointPerspective",
+          "border": 1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1-long",
+          "projection": "TwoPointPerspective",
+          "border": 1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1-thin",
+          "projection": "TwoPointPerspective",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1-point",
+          "projection": "TwoPointPerspective",
+          "border": 1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.1-box",
+          "projection": "TwoPointPerspective",
+          "border": 1.1,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.1-long",
+          "projection": "TwoPointPerspective",
+          "border": 1.1,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.1-thin",
+          "projection": "TwoPointPerspective",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.1-point",
+          "projection": "TwoPointPerspective",
+          "border": 1.1,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.4-box",
+          "projection": "TwoPointPerspective",
+          "border": 1.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.4-long",
+          "projection": "TwoPointPerspective",
+          "border": 1.4,
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.4-thin",
+          "projection": "TwoPointPerspective",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-1.4-point",
+          "projection": "TwoPointPerspective",
+          "border": 1.4,
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Top-shift--0.5",
+          "projection": "Top",
+          "vertical_shift": -0.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Top-shift-0.75",
+          "projection": "Top",
+          "vertical_shift": 0.75,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Top-shift-1.5",
+          "projection": "Top",
+          "vertical_shift": 1.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Top-scale-0.4",
+          "projection": "Top",
+          "frustum_scale": 0.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-scale-2",
+          "projection": "Top",
+          "frustum_scale": 2,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-Selected",
+          "projection": "Top",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-BoundingBox",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-shift--0.5",
+          "projection": "Perspective",
+          "vertical_shift": -0.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Perspective-shift-0.75",
+          "projection": "Perspective",
+          "vertical_shift": 0.75,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Perspective-shift-1.5",
+          "projection": "Perspective",
+          "vertical_shift": 1.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Perspective-scale-0.4",
+          "projection": "Perspective",
+          "frustum_scale": 0.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-scale-2",
+          "projection": "Perspective",
+          "frustum_scale": 2,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-Selected",
+          "projection": "Perspective",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-BoundingBox",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-shift--0.5",
+          "projection": "TwoPointPerspective",
+          "vertical_shift": -0.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-shift-0.75",
+          "projection": "TwoPointPerspective",
+          "vertical_shift": 0.75,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-shift-1.5",
+          "projection": "TwoPointPerspective",
+          "vertical_shift": 1.5,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-scale-0.4",
+          "projection": "TwoPointPerspective",
+          "frustum_scale": 0.4,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-scale-2",
+          "projection": "TwoPointPerspective",
+          "frustum_scale": 2,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-Selected",
+          "projection": "TwoPointPerspective",
+          "method": "Selected",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-BoundingBox",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Top-BoundingBox-long",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Top-BoundingBox-thin",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Top-BoundingBox-point",
+          "projection": "Top",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Top-tiny",
+          "projection": "Top",
+          "min": [
+            -0.0001,
+            -0.0002,
+            -0.0003
+          ],
+          "max": [
+            0.0001,
+            0.0002,
+            0.0003
+          ]
+        },
+        {
+          "id": "Top-depth-line",
+          "projection": "Top",
+          "min": [
+            0,
+            0,
+            -10
+          ],
+          "max": [
+            0,
+            0,
+            10
+          ]
+        },
+        {
+          "id": "Top-crop",
+          "projection": "Top",
+          "border": 0.8,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Perspective-BoundingBox-long",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "Perspective-BoundingBox-thin",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-BoundingBox-point",
+          "projection": "Perspective",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "Perspective-tiny",
+          "projection": "Perspective",
+          "min": [
+            -0.0001,
+            -0.0002,
+            -0.0003
+          ],
+          "max": [
+            0.0001,
+            0.0002,
+            0.0003
+          ]
+        },
+        {
+          "id": "Perspective-depth-line",
+          "projection": "Perspective",
+          "min": [
+            0,
+            0,
+            -10
+          ],
+          "max": [
+            0,
+            0,
+            10
+          ]
+        },
+        {
+          "id": "Perspective-crop",
+          "projection": "Perspective",
+          "border": 0.8,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-BoundingBox-long",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            -70,
+            -1,
+            -1
+          ],
+          "max": [
+            70,
+            1,
+            1
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-BoundingBox-thin",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            35,
+            -36,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-BoundingBox-point",
+          "projection": "TwoPointPerspective",
+          "method": "BoundingBox",
+          "min": [
+            31,
+            -42,
+            53
+          ],
+          "max": [
+            31,
+            -42,
+            53
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-tiny",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -0.0001,
+            -0.0002,
+            -0.0003
+          ],
+          "max": [
+            0.0001,
+            0.0002,
+            0.0003
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-depth-line",
+          "projection": "TwoPointPerspective",
+          "min": [
+            0,
+            0,
+            -10
+          ],
+          "max": [
+            0,
+            0,
+            10
+          ]
+        },
+        {
+          "id": "TwoPointPerspective-crop",
+          "projection": "TwoPointPerspective",
+          "border": 0.8,
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ]
+        },
+        {
+          "id": "Bottom-1-box",
+          "projection": "Bottom",
+          "border": 1,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Bottom-1.4-box",
+          "projection": "Bottom",
+          "border": 1.4,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Front-1-box",
+          "projection": "Front",
+          "border": 1,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Front-1.4-box",
+          "projection": "Front",
+          "border": 1.4,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Back-1-box",
+          "projection": "Back",
+          "border": 1,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Back-1.4-box",
+          "projection": "Back",
+          "border": 1.4,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Right-1-box",
+          "projection": "Right",
+          "border": 1,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Right-1.4-box",
+          "projection": "Right",
+          "border": 1.4,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Left-1-box",
+          "projection": "Left",
+          "border": 1,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        },
+        {
+          "id": "Left-1.4-box",
+          "projection": "Left",
+          "border": 1.4,
+          "min": [
+            20,
+            -10,
+            0
+          ],
+          "max": [
+            40,
+            10,
+            30
+          ]
+        }
+      ]
+    }
+  ]
+}
