@@ -48,6 +48,8 @@ pub struct ThreeDmGroup {
 pub enum ThreeDmProjection {
     Parallel = 1,
     Perspective = 2,
+    /// Perspective with locked camera up and left/right frustum symmetry.
+    TwoPointPerspective = 3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1022,6 +1024,7 @@ fn decode_view(raw: &ffi::ViboNamedView) -> Result<ThreeDmNamedView, ThreeDmErro
     let projection = match raw.projection {
         1 => ThreeDmProjection::Parallel,
         2 => ThreeDmProjection::Perspective,
+        3 => ThreeDmProjection::TwoPointPerspective,
         _ => return Err(ThreeDmError::MalformedBridge("invalid view projection")),
     };
     Ok(ThreeDmNamedView {
@@ -3554,6 +3557,47 @@ mod tests {
                 "{fixture} produced invalid topology"
             );
         }
+    }
+
+    #[test]
+    fn two_point_camera_locks_survive_named_and_working_view_records() {
+        let path = temporary_path("two-point-views.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        let camera = ThreeDmNamedView {
+            name: "Two point".into(),
+            projection: ThreeDmProjection::TwoPointPerspective,
+            camera_location: Point3::try_new(20., -80., 30.).unwrap(),
+            camera_direction: Vector3::try_new(0., 1., 0.).unwrap(),
+            camera_up: Vector3::try_new(0., 0., 1.).unwrap(),
+            target: Some(Point3::try_new(20., 20., 30.).unwrap()),
+            construction_plane: Frame3::try_from_directions(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Vector3::try_new(0., 1., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            frustum: [-1., 1., -0.25, 1.25, 1., 1000.],
+            screen_port: [0, 640, 480, 0],
+        };
+        model.named_views.push(camera.clone());
+        let mut unlocked = camera.clone();
+        unlocked.name = "Ordinary perspective with the same axes".into();
+        unlocked.projection = ThreeDmProjection::Perspective;
+        model.named_views.push(unlocked);
+        model.viewports.push(ThreeDmViewport {
+            camera,
+            display_mode: ThreeDmDisplayMode::Ghosted,
+            grid: ThreeDmGridSettings::default(),
+            active: true,
+            position: [0., 1., 0., 1.],
+            maximized: false,
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.named_views, model.named_views);
+        assert_eq!(loaded.viewports, model.viewports);
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]

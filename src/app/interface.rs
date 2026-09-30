@@ -758,6 +758,19 @@ impl VibocerosApp {
                 if let InterfaceCommand::SetViewWorld(view) = command {
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
+                    if matches!(
+                        view,
+                        WorldView::Perspective | WorldView::TwoPointPerspective
+                    ) {
+                        match self.viewports[self.active_viewport]
+                            .set_world_perspective_view(view == WorldView::TwoPointPerspective)
+                        {
+                            Ok(()) => self
+                                .push_log(format!("World {} view (active viewport)", view.label())),
+                            Err(error) => self.push_log(format!("Error: {error}")),
+                        }
+                        return;
+                    }
                     let kind = match view {
                         WorldView::Top => ViewKind::Top,
                         WorldView::Bottom => ViewKind::Bottom,
@@ -765,9 +778,13 @@ impl VibocerosApp {
                         WorldView::Back => ViewKind::Back,
                         WorldView::Right => ViewKind::Right,
                         WorldView::Left => ViewKind::Left,
-                        WorldView::Perspective => ViewKind::Perspective,
+                        WorldView::Perspective | WorldView::TwoPointPerspective => {
+                            unreachable!("handled above")
+                        }
                     };
-                    self.viewports[self.active_viewport].set_world_view(kind);
+                    self.viewports[self.active_viewport]
+                        .set_world_view(kind)
+                        .expect("parallel world view has finite preset values");
                     self.push_log(format!("World {} view (active viewport)", view.label()));
                     return;
                 }

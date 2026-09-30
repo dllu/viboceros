@@ -229,6 +229,10 @@ class OracleClient:
                for op in request.get("operations", [])):
             from .group_picking import IdlePicker
             interaction = IdlePicker()
+        if any(op.get("op") == "view_camera_probe" and "mouse_drag" in op
+               for op in request.get("operations", [])):
+            from .camera_navigation import CameraNavigator
+            interaction = CameraNavigator(request)
         if any(op.get("op") in ("area_centroid_command", "volume_centroid_command", "volume_command") for op in request.get("operations", [])):
             from .area_centroid_probe import validate
             if type(request.get("iterations",1)) is not int or request.get("iterations",1) != 1:

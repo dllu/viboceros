@@ -88,8 +88,10 @@ bool read_view_camera(const ON_3dmView& source_view, ViboNamedView& record) {
   if (!source_view.m_vp.IsValid() || !source_view.m_cplane.m_plane.IsValid()) {
     return false;
   }
-  record.projection = static_cast<uint8_t>(source_view.m_vp.Projection());
-  if (record.projection != 1 && record.projection != 2) {
+  record.projection = source_view.m_vp.IsTwoPointPerspectiveProjection()
+                          ? 3
+                          : static_cast<uint8_t>(source_view.m_vp.Projection());
+  if (record.projection < 1 || record.projection > 3) {
     return false;
   }
   const auto fill3 = [](double (&destination)[3], const auto& value) {
@@ -118,14 +120,14 @@ bool read_view_camera(const ON_3dmView& source_view, ViboNamedView& record) {
 
 bool write_view_camera(ON_3dmView& view, const ViboNamedView& source) {
   if (source.name == nullptr || source.name[0] == '\0' ||
-      (source.projection != 1 && source.projection != 2)) {
+      (source.projection < 1 || source.projection > 3)) {
     return false;
   }
   view.m_name = ON_wString(source.name);
   ON_UUID viewport_id;
   ON_CreateUuid(viewport_id);
   if (!view.m_vp.SetViewportId(viewport_id) ||
-      !view.m_vp.SetProjection(static_cast<ON::view_projection>(source.projection)) ||
+      !view.m_vp.SetProjection(source.projection == 1 ? ON::parallel_view : ON::perspective_view) ||
       !view.m_vp.SetCameraLocation(ON_3dPoint(source.camera_location))) {
     return false;
   }
@@ -133,6 +135,11 @@ bool write_view_camera(ON_3dmView& view, const ViboNamedView& source) {
   // changing from the default camera orientation (for example, Front view).
   view.m_vp.SetCameraDirection(ON_3dVector(source.camera_direction));
   view.m_vp.SetCameraUp(ON_3dVector(source.camera_up));
+  if (source.projection == 3) {
+    view.m_vp.SetCameraUpLock(true);
+    view.m_vp.SetFrustumLeftRightSymmetry(true);
+    view.m_vp.SetFrustumTopBottomSymmetry(false);
+  }
   if (!view.m_vp.IsValidCamera() ||
       !view.m_vp.SetScreenPort(source.screen_port[0], source.screen_port[1],
                                source.screen_port[2], source.screen_port[3]) ||

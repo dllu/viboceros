@@ -4,6 +4,7 @@ import math
 
 
 DIRECTIONS = ("Top", "Bottom", "Front", "Back", "Right", "Left")
+WORLD_DIRECTIONS = ("WorldPerspective", "WorldTwoPointPerspective")
 PROJECTIONS = ("Top", "Perspective")
 try:
     string_types = (basestring,)
@@ -31,6 +32,13 @@ def validate(operation):
         _point(operation.get(name), name)
     if "camera_target" in operation:
         _point(operation["camera_target"], "camera_target")
+    if "mouse_drag" in operation:
+        drag = operation["mouse_drag"]
+        if (not isinstance(drag, list) or len(drag) != 2
+                or any(type(value) is not int or abs(value) > 100 for value in drag)
+                or operation.get("directions") != ["WorldTwoPointPerspective"]
+                or operation.get("projections") != ["Perspective"]):
+            raise ValueError("mouse navigation requires one perspective two-point view and a bounded drag")
     projections = operation.get("projections")
     directions = operation.get("directions")
     if not isinstance(projections, list) or not projections or len(projections) > 2 \
@@ -40,9 +48,9 @@ def validate(operation):
     if not isinstance(directions, list) or not directions or len(directions) > 6 \
             or any(not isinstance(value, string_types) for value in directions) \
             or (directions not in (["Plan"], ["CPlaneView"]) and
-                (any(value not in DIRECTIONS for value in directions)
+                (any(value not in DIRECTIONS + WORLD_DIRECTIONS for value in directions)
                  or len(set(directions)) != len(directions))):
-        raise ValueError("camera probe directions must be Plan, CPlaneView, or distinct standard CPlane views")
+        raise ValueError("camera probe directions must be Plan, CPlaneView, or distinct standard views")
 
 
 def script(direction):
@@ -50,6 +58,8 @@ def script(direction):
         return "_Plan"
     if direction == "CPlaneView":
         return "_CPlane _View"
+    if direction in WORLD_DIRECTIONS:
+        return "_SetView _World _" + direction[len("World"):]
     if direction not in DIRECTIONS:
         raise ValueError("unsupported CPlane view")
     return "_SetView _CPlane _" + direction
@@ -127,6 +137,20 @@ def _snapshot(viewport, Rhino, projection, direction, distance_before, width_bef
     if direction == "CPlaneView":
         result["camera_target_before"] = target_before
         result.update(camera_before)
+    if direction in WORLD_DIRECTIONS:
+        info = Rhino.DocObjects.ViewportInfo(viewport)
+        try:
+            result["two_point_perspective"] = bool(viewport.IsTwoPointPerspectiveProjection)
+            result["frustum"] = [float(getattr(info, "Frustum" + name))
+                                 for name in ("Left", "Right", "Bottom", "Top", "Near", "Far")]
+            result["viewport_size"] = [int(viewport.Size.Width), int(viewport.Size.Height)]
+            result.update(camera_before)
+            result["projected_points"] = []
+            for point in ([30, -5, 0], [40, 10, 30], [11, 12, 80], [11, 12, 120]):
+                screen = viewport.WorldToClient(Rhino.Geometry.Point3d(*point))
+                result["projected_points"].append({"point": point, "screen": [float(screen.X), float(screen.Y)]})
+        finally:
+            info.Dispose()
     if scale_before is not None:
         result["screen_scale_before"] = scale_before
         result["screen_scale"] = _screen_scale(viewport, Rhino, origin)
@@ -180,7 +204,16 @@ def run(operation, viewport, host):
                     camera_location_before=_xyz(viewport.CameraLocation),
                     camera_direction_before=_unit(viewport.CameraDirection),
                     camera_up_before=_unit(viewport.CameraUp),
-                ) if direction == "CPlaneView" else None)
+                ) if direction == "CPlaneView" or direction in WORLD_DIRECTIONS else None)
+                if direction in WORLD_DIRECTIONS:
+                    camera_before["camera_target_before"] = _xyz(viewport.CameraTarget)
+                    info = Rhino.DocObjects.ViewportInfo(viewport)
+                    try:
+                        camera_before["frustum_before"] = [float(getattr(info, "Frustum" + name))
+                                                           for name in ("Left", "Right", "Bottom", "Top", "Near", "Far")]
+                    finally:
+                        info.Dispose()
+                history_before = Rhino.RhinoApp.CommandHistoryWindowText if direction in WORLD_DIRECTIONS else None
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("%s command failed" % (
                         "CPlane View" if direction == "CPlaneView" else "SetView CPlane"))
@@ -189,6 +222,23 @@ def run(operation, viewport, host):
                                          scale_before, target_scale_before,
                                          target_before, near_before, origin,
                                          camera_before))
+                if history_before is not None:
+                    history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                    results[-1]["history"] = (history_after[len(history_before):]
+                                              if history_after.startswith(history_before)
+                                              else history_after[-2000:])
+                if "mouse_drag" in operation:
+                    view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
+                    bounds = view.ScreenRectangle
+                    x, y = int((bounds.Left + bounds.Right) / 2), int((bounds.Top + bounds.Bottom) / 2)
+                    dx, dy = operation["mouse_drag"]
+                    if not (bounds.Left < x + dx < bounds.Right and bounds.Top < y + dy < bounds.Bottom):
+                        raise ValueError("navigation drag would leave the owned viewport")
+                    host["progress"]("PICK %s %d %d" % (operation["id"], x, y))
+                    Rhino.RhinoApp.RunScript("_EvaluatePt _Pause", False)
+                    results[-1]["navigation_after"] = _snapshot(
+                        viewport, Rhino, projection, direction, distance_before, width_before,
+                        None, None, None, None, origin, camera_before)
         return results
     finally:
         errors = []
@@ -275,6 +325,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     validate(operation)
     if operation["directions"] == ["CPlaneView"]:
         return compare_cplane_view(operation, rows, epsilon)
+    if any(direction in WORLD_DIRECTIONS for direction in operation["directions"]):
+        raise ValueError("World perspective captures are checked by the native viewport tests")
     if not _finite(float(epsilon)) or epsilon < 0.0:
         raise ValueError("invalid camera comparison epsilon")
     expected_x = _normalized(_point(operation["x_axis"], "x_axis"))

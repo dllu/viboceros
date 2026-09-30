@@ -43,7 +43,7 @@ fn draft_angle_uses_active_view_and_logs_the_direction_used() {
     app.document
         .select_objects_direct([source], SelectionMode::Replace)
         .unwrap();
-    app.viewports[0].set_world_view(ViewKind::Bottom);
+    app.viewports[0].set_world_view(ViewKind::Bottom).unwrap();
     assert!(app.try_execute_command("ExtractMeshFacesByDraftAngle StartAngle=0 EndAngle=0"));
     let selected = app.document.selected_objects().next().unwrap();
     let Geometry::Mesh(bottom_face) = selected.geometry() else {

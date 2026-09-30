@@ -54,6 +54,48 @@ fn real_to_gpu(value: Real) -> Option<f32> {
 }
 
 impl Viewport {
+    pub(crate) fn set_world_perspective_view(
+        &mut self,
+        two_point: bool,
+    ) -> Result<(), GeometryError> {
+        let previous = self.camera_snapshot();
+        let target = self.construction_plane_aligned_to_view()?.origin();
+        if self.kind.is_parallel() || !two_point {
+            let [width, height] = self.named_view_port_size();
+            // OpenNURBS's parallel-to-perspective default is a 20 mm lens;
+            // World Perspective sets a 50 mm lens. The smaller frustum
+            // dimension is 12/lens times the near distance.
+            let lens = if two_point { 20.0 } else { 50.0 };
+            self.perspective_fov_radians =
+                2.0 * (12.0 / lens * (f64::from(height) / f64::from(width)).max(1.0)).atan();
+        }
+        self.kind = ViewKind::Perspective;
+        self.two_point_perspective = two_point;
+        self.target = NaVector3::from(target.to_array());
+        self.pan = Vec2::ZERO;
+        self.perspective_frame = None;
+        self.cplane_direction = None;
+        self.synchronized_role = None;
+        // The public OpenNURBS default world perspective direction is
+        // (-sqrt(3)/4, 3/4, -1/2). Leveling it gives this -60 degree azimuth.
+        self.orbit_yaw = -std::f64::consts::FRAC_PI_3;
+        self.orbit_pitch = if two_point {
+            0.0
+        } else {
+            std::f64::consts::FRAC_PI_6
+        };
+        self.perspective_lens_shift = [0.0; 2];
+        if two_point {
+            self.set_construction_plane(
+                WorldPlane::Top
+                    .frame()
+                    .with_origin(self.construction_plane().origin()),
+            );
+        }
+        self.record_camera_change(previous);
+        Ok(())
+    }
+
     /// Rhino's CPlane View uses the camera target as origin and screen right/up
     /// as the plane axes. Parallel pan is represented separately in this camera.
     pub(crate) fn construction_plane_aligned_to_view(&self) -> Result<Frame3, GeometryError> {
@@ -427,6 +469,43 @@ impl Viewport {
                     self.pan = pan;
                 }
             }
+        } else if button == PointerButton::Secondary && self.two_point_perspective {
+            let Some(rect) = self
+                .last_rect
+                .filter(|rect| rect.is_finite() && rect.is_positive())
+            else {
+                return;
+            };
+            let (right, up, _) = self.perspective_basis();
+            // Six owned Rhino 8 drags calibrate yaw to 0.3 degrees/pixel and
+            // vertical travel to eight target-plane pixels per mouse pixel.
+            let yaw = -Real::from(delta.x) * std::f64::consts::PI / 600.0;
+            let vertical = 8.0 * Real::from(delta.y) * self.perspective_camera_distance
+                / self.perspective_focal_length_pixels(rect);
+            let target = self.target + up * vertical;
+            let shift = self.perspective_lens_shift[1]
+                - 16.0 * Real::from(delta.y) / Real::from(rect.height().max(1.0));
+            if !target.iter().all(|value| value.is_finite()) || !shift.is_finite() {
+                return;
+            }
+            if self.perspective_frame.is_some() {
+                let rotation = UnitQuaternion::from_axis_angle(&Unit::new_normalize(up), yaw);
+                let right = rotation.transform_vector(&right);
+                let Ok(frame) = Frame3::try_from_directions(
+                    Point3::try_from([target.x, target.y, target.z]).expect("finite target"),
+                    Vector3::try_from([right.x, right.y, right.z]).expect("finite camera axis"),
+                    Vector3::try_from([up.x, up.y, up.z]).expect("finite camera axis"),
+                    Tolerance::DEFAULT,
+                ) else {
+                    return;
+                };
+                self.perspective_frame = Some(frame);
+            } else {
+                self.orbit_yaw += yaw;
+            }
+            self.target = target;
+            self.perspective_lens_shift[1] = shift;
+            self.cplane_direction = None;
         } else if button == PointerButton::Secondary {
             if let Some(frame) = self.perspective_frame {
                 let (right, up, _) = self.perspective_basis();

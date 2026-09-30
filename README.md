@@ -26,6 +26,8 @@ press Enter to use the active viewport.
 construction plane origin while retaining its own axes.
 At either point prompt, `All` toggles its setting; `All=Yes|No` selects it.
 `CPlane View` aligns the active plane to its camera without moving the view.
+`SetView World TwoPointPerspective` enables a level perspective camera;
+named and working 3DM views retain its projection and shifted frustum.
 `CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
 ellipse, surface, or picked mesh/B-rep face.
 `CPlane Curve` places it perpendicular to a curve at a picked station.

@@ -6696,7 +6696,7 @@ def _execute(operation, iterations, tolerance):
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:
-            return run(operation, viewport, {"Rhino": Rhino}), 0
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
     if kind == "plane_transform":
         return _plane_transform(operation)
     if kind == "point_grid_command":

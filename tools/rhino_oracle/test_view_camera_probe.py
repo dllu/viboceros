@@ -115,6 +115,26 @@ class CameraProbeTests(unittest.TestCase):
         self.assertEqual(view_camera_probe.script("Plan"), "_Plan")
         self.assertEqual(view_camera_probe.script("CPlaneView"), "_CPlane _View")
 
+    def test_mouse_navigation_requires_a_bounded_two_point_view(self):
+        operation = dict(fixture(), projections=["Perspective"],
+                         directions=["WorldTwoPointPerspective"], mouse_drag=[60, -20])
+        view_camera_probe.validate(operation)
+        for mutation in [
+            dict(mouse_drag=[101, 0]), dict(mouse_drag=[0, -101]),
+            dict(mouse_drag=[True, 0]), dict(mouse_drag=[1.5, 0]),
+            dict(mouse_drag=[0]), dict(mouse_drag="60,0"),
+            dict(projections=["Top"]), dict(directions=["WorldPerspective"]),
+            dict(directions=["WorldTwoPointPerspective", "Top"]),
+        ]:
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                view_camera_probe.validate(dict(operation, **mutation))
+        self.assertEqual(view_camera_probe.script("WorldPerspective"),
+                         "_SetView _World _Perspective")
+        self.assertEqual(view_camera_probe.script("WorldTwoPointPerspective"),
+                         "_SetView _World _TwoPointPerspective")
+        with self.assertRaisesRegex(ValueError, "native viewport tests"):
+            view_camera_probe.compare_to_viboceros(operation, [])
+
     def test_probe_restores_projection_target_and_name_after_command_failure(self):
         class Vector:
             def __init__(self, x, y, z):

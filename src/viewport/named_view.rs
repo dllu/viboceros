@@ -36,7 +36,11 @@ impl Viewport {
             let half_width = half_height * aspect;
             let [shift_x, shift_y] = camera.perspective_lens_shift;
             (
-                ThreeDmProjection::Perspective,
+                if camera.two_point_perspective {
+                    ThreeDmProjection::TwoPointPerspective
+                } else {
+                    ThreeDmProjection::Perspective
+                },
                 location,
                 forward,
                 up,
@@ -66,7 +70,7 @@ impl Viewport {
             let half_height = f64::from(height) / (2.0 * scale);
             (
                 ThreeDmProjection::Parallel,
-                center - forward * 50.0,
+                center - forward * camera.perspective_camera_distance,
                 forward,
                 up,
                 center,
@@ -141,8 +145,11 @@ impl Viewport {
         view.pan = Vec2::ZERO;
         view.frustum_near = near;
         view.frustum_far = far;
-        if source.projection == ThreeDmProjection::Perspective {
+        view.perspective_camera_distance = distance;
+        if source.projection != ThreeDmProjection::Parallel {
             view.kind = ViewKind::Perspective;
+            view.two_point_perspective =
+                source.projection == ThreeDmProjection::TwoPointPerspective;
             // The app's orbit target lies on the camera axis. Rhino targets may
             // be off axis, so preserve the camera location when choosing it.
             view.target = location + forward * distance;
@@ -152,7 +159,6 @@ impl Viewport {
                 vector(up_axis)?,
                 Tolerance::DEFAULT,
             )?);
-            view.perspective_camera_distance = distance;
             view.perspective_fov_radians = 2.0 * (height / (2.0 * near)).atan();
             view.perspective_lens_shift = [(left + right) / width, (bottom + top) / height];
         } else {

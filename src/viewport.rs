@@ -134,6 +134,7 @@ const VIEW_HISTORY_LIMIT: usize = 50;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct CameraSnapshot {
     kind: ViewKind,
+    two_point_perspective: bool,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
@@ -419,6 +420,7 @@ pub struct Viewport {
     title_reference: Option<(CameraSnapshot, Frame3)>,
     /// View to reactivate when a NewViewport-created view is closed this session.
     pub(crate) new_viewport_parent: Option<usize>,
+    two_point_perspective: bool,
     plan_frame: Frame3,
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
@@ -466,6 +468,7 @@ impl Viewport {
             title: None,
             title_reference: None,
             new_viewport_parent: None,
+            two_point_perspective: false,
             plan_frame: WorldPlane::Top.frame(),
             perspective_frame: None,
             cplane_direction: None,
@@ -502,6 +505,7 @@ impl Viewport {
     pub(crate) fn camera_snapshot(&self) -> CameraSnapshot {
         CameraSnapshot {
             kind: self.kind,
+            two_point_perspective: self.two_point_perspective,
             plan_frame: self.plan_frame,
             perspective_frame: self.perspective_frame,
             cplane_direction: self.cplane_direction,
@@ -587,6 +591,7 @@ impl Viewport {
 
     fn restore_camera(&mut self, camera: CameraSnapshot) {
         self.kind = camera.kind;
+        self.two_point_perspective = camera.two_point_perspective;
         self.plan_frame = camera.plan_frame;
         self.perspective_frame = camera.perspective_frame;
         self.cplane_direction = camera.cplane_direction;
@@ -726,6 +731,9 @@ impl Viewport {
         if let Some(title) = &self.title {
             return title;
         }
+        if self.two_point_perspective {
+            return "TwoPointPerspective";
+        }
         if let Some(role) = self.synchronized_role {
             return if self.kind == ViewKind::Perspective {
                 "Perspective"
@@ -815,15 +823,20 @@ impl Viewport {
         }
         self.kind = kind;
         self.perspective_frame = None;
+        self.two_point_perspective = false;
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.set_construction_plane(Self::default_plane(kind));
         self.record_camera_change(previous);
     }
 
-    pub(crate) fn set_world_view(&mut self, kind: ViewKind) {
+    pub(crate) fn set_world_view(&mut self, kind: ViewKind) -> Result<(), GeometryError> {
+        if kind == ViewKind::Perspective {
+            return self.set_world_perspective_view(false);
+        }
         let previous = self.camera_snapshot();
         self.kind = kind;
+        self.two_point_perspective = false;
         self.perspective_frame = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
@@ -845,6 +858,7 @@ impl Viewport {
             self.set_construction_plane(Self::default_plane(kind));
         }
         self.record_camera_change(previous);
+        Ok(())
     }
 
     pub(crate) fn set_plan_view(&mut self) {
@@ -859,6 +873,7 @@ impl Viewport {
         }
         self.plan_frame = self.construction_plane();
         self.kind = ViewKind::Plan;
+        self.two_point_perspective = false;
         self.perspective_frame = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
@@ -1578,6 +1593,7 @@ fn circular_arc_samples(arc: CircularArc3) -> usize {
 mod tests {
     mod construction_plane;
     mod object_selection;
+    mod two_point;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
@@ -3685,7 +3701,7 @@ mod tests {
         assert!((after.0.norm() - 1.0).abs() < 1.0e-12);
         assert!((after.1.norm() - 1.0).abs() < 1.0e-12);
         assert!(after.0.dot(&after.1).abs() < 1.0e-12);
-        view.set_world_view(ViewKind::Perspective);
+        view.set_world_view(ViewKind::Perspective).unwrap();
         assert!(view.perspective_frame.is_none());
         assert_eq!(view.view_label(), "Perspective");
         assert_eq!(view.construction_plane(), plane);

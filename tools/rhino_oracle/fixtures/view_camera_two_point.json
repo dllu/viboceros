@@ -1,0 +1,242 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "view_camera_probe",
+      "id": "world-perspective-presets",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective"
+      ],
+      "directions": [
+        "WorldPerspective",
+        "WorldTwoPointPerspective"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-vertical",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        0,
+        60
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-horizontal",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        60,
+        0
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-diagonal",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        60,
+        60
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-vertical-short",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        0,
+        30
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-vertical-negative",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        0,
+        -20
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "two-point-drag-horizontal-short",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "WorldTwoPointPerspective"
+      ],
+      "mouse_drag": [
+        30,
+        0
+      ]
+    }
+  ]
+}

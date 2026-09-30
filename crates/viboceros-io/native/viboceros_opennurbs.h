@@ -61,7 +61,7 @@ typedef struct ViboWriteGroup {
 
 typedef struct ViboNamedView {
   const char* name;
-  uint8_t projection; // 1 parallel, 2 perspective
+  uint8_t projection; // 1 parallel, 2 perspective, 3 two-point perspective
   uint8_t has_target;
   double camera_location[3];
   double camera_direction[3];

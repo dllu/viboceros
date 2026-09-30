@@ -2994,16 +2994,21 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
         ("Right", ViewKind::Right, Some(WorldPlane::Right)),
         ("Left", ViewKind::Left, Some(WorldPlane::Left)),
         ("Perspective", ViewKind::Perspective, None),
+        (
+            "TwoPointPerspective",
+            ViewKind::Perspective,
+            Some(WorldPlane::Top),
+        ),
     ] {
         enter(&mut app, "Zoom Factor 2");
         let before = app.viewports[2].camera_snapshot();
         let plane_before = app.viewports[2].construction_plane();
         enter(&mut app, &format!("SetView World {name}"));
         assert_eq!(app.viewports[2].kind(), kind);
-        assert_eq!(
-            app.viewports[2].camera_snapshot(),
-            Viewport::new(kind).camera_snapshot()
-        );
+        let after = app.viewports[2].camera_snapshot();
+        if kind != ViewKind::Perspective {
+            assert_eq!(after, Viewport::new(kind).camera_snapshot());
+        }
         assert_eq!(
             app.viewports[2].construction_plane(),
             plane.map_or(plane_before, WorldPlane::frame)
@@ -3011,10 +3016,7 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
         enter(&mut app, "UndoView");
         assert_eq!(app.viewports[2].camera_snapshot(), before);
         enter(&mut app, "RedoView");
-        assert_eq!(
-            app.viewports[2].camera_snapshot(),
-            Viewport::new(kind).camera_snapshot()
-        );
+        assert_eq!(app.viewports[2].camera_snapshot(), after);
         assert_eq!(app.viewports[0].camera_snapshot(), untouched);
         assert_eq!(app.active_command, pending);
         assert_eq!(app.document.redo_label(), redo.as_deref());

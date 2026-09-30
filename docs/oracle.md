@@ -1784,6 +1784,40 @@ Rust test checks the saved Rhino width and scale. The Python comparator still
 marks native zoom parity as unchecked because the generic oracle `compare` mode
 has no native camera operation for either fixture.
 
+### World perspective and two-point camera probe
+
+The [two-point fixture](../tools/rhino_oracle/fixtures/view_camera_two_point.json)
+records `SetView World Perspective` and `SetView World TwoPointPerspective`
+from both parallel and perspective inputs with a translated target and an
+oblique construction plane. Six additional operations deliver bounded right
+drags in the owned viewport: horizontal, vertical, diagonal, shorter, and
+negative vertical motion. Each drag uses the private Xvfb display and cancels
+its disposable `EvaluatePt` prompt afterward. Capture with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_two_point.json --timeout 240
+```
+
+The [saved Rhino 8.32 observation](../tools/rhino_oracle/observations/view_camera_two_point.json)
+contains the input and output camera state, complete frusta, projection flags,
+construction planes, viewport sizes, and projected world points. The native
+viewport regression imports each measured input and checks the actual camera
+transition and navigation, plus undo/redo and named-view restoration:
+
+```sh
+cargo test --release -p viboceros viewport::tests::two_point
+```
+
+Camera and plane components and frustum dimensions normalized by the near
+distance use tolerance `2e-12`. Projected points agree with Rhino within
+`1e-4` pixels; the CPU/GPU comparison uses `1e-3` pixels. Drafting picks also
+round-trip through shifted perspective rays. The IO tests check projection
+locks and shifted frusta in both named and working 3DM views.
+Rhino recomputes document-based near/far clipping after these commands;
+Viboceros currently retains its existing distances, so clipping parity is
+excluded from this comparison. The generic oracle `compare` operation and the
+Python CPlane comparator do not run these native camera transitions.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness
