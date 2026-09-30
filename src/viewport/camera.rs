@@ -317,14 +317,7 @@ impl Viewport {
         let Some((minimum, maximum)) = range else {
             return [0.0, 1.0];
         };
-        let (near, far) = if self.kind.is_parallel() {
-            (
-                self.frustum_near - self.perspective_camera_distance,
-                self.frustum_far - self.perspective_camera_distance,
-            )
-        } else {
-            (self.frustum_near, self.frustum_far)
-        };
+        let (near, far) = self.display_depth_interval();
         if maximum < near || minimum > far {
             return [1.0, -1.0];
         }
@@ -363,7 +356,7 @@ impl Viewport {
         self.clip_segment_at_near(start, end, self.primitive_near(&[start, end]))
     }
 
-    fn primitive_near(&self, points: &[Point3]) -> Real {
+    pub(super) fn primitive_near(&self, points: &[Point3]) -> Real {
         let scale = points
             .iter()
             .flat_map(|point| point.to_array())

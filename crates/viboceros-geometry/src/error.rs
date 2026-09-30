@@ -93,6 +93,11 @@ pub enum GeometryError {
     #[error("{context} contains a non-finite value")]
     NonFinite { context: &'static str },
 
+    #[error(
+        "interpolation requires distinct finite endpoint parameters and a parameter between them"
+    )]
+    InvalidInterpolationParameter,
+
     #[error("{context} is degenerate at the requested tolerance")]
     Degenerate { context: &'static str },
 

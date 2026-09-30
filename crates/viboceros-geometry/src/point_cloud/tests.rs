@@ -6,6 +6,78 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
 }
 
 #[test]
+fn filtered_indexed_queries_match_exhaustive_search_with_hidden_members_and_ties() {
+    let points: Vec<_> = (0..73)
+        .map(|i| {
+            point(
+                f64::from(i % 7) - 3.,
+                f64::from((i / 7) % 7) - 3.,
+                f64::from(i % 5),
+            )
+        })
+        .collect();
+    let cloud = PointCloud3::try_new(points.clone())
+        .unwrap()
+        .with_hidden((0..points.len()).map(|i| i % 11 == 0).collect())
+        .unwrap();
+    let origin = point(0., 0., 0.);
+    for projection in [
+        PointCloudProjection::Xy,
+        PointCloudProjection::Xz,
+        PointCloudProjection::Yz,
+    ] {
+        let axes = projection.axes();
+        let vector = |axis: u8| {
+            let mut values = [0.; 3];
+            values[usize::from(axis)] = 1.;
+            Vector3::try_from(values).unwrap()
+        };
+        let frame = Frame3::try_from_directions(
+            origin,
+            vector(axes[0]),
+            vector(axes[1]),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for offset in [[0., 0.], [0.5, -0.25], [-2., 1.]] {
+            for radius in [0., 0.75, 2., 10.] {
+                for modulo in [1, 2, 3, 7] {
+                    let accept = |i: usize, p: Point3| !i.is_multiple_of(modulo) && p.z() <= 3.;
+                    let expected = points
+                        .iter()
+                        .copied()
+                        .enumerate()
+                        .filter(|(i, p)| !cloud.is_hidden(*i) && accept(*i, *p))
+                        .filter_map(|(i, p)| {
+                            let a = p.to_array();
+                            let distance = (a[usize::from(axes[0])] - offset[0])
+                                .hypot(a[usize::from(axes[1])] - offset[1]);
+                            (distance <= radius).then_some((i, p, distance))
+                        })
+                        .min_by(|a, b| a.2.total_cmp(&b.2).then(a.0.cmp(&b.0)));
+                    assert_eq!(
+                        cloud
+                            .nearest_visible_projected_relative_with_filter(
+                                projection, origin, offset, radius, accept
+                            )
+                            .unwrap(),
+                        expected
+                    );
+                    assert_eq!(
+                        cloud
+                            .nearest_visible_projected_frame_relative_with_filter(
+                                frame, offset, radius, accept
+                            )
+                            .unwrap(),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn optional_point_colors_validate_and_survive_transforms() {
     let points = vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)];
     let colors = vec![[10, 20, 30, 0], [40, 50, 60, 128]];

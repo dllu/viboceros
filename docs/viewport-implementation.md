@@ -221,8 +221,28 @@ depth planes in shaded and ghosted modes, with both target formats (192 renders)
 Parallel encoded depth coordinates intentionally differ from Rhino's clip Z;
 the clipping region is compared. This establishes specific frustum cases,
 not complete display parity or behavior at every numeric boundary.
-CPU drafting/picking still uses its camera-plane projection rules; matching
-selection filtering to the display near/far planes remains separate work.
+CPU selection uses the same stored depth interval. Points and point-cloud
+members outside it cannot win a click; indexed cloud searches filter candidates
+before nearest ordering, preserving hidden flags and stored-index ties. Lines
+test the depth at their closest screen point, without treating a new endpoint
+on a clip plane as a separate click target. Face interiors interpolate depth
+on the original projected triangles and reject clipped hits while retaining
+source face indices.
+
+Window selection requires all source vertices/sampled wire points inside the
+depth interval. Crossing selection tests the visible clipped portions. Triangle
+clipping uses fixed arrays for the resulting polygon (at most five vertices).
+The kernel's scalar interpolation falls back to rational arithmetic for severe
+cancellation and extreme intermediate ranges, retaining separate clip-plane
+intersections on long segments. Ordinary interpolation keeps a floating-point
+path; this is not a general exact clipping predicate.
+
+A private-Xvfb fixture records 1,296 primitive/document line picking results
+across 48 cameras using public Rhino pick contexts. Native click/window/crossing
+tests replay every result. Independent ray tests cover face interiors crossing
+both depth planes in all eight views and both shaded modes. Drafting/snapping
+projection still follows its existing camera-plane rules; these picking tests
+do not establish osnap clipping or every inverted-selection case.
 
 Imported nonorthogonal `CameraUp` hints are retained separately from the
 orthonormal rendering frame, including through clipping refresh and 3DM

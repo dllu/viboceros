@@ -2108,6 +2108,33 @@ the actual near/far planes. The offscreen test checks 4,032 face/wire/point
 coverage samples in 192 renders, in shaded/ghosted and both target formats.
 These are public-API geometric comparisons, not Rhino screenshot/color matches.
 
+### Selection at the depth planes
+
+The [picking fixture](../tools/rhino_oracle/fixtures/viewport_clipping_picks.json)
+and [capture](../tools/rhino_oracle/observations/viewport_clipping_picks.json)
+reuse those 48 camera cases with `picking_probe=true`. After projection capture,
+the worker adds nine owned lines, constructs disposable public
+[PickContext](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Input_Custom_PickContext.htm)
+instances with the viewport's rectangle pick transform, and updates clipping
+planes. It queries each line primitive and
+[ObjectTable.PickObjects](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_DocObjects_Tables_ObjectTable_PickObjects.htm)
+in PointPick, WindowPick, and CrossingPick modes. All 1,296 paired results agree.
+The probe performs no redraw while its temporary lines exist, verifies the
+camera is unchanged, disposes contexts/references, and deletes only owned lines.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/viewport_clipping_picks.json --timeout 300
+cargo test --release -p viboceros viewport::clip_tests
+```
+
+In these captures, window selection rejects a line crossing any frustum plane;
+crossing selection accepts its visible part. Click selection rejects a line
+when its closest screen point is beyond a depth plane, even when an artificial
+clipped endpoint lies within the capture aperture. The native replay checks
+every primitive/document result, with no timing claim. These cases establish
+line selection behavior for the measured cameras; face picking also has an
+independent ray regression, but no native Rhino mesh-pick capture here.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

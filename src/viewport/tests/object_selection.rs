@@ -15,7 +15,8 @@ fn point_cloud_member_pick_returns_stored_index_in_all_views() {
         ViewKind::Plan,
         ViewKind::Perspective,
     ] {
-        let view = Viewport::new(kind);
+        let mut view = Viewport::new(kind);
+        view.frustum_near = 0.005;
         let pixel = view.project(cloud.points()[1], rect).unwrap();
         assert_eq!(
             view.pick_point_cloud_member(pixel, rect, &cloud).unwrap().0,
@@ -329,7 +330,8 @@ fn mesh_filter_is_applied_before_point_and_curve_hit_priority() {
         ViewKind::Front,
         ViewKind::Right,
     ] {
-        let view = Viewport::new(kind);
+        let mut view = Viewport::new(kind);
+        view.frustum_near = 0.005;
         let pointer = view.project(point(2., 0., 0.), rect).unwrap();
         assert_eq!(view.pick_object(pointer, rect, &d), Some(dot));
         assert_eq!(

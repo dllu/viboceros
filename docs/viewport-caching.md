@@ -6,7 +6,8 @@ The four viewports share camera-independent display geometry: sampled curves,
 surface/B-rep wire curves, mesh edges, tessellated faces, and smooth corner
 normals. Wireframe views generate only wires; shaded faces and normals are lazy.
 Click and window selection reuse this data. Point-cloud click picking retains
-its existing spatial index.
+its existing spatial index and rejects clipped candidates during that search,
+so a hidden or clipped nearest member cannot suppress a visible farther member.
 
 Each viewport also retains its last prepared GPU scene. Unchanged geometry,
 styles, camera, viewport rectangle, and display mode reuse that scene. The GPU
@@ -98,3 +99,10 @@ tests, and all nine explicit offscreen raster tests passed on NVIDIA GB10/Vulkan
 driver 610.57.04. Formatting and application all-target Clippy passed with the
 existing warnings. The new [public clip captures](oracle.md#gpu-frustum-clipping)
 were taken entirely on private Xvfb; no new performance comparison is claimed.
+
+Selection-clipping follow-up: 757 ordinary application tests and 1,865 geometry
+tests passed (13 and eight opt-in exclusions respectively), alongside 486 Python
+tests. The [public pick captures](oracle.md#selection-at-the-depth-planes)
+record 1,296 paired primitive/document results on private Xvfb. Formatting and
+workspace all-target Clippy passed with existing warnings; GPU code and the
+previous offscreen verification remain unchanged in this selection change.

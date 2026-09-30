@@ -672,7 +672,7 @@ fn sloped_and_camera_crossing_face_picks_match_independent_rays() {
 
 /// Independent ray/triangle intersection, not a projection or clipping helper.
 /// Return ray distance and barycentric weights; leave edge exclusion to callers.
-fn ray_triangle(
+pub(super) fn ray_triangle(
     origin: NaVector3<Real>,
     direction: NaVector3<Real>,
     points: [Point3; 3],

@@ -25,6 +25,7 @@ class ZoomExtentsProbeTests(unittest.TestCase):
                        dict(border=True), dict(frustum_scale=float("inf")),
                        dict(vertical_shift=4), dict(border_command=1), dict(clipping_probe=1),
                        dict(projection_probe=1),
+                       dict(picking_probe=1), dict(picking_probe=True),
                        dict(projection_shift=[0., 0.]), dict(projection_probe=True, projection_shift=[0.]),
                        dict(projection_probe=True, projection_shift=[True, 0.]),
                        dict(projection_probe=True, projection_shift=[0., float("inf")]),
@@ -244,6 +245,60 @@ class ZoomExtentsProbeTests(unittest.TestCase):
                 clip = query["clip"]
                 if all(abs(abs(value) - 1) > 2e-7 for value in clip):
                     self.assertEqual(query["visible"], all(abs(value) <= 1 for value in clip))
+
+    def test_clipping_pick_captures_distinguish_window_and_crossing(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/viewport_clipping_picks.json").read_text())
+        capture = json.loads((root / "observations/viewport_clipping_picks.json").read_text())
+        probe.validate(request["operations"][0])
+        rows = capture["results"][0]["value"]
+        self.assertEqual([row["case"] for row in rows], request["operations"][0]["cases"])
+        self.assertEqual(len(rows), 48)
+        self.assertEqual(sum(len(row["picking"]["lines"]) * len(row["picking"]["picks"]) for row in rows), 1296)
+        for row in rows:
+            picks = {pick["style"]: pick for pick in row["picking"]["picks"]}
+            for pick in picks.values():
+                self.assertEqual(pick["primitive"], pick["objects"])
+            self.assertEqual(picks["WindowPick"]["objects"], [False, True, True, True, False, False, False, False, False])
+            self.assertEqual(picks["CrossingPick"]["objects"], [False, True, True, True, False, True, True, True, True])
+
+    def test_clipping_pick_failure_deletes_owned_lines_and_disposes_context(self):
+        root = Path(__file__).parent
+        camera = json.loads((root / "observations/viewport_clipping_picks.json").read_text())["results"][0]["value"][0]["picking"]["camera"]
+        for add_failure in (3, None):
+            with self.subTest(add_failure=add_failure):
+                state = dict(added=[], deleted=[], disposed=0, attempts=0)
+                class Objects:
+                    def AddLine(self, start, end):
+                        state["attempts"] += 1
+                        if state["attempts"] == add_failure:
+                            return 0
+                        state["added"].append(state["attempts"])
+                        return state["attempts"]
+                    def Delete(self, object_id, quiet):
+                        self.assert_owned(object_id)
+                        state["deleted"].append(object_id)
+                        return True
+                    def assert_owned(self, object_id):
+                        if object_id not in state["added"]:
+                            raise AssertionError("foreign object deletion")
+                class Context:
+                    def SetPickTransform(self, transform):
+                        raise ValueError("pick transform failed")
+                    def Dispose(self):
+                        state["disposed"] += 1
+                point = lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)
+                document = SimpleNamespace(Objects=Objects(), Views=SimpleNamespace(ActiveView=object()))
+                Rhino = SimpleNamespace(RhinoDoc=SimpleNamespace(ActiveDoc=document),
+                    Geometry=SimpleNamespace(Point3d=point), Input=SimpleNamespace(Custom=SimpleNamespace(
+                        PickContext=Context, PickStyle=SimpleNamespace(PointPick="point"))))
+                System = SimpleNamespace(Drawing=SimpleNamespace(Rectangle=lambda x,y,w,h: (x,y,w,h)))
+                viewport = SimpleNamespace(CameraX=point(1,0,0), CameraY=point(0,1,0), CameraZ=point(0,0,1),
+                    GetFrustumLine=lambda x,y: (True, "ray"), GetPickTransform=lambda rect: "transform")
+                with patch.object(probe, "snapshot", return_value=camera), self.assertRaises(ValueError):
+                    probe.picking_snapshot(viewport, dict(Rhino=Rhino, System=System, empty_guid=0))
+                self.assertEqual(state["deleted"], state["added"])
+                self.assertEqual(state["disposed"], 0 if add_failure else 1)
 
 
 if __name__ == "__main__":

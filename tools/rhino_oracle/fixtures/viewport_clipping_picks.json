@@ -1,0 +1,1020 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "clipping-picks",
+      "op": "zoom_extents_probe",
+      "cases": [
+        {
+          "id": "Top-normal-0.0",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Top-normal-0.4",
+          "projection": "Top",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Top-tiny-0.0",
+          "projection": "Top",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Top-tiny-0.4",
+          "projection": "Top",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Top-translated-0.0",
+          "projection": "Top",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Top-translated-0.4",
+          "projection": "Top",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-normal-0.0",
+          "projection": "Bottom",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-normal-0.4",
+          "projection": "Bottom",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-tiny-0.0",
+          "projection": "Bottom",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-tiny-0.4",
+          "projection": "Bottom",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-translated-0.0",
+          "projection": "Bottom",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Bottom-translated-0.4",
+          "projection": "Bottom",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-normal-0.0",
+          "projection": "Front",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-normal-0.4",
+          "projection": "Front",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-tiny-0.0",
+          "projection": "Front",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-tiny-0.4",
+          "projection": "Front",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-translated-0.0",
+          "projection": "Front",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Front-translated-0.4",
+          "projection": "Front",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-normal-0.0",
+          "projection": "Back",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-normal-0.4",
+          "projection": "Back",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-tiny-0.0",
+          "projection": "Back",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-tiny-0.4",
+          "projection": "Back",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-translated-0.0",
+          "projection": "Back",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Back-translated-0.4",
+          "projection": "Back",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-normal-0.0",
+          "projection": "Right",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-normal-0.4",
+          "projection": "Right",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-tiny-0.0",
+          "projection": "Right",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-tiny-0.4",
+          "projection": "Right",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-translated-0.0",
+          "projection": "Right",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Right-translated-0.4",
+          "projection": "Right",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-normal-0.0",
+          "projection": "Left",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-normal-0.4",
+          "projection": "Left",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-tiny-0.0",
+          "projection": "Left",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-tiny-0.4",
+          "projection": "Left",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-translated-0.0",
+          "projection": "Left",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Left-translated-0.4",
+          "projection": "Left",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-normal-0.0",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-normal-0.4",
+          "projection": "Perspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-tiny-0.0",
+          "projection": "Perspective",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-tiny-0.4",
+          "projection": "Perspective",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-translated-0.0",
+          "projection": "Perspective",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "Perspective-translated-0.4",
+          "projection": "Perspective",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-normal-0.0",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-normal-0.4",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -10,
+            -5,
+            -3
+          ],
+          "max": [
+            10,
+            5,
+            3
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-tiny-0.0",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-tiny-0.4",
+          "projection": "TwoPointPerspective",
+          "min": [
+            -9.999999999999999e-06,
+            -4.9999999999999996e-06,
+            -3e-06
+          ],
+          "max": [
+            9.999999999999999e-06,
+            4.9999999999999996e-06,
+            3e-06
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-translated-0.0",
+          "projection": "TwoPointPerspective",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.0,
+            0.0
+          ],
+          "picking_probe": true
+        },
+        {
+          "id": "TwoPointPerspective-translated-0.4",
+          "projection": "TwoPointPerspective",
+          "min": [
+            999990.0,
+            -2000005.0,
+            2999997.0
+          ],
+          "max": [
+            1000010.0,
+            -1999995.0,
+            3000003.0
+          ],
+          "method": "BoundingBox",
+          "projection_probe": true,
+          "projection_shift": [
+            0.2,
+            0.4
+          ],
+          "picking_probe": true
+        }
+      ]
+    }
+  ]
+}

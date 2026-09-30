@@ -25,9 +25,22 @@ impl SearchRegion {
 }
 
 #[derive(Clone, Copy)]
+pub(super) struct PointFilter<'a> {
+    pub hidden: Option<&'a [bool]>,
+    pub accept: Option<&'a dyn Fn(usize, Point3) -> bool>,
+}
+
+impl PointFilter<'_> {
+    fn accepts(self, index: usize, point: Point3) -> bool {
+        !self.hidden.is_some_and(|flags| flags[index])
+            && self.accept.is_none_or(|accept| accept(index, point))
+    }
+}
+
+#[derive(Clone, Copy)]
 pub(super) struct ProjectedQuery<'a> {
     pub points: &'a [Point3],
-    pub hidden: Option<&'a [bool]>,
+    pub filter: PointFilter<'a>,
     pub origin: Point3,
     pub offset: [Real; 2],
     pub region: SearchRegion,
@@ -151,7 +164,7 @@ impl ProjectedIndex {
                 - query.offset[1],
         ];
         let distance = relative[0].hypot(relative[1]);
-        if !query.hidden.is_some_and(|flags| flags[node.point_index])
+        if query.filter.accepts(node.point_index, point)
             && query.region.contains(relative, distance)
             && best.is_none_or(|(best_distance, best_index)| {
                 distance < best_distance
@@ -218,7 +231,7 @@ impl ProjectedIndex {
     pub(super) fn nearest_in_frame(
         &self,
         points: &[Point3],
-        hidden: Option<&[bool]>,
+        filter: PointFilter<'_>,
         bounds: &[NodeBounds],
         frame: Frame3,
         offset: [Real; 2],
@@ -227,7 +240,7 @@ impl ProjectedIndex {
         let mut query = FrameSearch {
             index: self,
             points,
-            hidden,
+            filter,
             bounds,
             frame,
             offset,
@@ -242,7 +255,7 @@ impl ProjectedIndex {
 struct FrameSearch<'a> {
     index: &'a ProjectedIndex,
     points: &'a [Point3],
-    hidden: Option<&'a [bool]>,
+    filter: PointFilter<'a>,
     bounds: &'a [NodeBounds],
     frame: Frame3,
     offset: [Real; 2],
@@ -271,7 +284,7 @@ impl FrameSearch<'_> {
             }
         }
         let point = self.points[node.point_index];
-        if !self.hidden.is_some_and(|flags| flags[node.point_index])
+        if self.filter.accepts(node.point_index, point)
             && let Ok(projected) = self.frame.projected_coordinates_of(point)
         {
             let relative = [projected[0] - self.offset[0], projected[1] - self.offset[1]];

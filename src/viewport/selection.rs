@@ -105,6 +105,7 @@ impl ScreenCircle {
 
 #[derive(Default, Debug, PartialEq)]
 pub(super) struct ProjectedPrimitives {
+    depth_clipped: bool,
     points: Vec<Pos2>,
     pub(super) segments: Vec<[Pos2; 2]>,
     pub(super) triangles: Vec<[Pos2; 3]>,
@@ -135,7 +136,9 @@ impl ProjectedPrimitives {
     }
 
     fn is_windowed_by(&self, selection: Rect) -> bool {
-        !self.points.is_empty() && self.points.iter().all(|point| selection.contains(*point))
+        !self.depth_clipped
+            && !self.points.is_empty()
+            && self.points.iter().all(|point| selection.contains(*point))
     }
 
     pub(super) fn is_crossed_by(&self, selection: Rect) -> bool {
@@ -152,7 +155,9 @@ impl ProjectedPrimitives {
     }
 
     fn is_windowed_by_circle(&self, circle: ScreenCircle) -> bool {
-        !self.points.is_empty() && self.points.iter().all(|&point| circle.contains(point))
+        !self.depth_clipped
+            && !self.points.is_empty()
+            && self.points.iter().all(|&point| circle.contains(point))
     }
 
     fn is_crossed_by_circle(&self, circle: ScreenCircle) -> bool {
@@ -173,7 +178,8 @@ impl ProjectedPrimitives {
     }
 
     fn is_windowed_by_boundary(&self, boundary: &ScreenBoundary) -> bool {
-        !self.points.is_empty()
+        !self.depth_clipped
+            && !self.points.is_empty()
             && self.points.iter().all(|&point| boundary.contains(point))
             && self.segments.iter().all(|&[a, b]| !boundary.crosses(a, b))
     }
@@ -203,6 +209,25 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
+    fn add_selection_point(&self, projected: &mut ProjectedPrimitives, point: Point3, rect: Rect) {
+        projected.depth_clipped |= !self.point_within_display_depth(point);
+        projected.add_point(self.project_selection_point(point, rect));
+    }
+
+    fn add_selection_segment(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        start: Point3,
+        end: Point3,
+        rect: Rect,
+    ) {
+        projected.depth_clipped |=
+            !self.point_within_display_depth(start) || !self.point_within_display_depth(end);
+        if let Some([a, b]) = self.project_selection_segment(start, end, rect) {
+            projected.add_segment(Some(a), Some(b));
+        }
+    }
+
     pub(crate) fn objects_in_lasso_preview(
         &self,
         path: &[Pos2],
@@ -253,11 +278,12 @@ impl Viewport {
                 .ok()
                 .and_then(|target| {
                     cloud
-                        .nearest_visible_projected_relative(
+                        .nearest_visible_projected_relative_with_filter(
                             projection,
                             target,
                             self.parallel_query_offset(pointer, rect)?,
                             Real::from(PICK_CAPTURE_PIXELS) / scale,
+                            |_, point| self.point_within_display_depth(point),
                         )
                         .ok()
                         .flatten()
@@ -268,10 +294,11 @@ impl Viewport {
                 .zip(self.parallel_query_offset(pointer, rect))
                 .and_then(|(frame, offset)| {
                     cloud
-                        .nearest_visible_projected_frame_relative(
+                        .nearest_visible_projected_frame_relative_with_filter(
                             frame,
                             offset,
                             Real::from(PICK_CAPTURE_PIXELS) / self.pixels_per_unit,
+                            |_, point| self.point_within_display_depth(point),
                         )
                         .ok()
                         .flatten()
@@ -284,7 +311,7 @@ impl Viewport {
                 .enumerate()
                 .filter(|(index, _)| !cloud.is_hidden(*index))
                 .filter_map(|(index, point)| {
-                    self.project(*point, rect)
+                    self.project_selection_point(*point, rect)
                         .map(|projected| (index, (projected - pointer).length()))
                 })
                 .fold(None, |best: Option<(usize, f32)>, candidate| {
@@ -310,7 +337,7 @@ impl Viewport {
             .enumerate()
             .filter(|(index, _)| !cloud.is_hidden(*index))
             .filter_map(|(index, point)| {
-                self.project(*point, viewport_rect)
+                self.project_selection_point(*point, viewport_rect)
                     .is_some_and(|pixel| selection.contains(pixel))
                     .then_some(index)
             })
@@ -368,7 +395,7 @@ impl Viewport {
             let hit = match object.geometry() {
                 Geometry::Point(point) => {
                     let distance = self
-                        .project(*point, rect)
+                        .project_selection_point(*point, rect)
                         .map_or(f32::INFINITY, |projected| {
                             point_segment_distance(pointer, projected, projected)
                         });
@@ -398,8 +425,7 @@ impl Viewport {
                         let distance = display
                             .wires()
                             .iter()
-                            .filter_map(|&[a, b]| self.project_segment(a, b, rect))
-                            .map(|[a, b]| point_segment_distance(pointer, a, b))
+                            .map(|&[a, b]| self.selection_line_distance(pointer, a, b, rect))
                             .fold(f32::INFINITY, f32::min);
                         PickHit::screen(if surface { 2 } else { 1 }, distance)
                     }
@@ -682,13 +708,13 @@ impl Viewport {
     ) -> ProjectedPrimitives {
         let mut projected = ProjectedPrimitives::default();
         match &*display.geometry {
-            Geometry::Point(point) => projected.add_point(self.project(*point, rect)),
+            Geometry::Point(point) => self.add_selection_point(&mut projected, *point, rect),
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
                     if cloud.is_hidden(index) {
                         continue;
                     }
-                    projected.add_point(self.project(*point, rect));
+                    self.add_selection_point(&mut projected, *point, rect);
                 }
             }
             Geometry::Mesh(mesh) => {
@@ -709,9 +735,7 @@ impl Viewport {
                     self.add_projected_mesh(&mut projected, rect, mesh, true, tolerance);
                 }
                 for &[a, b] in display.wires() {
-                    if let Some([a, b]) = self.project_segment(a, b, rect) {
-                        projected.add_segment(Some(a), Some(b));
-                    }
+                    self.add_selection_segment(&mut projected, a, b, rect);
                 }
             }
         }
@@ -728,21 +752,19 @@ impl Viewport {
     ) -> ProjectedPrimitives {
         let mut projected = ProjectedPrimitives::default();
         match geometry {
-            Geometry::Point(point) => projected.add_point(self.project(*point, viewport_rect)),
+            Geometry::Point(point) => {
+                self.add_selection_point(&mut projected, *point, viewport_rect)
+            }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
                     if cloud.is_hidden(index) {
                         continue;
                     }
-                    projected.add_point(self.project(*point, viewport_rect));
+                    self.add_selection_point(&mut projected, *point, viewport_rect);
                 }
             }
             Geometry::Line(line) => {
-                if let Some([start, end]) =
-                    self.project_segment(line.start(), line.end(), viewport_rect)
-                {
-                    projected.add_segment(Some(start), Some(end));
-                }
+                self.add_selection_segment(&mut projected, line.start(), line.end(), viewport_rect);
             }
             Geometry::Circle(circle) => self.add_projected_parametric_curve(
                 &mut projected,
@@ -764,11 +786,12 @@ impl Viewport {
             ),
             Geometry::Polyline(polyline) => {
                 for segment in polyline.segments() {
-                    if let Some([start, end]) =
-                        self.project_segment(segment.start(), segment.end(), viewport_rect)
-                    {
-                        projected.add_segment(Some(start), Some(end));
-                    }
+                    self.add_selection_segment(
+                        &mut projected,
+                        segment.start(),
+                        segment.end(),
+                        viewport_rect,
+                    );
                 }
             }
             Geometry::NurbsCurve(curve) => {
@@ -825,10 +848,8 @@ impl Viewport {
         let mut previous = None;
         for sample in 0..=samples {
             let point = evaluate(sample as Real / samples as Real).ok();
-            if let (Some(start), Some(end)) = (previous, point)
-                && let Some([start, end]) = self.project_segment(start, end, rect)
-            {
-                projected.add_segment(Some(start), Some(end));
+            if let (Some(start), Some(end)) = (previous, point) {
+                self.add_selection_segment(projected, start, end, rect);
             }
             previous = point;
         }
@@ -841,9 +862,7 @@ impl Viewport {
         curve: &impl ViewportCurve,
     ) {
         curve.visit_segments(|start, end| {
-            if let Some([start, end]) = self.project_segment(start, end, rect) {
-                projected.add_segment(Some(start), Some(end));
-            }
+            self.add_selection_segment(projected, start, end, rect);
         });
     }
 
@@ -856,19 +875,17 @@ impl Viewport {
         tolerance: Tolerance,
     ) {
         for point in mesh.vertices() {
-            projected.add_point(self.project(*point, rect));
+            self.add_selection_point(projected, *point, rect);
         }
         if let Ok(lines) = mesh.visible_wireframe_lines(tolerance) {
             for line in lines {
-                if let Some([start, end]) = self.project_segment(line.start(), line.end(), rect) {
-                    projected.add_segment(Some(start), Some(end));
-                }
+                self.add_selection_segment(projected, line.start(), line.end(), rect);
             }
         }
         if include_faces {
             for triangle in 0..mesh.triangles().len() {
                 if let Some(points) = mesh.triangle_points(triangle) {
-                    for points in self.clip_triangle(points).into_iter().flatten() {
+                    for points in self.clip_selection_triangle(points).into_iter().flatten() {
                         projected.add_triangle(points.map(|point| self.project(point, rect)));
                     }
                 }
@@ -885,9 +902,7 @@ impl Viewport {
     ) -> f32 {
         let mut nearest = f32::INFINITY;
         curve.visit_segments(|start, end| {
-            if let Some([start, end]) = self.project_segment(start, end, rect) {
-                nearest = nearest.min(point_segment_distance(pointer, start, end));
-            }
+            nearest = nearest.min(self.selection_line_distance(pointer, start, end, rect));
         });
         nearest
     }

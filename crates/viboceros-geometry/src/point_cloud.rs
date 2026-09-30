@@ -5,7 +5,7 @@ use crate::{
 };
 
 mod index;
-use index::{NodeBounds, ProjectedIndex, ProjectedQuery, SearchRegion};
+use index::{NodeBounds, PointFilter, ProjectedIndex, ProjectedQuery, SearchRegion};
 
 /// Axis-aligned projection used by a point-cloud spatial query.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -361,6 +361,7 @@ impl PointCloud3 {
             offset,
             SearchRegion::Circle(maximum_distance),
             None,
+            None,
         )
     }
 
@@ -378,6 +379,28 @@ impl PointCloud3 {
             offset,
             SearchRegion::Circle(maximum_distance),
             self.hidden(),
+            None,
+        )
+    }
+
+    /// Filter candidates during the indexed search, before nearest ordering.
+    /// A rejected closest member cannot suppress a farther accepted member.
+    /// Hidden flags and deterministic source-index tie breaking still apply.
+    pub fn nearest_visible_projected_relative_with_filter(
+        &self,
+        projection: PointCloudProjection,
+        origin: Point3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+        accept: impl Fn(usize, Point3) -> bool,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_region(
+            projection,
+            origin,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+            self.hidden(),
+            Some(&accept),
         )
     }
 
@@ -399,6 +422,7 @@ impl PointCloud3 {
             offset,
             SearchRegion::Square(half_width),
             None,
+            None,
         )
     }
 
@@ -416,6 +440,7 @@ impl PointCloud3 {
             offset,
             SearchRegion::Square(half_width),
             self.hidden(),
+            None,
         )
     }
 
@@ -428,7 +453,13 @@ impl PointCloud3 {
         offset: [Real; 2],
         maximum_distance: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
-        self.nearest_in_frame_region(frame, offset, SearchRegion::Circle(maximum_distance), None)
+        self.nearest_in_frame_region(
+            frame,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+            None,
+            None,
+        )
     }
 
     /// Nearest visible member in a frame projection.
@@ -443,6 +474,25 @@ impl PointCloud3 {
             offset,
             SearchRegion::Circle(maximum_distance),
             self.hidden(),
+            None,
+        )
+    }
+
+    /// Candidate-filtered arbitrary frame query, sharing the existing bounds
+    /// cache and preserving stored indices and hidden-member filtering.
+    pub fn nearest_visible_projected_frame_relative_with_filter(
+        &self,
+        frame: Frame3,
+        offset: [Real; 2],
+        maximum_distance: Real,
+        accept: impl Fn(usize, Point3) -> bool,
+    ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
+        self.nearest_in_frame_region(
+            frame,
+            offset,
+            SearchRegion::Circle(maximum_distance),
+            self.hidden(),
+            Some(&accept),
         )
     }
 
@@ -453,7 +503,7 @@ impl PointCloud3 {
         offset: [Real; 2],
         half_width: Real,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
-        self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width), None)
+        self.nearest_in_frame_region(frame, offset, SearchRegion::Square(half_width), None, None)
     }
 
     /// Nearest visible member inside an inclusive frame-projected square.
@@ -468,6 +518,7 @@ impl PointCloud3 {
             offset,
             SearchRegion::Square(half_width),
             self.hidden(),
+            None,
         )
     }
 
@@ -477,6 +528,7 @@ impl PointCloud3 {
         offset: [Real; 2],
         region: SearchRegion,
         hidden: Option<&[bool]>,
+        accept: Option<&dyn Fn(usize, Point3) -> bool>,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         let radius = region.half_width();
         if !radius.is_finite() || radius < 0.0 {
@@ -491,10 +543,14 @@ impl PointCloud3 {
             .data
             .spatial_bounds
             .get_or_init(|| self.data.xy.node_bounds(&self.data.points));
-        let best =
-            self.data
-                .xy
-                .nearest_in_frame(&self.data.points, hidden, bounds, frame, offset, region);
+        let best = self.data.xy.nearest_in_frame(
+            &self.data.points,
+            PointFilter { hidden, accept },
+            bounds,
+            frame,
+            offset,
+            region,
+        );
         Ok(best.map(|(distance, index)| (index, self.data.points[index], distance)))
     }
 
@@ -505,6 +561,7 @@ impl PointCloud3 {
         offset: [Real; 2],
         region: SearchRegion,
         hidden: Option<&[bool]>,
+        accept: Option<&dyn Fn(usize, Point3) -> bool>,
     ) -> Result<Option<(usize, Point3, Real)>, GeometryError> {
         let maximum_distance = region.half_width();
         if !maximum_distance.is_finite() || maximum_distance < 0.0 {
@@ -531,7 +588,7 @@ impl PointCloud3 {
             index.root,
             ProjectedQuery {
                 points: &self.data.points,
-                hidden,
+                filter: PointFilter { hidden, accept },
                 origin,
                 offset,
                 region,

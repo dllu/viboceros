@@ -6705,7 +6705,7 @@ def _execute(operation, iterations, tolerance):
         from zoom_extents_probe import run
         with _independent_construction_planes() as viewport:
             return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress,
-                                             "empty_guid": System.Guid.Empty}), 0
+                                             "empty_guid": System.Guid.Empty, "System": System}), 0
     if kind == "view_camera_probe":
         from view_camera_probe import run
         with _independent_construction_planes() as viewport:

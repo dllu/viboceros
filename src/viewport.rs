@@ -43,6 +43,7 @@ use scene::GpuSceneBuilder;
 mod picking;
 mod screen;
 mod selection;
+mod selection_clipping;
 use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
 #[cfg(test)]
 mod clip_tests;
@@ -1935,7 +1936,8 @@ mod tests {
 
     #[test]
     fn camera_crossing_lines_remain_visible_and_pickable() {
-        let viewport = Viewport::new(ViewKind::Perspective);
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        viewport.frustum_near = 1e-6;
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let (right, _, forward) = viewport.perspective_basis();
         let camera = viewport.target - forward * viewport.perspective_camera_distance;

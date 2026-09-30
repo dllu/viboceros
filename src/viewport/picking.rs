@@ -1,6 +1,6 @@
 //! Screen capture and depth ordering for mesh and tessellated surface hits.
 
-use super::screen::{point_in_triangle, point_segment_distance, signed_area};
+use super::screen::{point_in_triangle, signed_area};
 use super::*;
 
 #[derive(Clone, Copy)]
@@ -319,8 +319,9 @@ impl Viewport {
                 .map(|lines| {
                     lines
                         .into_iter()
-                        .filter_map(|line| self.project_segment(line.start(), line.end(), rect))
-                        .map(|[start, end]| point_segment_distance(pointer, start, end))
+                        .map(|line| {
+                            self.selection_line_distance(pointer, line.start(), line.end(), rect)
+                        })
                         .fold(f32::INFINITY, f32::min)
                 })
                 .unwrap_or(f32::INFINITY);
@@ -363,29 +364,38 @@ impl Viewport {
                     else {
                         continue;
                     };
-                    let hit = if point_in_triangle(pointer, first, second, third) {
-                        let depths = points.map(|p| self.view_depth(p));
-                        let Some(depth) = triangle_depth(
-                            pointer,
-                            [first, second, third],
-                            depths,
-                            !self.kind.is_parallel(),
-                        ) else {
-                            continue;
+                    let hit =
+                        if point_in_triangle(pointer, first, second, third) {
+                            let depths = points.map(|p| self.view_depth(p));
+                            let Some(depth) = triangle_depth(
+                                pointer,
+                                [first, second, third],
+                                depths,
+                                !self.kind.is_parallel(),
+                            ) else {
+                                continue;
+                            };
+                            let (near, far) = self.display_depth_interval();
+                            if depth < near || depth > far {
+                                continue;
+                            }
+                            PickHit {
+                                distance: 0.0,
+                                priority: 2,
+                                depth,
+                            }
+                        } else {
+                            PickHit::screen(
+                                2,
+                                self.selection_line_distance(pointer, points[0], points[1], rect)
+                                    .min(self.selection_line_distance(
+                                        pointer, points[1], points[2], rect,
+                                    ))
+                                    .min(self.selection_line_distance(
+                                        pointer, points[2], points[0], rect,
+                                    )),
+                            )
                         };
-                        PickHit {
-                            distance: 0.0,
-                            priority: 2,
-                            depth,
-                        }
-                    } else {
-                        PickHit::screen(
-                            2,
-                            point_segment_distance(pointer, first, second)
-                                .min(point_segment_distance(pointer, second, third))
-                                .min(point_segment_distance(pointer, third, first)),
-                        )
-                    };
                     if nearest.is_none_or(|(best, _, _, _): (PickHit, usize, _, _)| {
                         hit.is_better_than(best)
                     }) {
@@ -473,7 +483,8 @@ mod tests {
         assert_eq!((object, face), (surface_id, 0));
         let hit_point = hit_point.unwrap();
         assert!(hit_point.distance_to(point(0.0, 0.0, 1.0)).unwrap() < 1e-10);
-        let perspective = Viewport::new(ViewKind::Perspective);
+        let mut perspective = Viewport::new(ViewKind::Perspective);
+        perspective.frustum_near = 0.005;
         let perspective_pointer = perspective.project(point(0.0, 0.0, 1.0), rect).unwrap();
         let (object, face, hit_point) = perspective
             .pick_selected_face_with_point(
@@ -698,6 +709,7 @@ mod tests {
         )
         .unwrap();
         let mesh = document.add_geometry(Geometry::Mesh(front)).unwrap();
+        view.refresh_clipping(&document, rect).unwrap();
         document
             .select_objects_direct([brep, mesh], SelectionMode::Replace)
             .unwrap();
@@ -925,6 +937,7 @@ mod tests {
     #[test]
     fn overlapping_constant_depth_faces_choose_the_nearer_f64_plane() {
         let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.frustum_far = Real::MAX;
         viewport.display_mode = DisplayMode::Shaded;
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let pointer = viewport

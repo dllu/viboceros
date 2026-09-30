@@ -42,6 +42,9 @@ def validate(operation):
             raise ValueError("clipping_probe must be boolean")
         if "projection_probe" in case and type(case["projection_probe"]) is not bool:
             raise ValueError("projection_probe must be boolean")
+        if "picking_probe" in case and (type(case["picking_probe"]) is not bool
+                                      or not case.get("projection_probe")):
+            raise ValueError("picking_probe requires a projection probe and a boolean")
         if "projection_shift" in case:
             shift = case["projection_shift"]
             if (not case.get("projection_probe") or not isinstance(shift, list) or len(shift) != 2
@@ -155,6 +158,84 @@ def projection_snapshot(viewport, corners, Rhino):
                          screen=[float(screen.X), float(screen.Y)],
                          visible=bool(viewport.IsVisible(point))))
     return dict(camera=camera, queries=rows)
+
+
+def picking_snapshot(viewport, host):
+    """Owned line objects and disposable public pick contexts; no redraw."""
+    Rhino, System = host["Rhino"], host["System"]
+    document = Rhino.RhinoDoc.ActiveDoc
+    before = snapshot(viewport, Rhino)
+    left, right, bottom, top, near, far = before["frustum"]
+    axes = [_unit(viewport.CameraX), _unit(viewport.CameraY),
+            [-v for v in _unit(viewport.CameraZ)]]
+    middle = near ** 0.5 * far ** 0.5
+    def point(depth, x, y=0.):
+        scale = depth / near if before["perspective"] else 1.
+        x = (0.5 * (left + right) + x * 0.5 * (right - left)) * scale
+        y = (0.5 * (bottom + top) + y * 0.5 * (top - bottom)) * scale
+        return Rhino.Geometry.Point3d(*[before["camera_location"][i]
+            + axes[0][i] * x + axes[1][i] * y + axes[2][i] * depth for i in range(3)])
+    sources = [("before-near", 0.5 * near, 0.5 * near, -0.25, 0.25),
+               ("inside-near", 1.001 * near, 1.001 * near, -0.25, 0.25),
+               ("middle", middle, middle, -0.25, 0.25),
+               ("inside-far", 0.999 * far, 0.999 * far, -0.25, 0.25),
+               ("after-far", 1.001 * far, 1.001 * far, -0.25, 0.25),
+               ("cross-near", 0.5 * near, middle, -0.25, 0.25),
+               ("cross-far", middle, 2. * far, -0.25, 0.25),
+               ("cross-both", 0.5 * near, 2. * far, -0.25, 0.25),
+               ("cross-sides", middle, middle, -2., 2.)]
+    owned = []
+    records = []
+    try:
+        for label, a, b, x0, x1 in sources:
+            start, end = point(a, x0), point(b, x1)
+            object_id = document.Objects.AddLine(start, end)
+            if object_id == host["empty_guid"]:
+                raise ValueError("could not add owned clipping-pick line")
+            owned.append(object_id)
+            records.append(dict(id=label, start=_xyz(start), end=_xyz(end)))
+        picks = []
+        width, height = before["viewport_size"]
+        for style in ("PointPick", "WindowPick", "CrossingPick"):
+            context = Rhino.Input.Custom.PickContext()
+            references = []
+            try:
+                context.View = document.Views.ActiveView
+                context.PickStyle = getattr(Rhino.Input.Custom.PickStyle, style)
+                context.PickGroupsEnabled = False
+                x, y = width // 2, height // 2
+                success, line = viewport.GetFrustumLine(x, y)
+                if not success:
+                    raise ValueError("could not obtain clipping-pick ray")
+                context.PickLine = line
+                rect = System.Drawing.Rectangle(x - 8, y - 8, 16, 16) if style == "PointPick" else System.Drawing.Rectangle(1, 1, width - 2, height - 2)
+                context.SetPickTransform(viewport.GetPickTransform(rect))
+                context.UpdateClippingPlanes()
+                primitive = [bool(context.PickFrustumTest(Rhino.Geometry.Line(
+                    Rhino.Geometry.Point3d(*record["start"]), Rhino.Geometry.Point3d(*record["end"])))[0])
+                    for record in records]
+                references = list(document.Objects.PickObjects(context) or [])
+                object_ids = set(reference.ObjectId for reference in references)
+                picks.append(dict(style=style, rect=[rect.X, rect.Y, rect.Width, rect.Height],
+                                  primitive=primitive, objects=[object_id in object_ids for object_id in owned]))
+            finally:
+                for reference in references:
+                    reference.Dispose()
+                context.Dispose()
+        after = snapshot(viewport, Rhino)
+        if before != after:
+            raise ValueError("public picking unexpectedly changed its source camera")
+        return dict(camera=before, lines=records, picks=picks)
+    finally:
+        errors = []
+        for object_id in owned:
+            try:
+                if document.Objects.Delete(object_id, True) is False:
+                    raise ValueError("could not delete owned clipping-pick line")
+            except Exception as error:
+                errors.append(str(error))
+        if errors:
+            raise ValueError("clipping-pick cleanup failed: " + "; ".join(errors))
 
 
 def run(operation, viewport, host):
@@ -353,6 +434,8 @@ def run(operation, viewport, host):
                 document.Views.Redraw()
                 Rhino.RhinoApp.Wait()
                 row["projection"] = projection_snapshot(viewport, corners, Rhino)
+                if case.get("picking_probe"):
+                    row["picking"] = picking_snapshot(viewport, host)
             rows.append(row)
         return rows
     finally:

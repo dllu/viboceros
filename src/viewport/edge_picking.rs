@@ -1,5 +1,4 @@
 //! Screen-space boundary components, separate from object selection and CPlane input.
-use super::screen::point_segment_distance;
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -33,8 +32,7 @@ impl Viewport {
             for (edge, segments) in display.edges().iter().enumerate() {
                 let distance = segments
                     .iter()
-                    .filter_map(|&[a, b]| self.project_segment(a, b, rect))
-                    .map(|[a, b]| point_segment_distance(pointer, a, b))
+                    .map(|&[a, b]| self.selection_line_distance(pointer, a, b, rect))
                     .fold(f32::INFINITY, f32::min);
                 if distance.is_finite() && distance <= PICK_CAPTURE_PIXELS {
                     hits.push((
@@ -80,7 +78,7 @@ impl Viewport {
                 continue;
             };
             for &[a, b] in segments {
-                if let Some([a, b]) = self.project_segment(a, b, rect) {
+                if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
                     painter.line_segment([a, b], Stroke::new(3., Color32::from_rgb(245, 160, 20)));
                 }
             }
