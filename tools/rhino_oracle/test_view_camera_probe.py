@@ -115,6 +115,16 @@ class CameraProbeTests(unittest.TestCase):
         self.assertEqual(view_camera_probe.script("Plan"), "_Plan")
         self.assertEqual(view_camera_probe.script("CPlaneView"), "_CPlane _View")
 
+    def test_world_presets_and_zoom_are_whitelisted(self):
+        operation = dict(fixture(), directions=["World" + name for name in view_camera_probe.DIRECTIONS],
+                         projections=list(view_camera_probe.PROJECTIONS), zoom_factor=2.5)
+        view_camera_probe.validate(operation)
+        for name in view_camera_probe.DIRECTIONS:
+            self.assertEqual(view_camera_probe.script("World" + name), "_SetView _World _" + name)
+        for value in (0, -1, 0.01, 11, True, float("inf"), float("nan"), "2.5"):
+            with self.subTest(zoom=value), self.assertRaises(ValueError):
+                view_camera_probe.validate(dict(operation, zoom_factor=value))
+
     def test_mouse_navigation_requires_a_bounded_two_point_view(self):
         operation = dict(fixture(), projections=["Perspective"],
                          directions=["WorldTwoPointPerspective"], mouse_drag=[60, -20])
@@ -134,6 +144,19 @@ class CameraProbeTests(unittest.TestCase):
                          "_SetView _World _TwoPointPerspective")
         with self.assertRaisesRegex(ValueError, "native viewport tests"):
             view_camera_probe.compare_to_viboceros(operation, [])
+
+    def test_shifted_frustum_requires_a_two_point_parallel_transition(self):
+        operation = dict(fixture(), directions=["WorldTop"],
+                         projections=["TwoPointPerspective"], vertical_lens_shift=0.75)
+        view_camera_probe.validate(operation)
+        for mutation in [
+            dict(vertical_lens_shift=True), dict(vertical_lens_shift=4),
+            dict(vertical_lens_shift=float("nan")), dict(vertical_lens_shift="0.75"),
+            dict(projections=["Top"]), dict(projections=["Perspective"]),
+            dict(directions=["WorldPerspective"]), dict(directions=None),
+        ]:
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                view_camera_probe.validate(dict(operation, **mutation))
 
     def test_probe_restores_projection_target_and_name_after_command_failure(self):
         class Vector:

@@ -1,0 +1,153 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "view_camera_probe",
+      "id": "translated-world-presets",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "zoomed-world-presets",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        -30,
+        11,
+        5
+      ],
+      "projections": [
+        "Top",
+        "Perspective",
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "zoom_factor": 2.5
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "shifted-two-point-positive",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "vertical_lens_shift": 0.75
+    },
+    {
+      "op": "view_camera_probe",
+      "id": "shifted-two-point-negative",
+      "origin": [
+        7,
+        8,
+        9
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "WorldTop",
+        "WorldBottom",
+        "WorldFront",
+        "WorldBack",
+        "WorldRight",
+        "WorldLeft"
+      ],
+      "vertical_lens_shift": -0.6
+    }
+  ]
+}

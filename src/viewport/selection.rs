@@ -248,7 +248,7 @@ impl Viewport {
         cloud: &PointCloud3,
     ) -> Option<(usize, f32)> {
         let nearest = if let Some(projection) = self.point_cloud_projection() {
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             Point3::try_new(self.target.x, self.target.y, self.target.z)
                 .ok()
                 .and_then(|target| {
@@ -271,14 +271,12 @@ impl Viewport {
                         .nearest_visible_projected_frame_relative(
                             frame,
                             offset,
-                            Real::from(PICK_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
+                            Real::from(PICK_CAPTURE_PIXELS) / self.pixels_per_unit,
                         )
                         .ok()
                         .flatten()
                 })
-                .map(|(index, _, distance)| {
-                    (index, (distance * Real::from(self.pixels_per_unit)) as f32)
-                })
+                .map(|(index, _, distance)| (index, (distance * self.pixels_per_unit) as f32))
         } else {
             cloud
                 .points()

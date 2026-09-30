@@ -139,7 +139,7 @@ pub(crate) struct CameraSnapshot {
     perspective_frame: Option<Frame3>,
     cplane_direction: Option<WorldPlane>,
     synchronized_role: Option<WorldPlane>,
-    pixels_per_unit: f32,
+    pixels_per_unit: Real,
     pan: Vec2,
     orbit_yaw: Real,
     orbit_pitch: Real,
@@ -429,7 +429,7 @@ pub struct Viewport {
     grid_undo: std::collections::VecDeque<GridMetrics>,
     grid_redo: Vec<GridMetrics>,
     pub display_mode: DisplayMode,
-    pixels_per_unit: f32,
+    pixels_per_unit: Real,
     grid: GridSettings,
     pan: Vec2,
     orbit_yaw: Real,
@@ -835,27 +835,37 @@ impl Viewport {
             return self.set_world_perspective_view(false);
         }
         let previous = self.camera_snapshot();
+        let target = self.construction_plane_aligned_to_view()?.origin();
+        let plane_origin = self.construction_plane().origin();
+        let scale = if self.kind == ViewKind::Perspective {
+            // World parallel views preserve the perspective frustum at the
+            // target depth, clamped to the current clipping interval. Unlike
+            // Plan, they do not simply keep the raw near-plane width.
+            let distance = self
+                .perspective_camera_distance
+                .clamp(self.frustum_near, self.frustum_far);
+            let half_height = distance * (self.perspective_fov_radians * 0.5).tan();
+            f64::from(self.named_view_port_size()[1]) / (2.0 * half_height)
+        } else {
+            self.pixels_per_unit
+        };
+        let raster_scale = scale as f32;
+        if !raster_scale.is_finite() || raster_scale <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "world parallel view scale",
+            });
+        }
         self.kind = kind;
         self.two_point_perspective = false;
         self.perspective_frame = None;
         self.cplane_direction = None;
         self.synchronized_role = None;
-        self.target = NaVector3::zeros();
+        self.target = NaVector3::from(target.to_array());
         self.pan = Vec2::ZERO;
-        self.pixels_per_unit = 40.0;
-        self.perspective_camera_distance = DEFAULT_PERSPECTIVE_CAMERA_DISTANCE;
-        self.perspective_fov_radians = PERSPECTIVE_VERTICAL_FOV_RADIANS;
-        self.frustum_near = if kind == ViewKind::Perspective {
-            DEFAULT_PERSPECTIVE_CAMERA_DISTANCE
-        } else {
-            1.0
-        };
-        self.frustum_far = 1.0e9;
+        self.pixels_per_unit = scale;
         self.perspective_lens_shift = [0.0; 2];
-        self.orbit_yaw = -std::f64::consts::FRAC_PI_4;
-        self.orbit_pitch = std::f64::consts::FRAC_PI_6;
         if kind.is_parallel() {
-            self.set_construction_plane(Self::default_plane(kind));
+            self.set_construction_plane(Self::default_plane(kind).with_origin(plane_origin));
         }
         self.record_camera_change(previous);
         Ok(())
@@ -868,7 +878,7 @@ impl Viewport {
             let half_height = self.frustum_near * (self.perspective_fov_radians * 0.5).tan();
             let scale = height / (2.0 * half_height);
             if scale.is_finite() && scale >= f64::from(f32::MIN_POSITIVE) {
-                self.pixels_per_unit = scale.min(f64::from(f32::MAX)) as f32;
+                self.pixels_per_unit = scale.min(f64::from(f32::MAX));
             }
         }
         self.plan_frame = self.construction_plane();
@@ -1594,6 +1604,7 @@ mod tests {
     mod construction_plane;
     mod object_selection;
     mod two_point;
+    mod world_parallel;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
@@ -2664,9 +2675,7 @@ mod tests {
                 assert!(wide.pixels_per_unit < default.pixels_per_unit);
                 assert!(default.pixels_per_unit < cropped.pixels_per_unit);
                 assert!(
-                    (f64::from(default.pixels_per_unit / cropped.pixels_per_unit) - 0.8 / 1.1)
-                        .abs()
-                        < 1e-6
+                    ((default.pixels_per_unit / cropped.pixels_per_unit) - 0.8 / 1.1).abs() < 1e-6
                 );
                 assert_eq!(selected.pixels_per_unit, cropped.pixels_per_unit);
             } else {
@@ -3372,11 +3381,11 @@ mod tests {
         );
         assert_eq!(zoom_pan(Vec2::splat(f32::MAX), Pos2::ZERO, rect, 2.0), None);
         let mut viewport = Viewport {
-            pixels_per_unit: f32::MIN_POSITIVE,
+            pixels_per_unit: Real::from(f32::MIN_POSITIVE),
             ..Default::default()
         };
         viewport.zoom_by(f32::MAX, Some(rect.center()), rect);
-        assert!(viewport.pixels_per_unit > f32::MIN_POSITIVE);
+        assert!(viewport.pixels_per_unit > Real::from(f32::MIN_POSITIVE));
         assert_eq!(viewport.pan, Vec2::ZERO);
         // A ratio exceeding f32's range still pins the center exactly.
         assert_eq!(
@@ -3513,7 +3522,11 @@ mod tests {
         let model = frame.point_at([2.0, 3.0, 4.0]).unwrap();
         let screen = view.project(model, rect).unwrap();
         let scale = view.pixels_per_unit;
-        assert!((screen - Pos2::new(400.0 + 2.0 * scale, 300.0 - 3.0 * scale)).length() < 1.0e-3);
+        assert!(
+            (screen - Pos2::new((400.0 + 2.0 * scale) as f32, (300.0 - 3.0 * scale) as f32))
+                .length()
+                < 1.0e-3
+        );
         let on_plane = view.unproject_drafting_plane(screen, rect, None).unwrap();
         let expected_plane = frame.point_at([2.0, 3.0, 0.0]).unwrap();
         assert!(
@@ -3574,9 +3587,9 @@ mod tests {
 
         view.set_plan_view();
         assert_eq!(view.kind(), ViewKind::Plan);
-        assert!((f64::from(view.pixels_per_unit) - 6.3102313143225155).abs() < 1e-6);
+        assert!((view.pixels_per_unit - 6.3102313143225155).abs() < 1e-6);
         assert!(
-            (f64::from(view.pixels_per_unit) / perspective_scale
+            (view.pixels_per_unit / perspective_scale
                 - view.perspective_camera_distance / view.frustum_near)
                 .abs()
                 < 1e-7

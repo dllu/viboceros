@@ -111,7 +111,7 @@ struct SceneKey {
     kind: ViewKind,
     mode: DisplayMode,
     rect: Rect,
-    pixels_per_unit: f32,
+    pixels_per_unit: Real,
     pan: Vec2,
     orbit: [Real; 2],
     distance: Real,

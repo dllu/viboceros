@@ -782,10 +782,12 @@ impl VibocerosApp {
                             unreachable!("handled above")
                         }
                     };
-                    self.viewports[self.active_viewport]
-                        .set_world_view(kind)
-                        .expect("parallel world view has finite preset values");
-                    self.push_log(format!("World {} view (active viewport)", view.label()));
+                    match self.viewports[self.active_viewport].set_world_view(kind) {
+                        Ok(()) => {
+                            self.push_log(format!("World {} view (active viewport)", view.label()))
+                        }
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
                     return;
                 }
                 if let InterfaceCommand::SetViewCPlane(direction) = command {

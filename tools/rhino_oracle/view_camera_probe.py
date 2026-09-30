@@ -4,8 +4,9 @@ import math
 
 
 DIRECTIONS = ("Top", "Bottom", "Front", "Back", "Right", "Left")
-WORLD_DIRECTIONS = ("WorldPerspective", "WorldTwoPointPerspective")
-PROJECTIONS = ("Top", "Perspective")
+WORLD_DIRECTIONS = tuple("World" + direction for direction in DIRECTIONS) + (
+    "WorldPerspective", "WorldTwoPointPerspective")
+PROJECTIONS = ("Top", "Perspective", "TwoPointPerspective")
 try:
     string_types = (basestring,)
 except NameError:
@@ -32,6 +33,20 @@ def validate(operation):
         _point(operation.get(name), name)
     if "camera_target" in operation:
         _point(operation["camera_target"], "camera_target")
+    if "zoom_factor" in operation:
+        zoom = operation["zoom_factor"]
+        if (isinstance(zoom, bool) or not isinstance(zoom, (int, float))
+                or not _finite(float(zoom)) or not 0.1 <= zoom <= 10.0):
+            raise ValueError("camera probe zoom_factor must be between 0.1 and 10")
+    if "vertical_lens_shift" in operation:
+        shift = operation["vertical_lens_shift"]
+        if (isinstance(shift, bool) or not isinstance(shift, (int, float))
+                or not _finite(float(shift)) or abs(shift) > 3.0
+                or operation.get("projections") != ["TwoPointPerspective"]
+                or not isinstance(operation.get("directions"), list)
+                or any(direction not in WORLD_DIRECTIONS[:6]
+                       for direction in operation.get("directions", []))):
+            raise ValueError("lens shift requires a bounded two-point World parallel probe")
     if "mouse_drag" in operation:
         drag = operation["mouse_drag"]
         if (not isinstance(drag, list) or len(drag) != 2
@@ -41,10 +56,10 @@ def validate(operation):
             raise ValueError("mouse navigation requires one perspective two-point view and a bounded drag")
     projections = operation.get("projections")
     directions = operation.get("directions")
-    if not isinstance(projections, list) or not projections or len(projections) > 2 \
+    if not isinstance(projections, list) or not projections or len(projections) > len(PROJECTIONS) \
             or any(not isinstance(value, string_types) or value not in PROJECTIONS for value in projections) \
             or len(set(projections)) != len(projections):
-        raise ValueError("camera probe projections must be distinct Top/Perspective values")
+        raise ValueError("camera probe projections must be distinct supported values")
     if not isinstance(directions, list) or not directions or len(directions) > 6 \
             or any(not isinstance(value, string_types) for value in directions) \
             or (directions not in (["Plan"], ["CPlaneView"]) and
@@ -190,6 +205,22 @@ def run(operation, viewport, host):
                         Rhino.Geometry.Point3d(*operation["camera_target"]), True)
                 if viewport.SetConstructionPlane(plane) is False:
                     raise ValueError("could not set camera probe CPlane")
+                if "zoom_factor" in operation:
+                    if not Rhino.RhinoApp.RunScript("_Zoom _Factor %.17g" % operation["zoom_factor"], False):
+                        raise ValueError("could not set camera probe zoom")
+                if "vertical_lens_shift" in operation:
+                    info = Rhino.DocObjects.ViewportInfo(viewport)
+                    try:
+                        half_height = (info.FrustumTop - info.FrustumBottom) * 0.5
+                        shift = operation["vertical_lens_shift"] * half_height
+                        if not info.SetFrustum(info.FrustumLeft, info.FrustumRight,
+                                               -half_height + shift, half_height + shift,
+                                               info.FrustumNear, info.FrustumFar):
+                            raise ValueError("could not set shifted camera probe frustum")
+                        if not viewport.SetViewProjection(info, False):
+                            raise ValueError("could not apply shifted camera probe frustum")
+                    finally:
+                        info.Dispose()
                 distance_before = _camera_distance(viewport)
                 width_before = _frustum_width(viewport, Rhino)
                 scale_before = (_screen_scale(viewport, Rhino, origin)
@@ -304,7 +335,7 @@ def compare_cplane_view(operation, rows, epsilon=1.0e-9):
         camera_error = max(_maximum_difference(vectors[name], vectors[name + "_before"])
                            for name in ("camera_location", "camera_direction", "camera_up",
                                         "camera_target"))
-        projection_matches = bool(row["perspective"]) == (projection == "Perspective")
+        projection_matches = bool(row["perspective"]) == (projection != "Top")
         passed = plane_error <= epsilon and camera_error <= epsilon and projection_matches
         results.append(dict(projection=projection, passed=passed,
                             cplane_error=plane_error, camera_error=camera_error,
@@ -326,7 +357,7 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     if operation["directions"] == ["CPlaneView"]:
         return compare_cplane_view(operation, rows, epsilon)
     if any(direction in WORLD_DIRECTIONS for direction in operation["directions"]):
-        raise ValueError("World perspective captures are checked by the native viewport tests")
+        raise ValueError("World camera captures are checked by the native viewport tests")
     if not _finite(float(epsilon)) or epsilon < 0.0:
         raise ValueError("invalid camera comparison epsilon")
     expected_x = _normalized(_point(operation["x_axis"], "x_axis"))
@@ -369,7 +400,7 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
         )
         target_error = _maximum_difference(vectors["camera_target"], vectors["cplane_origin"])
         projection_matches = bool(row["perspective"]) == (
-            projection == "Perspective" and direction != "Plan")
+            projection != "Top" and direction != "Plan")
         distance = math.sqrt(sum(
             (location - target) ** 2
             for location, target in zip(vectors["camera_location"], vectors["camera_target"])
@@ -383,7 +414,7 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
                or not _finite(float(width)) or width <= 0.0 for width in widths):
             raise ValueError("invalid camera frustum width")
         distance_error = (abs(distance - distance_before)
-                          if projection == "Perspective" and direction != "Plan" else None)
+                          if projection != "Top" and direction != "Plan" else None)
         parallel_width_error = (abs(widths[1] - widths[0])
                                 if projection == "Top" else None)
         plan_scale_error = None
@@ -420,15 +451,15 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
             projection=projection, direction=direction, passed=passed,
             orientation_error=orientation_error, cplane_origin_error=plane_error,
             cplane_axes_error=axes_error,
-            target_error=target_error, perspective_distance=distance if projection == "Perspective" else None,
-            perspective_distance_before=distance_before if projection == "Perspective" else None,
+            target_error=target_error, perspective_distance=distance if projection != "Top" else None,
+            perspective_distance_before=distance_before if projection != "Top" else None,
             perspective_distance_error=distance_error,
             parallel_frustum_width_before=widths[0] if projection == "Top" else None,
             parallel_frustum_width=widths[1] if projection == "Top" else None,
             parallel_frustum_width_error=parallel_width_error,
             plan_parallel_scale_error=plan_scale_error,
             plan_perspective_scale_ratio=(row["screen_scale"] / row["screen_scale_before"]
-                                          if direction == "Plan" and projection == "Perspective" else None),
+                                          if direction == "Plan" and projection != "Top" else None),
             plan_perspective_expected_ratio=plan_expected_scale_ratio,
             plan_perspective_ratio_error=plan_perspective_ratio_error,
             zoom_checked=direction != "Plan" or projection == "Top",

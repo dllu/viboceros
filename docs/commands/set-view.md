@@ -8,8 +8,14 @@ checked CPU/GPU projection, depth ordering, grid and point drafting, object pick
 point-cloud snaps. Bottom reverses Top's vertical axis; Back and Left reverse
 the horizontal axes of Front and Right.
 
-Parallel options restore the default camera target, pan, orientation, and zoom
-and set the matching world construction plane. `World Perspective` preserves
+Parallel options preserve the camera target and drawing scale and set the
+matching world construction-plane axes while retaining its origin. A panned
+parallel view keeps its current center. Conversion from perspective uses the
+frustum at the camera target depth, clamped to the existing near/far interval,
+and clears any lens shift. The
+[World parallel camera probe](../oracle.md#world-parallel-camera-probe)
+checks all six presets from parallel, perspective, and two-point inputs at
+different zooms and with shifted frusta. `World Perspective` preserves
 the camera target and distance, uses a 50 mm lens and the standard world camera
 direction, and keeps the current construction plane. View undo restores the
 prior camera and projection; construction-plane history remains independent. Switching through
@@ -59,7 +65,10 @@ the drawing scale when the source view is parallel, matching the
 Plan conversion preserves raw frustum width while changing scale at the former
 camera target by the camera-distance/frustum-near ratio. The native view retains the frustum near
 distance through 3DM import, named views, and view history and uses it for this
-conversion. The six World parallel presets still need live camera comparisons.
+conversion. Document-based near/far clipping and the resulting parallel camera
+relocation along the depth axis remain pending. The World parallel probe checks
+framing, orientation, target, and construction-plane state independently of that
+camera relocation.
 
 `NextViewport` and `PrevViewport` cycle through the four viewports, wrapping at
 the ends. Ctrl/Cmd+Tab and Ctrl/Cmd+Shift+Tab run them without moving focus out

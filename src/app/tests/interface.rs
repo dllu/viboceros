@@ -2973,7 +2973,7 @@ fn zoom_all_records_one_independent_view_step_per_viewport() {
 }
 
 #[test]
-fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
+fn set_view_world_preserves_framing_and_model_history() {
     use viboceros_command::construction_plane::WorldPlane;
 
     let mut app = test_app();
@@ -2985,6 +2985,9 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
     let context = egui::Context::default();
     layout_viewports(&context, &mut app);
     app.active_viewport = 2;
+    app.viewports[2]
+        .plane
+        .set(WorldPlane::Right.frame().with_origin(point(17., -11., 3.)));
     let untouched = app.viewports[0].camera_snapshot();
     for (name, kind, plane) in [
         ("Top", ViewKind::Top, Some(WorldPlane::Top)),
@@ -3002,16 +3005,25 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
     ] {
         enter(&mut app, "Zoom Factor 2");
         let before = app.viewports[2].camera_snapshot();
+        let before_record =
+            Viewport::named_view_to_3dm(app.viewports[2].named_view_snapshot(), "Before".into())
+                .unwrap();
         let plane_before = app.viewports[2].construction_plane();
         enter(&mut app, &format!("SetView World {name}"));
         assert_eq!(app.viewports[2].kind(), kind);
         let after = app.viewports[2].camera_snapshot();
+        let after_record =
+            Viewport::named_view_to_3dm(app.viewports[2].named_view_snapshot(), "After".into())
+                .unwrap();
+        assert_eq!(after_record.target, before_record.target);
         if kind != ViewKind::Perspective {
-            assert_eq!(after, Viewport::new(kind).camera_snapshot());
+            assert_eq!(after_record.frustum, before_record.frustum);
         }
         assert_eq!(
             app.viewports[2].construction_plane(),
-            plane.map_or(plane_before, WorldPlane::frame)
+            plane.map_or(plane_before, |plane| {
+                plane.frame().with_origin(plane_before.origin())
+            })
         );
         enter(&mut app, "UndoView");
         assert_eq!(app.viewports[2].camera_snapshot(), before);
@@ -3021,6 +3033,34 @@ fn set_view_world_resets_each_standard_camera_and_keeps_model_history() {
         assert_eq!(app.active_command, pending);
         assert_eq!(app.document.redo_label(), redo.as_deref());
     }
+}
+
+#[test]
+fn world_parallel_command_reports_an_unrenderable_imported_camera_without_mutation() {
+    let mut app = test_app();
+    for command in ["Point 1,2,3", "Undo", "Line", "0"] {
+        enter(&mut app, command);
+    }
+    let pending = app.active_command;
+    let redo = app.document.redo_label().map(str::to_owned);
+    app.active_viewport = 1;
+    let mut camera = Viewport::named_view_to_3dm(
+        app.viewports[1].named_view_snapshot(),
+        "Very narrow perspective".into(),
+    )
+    .unwrap();
+    // The file is a finite, valid perspective view, but conversion would
+    // exceed the renderer's f32 screen-coordinate range.
+    camera.frustum = [-1e-300, 1e-300, -1e-300, 1e-300, 1., 1000.];
+    app.viewports[1].restore_named_view(Viewport::named_view_from_3dm(&camera).unwrap());
+    let before = app.viewports[1].camera_snapshot();
+    let plane = app.viewports[1].construction_plane();
+    enter(&mut app, "SetView World Top");
+    assert_eq!(app.viewports[1].camera_snapshot(), before);
+    assert_eq!(app.viewports[1].construction_plane(), plane);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.document.redo_label(), redo.as_deref());
+    assert!(app.command_log.back().unwrap().contains("Error:"));
 }
 
 #[test]

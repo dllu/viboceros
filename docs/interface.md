@@ -222,8 +222,9 @@ Home and End do the same when a text field is not focused. View history is
 separate from model undo and construction-plane undo.
 
 The view-preset menu offers Top, Bottom, Front, Back, Right, Left, and
-Perspective. `SetView World <direction>` resets the active camera to that
-standard view. `SetView World TwoPointPerspective` selects a level perspective
+Perspective. `SetView World <direction>` changes the active camera to that
+standard orientation while retaining its target. Parallel views keep their
+framing and construction-plane origin. `SetView World TwoPointPerspective` selects a level perspective
 camera, with horizontal rotation and vertical camera-height navigation.
 `SetView CPlane <direction>` uses the active construction plane
 without changing its projection. See [view commands](commands/set-view.md).

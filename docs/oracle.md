@@ -1750,8 +1750,9 @@ largest observed perspective distance change is `1.5e-14` model units. Rhino's
 startup distance in this capture is about `102.226`, while Viboceros currently
 starts at `50`; the comparison tests the SetView transition from the existing
 camera, not identical startup framing.
-Parallel camera location is diagnostic because Viboceros has no finite parallel
-camera location. The camera probe has no native oracle operation yet, so the
+Parallel camera location is diagnostic: Viboceros retains a camera distance for
+3DM interchange, but Rhino can relocate parallel cameras when recomputing
+document clipping. The camera probe has no native oracle operation yet, so the
 generic `compare` mode is unavailable for this fixture. The independent Rust
 viewport tests cover all six directions in both projections and preservation of
 nondefault parallel zoom and perspective camera distance.
@@ -1783,6 +1784,46 @@ views and view history. Its Plan conversion uses the measured ratio; a focused
 Rust test checks the saved Rhino width and scale. The Python comparator still
 marks native zoom parity as unchecked because the generic oracle `compare` mode
 has no native camera operation for either fixture.
+
+### World parallel camera probe
+
+The [World parallel fixture](../tools/rhino_oracle/fixtures/view_camera_world_parallel.json)
+records all six `SetView World` parallel presets with a translated target and
+oblique construction plane. It covers parallel, perspective, and two-point
+inputs at their current zoom and after `Zoom Factor 2.5`, plus positive and
+negative vertical shifts of a two-point frustum: 48 recorded transitions.
+Capture on a private display with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_world_parallel.json --timeout 300
+```
+
+The [saved Rhino 8.32 observation](../tools/rhino_oracle/observations/view_camera_world_parallel.json)
+includes the complete camera and frustum before and after each command, plus
+projected world points. The native regression imports each measured input and
+executes the corresponding World preset:
+
+```sh
+cargo test --release -p viboceros viewport::tests::world_parallel
+```
+
+Camera direction, up, target, CPlane origin/axes, and the four framing dimensions
+agree within `2e-12`. Precise CPU projection agrees with Rhino's screen
+coordinates within `1e-8` pixels. GPU comparisons account for `f32` rounding,
+including points far outside a highly zoomed viewport; drafting picks round-trip
+within `1e-4` model units. The tests also cover panned parallel input, clearing
+two-point locks, view history, and 3DM named-view conversion. Parallel scale is
+retained in `f64` through import, camera operations, snapping, picking, scene
+cache keys, and export.
+
+The transitions preserve the camera target and CPlane origin. Parallel inputs
+retain frustum width. Perspective inputs use the frustum at the target depth,
+clamped to the old near/far interval. Lens shift is cleared. Document-based
+clipping can also move Rhino's parallel camera along the view direction without
+changing framing; matching those depth relocations and near/far updates remains
+pending. The test excludes those fields and does not claim full camera-record
+parity. The Python CPlane comparator and generic oracle `compare` do not execute
+these native World transitions.
 
 ### World perspective and two-point camera probe
 

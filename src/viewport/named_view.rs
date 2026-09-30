@@ -63,7 +63,7 @@ impl Viewport {
             let right = NaVector3::from(frame.x_axis().as_vector().to_array());
             let up = NaVector3::from(frame.y_axis().as_vector().to_array());
             let forward = -NaVector3::from(frame.z_axis().as_vector().to_array());
-            let scale = f64::from(camera.pixels_per_unit);
+            let scale = camera.pixels_per_unit;
             let center = camera.target - right * (f64::from(camera.pan.x) / scale)
                 + up * (f64::from(camera.pan.y) / scale);
             let half_width = f64::from(width) / (2.0 * scale);
@@ -172,8 +172,9 @@ impl Viewport {
                 vector(up_axis)?,
                 Tolerance::DEFAULT,
             )?;
-            view.pixels_per_unit = (f64::from(port_size[1]) / height) as f32;
-            if !view.pixels_per_unit.is_finite() || view.pixels_per_unit <= 0.0 {
+            view.pixels_per_unit = f64::from(port_size[1]) / height;
+            let raster_scale = view.pixels_per_unit as f32;
+            if !raster_scale.is_finite() || raster_scale <= 0.0 {
                 return Err(GeometryError::Degenerate {
                     context: "named view scale",
                 });
@@ -279,7 +280,7 @@ mod tests {
         restored.last_rect = source.last_rect;
         restored.restore_named_view(decoded);
         restored.set_plan_view();
-        assert!((f64::from(restored.pixels_per_unit) - 365.0 / (2.0 * half_height)).abs() < 1e-6);
+        assert!((restored.pixels_per_unit - 365.0 / (2.0 * half_height)).abs() < 1e-6);
         let parallel =
             Viewport::named_view_to_3dm(restored.named_view_snapshot(), "Plan".into()).unwrap();
         assert_eq!(parallel.projection, ThreeDmProjection::Parallel);

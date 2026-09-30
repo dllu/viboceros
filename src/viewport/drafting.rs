@@ -61,7 +61,7 @@ impl Viewport {
     ) -> Option<ObjectSnap> {
         let options = options.into();
         if let Some(projection) = self.point_cloud_projection() {
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok()?;
             self.object_snap_cache
                 .borrow_mut()
@@ -92,7 +92,7 @@ impl Viewport {
                     document,
                     self.plan_target_frame()?,
                     self.parallel_query_offset(pointer, rect)?,
-                    Real::from(OSNAP_CAPTURE_PIXELS) / Real::from(self.pixels_per_unit),
+                    Real::from(OSNAP_CAPTURE_PIXELS) / self.pixels_per_unit,
                     options,
                 )
                 .ok()

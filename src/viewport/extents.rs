@@ -36,7 +36,7 @@ impl ZoomExtentsBorders {
 
 struct CameraFit {
     target: NaVector3<Real>,
-    scale: f32,
+    scale: Real,
     distance: Real,
 }
 
@@ -242,10 +242,10 @@ impl Viewport {
         let scale = if scale.is_infinite() {
             40.0
         } else {
-            scale.min(2_000.0) as f32
+            scale.min(2_000.0)
         };
         if !scale.is_finite()
-            || scale < f32::MIN_POSITIVE
+            || scale < Real::from(f32::MIN_POSITIVE)
             || !distance.is_finite()
             || (self.kind == ViewKind::Perspective && distance > MAX_PERSPECTIVE_CAMERA_DISTANCE)
         {

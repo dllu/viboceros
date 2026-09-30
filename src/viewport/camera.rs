@@ -116,7 +116,7 @@ impl Viewport {
         let target = if self.kind == ViewKind::Perspective {
             self.target
         } else {
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             self.target - right * (Real::from(self.pan.x) / scale)
                 + up * (Real::from(self.pan.y) / scale)
         };
@@ -166,7 +166,7 @@ impl Viewport {
             [axes.right.1, axes.up.1]
         };
         let origin = self.world_origin(rect);
-        let scale = Real::from(self.pixels_per_unit);
+        let scale = self.pixels_per_unit;
         Some([
             (Real::from(pointer.x) - Real::from(origin.x)) / scale * signs[0],
             (Real::from(origin.y) - Real::from(pointer.y)) / scale * signs[1],
@@ -182,7 +182,7 @@ impl Viewport {
                 .plan_target_frame()?
                 .projected_coordinates_of(point)
                 .ok()?;
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             return Some([
                 real_to_gpu(local[0] * scale)?,
                 real_to_gpu(local[1] * scale)?,
@@ -202,7 +202,7 @@ impl Viewport {
             local[axis] = 0.0;
         }
         let scale = if self.kind.is_parallel() {
-            Real::from(self.pixels_per_unit)
+            self.pixels_per_unit
         } else {
             1.0
         };
@@ -385,7 +385,7 @@ impl Viewport {
             )
         } else {
             let screen_origin = self.world_origin(rect);
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             let horizontal = (Real::from(pointer.x) - Real::from(screen_origin.x)) / scale;
             let vertical = (Real::from(screen_origin.y) - Real::from(pointer.y)) / scale;
             let origin = if self.kind == ViewKind::Plan {
@@ -580,13 +580,13 @@ impl Viewport {
                 .ok()
             }
             ViewKind::Plan => {
-                let scale = Real::from(self.pixels_per_unit);
+                let scale = self.pixels_per_unit;
                 self.plan_target_frame()?
                     .point_at([dx / scale, dy / scale, 0.0])
                     .ok()
             }
             _ => {
-                let scale = Real::from(self.pixels_per_unit);
+                let scale = self.pixels_per_unit;
                 let axes = self.kind.parallel_axes()?;
                 let mut point = [self.target.x, self.target.y, self.target.z];
                 point[axes.right.0] += dx / scale * axes.right.1;
@@ -614,8 +614,8 @@ impl Viewport {
                     .projected_coordinates_of(point)
                     .ok()?;
                 (
-                    coordinates[0] * f64::from(self.pixels_per_unit),
-                    coordinates[1] * f64::from(self.pixels_per_unit),
+                    coordinates[0] * self.pixels_per_unit,
+                    coordinates[1] * self.pixels_per_unit,
                 )
             }
             ViewKind::Perspective => {
@@ -635,8 +635,8 @@ impl Viewport {
                 let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
                 let axes = self.kind.parallel_axes().expect("parallel view");
                 (
-                    local[axes.right.0] * axes.right.1 * f64::from(self.pixels_per_unit),
-                    local[axes.up.0] * axes.up.1 * f64::from(self.pixels_per_unit),
+                    local[axes.right.0] * axes.right.1 * self.pixels_per_unit,
+                    local[axes.up.0] * axes.up.1 * self.pixels_per_unit,
                 )
             }
         };
@@ -658,7 +658,7 @@ impl Viewport {
     pub(super) fn unproject(&self, position: Pos2, rect: Rect, elevation: Real) -> Option<Point3> {
         let origin = self.world_origin(rect);
         if self.kind == ViewKind::Plan {
-            let scale = Real::from(self.pixels_per_unit);
+            let scale = self.pixels_per_unit;
             let horizontal = (Real::from(position.x) - Real::from(origin.x)) / scale;
             let vertical = (Real::from(origin.y) - Real::from(position.y)) / scale;
             return self
@@ -668,7 +668,7 @@ impl Viewport {
         }
         match self.kind.parallel_axes() {
             Some(axes) => {
-                let scale = Real::from(self.pixels_per_unit);
+                let scale = self.pixels_per_unit;
                 let horizontal = (Real::from(position.x) - Real::from(origin.x)) / scale;
                 let vertical = (Real::from(origin.y) - Real::from(position.y)) / scale;
                 let mut point = [self.target.x, self.target.y, self.target.z];
@@ -723,7 +723,7 @@ impl Viewport {
                 (self.perspective_focal_length_pixels(rect) / self.perspective_camera_distance)
                     as f32
             }
-            _ => self.pixels_per_unit,
+            _ => self.pixels_per_unit as f32,
         }
     }
 
@@ -792,9 +792,8 @@ impl Viewport {
             return Ok(changed);
         }
         let old_scale = self.pixels_per_unit;
-        let new_scale =
-            (Real::from(old_scale) * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
-        let actual_factor = Real::from(new_scale) / Real::from(old_scale);
+        let new_scale = (old_scale * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0);
+        let actual_factor = new_scale / old_scale;
         let pan_x = (Real::from(viewport_center.x) + Real::from(self.pan.x) - Real::from(center.x))
             * actual_factor;
         let pan_y = (Real::from(viewport_center.y) + Real::from(self.pan.y) - Real::from(center.y))
@@ -877,8 +876,8 @@ impl Viewport {
             self.target = new_target;
             self.perspective_camera_distance = distance;
         } else {
-            let scale = (Real::from(self.pixels_per_unit) * factor)
-                .clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
+            let scale =
+                (self.pixels_per_unit * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0);
             self.target = new_target;
             self.pan = Vec2::ZERO;
             self.pixels_per_unit = scale;
@@ -935,18 +934,12 @@ impl Viewport {
             return Ok(true);
         }
         let old_scale = self.pixels_per_unit;
-        let new_scale =
-            (Real::from(old_scale) * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0) as f32;
+        let new_scale = (old_scale * factor).clamp(Real::from(f32::MIN_POSITIVE), 2_000.0);
         if new_scale == old_scale {
             return Ok(false);
         }
         if let Some(pointer) = pointer {
-            let Some(pan) = zoom_pan(
-                self.pan,
-                pointer,
-                rect,
-                Real::from(new_scale) / Real::from(old_scale),
-            ) else {
+            let Some(pan) = zoom_pan(self.pan, pointer, rect, new_scale / old_scale) else {
                 return Err("zoom exceeds the screen-coordinate range");
             };
             self.pan = pan;
