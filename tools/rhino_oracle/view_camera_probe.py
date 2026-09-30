@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Bounded public-RhinoCommon camera probe for SetView, Plan, and CPlane View."""
 import math
+import uuid
 
 
 DIRECTIONS = ("Top", "Bottom", "Front", "Back", "Right", "Left")
@@ -31,6 +32,14 @@ def validate(operation):
         raise ValueError("unsupported camera probe operation")
     for name in ("origin", "x_axis", "y_axis"):
         _point(operation.get(name), name)
+    if "full_camera" in operation and type(operation["full_camera"]) is not bool:
+        raise ValueError("full_camera must be boolean")
+    if "parallel_from_two_point" in operation:
+        if (operation["parallel_from_two_point"] is not True
+                or operation.get("projections") != ["Top"]
+                or operation.get("full_camera") is not True
+                or "view_policy" not in operation):
+            raise ValueError("parallel_from_two_point requires a full Top camera probe with explicit policy")
     if "view_policy" in operation:
         policy = operation["view_policy"]
         if (not isinstance(policy, dict) or set(policy) != set(("set_cplane", "set_projection"))
@@ -47,11 +56,12 @@ def validate(operation):
         shift = operation["vertical_lens_shift"]
         if (isinstance(shift, bool) or not isinstance(shift, (int, float))
                 or not _finite(float(shift)) or abs(shift) > 3.0
-                or operation.get("projections") != ["TwoPointPerspective"]
+                or (operation.get("projections") != ["TwoPointPerspective"]
+                    and not operation.get("parallel_from_two_point"))
                 or not isinstance(operation.get("directions"), list)
-                or any(direction not in WORLD_DIRECTIONS[:6]
+                or any(direction not in DIRECTIONS + WORLD_DIRECTIONS + ("Plan", "CPlaneView")
                        for direction in operation.get("directions", []))):
-            raise ValueError("lens shift requires a bounded two-point World parallel probe")
+            raise ValueError("lens shift requires a bounded two-point camera probe")
     if "mouse_drag" in operation:
         drag = operation["mouse_drag"]
         if (not isinstance(drag, list) or len(drag) != 2
@@ -138,7 +148,7 @@ def _screen_scale(viewport, Rhino, point):
 
 def _snapshot(viewport, Rhino, projection, direction, distance_before, width_before,
               scale_before, target_scale_before, target_before, near_before, origin,
-              camera_before):
+              camera_before, full_camera=False):
     plane = viewport.ConstructionPlane()
     result = dict(
         projection=projection, direction=direction,
@@ -157,7 +167,7 @@ def _snapshot(viewport, Rhino, projection, direction, distance_before, width_bef
     if direction == "CPlaneView":
         result["camera_target_before"] = target_before
         result.update(camera_before)
-    if direction in WORLD_DIRECTIONS:
+    if direction in WORLD_DIRECTIONS or full_camera:
         info = Rhino.DocObjects.ViewportInfo(viewport)
         try:
             result["two_point_perspective"] = bool(viewport.IsTwoPointPerspectiveProjection)
@@ -198,14 +208,18 @@ def run(operation, viewport, host):
     original = Rhino.DocObjects.ViewportInfo(viewport)
     original_target = viewport.CameraTarget
     original_name = viewport.Name
+    original_plane = viewport.ConstructionPlane()
     policy_settings = Rhino.ApplicationSettings.ViewSettings if "view_policy" in operation else None
     original_policy = (dict(set_cplane=bool(policy_settings.DefinedViewSetCPlane),
                             set_projection=bool(policy_settings.DefinedViewSetProjection))
                        if policy_settings is not None else None)
+    named_table = Rhino.RhinoDoc.ActiveDoc.NamedViews if operation.get("parallel_from_two_point") else None
+    owned_named_views = []
     try:
         results = []
         for projection in operation["projections"]:
-            defined = getattr(Rhino.Display.DefinedViewportProjection, projection)
+            defined = getattr(Rhino.Display.DefinedViewportProjection,
+                              "TwoPointPerspective" if named_table is not None else projection)
             for direction in operation["directions"]:
                 if policy_settings is not None:
                     # SetProjection itself honors this application setting;
@@ -215,8 +229,9 @@ def run(operation, viewport, host):
                 if not viewport.SetProjection(defined, "SetView camera probe", False):
                     raise ValueError("could not set camera probe projection")
                 if "camera_target" in operation:
-                    viewport.SetCameraTarget(
-                        Rhino.Geometry.Point3d(*operation["camera_target"]), True)
+                    if viewport.SetCameraTarget(
+                            Rhino.Geometry.Point3d(*operation["camera_target"]), True) is False:
+                        raise ValueError("could not set camera probe target")
                 if viewport.SetConstructionPlane(plane) is False:
                     raise ValueError("could not set camera probe CPlane")
                 if "zoom_factor" in operation:
@@ -235,6 +250,20 @@ def run(operation, viewport, host):
                             raise ValueError("could not apply shifted camera probe frustum")
                     finally:
                         info.Dispose()
+                if named_table is not None:
+                    index = named_table.Add("VibocerosCameraProbe_" + uuid.uuid4().hex, viewport.Id)
+                    if index < 0:
+                        raise ValueError("could not save disposable two-point view")
+                    owned_named_views.append(index)
+                    if not viewport.SetProjection(Rhino.Display.DefinedViewportProjection.Top,
+                                                  "SetView camera probe", False):
+                        raise ValueError("could not initialize destination parallel projection")
+                    if viewport.SetConstructionPlane(plane) is False:
+                        raise ValueError("could not initialize shifted parallel probe plane")
+                    policy_settings.DefinedViewSetProjection = False
+                    policy_settings.DefinedViewSetCPlane = False
+                    if not named_table.Restore(index, viewport):
+                        raise ValueError("could not restore shifted parallel probe source")
                 distance_before = _camera_distance(viewport)
                 width_before = _frustum_width(viewport, Rhino)
                 scale_before = (_screen_scale(viewport, Rhino, origin)
@@ -249,11 +278,16 @@ def run(operation, viewport, host):
                     camera_location_before=_xyz(viewport.CameraLocation),
                     camera_direction_before=_unit(viewport.CameraDirection),
                     camera_up_before=_unit(viewport.CameraUp),
-                ) if direction == "CPlaneView" or direction in WORLD_DIRECTIONS else None)
-                if direction in WORLD_DIRECTIONS:
+                ) if direction == "CPlaneView" or direction in WORLD_DIRECTIONS or operation.get("full_camera") else None)
+                if direction in WORLD_DIRECTIONS or operation.get("full_camera"):
                     camera_before["camera_target_before"] = _xyz(viewport.CameraTarget)
                     camera_before["perspective_before"] = bool(viewport.IsPerspectiveProjection)
                     camera_before["two_point_perspective_before"] = bool(viewport.IsTwoPointPerspectiveProjection)
+                    if operation.get("full_camera"):
+                        before_plane = viewport.ConstructionPlane()
+                        camera_before["cplane_origin_before"] = _xyz(before_plane.Origin)
+                        camera_before["cplane_x_before"] = _unit(before_plane.XAxis)
+                        camera_before["cplane_y_before"] = _unit(before_plane.YAxis)
                     info = Rhino.DocObjects.ViewportInfo(viewport)
                     try:
                         camera_before["frustum_before"] = [float(getattr(info, "Frustum" + name))
@@ -263,7 +297,7 @@ def run(operation, viewport, host):
                 if policy_settings is not None:
                     policy_settings.DefinedViewSetCPlane = operation["view_policy"]["set_cplane"]
                     policy_settings.DefinedViewSetProjection = operation["view_policy"]["set_projection"]
-                history_before = Rhino.RhinoApp.CommandHistoryWindowText if direction in WORLD_DIRECTIONS else None
+                history_before = Rhino.RhinoApp.CommandHistoryWindowText if direction in WORLD_DIRECTIONS or operation.get("full_camera") else None
                 if not Rhino.RhinoApp.RunScript(script(direction), False):
                     raise ValueError("%s command failed" % (
                         "CPlane View" if direction == "CPlaneView" else "SetView CPlane"))
@@ -271,7 +305,7 @@ def run(operation, viewport, host):
                                          distance_before, width_before,
                                          scale_before, target_scale_before,
                                          target_before, near_before, origin,
-                                         camera_before))
+                                         camera_before, operation.get("full_camera", False)))
                 if original_policy is not None:
                     results[-1]["view_policy"] = operation["view_policy"]
                     results[-1]["view_policy_before"] = original_policy
@@ -295,12 +329,15 @@ def run(operation, viewport, host):
         return results
     finally:
         errors = []
-        cleanup = [
+        cleanup = [("named view %s" % index, lambda index=index: named_table.Delete(index))
+                   for index in reversed(owned_named_views)]
+        cleanup.extend([
             ("projection", lambda: viewport.SetViewProjection(original, False)),
             ("target", lambda: viewport.SetCameraTarget(original_target, False)),
+            ("construction plane", lambda: viewport.SetConstructionPlane(original_plane)),
             ("name", lambda: setattr(viewport, "Name", original_name)),
             ("viewport info", original.Dispose),
-        ]
+        ])
         if original_policy is not None:
             cleanup.extend([
                 ("CPlane restore policy", lambda: setattr(policy_settings, "DefinedViewSetCPlane", original_policy["set_cplane"])),
@@ -382,6 +419,8 @@ def compare_to_viboceros(operation, rows, epsilon=1.0e-9):
     remains diagnostic until native frustum conversion is represented.
     """
     validate(operation)
+    if operation.get("full_camera"):
+        raise ValueError("full camera captures are checked by the native viewport tests")
     if operation["directions"] == ["CPlaneView"]:
         return compare_cplane_view(operation, rows, epsilon)
     if any(direction in WORLD_DIRECTIONS for direction in operation["directions"]):

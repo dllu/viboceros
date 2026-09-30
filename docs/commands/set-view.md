@@ -54,11 +54,16 @@ one of the six standard directions of the current construction plane. It centers
 the camera on the CPlane origin and resets pan. The construction plane and
 viewport projection remain unchanged: a parallel viewport stays parallel and
 keeps its drawing scale, while a perspective viewport keeps its field of view
-and camera distance. The camera captures the plane orientation, so later CPlane
+and axial camera distance. A two-point source becomes ordinary perspective, and
+lens shift is cleared. The camera captures the plane orientation, so later CPlane
 edits do not rotate it. View history restores the captured orientation, and
 perspective orbit continues from it. The
 [live camera probe](../oracle.md#setview-cplane-camera-probe) confirms
 that Rhino also preserves parallel frustum width through all six directions.
+The [two-point and shifted camera probe](../oracle.md#cplane-two-point-and-shifted-camera-probe)
+checks six directions, Plan, and CPlane View from two-point and shifted parallel
+inputs. Imported off-axis camera targets and frustum centers remain independent;
+CPlane View places the plane at the saved target without changing optical framing.
 
 Both SetView forms preserve the model, selection, model undo/redo, and any
 unfinished modeling prompt. [Named views](named-view.md) save and restore
@@ -93,10 +98,12 @@ tree with lazy three-dimensional subtree bounds for picking and snapping. The
 command preserves unfinished modeling prompts and document undo/redo. It keeps
 the drawing scale when the source view is parallel, matching the
 [live Plan probe](../oracle.md#plan-camera-probe). Rhino's perspective-to-parallel
-Plan conversion preserves raw frustum width while changing scale at the former
-camera target by the camera-distance/frustum-near ratio. The native view retains the frustum near
-distance through 3DM import, named views, and view history and uses it for this
-conversion. Document-based near/far clipping and the resulting parallel camera
+Plan conversion projects the former target plane when its axial distance is
+beyond the near plane. Otherwise it retains the raw near-plane width. It clears
+two-point locks and frustum shift and centers on the CPlane origin. The native
+view retains the near distance through 3DM import, named views, and view history
+for this conversion. Unrepresentable parallel scales return an error without
+changing the camera or histories. Document-based near/far clipping and the resulting parallel camera
 relocation along the depth axis remain pending. The World parallel probe checks
 framing, orientation, target, and construction-plane state independently of that
 camera relocation.

@@ -44,7 +44,7 @@ impl Viewport {
                 location,
                 forward,
                 up,
-                camera.target,
+                camera.target + camera.camera_target_offset,
                 [
                     (shift_x - 1.0) * half_width,
                     (shift_x + 1.0) * half_width,
@@ -71,14 +71,14 @@ impl Viewport {
             let [shift_x, shift_y] = camera.parallel_frustum_shift;
             // Rendering uses the effective center. Keep the original frustum
             // offset and camera pose for projection changes and 3DM records.
-            let nominal_target =
+            let axis_target =
                 center - right * (shift_x * half_width) - up * (shift_y * half_height);
             (
                 ThreeDmProjection::Parallel,
-                nominal_target - forward * camera.perspective_camera_distance,
+                axis_target - forward * camera.perspective_camera_distance,
                 forward,
                 up,
-                nominal_target,
+                axis_target + camera.camera_target_offset,
                 [
                     (shift_x - 1.0) * half_width,
                     (shift_x + 1.0) * half_width,
@@ -139,7 +139,7 @@ impl Viewport {
             NaVector3::from(target.to_array())
         });
         let distance = (nominal_target - location).dot(&forward);
-        let distance = if distance.is_finite() && distance > 0.01 {
+        let distance = if distance.is_finite() && distance > 0.0 {
             distance
         } else {
             50.0
@@ -151,13 +151,24 @@ impl Viewport {
         view.frustum_near = near;
         view.frustum_far = far;
         view.perspective_camera_distance = distance;
+        let axis_target = location + forward * distance;
+        view.camera_target_offset = nominal_target - axis_target;
+        if !view
+            .camera_target_offset
+            .iter()
+            .all(|value| value.is_finite())
+        {
+            return Err(GeometryError::Degenerate {
+                context: "named view target offset",
+            });
+        }
         if source.projection != ThreeDmProjection::Parallel {
             view.kind = ViewKind::Perspective;
             view.two_point_perspective =
                 source.projection == ThreeDmProjection::TwoPointPerspective;
-            // The app's orbit target lies on the camera axis. Rhino targets may
-            // be off axis, so preserve the camera location when choosing it.
-            view.target = location + forward * distance;
+            // Keep the camera axis for rendering and retain the nominal target
+            // separately for CPlane View, presets, and file interchange.
+            view.target = axis_target;
             view.perspective_frame = Some(Frame3::try_from_directions(
                 point(view.target)?,
                 vector(right_axis)?,
@@ -169,7 +180,7 @@ impl Viewport {
         } else {
             view.kind = ViewKind::Plan;
             view.parallel_frustum_shift = [(left + right) / width, (bottom + top) / height];
-            view.target = nominal_target
+            view.target = axis_target
                 + right_axis * ((left + right) * 0.5)
                 + up_axis * ((bottom + top) * 0.5);
             view.plan_frame = Frame3::try_from_directions(
@@ -195,6 +206,39 @@ impl Viewport {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn imported_small_positive_target_depth_is_retained_for_projection_and_presets() {
+        let mut source = Viewport::new(ViewKind::Perspective);
+        source.perspective_camera_distance = 5e-4;
+        source.frustum_near = 1e-4;
+        source.frustum_far = 1e-2;
+        source.perspective_lens_shift = [0.2, -0.15];
+        source.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.)));
+        let record =
+            Viewport::named_view_to_3dm(source.named_view_snapshot(), String::new()).unwrap();
+        let saved = Viewport::named_view_from_3dm(&record).unwrap();
+        assert!((saved.camera.perspective_camera_distance - 5e-4).abs() < 1e-18);
+        let mut restored = Viewport::new(ViewKind::Top);
+        restored.restore_named_view(saved);
+        restored.last_rect = source.last_rect;
+        let rect = source.last_rect.unwrap();
+        let origin = Point3::try_new(0., 0., 0.).unwrap();
+        for point in [origin, Point3::try_new(1e-4, -2e-4, 1e-4).unwrap()] {
+            let expected = source.project_precise(point, rect).unwrap();
+            let actual = restored.project_precise(point, rect).unwrap();
+            for (a, b) in actual.into_iter().zip(expected) {
+                assert!((a - b).abs() < 1e-8);
+            }
+        }
+        restored.set_world_perspective_view(false).unwrap();
+        assert!((restored.perspective_camera_distance - 5e-4).abs() < 1e-18);
+        let target = Viewport::named_view_to_3dm(restored.named_view_snapshot(), String::new())
+            .unwrap()
+            .target
+            .unwrap();
+        assert!(target.distance_to(origin).unwrap() < 1e-18);
+    }
 
     #[test]
     fn parallel_view_preserves_center_scale_and_construction_plane() {
@@ -285,7 +329,7 @@ mod tests {
         let mut restored = Viewport::new(ViewKind::Top);
         restored.last_rect = source.last_rect;
         restored.restore_named_view(decoded);
-        restored.set_plan_view();
+        restored.set_plan_view().unwrap();
         assert!((restored.pixels_per_unit - 365.0 / (2.0 * half_height)).abs() < 1e-6);
         let parallel =
             Viewport::named_view_to_3dm(restored.named_view_snapshot(), "Plan".into()).unwrap();

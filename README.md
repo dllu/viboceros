@@ -25,7 +25,8 @@ press Enter to use the active viewport.
 `CPlane All point` and `CPlane Through All point` move every viewport's
 construction plane origin while retaining its own axes.
 At either point prompt, `All` toggles its setting; `All=Yes|No` selects it.
-`CPlane View` aligns the active plane to its camera without moving the view.
+`CPlane View` aligns the active plane to the stored camera target and screen axes,
+including off-axis targets imported from 3DM.
 `SetView World TwoPointPerspective` enables a level perspective camera;
 named and working 3DM views retain its projection and shifted frustum.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.

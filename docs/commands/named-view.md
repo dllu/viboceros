@@ -14,8 +14,10 @@ Disable the former to keep the destination CPlane; disable the latter to keep
 its parallel/perspective projection family. Restoration copies the saved camera
 pose and raw frustum in either case. Saved two-point locks apply only when the
 destination is perspective. Shifted parallel frusta survive projection changes,
-view history, and 3DM round trips. Working viewport restoration on file open
+view history, and 3DM round trips. Off-axis saved targets are retained separately
+from the camera axis, preserving camera location and projection. Working viewport restoration on file open
 always uses the file's saved state. See the [policy probes](../oracle.md#named-view-and-world-preset-policy-probes).
+Positive saved target depths below the navigation step limit are also retained.
 
 `NamedView` or `NamedView List` lists saved names in their current order.
 `NamedView Update Front detail` replaces an existing snapshot; Save rejects a

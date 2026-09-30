@@ -149,6 +149,7 @@ pub(crate) struct CameraSnapshot {
     frustum_far: Real,
     perspective_lens_shift: [Real; 2],
     parallel_frustum_shift: [Real; 2],
+    camera_target_offset: NaVector3<Real>,
     pub(crate) target: NaVector3<Real>,
 }
 
@@ -441,6 +442,8 @@ pub struct Viewport {
     frustum_far: Real,
     perspective_lens_shift: [Real; 2],
     parallel_frustum_shift: [Real; 2],
+    /// Nominal target relative to the camera axis; independent of lens shift.
+    camera_target_offset: NaVector3<Real>,
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
@@ -494,6 +497,7 @@ impl Viewport {
             frustum_far: 1.0e9,
             perspective_lens_shift: [0.0; 2],
             parallel_frustum_shift: [0.0; 2],
+            camera_target_offset: NaVector3::zeros(),
             target: NaVector3::zeros(),
             last_rect: None,
             selection_drag_start: None,
@@ -523,6 +527,7 @@ impl Viewport {
             frustum_far: self.frustum_far,
             perspective_lens_shift: self.perspective_lens_shift,
             parallel_frustum_shift: self.parallel_frustum_shift,
+            camera_target_offset: self.camera_target_offset,
             target: self.target,
         }
     }
@@ -636,6 +641,7 @@ impl Viewport {
         self.frustum_far = camera.frustum_far;
         self.perspective_lens_shift = camera.perspective_lens_shift;
         self.parallel_frustum_shift = camera.parallel_frustum_shift;
+        self.camera_target_offset = camera.camera_target_offset;
         self.target = camera.target;
     }
 
@@ -863,8 +869,7 @@ impl Viewport {
         let keep_perspective = self.kind == ViewKind::Perspective && !policy.set_projection;
         let scale = if self.kind == ViewKind::Perspective && !keep_perspective {
             // World parallel views preserve the perspective frustum at the
-            // target depth, clamped to the current clipping interval. Unlike
-            // Plan, they do not simply keep the raw near-plane width.
+            // target depth, clamped to the current clipping interval.
             let distance = self
                 .perspective_camera_distance
                 .clamp(self.frustum_near, self.frustum_far);
@@ -890,6 +895,7 @@ impl Viewport {
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(target.to_array());
+        self.camera_target_offset = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.pixels_per_unit = scale;
         self.perspective_lens_shift = [0.0; 2];
@@ -901,16 +907,25 @@ impl Viewport {
         Ok(())
     }
 
-    pub(crate) fn set_plan_view(&mut self) {
+    pub(crate) fn set_plan_view(&mut self) -> Result<(), GeometryError> {
         let previous = self.camera_snapshot();
-        if self.kind == ViewKind::Perspective {
+        let scale = if self.kind == ViewKind::Perspective {
             let height = f64::from(self.named_view_port_size()[1]);
-            let half_height = self.frustum_near * (self.perspective_fov_radians * 0.5).tan();
-            let scale = height / (2.0 * half_height);
-            if scale.is_finite() && scale >= f64::from(f32::MIN_POSITIVE) {
-                self.pixels_per_unit = scale.min(f64::from(f32::MAX));
-            }
+            // OpenNURBS projects the target plane when it is beyond the near
+            // plane; otherwise it retains the raw near-plane width.
+            let depth = self.perspective_camera_distance.max(self.frustum_near);
+            let half_height = depth * (self.perspective_fov_radians * 0.5).tan();
+            height / (2.0 * half_height)
+        } else {
+            self.pixels_per_unit
+        };
+        let raster_scale = scale as f32;
+        if !raster_scale.is_finite() || raster_scale <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "plan parallel view scale",
+            });
         }
+        self.pixels_per_unit = scale;
         self.plan_frame = self.construction_plane();
         self.parallel_frustum_shift = [0.0; 2];
         self.kind = ViewKind::Plan;
@@ -919,8 +934,10 @@ impl Viewport {
         self.cplane_direction = None;
         self.synchronized_role = None;
         self.target = NaVector3::from(self.plan_frame.origin().to_array());
+        self.camera_target_offset = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.record_camera_change(previous);
+        Ok(())
     }
 
     pub(crate) fn set_cplane_view(&mut self, direction: WorldPlane) {
@@ -949,11 +966,14 @@ impl Viewport {
         self.synchronized_role = synchronized_name;
         if self.kind == ViewKind::Perspective {
             self.perspective_frame = Some(camera_frame);
+            self.two_point_perspective = false;
+            self.perspective_lens_shift = [0.0; 2];
         } else {
             self.kind = ViewKind::Plan;
             self.perspective_frame = None;
         }
         self.target = NaVector3::from(plane.origin().to_array());
+        self.camera_target_offset = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.parallel_frustum_shift = [0.0; 2];
         self.record_camera_change(previous);
@@ -1634,6 +1654,7 @@ fn circular_arc_samples(arc: CircularArc3) -> usize {
 #[cfg(test)]
 mod tests {
     mod construction_plane;
+    mod cplane_two_point;
     mod named_view_policy;
     mod object_selection;
     mod two_point;
@@ -3548,7 +3569,7 @@ mod tests {
         let mut view = Viewport::new(ViewKind::Perspective);
         view.plane.set(frame);
         let before = view.camera_snapshot();
-        view.set_plan_view();
+        view.set_plan_view().unwrap();
         assert_eq!(view.kind(), ViewKind::Plan);
         assert_eq!(view.construction_plane(), frame);
         assert_eq!(view.target, NaVector3::from(frame.origin().to_array()));
@@ -3592,7 +3613,7 @@ mod tests {
     fn plan_view_preserves_parallel_zoom() {
         let mut view = Viewport::new(ViewKind::Top);
         view.pixels_per_unit = 125.0;
-        view.set_plan_view();
+        view.set_plan_view().unwrap();
         assert_eq!(view.kind(), ViewKind::Plan);
         assert_eq!(view.pixels_per_unit, 125.0);
         assert!(view.undo_view());
@@ -3618,7 +3639,7 @@ mod tests {
             Viewport::named_view_to_3dm(view.named_view_snapshot(), "Before".into()).unwrap();
         assert!((encoded_before.frustum[1] - encoded_before.frustum[0] - raw_width).abs() < 1e-10);
 
-        view.set_plan_view();
+        view.set_plan_view().unwrap();
         assert_eq!(view.kind(), ViewKind::Plan);
         assert!((view.pixels_per_unit - 6.3102313143225155).abs() < 1e-6);
         assert!(
@@ -3812,7 +3833,7 @@ mod tests {
         let second = frame.point_at([-2.0, -3.0, 0.0]).unwrap();
         let mut view = Viewport::new(ViewKind::Top);
         view.plane.set(frame);
-        view.set_plan_view();
+        view.set_plan_view().unwrap();
         view.last_rect = Some(rect);
         let mut document = Document::default();
         let cloud_id = document
@@ -3862,7 +3883,7 @@ mod tests {
             .with_origin(point(0.0, 0.0, -Real::MAX));
         let mut view = Viewport::new(ViewKind::Top);
         view.plane.set(frame);
-        view.set_plan_view();
+        view.set_plan_view().unwrap();
         let model = point(1.0, 2.0, Real::MAX);
         assert_eq!(view.project(model, rect), Some(Pos2::new(440.0, 220.0)));
         assert_eq!(view.gpu_position(model), Some([40.0, 80.0, 0.0]));

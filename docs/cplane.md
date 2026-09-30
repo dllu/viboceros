@@ -52,9 +52,11 @@ role; this also applies to Top. Renamed user views are left alone.
 parallel cameras along those planes. Perspective's camera stays in place. The
 default is `SetView=Yes`.
 
-`CPlane View` reads the current viewport camera, including its effective
-parallel-view pan target, and changes only that viewport's construction plane.
-It preserves camera position, direction, and projection. At the bare `CPlane`
+`CPlane View` reads the current viewport's nominal camera target and screen axes,
+including parallel pan and imported off-axis targets. Lens shift changes the
+frustum center independently of that target. It retains camera direction,
+projection, and optical framing; document clipping can still relocate a parallel
+camera along its depth axis. At the bare `CPlane`
 origin prompt, type `View` to apply the same option.
 
 Points accept the regular local/world/relative coordinate syntax; prefix `w`

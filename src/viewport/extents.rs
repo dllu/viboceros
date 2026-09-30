@@ -44,11 +44,13 @@ impl CameraFit {
     fn apply(self, viewport: &mut Viewport) {
         let previous = viewport.camera_snapshot();
         viewport.target = self.target;
+        viewport.camera_target_offset = NaVector3::zeros();
         viewport.pan = Vec2::ZERO;
         if viewport.kind == ViewKind::Perspective {
             viewport.perspective_camera_distance = self.distance;
         } else {
             viewport.pixels_per_unit = self.scale;
+            viewport.parallel_frustum_shift = [0.0; 2];
         }
         viewport.record_camera_change(previous);
     }

@@ -1,0 +1,913 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": 0
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0-Plan",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": 0
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0-CPlaneView",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": 0
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0.75-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": 0.75
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0.75-Plan",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": 0.75
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift-0.75-CPlaneView",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": 0.75
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift--0.5-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": -0.5
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift--0.5-Plan",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": -0.5
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "two-point-shift--0.5-CPlaneView",
+      "projections": [
+        "TwoPointPerspective"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": -0.5
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": 0,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0-Plan",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": 0,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0-CPlaneView",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": 0,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0.75-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": 0.75,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0.75-Plan",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": 0.75,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift-0.75-CPlaneView",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": 0.75,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift--0.5-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ],
+      "vertical_lens_shift": -0.5,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift--0.5-Plan",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Plan"
+      ],
+      "vertical_lens_shift": -0.5,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "shifted-parallel-shift--0.5-CPlaneView",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "CPlaneView"
+      ],
+      "vertical_lens_shift": -0.5,
+      "parallel_from_two_point": true
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Top-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Top-Plan",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "Plan"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Top-CPlaneView",
+      "projections": [
+        "Top"
+      ],
+      "directions": [
+        "CPlaneView"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Perspective-Top-Bottom-Front-Back-Right-Left",
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "Top",
+        "Bottom",
+        "Front",
+        "Back",
+        "Right",
+        "Left"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Perspective-Plan",
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "Plan"
+      ]
+    },
+    {
+      "op": "view_camera_probe",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "camera_target": [
+        21,
+        -13,
+        17
+      ],
+      "full_camera": true,
+      "view_policy": {
+        "set_cplane": true,
+        "set_projection": true
+      },
+      "id": "regular-Perspective-CPlaneView",
+      "projections": [
+        "Perspective"
+      ],
+      "directions": [
+        "CPlaneView"
+      ]
+    }
+  ]
+}

@@ -1834,6 +1834,45 @@ generic `compare` mode is unavailable for this fixture. The independent Rust
 viewport tests cover all six directions in both projections and preservation of
 nondefault parallel zoom and perspective camera distance.
 
+### CPlane two-point and shifted camera probe
+
+The [full camera fixture](../tools/rhino_oracle/fixtures/view_camera_cplane_two_point.json)
+and [Rhino 8.32 observation](../tools/rhino_oracle/observations/view_camera_cplane_two_point.json)
+record 64 transitions: all six SetView CPlane directions, Plan, and CPlane View,
+from ordinary parallel/perspective, two-point, and parallel views restored from
+two-point named views. Two-point and restored parallel inputs include centered,
+positive, and negative vertical frustum shifts. Capture and replay with:
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/view_camera_cplane_two_point.json --timeout 300
+cargo test --release -p viboceros cplane_two_point
+```
+
+All live captures use private Xvfb. The `full_camera` flag records camera pose,
+target, CPlane, projection, and frustum before and after each command, plus
+projected world points. `parallel_from_two_point` initializes a shifted parallel
+source by restoring a disposable two-point named view with projection restoration
+disabled. Cleanup deletes only owned named records and independently restores
+projection, target, CPlane, name, and application settings.
+
+SetView CPlane retains the binary parallel/perspective family, clears two-point
+locks and frustum shifts, and uses the CPlane origin as target. Plan expands a
+perspective near frustum by `target_distance / near` when that ratio exceeds one;
+otherwise it keeps the raw width. CPlane View instead retains projection and
+framing and uses the nominal camera target for its origin, independently of the
+frustum center. Several inputs have targets off the camera axis. Native import
+retains those offsets instead of moving the camera or replacing the saved target.
+
+Native replay checks camera/CPlane components at `2e-12`, optical framing at
+`2e-12`, and screen coordinates at `1e-8` pixels. GPU checks allow f32 rounding;
+drafting rays round-trip through view-normal planes within `1e-4` model units.
+Side views are edge-on to the original CPlane, where parallel drafting rays have
+no unique plane intersection. Tests also check independent histories, Plan scale
+limits, explicit target replacement, and 128 captured input/output cameras through
+actual 3DM files. Document-driven clipping and parallel camera depth relocation
+remain excluded. The generic Python comparator directs full captures to the
+native tests.
+
 ### Plan camera probe
 
 The same bounded probe records `Plan` from parallel and perspective views with
@@ -1861,6 +1900,8 @@ views and view history. Its Plan conversion uses the measured ratio; a focused
 Rust test checks the saved Rhino width and scale. The Python comparator still
 marks native zoom parity as unchecked because the generic oracle `compare` mode
 has no native camera operation for either fixture.
+The full camera probe above also covers inputs with the target beyond the near
+plane, where Plan scales the raw width to the target depth.
 
 ### World parallel camera probe
 

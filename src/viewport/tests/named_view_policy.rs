@@ -27,7 +27,7 @@ fn policy(value: &serde_json::Value) -> NamedViewPolicy {
     }
 }
 
-fn from_row(row: &serde_json::Value) -> ThreeDmNamedView {
+pub(super) fn from_row(row: &serde_json::Value) -> ThreeDmNamedView {
     let [width, height]: [i32; 2] = serde_json::from_value(row["viewport_size"].clone()).unwrap();
     ThreeDmNamedView {
         name: "Rhino captured view".into(),
@@ -48,7 +48,7 @@ fn from_row(row: &serde_json::Value) -> ThreeDmNamedView {
     }
 }
 
-fn viewport_from_row(row: &serde_json::Value) -> Viewport {
+pub(super) fn viewport_from_row(row: &serde_json::Value) -> Viewport {
     let source = from_row(row);
     let mut view = Viewport::new(ViewKind::Top);
     view.restore_named_view(Viewport::named_view_from_3dm(&source).unwrap());
@@ -65,7 +65,7 @@ fn check_vector(actual: [f64; 3], expected: [f64; 3], context: &str) {
     }
 }
 
-fn check_view(actual: &ThreeDmNamedView, expected: &ThreeDmNamedView, location: bool) {
+pub(super) fn check_view(actual: &ThreeDmNamedView, expected: &ThreeDmNamedView, location: bool) {
     assert_eq!(actual.projection, expected.projection);
     if location {
         check_vector(

@@ -178,7 +178,7 @@ fn two_point_world_preset_retains_translated_parallel_pan() {
         view.construction_plane(),
         WorldPlane::Top.frame().with_origin(plane.origin())
     );
-    view.set_plan_view();
+    view.set_plan_view().unwrap();
     assert!(!view.two_point_perspective);
     assert!(view.undo_view());
     assert!(view.two_point_perspective);

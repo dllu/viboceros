@@ -830,8 +830,12 @@ impl VibocerosApp {
                 if command == InterfaceCommand::Plan {
                     self.zoom_window_pending = false;
                     self.zoom_target = None;
-                    self.viewports[self.active_viewport].set_plan_view();
-                    self.push_log("Plan view aligned to current construction plane".into());
+                    match self.viewports[self.active_viewport].set_plan_view() {
+                        Ok(()) => {
+                            self.push_log("Plan view aligned to current construction plane".into())
+                        }
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
                     return;
                 }
                 if matches!(

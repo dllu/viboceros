@@ -154,7 +154,7 @@ class CameraProbeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "native viewport tests"):
             view_camera_probe.compare_to_viboceros(operation, [])
 
-    def test_shifted_frustum_requires_a_two_point_parallel_transition(self):
+    def test_shifted_frustum_requires_a_bounded_two_point_source(self):
         operation = dict(fixture(), directions=["WorldTop"],
                          projections=["TwoPointPerspective"], vertical_lens_shift=0.75)
         view_camera_probe.validate(operation)
@@ -162,10 +162,28 @@ class CameraProbeTests(unittest.TestCase):
             dict(vertical_lens_shift=True), dict(vertical_lens_shift=4),
             dict(vertical_lens_shift=float("nan")), dict(vertical_lens_shift="0.75"),
             dict(projections=["Top"]), dict(projections=["Perspective"]),
-            dict(directions=["WorldPerspective"]), dict(directions=None),
+            dict(directions=["Unknown"]), dict(directions=None),
         ]:
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                 view_camera_probe.validate(dict(operation, **mutation))
+        for directions in [["Top", "Front"], ["Plan"], ["CPlaneView"], ["WorldPerspective"]]:
+            view_camera_probe.validate(dict(operation, directions=directions))
+
+    def test_full_capture_and_restored_parallel_sources_are_bounded(self):
+        operation = dict(fixture(), projections=["Top"], directions=["CPlaneView"],
+                         full_camera=True, parallel_from_two_point=True,
+                         vertical_lens_shift=0.75,
+                         view_policy=dict(set_cplane=True, set_projection=True))
+        view_camera_probe.validate(operation)
+        for change in [dict(full_camera=1), dict(full_camera=False),
+                       dict(projections=["Perspective"]), dict(parallel_from_two_point=1),
+                       dict(parallel_from_two_point=False)]:
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                view_camera_probe.validate(dict(operation, **change))
+        without_policy = dict(operation)
+        del without_policy["view_policy"]
+        with self.assertRaises(ValueError):
+            view_camera_probe.validate(without_policy)
 
     def test_probe_restores_projection_target_and_name_after_command_failure(self):
         class Vector:
@@ -213,6 +231,7 @@ class CameraProbeTests(unittest.TestCase):
 
         viewport = Viewport()
         original_target = viewport.CameraTarget
+        original_plane = viewport.plane
         captured = []
 
         class Info:
@@ -234,13 +253,44 @@ class CameraProbeTests(unittest.TestCase):
                 Top="Top", Perspective="Perspective")),
             DocObjects=SimpleNamespace(ViewportInfo=Info),
             RhinoApp=SimpleNamespace(RunScript=run_script),
+            ApplicationSettings=SimpleNamespace(ViewSettings=SimpleNamespace(
+                DefinedViewSetCPlane=False, DefinedViewSetProjection=False)),
         ))
         with self.assertRaisesRegex(ValueError, "SetView CPlane command failed"):
-            view_camera_probe.run(dict(fixture(), projections=["Top"], directions=["Top"]), viewport, host)
+            view_camera_probe.run(dict(fixture(), projections=["Top"], directions=["Top"],
+                                       view_policy=dict(set_cplane=True, set_projection=True)), viewport, host)
         self.assertEqual(viewport.projection, "original")
         self.assertIs(viewport.CameraTarget, original_target)
+        self.assertIs(viewport.plane, original_plane)
         self.assertEqual(viewport.Name, "original")
+        self.assertFalse(host["Rhino"].ApplicationSettings.ViewSettings.DefinedViewSetCPlane)
+        self.assertFalse(host["Rhino"].ApplicationSettings.ViewSettings.DefinedViewSetProjection)
         self.assertTrue(captured[0].disposed)
+
+    def test_full_camera_fixture_contains_each_source_and_complete_projection_state(self):
+        root = Path(__file__).parent
+        request = json.loads((root / "fixtures/view_camera_cplane_two_point.json").read_text())
+        capture = json.loads((root / "observations/view_camera_cplane_two_point.json").read_text())
+        self.assertEqual(len(request["operations"]),len(capture["results"]))
+        total = 0
+        for operation, result in zip(request["operations"],capture["results"]):
+            view_camera_probe.validate(operation)
+            self.assertEqual(operation["id"],result["id"])
+            self.assertEqual(len(operation["directions"]),len(result["value"]))
+            with self.assertRaisesRegex(ValueError,"native viewport tests"):
+                view_camera_probe.compare_to_viboceros(operation,result["value"])
+            for row, direction in zip(result["value"],operation["directions"]):
+                self.assertEqual(row["direction"],direction)
+                for field in ("frustum", "camera_target", "camera_location", "camera_direction",
+                              "camera_up", "perspective", "two_point_perspective",
+                              "cplane_origin", "cplane_x", "cplane_y"):
+                    self.assertIn(field,row)
+                    self.assertIn(field+"_before",row)
+                self.assertEqual(row["perspective_before"],operation["projections"]==["TwoPointPerspective"]
+                                 or operation["projections"]==["Perspective"])
+                self.assertEqual(row["two_point_perspective_before"],operation["projections"]==["TwoPointPerspective"])
+                total += 1
+        self.assertEqual(total,64)
 
 
 if __name__ == "__main__":

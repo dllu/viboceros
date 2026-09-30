@@ -86,6 +86,7 @@ impl Viewport {
         };
         self.two_point_perspective = two_point;
         self.target = NaVector3::from(target.to_array());
+        self.camera_target_offset = NaVector3::zeros();
         self.pan = Vec2::ZERO;
         self.perspective_frame = None;
         self.cplane_direction = None;
@@ -138,11 +139,16 @@ impl Viewport {
             )
         };
         let target = if self.kind == ViewKind::Perspective {
-            self.target
+            self.target + self.camera_target_offset
         } else {
             let scale = self.pixels_per_unit;
+            let [width, height] = self.named_view_port_size();
+            let [shift_x, shift_y] = self.parallel_frustum_shift;
             self.target - right * (Real::from(self.pan.x) / scale)
                 + up * (Real::from(self.pan.y) / scale)
+                - right * (shift_x * f64::from(width) / (2.0 * scale))
+                - up * (shift_y * f64::from(height) / (2.0 * scale))
+                + self.camera_target_offset
         };
         Frame3::try_from_directions(
             Point3::try_from([target.x, target.y, target.z])?,
@@ -918,7 +924,9 @@ impl Viewport {
             self.target = new_target;
             self.pan = Vec2::ZERO;
             self.pixels_per_unit = scale;
+            self.parallel_frustum_shift = [0.0; 2];
         }
+        self.camera_target_offset = NaVector3::zeros();
         let changed = self.camera_snapshot() != previous;
         self.record_camera_change(previous);
         Ok(changed)
