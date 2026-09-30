@@ -2,6 +2,7 @@
 use super::*;
 use crate::{curve_join_close::CurveInput, object_source::ObjectSource};
 
+mod box_source;
 mod surface_face;
 mod trim_encoding;
 
@@ -169,11 +170,7 @@ impl BrepCommandSource {
                 max,
                 keep_faces,
             }) => {
-                let brep = Brep::try_box(
-                    viboceros_command::CommandContext::default().construction_plane,
-                    std::array::from_fn(|i| [min[i], max[i]]),
-                    tolerance,
-                )?;
+                let brep = box_source::build(*min, *max, tolerance)?;
                 Geometry::Brep(if let Some(faces) = keep_faces {
                     brep.duplicate_faces(faces, tolerance)?
                 } else {

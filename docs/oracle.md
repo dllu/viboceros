@@ -579,6 +579,13 @@ control coordinates and spatial edge domains. The kernel's natural-face
 constructor now follows surface-axis intervals instead; the harness builds its
 declared input curves, without rewriting expected output domains or observations.
 
+Shared `box` sources likewise retain the UV definitions of the native-written
+3DM inputs used in the saved archives. Two walls use their original cyclic UV
+corner order. The source adapter constructs these faces before edge splitting,
+reordering, reversal, or command execution. The kernel box constructor follows
+Rhino's natural wall axes, as checked by the six `CPlane Object` face captures;
+changing that constructor must not silently change a saved replay's inputs.
+
 The [redundant-edge cleanup audit](join-edge-cleanup.md) adds 32 angular-tolerance
 records using the same sixteen shared source artifacts at four document angles.
 The cumulative total is 679 full matches, 32 native errors and 238 other
