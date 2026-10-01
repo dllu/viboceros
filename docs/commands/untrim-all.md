@@ -6,6 +6,8 @@
 selected standalone surfaces. It restores the complete underlying NURBS surface
 without fitting, changing its knots, control points, weights, or parameter
 domains. Face orientation, object identity, attributes, and groups are preserved.
+New boundary edges use the original surface parameter intervals, including
+shifted and negative domains; reversed north/west edges negate those intervals.
 
 ```text
 UntrimAll KeepTrimObjects=Yes
@@ -28,20 +30,21 @@ geometry is staged before editing, and one Undo restores the complete command.
 
 Whole polysurfaces are rejected, matching Rhino's whole-object filter.
 Polysurface face subobject selection, hatches, and automatic crease-splitting
-settings remain pending. The separate `Untrim`, `UntrimBorder`, and `UntrimHoles`
-commands are not implemented by this command.
+settings remain pending. [UntrimBorder](untrim-border.md) preserves interior
+holes while restoring the exterior. `Untrim` and `UntrimHoles` remain pending.
 
 ## Verification
 
 The [source fixture](../../tools/rhino_oracle/fixtures/untrim_all.json) and
 [Rhino 8.32 capture](../../tools/rhino_oracle/observations/untrim_all.json) retain
-72 private-Xvfb cases: exterior trims, holes, circular rational boundaries,
+100 private-Xvfb cases: exterior trims, holes, circular rational boundaries,
 paraboloids, oblique planes, reversed faces, multiple sources, periodic cylinder
 seams, a collapsed boundary, kinked degree-one boundaries, and noncurrent-layer
-attributes. Both selection workflows and both retention choices are covered.
+attributes, multiple holes, and shifted/negative parameter domains. Both
+selection workflows and both retention choices are covered.
 
 Rust replay compares complete source and result definitions, topology,
-chronological order, selection, names, colors, layers, and memberships for 68
+chronological order, selection, names, colors, layers, and memberships for 96
 cases with absolute epsilon `1e-9`. The remaining four box cases compare
 whole-polysurface rejection and unchanged geometry separately in each engine:
 the independent box constructors have different face and edge tables. Four

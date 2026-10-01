@@ -188,3 +188,168 @@ fn whole_polysurfaces_are_rejected_and_preferences_are_registry_local() {
             .value
     );
 }
+
+#[test]
+fn untrim_border_preserves_holes_and_metadata_with_both_retention_and_selection_workflows() {
+    for reversed in [false, true] {
+        for post in [false, true] {
+            for keep in [false, true] {
+                let registry = CommandRegistry::with_builtins();
+                let mut doc = Document::default();
+                let source = if reversed {
+                    trimmed().reversed()
+                } else {
+                    trimmed()
+                };
+                let layer = doc.add_layer("Source", ColorRgb::new(20, 30, 40)).unwrap();
+                let id = doc
+                    .add_geometry_with_attributes(
+                        Geometry::Brep(source.clone()),
+                        ObjectAttributes::on_layer(layer)
+                            .with_name("Holey patch")
+                            .with_object_color(ColorRgb::new(50, 60, 70)),
+                    )
+                    .unwrap();
+                let peer = doc.add_geometry(Geometry::Point(point(20., 30.))).unwrap();
+                doc.add_group(Some("Together".into()), [id, peer]).unwrap();
+                doc.select_objects_direct([id, peer], SelectionMode::Replace)
+                    .unwrap();
+                let before = doc.objects().cloned().collect::<Vec<_>>();
+                let input = format!(
+                    "UntrimBorder KeepTrimObjects={}",
+                    if keep { "Yes" } else { "No" }
+                );
+                let result = if post {
+                    registry.execute_postselected(&mut doc, &input, Default::default())
+                } else {
+                    registry.execute(&mut doc, &input)
+                };
+                assert_eq!(
+                    result.unwrap(),
+                    format!(
+                        "Untrimmed 1 loop(s) in 1 surface(s); retained {} trim curve(s)",
+                        usize::from(keep)
+                    )
+                );
+                let output = doc.object(id).unwrap();
+                assert_eq!(output.attributes(), before[0].attributes());
+                assert_eq!(output.group_ids(), before[0].group_ids());
+                let Geometry::Brep(restored) = output.geometry() else {
+                    panic!()
+                };
+                assert_eq!(restored.faces()[0].surface(), source.faces()[0].surface());
+                assert_eq!(restored.faces()[0].is_reversed(), reversed);
+                assert_eq!(restored.faces()[0].loops().len(), 2);
+                assert!((restored.area(doc.tolerance()).unwrap() - 96.).abs() < 1e-9);
+                for (a, b) in restored.faces()[0].loops()[1]
+                    .trims()
+                    .iter()
+                    .zip(source.faces()[0].loops()[1].trims())
+                {
+                    assert_eq!(a.curve(), b.curve());
+                    assert_eq!(
+                        restored.edges()[a.edge().unwrap()].curve(),
+                        source.edges()[b.edge().unwrap()].curve()
+                    );
+                }
+                let after = doc.objects().cloned().collect::<Vec<_>>();
+                assert_eq!(after.len(), 2 + usize::from(keep));
+                assert_eq!(after[0].id(), peer);
+                assert_eq!(after.last().unwrap().id(), id);
+                if keep {
+                    assert!(
+                        after[1]
+                            .geometry()
+                            .curve_ref()
+                            .unwrap()
+                            .is_closed()
+                            .unwrap()
+                    );
+                    assert!(after[1].group_ids().is_empty());
+                    assert_eq!(after[1].attributes().layer_id(), doc.current_layer_id());
+                    assert_eq!(after[1].attributes().name(), None);
+                    assert!(!doc.is_selected(after[1].id()));
+                }
+                assert_eq!(doc.is_selected(id), !post);
+                assert_eq!(doc.undo_label(), Some("UntrimBorder"));
+                doc.undo().unwrap();
+                assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+                doc.redo().unwrap();
+                assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+            }
+        }
+    }
+}
+
+#[test]
+fn border_options_are_independent_and_failed_or_noop_commands_preserve_history_contract() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::Brep(trimmed())).unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    for input in [
+        "UntrimBorder Unknown=Yes",
+        "UntrimBorder KeepTrimObjects=Maybe",
+        "UntrimBorder Yes extra",
+    ] {
+        let before = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, input).is_err());
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    registry
+        .execute(&mut doc, "UntrimBorder KeepTrimObjects=Yes")
+        .unwrap();
+    assert!(
+        registry
+            .object_selection_prompt("UntrimBorder")
+            .unwrap()
+            .unwrap()
+            .options[0]
+            .value
+    );
+    assert!(
+        !registry
+            .object_selection_prompt("UntrimAll")
+            .unwrap()
+            .unwrap()
+            .options[0]
+            .value
+    );
+    doc.undo().unwrap();
+    assert!(
+        registry
+            .object_selection_prompt("UntrimBorder")
+            .unwrap()
+            .unwrap()
+            .options[0]
+            .value
+    );
+    registry
+        .execute(&mut doc, "UntrimBorder KeepTrimObjects=No")
+        .unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    registry.execute(&mut doc, "UntrimBorder").unwrap();
+    assert!(doc.can_undo());
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    let box_id = doc
+        .add_geometry(Geometry::Brep(
+            Brep::try_box(
+                CommandContext::default().construction_plane,
+                [[0., 10.]; 3],
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    doc.select_objects_direct([box_id], SelectionMode::Replace)
+        .unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    assert!(matches!(
+        registry.execute(&mut doc, "UntrimBorder"),
+        Err(CommandError::UnsupportedUntrimBorderGeometry)
+    ));
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(doc.selected_object_count(), 0);
+}

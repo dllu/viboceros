@@ -2250,7 +2250,7 @@ cargo test --release -p viboceros viewport::drafting::clipping_tests
 
 ## Surface trim removal
 
-[UntrimAll](commands/untrim-all.md) has 72 saved private-Xvfb command cases in
+[UntrimAll](commands/untrim-all.md) has 100 saved private-Xvfb command cases in
 [the fixture](../tools/rhino_oracle/fixtures/untrim_all.json) and
 [Rhino capture](../tools/rhino_oracle/observations/untrim_all.json). The probe
 records public command completion, full constructed and inserted geometry,
@@ -2259,7 +2259,7 @@ attributes. Source recipes are regenerated without using observed targets.
 For raw surfaces, document snapshots compare a natural B-rep wrapper; the
 constructed record retains the original NURBS surface definition.
 
-The Python replay compares all 68 non-box cases with absolute epsilon `1e-9`
+The Python replay compares all 96 non-box cases with absolute epsilon `1e-9`
 and relative epsilon zero, including four rejected two-face selections and
 both workflows. Four independently built
 box cases compare rejection, attributes, and unchanged geometry within each
@@ -2272,6 +2272,22 @@ The recorded replay's maximum absolute difference is `3.55e-15`.
 
 ```sh
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_all.json tools/rhino_oracle/observations/untrim_all.json
+```
+
+[UntrimBorder](commands/untrim-border.md) has another 100 cases in
+[its source fixture](../tools/rhino_oracle/fixtures/untrim_border.json) and
+[Rhino capture](../tools/rhino_oracle/observations/untrim_border.json). The same
+replay compares 96 complete definitions and scopes the four independent box
+factories to rejection and unchanged geometry. Inner loops retain their exact
+model-space curves, UV trims, tolerances, and winding while unused outer
+topology is removed. The cases include multiple holes, reversed faces, shifted
+and negative domains, natural surfaces, and exterior trims. Both commands
+restore native parameter intervals on new boundary edges. Kernel checks also
+exercise a hole on a closed cylinder with shared seam topology and permuted
+multi-edge hole boundaries.
+
+```sh
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_border.json tools/rhino_oracle/observations/untrim_border.json
 ```
 
 The command reference lists the remaining face-subobject, hatch, and crease

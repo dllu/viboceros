@@ -6,16 +6,42 @@ use viboceros_geometry::BrepLoopType;
 #[cfg(test)]
 mod tests;
 
-const USAGE: &str = "UntrimAll [KeepTrimObjects=Yes|No]";
 const QUESTION: &str =
     "Keep trim objects? Yes or No finishes; Enter uses the shown choice, Esc cancels";
 
-#[derive(Default)]
-pub(super) struct UntrimAllCommand {
+#[derive(Clone, Copy)]
+enum Scope {
+    All,
+    Border,
+}
+
+pub(super) struct UntrimCommand {
+    scope: Scope,
     keep_trim_objects: remembered::Remembered<bool>,
 }
 
-impl UntrimAllCommand {
+impl UntrimCommand {
+    pub(super) fn all() -> Self {
+        Self {
+            scope: Scope::All,
+            keep_trim_objects: Default::default(),
+        }
+    }
+
+    pub(super) fn border() -> Self {
+        Self {
+            scope: Scope::Border,
+            keep_trim_objects: Default::default(),
+        }
+    }
+
+    fn usage(&self) -> &'static str {
+        match self.scope {
+            Scope::All => "UntrimAll [KeepTrimObjects=Yes|No]",
+            Scope::Border => "UntrimBorder [KeepTrimObjects=Yes|No]",
+        }
+    }
+
     fn parse(&self, arguments: &[&str]) -> Result<bool, CommandError> {
         if arguments.is_empty() {
             return Ok(self.keep_trim_objects.get());
@@ -25,12 +51,12 @@ impl UntrimAllCommand {
         {
             return Ok(keep);
         }
-        let (name, value, consumed) = orient_option(arguments, 0, USAGE)?;
-        require_consumed(arguments, consumed, USAGE)?;
+        let (name, value, consumed) = orient_option(arguments, 0, self.usage())?;
+        require_consumed(arguments, consumed, self.usage())?;
         if !option_name_eq(name, "KeepTrimObjects") {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.usage()));
         }
-        parse_yes_no(value).ok_or(CommandError::Usage(USAGE))
+        parse_yes_no(value).ok_or(CommandError::Usage(self.usage()))
     }
 
     fn untrim(
@@ -59,24 +85,28 @@ impl UntrimAllCommand {
             let converted;
             let brep = match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
-                    converted = Brep::try_surface_face(surface.clone(), tolerance)?;
+                    converted = Brep::try_surface_face_with_native_edge_parameters(
+                        surface.clone(),
+                        tolerance,
+                    )?;
                     &converted
                 }
                 Geometry::Brep(brep) if brep.faces().len() == 1 => brep,
                 _ => continue,
             };
             let face = &brep.faces()[0];
-            let surface = face.surface();
-            let untrimmed = Brep::try_rectangular_surface_face_with_orientation(
-                surface.clone(),
-                surface.domain_u(),
-                surface.domain_v(),
-                face.is_reversed(),
-                tolerance,
-            )?;
+            let untrimmed = match self.scope {
+                Scope::All => brep.try_untrim_all(tolerance)?,
+                Scope::Border => brep.try_untrim_outer_boundary(tolerance)?,
+            };
             let mut curves = Vec::new();
             if keep {
                 for (index, boundary) in face.loops().iter().enumerate() {
+                    if matches!(self.scope, Scope::Border)
+                        && boundary.loop_type() != BrepLoopType::Outer
+                    {
+                        continue;
+                    }
                     for mut component in brep.loop_boundary_curve_components(0, index)? {
                         // Retained trims follow the surface's UV winding;
                         // face normal reversal does not reverse those curves.
@@ -141,16 +171,22 @@ impl UntrimAllCommand {
             count = count
                 .checked_add(curves.len())
                 .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
-                .ok_or_else(|| too_many_span_outputs("UntrimAll"))?;
+                .ok_or_else(|| too_many_span_outputs(self.name()))?;
             staged.push((
                 object.id(),
                 Geometry::Brep(untrimmed),
                 curves,
-                face.loops().len(),
+                match self.scope {
+                    Scope::All => face.loops().len(),
+                    Scope::Border => 1,
+                },
             ));
         }
         if staged.is_empty() {
-            return Err(CommandError::UnsupportedUntrimAllGeometry);
+            return Err(match self.scope {
+                Scope::All => CommandError::UnsupportedUntrimAllGeometry,
+                Scope::Border => CommandError::UnsupportedUntrimBorderGeometry,
+            });
         }
         let objects = staged.len();
         let loops: usize = staged.iter().map(|(_, _, _, loops)| loops).sum();
@@ -180,9 +216,12 @@ impl UntrimAllCommand {
     }
 }
 
-impl Command for UntrimAllCommand {
+impl Command for UntrimCommand {
     fn name(&self) -> &'static str {
-        "UntrimAll"
+        match self.scope {
+            Scope::All => "UntrimAll",
+            Scope::Border => "UntrimBorder",
+        }
     }
 
     fn object_selection_prompt(
@@ -235,7 +274,11 @@ impl Command for UntrimAllCommand {
         error: &CommandError,
         _postselected: bool,
     ) {
-        if matches!(error, CommandError::UnsupportedUntrimAllGeometry) {
+        if matches!(
+            error,
+            CommandError::UnsupportedUntrimAllGeometry
+                | CommandError::UnsupportedUntrimBorderGeometry
+        ) {
             document.clear_selection();
         }
     }

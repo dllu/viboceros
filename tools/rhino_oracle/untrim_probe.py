@@ -1,11 +1,14 @@
-"""Owned public UntrimAll commands, retaining complete source/output definitions."""
+"""Owned public untrim commands, retaining complete source/output definitions."""
 import re
+
+COMMANDS = {"untrim_all_command": "UntrimAll", "untrim_border_command": "UntrimBorder"}
 
 
 def validate(operation):
     if (not isinstance(operation, dict)
             or set(operation) - {"preselect", "source_layer"} != {"op", "id", "sources", "keep_trim_objects"}
-            or operation.get("op") != "untrim_all_command"
+            or not isinstance(operation.get("op"), str)
+            or operation.get("op") not in COMMANDS
             or not isinstance(operation["id"], str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None
             or type(operation["keep_trim_objects"]) is not bool
@@ -13,15 +16,16 @@ def validate(operation):
             or type(operation.get("source_layer", False)) is not bool
             or not isinstance(operation["sources"], list)
             or not 1 <= len(operation["sources"]) <= 8):
-        raise ValueError("invalid UntrimAll fixture")
+        raise ValueError("invalid untrim fixture")
     if any(not isinstance(source, dict) or source.get("type") not in
            ("point", "surface", "brep", "box") for source in operation["sources"]):
-        raise ValueError("invalid UntrimAll source type")
+        raise ValueError("invalid untrim source type")
 
 
 def run(operation, tolerance, host):
     from join_probe import observe_command
     validate(operation)
+    command = COMMANDS[operation["op"]]
     Rhino, System = host["Rhino"], host["System"]
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
@@ -105,11 +109,11 @@ def run(operation, tolerance, host):
         before = snapshot()
         # Command-first options belong before selection's terminating Enter;
         # preselection instead answers the command's immediate option prompt.
-        macro = "_UntrimAll _KeepTrimObjects=%s%s" % (
-            "Yes" if operation["keep_trim_objects"] else "No", suffix)
-        marker = "Viboceros UntrimAll " + str(System.Guid.NewGuid())
+        macro = "_%s _KeepTrimObjects=%s%s" % (
+            command, "Yes" if operation["keep_trim_objects"] else "No", suffix)
+        marker = "Viboceros " + command + " " + str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
-        succeeded, after, events = observe_command(Rhino.Commands.Command, "UntrimAll",
+        succeeded, after, events = observe_command(Rhino.Commands.Command, command,
             lambda: Rhino.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
         if len(history) != 2: raise ValueError("UntrimAll history marker missing")

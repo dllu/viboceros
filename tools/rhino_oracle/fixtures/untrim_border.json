@@ -3,7 +3,7 @@
   "iterations": 1,
   "operations": [
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "outer-keep-0-pre-0",
       "sources": [
         {
@@ -182,7 +182,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "outer-keep-0-pre-1",
       "sources": [
         {
@@ -361,7 +361,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "outer-keep-1-pre-0",
       "sources": [
         {
@@ -540,7 +540,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "outer-keep-1-pre-1",
       "sources": [
         {
@@ -719,7 +719,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "hole-keep-0-pre-0",
       "sources": [
         {
@@ -1008,7 +1008,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "hole-keep-0-pre-1",
       "sources": [
         {
@@ -1297,7 +1297,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "hole-keep-1-pre-0",
       "sources": [
         {
@@ -1586,7 +1586,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "hole-keep-1-pre-1",
       "sources": [
         {
@@ -1875,7 +1875,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "natural-keep-0-pre-0",
       "sources": [
         {
@@ -1936,7 +1936,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "natural-keep-0-pre-1",
       "sources": [
         {
@@ -1997,7 +1997,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "natural-keep-1-pre-0",
       "sources": [
         {
@@ -2058,7 +2058,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "natural-keep-1-pre-1",
       "sources": [
         {
@@ -2119,7 +2119,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "box-keep-0-pre-0",
       "sources": [
         {
@@ -2130,7 +2130,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "box-keep-0-pre-1",
       "sources": [
         {
@@ -2141,7 +2141,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "box-keep-1-pre-0",
       "sources": [
         {
@@ -2152,7 +2152,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "box-keep-1-pre-1",
       "sources": [
         {
@@ -2163,7 +2163,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "mixed-keep-0-pre-0",
       "sources": [
         {
@@ -2460,7 +2460,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "mixed-keep-0-pre-1",
       "sources": [
         {
@@ -2757,7 +2757,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "mixed-keep-1-pre-0",
       "sources": [
         {
@@ -3054,7 +3054,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "mixed-keep-1-pre-1",
       "sources": [
         {
@@ -3351,7 +3351,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-outer-keep-0-pre-0",
       "sources": [
         {
@@ -3531,7 +3531,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-outer-keep-0-pre-1",
       "sources": [
         {
@@ -3711,7 +3711,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-outer-keep-1-pre-0",
       "sources": [
         {
@@ -3891,7 +3891,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-outer-keep-1-pre-1",
       "sources": [
         {
@@ -4071,7 +4071,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-hole-keep-0-pre-0",
       "sources": [
         {
@@ -4361,7 +4361,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-hole-keep-0-pre-1",
       "sources": [
         {
@@ -4651,7 +4651,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-hole-keep-1-pre-0",
       "sources": [
         {
@@ -4941,7 +4941,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-hole-keep-1-pre-1",
       "sources": [
         {
@@ -5231,7 +5231,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "full-border-keep-0-pre-0",
       "sources": [
         {
@@ -5520,7 +5520,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "full-border-keep-0-pre-1",
       "sources": [
         {
@@ -5809,7 +5809,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "full-border-keep-1-pre-0",
       "sources": [
         {
@@ -6098,7 +6098,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "full-border-keep-1-pre-1",
       "sources": [
         {
@@ -6387,7 +6387,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "annulus-keep-0-pre-0",
       "sources": [
         {
@@ -6824,7 +6824,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "annulus-keep-0-pre-1",
       "sources": [
         {
@@ -7261,7 +7261,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "annulus-keep-1-pre-0",
       "sources": [
         {
@@ -7698,7 +7698,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "annulus-keep-1-pre-1",
       "sources": [
         {
@@ -8135,7 +8135,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "oblique-keep-0-pre-0",
       "sources": [
         {
@@ -8424,7 +8424,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "oblique-keep-0-pre-1",
       "sources": [
         {
@@ -8713,7 +8713,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "oblique-keep-1-pre-0",
       "sources": [
         {
@@ -9002,7 +9002,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "oblique-keep-1-pre-1",
       "sources": [
         {
@@ -9291,7 +9291,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-disk-keep-0-pre-0",
       "sources": [
         {
@@ -9590,7 +9590,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-disk-keep-0-pre-1",
       "sources": [
         {
@@ -9889,7 +9889,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-disk-keep-1-pre-0",
       "sources": [
         {
@@ -10188,7 +10188,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-disk-keep-1-pre-1",
       "sources": [
         {
@@ -10487,7 +10487,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-annulus-keep-0-pre-0",
       "sources": [
         {
@@ -10970,7 +10970,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-annulus-keep-0-pre-1",
       "sources": [
         {
@@ -11453,7 +11453,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-annulus-keep-1-pre-0",
       "sources": [
         {
@@ -11936,7 +11936,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-annulus-keep-1-pre-1",
       "sources": [
         {
@@ -12419,7 +12419,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-oblique-keep-0-pre-0",
       "sources": [
         {
@@ -12769,7 +12769,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-oblique-keep-0-pre-1",
       "sources": [
         {
@@ -13119,7 +13119,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-oblique-keep-1-pre-0",
       "sources": [
         {
@@ -13469,7 +13469,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "paraboloid-oblique-keep-1-pre-1",
       "sources": [
         {
@@ -13819,7 +13819,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "multiple-keep-0-pre-0",
       "sources": [
         {
@@ -14279,7 +14279,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "multiple-keep-0-pre-1",
       "sources": [
         {
@@ -14739,7 +14739,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "multiple-keep-1-pre-0",
       "sources": [
         {
@@ -15199,7 +15199,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "multiple-keep-1-pre-1",
       "sources": [
         {
@@ -15659,7 +15659,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "cylinder-keep-0-pre-0",
       "sources": [
         {
@@ -15840,7 +15840,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "cylinder-keep-0-pre-1",
       "sources": [
         {
@@ -16021,7 +16021,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "cylinder-keep-1-pre-0",
       "sources": [
         {
@@ -16202,7 +16202,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "cylinder-keep-1-pre-1",
       "sources": [
         {
@@ -16383,7 +16383,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "kinky-keep-0-pre-0",
       "sources": [
         {
@@ -16461,7 +16461,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "kinky-keep-0-pre-1",
       "sources": [
         {
@@ -16539,7 +16539,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "kinky-keep-1-pre-0",
       "sources": [
         {
@@ -16617,7 +16617,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "kinky-keep-1-pre-1",
       "sources": [
         {
@@ -16695,7 +16695,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "triangle-keep-0-pre-0",
       "sources": [
         {
@@ -16756,7 +16756,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "triangle-keep-0-pre-1",
       "sources": [
         {
@@ -16817,7 +16817,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "triangle-keep-1-pre-0",
       "sources": [
         {
@@ -16878,7 +16878,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "triangle-keep-1-pre-1",
       "sources": [
         {
@@ -16939,7 +16939,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "source-layer-keep-0-pre-0",
       "sources": [
         {
@@ -17229,7 +17229,7 @@
       "source_layer": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "source-layer-keep-0-pre-1",
       "sources": [
         {
@@ -17519,7 +17519,7 @@
       "source_layer": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "source-layer-keep-1-pre-0",
       "sources": [
         {
@@ -17809,7 +17809,7 @@
       "source_layer": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "source-layer-keep-1-pre-1",
       "sources": [
         {
@@ -18099,7 +18099,7 @@
       "source_layer": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "two-holes-keep-0-pre-0",
       "sources": [
         {
@@ -18498,7 +18498,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "two-holes-keep-0-pre-1",
       "sources": [
         {
@@ -18897,7 +18897,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "two-holes-keep-1-pre-0",
       "sources": [
         {
@@ -19296,7 +19296,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "two-holes-keep-1-pre-1",
       "sources": [
         {
@@ -19695,7 +19695,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-two-holes-keep-0-pre-0",
       "sources": [
         {
@@ -20095,7 +20095,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-two-holes-keep-0-pre-1",
       "sources": [
         {
@@ -20495,7 +20495,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-two-holes-keep-1-pre-0",
       "sources": [
         {
@@ -20895,7 +20895,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "reversed-two-holes-keep-1-pre-1",
       "sources": [
         {
@@ -21295,7 +21295,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-domains-keep-0-pre-0",
       "sources": [
         {
@@ -21694,7 +21694,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-domains-keep-0-pre-1",
       "sources": [
         {
@@ -22093,7 +22093,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-domains-keep-1-pre-0",
       "sources": [
         {
@@ -22492,7 +22492,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-domains-keep-1-pre-1",
       "sources": [
         {
@@ -22891,7 +22891,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-surface-keep-0-pre-0",
       "sources": [
         {
@@ -22952,7 +22952,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-surface-keep-0-pre-1",
       "sources": [
         {
@@ -23013,7 +23013,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-surface-keep-1-pre-0",
       "sources": [
         {
@@ -23074,7 +23074,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-surface-keep-1-pre-1",
       "sources": [
         {
@@ -23135,7 +23135,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-outer-keep-0-pre-0",
       "sources": [
         {
@@ -23314,7 +23314,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-outer-keep-0-pre-1",
       "sources": [
         {
@@ -23493,7 +23493,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-outer-keep-1-pre-0",
       "sources": [
         {
@@ -23672,7 +23672,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-outer-keep-1-pre-1",
       "sources": [
         {
@@ -23851,7 +23851,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "negative-surface-keep-0-pre-0",
       "sources": [
         {
@@ -23912,7 +23912,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "negative-surface-keep-0-pre-1",
       "sources": [
         {
@@ -23973,7 +23973,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "negative-surface-keep-1-pre-0",
       "sources": [
         {
@@ -24034,7 +24034,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "negative-surface-keep-1-pre-1",
       "sources": [
         {
@@ -24095,7 +24095,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-cylinder-keep-0-pre-0",
       "sources": [
         {
@@ -24276,7 +24276,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-cylinder-keep-0-pre-1",
       "sources": [
         {
@@ -24457,7 +24457,7 @@
       "preselect": true
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-cylinder-keep-1-pre-0",
       "sources": [
         {
@@ -24638,7 +24638,7 @@
       "preselect": false
     },
     {
-      "op": "untrim_all_command",
+      "op": "untrim_border_command",
       "id": "shifted-cylinder-keep-1-pre-1",
       "sources": [
         {

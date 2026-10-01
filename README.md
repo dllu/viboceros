@@ -67,8 +67,9 @@ interchange are available; STEP imports meshes or supported native planar and
 NURBS B-reps and exports faceted shells or supported native B-reps. Full Rhino
 compatibility is still in progress.
 
-`UntrimAll KeepTrimObjects=Yes|No` restores selected standalone surfaces and can
-retain their trim boundaries as curves; see the [command reference](docs/commands/untrim-all.md).
+[`UntrimAll`](docs/commands/untrim-all.md) removes all trims from standalone
+surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exterior
+boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.
 
 ## Build and run
 

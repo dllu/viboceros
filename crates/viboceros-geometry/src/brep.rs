@@ -45,6 +45,7 @@ mod tolerance;
 use tolerance::scaled_tolerance;
 mod trim_image;
 mod trim_region;
+mod untrim;
 mod validate;
 
 #[cfg(test)]

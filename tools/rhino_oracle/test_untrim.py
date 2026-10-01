@@ -39,8 +39,8 @@ class UntrimTests(unittest.TestCase):
         fixture=json.loads((root/"fixtures/untrim_all.json").read_text())
         observed=json.loads((root/"observations/untrim_all.json").read_text())
         self.assertEqual(request(),fixture)
-        self.assertEqual(len(fixture["operations"]),72)
-        self.assertEqual(len(observed["results"]),72)
+        self.assertEqual(len(fixture["operations"]),100)
+        self.assertEqual(len(observed["results"]),100)
         def curve_definition(spec,actual):
             self.assertEqual(spec["degree"],actual["degree"])
             self.assertEqual(spec["knots"],actual["knots"])
@@ -98,7 +98,7 @@ class UntrimTests(unittest.TestCase):
         base=request()["operations"][0]
         for changes in (dict(id="x _Delete"),dict(keep_trim_objects=1),dict(preselect=None),
                         dict(sources=[]),dict(sources=[{}]*9),dict(sources=[None]),
-                        dict(sources=[dict(type="macro")]),dict(extra=1)):
+                        dict(sources=[dict(type="macro")]),dict(extra=1),dict(op=[]),dict(op="untrim_holes_command")):
             with self.subTest(changes=changes),self.assertRaises(ValueError):validate(dict(base,**changes))
 
     def test_failed_insertion_and_cleanup_still_restore_selection_and_dispose_sources(self):

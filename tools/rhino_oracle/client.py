@@ -218,12 +218,12 @@ class OracleClient:
                 raise OracleProtocolError("orientation audit requires one iteration")
             for operation in request["operations"]:
                 if operation.get("op") == "orientation_audit": validate(operation)
-        if any(op.get("op") == "untrim_all_command" for op in request.get("operations", [])):
+        if any(op.get("op") in ("untrim_all_command", "untrim_border_command") for op in request.get("operations", [])):
             from .untrim_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
-                raise OracleProtocolError("UntrimAll commands require one iteration")
+                raise OracleProtocolError("untrim commands require one iteration")
             for operation in request["operations"]:
-                if operation.get("op") == "untrim_all_command": validate(operation)
+                if operation.get("op") in ("untrim_all_command", "untrim_border_command"): validate(operation)
         if any(op.get("op") == "view_camera_probe" for op in request.get("operations", [])):
             from .view_camera_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -355,7 +355,7 @@ class OracleClient:
                 for name in ("orientation_probe.py", "join_probe.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") == "untrim_all_command" for op in request.get("operations", [])):
+            if any(op.get("op") in ("untrim_all_command", "untrim_border_command") for op in request.get("operations", [])):
                 for name in ("untrim_probe.py", "join_probe.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)

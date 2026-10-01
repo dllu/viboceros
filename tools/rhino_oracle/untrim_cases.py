@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 
 
-def request():
+def _base_request():
     def controls(points, weights=None):
         return [dict(point=list(p), weight=1 if weights is None else weights[i]) for i, p in enumerate(points)]
     surface = dict(degree_u=1, degree_v=1, control_point_count_u=2, control_point_count_v=2,
@@ -67,6 +67,54 @@ def request():
             operations.append(dict(op="untrim_all_command",id="source-layer-keep-%d-pre-%d"%(keep,pre),
                 sources=[copy.deepcopy(hole)],keep_trim_objects=bool(keep),preselect=bool(pre),source_layer=True))
     return dict(protocol_version=1,iterations=1,operations=operations)
+
+
+def request():
+    return _extended_request("untrim_all_command")
+
+
+def border_request():
+    return _extended_request("untrim_border_command")
+
+
+def _extended_request(command):
+    result=_base_request()
+    for operation in result["operations"]:
+        operation["op"]=command
+    hole=copy.deepcopy(next(op for op in result["operations"] if op["id"]=="hole-keep-0-pre-0")["sources"][0])
+    two=copy.deepcopy(hole)
+    second=copy.deepcopy(hole["boundaries"][1])
+    for key in ("curve","parameter_curve"):
+        for control in second[key]["control_points"]:
+            control["point"][0]+=3.
+            control["point"][1]+=3.
+    two["boundaries"].append(second)
+    reversed_two=copy.deepcopy(two);reversed_two["reversed"]=True
+    shifted=copy.deepcopy(two)
+    shifted["surface"]["knots_u"]=[2.,2.,4.,4.]
+    shifted["surface"]["knots_v"]=[-3.,-3.,5.,5.]
+    def parameter(p):return [2.+.2*p[0],-3.+.8*p[1],0.]
+    for boundary in shifted["boundaries"]:
+        for control in boundary["parameter_curve"]["control_points"]:
+            control["point"]=parameter(control["point"])
+    shifted["interior_uv"]=parameter(shifted["interior_uv"]+[0.])[:2]
+    raw=dict(type="surface",**copy.deepcopy(shifted["surface"]))
+    outer=copy.deepcopy(shifted);outer["boundaries"]=outer["boundaries"][:1]
+    negative=copy.deepcopy(raw)
+    negative["knots_u"]=[-4.,-4.,-2.,-2.]
+    negative["knots_v"]=[-5.,-5.,-1.,-1.]
+    cylinder=copy.deepcopy(next(op for op in result["operations"] if op["id"]=="cylinder-keep-0-pre-0")["sources"][0])
+    cylinder["knots_u"]=[k+2. for k in cylinder["knots_u"]]
+    cylinder["knots_v"]=[k-1. for k in cylinder["knots_v"]]
+    for name,source in (("two-holes",two),("reversed-two-holes",reversed_two),("shifted-domains",shifted),
+                        ("shifted-surface",raw),("shifted-outer",outer),("negative-surface",negative),
+                        ("shifted-cylinder",cylinder)):
+        for keep in (False,True):
+            for pre in (False,True):
+                result["operations"].append(dict(op=command,
+                    id="%s-keep-%d-pre-%d"%(name,keep,pre),sources=[copy.deepcopy(source)],
+                    keep_trim_objects=keep,preselect=pre))
+    return result
 
 
 if __name__ == "__main__": print(json.dumps(request(),indent=2))

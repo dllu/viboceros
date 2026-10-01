@@ -28,10 +28,14 @@ enum BoxSource {
     Box,
 }
 
-pub(super) fn run(f: &UntrimFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
+pub(super) fn run(
+    f: &UntrimFixture,
+    tolerance: Tolerance,
+    command: &str,
+) -> Result<(Value, u64), ProbeError> {
     if !(1..=8).contains(&f.sources.len()) {
         return Err(ProbeError::FixtureInvariant(
-            "UntrimAll requires 1 to 8 sources",
+            "untrim commands require 1 to 8 sources",
         ));
     }
     let mut document = Document::new(tolerance);
@@ -80,7 +84,7 @@ pub(super) fn run(f: &UntrimFixture, tolerance: Tolerance) -> Result<(Value, u64
         document.select_objects_direct(eligible, SelectionMode::Replace)?;
     }
     let input = format!(
-        "UntrimAll KeepTrimObjects={}",
+        "{command} KeepTrimObjects={}",
         if f.keep_trim_objects { "Yes" } else { "No" }
     );
     let result = if f.preselect {
@@ -123,7 +127,7 @@ fn snapshot(
                     // Normalize that wrapper only for document snapshots;
                     // constructed records retain the original surface input.
                     Geometry::NurbsSurface(surface) => geometry_record(&Geometry::Brep(
-                        Brep::try_surface_face(surface.clone(),document.tolerance())?),document.tolerance())?,
+                        Brep::try_surface_face_with_native_edge_parameters(surface.clone(),document.tolerance())?),document.tolerance())?,
                     geometry => geometry_record(geometry, document.tolerance())?,
                 },
     }))}).collect()

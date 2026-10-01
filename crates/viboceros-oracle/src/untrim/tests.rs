@@ -36,8 +36,32 @@ fn full_surface_and_retained_trim_definitions_match_owned_rhino_commands() {
         "../../../../tools/rhino_oracle/observations/untrim_all.json"
     ))
     .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 72);
+    replay_complete_definitions(&request, &observed, 100, 92, 96);
+}
+
+#[test]
+fn exterior_restoration_and_preserved_holes_match_complete_rhino_definitions() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/untrim_border.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/untrim_border.json"
+    ))
+    .unwrap();
+    replay_complete_definitions(&request, &observed, 100, 92, 96);
+}
+
+fn replay_complete_definitions(
+    request: &ProbeRequest,
+    observed: &Value,
+    cases: usize,
+    expected_successes: usize,
+    expected_complete: usize,
+) {
+    let actual = run_request(request).unwrap();
+    assert_eq!(actual.results.len(), cases);
+    assert_eq!(observed["results"].as_array().unwrap().len(), cases);
     let mut successes = 0;
     let mut complete_definitions = 0;
     for (actual, expected) in actual
@@ -53,6 +77,11 @@ fn full_surface_and_retained_trim_definitions_match_owned_rhino_commands() {
             // The two independent box factories have different face/edge
             // tables. This case proves whole-polysurface rejection, unchanged
             // geometry in each engine, and identical identity/attribute state.
+            assert_eq!(a["succeeded"], false);
+            for record in [a, b] {
+                assert_eq!(record["before"].as_array().unwrap().len(), 1);
+                assert_eq!(record["after"].as_array().unwrap().len(), 1);
+            }
             for (old, new) in a["before"]
                 .as_array()
                 .unwrap()
@@ -80,7 +109,9 @@ fn full_surface_and_retained_trim_definitions_match_owned_rhino_commands() {
                     })
                     .collect::<Vec<_>>()
             };
-            assert_eq!(strip(&a["after"]), strip(&b["after"]));
+            for field in ["before", "after"] {
+                assert_eq!(strip(&a[field]), strip(&b[field]));
+            }
         } else {
             for field in ["constructed", "before", "after"] {
                 same(&a[field], &b[field], &format!("{}.{}", actual.id, field));
@@ -88,15 +119,19 @@ fn full_surface_and_retained_trim_definitions_match_owned_rhino_commands() {
             complete_definitions += 1;
         }
     }
-    assert_eq!(successes, 64);
-    assert_eq!(complete_definitions, 68);
+    assert_eq!(successes, expected_successes);
+    assert_eq!(complete_definitions, expected_complete);
 }
 
 #[test]
 fn untrim_rejects_ambiguous_iterations_and_empty_sources() {
-    let mut request: ProbeRequest = serde_json::from_value(json!({"protocol_version":1,"iterations":2,
-        "operations":[{"op":"untrim_all_command","id":"empty","sources":[],"keep_trim_objects":false}]})).unwrap();
-    assert!(run_request(&request).is_err());
-    request.iterations = 1;
-    assert!(run_request(&request).is_err());
+    for command in ["untrim_all_command", "untrim_border_command"] {
+        let mut request: ProbeRequest =
+            serde_json::from_value(json!({"protocol_version":1,"iterations":2,
+            "operations":[{"op":command,"id":"empty","sources":[],"keep_trim_objects":false}]}))
+            .unwrap();
+        assert!(run_request(&request).is_err());
+        request.iterations = 1;
+        assert!(run_request(&request).is_err());
+    }
 }
