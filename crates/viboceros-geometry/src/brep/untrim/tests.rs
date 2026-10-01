@@ -1,5 +1,150 @@
 use super::*;
 
+#[test]
+fn selected_hole_removal_preserves_outer_geometry_and_discards_unused_topology() {
+    for reversed in [false, true] {
+        let original = source(reversed);
+        let saved = original.clone();
+        let result = original
+            .try_remove_holes(&[(0, 1), (0, 1)], Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(original, saved);
+        assert_eq!(result.vertices, original.vertices[..1]);
+        assert_eq!(result.edges.len(), 1);
+        assert_eq!(result.edges[0].curve, original.edges[1].curve);
+        assert_eq!(result.edges[0].tolerance, original.edges[1].tolerance);
+        assert_eq!(result.faces[0].surface, original.faces[0].surface);
+        assert_eq!(result.faces[0].reversed, reversed);
+        let mut expected = original.faces[0].loops[0].clone();
+        expected.trims[0].edge = Some(0);
+        assert_eq!(result.faces[0].loops, [expected]);
+        assert!((result.area(Tolerance::DEFAULT).unwrap() - 64.).abs() < 1e-10);
+        assert!(
+            result.faces[0]
+                .contains_parameters(4., 4., Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert_eq!(
+            result.try_remove_all_holes(Tolerance::DEFAULT).unwrap(),
+            Some(result.clone())
+        );
+        assert_eq!(
+            result.try_remove_holes(&[], Tolerance::DEFAULT).unwrap(),
+            None
+        );
+        assert_eq!(
+            original
+                .try_remove_holes(&[(0, 0)], Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        for indices in [vec![(0, 1), (0, 2)], vec![(0, 1), (1, 0)]] {
+            assert!(
+                original
+                    .try_remove_holes(&indices, Tolerance::DEFAULT)
+                    .is_err()
+            );
+            assert_eq!(original, saved);
+        }
+    }
+}
+
+#[test]
+fn one_joined_opening_removes_its_wall_and_both_cap_holes_exactly() {
+    let frame = Frame3::try_from_directions(
+        point(0., 0.),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let tube = Brep::try_tube(frame, [2., 5.], 8., Tolerance::DEFAULT)
+        .unwrap()
+        .reordered_edges(&[5, 1, 3, 0, 4, 2], Tolerance::DEFAULT)
+        .unwrap();
+    let result = tube
+        .try_remove_holes(&[(2, 1)], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        tube.try_remove_holes(&[(3, 1)], Tolerance::DEFAULT)
+            .unwrap(),
+        Some(result.clone())
+    );
+    assert_eq!(
+        tube.try_remove_all_holes(Tolerance::DEFAULT).unwrap(),
+        Some(result.clone())
+    );
+    assert!(result.is_closed());
+    assert!(result.is_solid());
+    assert_eq!(result.vertices.len(), 2);
+    assert_eq!(result.edges.len(), 3);
+    assert_eq!(result.faces.len(), 3);
+    for (remaining, index) in result.faces.iter().zip([0, 2, 3]) {
+        assert_eq!(remaining.surface, tube.faces[index].surface);
+        assert_eq!(remaining.reversed, tube.faces[index].reversed);
+        assert_eq!(remaining.loops.len(), 1);
+        for (a, b) in remaining.loops[0]
+            .trims
+            .iter()
+            .zip(&tube.faces[index].loops[0].trims)
+        {
+            assert_eq!(a.curve, b.curve);
+            assert_eq!(a.tolerance, b.tolerance);
+            assert_eq!(a.trim_type, b.trim_type);
+            assert_eq!(a.reversed_3d, b.reversed_3d);
+            assert_eq!(a.iso, b.iso);
+            assert_eq!(
+                result.edges[a.edge.unwrap()].curve,
+                tube.edges[b.edge.unwrap()].curve
+            );
+        }
+    }
+    let open = tube.sub_brep(&[0, 1, 2], Tolerance::DEFAULT).unwrap();
+    let closed_hole = open
+        .try_remove_holes(&[(2, 1)], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(closed_hole.faces.len(), 2);
+    assert!(!closed_hole.is_closed());
+    assert!(closed_hole.faces.iter().all(|face| face.loops.len() == 1));
+    let caps = tube.sub_brep(&[2, 3], Tolerance::DEFAULT).unwrap();
+    let one_cap = caps
+        .try_remove_holes(&[(0, 1)], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(one_cap.faces[0].loops.len(), 1);
+    assert_eq!(one_cap.faces[1].loops.len(), 2);
+    assert_eq!(
+        one_cap.faces[1].loops[1].trims[0].curve,
+        caps.faces[1].loops[1].trims[0].curve
+    );
+}
+
+#[test]
+fn hole_traversal_stays_within_each_disconnected_component() {
+    let original =
+        Brep::try_combine(vec![source(false), source(true)], Tolerance::DEFAULT).unwrap();
+    let selected = original
+        .try_remove_holes(&[(0, 1)], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(selected.faces.len(), 2);
+    assert_eq!(selected.faces[0].loops.len(), 1);
+    assert_eq!(selected.faces[1].loops.len(), 2);
+    assert_eq!(selected.faces[1].surface, original.faces[1].surface);
+    assert!(selected.faces[1].reversed);
+    assert!((selected.area(Tolerance::DEFAULT).unwrap() - 124.).abs() < 1e-10);
+    let all = original
+        .try_remove_all_holes(Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert!((all.area(Tolerance::DEFAULT).unwrap() - 128.).abs() < 1e-10);
+    assert_eq!(all.edges.len(), 2);
+    assert_eq!(all.vertices.len(), 2);
+}
+
 fn point(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.).unwrap()
 }

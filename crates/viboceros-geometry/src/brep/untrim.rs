@@ -1,10 +1,127 @@
-//! Exact outer-boundary replacement while retaining interior trim geometry.
+//! Exact boundary restoration and interior-hole removal.
 use super::*;
 
 #[cfg(test)]
 mod tests;
 
 impl Brep {
+    /// Removes all interior holes, including faces joined to their boundaries.
+    /// A source without holes is returned as an unchanged independent copy.
+    pub fn try_remove_all_holes(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        let holes = self
+            .faces
+            .iter()
+            .enumerate()
+            .flat_map(|(face, record)| {
+                (1..record.loops.len()).map(move |boundary| (face, boundary))
+            })
+            .collect::<Vec<_>>();
+        if holes.is_empty() {
+            return Ok(Some(self.clone()));
+        }
+        self.try_remove_holes(&holes, tolerance)
+    }
+
+    /// Removes the selected interior loops and any connected hole walls.
+    /// Indices identify a face and its local loop; outer loops are ignored.
+    /// Repeated indices select a hole once. Invalid indices return an error
+    /// before any geometry changes. A selection without inner loops returns
+    /// `None`.
+    ///
+    /// Traversal stops at neighboring inner loops, which are also removed.
+    /// Faces reached through their outer loops belong to the hole walls and
+    /// are deleted. This closes both ends of a joined through hole when only
+    /// one opening is selected. Surviving control nets, domains, tolerances,
+    /// and orientation are preserved; unused topology is compacted in source
+    /// order, and the complete result is validated.
+    pub fn try_remove_holes(
+        &self,
+        holes: &[(usize, usize)],
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        let mut removed = self
+            .faces
+            .iter()
+            .map(|face| vec![false; face.loops.len()])
+            .collect::<Vec<_>>();
+        let mut queue = Vec::new();
+        for &(face, boundary) in holes {
+            let Some(record) = self.faces.get(face) else {
+                return Err(GeometryError::BrepFaceIndexOutOfRange {
+                    face,
+                    face_count: self.faces.len(),
+                });
+            };
+            let Some(boundary_record) = record.loops.get(boundary) else {
+                return Err(GeometryError::InvalidBrepTopology {
+                    context: "hole loop index outside face",
+                });
+            };
+            if boundary_record.loop_type == BrepLoopType::Inner
+                && !std::mem::replace(&mut removed[face][boundary], true)
+            {
+                queue.push((face, boundary));
+            }
+        }
+        if queue.is_empty() {
+            return Ok(None);
+        }
+        let mut uses = vec![Vec::new(); self.edges.len()];
+        for usage in self.trim_uses() {
+            if let Some(edge) = usage.trim.edge {
+                uses[edge].push((usage.face, usage.face_loop));
+            }
+        }
+        let mut deleted_faces = vec![false; self.faces.len()];
+        while let Some((face, boundary)) = queue.pop() {
+            for trim in &self.faces[face].loops[boundary].trims {
+                let Some(edge) = trim.edge else { continue };
+                for &(neighbor, neighbor_loop) in &uses[edge] {
+                    if (neighbor, neighbor_loop) == (face, boundary)
+                        || deleted_faces[neighbor]
+                        || removed[neighbor][neighbor_loop]
+                    {
+                        continue;
+                    }
+                    if self.faces[neighbor].loops[neighbor_loop].loop_type == BrepLoopType::Inner {
+                        removed[neighbor][neighbor_loop] = true;
+                        queue.push((neighbor, neighbor_loop));
+                    } else {
+                        deleted_faces[neighbor] = true;
+                        for (boundary, marked) in removed[neighbor].iter_mut().enumerate() {
+                            *marked = true;
+                            queue.push((neighbor, boundary));
+                        }
+                    }
+                }
+            }
+        }
+        if deleted_faces.iter().all(|deleted| *deleted) {
+            return Ok(None);
+        }
+        let faces = self
+            .faces
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| !deleted_faces[*index])
+            .map(|(index, face)| {
+                let mut face = face.clone();
+                face.loops = face
+                    .loops
+                    .into_iter()
+                    .enumerate()
+                    .filter(|(boundary, _)| !removed[index][*boundary])
+                    .map(|(_, boundary)| boundary)
+                    .collect();
+                face
+            })
+            .collect::<Vec<_>>();
+        compact_retained_faces(self, faces, tolerance).map(Some)
+    }
+
     /// Wraps a surface as one natural face using its original U/V intervals
     /// on spatial boundary curves. Reversed north/west curves use negated
     /// intervals. Control nets and UV trims remain exact; closed directions
@@ -123,6 +240,72 @@ impl Brep {
         natural.faces[0].loops.append(&mut holes);
         Self::try_new(vertices, edges, natural.faces, tolerance)
     }
+}
+
+fn compact_retained_faces(
+    source: &Brep,
+    mut faces: Vec<BrepFace>,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    let mut used_vertices = vec![false; source.vertices.len()];
+    let mut edge_uses = vec![0usize; source.edges.len()];
+    for face in faces.iter() {
+        for boundary in &face.loops {
+            for trim in &boundary.trims {
+                for vertex in trim.vertices {
+                    used_vertices[vertex] = true;
+                }
+                if let Some(edge) = trim.edge {
+                    edge_uses[edge] += 1;
+                    for vertex in source.edges[edge].vertices {
+                        used_vertices[vertex] = true;
+                    }
+                }
+            }
+        }
+    }
+    let mut vertex_map = vec![usize::MAX; source.vertices.len()];
+    let mut vertices = Vec::new();
+    for (index, vertex) in source.vertices.iter().copied().enumerate() {
+        if used_vertices[index] {
+            vertex_map[index] = vertices.len();
+            vertices.push(vertex);
+        }
+    }
+    let mut edge_map = vec![usize::MAX; source.edges.len()];
+    let mut edges = Vec::new();
+    for (index, edge) in source.edges.iter().enumerate() {
+        if edge_uses[index] != 0 {
+            edge_map[index] = edges.len();
+            let mut edge = edge.clone();
+            edge.vertices = edge.vertices.map(|vertex| vertex_map[vertex]);
+            edges.push(edge);
+        }
+    }
+    for face in faces.iter_mut() {
+        for boundary in &mut face.loops {
+            let mut same_loop_uses = BTreeMap::new();
+            for trim in &boundary.trims {
+                if let Some(edge) = trim.edge {
+                    *same_loop_uses.entry(edge).or_insert(0usize) += 1;
+                }
+            }
+            for trim in &mut boundary.trims {
+                trim.vertices = trim.vertices.map(|vertex| vertex_map[vertex]);
+                if let Some(edge) = trim.edge {
+                    trim.trim_type = if edge_uses[edge] == 1 {
+                        BrepTrimType::Boundary
+                    } else if same_loop_uses[&edge] >= 2 {
+                        BrepTrimType::Seam
+                    } else {
+                        BrepTrimType::Mated
+                    };
+                    trim.edge = Some(edge_map[edge]);
+                }
+            }
+        }
+    }
+    Brep::try_new(vertices, edges, faces, tolerance)
 }
 
 // Editing an existing outer loop uses native surface intervals for its new

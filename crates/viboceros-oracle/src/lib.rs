@@ -85,6 +85,7 @@ mod mesh_picking;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
+mod remove_holes;
 mod solid_orientation;
 #[cfg(test)]
 mod test_json;
@@ -181,6 +182,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    BrepRemoveHoles {
+        id: String,
+        #[serde(flatten)]
+        fixture: remove_holes::RemoveHolesFixture,
+    },
     UntrimBorderCommand {
         id: String,
         #[serde(flatten)]
@@ -2022,6 +2028,7 @@ impl Operation {
             | Self::BorderCommand { id, .. }
             | Self::CapCommand { id, .. }
             | Self::BrepMergeEdge { id, .. }
+            | Self::BrepRemoveHoles { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::MergeEdgeCommand { id, .. }
             | Self::SplitEdgeCommand { id, .. }
@@ -2398,6 +2405,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::VolumeCommand { .. }
                 | Operation::UntrimAllCommand { .. }
                 | Operation::UntrimBorderCommand { .. }
+                | Operation::BrepRemoveHoles { .. }
         ) && request.iterations != 1
         {
             return Err(ProbeError::FixtureInvariant(
@@ -2433,6 +2441,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
         Operation::UntrimAllCommand { fixture, .. } => {
             untrim::run(fixture, tolerance, "UntrimAll")?
         }

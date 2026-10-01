@@ -2293,6 +2293,24 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_b
 The command reference lists the remaining face-subobject, hatch, and crease
 settings gaps. These captures do not certify those workflows.
 
+## Interior-hole removal geometry API
+
+[`brep_remove_holes`](geometry/remove-holes.md) records the public
+`Brep.RemoveHoles` overloads on identical, owned 3dm source files. Its
+[28 source recipes](../tools/rhino_oracle/fixtures/brep_remove_holes.json) and
+[Rhino capture](../tools/rhino_oracle/observations/brep_remove_holes.json) compare
+complete before/after topology, NURBS definitions, UV trims, and tolerances with
+absolute epsilon `1e-9` and relative epsilon zero. Selecting one opening of a
+joined through hole removes its wall and closes both openings. Disconnected
+caps are edited independently. Empty and outer-only selections return no result;
+the all-hole overload copies no-hole sources unchanged. This untimed API probe
+does not establish interactive `UntrimHoles` parity. Its component-selection,
+length-filter, retained-object, and history workflows remain under development.
+
+```sh
+python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/brep_remove_holes.json --observations tools/rhino_oracle/observations/brep_remove_holes.json --absolute-epsilon 1e-9 --relative-epsilon 0 --timeout 300
+```
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

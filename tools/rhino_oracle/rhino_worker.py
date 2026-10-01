@@ -6639,6 +6639,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "brep_merge_edge":
         import merge_edge_probe
         return merge_edge_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_remove_holes":
+        import remove_holes_probe
+        return remove_holes_probe.run(operation, tolerance, globals())
     if operation["op"] == "brep_join":
         import brep_join_probe
         return brep_join_probe.run(operation, tolerance, globals())
@@ -6768,6 +6771,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "orientation_audit":
         import orientation_probe
         return orientation_probe.run(operation, tolerance, globals())
+    if kind == "untrim_holes_command":
+        import untrim_holes_probe
+        return untrim_holes_probe.run(operation, tolerance, globals())
     if kind in ("untrim_all_command", "untrim_border_command"):
         import untrim_probe
         return untrim_probe.run(operation, tolerance, globals())

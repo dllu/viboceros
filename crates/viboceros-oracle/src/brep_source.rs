@@ -66,6 +66,11 @@ pub(super) enum Primitive {
         radii: [f64; 2],
         height: f64,
     },
+    SolidTube {
+        radii: [f64; 2],
+        height: f64,
+        keep_faces: Option<Vec<usize>>,
+    },
     MeshBrep {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -131,6 +136,23 @@ impl BrepCommandSource {
                 )?
                 .sub_brep(&[0, 1], tolerance)?,
             ),
+            Self::Primitive(Primitive::SolidTube {
+                radii,
+                height,
+                keep_faces,
+            }) => {
+                let brep = Brep::try_tube(
+                    viboceros_command::CommandContext::default().construction_plane,
+                    *radii,
+                    *height,
+                    tolerance,
+                )?;
+                Geometry::Brep(if let Some(faces) = keep_faces {
+                    brep.sub_brep(faces, tolerance)?
+                } else {
+                    brep
+                })
+            }
 
             Self::Primitive(Primitive::MeshBrep { vertices, faces }) => {
                 let source = ObjectSource::Vertices(crate::object_source::VertexSource::Mesh {

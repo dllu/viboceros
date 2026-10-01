@@ -1,0 +1,7660 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "brep_remove_holes",
+      "id": "outer-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "outer-empty",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": []
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "outer-outer",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "hole-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "hole-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "two-holes-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "two-holes-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "reversed-two-holes-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ],
+          "reversed": true
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "reversed-two-holes-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ],
+          "reversed": true
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "shifted-domains-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              2.0,
+              2.0,
+              4.0,
+              4.0
+            ],
+            "knots_v": [
+              -3.0,
+              -3.0,
+              5.0,
+              5.0
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      2.2,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.8,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.8,
+                      4.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.2,
+                      4.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.2,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      2.6,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.6,
+                      1.0,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.0,
+                      1.0,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.0,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.6,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3.2,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.2,
+                      3.4000000000000004,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.6,
+                      3.4000000000000004,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.6,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.2,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2.4,
+            -1.4
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "shifted-domains-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              2.0,
+              2.0,
+              4.0,
+              4.0
+            ],
+            "knots_v": [
+              -3.0,
+              -3.0,
+              5.0,
+              5.0
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      2.2,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.8,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.8,
+                      4.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.2,
+                      4.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.2,
+                      -2.2,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      2.6,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.6,
+                      1.0,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.0,
+                      1.0,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.0,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      2.6,
+                      -0.5999999999999996,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3.2,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.2,
+                      3.4000000000000004,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.6,
+                      3.4000000000000004,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.6,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3.2,
+                      1.8000000000000007,
+                      0.0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2.4,
+            -1.4
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "annulus-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      1,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      1,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      4,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      4,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      6,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      4,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      4,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      6,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            5
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "annulus-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      1,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      1,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      9,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      4,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      4,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      6,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      4,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      4,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      4,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      4,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      5,
+                      6,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6,
+                      6,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      6,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            5
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "paraboloid-annulus-all",
+      "source": {
+        "source": {
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  -4,
+                  -4,
+                  -4,
+                  -3,
+                  -3,
+                  -2,
+                  -2,
+                  -1,
+                  -1,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.35,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  -4,
+                  -4,
+                  -4,
+                  -3,
+                  -3,
+                  -2,
+                  -2,
+                  -1,
+                  -1,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0.575,
+            0
+          ],
+          "cap_surface": null,
+          "reversed": false,
+          "type": "brep"
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "paraboloid-annulus-first",
+      "source": {
+        "source": {
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  -1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  -1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  -1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  0,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  -1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  1,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  1,
+                  1,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0.6400000000000001
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0.6400000000000001
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      -0.8,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.8,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      -0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0.35,
+                      0.12249999999999998
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0.12249999999999998
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  -4,
+                  -4,
+                  -4,
+                  -3,
+                  -3,
+                  -2,
+                  -2,
+                  -1,
+                  -1,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      -0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.35,
+                      0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.35,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0.35,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.35,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  -4,
+                  -4,
+                  -4,
+                  -3,
+                  -3,
+                  -2,
+                  -2,
+                  -1,
+                  -1,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0.575,
+            0
+          ],
+          "cap_surface": null,
+          "reversed": false,
+          "type": "brep"
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "paraboloid-oblique-all",
+      "source": {
+        "source": {
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 2,
+            "control_point_count_u": 3,
+            "control_point_count_v": 3,
+            "control_points": [
+              {
+                "point": [
+                  7,
+                  -6,
+                  15
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  8,
+                  -4,
+                  15
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  9,
+                  -6,
+                  15
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  7,
+                  -4,
+                  16
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  8,
+                  -2,
+                  16
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  9,
+                  -4,
+                  16
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  7,
+                  -6,
+                  17
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  8,
+                  -4,
+                  17
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  9,
+                  -6,
+                  17
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      8.5,
+                      -4.25,
+                      16
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.5,
+                      -4.25,
+                      16.5
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      8,
+                      -4.25,
+                      16.5
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      7.5,
+                      -4.25,
+                      16.5
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      7.5,
+                      -4.25,
+                      16
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      7.5,
+                      -4.25,
+                      15.5
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      8,
+                      -4.25,
+                      15.5
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.5,
+                      -4.25,
+                      15.5
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      8.5,
+                      -4.25,
+                      16
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0.5,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.5,
+                      0.5,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      0.5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.5,
+                      0.5,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      -0.5,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -0.5,
+                      -0.5,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0,
+                      -0.5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0.5,
+                      -0.5,
+                      0
+                    ],
+                    "weight": 0.7071067811865476
+                  },
+                  {
+                    "point": [
+                      0.5,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1,
+                  2,
+                  2,
+                  3,
+                  3,
+                  4,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            0,
+            0
+          ],
+          "cap_surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  7,
+                  -4.25,
+                  15
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  9,
+                  -4.25,
+                  15
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  7,
+                  -4.25,
+                  17
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  9,
+                  -4.25,
+                  17
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              -1,
+              -1,
+              1,
+              1
+            ],
+            "knots_v": [
+              -1,
+              -1,
+              1,
+              1
+            ]
+          },
+          "reversed": true,
+          "type": "brep"
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "full-border-all",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "full-border-first",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "two-holes-last",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "two-holes-duplicate",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "two-holes-empty",
+      "source": {
+        "source": {
+          "type": "brep",
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  0,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  0,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  0,
+                  10,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  10,
+                  10,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              10,
+              10
+            ],
+            "knots_v": [
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          "boundaries": [
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      9,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      9,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      5,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      5,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      3,
+                      3,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            },
+            {
+              "curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              },
+              "parameter_curve": {
+                "degree": 1,
+                "control_points": [
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      8.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      6.0,
+                      6.0,
+                      0
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots": [
+                  0,
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  4
+                ]
+              }
+            }
+          ],
+          "interior_uv": [
+            2,
+            2
+          ]
+        }
+      },
+      "loops": []
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-solid-all",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": null
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-solid-first",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": null
+        }
+      },
+      "loops": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-open-all",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": [
+            0,
+            1,
+            2
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-open-first",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": [
+            0,
+            1,
+            2
+          ]
+        }
+      },
+      "loops": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-caps-all",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": [
+            2,
+            3
+          ]
+        }
+      },
+      "loops": null
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-caps-first",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0,
+          "keep_faces": [
+            2,
+            3
+          ]
+        }
+      },
+      "loops": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "brep_remove_holes",
+      "id": "tube-wall-outer",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "loops": [
+        [
+          1,
+          0
+        ]
+      ]
+    }
+  ]
+}

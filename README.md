@@ -70,6 +70,8 @@ compatibility is still in progress.
 [`UntrimAll`](docs/commands/untrim-all.md) removes all trims from standalone
 surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exterior
 boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.
+The [hole-removal geometry API](docs/geometry/remove-holes.md) closes selected
+interior holes and removes joined hole walls while preserving exact source data.
 
 ## Build and run
 
