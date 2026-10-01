@@ -116,6 +116,11 @@ pub enum ObjectSelectionWorkflow {
     ConfirmAfterSelection,
     /// A single Yes/No answer executes immediately; Enter uses its current value.
     ChooseBooleanAfterSelection,
+    /// Offers options while picking, but asks a single immediate question when
+    /// started with eligible objects already selected (for example UntrimAll).
+    QuestionOnPreselection {
+        message: &'static str,
+    },
     /// A command-owned Yes/No question, asked only when the selected geometry
     /// requires it. Keyboard Escape may have a distinct, observed answer;
     /// replacing/cancelling the command never implicitly accepts the question.
@@ -129,7 +134,16 @@ impl ObjectSelectionWorkflow {
     pub fn answers_immediately(self) -> bool {
         matches!(
             self,
-            Self::ChooseBooleanAfterSelection | Self::QuestionAfterSelection { .. }
+            Self::ChooseBooleanAfterSelection
+                | Self::QuestionAfterSelection { .. }
+                | Self::QuestionOnPreselection { .. }
+        )
+    }
+
+    pub fn options_during_selection(self) -> bool {
+        matches!(
+            self,
+            Self::OptionsDuringSelection | Self::QuestionOnPreselection { .. }
         )
     }
 }
@@ -148,7 +162,7 @@ impl ObjectSelectionPrompt {
     /// A conditional question may follow ordinary picking-time choices. Its
     /// confirmation descriptor then removes those choices and keeps the answer.
     pub fn allows_selection_options(&self) -> bool {
-        self.workflow == ObjectSelectionWorkflow::OptionsDuringSelection
+        self.workflow.options_during_selection()
             || (matches!(
                 self.workflow,
                 ObjectSelectionWorkflow::QuestionAfterSelection { .. }

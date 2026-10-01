@@ -76,7 +76,8 @@ impl PendingObjectCommand {
         }
         match self.phase {
             ObjectPromptPhase::Selecting => match self.description.workflow {
-                ObjectSelectionWorkflow::OptionsDuringSelection => {
+                ObjectSelectionWorkflow::OptionsDuringSelection
+                | ObjectSelectionWorkflow::QuestionOnPreselection { .. } => {
                     if self.description.filter == ObjectSelectionFilter::Grouped {
                         "Select grouped objects or type options; Enter finishes, Esc cancels"
                     } else {
@@ -103,14 +104,14 @@ impl PendingObjectCommand {
                 if matches!(
                     self.description.workflow,
                     ObjectSelectionWorkflow::QuestionAfterSelection { .. }
+                        | ObjectSelectionWorkflow::QuestionOnPreselection { .. }
                 ) =>
             {
-                let ObjectSelectionWorkflow::QuestionAfterSelection { message, .. } =
-                    self.description.workflow
-                else {
-                    unreachable!()
-                };
-                message
+                match self.description.workflow {
+                    ObjectSelectionWorkflow::QuestionAfterSelection { message, .. }
+                    | ObjectSelectionWorkflow::QuestionOnPreselection { message } => message,
+                    _ => unreachable!(),
+                }
             }
             ObjectPromptPhase::Options => "Set conversion options; Enter converts, Esc cancels",
             ObjectPromptPhase::Menu(_) => {
@@ -525,7 +526,7 @@ impl VibocerosApp {
                     self.push_log("Select at least one eligible object; Esc cancels".into());
                     return true;
                 }
-                if pending.description.workflow != ObjectSelectionWorkflow::OptionsDuringSelection {
+                if !pending.description.workflow.options_during_selection() {
                     match self
                         .commands
                         .object_selection_confirmation(&self.document, &pending.description)

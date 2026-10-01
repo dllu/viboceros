@@ -90,6 +90,7 @@ mod solid_orientation;
 mod test_json;
 mod trimmed_brep;
 mod undo_selection;
+mod untrim;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
@@ -180,6 +181,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    UntrimAllCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: untrim::UntrimFixture,
+    },
     DocumentBrepImport {
         id: String,
         #[serde(flatten)]
@@ -1977,6 +1983,7 @@ impl Operation {
             | Self::DocumentBrep { id, .. }
             | Self::BrepSolidOrientation { id, .. }
             | Self::AreaCentroidCommand { id, .. }
+            | Self::UntrimAllCommand { id, .. }
             | Self::VolumeCentroidCommand { id, .. }
             | Self::ProjectedObjectSnap { id, .. }
             | Self::PolycurveGeometry { id, .. }
@@ -2383,6 +2390,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::AreaCentroidCommand { .. }
                 | Operation::VolumeCentroidCommand { .. }
                 | Operation::VolumeCommand { .. }
+                | Operation::UntrimAllCommand { .. }
         ) && request.iterations != 1
         {
             return Err(ProbeError::FixtureInvariant(
@@ -2418,6 +2426,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::UntrimAllCommand { fixture, .. } => untrim::run(fixture, tolerance)?,
         Operation::DocumentBrepImport { fixture, .. } => {
             document_brep::run_import(fixture, iterations, tolerance)?
         }

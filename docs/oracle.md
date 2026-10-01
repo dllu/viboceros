@@ -2248,6 +2248,35 @@ python3 -m tools.rhino_oracle.point_snap_replay tools/rhino_oracle/fixtures/snap
 cargo test --release -p viboceros viewport::drafting::clipping_tests
 ```
 
+## Surface trim removal
+
+[UntrimAll](commands/untrim-all.md) has 72 saved private-Xvfb command cases in
+[the fixture](../tools/rhino_oracle/fixtures/untrim_all.json) and
+[Rhino capture](../tools/rhino_oracle/observations/untrim_all.json). The probe
+records public command completion, full constructed and inserted geometry,
+result topology and definitions, chronological object order, selection, and
+attributes. Source recipes are regenerated without using observed targets.
+For raw surfaces, document snapshots compare a natural B-rep wrapper; the
+constructed record retains the original NURBS surface definition.
+
+The Python replay compares all 68 non-box cases with absolute epsilon `1e-9`
+and relative epsilon zero, including four rejected two-face selections and
+both workflows. Four independently built
+box cases compare rejection, attributes, and unchanged geometry within each
+engine; their different face/edge tables are not a topology-parity claim.
+Command events and history are retained as diagnostics, outside the geometric
+comparison. The adapter rejects changed geometry in those box cases before
+comparison and sends only the original source fixture to the native engine.
+Native commands and replay are untimed.
+The recorded replay's maximum absolute difference is `3.55e-15`.
+
+```sh
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_all.json tools/rhino_oracle/observations/untrim_all.json
+```
+
+The command reference lists the remaining face-subobject, hatch, and crease
+settings gaps. These captures do not certify those workflows.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

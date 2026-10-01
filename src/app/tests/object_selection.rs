@@ -3,6 +3,77 @@ use crate::app::object_selection::ObjectPromptPhase;
 use viboceros_document::SelectionMode;
 
 #[test]
+fn untrim_all_prompts_only_preselection_and_stages_filtered_picks() {
+    use viboceros_geometry::{Brep, NurbsSurface, Tolerance};
+    for pre in [false, true] {
+        for cancel in [false, true] {
+            let mut app = test_app();
+            let surface = NurbsSurface::try_bilinear([
+                point(0., 0., 0.),
+                point(10., 0., 0.),
+                point(10., 10., 0.),
+                point(0., 10., 0.),
+            ])
+            .unwrap();
+            let patch = Brep::try_rectangular_surface_face(
+                surface,
+                0.1..=0.9,
+                0.1..=0.9,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let id = app.document.add_geometry(Geometry::Brep(patch)).unwrap();
+            let peer = app
+                .document
+                .add_geometry(Geometry::Point(point(20., 0., 0.)))
+                .unwrap();
+            let before = app.document.objects().cloned().collect::<Vec<_>>();
+            if pre {
+                app.document
+                    .select_objects_direct([id], SelectionMode::Replace)
+                    .unwrap();
+            }
+            enter(&mut app, "UntrimAll");
+            assert_eq!(
+                app.object_prompt.as_ref().unwrap().phase,
+                if pre {
+                    ObjectPromptPhase::Options
+                } else {
+                    ObjectPromptPhase::Selecting
+                }
+            );
+            if !pre {
+                for picked in [peer, id] {
+                    app.apply_selection_click(SelectionClick {
+                        object_id: Some(picked),
+                        mode: SelectionMode::Replace,
+                    });
+                }
+                assert!(!app.document.is_selected(peer));
+                assert!(app.document.is_selected(id));
+                enter(&mut app, "KeepTrimObjects=Yes");
+                assert!(app.object_prompt.is_some());
+            }
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            if cancel {
+                app.cancel_interactive_command(false);
+            } else {
+                enter(&mut app, if pre { "KeepTrimObjects=Yes" } else { "" });
+                assert!(app.object_prompt.is_none());
+                assert_eq!(app.document.objects().len(), 3);
+                assert_eq!(app.document.is_selected(id), pre);
+                assert!(
+                    matches!(app.document.object(id).unwrap().geometry(),Geometry::Brep(b) if b.faces()[0].is_untrimmed(Tolerance::DEFAULT).unwrap())
+                );
+                enter(&mut app, "Undo");
+            }
+            assert!(app.object_prompt.is_none());
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        }
+    }
+}
+
+#[test]
 fn show_selected_prompt_preserves_selection_and_supports_cancel_and_undo() {
     let mut app = test_app();
     for x in 0..3 {

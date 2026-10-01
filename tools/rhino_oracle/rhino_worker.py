@@ -6768,6 +6768,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "orientation_audit":
         import orientation_probe
         return orientation_probe.run(operation, tolerance, globals())
+    if kind == "untrim_all_command":
+        import untrim_probe
+        return untrim_probe.run(operation, tolerance, globals())
     if kind == "brep_solid_orientation":
         return _brep_solid_orientation(operation, iterations)
     if kind == "document_brep":

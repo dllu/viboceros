@@ -23,6 +23,7 @@ Rhino's complete command set is still a work in progress.
 - [Surfaces and solids](surfaces.md)
 - [Circular pipe surfaces and solids](pipe.md)
 - [Cap planar surface, B-rep, and mesh holes](cap.md)
+- [Remove all surface trims](untrim-all.md)
 - [Flip curve, surface, and mesh directions](flip.md)
 - [Merge redundant surface/B-rep edges](merge-edges.md)
 - [Merge a selected edge or its immediate neighbors](merge-edge.md)

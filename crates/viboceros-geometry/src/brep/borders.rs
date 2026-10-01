@@ -23,11 +23,40 @@ impl Brep {
                 face: face_index,
                 face_count: self.faces.len(),
             })?;
-        let mut seen = BTreeSet::new();
-        let edges = face
+        self.face_trim_boundary_components(face, face.loops.iter().flat_map(|l| &l.trims))
+    }
+
+    /// Exact non-seam boundary chains for one trim loop. This retains the
+    /// same curve, orientation, and join policy as face boundary extraction,
+    /// while keeping outer and inner loops separate for trim editing.
+    pub fn loop_boundary_curve_components(
+        &self,
+        face_index: usize,
+        loop_index: usize,
+    ) -> Result<Vec<Vec<NurbsCurve>>, GeometryError> {
+        let face = self
+            .faces
+            .get(face_index)
+            .ok_or(GeometryError::BrepFaceIndexOutOfRange {
+                face: face_index,
+                face_count: self.faces.len(),
+            })?;
+        let boundary = face
             .loops
-            .iter()
-            .flat_map(|face_loop| &face_loop.trims)
+            .get(loop_index)
+            .ok_or(GeometryError::InvalidBrepTopology {
+                context: "the requested face loop does not exist",
+            })?;
+        self.face_trim_boundary_components(face, boundary.trims.iter())
+    }
+
+    fn face_trim_boundary_components<'a>(
+        &self,
+        face: &BrepFace,
+        trims: impl Iterator<Item = &'a BrepTrim>,
+    ) -> Result<Vec<Vec<NurbsCurve>>, GeometryError> {
+        let mut seen = BTreeSet::new();
+        let edges = trims
             .filter(|trim| matches!(trim.trim_type, BrepTrimType::Boundary | BrepTrimType::Mated))
             .filter_map(|trim| {
                 let edge = trim.edge.expect("validated boundary trim has an edge");
