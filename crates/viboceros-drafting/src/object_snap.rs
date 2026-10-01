@@ -183,11 +183,13 @@ pub fn nearest_object_snap_axis_aligned(
     )
 }
 
-/// Finds the closest visible feature after mapping candidates into an
+/// Finds the closest feature admitted by visible geometry after mapping candidates into an
 /// affine or projective viewport projection. The square aperture half-width and the
 /// returned distance use the same units as `cursor` and `project`.
 /// `project` must reject points behind its camera/clipping plane. Hover broad
 /// phase bounds rely on the projection preserving convexity in the visible half-space.
+/// Center and Mid-only hover use the projected source curve and may return a
+/// finite target outside that half-space, matching Rhino's GetPoint behavior.
 pub fn nearest_object_snap_projected(
     document: &Document,
     cursor: [Real; 2],
@@ -209,6 +211,11 @@ trait SnapMetric {
     fn offset(&self, point: Point3) -> Option<[Real; 2]>;
     /// Larger values are closer to the viewer when projected source distances tie.
     fn frontness(&self, _point: Point3) -> Option<Real> {
+        None
+    }
+    /// Signed perspective camera depth, positive in front of the camera.
+    /// An arbitrary source-ranking score does not identify the camera plane.
+    fn camera_depth(&self, _point: Point3) -> Option<Real> {
         None
     }
     #[cfg(test)]
@@ -360,11 +367,16 @@ impl SnapMetric for FrameSnapMetric {
     }
 }
 
+enum ProjectedDepth<D> {
+    Frontness(D),
+    CameraDepth(D),
+}
+
 struct ProjectedSnapMetric<F, D> {
     cursor: [Real; 2],
     capture_radius: Real,
     project: F,
-    frontness: D,
+    depth: ProjectedDepth<D>,
 }
 
 impl<F, D> SnapMetric for ProjectedSnapMetric<F, D>
@@ -386,7 +398,18 @@ where
     }
 
     fn frontness(&self, point: Point3) -> Option<Real> {
-        (self.frontness)(point)
+        match &self.depth {
+            ProjectedDepth::Frontness(frontness) => frontness(point),
+            ProjectedDepth::CameraDepth(depth) => depth(point).map(|value| -value),
+        }
+        .filter(|value| value.is_finite())
+    }
+
+    fn camera_depth(&self, point: Point3) -> Option<Real> {
+        match &self.depth {
+            ProjectedDepth::Frontness(_) => None,
+            ProjectedDepth::CameraDepth(depth) => depth(point).filter(|value| value.is_finite()),
+        }
     }
 
     fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {

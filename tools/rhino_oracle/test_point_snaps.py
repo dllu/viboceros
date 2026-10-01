@@ -186,6 +186,13 @@ class PointSnapTests(unittest.TestCase):
                         dict(offset=[True,0]), dict(snap_to_meshes=None), dict(snap_to_meshes=1),
                         dict(capture_radius=0), dict(capture_radius=65), dict(capture_radius=True), dict(capture_radius=12.5),
                         dict(pick_diagnostics=None), dict(pick_diagnostics=1),
+                        dict(clipping_probe=None), dict(clipping_probe=1),
+                        dict(camera_pose=None), dict(camera_pose=dict(location=[0,0,10],target=[0,0,10])),
+                        dict(camera_pose=dict(location=[0,0,True],target=[0,0,0])),
+                        dict(camera_pose=dict(location=[0,0,float("inf")],target=[0,0,0])),
+                        dict(camera_pose=dict(location=[0,0,1e101],target=[0,0,0])),
+                        dict(camera_pose=dict(location=[0,0,10],target=[0,0,0],up=[0,1,0])),
+                        dict(camera_pose=dict(location=[0,0,10],target=[0,0,0]),view="Top"),
                         dict(input_settle_ms=True), dict(input_settle_ms=-1), dict(input_settle_ms=1001), dict(input_settle_ms=0.5),
                         dict(input_detour=[1,0]),
                         dict(persistent_snaps=["Near","Near"]), dict(persistent_snaps=[{}]),
@@ -208,6 +215,77 @@ class PointSnapTests(unittest.TestCase):
                         dict(operations=[]), dict(operations=[operation]*2), dict(operations=[{}])]:
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 probe.validate_request(dict(base, **changes))
+
+    def test_depth_visibility_captures_preserve_off_camera_hover_targets_and_modes(self):
+        fixture = json.loads((ROOT/"tools/rhino_oracle/fixtures/snap_depth_visibility.json").read_text())
+        capture = json.loads((ROOT/"tools/rhino_oracle/observations/snap_depth_visibility.json").read_text())
+        probe.validate_request(fixture)
+        self.assertEqual(len(fixture["operations"]),30)
+        self.assertEqual([op["id"] for op in fixture["operations"]],[row["id"] for row in capture["results"]])
+        clipped, behind = [], []
+        rows = {}
+        for operation, row in zip(fixture["operations"],capture["results"]):
+            value = row["value"]
+            rows[row["id"]] = value
+            self.assertEqual(value["before"],value["after"])
+            camera = value["clipping"]["camera"]
+            self.assertEqual(value["frame"]["clipping_camera"],camera)
+            self.assertEqual(camera["camera_location"],operation["camera_pose"]["location"])
+            self.assertEqual(camera["camera_target"],operation["camera_pose"]["target"])
+            for query in value["clipping"]["queries"]:
+                self.assertEqual(query["visible"],all(abs(v) <= 1 for v in query["clip"]))
+            state = value["mesh_snap_setting"]
+            self.assertEqual(state["before"],state["restored"])
+            self.assertGreaterEqual(value["input_motion"]["motion_to_click_ms"],250)
+            if value["kind"] == "None":
+                self.assertIsNone(value["source"])
+                continue
+            self.assertEqual(value["source"],0)
+            if not value["clipping"]["queries"][1]["visible"]:
+                clipped.append(row["id"])
+            depth = sum((a-b)*d for a,b,d in zip(value["point"],camera["camera_location"],camera["camera_direction"]))
+            if depth < 0: behind.append(row["id"])
+        self.assertEqual(len(clipped),14)
+        self.assertEqual(len(behind),7)
+        for name in ("arc-center-behind-camera-direct","arc-center-behind-camera-hover",
+                     "nurbs-center-behind","ellipse-center-behind","circle-center-behind","polygon-center-behind"):
+            self.assertEqual(rows[name]["kind"],"Center")
+        self.assertEqual(rows["crossing-line-mid-behind"]["kind"],"Midpoint")
+        self.assertEqual(rows["crossing-line-mid-behind-with-center"]["kind"],"None")
+        self.assertEqual(rows["crossing-line-mid-behind-with-near"]["kind"],"Near")
+        for name in ("line-end-behind","line-mid-behind","line-near-behind","crossing-line-end-behind"):
+            self.assertEqual(rows[name]["kind"],"None")
+
+    def test_crossing_near_capture_keeps_original_endpoint_in_both_orders(self):
+        fixture = json.loads((ROOT/"tools/rhino_oracle/fixtures/snap_crossing_line_near.json").read_text())
+        capture = json.loads((ROOT/"tools/rhino_oracle/observations/snap_crossing_line_near.json").read_text())
+        probe.validate_request(fixture)
+        self.assertEqual(len(fixture["operations"]),27)
+        self.assertEqual([op["id"] for op in fixture["operations"]],[row["id"] for row in capture["results"]])
+        hits, misses, interior = 0, 0, 0
+        for operation, row in zip(fixture["operations"],capture["results"]):
+            value = row["value"]
+            self.assertEqual(value["before"],value["after"])
+            self.assertEqual(value["frame"]["clipping_camera"],value["clipping"]["camera"])
+            self.assertEqual(value["mesh_snap_setting"]["before"],value["mesh_snap_setting"]["restored"])
+            self.assertGreaterEqual(value["input_motion"]["motion_to_click_ms"],250)
+            crossing = row["id"].startswith(("near-cross-","near-reverse-"))
+            offset = operation["offset"][0]
+            admitted = abs(offset) <= 8 if crossing else offset >= -8
+            self.assertEqual(value["kind"],"Near" if admitted else "None")
+            if not admitted:
+                self.assertIsNone(value["source"])
+                misses += 1
+                continue
+            self.assertEqual(value["source"],0)
+            hits += 1
+            if crossing or offset <= 1:
+                self.assertEqual(value["point"],[-0.2,0,9])
+            else:
+                self.assertGreater(value["point"][0],-0.2)
+                self.assertLess(value["point"][2],9)
+                interior += 1
+        self.assertEqual((hits,misses,interior),(22,5,3))
 
     def exercise_pick(self, failure=None):
         class Event:
@@ -245,9 +323,11 @@ class PointSnapTests(unittest.TestCase):
         modules = {"clr":SimpleNamespace(AddReference=Mock()),"System.Windows.Forms":SimpleNamespace(Timer=lambda:timer)}
         capture = Mock(return_value={"camera":"actual"})
         if failure == "camera": capture.side_effect = ValueError("bad matrix")
-        with patch.dict(sys.modules,modules), patch("builtins.open",output), patch.object(probe.viewport_capture,"capture",capture):
+        operation = request()["operations"][0]
+        if failure == "clipping": operation["clipping_probe"] = True
+        with patch.dict(sys.modules,modules), patch("builtins.open",output), patch.object(probe.viewport_capture,"capture",capture), patch.object(probe,"clipping_camera",side_effect=ValueError("clipping capture failed")):
             if failure:
-                with self.assertRaises(ValueError): probe.pick(request()["operations"][0],host)
+                with self.assertRaises(ValueError): probe.pick(operation,host)
             else:
                 value, source = probe.pick(request()["operations"][0],host)
                 self.assertEqual(source,"owned")
@@ -264,11 +344,11 @@ class PointSnapTests(unittest.TestCase):
         self.exercise_pick()
 
     def test_driver_fails_closed_and_disposes_on_io_camera_cancel_and_get_failures(self):
-        for failure in ("write","camera","cancel","get","point"):
+        for failure in ("write","camera","clipping","cancel","get","point"):
             with self.subTest(failure=failure): self.exercise_pick(failure)
 
     def test_owned_sources_and_view_restore_after_setup_pick_and_cleanup_failures(self):
-        for failure in (None,"source","projection","fit","pick","owner","topology","diagnostics","delete"):
+        for failure in (None,"source","projection","fit","pose","pick","owner","topology","diagnostics","delete"):
             with self.subTest(failure=failure):
                 created, table, deleted = [], {}, []
                 class Curve:
@@ -289,6 +369,7 @@ class PointSnapTests(unittest.TestCase):
                 viewport = SimpleNamespace(Name="original",CameraTarget=[11,12,13],
                     SetProjection=Mock(return_value=failure != "projection"),
                     ZoomBoundingBox=Mock(return_value=failure != "fit"),
+                    SetCameraLocations=Mock(side_effect=ValueError("pose failed") if failure == "pose" else None),
                     SetViewProjection=Mock(return_value=True),SetCameraTarget=Mock())
                 saved = SimpleNamespace(Dispose=Mock())
                 view = SimpleNamespace(ActiveViewport=viewport)
@@ -313,6 +394,7 @@ class PointSnapTests(unittest.TestCase):
                 op = copy.deepcopy(request()["operations"][0])
                 op["sources"] *= 2
                 if failure == "diagnostics": op["pick_diagnostics"] = True
+                if failure == "pose": op["camera_pose"] = dict(location=[0,0,10],target=[0,0,0])
                 def topology(geometry,host):
                     if failure == "topology": raise ValueError("topology query failed")
                     return None

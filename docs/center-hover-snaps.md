@@ -7,6 +7,10 @@ ellipse, including arc leaves in polycurves. The returned model point is the
 curve's center, which may be far from the cursor and off the construction plane.
 Hovering over an empty center alone does not admit the snap. Hidden geometry is
 excluded; locked objects and layers remain eligible.
+The finite center may lie outside the depth planes or behind the camera:
+admission follows the visible source curve. The
+[depth-plane capture](oracle.md#snap-targets-outside-the-visible-depth-interval)
+also checks circular NURBS and polygon centers in these cases.
 
 Enabled direct point features take precedence over Center on the same object.
 Candidates on different objects compete by capture distance: a circle's curve

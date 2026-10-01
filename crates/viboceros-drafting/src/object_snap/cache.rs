@@ -282,7 +282,36 @@ impl ObjectSnapCache {
                 cursor,
                 capture_radius,
                 project,
-                frontness,
+                depth: ProjectedDepth::Frontness(frontness),
+            },
+            self,
+            options,
+        )
+    }
+
+    /// Perspective capture with signed camera depth, positive in front of the
+    /// camera. Near on a camera-crossing straight source uses its projectable
+    /// original endpoint; Mid/Center hover still searches the visible locus.
+    /// Depth is also used to rank apparent intersection sources, with smaller
+    /// values closer to the viewer. Parallel queries use the frontness API.
+    pub fn nearest_projected_with_options_and_camera_depth(
+        &mut self,
+        document: &Document,
+        cursor: [Real; 2],
+        capture_radius: Real,
+        project: impl Fn(Point3) -> Option<[Real; 2]>,
+        camera_depth: impl Fn(Point3) -> Option<Real>,
+        options: ObjectSnapOptions,
+    ) -> Result<Option<ObjectSnap>, DraftingError> {
+        validate_capture_radius(capture_radius)?;
+        validate_cursor_coordinates(cursor)?;
+        nearest_object_snap_with_metric(
+            document,
+            &ProjectedSnapMetric {
+                cursor,
+                capture_radius,
+                project,
+                depth: ProjectedDepth::CameraDepth(camera_depth),
             },
             self,
             options,

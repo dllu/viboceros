@@ -240,9 +240,19 @@ path; this is not a general exact clipping predicate.
 A private-Xvfb fixture records 1,296 primitive/document line picking results
 across 48 cameras using public Rhino pick contexts. Native click/window/crossing
 tests replay every result. Independent ray tests cover face interiors crossing
-both depth planes in all eight views and both shaded modes. Drafting/snapping
-projection still follows its existing camera-plane rules; these picking tests
-do not establish osnap clipping or every inverted-selection case.
+both depth planes in all eight views and both shaded modes. These picking tests
+do not establish every inverted-selection case.
+
+Snapping uses its own admission rules. Thirty private-Xvfb GetPoint captures
+show 14 admitted targets outside the display depth interval, including seven
+behind the camera. Center and Mid-only hover test the visible source curve;
+their finite target can lie outside the projection half-space. Direct point
+features and source-curve proximity retain camera-plane rejection. Mixed-mode
+Mid remains a direct-feature query. Snap overlays use signed perspective depth
+for admitted targets; a target without a finite image keeps its label at the
+pointer. Ordinary geometry projection still rejects the camera's back side.
+See [snap depth evidence](oracle.md#snap-targets-outside-the-visible-depth-interval)
+for source families, independent Near checks, and the limited camera scope.
 
 Imported nonorthogonal `CameraUp` hints are retained separately from the
 orthonormal rendering frame, including through clipping refresh and 3DM

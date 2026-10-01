@@ -34,6 +34,8 @@ views with Rhino-matched framing and cleared shifted frusta. Viewport redraw
 refreshes document clipping after navigation and scene edits; GPU faces, wires,
 points, and click/area selection obey those near/far planes. Crossing selection
 accepts visible portions; window selection requires the whole object inside.
+Center and Mid-only snaps can return clipped targets discovered from a visible
+part of their source curve.
 `SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
 Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
 the view prompt and resumes the unfinished command.

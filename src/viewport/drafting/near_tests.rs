@@ -9,7 +9,8 @@ fn area() -> Rect {
 }
 
 #[test]
-fn perspective_near_captures_a_thin_visible_part_of_a_camera_crossing_line() {
+fn perspective_camera_crossing_line_near_uses_the_visible_endpoint_while_mid_hover_uses_the_locus()
+{
     for reverse in [false, true] {
         let view = Viewport::new(ViewKind::Perspective);
         let (right, _, forward) = view.perspective_basis();
@@ -39,22 +40,23 @@ fn perspective_near_captures_a_thin_visible_part_of_a_camera_crossing_line() {
                 .unwrap(),
             ))
             .unwrap();
-        let cursor = view
-            .drafting_cursor(
+        let near = ObjectSnapModes::only(ObjectSnapKind::Near);
+        assert!(view.object_snap(pointer, area(), &doc, near).is_none());
+        let endpoint = view.project(a, area()).unwrap() + Vec2::new(0., 2.);
+        let snap = view.object_snap(endpoint, area(), &doc, near).unwrap();
+        assert_eq!(snap.object_id(), id);
+        assert_eq!(snap.point(), a);
+        let mid = view
+            .object_snap(
                 pointer,
                 area(),
                 &doc,
-                DraftingInput {
-                    active: true,
-                    osnap: ObjectSnapModes::only(ObjectSnapKind::Near),
-                    ..Default::default()
-                },
+                ObjectSnapModes::only(ObjectSnapKind::Mid),
             )
             .unwrap();
-        assert_eq!(cursor.object_snap.unwrap().object_id(), id);
-        // This includes the ordinary egui f32 pointer quantization.
-        assert!(cursor.point.distance_to(expected).unwrap() < 1e-5);
-        assert!(view.project_precise(cursor.point, area()).is_some());
+        // Line evaluation and the independent midpoint can differ by one ULP.
+        assert!(mid.point().distance_to(a.midpoint(b).unwrap()).unwrap() < 1e-9);
+        assert!(view.project(mid.point(), area()).is_none());
     }
 }
 

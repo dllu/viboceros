@@ -108,10 +108,9 @@ fn candidate(
     metric: &impl SnapMetric,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    let Some(offset) = metric.offset(point) else {
-        return;
-    };
-    let direct = metric.captured_offset_distance(offset);
+    // Hover is scored on the visible source curve. Rhino can return its Mid
+    // target behind the camera; only a direct hit needs the target projection.
+    let direct = metric.captured_distance(point);
     // The target is itself a point on the curve. Keep exact target hits even
     // when the bounded proximity refinement only approaches their parameter.
     if let Some(distance) = hover.into_iter().chain(direct).min_by(Real::total_cmp) {

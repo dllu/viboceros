@@ -2135,6 +2135,64 @@ every primitive/document result, with no timing claim. These cases establish
 line selection behavior for the measured cameras; face picking also has an
 independent ray regression, but no native Rhino mesh-pick capture here.
 
+### Snap targets outside the visible depth interval
+
+The [30 snap requests](../tools/rhino_oracle/fixtures/snap_depth_visibility.json)
+and [Rhino capture](../tools/rhino_oracle/observations/snap_depth_visibility.json)
+use real public `GetPoint` input on a private Xvfb display. The optional
+`camera_pose` sets a bounded perspective location/target through public
+[SetCameraLocations](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Display_RhinoViewport_SetCameraLocations.htm).
+Rhino still computes its own document clip planes on redraw. `clipping_probe`
+records the camera/frustum at the actual point prompt and after the click,
+plus public World-to-Clip and IsVisible queries for the aim and picked point.
+Every case retains identical prompt/post-click cameras, unchanged source
+records, restored snap settings, and at least 250 ms of owned motion settling.
+
+Fourteen admitted targets are outside those depth planes; seven are behind
+the camera. Arc, circle, ellipse, circular NURBS, and closed-polygon Center
+targets follow visible curve proximity. Mid-only hover can likewise return
+a midpoint behind the camera. Mixed Mid+Cen rejects that off-camera midpoint;
+Mid+Near captures the visible Near target. Fully behind-camera lines do not
+admit direct End, Mid, or Near snaps, and a crossing line's rear endpoint is
+not admitted.
+
+The additional [27 line Near requests](../tools/rhino_oracle/fixtures/snap_crossing_line_near.json)
+and [capture](../tools/rhino_oracle/observations/snap_crossing_line_near.json)
+use nine pointer offsets, endpoint reversal, and a fully front-facing control.
+Camera-crossing Near selects the original visible endpoint in either order,
+including when a visible interior point is closer. Offsets of 16 pixels miss
+that endpoint. The front-facing control retains ordinary interior Near targets.
+There are 22 Near results and five misses, replayed at `1e-9` through the
+viewport. Native camera queries receive explicit signed depth; projection
+overflow and positive-depth clipping retain mathematical visible-locus search.
+The same depth API is used by the calibrated Python oracle replay.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/snap_depth_visibility.json --timeout 300
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/snap_crossing_line_near.json --timeout 300
+cargo test --release -p viboceros viewport::drafting::clipping_tests
+cargo test --release -p viboceros-drafting object_snap
+python3 -m tools.rhino_oracle.point_snap_replay tools/rhino_oracle/fixtures/snap_crossing_line_near.json tools/rhino_oracle/observations/snap_crossing_line_near.json
+```
+
+Native tests replay all 30 kind/source/point results through the application
+drafting query. Feature and line Near points compare at `1e-9` model units.
+Four arc Near points compare at `1e-8`; independent closed-form ray/circle
+solutions check native results at `1e-12`. A separate 90-digit Decimal
+calculation found Rhino's front and behind-center arc Near positions differ
+from that analytic optimum by `2.83e-9` and `3.04e-9`. The looser arc comparison
+accounts for those recorded oracle residuals. Overlay tests check labels for
+admitted rear targets, and their pixels match the recorded screen transform
+within `1e-3` pixels. This does not establish Rhino screenshot appearance,
+all camera orientations/scales, user clipping planes, or source admission at
+every depth boundary. None results compare snap admission, not CPlane placement.
+
+The calibrated Python CLI replay matches all 27 additional line cases; its
+largest coordinate residual is `2.78e-17`. Verification passes 760 application,
+157 drafting, and 447 oracle tests, plus all 488 Python tests. Formatting and
+whitespace checks pass. Workspace Clippy completes with existing warnings in
+unchanged files; its strict `-D warnings` gate still fails on those warnings.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

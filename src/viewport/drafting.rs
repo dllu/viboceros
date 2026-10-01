@@ -98,23 +98,14 @@ impl Viewport {
                 .ok()
                 .flatten()
         } else {
-            let view_normal = self.apparent_intersection_normal().to_array();
             self.object_snap_cache
                 .borrow_mut()
-                .nearest_projected_with_options_and_frontness(
+                .nearest_projected_with_options_and_camera_depth(
                     document,
                     [Real::from(pointer.x), Real::from(pointer.y)],
                     Real::from(OSNAP_CAPTURE_PIXELS),
                     |point| self.project_precise(point, rect),
-                    |point| {
-                        let xyz = point.to_array();
-                        Some(
-                            -xyz.iter()
-                                .zip(view_normal)
-                                .map(|(a, b)| a * b)
-                                .sum::<Real>(),
-                        )
-                    },
+                    |point| Some(self.view_depth(point)),
                     options,
                 )
                 .ok()
@@ -488,8 +479,16 @@ impl Viewport {
             );
         }
 
-        let Some(target) = self.project(cursor.point, rect) else {
-            return;
+        let target = if cursor.object_snap.is_some() {
+            // A camera-plane target has no finite image; keep its label and
+            // coordinates at the pointer instead of hiding an admitted snap.
+            self.project_snap_target(cursor.point, rect)
+                .unwrap_or(cursor.pointer)
+        } else {
+            let Some(target) = self.project(cursor.point, rect) else {
+                return;
+            };
+            target
         };
         let marker_color = if cursor.object_snap.is_some() {
             SNAP_COLOR
@@ -555,6 +554,8 @@ pub(super) fn clip_drafting_line(
 
 #[cfg(test)]
 mod center_tests;
+#[cfg(test)]
+mod clipping_tests;
 #[cfg(test)]
 mod intersection_tests;
 #[cfg(test)]

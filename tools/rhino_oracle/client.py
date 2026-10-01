@@ -371,7 +371,7 @@ class OracleClient:
                 helper = Path(__file__).with_name("snap_environment.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
-                for name in ("point_snap_probe.py", "viewport_capture.py"):
+                for name in ("point_snap_probe.py", "viewport_capture.py", "named_view_policy_probe.py", "view_camera_probe.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):

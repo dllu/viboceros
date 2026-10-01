@@ -2,18 +2,19 @@
 
 [Near](near-snaps.md) · [Mid hover](mid-hover-snaps.md) · [Architecture](architecture.md)
 
-An audit after `ca54e32` reproduced three numerical failures: Near missed a thin
-visible portion of a camera-crossing line, a long projected segment could choose
-its endpoint instead of an interior target, and hover distance could similarly
-round an interior minimum to an endpoint. The new focused regression tests failed
-before the repair; these were not discovered by the original Rhino fixtures.
+An independent mathematical audit after `ca54e32` repaired thin visible-line
+clipping, interior targets on long projected segments, and hover distance that
+rounded an interior minimum to an endpoint. Later actual Rhino GetPoint
+[captures](oracle.md#snap-targets-outside-the-visible-depth-interval) establish
+a separate Near admission rule for sources crossing the perspective camera.
 
 ## Shared implementation
 
 `viboceros-drafting/object_snap/projected_line` owns straight-locus clipping,
 screen distance and inverse projection. Near uses it for analytic lines,
 polyline segments and common-sign degree-one NURBS spans. Mid and polygon Center
-share its distance query; their target/visibility/priority policies are unchanged.
+share its distance query. Their visible source can admit a finite target behind
+the camera; the target itself need not project.
 The implementation is independent of egui and document mutations.
 
 [Mesh Near](point-snaps.md) shares clipping and interpolation utilities but has
@@ -27,9 +28,21 @@ If one endpoint projects and the other does not, the visible boundary is bisecte
 in model coordinates. Every retained inside point actually projects. Midpoint
 stagnation terminates the search; the 2,200-step guard covers the binary64 exponent
 and significand range. No fixed sampling interval or geometric epsilon removes a
-thin visible portion. The resulting visible segment uses the same direct query
+thin visible portion. The mathematical visible segment uses the same direct query
 as an unclipped line. The callback must remain affine/projective in a convex
 visible half-space; it is not an arbitrary nonlinear map or occlusion test.
+
+Actual Rhino curve Near uses the original projectable endpoint when the other
+endpoint lies behind the perspective camera. It misses if that endpoint is
+outside the square aperture, even if the visible clipped locus reaches the
+cursor. The 27 retained captures include endpoint reversal, nine pointer offsets,
+and a fully front-facing control. The application and calibrated Python oracle
+replay supply signed camera depth through
+`nearest_projected_with_options_and_camera_depth`; Near applies this admission
+before bisection. Projection-only callbacks retain the mathematical query because
+an unprojectable endpoint can also mean overflow or another clipping boundary.
+Positive-depth clipping and screen-range rejection do not trigger the camera rule.
+Mid/Center hover and the independent Fraction corpus keep visible-locus distance.
 
 Screen distances are evaluated from the nearer endpoint. Inverse projection
 computes both endpoint fractions independently, then interpolates from the nearer
@@ -67,9 +80,10 @@ independent mathematical reference, not a new Rhino measurement.
 Additional regressions cover camera-crossing depths through `1e100`, Near on
 line/polyline/rational degree-one sources, clipping-boundary targets, rejected
 invisible segments, common-positive/common-negative weight hover and asymmetric
-screen extents through `1e300`. The actual perspective viewport also captures a
-thin visible line portion in both endpoint orders; its `1e-5` model-point bound
-includes egui's binary32 pointer quantization.
+screen extents through `1e300`. The actual perspective viewport checks Near's
+endpoint admission and Mid-only hover on a thin visible line portion in both
+endpoint orders. These numerical cases extend the captured line policy; the
+Rhino camera measurements do not establish every geometry type or numeric range.
 
 The existing calibrated Rhino Near/Mid/Center replays remain regression evidence
 for their retained cases. No user desktop or existing Rhino process is accessed
@@ -101,7 +115,7 @@ linear in object count.
 python3 -m tools.rhino_oracle.references.projected_lines
 python3 -m unittest tools.rhino_oracle.test_projected_lines
 cargo test --release -p viboceros-drafting object_snap
-cargo test --release -p viboceros perspective_near_captures
+cargo test --release -p viboceros perspective_camera_crossing_line
 ```
 
 The generator writes CSV to stdout; the Python regression also verifies that the

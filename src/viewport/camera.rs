@@ -698,6 +698,22 @@ impl Viewport {
 
     /// Keep model-point query minimization independent of egui's f32 raster coordinates.
     pub(super) fn project_precise(&self, point: Point3, rect: Rect) -> Option<[Real; 2]> {
+        self.project_precise_with_signed_depth(point, rect, false)
+    }
+
+    /// Overlay projection for a finite feature already admitted by its visible
+    /// source curve. The feature itself may lie behind the camera.
+    pub(super) fn project_snap_target(&self, point: Point3, rect: Rect) -> Option<Pos2> {
+        let [x, y] = self.project_precise_with_signed_depth(point, rect, true)?;
+        Some(Pos2::new(x as f32, y as f32))
+    }
+
+    fn project_precise_with_signed_depth(
+        &self,
+        point: Point3,
+        rect: Rect,
+        signed_depth: bool,
+    ) -> Option<[Real; 2]> {
         let center = rect.center();
         let origin = if self.kind == ViewKind::Perspective {
             [
@@ -727,7 +743,8 @@ impl Viewport {
                 let local = NaVector3::new(point.x(), point.y(), point.z()) - self.target;
                 let (right, up, forward) = self.perspective_basis();
                 let depth = local.dot(&forward) + self.perspective_camera_distance;
-                if !depth.is_finite() || depth <= 1.0e-6 {
+                if !depth.is_finite() || (if signed_depth { depth.abs() } else { depth }) <= 1.0e-6
+                {
                     return None;
                 }
                 let focal_length = self.perspective_focal_length_pixels(rect);

@@ -28,6 +28,16 @@ pub(super) struct Segment {
 pub(super) fn visible_segment(a: Point3, b: Point3, metric: &impl SnapMetric) -> Option<Segment> {
     let pa = metric.offset(a);
     let pb = metric.offset(b);
+    visible_segment_with_images(a, b, pa, pb, metric)
+}
+
+fn visible_segment_with_images(
+    a: Point3,
+    b: Point3,
+    pa: Option<[Real; 2]>,
+    pb: Option<[Real; 2]>,
+    metric: &impl SnapMetric,
+) -> Option<Segment> {
     let (inside, outside, image) = match (pa, pb) {
         (Some(pa), Some(pb)) => return Some(Segment { a, b, pa, pb }),
         (Some(pa), None) => (a, b, pa),
@@ -124,7 +134,30 @@ pub(super) fn capture_mesh(a: Point3, b: Point3, metric: &impl SnapMetric) -> Ca
 }
 
 fn capture_with_policy(a: Point3, b: Point3, metric: &impl SnapMetric, mesh: bool) -> Capture {
-    let Some(segment) = visible_segment(a, b, metric) else {
+    let pa = metric.offset(a);
+    let pb = metric.offset(b);
+    if !mesh
+        && let Some((inside, outside, image)) = match (pa, pb) {
+            (Some(image), None) => Some((a, b, image)),
+            (None, Some(image)) => Some((b, a, image)),
+            _ => None,
+        }
+        && metric.camera_depth(inside).is_some_and(|depth| depth > 0.)
+        && metric
+            .camera_depth(outside)
+            .is_some_and(|depth| depth <= 0.)
+    {
+        // Actual GetPoint captures select the original visible endpoint in
+        // either orientation, even when the clipped locus reaches the cursor.
+        // Explicit depth avoids treating overflow or a positive-depth clipping
+        // boundary as the camera plane. Hover keeps mathematical locus distance.
+        return if metric.captured_offset_distance(image).is_some() {
+            Capture::Point(inside)
+        } else {
+            Capture::Miss
+        };
+    }
+    let Some(segment) = visible_segment_with_images(a, b, pa, pb, metric) else {
         return Capture::Unresolved;
     };
     let radius = metric.capture_radius();

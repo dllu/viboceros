@@ -105,7 +105,7 @@ impl Viewport {
             return;
         };
         if let Some(snap) = cursor.snap
-            && let Some(source) = self.project(snap.point(), rect)
+            && let Some(source) = self.project_snap_target(snap.point(), rect)
         {
             // Show the actual feature separately from its edge-constrained point.
             let color = SNAP_COLOR;

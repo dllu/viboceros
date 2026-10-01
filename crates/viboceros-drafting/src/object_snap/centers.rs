@@ -20,9 +20,6 @@ pub(super) fn visit_nurbs(
         let Some(center) = feature.conic_center() else {
             continue;
         };
-        if metric.offset(center).is_none() {
-            continue;
-        }
         // Capture the original arc, not the rest of its supporting circle.
         // A center is not on the curve and cannot use Mid's direct-hit fallback.
         if let Some(distance) =
@@ -76,7 +73,7 @@ fn candidate(
     evaluate: impl Fn(Real) -> Option<Point3>,
     emit: &mut impl FnMut(Point3, Real),
 ) {
-    if metric.offset(center).is_none() || outside_sphere(center, radius, metric) {
+    if outside_sphere(center, radius, metric) {
         return;
     }
     if let Some(distance) = projected_capture_distance(evaluate, metric) {

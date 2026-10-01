@@ -96,13 +96,11 @@ impl Cache {
             );
         }
         for target in &self.entries[&id].targets {
-            if metric.offset(target.point).is_none()
-                || proximity::outside_bounds(
-                    target.bounds.min().to_array(),
-                    target.bounds.max().to_array(),
-                    metric,
-                )
-            {
+            if proximity::outside_bounds(
+                target.bounds.min().to_array(),
+                target.bounds.max().to_array(),
+                metric,
+            ) {
                 continue;
             }
             let distance = target

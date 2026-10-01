@@ -159,9 +159,7 @@ impl SnapCamera {
 
     pub(super) fn project(&self, point: Point3) -> Option<[f64; 2]> {
         let p = point.to_array();
-        let depth: f64 = (0..3)
-            .map(|i| (p[i] - self.location[i]) * self.direction[i])
-            .sum();
+        let depth = self.depth(point);
         if !depth.is_finite() || depth <= 0. {
             return None;
         }
@@ -176,6 +174,13 @@ impl SnapCamera {
         }
         let image = [h[0] / h[3], h[1] / h[3]];
         image.iter().all(|v| v.is_finite()).then_some(image)
+    }
+
+    fn depth(&self, point: Point3) -> f64 {
+        let p = point.to_array();
+        (0..3)
+            .map(|i| (p[i] - self.location[i]) * self.direction[i])
+            .sum()
     }
 }
 
@@ -234,8 +239,25 @@ pub(super) fn run(
     for source in &fixture.sources {
         ids.push(document.add_geometry(source.geometry(tolerance)?)?);
     }
-    let snap = ObjectSnapCache::default()
-        .nearest_projected_with_options_and_frontness(
+    let mut cache = ObjectSnapCache::default();
+    let options = ObjectSnapOptions {
+        modes,
+        mesh_edges: fixture.snap_to_meshes,
+    };
+    let snap = if fixture.camera.world_to_screen[3][..3]
+        .iter()
+        .any(|&v| v != 0.)
+    {
+        cache.nearest_projected_with_options_and_camera_depth(
+            &document,
+            fixture.cursor,
+            fixture.capture_radius,
+            |p| fixture.camera.project(p),
+            |p| Some(fixture.camera.depth(p)),
+            options,
+        )
+    } else {
+        cache.nearest_projected_with_options_and_frontness(
             &document,
             fixture.cursor,
             fixture.capture_radius,
@@ -249,15 +271,13 @@ pub(super) fn run(
                         .sum::<f64>(),
                 )
             },
-            ObjectSnapOptions {
-                modes,
-                mesh_edges: fixture.snap_to_meshes,
-            },
+            options,
         )
-        .map_err(|error| match error {
-            viboceros_drafting::DraftingError::Geometry(error) => ProbeError::Geometry(error),
-            _ => ProbeError::FixtureInvariant("invalid calibrated snap metric"),
-        })?;
+    }
+    .map_err(|error| match error {
+        viboceros_drafting::DraftingError::Geometry(error) => ProbeError::Geometry(error),
+        _ => ProbeError::FixtureInvariant("invalid calibrated snap metric"),
+    })?;
     let value = if let Some(snap) = snap {
         let kind = match snap.kind() {
             ObjectSnapKind::Mid => "Midpoint",

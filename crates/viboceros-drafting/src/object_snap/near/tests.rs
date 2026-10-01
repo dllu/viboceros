@@ -136,6 +136,114 @@ fn near_finds_a_visible_sliver_of_a_camera_crossing_line_in_both_orders() {
 }
 
 #[test]
+fn explicit_camera_depth_admits_only_original_front_endpoints_of_crossing_straight_sources() {
+    for depth in [1e3, 1e12, 1e100] {
+        for reverse in [false, true] {
+            let front = p(0., 0., 1.);
+            let back = p(1., 0., -depth);
+            let (a, b) = if reverse {
+                (back, front)
+            } else {
+                (front, back)
+            };
+            for geometry in [
+                Geometry::Line(segment(a, b)),
+                Geometry::Polyline(Polyline3::try_new(vec![a, b], Tolerance::DEFAULT).unwrap()),
+                Geometry::NurbsCurve(
+                    NurbsCurve::try_new_rational(
+                        1,
+                        vec![
+                            WeightedPoint3::try_new(a, 0.5).unwrap(),
+                            WeightedPoint3::try_new(b, 3.).unwrap(),
+                        ],
+                        vec![0., 0., 1., 1.],
+                    )
+                    .unwrap(),
+                ),
+            ] {
+                let mut doc = Document::default();
+                doc.add_geometry(geometry).unwrap();
+                let project =
+                    |p: Point3| (p.z() >= 0.1).then_some([p.x() * depth / p.z(), p.y() / p.z()]);
+                let mut cache = ObjectSnapCache::default();
+                assert!(
+                    cache
+                        .nearest_projected_with_options_and_camera_depth(
+                            &doc,
+                            [0.5, 0.1],
+                            0.2,
+                            project,
+                            |p| Some(p.z()),
+                            modes().into()
+                        )
+                        .unwrap()
+                        .is_none(),
+                    "depth {depth}, reverse {reverse}"
+                );
+                let hit = cache
+                    .nearest_projected_with_options_and_camera_depth(
+                        &doc,
+                        [0., 0.1],
+                        0.2,
+                        project,
+                        |p| Some(p.z()),
+                        modes().into(),
+                    )
+                    .unwrap()
+                    .unwrap();
+                assert_eq!(hit.point(), front);
+                assert!((hit.distance() - 0.1).abs() < 1e-12);
+            }
+        }
+    }
+}
+
+#[test]
+fn positive_depth_clipping_and_screen_range_limits_do_not_trigger_camera_endpoint_policy() {
+    let mut doc = Document::default();
+    doc.add_geometry(Geometry::Line(segment(p(0., 0., 1.), p(1., 0., 0.01))))
+        .unwrap();
+    let hit = ObjectSnapCache::default()
+        .nearest_projected_with_options_and_camera_depth(
+            &doc,
+            [0.5, 0.1],
+            0.2,
+            |p| (p.z() >= 0.1).then_some([p.x() / p.z(), p.y() / p.z()]),
+            |p| Some(p.z()),
+            modes().into(),
+        )
+        .unwrap()
+        .unwrap();
+    let t = 0.5 / (1. + 0.5 * 0.99);
+    close(hit.point(), p(t, 0., 1. - 0.99 * t));
+    for far in [1e24, 1e100, 1e200] {
+        for reverse in [false, true] {
+            let a = p(0., 0., 1.);
+            let b = p(far, 0., 1.);
+            let mut doc = Document::default();
+            doc.add_geometry(Geometry::Line(if reverse {
+                segment(b, a)
+            } else {
+                segment(a, b)
+            }))
+            .unwrap();
+            let hit = ObjectSnapCache::default()
+                .nearest_projected_with_options_and_camera_depth(
+                    &doc,
+                    [0.5, 0.1],
+                    0.2,
+                    |p| (p.x().abs() <= 1e20).then_some([p.x(), p.y()]),
+                    |p| Some(p.z()),
+                    modes().into(),
+                )
+                .unwrap()
+                .unwrap();
+            close(hit.point(), p(0.5, 0., 1.));
+        }
+    }
+}
+
+#[test]
 fn near_retains_small_offsets_from_either_end_of_a_long_visible_line() {
     for far in [1e12, 1e100] {
         for reverse in [false, true] {

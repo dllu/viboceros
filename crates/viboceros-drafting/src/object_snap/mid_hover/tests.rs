@@ -257,7 +257,7 @@ fn discontinuous_nurbs_never_create_a_hover_chord_through_a_jump() {
 }
 
 #[test]
-fn unprojectable_mid_target_is_not_admitted_by_a_visible_curve() {
+fn visible_curve_hover_admits_a_mid_target_outside_the_projection_half_space() {
     let mut doc = Document::default();
     doc.add_geometry(Geometry::Line(line(p(2., -4.), p(8., -4.))))
         .unwrap();
@@ -270,7 +270,13 @@ fn unprojectable_mid_target_is_not_admitted_by_a_visible_curve() {
             only_mid(),
         )
         .unwrap();
-    assert!(snap.is_none());
+    assert_eq!(snap.unwrap().point(), p(5., -4.));
+    assert!(
+        ObjectSnapCache::default()
+            .nearest_projected_with_modes(&doc, [2.8, -4.], 0.05, |_| None, only_mid())
+            .unwrap()
+            .is_none()
+    );
 }
 
 #[test]

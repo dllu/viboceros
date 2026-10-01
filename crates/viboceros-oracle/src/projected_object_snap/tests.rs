@@ -41,6 +41,60 @@ fn calibrated_probe_reports_source_mode_target_and_non_admission() {
 }
 
 #[test]
+fn captured_camera_crossing_near_cases_replay_through_the_calibrated_oracle_api() {
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/snap_crossing_line_near.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/snap_crossing_line_near.json"
+    ))
+    .unwrap();
+    let operations = request["operations"].as_array().unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 27);
+    assert_eq!(rows.len(), operations.len());
+    let (mut hits, mut misses) = (0, 0);
+    for (operation, row) in operations.iter().zip(rows) {
+        assert_eq!(operation["id"], row["id"]);
+        let frame = &row["value"]["frame"];
+        let fixture: ProjectedObjectSnapFixture = serde_json::from_value(json!({
+            "sources": operation["sources"],
+            "camera": {"world_to_screen": frame["world_to_screen"],
+                "location": frame["camera_location"], "direction": frame["camera_direction"]},
+            "cursor": frame["click_client"], "capture_radius": 12,
+            "modes": operation["persistent_snaps"], "snap_to_meshes": operation["snap_to_meshes"]
+        }))
+        .unwrap();
+        let actual = run(&fixture, Tolerance::DEFAULT).unwrap().0;
+        let expected = &row["value"];
+        assert_eq!(actual["kind"], expected["kind"], "{}", row["id"]);
+        assert_eq!(actual["source"], expected["source"], "{}", row["id"]);
+        if actual["kind"] == "None" {
+            assert!(actual["point"].is_null());
+            misses += 1;
+        } else {
+            let point = |value: &Value| {
+                Point3::try_from(serde_json::from_value::<[f64; 3]>(value.clone()).unwrap())
+                    .unwrap()
+            };
+            assert!(
+                point(&actual["point"])
+                    .distance_to(point(&expected["point"]))
+                    .unwrap()
+                    < 1e-9,
+                "{} {} vs {}",
+                row["id"],
+                actual["point"],
+                expected["point"]
+            );
+            hits += 1;
+        }
+    }
+    assert_eq!((hits, misses), (22, 5));
+}
+
+#[test]
 fn invalid_camera_modes_and_source_bounds_fail_instead_of_becoming_misses() {
     let mut cases = Vec::new();
     let base = fixture();

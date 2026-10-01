@@ -24,12 +24,21 @@ def point(value):
 
 def validate(operation):
     required = set(("op", "id", "sources", "view", "bounds", "aim", "offset", "persistent_snaps", "snap_to_meshes"))
-    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms","input_detour")) != required
+    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms","input_detour","camera_pose","clipping_probe")) != required
             or operation["op"] != "point_snap"):
         raise ValueError("invalid point snap fields")
     radius = operation.get("capture_radius",12)
     if type(radius) is not int or not 1 <= radius <= 64: raise ValueError("invalid snap aperture")
     if type(operation.get("pick_diagnostics",False)) is not bool: raise ValueError("invalid picking diagnostic switch")
+    if type(operation.get("clipping_probe",False)) is not bool: raise ValueError("invalid clipping diagnostic switch")
+    if "camera_pose" in operation:
+        pose = operation["camera_pose"]
+        if (not isinstance(pose,dict) or set(pose) != set(("location","target"))
+                or not all(point(pose[key]) for key in ("location","target"))
+                or pose["location"] == pose["target"]
+                or any(abs(value) > 1e100 for key in pose for value in pose[key])
+                or operation.get("view") != "Perspective"):
+            raise ValueError("camera pose requires bounded distinct perspective location and target")
     settle = operation.get("input_settle_ms",0)
     if type(settle) is not int or not 0 <= settle <= 1000: raise ValueError("invalid point input settling interval")
     detour = operation.get("input_detour",[1,0])
@@ -122,6 +131,32 @@ def validate_request(request):
         names.add(operation["id"])
 
 
+def clipping_camera(viewport, host):
+    if __package__:
+        from .named_view_policy_probe import snapshot
+    else:
+        from named_view_policy_probe import snapshot
+    return snapshot(viewport, host["Rhino"])
+
+
+def clipping_queries(viewport, points, host):
+    """Public point visibility and clip coordinates, with no camera mutation."""
+    Rhino = host["Rhino"]
+    systems = Rhino.DocObjects.CoordinateSystem
+    transform = viewport.GetTransform(systems.World, systems.Clip)
+    records = []
+    for label, coordinates in points:
+        world = host["_point"](coordinates)
+        visible = bool(viewport.IsVisible(world))
+        clip = Rhino.Geometry.Point3d(world)
+        clip.Transform(transform)
+        coordinates = host["_xyz"](clip)
+        if not point(coordinates):
+            raise ValueError("nonfinite snap clip coordinates")
+        records.append(dict(id=label, clip=coordinates, visible=visible))
+    return records
+
+
 def pick(operation, host):
     import clr
     clr.AddReference("System.Windows.Forms")
@@ -148,6 +183,8 @@ def pick(operation, host):
             if not 1 <= x < viewport.Size.Width-1 or not 1 <= y < viewport.Size.Height-1:
                 raise ValueError("point snap click outside owned viewport")
             frame = viewport_capture.capture(viewport, aim, [x,y], host)
+            if operation.get("clipping_probe"):
+                frame["clipping_camera"] = clipping_camera(viewport, host)
             screen = view.ClientToScreen(System.Drawing.Point(x,y))
             send("PICK @point:%s %d %d" % (operation["id"], screen.X, screen.Y))
             frames.append(frame)
@@ -171,8 +208,13 @@ def pick(operation, host):
             component = None if reference is None else dict(
                 type=str(reference.GeometryComponentIndex.ComponentIndexType),
                 index=int(reference.GeometryComponentIndex.Index))
-            return dict(point=actual_point, kind=str(getter.OsnapEventType),
-                        component=component, frame=frames[0]), None if reference is None else reference.ObjectId
+            value = dict(point=actual_point, kind=str(getter.OsnapEventType),
+                         component=component, frame=frames[0])
+            if operation.get("clipping_probe"):
+                viewport = view.ActiveViewport
+                value["clipping"] = dict(camera=clipping_camera(viewport, host),
+                    queries=clipping_queries(viewport, [("aim",operation["aim"]),("picked",actual_point)], host))
+            return value, None if reference is None else reference.ObjectId
         finally:
             if reference is not None: reference.Dispose()
     finally:
@@ -288,6 +330,9 @@ def run(operation, tolerance, host):
         if not viewport.SetProjection(projection, "Snap probe", False): raise ValueError("point snap projection failed")
         bounds = Rhino.Geometry.BoundingBox(*[host["_point"](p) for p in operation["bounds"]])
         if not viewport.ZoomBoundingBox(bounds): raise ValueError("point snap camera fit failed")
+        if "camera_pose" in operation:
+            pose = operation["camera_pose"]
+            viewport.SetCameraLocations(host["_point"](pose["target"]), host["_point"](pose["location"]))
         document.Views.Redraw()
         before = [record(document.Objects.FindId(key).Geometry) for key in ids]
         with snap_environment.environment(operation, host, operation.get("capture_radius",12)) as state:

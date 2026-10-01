@@ -6,7 +6,9 @@ Near captures curve points in screen space, preserving their model-space height.
 It supports lines, polylines, circles, arcs, ellipses, NURBS, polycurve leaves,
 natural surface boundaries and spatial B-rep edges. [Mesh wire Near](mesh-snaps.md)
 is separately opt-in and uses its own calibrated depth weighting; mesh wire-selection
-priorities remain incomplete. Curve Near's screen-Euclidean calculation is unchanged.
+priorities remain incomplete. Fully front-facing curve Near uses screen-Euclidean
+distance. A [camera-crossing line](oracle.md#snap-targets-outside-the-visible-depth-interval)
+uses its original visible endpoint, provided that endpoint is within the aperture.
 Enable it in **Snap modes**, right-click to isolate/restore it, or Shift-click
 for one point. At a point prompt, `Near`/`Nearest` selects a one-shot override.
 Near is off by default: the default five landmark modes remain Point/End/Mid/Cen/Quad.
@@ -94,7 +96,11 @@ midpoint; reversing the line avoids forming `1 - tiny_fraction`. Parallel
 axis-aligned queries directly interpolate the affine fraction and retain local
 cursor precision. Independent line tests cover both endpoint orders and depth
 ratios through `1e100`. A line with one projectable endpoint resolves its clipped
-interval by model-coordinate bisection before the direct solution. Numerically
+interval by model-coordinate bisection before the direct solution, except when
+explicit camera depth identifies a camera-crossing source: Near uses the original
+visible endpoint in either endpoint order. Mid/Center hover keeps visible-locus
+proximity. Positive-depth clipping and numerical projection limits retain the
+mathematical line query. Numerically
 unresolved projections retain the bounded visible-locus fallback below.
 
 Curved targets use analytic derivatives or the kernel's
