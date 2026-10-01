@@ -34,6 +34,35 @@ def camera_input(operation, frame):
     return dict(world_to_screen=copy.deepcopy(matrix),location=list(location),direction=list(direction))
 
 
+def source_matches(source, record):
+    """Verify input geometry, using full NURBS data rather than sampled loci."""
+    kind = source["type"]
+    if kind == "line": return record == dict(line=[source["start"],source["end"]])
+    if kind == "mesh": return record == dict(mesh=dict(vertices=source["vertices"],faces=source["faces"]))
+    if kind == "polyline": return record == dict(polyline=source["vertices"])
+    if kind != "nurbs":
+        raise OracleProtocolError("calibrated replay needs a source geometry verifier for " + kind)
+    if not isinstance(record,dict) or set(record) != {"nurbs_curve","nurbs_definition"}: return False
+    definition = record["nurbs_definition"]
+    if not isinstance(definition,dict) or set(definition) != {"degree","knots","domain","control_points"}: return False
+    if (type(definition["degree"]) is not int or definition["degree"] != source["degree"]
+            or not isinstance(definition["knots"],list) or not all(probe.finite(v) for v in definition["knots"])
+            or definition["knots"] != source["knots"]
+            or not isinstance(definition["domain"],list) or not all(probe.finite(v) for v in definition["domain"])
+            or definition["domain"] != [source["knots"][source["degree"]],source["knots"][len(source["control_points"])]]): return False
+    controls = definition["control_points"]
+    if not isinstance(controls,list) or len(controls) != len(source["control_points"]): return False
+    for actual, expected in zip(controls,source["control_points"]):
+        if (not isinstance(actual,dict) or set(actual) != {"point","weight"}
+                or not probe.finite(actual["weight"]) or actual["weight"] != expected["weight"]
+                or not probe.point(actual["point"])
+                or any(abs(a-b) > 1e-10 for a,b in zip(actual["point"],expected["point"]))): return False
+    samples = record["nurbs_curve"]
+    return (isinstance(samples,list) and len(samples) == 2 and type(samples[0]) is int
+            and samples[0] == source["degree"] and isinstance(samples[1],list)
+            and len(samples[1]) == 5 and all(probe.point(point) for point in samples[1]))
+
+
 def prepare(request, observed):
     """Validate owned observations; return native inputs and target-only evidence."""
     probe.validate_request(request)
@@ -66,15 +95,10 @@ def prepare(request, observed):
             point = None
         elif kind not in ("Point","End","Midpoint","Center","Quadrant","Near","Intersection") or type(source) is not int or not 0 <= source < len(operation["sources"]):
             raise OracleProtocolError("invalid observed snap kind/source")
-        expected = []
-        for item in operation["sources"]:
-            if item["type"] == "line":
-                expected.append(dict(line=[item["start"],item["end"]]))
-            elif item["type"] == "mesh":
-                expected.append(dict(mesh=dict(vertices=item["vertices"],faces=item["faces"])))
-            else:
-                raise OracleProtocolError("calibrated replay needs a source geometry verifier for " + item["type"])
-        if value.get("before") != expected or value["before"] != value.get("after"):
+        before = value.get("before")
+        if (not isinstance(before,list) or len(before) != len(operation["sources"])
+                or before != value.get("after")
+                or not all(source_matches(item,record) for item,record in zip(operation["sources"],before))):
             raise OracleProtocolError("source geometry differs from input or changed during snap capture")
         state = value.get("mesh_snap_setting")
         if (not isinstance(state,dict) or type(state.get("before")) is not bool or type(state.get("restored")) is not bool

@@ -1,0 +1,1012 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "arc-center-camera-plane-direct",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              0.0,
+              -3.0,
+              6.0
+            ],
+            [
+              0.0,
+              0.0,
+              5.0
+            ],
+            [
+              0.0,
+              3.0,
+              6.0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "arc-center-camera-plane-hover",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              0.0,
+              -3.0,
+              6.0
+            ],
+            [
+              0.0,
+              0.0,
+              5.0
+            ],
+            [
+              0.0,
+              3.0,
+              6.0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.3,
+        5.009008114612888
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "nurbs-center-camera-plane",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -3.0,
+                6.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                3.75
+              ],
+              "weight": 0.8
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                6.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-center-camera-plane",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            10.0
+          ],
+          "radius_x": 3.0,
+          "radius_y": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "circle-center-camera-plane",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            10.0
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "polygon-center-camera-plane",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              -0.2,
+              -0.2,
+              9.0
+            ],
+            [
+              -0.2,
+              0.2,
+              9.0
+            ],
+            [
+              0.2,
+              0.2,
+              11
+            ],
+            [
+              0.2,
+              -0.2,
+              11
+            ],
+            [
+              -0.2,
+              -0.2,
+              9.0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0.0,
+        9.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "crossing-line-mid-camera-plane",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -0.2,
+            0.0,
+            9.0
+          ],
+          "end": [
+            0.1,
+            0.0,
+            11
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0.0,
+        9.0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Mid"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "circle-center-front-ulp",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            9.999999999999998
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        4.999999999999998
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "circle-center-rear-ulp",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            10.000000000000002
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.000000000000002
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "circle-center-front-nanounit",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            9.999999999
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        4.999999999
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "circle-center-rear-nanounit",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            10.000000001
+          ],
+          "radius": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.000000001
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-center-front-ulp",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            9.999999999999998
+          ],
+          "radius_x": 3.0,
+          "radius_y": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        4.999999999999998
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-center-rear-ulp",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            10.000000000000002
+          ],
+          "radius_x": 3.0,
+          "radius_y": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.000000000000002
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-center-front-nanounit",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            9.999999999
+          ],
+          "radius_x": 3.0,
+          "radius_y": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        4.999999999
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "ellipse-center-rear-nanounit",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            10.000000001
+          ],
+          "radius_x": 3.0,
+          "radius_y": 5.0,
+          "x_axis": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8.0,
+          -8.0,
+          -8.0
+        ],
+        [
+          8.0,
+          8.0,
+          8.0
+        ]
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        5.000000001
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Cen"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

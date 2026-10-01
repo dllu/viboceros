@@ -19,6 +19,35 @@ def inputs(name="point_snaps"):
 
 
 class PointSnapReplayTests(unittest.TestCase):
+    def test_crossing_straight_sources_verify_complete_nurbs_nets_and_never_input_targets(self):
+        request,observed = inputs("snap_crossing_straight_sources")
+        native,evidence = replay.prepare(request,observed)
+        self.assertEqual(len(native["operations"]),72)
+        self.assertEqual(sum(row["value"]["kind"] == "Near" for row in evidence["results"]),48)
+        self.assertEqual(sum(op["sources"][0]["type"] == "nurbs" for op in native["operations"]),24)
+        changed = copy.deepcopy(observed)
+        for row in changed["results"]: row["value"]["point"] = [123,456,789]
+        self.assertEqual(replay.prepare(request,changed)[0],native)
+        index = next(i for i,op in enumerate(request["operations"]) if op["sources"][0]["type"] == "nurbs")
+        mutations = (
+            lambda r:r.pop("nurbs_definition"),
+            lambda r:r["nurbs_definition"].update(degree=True),
+            lambda r:r["nurbs_definition"]["knots"].__setitem__(0,False),
+            lambda r:r["nurbs_definition"].update(domain=[0,2]),
+            lambda r:r["nurbs_definition"]["control_points"].pop(),
+            lambda r:r["nurbs_definition"]["control_points"][0].update(weight=2),
+            lambda r:r["nurbs_definition"]["control_points"][0]["point"].__setitem__(0,999),
+        )
+        client = Mock()
+        for mutation in mutations:
+            with self.subTest(mutation=mutation):
+                corrupted = copy.deepcopy(observed)
+                value = corrupted["results"][index]["value"]
+                mutation(value["before"][0])
+                value["after"] = copy.deepcopy(value["before"])
+                with self.assertRaises(OracleProtocolError): replay.replay(request,corrupted,client)
+        client.run_viboceros.assert_not_called()
+
     def test_multi_object_intersection_captures_prepare_for_native_replay(self):
         for stem in ("intersection_multi_snaps", "intersection_multi_detail_snaps",
                      "intersection_multi_depth_snaps", "intersection_multi_orientation_snaps",

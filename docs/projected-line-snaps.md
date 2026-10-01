@@ -43,6 +43,10 @@ before bisection. Projection-only callbacks retain the mathematical query becaus
 an unprojectable endpoint can also mean overflow or another clipping boundary.
 Positive-depth clipping and screen-range rejection do not trigger the camera rule.
 Mid/Center hover and the independent Fraction corpus keep visible-locus distance.
+Another [72 real GetPoint cases](oracle.md#camera-plane-centers-and-straight-source-representation)
+verify the same Near policy on polylines and rational degree-one NURBS with
+translated, side, and oblique cameras. Their public full NURBS definitions are
+verified before the Python CLI replay; sampling alone does not verify a source net.
 
 Screen distances are evaluated from the nearer endpoint. Inverse projection
 computes both endpoint fractions independently, then interpolates from the nearer

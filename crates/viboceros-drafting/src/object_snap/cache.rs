@@ -50,6 +50,9 @@ impl CurveFeatures {
                         .ok()
                         .flatten()
                         .or_else(|| self.curve.elliptical_center(self.tolerance).ok().flatten())
+                        .map(|center| {
+                            super::centers::stable_closed_conic_center(&self.curve, center)
+                        })
                 })
                 .flatten()
         })

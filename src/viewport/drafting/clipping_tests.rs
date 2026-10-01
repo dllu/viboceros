@@ -251,17 +251,32 @@ fn curve_hover_snap_targets_match_rhino_outside_depth_planes_and_behind_the_came
 
 #[test]
 fn camera_crossing_near_matches_rhino_endpoint_reversal_aperture_and_front_controls() {
-    let request: serde_json::Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/snap_crossing_line_near.json"
-    ))
-    .unwrap();
-    let observed: serde_json::Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/snap_crossing_line_near.json"
-    ))
-    .unwrap();
+    for (request, observed, expected_counts) in [
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/snap_crossing_line_near.json"),
+            include_str!("../../../tools/rhino_oracle/observations/snap_crossing_line_near.json"),
+            (22, 5),
+        ),
+        (
+            include_str!(
+                "../../../tools/rhino_oracle/fixtures/snap_crossing_straight_sources.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/snap_crossing_straight_sources.json"
+            ),
+            (48, 24),
+        ),
+    ] {
+        replay_near_captures(request, observed, expected_counts);
+    }
+}
+
+fn replay_near_captures(request: &str, observed: &str, expected_counts: (usize, usize)) {
+    let request: serde_json::Value = serde_json::from_str(request).unwrap();
+    let observed: serde_json::Value = serde_json::from_str(observed).unwrap();
     let operations = request["operations"].as_array().unwrap();
     let rows = observed["results"].as_array().unwrap();
-    assert_eq!(operations.len(), 27);
+    assert_eq!(operations.len(), expected_counts.0 + expected_counts.1);
     assert_eq!(rows.len(), operations.len());
     let (mut hits, mut misses) = (0, 0);
     for (operation, row) in operations.iter().zip(rows) {
@@ -298,7 +313,96 @@ fn camera_crossing_near_matches_rhino_endpoint_reversal_aperture_and_front_contr
             hits += 1;
         }
     }
-    assert_eq!((hits, misses), (22, 5));
+    assert_eq!((hits, misses), expected_counts);
+}
+
+#[test]
+fn camera_plane_targets_match_rhino_conic_admission_and_keep_singular_overlay_labels() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/snap_camera_plane_targets.json"
+    ))
+    .unwrap();
+    let observed: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/snap_camera_plane_targets.json"
+    ))
+    .unwrap();
+    let operations = request["operations"].as_array().unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 15);
+    assert_eq!(rows.len(), operations.len());
+    let context = egui::Context::default();
+    let mut misses = 0;
+    for (operation, row) in operations.iter().zip(rows) {
+        assert_eq!(operation["id"], row["id"]);
+        let expected = &row["value"];
+        let view = super::super::clip_tests::captured_view(&expected["frame"]["clipping_camera"]);
+        let rect = view.last_rect.unwrap();
+        let pointer: [f32; 2] =
+            serde_json::from_value(expected["frame"]["click_client"].clone()).unwrap();
+        let pointer = Pos2::new(pointer[0], pointer[1]);
+        let mut document = Document::default();
+        // Rhino stores ellipses as NURBS. Reconstruct the actual captured net:
+        // scaling around an origin can round a one-ULP center shift away.
+        let geometry = if operation["sources"][0]["type"] == "ellipse" {
+            let mut definition = expected["before"][0]["nurbs_definition"].clone();
+            definition["type"] = "nurbs".into();
+            source(&definition)
+        } else {
+            source(&operation["sources"][0])
+        };
+        let id = document.add_geometry(geometry).unwrap();
+        let input = DraftingInput {
+            active: true,
+            osnap: modes(operation),
+            ..Default::default()
+        };
+        let snap = view.object_snap(pointer, rect, &document, modes(operation));
+        if expected["kind"] == "None" {
+            assert!(snap.is_none(), "{} got {snap:?}", row["id"]);
+            misses += 1;
+            continue;
+        }
+        let snap = snap.unwrap_or_else(|| panic!("{} missing snap", row["id"]));
+        assert_eq!(snap.object_id(), id);
+        assert_eq!(
+            snap.kind(),
+            if expected["kind"] == "Midpoint" {
+                ObjectSnapKind::Mid
+            } else {
+                ObjectSnapKind::Center
+            }
+        );
+        assert!(
+            snap.point().distance_to(point(&expected["point"])).unwrap() < 1e-9,
+            "{}",
+            row["id"]
+        );
+        assert!(
+            view.project_snap_target(snap.point(), rect).is_none(),
+            "{}",
+            row["id"]
+        );
+        let cursor = view
+            .drafting_cursor(pointer, rect, &document, input)
+            .unwrap();
+        let label = snap.kind().label();
+        let output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(rect),
+                ..Default::default()
+            },
+            |ui| {
+                view.paint_drafting(ui.painter(), rect, input, cursor);
+            },
+        );
+        assert!(
+            output.shapes.iter().any(|shape| matches!(&shape.shape,
+            egui::Shape::Text(text) if text.galley.text() == label && text.pos.is_finite())),
+            "{}",
+            row["id"]
+        );
+    }
+    assert_eq!(misses, 4);
 }
 
 #[test]

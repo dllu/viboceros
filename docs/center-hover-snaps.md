@@ -11,6 +11,10 @@ The finite center may lie outside the depth planes or behind the camera:
 admission follows the visible source curve. The
 [depth-plane capture](oracle.md#snap-targets-outside-the-visible-depth-interval)
 also checks circular NURBS and polygon centers in these cases.
+Circle and ellipse centers exactly on the perspective camera plane are excluded;
+polygon Center and Mid may still be admitted there. The
+[camera-plane captures](oracle.md#camera-plane-centers-and-straight-source-representation)
+check neighboring depths, actual ellipse NURBS nets, and finite overlay labels.
 
 Enabled direct point features take precedence over Center on the same object.
 Candidates on different objects compete by capture distance: a circle's curve

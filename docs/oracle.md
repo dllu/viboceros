@@ -2193,6 +2193,61 @@ largest coordinate residual is `2.78e-17`. Verification passes 760 application,
 whitespace checks pass. Workspace Clippy completes with existing warnings in
 unchanged files; its strict `-D warnings` gate still fails on those warnings.
 
+### Camera-plane centers and straight-source representation
+
+The [72 straight-source requests](../tools/rhino_oracle/fixtures/snap_crossing_straight_sources.json)
+and [Rhino 8.32 captures](../tools/rhino_oracle/observations/snap_crossing_straight_sources.json)
+cover lines, two-point polylines, and rational degree-one NURBS in both endpoint
+orders, with world, translated, side, and oblique cameras. All 48 Near hits use
+the original visible endpoint; all 24 aperture misses remain misses. The viewport
+and calibrated Python CLI replay these inputs at `1e-9` model units. The CLI's
+largest coordinate difference is `1.42e-14`.
+
+The side camera lies in World XY. A missed point there leaves ordinary GetPoint
+without a usable free plane intersection. The explicit diagnostic `camera_plane`
+option sets a camera-facing construction plane at the target and restores it
+afterward. Snap projection to the CPlane remains disabled. Its boolean validation,
+setup failures, restoration failures, and resource cleanup are tested. Every
+live capture uses a private Xvfb display and at least 250 ms of owned settling.
+
+NURBS observations now retain public degree, knots, domain, controls, and weights
+as well as the original five samples. The Python replay verifies the complete
+definition before invoking the native engine; control coordinates compare at
+`1e-10`, while weights, knots, degree, and domain must match. Before/after records
+must be identical. Polyline vertices are verified directly. Targets never enter
+native query inputs. Older sample-only NURBS observations do not establish a
+complete source definition for this replay.
+
+The [15 camera-plane requests](../tools/rhino_oracle/fixtures/snap_camera_plane_targets.json)
+and [capture](../tools/rhino_oracle/observations/snap_camera_plane_targets.json)
+include exact-plane Center/Mid targets and neighboring float/nanounit depths.
+Circle Center rejects an exact camera-plane target but admits the adjacent floats
+on either side. The recorded closed ellipse nets reject the same singular center;
+polygon Center and Mid can still be admitted on that plane. Partial arc/quarter
+NURBS centers in these records are a few float steps in front of the plane.
+
+Rhino's ellipse conversion rounds the adjacent center shifts away in its actual
+NURBS net. The viewport replay therefore reconstructs that recorded net, rather
+than assuming an ideal analytic ellipse has identical binary64 controls. A
+recognized four-span quadratic with coincident diagonal midpoints uses that
+stable center only when the fit differs by at most four input-coordinate ULPs.
+This corrects a three-ULP fit offset without changing conic recognition or the
+geometry kernel. Admitted near-singular targets keep finite overlay labels at
+the pointer. Public IsVisible reports true for the exact-plane polygon/Mid points
+with zero clip coordinates; these values do not establish a finite camera image.
+
+Verification passes 761 application, 157 drafting, and 447 oracle tests, plus 490
+Python tests. These records do not establish all conic representations, arbitrary
+camera poses/scales, user clipping planes, or screenshot appearance. CLI misses
+compare admission, not free CPlane placement.
+
+```sh
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/snap_crossing_straight_sources.json --timeout 720
+tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/snap_camera_plane_targets.json --timeout 300
+python3 -m tools.rhino_oracle.point_snap_replay tools/rhino_oracle/fixtures/snap_crossing_straight_sources.json tools/rhino_oracle/observations/snap_crossing_straight_sources.json
+cargo test --release -p viboceros viewport::drafting::clipping_tests
+```
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

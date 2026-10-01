@@ -1,0 +1,4680 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_snap",
+      "id": "near-world-line-forward-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -0.2,
+            0,
+            9
+          ],
+          "end": [
+            0.1,
+            0,
+            13
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-line-forward-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -0.2,
+            0,
+            9
+          ],
+          "end": [
+            0.1,
+            0,
+            13
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-line-forward-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -0.2,
+            0,
+            9
+          ],
+          "end": [
+            0.1,
+            0,
+            13
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-line-reverse-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0.1,
+            0,
+            13
+          ],
+          "end": [
+            -0.2,
+            0,
+            9
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-line-reverse-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0.1,
+            0,
+            13
+          ],
+          "end": [
+            -0.2,
+            0,
+            9
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-line-reverse-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0.1,
+            0,
+            13
+          ],
+          "end": [
+            -0.2,
+            0,
+            9
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-forward-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              -0.2,
+              0,
+              9
+            ],
+            [
+              0.1,
+              0,
+              13
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-forward-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              -0.2,
+              0,
+              9
+            ],
+            [
+              0.1,
+              0,
+              13
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-forward-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              -0.2,
+              0,
+              9
+            ],
+            [
+              0.1,
+              0,
+              13
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-reverse-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.1,
+              0,
+              13
+            ],
+            [
+              -0.2,
+              0,
+              9
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-reverse-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.1,
+              0,
+              13
+            ],
+            [
+              -0.2,
+              0,
+              9
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-polyline-reverse-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.1,
+              0,
+              13
+            ],
+            [
+              -0.2,
+              0,
+              9
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-forward-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-forward-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-forward-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-reverse-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-reverse-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-world-nurbs-reverse-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0.1,
+                0,
+                13
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                -0.2,
+                0,
+                9
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        -0.2,
+        0,
+        9
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          0,
+          0,
+          10
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-forward-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            99.8,
+            -20,
+            39
+          ],
+          "end": [
+            100.1,
+            -20,
+            43
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-forward-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            99.8,
+            -20,
+            39
+          ],
+          "end": [
+            100.1,
+            -20,
+            43
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-forward-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            99.8,
+            -20,
+            39
+          ],
+          "end": [
+            100.1,
+            -20,
+            43
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-reverse-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            100.1,
+            -20,
+            43
+          ],
+          "end": [
+            99.8,
+            -20,
+            39
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-reverse-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            100.1,
+            -20,
+            43
+          ],
+          "end": [
+            99.8,
+            -20,
+            39
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-line-reverse-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            100.1,
+            -20,
+            43
+          ],
+          "end": [
+            99.8,
+            -20,
+            39
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-forward-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              99.8,
+              -20,
+              39
+            ],
+            [
+              100.1,
+              -20,
+              43
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-forward-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              99.8,
+              -20,
+              39
+            ],
+            [
+              100.1,
+              -20,
+              43
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-forward-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              99.8,
+              -20,
+              39
+            ],
+            [
+              100.1,
+              -20,
+              43
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-reverse-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              100.1,
+              -20,
+              43
+            ],
+            [
+              99.8,
+              -20,
+              39
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-reverse-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              100.1,
+              -20,
+              43
+            ],
+            [
+              99.8,
+              -20,
+              39
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-polyline-reverse-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              100.1,
+              -20,
+              43
+            ],
+            [
+              99.8,
+              -20,
+              39
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-forward-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-forward-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-forward-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-reverse-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-reverse-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-offset-nurbs-reverse-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                100.1,
+                -20,
+                43
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                99.8,
+                -20,
+                39
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          92,
+          -28,
+          22
+        ],
+        [
+          108,
+          -12,
+          38
+        ]
+      ],
+      "aim": [
+        99.8,
+        -20,
+        39
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          100,
+          -20,
+          40
+        ],
+        "target": [
+          100,
+          -20,
+          30
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-forward-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            9,
+            -0.2,
+            0
+          ],
+          "end": [
+            13,
+            0.1,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-forward-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            9,
+            -0.2,
+            0
+          ],
+          "end": [
+            13,
+            0.1,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-forward-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            9,
+            -0.2,
+            0
+          ],
+          "end": [
+            13,
+            0.1,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-reverse-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            13,
+            0.1,
+            0
+          ],
+          "end": [
+            9,
+            -0.2,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-reverse-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            13,
+            0.1,
+            0
+          ],
+          "end": [
+            9,
+            -0.2,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-line-reverse-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            13,
+            0.1,
+            0
+          ],
+          "end": [
+            9,
+            -0.2,
+            0
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-forward-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              9,
+              -0.2,
+              0
+            ],
+            [
+              13,
+              0.1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-forward-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              9,
+              -0.2,
+              0
+            ],
+            [
+              13,
+              0.1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-forward-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              9,
+              -0.2,
+              0
+            ],
+            [
+              13,
+              0.1,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-reverse-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              13,
+              0.1,
+              0
+            ],
+            [
+              9,
+              -0.2,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-reverse-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              13,
+              0.1,
+              0
+            ],
+            [
+              9,
+              -0.2,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-polyline-reverse-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              13,
+              0.1,
+              0
+            ],
+            [
+              9,
+              -0.2,
+              0
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-forward-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-forward-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-forward-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-reverse-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-reverse-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-side-nurbs-reverse-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                13,
+                0.1,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                9,
+                -0.2,
+                0
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -8,
+          -8,
+          -8
+        ],
+        [
+          8,
+          8,
+          8
+        ]
+      ],
+      "aim": [
+        9,
+        -0.2,
+        0
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          10,
+          0,
+          0
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "camera_plane": true
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-forward-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            7.08,
+            0,
+            5.56
+          ],
+          "end": [
+            10.46,
+            0,
+            7.72
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-forward-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            7.08,
+            0,
+            5.56
+          ],
+          "end": [
+            10.46,
+            0,
+            7.72
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-forward-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            7.08,
+            0,
+            5.56
+          ],
+          "end": [
+            10.46,
+            0,
+            7.72
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-reverse-0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            10.46,
+            0,
+            7.72
+          ],
+          "end": [
+            7.08,
+            0,
+            5.56
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-reverse-8",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            10.46,
+            0,
+            7.72
+          ],
+          "end": [
+            7.08,
+            0,
+            5.56
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-line-reverse-16",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            10.46,
+            0,
+            7.72
+          ],
+          "end": [
+            7.08,
+            0,
+            5.56
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-forward-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              7.08,
+              0,
+              5.56
+            ],
+            [
+              10.46,
+              0,
+              7.72
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-forward-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              7.08,
+              0,
+              5.56
+            ],
+            [
+              10.46,
+              0,
+              7.72
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-forward-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              7.08,
+              0,
+              5.56
+            ],
+            [
+              10.46,
+              0,
+              7.72
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-reverse-0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              10.46,
+              0,
+              7.72
+            ],
+            [
+              7.08,
+              0,
+              5.56
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-reverse-8",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              10.46,
+              0,
+              7.72
+            ],
+            [
+              7.08,
+              0,
+              5.56
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-polyline-reverse-16",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              10.46,
+              0,
+              7.72
+            ],
+            [
+              7.08,
+              0,
+              5.56
+            ]
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-forward-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-forward-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-forward-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-reverse-0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-reverse-8",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        8,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "point_snap",
+      "id": "near-oblique-nurbs-reverse-16",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                10.46,
+                0,
+                7.72
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                7.08,
+                0,
+                5.56
+              ],
+              "weight": 3
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "view": "Perspective",
+      "bounds": [
+        [
+          -11.2,
+          -8,
+          -11.2
+        ],
+        [
+          11.2,
+          8,
+          11.2
+        ]
+      ],
+      "aim": [
+        7.08,
+        0,
+        5.56
+      ],
+      "offset": [
+        16,
+        0
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "snap_to_meshes": true,
+      "clipping_probe": true,
+      "input_settle_ms": 250,
+      "camera_pose": {
+        "location": [
+          8.0,
+          0,
+          6.0
+        ],
+        "target": [
+          0.0,
+          0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

@@ -187,6 +187,7 @@ class PointSnapTests(unittest.TestCase):
                         dict(capture_radius=0), dict(capture_radius=65), dict(capture_radius=True), dict(capture_radius=12.5),
                         dict(pick_diagnostics=None), dict(pick_diagnostics=1),
                         dict(clipping_probe=None), dict(clipping_probe=1),
+                        dict(camera_plane=None), dict(camera_plane=1), dict(camera_plane=True),
                         dict(camera_pose=None), dict(camera_pose=dict(location=[0,0,10],target=[0,0,10])),
                         dict(camera_pose=dict(location=[0,0,True],target=[0,0,0])),
                         dict(camera_pose=dict(location=[0,0,float("inf")],target=[0,0,0])),
@@ -340,6 +341,30 @@ class PointSnapTests(unittest.TestCase):
         timer.Dispose.assert_called_once()
         getter.Dispose.assert_called_once()
 
+    def test_camera_plane_targets_preserve_singular_admission_and_ellipse_source_rounding(self):
+        fixture = json.loads((ROOT/"tools/rhino_oracle/fixtures/snap_camera_plane_targets.json").read_text())
+        capture = json.loads((ROOT/"tools/rhino_oracle/observations/snap_camera_plane_targets.json").read_text())
+        probe.validate_request(fixture)
+        self.assertEqual(len(fixture["operations"]),15)
+        self.assertEqual([op["id"] for op in fixture["operations"]],[row["id"] for row in capture["results"]])
+        rows = {}
+        for operation,row in zip(fixture["operations"],capture["results"]):
+            value = row["value"]; rows[row["id"]] = value
+            self.assertEqual(value["before"],value["after"])
+            self.assertEqual(value["frame"]["clipping_camera"],value["clipping"]["camera"])
+            self.assertEqual(value["mesh_snap_setting"]["before"],value["mesh_snap_setting"]["restored"])
+            self.assertGreaterEqual(value["input_motion"]["motion_to_click_ms"],250)
+        misses = {name for name,value in rows.items() if value["kind"] == "None"}
+        self.assertEqual(misses,{"circle-center-camera-plane","ellipse-center-camera-plane",
+                                 "ellipse-center-front-ulp","ellipse-center-rear-ulp"})
+        for side in ("front","rear"):
+            self.assertEqual(rows["circle-center-"+side+"-ulp"]["kind"],"Center")
+            definition = rows["ellipse-center-"+side+"-ulp"]["before"][0]["nurbs_definition"]
+            self.assertEqual([p["point"][2] for p in definition["control_points"][::2]],[10,5,10,15,10])
+        for name in ("polygon-center-camera-plane","crossing-line-mid-camera-plane"):
+            self.assertEqual(rows[name]["point"][2],10)
+            self.assertTrue(rows[name]["clipping"]["queries"][1]["visible"])
+
     def test_driver_waits_for_prompt_and_records_public_kind_point_and_owner(self):
         self.exercise_pick()
 
@@ -348,7 +373,7 @@ class PointSnapTests(unittest.TestCase):
             with self.subTest(failure=failure): self.exercise_pick(failure)
 
     def test_owned_sources_and_view_restore_after_setup_pick_and_cleanup_failures(self):
-        for failure in (None,"source","projection","fit","pose","pick","owner","topology","diagnostics","delete"):
+        for failure in (None,"source","projection","fit","pose","plane","restore_plane","pick","owner","topology","diagnostics","delete"):
             with self.subTest(failure=failure):
                 created, table, deleted = [], {}, []
                 class Curve:
@@ -366,7 +391,12 @@ class PointSnapTests(unittest.TestCase):
                     del table[key]; return True
                 objects = SimpleNamespace(GetObjectList=lambda s:list(table.values()),AddCurve=add,
                                           FindId=lambda key:table[key],Delete=delete)
-                viewport = SimpleNamespace(Name="original",CameraTarget=[11,12,13],
+                def set_plane(plane):
+                    if failure == "restore_plane" and plane == "original-plane": return False
+                    if failure == "plane" and plane != "original-plane": return False
+                    return True
+                viewport = SimpleNamespace(Name="original",CameraTarget=[11,12,13],CameraDirection=[0,0,-1],
+                    ConstructionPlane=Mock(return_value="original-plane"),SetConstructionPlane=Mock(side_effect=set_plane),
                     SetProjection=Mock(return_value=failure != "projection"),
                     ZoomBoundingBox=Mock(return_value=failure != "fit"),
                     SetCameraLocations=Mock(side_effect=ValueError("pose failed") if failure == "pose" else None),
@@ -375,7 +405,8 @@ class PointSnapTests(unittest.TestCase):
                 view = SimpleNamespace(ActiveViewport=viewport)
                 document = SimpleNamespace(Objects=objects,Views=SimpleNamespace(ActiveView=view,Redraw=Mock()))
                 rhino = SimpleNamespace(RhinoDoc=SimpleNamespace(ActiveDoc=document),
-                    Geometry=SimpleNamespace(Mesh=type("Mesh",(),{}),BoundingBox=lambda a,b:[a,b]),
+                    Geometry=SimpleNamespace(Mesh=type("Mesh",(),{}),BoundingBox=lambda a,b:[a,b],
+                        Plane=lambda origin,normal:dict(origin=origin,normal=normal)),
                     Display=SimpleNamespace(DefinedViewportProjection=SimpleNamespace(Perspective=1)),
                     DocObjects=SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace,ViewportInfo=lambda vp:saved))
                 host = dict(Rhino=rhino,System=SimpleNamespace(Guid=SimpleNamespace(Empty="empty")),
@@ -394,7 +425,8 @@ class PointSnapTests(unittest.TestCase):
                 op = copy.deepcopy(request()["operations"][0])
                 op["sources"] *= 2
                 if failure == "diagnostics": op["pick_diagnostics"] = True
-                if failure == "pose": op["camera_pose"] = dict(location=[0,0,10],target=[0,0,0])
+                op["camera_pose"] = dict(location=[0,0,10],target=[0,0,0])
+                op["camera_plane"] = True
                 def topology(geometry,host):
                     if failure == "topology": raise ValueError("topology query failed")
                     return None
@@ -412,5 +444,7 @@ class PointSnapTests(unittest.TestCase):
                 saved.Dispose.assert_called_once()
                 viewport.SetViewProjection.assert_called_once_with(saved,False)
                 viewport.SetCameraTarget.assert_called_once_with([11,12,13],False)
+                viewport.ConstructionPlane.assert_called_once_with()
+                self.assertEqual(viewport.SetConstructionPlane.call_args.args,("original-plane",))
                 self.assertEqual(viewport.Name,"original")
                 self.assertEqual(entered,restored)

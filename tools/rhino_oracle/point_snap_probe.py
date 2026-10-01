@@ -24,13 +24,16 @@ def point(value):
 
 def validate(operation):
     required = set(("op", "id", "sources", "view", "bounds", "aim", "offset", "persistent_snaps", "snap_to_meshes"))
-    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms","input_detour","camera_pose","clipping_probe")) != required
+    if (not isinstance(operation, dict) or set(operation)-set(("capture_radius","pick_diagnostics","input_settle_ms","input_detour","camera_pose","clipping_probe","camera_plane")) != required
             or operation["op"] != "point_snap"):
         raise ValueError("invalid point snap fields")
     radius = operation.get("capture_radius",12)
     if type(radius) is not int or not 1 <= radius <= 64: raise ValueError("invalid snap aperture")
     if type(operation.get("pick_diagnostics",False)) is not bool: raise ValueError("invalid picking diagnostic switch")
     if type(operation.get("clipping_probe",False)) is not bool: raise ValueError("invalid clipping diagnostic switch")
+    if (type(operation.get("camera_plane",False)) is not bool
+            or operation.get("camera_plane") and "camera_pose" not in operation):
+        raise ValueError("camera-facing construction plane requires an explicit camera pose")
     if "camera_pose" in operation:
         pose = operation["camera_pose"]
         if (not isinstance(pose,dict) or set(pose) != set(("location","target"))
@@ -293,6 +296,7 @@ def run(operation, tolerance, host):
     # Foreign geometry could compete for snaps, even when not selected.
     if objects(): raise ValueError("point snap calibration requires an empty owned document")
     view, viewport = document.Views.ActiveView, document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane() if operation.get("camera_plane") else None
     original_projection = Rhino.DocObjects.ViewportInfo(viewport)
     original_name, original_target = viewport.Name, viewport.CameraTarget
     ids, owned = [], []
@@ -309,7 +313,8 @@ def run(operation, tolerance, host):
         if isinstance(geometry, getattr(Rhino.Geometry, "NurbsCurve", ())):
             return dict(nurbs_curve=[int(geometry.Degree),
                                      [host["_xyz"](geometry.PointAt(geometry.Domain.ParameterAt(t)))
-                                      for t in (0.0,0.25,0.5,0.75,1.0)]])
+                                      for t in (0.0,0.25,0.5,0.75,1.0)]],
+                        nurbs_definition=host["_nurbs_curve_definition"](geometry))
         if isinstance(geometry, getattr(Rhino.Geometry, "PolylineCurve", ())):
             success, polyline = geometry.TryGetPolyline()
             if not success: raise ValueError("point snap polyline changed representation")
@@ -333,6 +338,10 @@ def run(operation, tolerance, host):
         if "camera_pose" in operation:
             pose = operation["camera_pose"]
             viewport.SetCameraLocations(host["_point"](pose["target"]), host["_point"](pose["location"]))
+            if operation.get("camera_plane"):
+                plane = Rhino.Geometry.Plane(host["_point"](pose["target"]), viewport.CameraDirection)
+                if viewport.SetConstructionPlane(plane) is False:
+                    raise ValueError("point snap camera-facing construction plane failed")
         document.Views.Redraw()
         before = [record(document.Objects.FindId(key).Geometry) for key in ids]
         with snap_environment.environment(operation, host, operation.get("capture_radius",12)) as state:
@@ -354,8 +363,10 @@ def run(operation, tolerance, host):
         actions = [("delete source",lambda key=key: document.Objects.Delete(key,True)) for key in ids]
         actions += [("dispose source",geometry.Dispose) for geometry in reversed(owned)]
         actions += [("restore projection",lambda: viewport.SetViewProjection(original_projection,False)),
-                    ("restore target",lambda: viewport.SetCameraTarget(original_target,False)),
-                    ("restore name",lambda: setattr(viewport,"Name",original_name)),
+                    ("restore target",lambda: viewport.SetCameraTarget(original_target,False))]
+        if original_plane is not None:
+            actions += [("restore construction plane",lambda: viewport.SetConstructionPlane(original_plane))]
+        actions += [("restore name",lambda: setattr(viewport,"Name",original_name)),
                     ("restore active view",lambda: setattr(document.Views,"ActiveView",view)),
                     ("dispose projection",original_projection.Dispose)]
         errors = []
