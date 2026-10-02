@@ -56,6 +56,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn start_extract_faces(&mut self, copy: bool, current: bool) {
+        self.commands.begin_copy_options("ExtractSrf");
         self.component_selection.valid_picks(&self.document);
         self.active_command = Some(InteractiveCommand::ExtractSrf {
             copy,
@@ -131,6 +132,7 @@ impl VibocerosApp {
             });
         match result {
             Ok(message) => {
+                self.commands.complete_copy_options("ExtractSrf", copy);
                 self.active_command = None;
                 self.component_selection.clear();
                 self.push_log(message);

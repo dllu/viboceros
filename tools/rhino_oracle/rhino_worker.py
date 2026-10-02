@@ -6341,6 +6341,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "copy_options_command":
+        import copy_options_probe
+        return copy_options_probe.run(operation, globals())
     if operation.get("op") == "connect_command":
         extension = operation.get("other_extension", "Line")
         if extension not in ("Line", "Smooth"):

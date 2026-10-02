@@ -1773,11 +1773,25 @@ fn front_view_transform_prompts_use_their_plane_and_undo_atomically() {
         enter(&mut app, "Point 1,2,3");
         enter(&mut app, "SelAll");
         let id = app.document.objects().next().unwrap().id();
+        let copying = inputs[0] == "Mirror";
         for input in inputs {
             enter(&mut app, input);
         }
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
-        let Geometry::Point(actual) = app.document.object(id).unwrap().geometry() else {
+        let output = if copying {
+            assert_eq!(app.document.objects().len(), 2);
+            assert_eq!(
+                app.document.object(id).unwrap().geometry(),
+                &Geometry::Point(point(1., 2., 3.))
+            );
+            app.document
+                .objects()
+                .find(|object| object.id() != id)
+                .unwrap()
+        } else {
+            app.document.object(id).unwrap()
+        };
+        let Geometry::Point(actual) = output.geometry() else {
             panic!("point")
         };
         assert!(

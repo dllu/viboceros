@@ -18,7 +18,7 @@ fn front_plane_transforms_are_not_world_xy_operations() {
     let p = |a| Point3::try_from(a).unwrap();
     for (command, expected) in [
         ("Rotate 0,0,0 90", [-3.0, 2.0, 1.0]),
-        ("Mirror 0,0,0 0,0,1", [-1.0, 2.0, 3.0]),
+        ("Mirror 0,0,0 0,0,1 Copy=No", [-1.0, 2.0, 3.0]),
         ("Scale2D 0,0,0 2", [2.0, 2.0, 6.0]),
         ("Shear 0,0,0 1,0,0 45", [1.0, 2.0, 4.0]),
         ("ProjectToCPlane DeleteInput=Yes", [1.0, 20.0, 3.0]),

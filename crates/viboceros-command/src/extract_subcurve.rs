@@ -29,6 +29,10 @@ struct Plan {
 pub(super) struct ExtractSubcurveCommand;
 
 impl Command for ExtractSubcurveCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "ExtractSubCrv"
     }

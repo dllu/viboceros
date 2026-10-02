@@ -80,6 +80,7 @@ use extract_mesh_faces_by_aspect_ratio::ExtractMeshFacesByAspectRatioCommand;
 use extract_mesh_faces_by_draft_angle::ExtractMeshFacesByDraftAngleCommand;
 use extract_mesh_faces_by_edge_length::ExtractMeshFacesByEdgeLengthCommand;
 use extract_mesh_part::ExtractMeshPartCommand;
+mod copy_options;
 #[cfg(test)]
 mod mesh_decomposition_tests;
 mod remembered;
@@ -289,6 +290,11 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
 
+    /// Built-in Copy default for commands governed by RememberCopyOptions.
+    fn copy_option_default(&self) -> Option<bool> {
+        None
+    }
+
     /// Parses the untouched argument tail before a document transaction starts.
     /// Commands with path arguments can preserve internal whitespace.
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
@@ -393,11 +399,17 @@ pub trait Command: Send + Sync {
 pub struct CommandRegistry {
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
+    copy_preferences: copy_options::CopyPreferences,
 }
 
 impl CommandRegistry {
     pub fn with_builtins() -> Self {
         let mut registry = Self::default();
+        registry
+            .register(copy_options::RememberCopyOptionsCommand(
+                registry.copy_preferences.clone(),
+            ))
+            .expect("unique built-in command");
         registry
             .register(PointCommand)
             .expect("unique built-in command");
@@ -1322,6 +1334,14 @@ impl CommandRegistry {
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
         let command = &self.commands[index];
         let arguments = command.parse_arguments(tokens.next().unwrap_or(""))?;
+        let (arguments, copy) = if let Some(default) = command.copy_option_default() {
+            copy_options::arguments(
+                &arguments,
+                self.copy_preferences.begin(command.name(), default),
+            )
+        } else {
+            (arguments, None)
+        };
         let run = |document: &mut Document| {
             if postselected {
                 command.run_postselected(document, &arguments, context)
@@ -1338,8 +1358,45 @@ impl CommandRegistry {
         };
         if let Err(error) = &result {
             command.cleanup_failed_selection(document, error, postselected);
+        } else if let Some(copy) = copy {
+            self.copy_preferences.complete(command.name(), copy);
         }
         result
+    }
+
+    /// Application-wide switch, shared across this registry's commands/documents.
+    pub fn remember_copy_options(&self) -> bool {
+        self.copy_preferences.enabled()
+    }
+
+    /// Read a Copy default for a prompt without accepting or starting a command.
+    pub fn copy_default(&self, name: &str) -> Option<bool> {
+        let command = self
+            .commands
+            .get(*self.lookup.get(&normalize_command_name(name))?)?;
+        command
+            .copy_option_default()
+            .map(|default| self.copy_preferences.peek(command.name(), default))
+    }
+
+    /// Start an interactive command, including the reset when remembering is off.
+    pub fn begin_copy_options(&self, name: &str) -> Option<bool> {
+        let command = self
+            .commands
+            .get(*self.lookup.get(&normalize_command_name(name))?)?;
+        command
+            .copy_option_default()
+            .map(|default| self.copy_preferences.begin(command.name(), default))
+    }
+
+    /// For edits staged by an application: call only after successful completion.
+    pub fn complete_copy_options(&self, name: &str, value: bool) {
+        if let Some(index) = self.lookup.get(&normalize_command_name(name)) {
+            let command = &self.commands[*index];
+            if command.copy_option_default().is_some() {
+                self.copy_preferences.complete(command.name(), value);
+            }
+        }
     }
 
     /// Recognizes canonical names, aliases, script prefixes, and built-in help.
@@ -8442,6 +8499,10 @@ struct SurfaceFaceSource {
 }
 
 impl Command for ExtractSurfaceCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "ExtractSrf"
     }
@@ -15171,6 +15232,10 @@ const ORIENT_THREE_POINT_USAGE: &str = "Orient3Pt reference-1 reference-2 refere
 struct OrientCommand;
 
 impl Command for OrientCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Orient"
     }
@@ -15220,6 +15285,10 @@ impl Command for OrientCommand {
 struct OrientThreePointCommand;
 
 impl Command for OrientThreePointCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Orient3Pt"
     }
@@ -15403,6 +15472,10 @@ const ORIENT_ON_SURFACE_USAGE: &str = "OrientOnSrf base-point reference-point ta
 struct OrientOnSurfaceCommand;
 
 impl Command for OrientOnSurfaceCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(true)
+    }
+
     fn name(&self) -> &'static str {
         "OrientOnSrf"
     }
@@ -16341,6 +16414,10 @@ const SCALE_NU_USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [Copy=Ye
 struct ScaleCommand;
 
 impl Command for ScaleCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Scale"
     }
@@ -16370,6 +16447,10 @@ impl Command for ScaleCommand {
 struct ScaleOneDimensionalCommand;
 
 impl Command for ScaleOneDimensionalCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Scale1D"
     }
@@ -16422,6 +16503,10 @@ impl Command for ScaleOneDimensionalCommand {
 struct ScaleNonUniformCommand;
 
 impl Command for ScaleNonUniformCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "ScaleNU"
     }
@@ -16457,6 +16542,10 @@ const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference tar
 struct RotateThreeDimensionalCommand;
 
 impl Command for RotateThreeDimensionalCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Rotate3D"
     }
@@ -18579,7 +18668,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Blend, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, ShrinkTrimmedSrf, ShrinkTrimmedSrfToEdge, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, UnjoinEdge, Unlock, UnlockSelected, Untrim, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
+            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Blend, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RememberCopyOptions, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, ShrinkTrimmedSrf, ShrinkTrimmedSrfToEdge, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, UnjoinEdge, Unlock, UnlockSelected, Untrim, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -22106,7 +22195,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             registry
-                .execute(&mut document, "ExtractSrf Faces=All")
+                .execute(&mut document, "ExtractSrf Faces=All Copy=No")
                 .unwrap(),
             "Extracted 6 surface(s) from 1 object(s); source faces removed"
         );
@@ -43731,6 +43820,25 @@ mod tests {
     }
 
     #[test]
+    fn orient_surface_named_copy_does_not_override_the_saved_copy_mode() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        add_orient_triad(&mut document);
+        add_named_surface(&mut document, orient_surface_quarter_cylinder(), "Copy");
+        registry
+            .execute(&mut document,
+                "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=No Rigid=Yes SurfaceName Copy")
+            .unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document,
+                "OrientOnSurface 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Rigid=Yes SurfaceName Copy")
+            .unwrap();
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(registry.copy_default("OrientOnSrf"), Some(false));
+    }
+
+    #[test]
     fn orient_on_surface_deformable_matches_rhino_splop_groups_and_history() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -44073,7 +44181,9 @@ mod tests {
         ));
         registry.execute(&mut document, "Undo").unwrap();
 
-        registry.execute(&mut document, "Mirror 0,0 0,1").unwrap();
+        registry
+            .execute(&mut document, "Mirror 0,0 0,1 Copy=No")
+            .unwrap();
         assert_eq!(
             position(&document),
             Point3::try_new(-2.0, 1.0, 0.0).unwrap()

@@ -9,8 +9,8 @@ preselection is also accepted. Picks can span multiple objects; geometry stays
 unchanged while picking. Escape cancels; `None` cancels and clears selection.
 
 Enter `Copy=Yes|No` or `OutputLayer=Input|Current` while selecting, including after
-face preselection. Interactive defaults currently start at Copy=No and
-OutputLayer=Input.
+face preselection. The initial Copy default is No; completed choices follow
+[RememberCopyOptions](remember-copy-options.md). OutputLayer currently starts at Input.
 With Copy=Yes, sources remain unchanged. Otherwise an unextracted remainder
 retains the source identity, attributes, and group memberships; a fully extracted
 source is deleted. Extracted faces inherit source attributes, become selected,
@@ -131,5 +131,5 @@ render meshes. These checks certify input locations; command selection is measur
 from the actual delivered mouse events. Mouse/key handlers and
 pressed modifiers are released on failures; incomplete sequences are rejected.
 
-Perspective picking, native SubD editing, remembered Copy/output-layer defaults,
+Perspective picking, native SubD editing, remembered output-layer defaults,
 and every imported trim representation remain unverified by these cases.

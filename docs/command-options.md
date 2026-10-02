@@ -48,8 +48,9 @@ remember accepted edits, but create no model history.
 
 Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
-persistence are not established by these tests. This is not a global preference
-implementation for all commands; use explicit options in deterministic scripts.
+persistence are not established by these tests. The shared
+[RememberCopyOptions policy](commands/remember-copy-options.md) covers Copy choices for the currently implemented affected commands. Other option
+lifetimes remain command-specific; use explicit options in deterministic scripts.
 
 The eight `conversion_sessions.json` probes run 39 steps in one command session,
 creating fresh owned geometry for each step. Each command's first use explicitly

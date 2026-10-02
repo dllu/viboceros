@@ -360,6 +360,13 @@ impl CommandRegistry {
         let Some(index) = self.lookup.get(&normalize_command_name(name)) else {
             return Ok(None);
         };
-        self.commands[*index].object_selection_prompt(&arguments.collect::<Vec<_>>())
+        let command = &self.commands[*index];
+        let arguments = arguments.collect::<Vec<_>>();
+        let arguments = if let Some(default) = self.copy_default(name) {
+            copy_options::arguments(&arguments, default).0
+        } else {
+            arguments
+        };
+        command.object_selection_prompt(&arguments)
     }
 }

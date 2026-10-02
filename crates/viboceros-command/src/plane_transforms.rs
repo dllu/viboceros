@@ -4,6 +4,10 @@ use super::*;
 pub(super) struct ScaleTwoDimensionalCommand;
 
 impl Command for ScaleTwoDimensionalCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Scale2D"
     }
@@ -47,6 +51,10 @@ impl Command for ScaleTwoDimensionalCommand {
 pub(super) struct RotateCommand;
 
 impl Command for RotateCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Rotate"
     }
@@ -97,6 +105,10 @@ impl Command for RotateCommand {
 pub(super) struct MirrorCommand;
 
 impl Command for MirrorCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(true)
+    }
+
     fn name(&self) -> &'static str {
         "Mirror"
     }
@@ -138,6 +150,10 @@ impl Command for MirrorCommand {
 pub(super) struct ShearCommand;
 
 impl Command for ShearCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "Shear"
     }

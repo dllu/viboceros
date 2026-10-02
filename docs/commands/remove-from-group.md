@@ -7,7 +7,7 @@ RemoveFromGroup
 RemoveFromGroup Copy=Yes
 ```
 
-`Copy=No` (the native default) removes every group membership from selected
+`Copy=No` (the initial default) removes every group membership from selected
 grouped objects, not just the last membership. Their identities, geometry,
 attributes, and selection are retained; unselected peers are unchanged. Empty
 group definitions remain. This differs from top-level `Ungroup`.
@@ -39,8 +39,7 @@ the retained originals and selected ungrouped outputs.
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/remove_from_group.json --timeout 180
 ```
 
-The [Rhino documentation](https://docs.mcneel.com/rhino/8mac/help/en-us/commands/group.htm)
-also describes `RememberCopyOptions`; that cross-command preference is not
-implemented here. Native invocations currently default to `Copy=No`. The probes
-do not establish every preselection/modifier gesture, hidden-member case, or
-Rhino outer Undo/Redo behavior.
+Omitted Copy choices follow [RememberCopyOptions](remember-copy-options.md),
+including reset on command start when remembering is disabled. These group
+probes do not establish every preselection/modifier gesture, hidden-member case,
+or Rhino outer Undo/Redo behavior.

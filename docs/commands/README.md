@@ -39,6 +39,7 @@ Rhino's complete command set is still a work in progress.
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [Transforms and arrays](transforms.md)
+- [Remember Copy options](remember-copy-options.md)
 - [Object and group distribution](distribute.md)
 - [Object and group alignment](align.md)
 - [Splitting curves and surfaces](split.md)

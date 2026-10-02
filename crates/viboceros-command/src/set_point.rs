@@ -23,7 +23,12 @@ impl Default for SetPointOptions {
 
 impl SetPointOptions {
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
+        Self::parse_with_copy_default(arguments, false)
+    }
+
+    pub fn parse_with_copy_default(arguments: &[&str], copy: bool) -> Result<Self, CommandError> {
         let mut options = Self::default();
+        options.copy = copy;
         let mut seen = [false; 5];
         for argument in arguments {
             let field = options.update(argument)?;
@@ -82,6 +87,10 @@ impl SetPointOptions {
 pub(super) struct SetPointCommand;
 
 impl Command for SetPointCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "SetPt"
     }

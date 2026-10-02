@@ -190,6 +190,9 @@ impl VibocerosApp {
                 return true;
             }
         };
+        // Starting selection is a command start even if the user later cancels.
+        // The shared Copy policy resets saved defaults here when disabled.
+        self.commands.begin_copy_options(description.command);
         if matches!(
             description.filter,
             ObjectSelectionFilter::HiddenObjects | ObjectSelectionFilter::LockedObjects

@@ -129,6 +129,7 @@ impl SelectionMenu {
 
 mod command_line;
 mod component_selection;
+mod copy_options;
 mod extract_surface;
 mod shrink_trimmed;
 #[cfg(test)]
@@ -1792,6 +1793,7 @@ pub struct VibocerosApp {
     point_constraint: Option<viboceros_drafting::PointConstraintState>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
     set_view_prompt: Option<set_view::SetViewSession>,
+    remember_copy_prompt: bool,
     copy_cplane_source: Option<construction_plane::CopyCPlaneKind>,
     cplane_options: viboceros_command::construction_plane::PlaneOptions,
     object_prompt: Option<object_selection::PendingObjectCommand>,
@@ -1880,6 +1882,7 @@ impl VibocerosApp {
             point_constraint: None,
             plane_prompt: None,
             set_view_prompt: None,
+            remember_copy_prompt: false,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
@@ -1906,6 +1909,9 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.try_continue_remember_copy_options(&input) {
+            return;
+        }
         if self.try_continue_set_view(&input) {
             return;
         }
@@ -2078,7 +2084,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_shrink_faces(&input)
+        if self.try_start_remember_copy_options(&input)
+            || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
             || self.try_start_unjoin_command(&input)
             || self.try_start_edge_command(&input)
@@ -2633,7 +2640,11 @@ impl VibocerosApp {
             };
             command
         } else if normalized == "setpt" && arguments.iter().all(|argument| argument.contains('=')) {
-            let Ok(options) = viboceros_command::set_point::SetPointOptions::parse(&arguments)
+            let Ok(options) =
+                viboceros_command::set_point::SetPointOptions::parse_with_copy_default(
+                    &arguments,
+                    self.commands.copy_default("SetPt").unwrap(),
+                )
             else {
                 return false;
             };
@@ -3471,9 +3482,11 @@ impl VibocerosApp {
                 }
             }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
-            let Some((copy, output_on_current_layer)) =
-                extract_surface::options(&arguments, false, false)
-            else {
+            let Some((copy, output_on_current_layer)) = extract_surface::options(
+                &arguments,
+                self.commands.copy_default("ExtractSrf").unwrap(),
+                false,
+            ) else {
                 return false;
             };
             InteractiveCommand::ExtractSrf {
@@ -4468,6 +4481,7 @@ impl VibocerosApp {
             self.start_extract_faces(copy, output_on_current_layer);
             return true;
         }
+        self.commands.begin_copy_options(command.name());
         if matches!(
             command,
             InteractiveCommand::Move { .. }
@@ -4546,6 +4560,9 @@ impl VibocerosApp {
             self.finish_unjoin_command(false);
         }
         self.set_view_prompt = None;
+        if std::mem::take(&mut self.remember_copy_prompt) && announce {
+            self.push_log("Cancelled RememberCopyOptions".into());
+        }
         self.cancel_end_analysis_pick(false);
         self.snaps.model_override = None;
         self.point_filter = None;
@@ -7874,6 +7891,8 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.remember_copy_prompt {
+            self.cancel_interactive_command(true);
         } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
             self.cancel_end_analysis_pick(true);
         } else if self.zoom_target.take().is_some() {
@@ -7958,6 +7977,7 @@ impl eframe::App for VibocerosApp {
             && self.unjoin_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
+            && !self.remember_copy_prompt
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Delete))
@@ -7970,7 +7990,7 @@ impl eframe::App for VibocerosApp {
         self.show_layers(ui);
         self.show_command_line(ui);
         let _ = self.show_viewport_tabs(ui);
-        let model_input_active = self.set_view_prompt.is_none();
+        let model_input_active = self.set_view_prompt.is_none() && !self.remember_copy_prompt;
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
@@ -8534,6 +8554,7 @@ mod tests {
     mod bezier_selection;
     mod command_line;
     mod construction_plane;
+    mod copy_options;
     mod distance;
     mod distribute;
     mod domain;
@@ -8621,6 +8642,7 @@ mod tests {
             point_constraint: None,
             plane_prompt: None,
             set_view_prompt: None,
+            remember_copy_prompt: false,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
@@ -11933,7 +11955,6 @@ mod tests {
             "Shear",
             "ExtrudeCrv",
             "ExtrudeCrvToPoint",
-            "ExtractSrf",
             "DupEdge",
             "DupFaceBorder",
             "ExtractMeshFaces",
@@ -11955,6 +11976,11 @@ mod tests {
             assert_eq!(app.active_command, None);
             assert!(app.command_log.back().unwrap().contains("no objects"));
         }
+        // ExtractSrf supports command-first component selection.
+        assert!(app.try_start_interactive_command("ExtractSrf"));
+        assert!(app.picking_extract_faces());
+        assert!(!app.document.can_undo());
+        app.cancel_interactive_command(false);
     }
 
     #[test]
@@ -12272,7 +12298,12 @@ mod tests {
         assert!(app.try_start_interactive_command("Mirror"));
         app.accept_drafting_point(point(0.0, 0.0, 0.0));
         app.accept_drafting_point(point(0.0, 1.0, 0.0));
-        assert_eq!(position(&app), point(-2.0, 1.0, 0.0));
+        assert_eq!(position(&app), point(2.0, 1.0, 0.0));
+        assert_eq!(app.document.objects().len(), 2);
+        assert_eq!(
+            app.document.objects().nth(1).unwrap().geometry(),
+            &Geometry::Point(point(-2.0, 1.0, 0.0))
+        );
         assert_eq!(app.document.undo_label(), Some("Mirror"));
     }
 

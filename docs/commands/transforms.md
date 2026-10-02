@@ -2,6 +2,9 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
+Omitted Copy choices follow [RememberCopyOptions](remember-copy-options.md).
+Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in place.
+
 ## Interactive transforms
 
 With objects selected, enter `Move` or `Copy`
@@ -73,8 +76,8 @@ trims, and meshes map per vertex.
 `SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
 keeps normal offsets parallel to `SourceNormal`, the command-line stand-in for
 Rhino's placement-viewport construction-plane normal.
-This command defaults to `Copy=Yes`; originals remain selected and copied group
-topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
+This command initially defaults to `Copy=Yes`; originals remain selected and
+copied group topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
 
 See [curve morphing](../curve-morphing.md), [surface morphing](../surface-morphing.md),
 and [B-rep morphing](../brep-morphing.md)

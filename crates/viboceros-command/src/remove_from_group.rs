@@ -17,6 +17,10 @@ fn copy_option(arguments: &[&str]) -> Result<bool, CommandError> {
 }
 
 impl Command for RemoveFromGroupCommand {
+    fn copy_option_default(&self) -> Option<bool> {
+        Some(false)
+    }
+
     fn name(&self) -> &'static str {
         "RemoveFromGroup"
     }

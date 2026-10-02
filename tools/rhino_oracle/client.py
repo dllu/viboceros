@@ -216,6 +216,14 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
+        if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
+            from .copy_options_probe import validate
+            if self.settings_scheme is None:
+                raise OracleProtocolError("Copy settings probes require a private Rhino settings scheme")
+            if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
+                raise OracleProtocolError("Copy settings probes require one iteration")
+            for operation in request["operations"]:
+                if operation.get("op") == "copy_options_command": validate(operation)
         if any(op.get("op") == "brep_remove_holes" for op in request.get("operations", [])):
             from .remove_holes_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -506,6 +514,10 @@ class OracleClient:
                 for name in ("extract_srf_probe.py", "owned_brep_command.py", "join_probe.py", "shrink_face_input.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
+                for name in ("copy_options_probe.py", "owned_brep_command.py", "join_probe.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") for op in request.get("operations", [])):
                 for name in ("shrink_trimmed_probe.py", "owned_brep_command.py", "join_probe.py", "shrink_face_input.py"):
                     helper = Path(__file__).with_name(name)
@@ -690,7 +702,7 @@ def _owned_artifact_request(request):
             elif operation.get("op") == "brep_join":
                 operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                     for part in range(len(_artifact_sources(operation)))]
-            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command"):
+            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command", "copy_options_command"):
                 for part, original_source in enumerate(_artifact_sources(operation)):
                     source = copy.deepcopy(original_source)
                     operation["sources"][part] = source

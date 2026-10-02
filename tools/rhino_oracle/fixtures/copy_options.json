@@ -1,0 +1,281 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "copy_options_command",
+      "id": "copy-options-sequence",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          }
+        }
+      ],
+      "steps": [
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": false,
+          "finish": "Cancel"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": false,
+          "finish": "Cancel"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": true,
+          "finish": "Cancel"
+        },
+        {
+          "command": "Mirror",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": true,
+          "finish": "Cancel"
+        },
+        {
+          "command": "Scale",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": false,
+          "finish": "Cancel"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": true,
+          "finish": "Cancel"
+        },
+        {
+          "command": "Scale",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "Scale",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": true,
+          "finish": "Cancel"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "ExtractSrf",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Mirror",
+          "copy": null,
+          "finish": "Complete"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": false,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": true,
+          "finish": "Cancel"
+        },
+        {
+          "command": "RememberCopyOptions",
+          "copy": true,
+          "finish": "Complete"
+        },
+        {
+          "command": "Rotate",
+          "copy": null,
+          "finish": "Complete"
+        }
+      ]
+    }
+  ]
+}

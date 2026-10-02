@@ -48,6 +48,7 @@ impl VibocerosApp {
             && self.unjoin_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
+            && !self.remember_copy_prompt
             && !self.component_selection.has_choices()
     }
 
@@ -162,7 +163,9 @@ impl VibocerosApp {
                     .completion
                     .refresh(&self.commands, &self.command_input, idle);
                 ui.horizontal(|ui| {
-                    let label = if self.zoom_factor_pending.is_some() {
+                    let label = if self.remember_copy_prompt {
+                        "RememberCopyOptions"
+                    } else if self.zoom_factor_pending.is_some() {
                         "Zoom Factor"
                     } else if self.plane_prompt.is_some() {
                         "CPlane"
@@ -239,6 +242,8 @@ impl VibocerosApp {
                                 "Enter a positive factor; Enter or Esc cancels"
                             } else if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
+                            } else if self.remember_copy_prompt {
+                                "Yes or No; Enter accepts, Esc cancels"
                             } else if let Some(prompt) = set_view_prompt {
                                 prompt.message()
                             } else if let Some(prompt) = &self.object_prompt {
