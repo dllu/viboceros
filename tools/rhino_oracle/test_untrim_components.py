@@ -14,6 +14,28 @@ ROOT=Path(__file__).parent
 
 
 class UntrimComponentTests(unittest.TestCase):
+    def test_multi_face_exterior_picks_are_ignored_with_positive_controls(self):
+        from .untrim_multiface_cases import request as multiface_request
+        fixture=json.loads((ROOT/'fixtures/untrim_multiface.json').read_text())
+        observed=json.loads((ROOT/'observations/untrim_multiface.json').read_text())
+        self.assertEqual(multiface_request(),fixture)
+        self.assertEqual(len(observed['results']),18)
+        for op,row in zip(fixture['operations'],observed['results']):
+            self.assertEqual(op['id'],row['id']);value=row['value']
+            self.assertTrue(value['succeeded'])
+            self.assertEqual(value['component_selection']['after'],[])
+            self.assertEqual(value['input_states'],[value['after']])
+            control=op['id'].startswith('multi-control-')
+            self.assertEqual(value['history_tested'],control)
+            if control:
+                self.assertNotEqual(value['before'],value['after'])
+                self.assertEqual(value['undo'],value['before']);self.assertEqual(value['redo'],value['after'])
+            else:
+                self.assertEqual(value['before'],value['after'])
+                self.assertNotIn('Undo',value['history'])
+        client=Mock();client.run_viboceros.return_value=dict(copy.deepcopy(observed),engine='viboceros')
+        self.assertTrue(replay(fixture,observed,client).passed)
+
     def test_polynomial_and_rational_partial_sources_regenerate(self):
         fixture=json.loads((ROOT/'fixtures/untrim_curved_partial.json').read_text())
         observed=json.loads((ROOT/'observations/untrim_curved_partial.json').read_text())

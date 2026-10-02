@@ -33,10 +33,10 @@ impl Brep {
     /// Rectangular partial edits with four initial side edges and forward spatial
     /// proxies reproduce native edge allocation. Other partial loops retain
     /// source order and append natural fragments. Complete restoration reuses
-    /// the first removed spatial edge slot, then appends natural edges. Joined
-    /// natural picks are unchanged. Joined trimmed exterior restoration and
-    /// partial runs across seams/singularities return an error. Sources are
-    /// unchanged on failure; complete results are validated before return.
+    /// the first removed spatial edge slot, then appends natural edges. All
+    /// exterior picks on multi-face B-reps are ignored. Partial runs across
+    /// seams/singularities return an error. Sources are unchanged on failure;
+    /// complete results are validated before return.
     pub fn try_untrim_boundary(
         &self,
         face: usize,
@@ -87,6 +87,11 @@ impl Brep {
                     }
                 }));
         }
+        // Rhino ignores exterior picks on multi-face B-reps, including
+        // disconnected components. Inner picks above remain eligible.
+        if self.faces.len() != 1 {
+            return Ok(None);
+        }
         let outer = &source_face.loops[0];
         let mut marked = vec![false; outer.trims.len()];
         for (_, index) in selected {
@@ -95,18 +100,6 @@ impl Brep {
         let remaining_trimmed = outer.trims.iter().zip(&marked).any(|(trim, &removed)| {
             !removed && !natural_iso(trim_iso::classify(&trim.curve, &source_face.surface))
         });
-        if self.faces.len() != 1 {
-            if outer
-                .trims
-                .iter()
-                .all(|trim| natural_iso(trim_iso::classify(&trim.curve, &source_face.surface)))
-            {
-                return Ok(None);
-            }
-            return Err(GeometryError::InvalidBrepTopology {
-                context: "joined exterior Untrim requires neighbor restoration",
-            });
-        }
         let brep = if !remaining_trimmed {
             self.restore_complete_outer(tolerance)?
         } else {

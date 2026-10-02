@@ -49,6 +49,15 @@ def run(operation,tolerance,host):
                 viewport.SetCameraDirection(Rhino.Geometry.Vector3d(-1.,1.,-1.),True)
                 viewport.CameraUp=Rhino.Geometry.Vector3d(0.,0.,1.)
             Rhino.RhinoApp.RunScript('_Zoom _Extents',False);fixture.doc.Views.Redraw()
+            if points:
+                # Check the original target before entering the native command's
+                # GetObject event loop. Later edits can renumber source edges.
+                view=fixture.doc.Views.ActiveView;viewport=view.ActiveViewport
+                pixel=viewport.WorldToClient(points[0]);x,y=int(pixel.X),int(pixel.Y)
+                if not 1<=x<viewport.Size.Width-1 or not 1<=y<viewport.Size.Height-1:
+                    raise ValueError('Untrim first edge pick outside owned viewport')
+                source,index=operation['components'][0]
+                fixture.verify_edge_pick(source,index,view,viewport,x,y)
         before=fixture.snapshot();selected=fixture.components();marker='Viboceros Untrim '+str(host['System'].Guid.NewGuid());Rhino.RhinoApp.WriteLine(marker)
         states=[];undo_states=[]
         if operation['pick']=='mouse':

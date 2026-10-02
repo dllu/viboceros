@@ -13,6 +13,10 @@ pub(super) struct BrepSourceFixture {
     #[serde(default)]
     reversed: bool,
     edge_order: Option<Vec<usize>>,
+    /// Explicit full-edge assembly on independently built source parts, before
+    /// endpoint encoding, edge permutation, or splitting. Never native outputs.
+    #[serde(default)]
+    joins: Vec<(usize, usize, bool)>,
     #[serde(default)]
     splits: Vec<(usize, Vec<f64>)>,
     trim_endpoint_encoding: Option<trim_encoding::EndpointEncoding>,
@@ -30,6 +34,14 @@ impl BrepSourceFixture {
                 ));
             }
         };
+        if !self.joins.is_empty() {
+            if self.joins.len() > 64 {
+                return Err(ProbeError::FixtureInvariant(
+                    "shared B-rep source allows at most 64 explicit edge joins",
+                ));
+            }
+            brep = brep.try_join_edge_pairs(&self.joins, tolerance.absolute(), tolerance)?;
+        }
         if let Some(encoding) = &self.trim_endpoint_encoding {
             brep = encoding.apply(brep, tolerance)?;
         }
@@ -280,6 +292,42 @@ pub(super) fn write_shared_artifact(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn explicit_source_joins_preserve_independent_surfaces_and_shared_topology() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/untrim_multiface.json"
+        ))
+        .unwrap();
+        let source = request["operations"][4]["sources"][0]["brep"].clone();
+        let fixture: BrepSourceFixture = serde_json::from_value(source.clone()).unwrap();
+        let joined = fixture.build(Tolerance::DEFAULT).unwrap();
+        assert_eq!(joined.faces().len(), 2);
+        assert_eq!(joined.vertices().len(), 6);
+        assert_eq!(joined.edges().len(), 7);
+        assert_eq!(joined.edge_connected_face_components(), [vec![0, 1]]);
+        assert_eq!(joined.faces()[0].loops()[0].trims()[1].edge(), Some(1));
+        assert_eq!(joined.faces()[1].loops()[0].trims()[0].edge(), Some(1));
+        for index in 0..2 {
+            let part: BrepSourceFixture =
+                serde_json::from_value(source["source"]["parts"][index].clone()).unwrap();
+            assert_eq!(
+                joined.faces()[index].surface(),
+                part.build(Tolerance::DEFAULT).unwrap().faces()[0].surface()
+            );
+        }
+        for pairs in [
+            json!([[1, 99, false]]),
+            json!([[1, 1, false]]),
+            json!([[1, 4, true]]),
+            json!(vec![(1, 4, false); 65]),
+        ] {
+            let mut invalid = source.clone();
+            invalid["joins"] = pairs;
+            let fixture: BrepSourceFixture = serde_json::from_value(invalid).unwrap();
+            assert!(fixture.build(Tolerance::DEFAULT).is_err());
+        }
+    }
 
     #[test]
     fn split_polygon_hole_source_preserves_every_serialized_coefficient() {

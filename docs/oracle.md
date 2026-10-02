@@ -2329,11 +2329,15 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 
 ## Picked boundary restoration
 
-General [Untrim](commands/untrim.md) has 213 saved private-Xvfb cases:
+General [Untrim](commands/untrim.md) has 231 saved private-Xvfb cases:
 71 preselection/mouse cases, six partial exterior variants, four opposite tube
 opening picks, 24 local Undo/Enter/Escape sequences, 96 rectangular source
 permutations, four split-edge variants and eight polynomial/rational surface
-partial edits. All sources are exported independently before Rhino starts.
+partial edits, 16 ignored multi-face exterior picks, and two positive controls.
+The multi-face sources include explicit exact edge joins and both face orders.
+All sources are exported independently before Rhino starts. Public picking
+queries confirm the owned object and first target edge before real mouse input;
+correctly targeted edges may still be ignored by the command.
 The driver gates inputs on public command
 lifecycle events and records complete per-click and per-Undo geometry.
 
@@ -2350,6 +2354,7 @@ before the next begins.
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_components.json tools/rhino_oracle/observations/untrim_components.json
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_history.json tools/rhino_oracle/observations/untrim_history.json
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_ordering.json tools/rhino_oracle/observations/untrim_ordering.json
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_multiface.json tools/rhino_oracle/observations/untrim_multiface.json
 ```
 
 ## Joined edge separation

@@ -33,6 +33,11 @@ fn independent_untrim_sources_match_native_geometry_metadata_and_history() {
             include_str!("../../../../tools/rhino_oracle/observations/untrim_curved_partial.json"),
             8,
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/untrim_multiface.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/untrim_multiface.json"),
+            18,
+        ),
     ] {
         let request: ProbeRequest = serde_json::from_str(input).unwrap();
         let native: Value = serde_json::from_str(capture).unwrap();

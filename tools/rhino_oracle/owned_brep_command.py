@@ -69,6 +69,36 @@ class OwnedBrepCommand:
                 result.append([source,kinds[str(component.ComponentIndexType)],int(component.Index)])
         return sorted(result)
 
+    def verify_edge_pick(self, source, edge_index, view, viewport, x, y):
+        """Confirm the owned object and intended edge in the public pick frustum.
+
+        This read-only check does not establish command eligibility: a command
+        can ignore a correctly targeted edge. Use before the first edit, since
+        subsequent replacement can change the source's numeric edge indices.
+        """
+        Rhino,System=self.Rhino,self.System
+        obj=self.doc.Objects.FindId(self.ids[source])
+        if obj is None:raise ValueError('owned edge pick source missing')
+        context=Rhino.Input.Custom.PickContext();references=[];curve=None
+        try:
+            context.View=view;context.PickStyle=Rhino.Input.Custom.PickStyle.PointPick
+            context.PickGroupsEnabled=False;context.SubObjectSelectionEnabled=True
+            ok,line=viewport.GetFrustumLine(x,y)
+            if not ok:raise ValueError('owned edge pick ray unavailable')
+            context.PickLine=line
+            context.SetPickTransform(viewport.GetPickTransform(System.Drawing.Rectangle(x-8,y-8,16,16)))
+            context.UpdateClippingPlanes()
+            references=list(self.doc.Objects.PickObjects(context) or [])
+            if not any(reference.ObjectId==obj.Id for reference in references):
+                raise ValueError('public picker missed owned edge pick source')
+            curve=obj.Geometry.Edges[edge_index].ToNurbsCurve()
+            if curve is None or not context.PickFrustumTest(curve)[0]:
+                raise ValueError('intended edge missed public pick frustum')
+        finally:
+            if curve is not None:curve.Dispose()
+            for reference in references:reference.Dispose()
+            context.Dispose()
+
     def __enter__(self):return self
 
     def __exit__(self, *exception):

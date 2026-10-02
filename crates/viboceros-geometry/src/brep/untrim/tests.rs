@@ -757,3 +757,48 @@ fn partial_untrim_preserves_a_reversed_spatial_proxy_and_its_trim_sense() {
     restored.validate(Tolerance::DEFAULT).unwrap();
     assert!((restored.area(Tolerance::DEFAULT).unwrap() - 80.).abs() < 1e-9);
 }
+
+#[test]
+fn multi_face_exterior_untrim_is_ignored_and_invalid_references_still_fail() {
+    let tolerance = Tolerance::DEFAULT;
+    let band =
+        Brep::try_rectangular_surface_face(surface(), 2.0..=8., 0.0..=10., tolerance).unwrap();
+    let wall = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([
+            Point3::try_new(8., 0., 0.).unwrap(),
+            Point3::try_new(8., 10., 0.).unwrap(),
+            Point3::try_new(8., 10., 10.).unwrap(),
+            Point3::try_new(8., 0., 10.).unwrap(),
+        ])
+        .unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let disconnected = Brep::try_combine(vec![band, wall], tolerance).unwrap();
+    let joined = disconnected
+        .try_join_edge_pairs(&[(1, 4, false)], 0., tolerance)
+        .unwrap();
+    for source in [disconnected, joined] {
+        let before = source.clone();
+        for all_similar in [false, true] {
+            for face in 0..2 {
+                for trim in 0..4 {
+                    assert!(
+                        source
+                            .try_untrim_boundary(face, 0, trim, all_similar, tolerance)
+                            .unwrap()
+                            .is_none()
+                    );
+                }
+            }
+        }
+        for (face, boundary, trim) in [(2, 0, 0), (0, 1, 0), (0, 0, 4)] {
+            assert!(
+                source
+                    .try_untrim_boundary(face, boundary, trim, false, tolerance)
+                    .is_err()
+            );
+        }
+        assert_eq!(source, before);
+    }
+}

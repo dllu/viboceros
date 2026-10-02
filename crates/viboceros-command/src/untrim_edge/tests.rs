@@ -103,3 +103,53 @@ fn option_parse_failures_do_not_change_registry_memory_or_document() {
             .value
     );
 }
+
+#[test]
+fn ignored_multi_face_exterior_pick_preserves_objects_history_and_redo() {
+    let mut document = Document::default();
+    let surface = NurbsSurface::try_bilinear([
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Point3::try_new(10., 0., 0.).unwrap(),
+        Point3::try_new(10., 10., 0.).unwrap(),
+        Point3::try_new(0., 10., 0.).unwrap(),
+    ])
+    .unwrap()
+    .try_reparameterized(0.0..=10., 0.0..=10.)
+    .unwrap();
+    let band =
+        Brep::try_rectangular_surface_face(surface, 2.0..=8., 0.0..=10., document.tolerance())
+            .unwrap();
+    let object = document
+        .add_geometry(Geometry::Brep(
+            Brep::try_combine(vec![band.clone(), band], document.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    document.clear_history().unwrap();
+    document.begin_transaction("redo control").unwrap();
+    fixture(&mut document);
+    document.commit_transaction().unwrap();
+    document.undo().unwrap();
+    let before = objects(&document);
+    assert!(document.can_redo());
+    for all_similar in [false, true] {
+        for keep_trim_objects in [false, true] {
+            let plan = UntrimSelection::prepare(
+                &document,
+                object,
+                1,
+                UntrimOptions {
+                    all_similar,
+                    keep_trim_objects,
+                },
+            )
+            .unwrap();
+            assert!(!plan.changes_geometry());
+            assert_eq!(plan.commit(&mut document).unwrap(), UntrimResult::default());
+            assert_eq!(objects(&document), before);
+            assert!(!document.can_undo());
+            assert!(document.can_redo());
+        }
+    }
+    document.redo().unwrap();
+    assert_eq!(document.objects().count(), 2);
+}
