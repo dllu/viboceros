@@ -6,7 +6,7 @@
 command, click faces or select them with a viewport rectangle, then press Enter.
 Ctrl/Command removes faces from the picked set. Ctrl/Command+Shift face
 preselection is also accepted. Picks can span multiple objects; geometry stays
-unchanged while picking. Escape cancels, and `None` clears the pending picks.
+unchanged while picking. Escape cancels; `None` cancels and clears selection.
 
 Enter `Copy=Yes|No` or `OutputLayer=Input|Current` while selecting, including after
 face preselection. Copy defaults to No and the output layer defaults to Input.
@@ -72,8 +72,38 @@ cargo test -p viboceros-oracle extract_surface --lib
 cargo test -p viboceros extract --bin viboceros
 ```
 
-Native captures use public SDK face preselection followed by the actual command.
-Application tests cover command-first clicks and rectangles, removal, options,
-cancellation, stale picks, and history. Native physical mouse sequences are not
-yet recorded here. The matrix does not establish native SubD editing, shared
-`RememberCopyOptions` memory, or every imported trim representation.
+These 60 captures use public SDK face preselection followed by the actual
+command. The [32 physical input sequences](../../tools/rhino_oracle/fixtures/extract_srf_picking.json)
+and [raw native observations](../../tools/rhino_oracle/observations/extract_srf_picking.json)
+also exercise Rhino's actual command-first selection prompt. They cover joined
+and disconnected planar faces, multiple sources, repeated picks, Ctrl removal,
+Ctrl+Shift toggling, window and crossing rectangles, rectangle modifiers,
+Copy/layer edits after picking, Escape, and `None` before and after picking.
+Rhino's `None` cancels extraction and invokes `SelNone`; our UI follows that
+behavior. Undo/Redo is checked for every completed extraction. Cancelled commands
+leave geometry unchanged and create no extraction history.
+
+The physical cases replay through a headless application test. Independent input
+recipes construct the source document. Press, move, and release events go through
+egui and the viewport component picker, then through the application's command
+handling. Native selection records are expected outputs only; no expected picks
+are injected into the application. Geometry and metadata must stay equal to the
+captured input document throughout picking. After execution and Undo/Redo they
+are compared to the corresponding native states, with the same `1e-9` absolute
+tolerance and raw topology/order checks as the geometry matrix. The oracle crate
+exposes `ExtractFixture::prepare_document` and
+`observe_component_document` for this application-level instrumentation.
+
+```sh
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.extract_srf_capture tools/rhino_oracle/fixtures/extract_srf_picking.json --timeout 300
+cargo test -p viboceros extract_surface_viewport_sequences --bin viboceros
+```
+
+All live captures run in a private Xvfb display and accept input only in the
+newly owned Rhino window. Face-click locations are checked through public shaded
+pick-frustum and face-intersection APIs before clicking. Mouse/key handlers and
+pressed modifiers are released on failures; incomplete sequences are rejected.
+
+The physical matrix covers planar sources in a shaded Top view. Other views,
+curved-face mouse picking, native SubD editing, shared `RememberCopyOptions`
+memory, and every imported trim representation remain unverified by these cases.

@@ -23,7 +23,7 @@ class ComponentPicker(HolePicker):
         if not name.startswith('@component-'):
             return super().send_input(name, x, y, window)
         if name.startswith('@component-key:'):
-            match = re.fullmatch(r'@component-key:[A-Za-z0-9_.-]{1,100}:\d{1,2}:(None|Undo)', name)
+            match = re.fullmatch(r'@component-key:[A-Za-z0-9_.-]{1,100}:\d{1,2}:(None|Undo|Copy=Yes|Copy=No|OutputLayer=Current|OutputLayer=Input)', name)
             if match is None: raise ValueError('invalid owned component key')
             subprocess.run(['xdotool', 'windowactivate', '--sync', window, 'type', '--clearmodifiers', match[1]], check=True, timeout=10)
             subprocess.run(['xdotool', 'windowactivate', '--sync', window, 'key', '--clearmodifiers', 'Return'], check=True, timeout=10)

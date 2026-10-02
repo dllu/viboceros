@@ -103,7 +103,9 @@ pub(super) fn run(
     ))
 }
 
-pub(super) fn snapshot(
+/// Record surface/curve/point geometry, original identity, attributes and selection
+/// in raw document order for native command or application comparisons.
+pub fn snapshot(
     document: &Document,
     ids: &[ObjectId],
     groups: &[viboceros_document::GroupId],

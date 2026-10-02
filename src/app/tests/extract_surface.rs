@@ -4,6 +4,8 @@ use viboceros_command::ComponentSelectionKind;
 use viboceros_document::{ObjectId, SelectionMode};
 use viboceros_geometry::Brep;
 
+mod native;
+
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();
@@ -147,12 +149,14 @@ fn extraction_cancel_none_and_stale_geometry_never_extract_partial_faces() {
     enter(&mut app, "ExtractSrf");
     click(&mut app, id, 0, false);
     enter(&mut app, "None");
+    assert!(!app.picking_extract_faces());
     assert!(
         app.component_selection
             .checked_picks(&app.document)
             .unwrap()
             .is_empty()
     );
+    enter(&mut app, "ExtractSrf");
     click(&mut app, id, 1, false);
     app.cancel_current_prompt_or_selection();
     assert!(!app.picking_extract_faces());

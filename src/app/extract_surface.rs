@@ -81,7 +81,7 @@ impl VibocerosApp {
             .iter()
             .any(|word| input.trim_start_matches('_').eq_ignore_ascii_case(word))
         {
-            self.component_selection.clear();
+            self.cancel_interactive_command(false);
             self.document.clear_selection();
         } else if let Some((copy, current)) =
             options(&input.split_whitespace().collect::<Vec<_>>(), copy, current)

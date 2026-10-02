@@ -3681,6 +3681,7 @@ dependencies = [
  "viboceros-drafting",
  "viboceros-geometry",
  "viboceros-io",
+ "viboceros-oracle",
 ]
 
 [[package]]

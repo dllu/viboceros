@@ -65,6 +65,7 @@ viboceros-io.workspace = true
 
 [dev-dependencies]
 pollster = "1.0.1"
+viboceros-oracle = { path = "crates/viboceros-oracle" }
 
 [profile.release]
 lto = "thin"

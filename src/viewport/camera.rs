@@ -642,7 +642,7 @@ impl Viewport {
         }
     }
 
-    pub(super) fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
+    pub(crate) fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
         self.project_precise(point, rect)
             .map(|[x, y]| Pos2::new(x as f32, y as f32))
     }

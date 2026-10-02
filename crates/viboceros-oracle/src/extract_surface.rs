@@ -15,36 +15,68 @@ struct Source {
     brep: crate::brep_source::BrepSourceFixture,
 }
 
+/// Independent sources and identity labels for application-level oracle replay.
+pub struct ExtractFixtureDocument {
+    pub document: Document,
+    pub sources: Vec<ObjectId>,
+    pub groups: Vec<viboceros_document::GroupId>,
+    pub constructed: Vec<Value>,
+}
+
+impl ExtractFixture {
+    /// Build only the input document, without applying expected/native results.
+    pub fn prepare_document(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<ExtractFixtureDocument, ProbeError> {
+        if !(1..=8).contains(&self.sources.len()) {
+            return Err(ProbeError::FixtureInvariant("invalid ExtractSrf sources"));
+        }
+        let mut doc = Document::new(tolerance);
+        let mut ids = Vec::new();
+        let mut groups = Vec::new();
+        let mut constructed = Vec::new();
+        let layer = if self.source_layer {
+            doc.add_layer("sources", ColorRgb::new(0, 0, 0))?
+        } else {
+            doc.current_layer_id()
+        };
+        for (i, source) in self.sources.iter().enumerate() {
+            let geometry = Geometry::Brep(source.brep.build(tolerance)?);
+            if let Some(path) = &source.brep.artifact_path {
+                crate::brep_source::write_shared_artifact(&geometry, path, tolerance)?;
+            }
+            constructed.push(untrim::geometry_record(&geometry, tolerance)?);
+            let id = doc.add_geometry_with_attributes(
+                geometry,
+                ObjectAttributes::on_layer(layer)
+                    .with_name(format!("source-{i}"))
+                    .with_object_color(ColorRgb::new(10 + i as u8, 30, 50)),
+            )?;
+            ids.push(id);
+            groups.push(doc.add_group(Some(format!("source-{i}")), [id])?);
+        }
+        Ok(ExtractFixtureDocument {
+            document: doc,
+            sources: ids,
+            groups,
+            constructed,
+        })
+    }
+}
+
 pub(super) fn run(f: &ExtractFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
-    if !(1..=8).contains(&f.sources.len()) || !(1..=64).contains(&f.components.len()) {
+    if !(1..=64).contains(&f.components.len()) {
         return Err(ProbeError::FixtureInvariant(
             "invalid ExtractSrf sources or face targets",
         ));
     }
-    let mut doc = Document::new(tolerance);
-    let mut ids = Vec::new();
-    let mut groups = Vec::new();
-    let mut constructed = Vec::new();
-    let layer = if f.source_layer {
-        doc.add_layer("sources", ColorRgb::new(0, 0, 0))?
-    } else {
-        doc.current_layer_id()
-    };
-    for (i, source) in f.sources.iter().enumerate() {
-        let geometry = Geometry::Brep(source.brep.build(tolerance)?);
-        if let Some(path) = &source.brep.artifact_path {
-            crate::brep_source::write_shared_artifact(&geometry, path, tolerance)?;
-        }
-        constructed.push(untrim::geometry_record(&geometry, tolerance)?);
-        let id = doc.add_geometry_with_attributes(
-            geometry,
-            ObjectAttributes::on_layer(layer)
-                .with_name(format!("source-{i}"))
-                .with_object_color(ColorRgb::new(10 + i as u8, 30, 50)),
-        )?;
-        ids.push(id);
-        groups.push(doc.add_group(Some(format!("source-{i}")), [id])?);
-    }
+    let ExtractFixtureDocument {
+        document: mut doc,
+        sources: ids,
+        groups,
+        constructed,
+    } = f.prepare_document(tolerance)?;
     let mut faces = BTreeSet::new();
     for &(source, face) in &f.components {
         if source >= ids.len() {

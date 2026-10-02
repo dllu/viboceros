@@ -1,4 +1,4 @@
-"""Experimental owned shrink inputs; failed runs never produce observations."""
+"""Owned component inputs; failed runs never produce observations."""
 import json
 import os
 import sys
@@ -31,7 +31,7 @@ def _input_hooks(timer, mouse, handlers):
             raise ValueError('component input cleanup failed: %s; original error: %s' % (failures, original))
 
 
-def drive(operation, points, host, selected, trace, command):
+def drive(operation, points, host, selected, trace, command, script=None, completion=None):
     Rhino, System = host['Rhino'], host['System']
     import clr
     clr.AddReference('System.Windows.Forms')
@@ -105,9 +105,13 @@ def drive(operation, points, host, selected, trace, command):
             if index == len(operation['steps']):
                 if not finished:
                     emit('@component-finish:%s:%s' % (operation['id'], operation['finish']))
+                    if completion is not None:completion.append(operation['finish'])
                     finished.append(True)
                 return
             step = operation['steps'][index]
+            if step['kind'] == 'key':
+                emit('@component-key:%s:%d:%s' % (operation['id'], index, step['value']))
+                return
             view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
             viewport = view.ActiveViewport
             screens = []
@@ -118,6 +122,7 @@ def drive(operation, points, host, selected, trace, command):
                     raise ValueError('component input outside owned viewport')
                 screens.append(view.ClientToScreen(System.Drawing.Point(x, y)))
             name = '@component-%s:%s:%d:%s' % (step['kind'], operation['id'], index, step['modifiers'])
+            if step['kind'] == 'window': name += ':%d:%d' % (screens[1].X, screens[1].Y)
             emit(name, screens[0].X, screens[0].Y)
         except Exception as error:
             errors.append(str(error)); timer.Stop()
@@ -127,7 +132,15 @@ def drive(operation, points, host, selected, trace, command):
     handlers = [(timer.Tick, tick), (Rhino.Commands.Command.BeginCommand, begun),
                 (Rhino.Commands.Command.EndCommand, ended), (Rhino.RhinoApp.EscapeKeyPressed, escape)]
     with _input_hooks(timer, mouse, handlers):
-        result = Rhino.RhinoApp.RunScript('_'+command+' _Pause', True)
+        result = Rhino.RhinoApp.RunScript(script or '_'+command+' _Pause', True)
+        # None can leave GetMultiple and invoke SelNone instead of requesting
+        # another input. Observe that final delivered key after command exit.
+        if (not errors and operation['steps'][-1] == dict(kind='key', value='None')
+                and len(trace)+1 == len(operation['steps'])
+                and 'Command: _SelNone' in Rhino.RhinoApp.CommandHistoryWindowText[len(start):]
+                and pending == ['@component-key:%s:%d:None' % (operation['id'], len(trace))]):
+            trace.append(selected()); finished.append(True)
+            if completion is not None:completion.append('None')
         if errors or len(trace) != len(operation['steps']) or not finished:
             raise ValueError('incomplete component sequence: %s; trace: %s; history: %s' % (errors, trace, Rhino.RhinoApp.CommandHistoryWindowText[len(start):][-2000:]))
         return result

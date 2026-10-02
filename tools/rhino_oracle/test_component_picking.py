@@ -71,7 +71,7 @@ class ComponentPickingTests(unittest.TestCase):
 
     def test_prompt_keys_are_whitelisted_and_scoped(self):
         with patch('tools.rhino_oracle.component_picking.subprocess.run') as run:
-            for key in ('None','Undo'):
+            for key in ('None','Undo','Copy=Yes','Copy=No','OutputLayer=Current','OutputLayer=Input'):
                 ComponentPicker().send_input('@component-key:owned:0:'+key,'1','1','123')
                 self.assertEqual(run.call_args_list[-2].args[0],['xdotool','windowactivate','--sync','123','type','--clearmodifiers',key])
                 self.assertEqual(run.call_args_list[-1].args[0],['xdotool','windowactivate','--sync','123','key','--clearmodifiers','Return'])

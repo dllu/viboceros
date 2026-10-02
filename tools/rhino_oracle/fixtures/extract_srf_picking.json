@@ -1,0 +1,6509 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-single-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-single-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-both-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-both-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-reverse-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-duplicate-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-remove-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-remove-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-ctrl-unselected-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-ctrlshift-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "sub"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-ctrlshift-add-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "sub"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-cancel-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-cancel-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-none-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "None"
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-none-empty-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "key",
+          "value": "None"
+        }
+      ],
+      "finish": "Cancel"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              29,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              29,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-remove-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              9,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-sub-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              9,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "sub"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-cross-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              9,
+              6,
+              0
+            ],
+            [
+              1,
+              4,
+              0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-rectangle-shift-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              21,
+              11,
+              0
+            ],
+            [
+              29,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "shift"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-options-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Copy=Yes"
+        },
+        {
+          "kind": "key",
+          "value": "OutputLayer=Current"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-options-reverse-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Copy=No"
+        },
+        {
+          "kind": "key",
+          "value": "OutputLayer=Input"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-joined-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            8.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        0,
+                        6
+                      ],
+                      [
+                        0,
+                        10
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "joins": [
+              [
+                1,
+                7,
+                true
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-joined-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            8.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        0,
+                        6
+                      ],
+                      [
+                        0,
+                        10
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "joins": [
+              [
+                1,
+                7,
+                true
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-joined-remove-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            8.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            18.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        0,
+                        6
+                      ],
+                      [
+                        0,
+                        10
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "joins": [
+              [
+                1,
+                7,
+                true
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            1,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            1,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-reverse-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            1,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-rectangle-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              69,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-rectangle-copy-1-current-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": true,
+      "output_current": true,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1,
+              11,
+              0
+            ],
+            [
+              69,
+              -1,
+              0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ],
+      "finish": "Enter"
+    },
+    {
+      "op": "extract_srf_command",
+      "id": "mouse-mixed-remove-copy-0-current-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            10,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "compound",
+              "parts": [
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            40,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            40,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            50,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "source": {
+                    "type": "surface_face",
+                    "surface": {
+                      "degree_u": 1,
+                      "degree_v": 1,
+                      "control_point_count_u": 2,
+                      "control_point_count_v": 2,
+                      "control_points": [
+                        {
+                          "point": [
+                            60.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            0,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            60.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        },
+                        {
+                          "point": [
+                            70.0,
+                            10,
+                            0
+                          ],
+                          "weight": 1
+                        }
+                      ],
+                      "knots_u": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ],
+                      "knots_v": [
+                        0,
+                        0,
+                        10,
+                        10
+                      ]
+                    },
+                    "trim_bounds": [
+                      [
+                        2.0,
+                        8.0
+                      ],
+                      [
+                        0.0,
+                        10.0
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "copy": false,
+      "output_current": false,
+      "source_layer": true,
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            1,
+            1
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            0
+          ],
+          "modifiers": "ctrl"
+        }
+      ],
+      "finish": "Enter"
+    }
+  ]
+}
