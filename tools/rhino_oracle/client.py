@@ -229,6 +229,12 @@ class OracleClient:
             if any(op.get("pick") in ("mouse", "sequence") for op in request["operations"]):
                 from .component_picking import ComponentPicker
                 interaction = ComponentPicker()
+        if any(op.get("op") == "extract_srf_command" for op in request.get("operations", [])):
+            from .extract_srf_probe import validate
+            if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
+                raise OracleProtocolError("ExtractSrf commands require one iteration")
+            for operation in request["operations"]:
+                if operation.get("op") == "extract_srf_command": validate(operation)
         if any(op.get("op") in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") for op in request.get("operations", [])):
             from .shrink_trimmed_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -464,7 +470,7 @@ class OracleClient:
                 helper = Path(__file__).with_name("brep_join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command") or
-                   (op.get("op") in ("untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") and op.get("undo_redo", False))
+                   (op.get("op") in ("untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command") and op.get("undo_redo", False))
                    for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("merge_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -483,6 +489,10 @@ class OracleClient:
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "unjoin_edge_command" for op in request.get("operations", [])):
                 for name in ("unjoin_edge_command_probe.py", "join_probe.py", "untrim_holes_probe.py", "unjoin_edge_input.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "extract_srf_command" for op in request.get("operations", [])):
+                for name in ("extract_srf_probe.py", "owned_brep_command.py", "join_probe.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") for op in request.get("operations", [])):
@@ -667,7 +677,7 @@ def _owned_artifact_request(request):
             elif operation.get("op") == "brep_join":
                 operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                     for part in range(len(_artifact_sources(operation)))]
-            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command"):
+            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command"):
                 for part, original_source in enumerate(_artifact_sources(operation)):
                     source = copy.deepcopy(original_source)
                     operation["sources"][part] = source

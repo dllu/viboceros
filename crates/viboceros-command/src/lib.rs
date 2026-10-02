@@ -175,10 +175,12 @@ mod blend;
 mod cap;
 mod chamfer;
 mod connect;
+mod extract_surface;
 mod fillet;
 mod fillet_corners;
 mod flip;
 mod shrink_trimmed;
+pub use extract_surface::ExtractSurfaceSelection;
 pub use shrink_trimmed::ShrinkTrimmedSelection;
 mod unjoin_edge;
 mod untrim;
@@ -8439,13 +8441,6 @@ struct SurfaceFaceSource {
     attributes: ObjectAttributes,
 }
 
-struct ExtractSurfacePlan {
-    source: ObjectId,
-    extracted: Vec<Geometry>,
-    remainder: Option<Geometry>,
-    attributes: ObjectAttributes,
-}
-
 impl Command for ExtractSurfaceCommand {
     fn name(&self) -> &'static str {
         "ExtractSrf"
@@ -8496,87 +8491,16 @@ impl Command for ExtractSurfaceCommand {
             document.tolerance(),
             SurfaceFaceCommand::ExtractSurface,
         )?;
-        let mut output_count = 0_usize;
-        let mut plans = Vec::with_capacity(selections.len());
-        for (source_index, face_indices) in selections {
-            output_count = output_count
-                .checked_add(face_indices.len())
-                .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
-                .ok_or_else(|| too_many_span_outputs("ExtractSrf"))?;
-            let source = &sources[source_index];
-            let (extracted, remainder) = match &source.geometry {
-                Geometry::NurbsSurface(surface) => {
-                    debug_assert_eq!(face_indices, [0]);
-                    (vec![Geometry::NurbsSurface(surface.clone())], None)
-                }
-                Geometry::Brep(brep) => {
-                    let extracted = face_indices
-                        .iter()
-                        .map(|&face| {
-                            brep.duplicate_faces(&[face], document.tolerance())
-                                .map(Geometry::Brep)
-                        })
-                        .collect::<Result<Vec<_>, GeometryError>>()?;
-                    let remainder = if options.copy {
-                        None
-                    } else {
-                        let selected = face_indices.iter().copied().collect::<BTreeSet<_>>();
-                        let remainder_faces = (0..brep.faces().len())
-                            .filter(|face| !selected.contains(face))
-                            .collect::<Vec<_>>();
-                        if remainder_faces.is_empty() {
-                            None
-                        } else {
-                            Some(Geometry::Brep(
-                                brep.sub_brep(&remainder_faces, document.tolerance())?,
-                            ))
-                        }
-                    };
-                    (extracted, remainder)
-                }
-                _ => unreachable!("ExtractSrf sources were validated above"),
-            };
-            plans.push(ExtractSurfacePlan {
-                source: source.id,
-                extracted,
-                remainder,
-                attributes: source.attributes.clone(),
-            });
-        }
-        let source_count = plans.len();
-
-        if !options.copy {
-            document.replace_object_geometries(plans.iter().filter_map(|plan| {
-                plan.remainder
-                    .as_ref()
-                    .map(|remainder| (plan.source, remainder.clone()))
-            }))?;
-            for plan in &plans {
-                if plan.remainder.is_none() {
-                    document.delete_object(plan.source)?;
-                }
-            }
-        }
-
-        let current_layer = document.current_layer_id();
-        let mut output_ids = Vec::with_capacity(output_count);
-        for plan in plans {
-            let attributes = match options.output_layer {
-                ExtractSurfaceOutputLayer::Input => plan.attributes,
-                ExtractSurfaceOutputLayer::Current => plan.attributes.with_layer(current_layer),
-            };
-            for geometry in plan.extracted {
-                output_ids
-                    .push(document.add_geometry_with_attributes(geometry, attributes.clone())?);
-            }
-        }
-        replace_selection(document, output_ids.iter().copied())?;
-        Ok(format!(
-            "Extracted {} surface(s) from {} object(s); source faces {}",
-            output_ids.len(),
-            source_count,
-            if options.copy { "copied" } else { "removed" }
-        ))
+        ExtractSurfaceSelection::prepare(
+            document,
+            selections.into_iter().flat_map(|(index, faces)| {
+                let id = sources[index].id;
+                faces.into_iter().map(move |face| (id, face))
+            }),
+            options.copy,
+            options.output_layer == ExtractSurfaceOutputLayer::Current,
+        )?
+        .apply(document)
     }
 }
 
@@ -17910,6 +17834,10 @@ pub enum CommandError {
 
     #[error("ExtractSrf supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractSurfaceGeometry,
+    #[error(
+        "ExtractSrf sources, source order, attributes, tolerance, or output layer changed; select faces again"
+    )]
+    ExtractSurfaceStale,
 
     #[error("UntrimAll requires a standalone surface; whole polysurfaces are not accepted")]
     UnsupportedUntrimAllGeometry,
@@ -22185,7 +22113,11 @@ mod tests {
         assert!(document.object(source).is_none());
         assert_eq!(document.group(group).unwrap().members().len(), 0);
         assert_eq!(document.selected_object_count(), 6);
-        for (object, source_face) in document.selected_objects().zip(box_brep.faces()) {
+        // Native ExtractSrf emits faces in descending source index order.
+        for (object, source_face) in document
+            .selected_objects()
+            .zip(box_brep.faces().iter().rev())
+        {
             let Geometry::Brep(face) = object.geometry() else {
                 panic!("ExtractSrf output must remain an exact one-face B-rep")
             };

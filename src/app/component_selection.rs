@@ -168,7 +168,7 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
-        if !click.preselection && self.unjoin_prompt.is_none() {
+        if !click.preselection && self.unjoin_prompt.is_none() && !self.picking_extract_faces() {
             if self
                 .hole_prompt
                 .as_ref()
@@ -206,7 +206,13 @@ impl VibocerosApp {
             self.component_selection.clear_choices();
             return;
         }
-        let picks = if self.unjoin_prompt.is_some() {
+        let picks = if self.picking_extract_faces() {
+            click
+                .picks
+                .into_iter()
+                .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                .collect()
+        } else if self.unjoin_prompt.is_some() {
             self.unjoinable_picks(click.picks)
         } else {
             click.picks
@@ -278,8 +284,16 @@ impl VibocerosApp {
             if self.component_preselection_available() {
                 self.select_components(window.picks, ComponentAction::Add);
             }
-        } else if self.unjoin_prompt.is_some() {
-            let picks = self.unjoinable_picks(window.picks);
+        } else if self.unjoin_prompt.is_some() || self.picking_extract_faces() {
+            let picks = if self.picking_extract_faces() {
+                window
+                    .picks
+                    .into_iter()
+                    .filter(|p| p.kind == ComponentSelectionKind::BrepFace)
+                    .collect()
+            } else {
+                self.unjoinable_picks(window.picks)
+            };
             let action =
                 if (window.modifiers.ctrl || window.modifiers.command) && !window.modifiers.shift {
                     ComponentAction::Remove

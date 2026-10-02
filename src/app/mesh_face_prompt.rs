@@ -92,19 +92,19 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_face_click(&mut self, object: ObjectId, face: usize) {
+        if self.picking_extract_faces() {
+            self.accept_component_click(crate::viewport::ComponentClick {
+                picks: vec![crate::viewport::ComponentPick {
+                    object,
+                    index: face,
+                    kind: viboceros_command::ComponentSelectionKind::BrepFace,
+                }],
+                preselection: false,
+                modifiers: Default::default(),
+            });
+            return;
+        }
         let command = match self.active_command {
-            Some(InteractiveCommand::ExtractSrf {
-                copy,
-                output_on_current_layer,
-            }) => format!(
-                "ExtractSrf Face={face} Object={object} Copy={} OutputLayer={}",
-                if copy { "Yes" } else { "No" },
-                if output_on_current_layer {
-                    "Current"
-                } else {
-                    "Input"
-                },
-            ),
             Some(InteractiveCommand::DupFaceBorder {
                 output_on_current_layer,
             }) => format!(

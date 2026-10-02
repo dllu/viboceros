@@ -76,6 +76,7 @@ mod conversion_session;
 mod distribute;
 mod document_brep;
 mod document_units;
+mod extract_surface;
 mod group_memberships;
 mod group_picking;
 mod join_command;
@@ -187,6 +188,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ExtractSrfCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: extract_surface::ExtractFixture,
+    },
     UnjoinEdgeCommand {
         id: String,
         #[serde(flatten)]
@@ -2067,6 +2073,7 @@ impl Operation {
             | Self::BrepUnjoinEdges { id, .. }
             | Self::UnjoinEdgeCommand { id, .. }
             | Self::ShrinkTrimmedSrfCommand { id, .. }
+            | Self::ExtractSrfCommand { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
@@ -2450,6 +2457,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::BrepUnjoinEdges { .. }
                 | Operation::UnjoinEdgeCommand { .. }
                 | Operation::ShrinkTrimmedSrfCommand { .. }
+                | Operation::ExtractSrfCommand { .. }
                 | Operation::ShrinkTrimmedSrfToEdgeCommand { .. }
                 | Operation::UntrimCommand { .. }
                 | Operation::UntrimHolesCommand { .. }
@@ -2489,6 +2497,7 @@ fn execute(
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
         Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
+        Operation::ExtractSrfCommand { fixture, .. } => extract_surface::run(fixture, tolerance)?,
         Operation::BrepUnjoinEdges { fixture, .. } => unjoin_edges::run(fixture, tolerance)?,
         Operation::UnjoinEdgeCommand { fixture, .. } => {
             unjoin_edge_command::run(fixture, tolerance)?

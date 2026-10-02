@@ -129,6 +129,7 @@ impl SelectionMenu {
 
 mod command_line;
 mod component_selection;
+mod extract_surface;
 mod shrink_trimmed;
 #[cfg(test)]
 use command_line::command_completions;
@@ -1169,7 +1170,7 @@ impl InteractiveCommand {
                 }
             },
             Self::ExtractSrf { .. } => {
-                "ExtractSrf: pick a face location on a selected surface or B-rep (Esc to cancel)"
+                "ExtractSrf: select faces; Enter extracts, Ctrl/Command removes (Esc cancels)"
             }
             Self::Curvature { .. } => {
                 "Curvature: pick a location on the selected curve or surface (Esc to cancel)"
@@ -2033,6 +2034,7 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_component_choice(&input)
+            || self.try_continue_extract_faces(&input)
             || self.try_continue_unjoin_command(&input)
             || self.try_continue_hole_command(&input)
             || self.try_continue_edge_command(&input)
@@ -3469,38 +3471,11 @@ impl VibocerosApp {
                 }
             }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
-            let mut copy = false;
-            let mut output_on_current_layer = false;
-            let mut copy_seen = false;
-            let mut output_layer_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                if name.eq_ignore_ascii_case("Copy") && !copy_seen {
-                    copy = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    copy_seen = true;
-                } else if name.eq_ignore_ascii_case("OutputLayer") && !output_layer_seen {
-                    output_on_current_layer = if value.eq_ignore_ascii_case("Current") {
-                        true
-                    } else if value.eq_ignore_ascii_case("Input") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    output_layer_seen = true;
-                } else {
-                    return false;
-                }
-            }
+            let Some((copy, output_on_current_layer)) =
+                extract_surface::options(&arguments, false, false)
+            else {
+                return false;
+            };
             InteractiveCommand::ExtractSrf {
                 copy,
                 output_on_current_layer,
@@ -4485,6 +4460,14 @@ impl VibocerosApp {
 
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
+        if let InteractiveCommand::ExtractSrf {
+            copy,
+            output_on_current_layer,
+        } = command
+        {
+            self.start_extract_faces(copy, output_on_current_layer);
+            return true;
+        }
         if matches!(
             command,
             InteractiveCommand::Move { .. }
@@ -4574,6 +4557,9 @@ impl VibocerosApp {
         self.cancel_intersection_prompt(announce);
         self.finish_edge_command(announce);
         self.finish_hole_command(announce);
+        if self.picking_extract_faces() {
+            self.component_selection.clear();
+        }
         let command = self.active_command.take();
         if matches!(
             command,
@@ -6399,21 +6385,8 @@ impl VibocerosApp {
             } => {
                 return self.finish_radius(point, diameter, mark, display_units);
             }
-            InteractiveCommand::ExtractSrf {
-                copy,
-                output_on_current_layer,
-            } => {
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "ExtractSrf {} Copy={} OutputLayer={}",
-                    format_model_point(point),
-                    if copy { "Yes" } else { "No" },
-                    if output_on_current_layer {
-                        "Current"
-                    } else {
-                        "Input"
-                    },
-                ));
+            InteractiveCommand::ExtractSrf { .. } => {
+                self.pick_extract_face_point(point);
             }
             InteractiveCommand::DupFaceBorder {
                 output_on_current_layer,
@@ -8001,6 +7974,7 @@ impl eframe::App for VibocerosApp {
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
+                && !self.picking_extract_faces()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
                 && self.plane_prompt.as_ref().map_or_else(
                     || {
@@ -8136,6 +8110,8 @@ impl eframe::App for VibocerosApp {
             .is_some_and(untrim_holes::HolePrompt::picking_faces)
         {
             Some(FacePickMode::SurfaceAndBrepAny)
+        } else if self.picking_extract_faces() {
+            Some(FacePickMode::SurfaceAndBrepAny)
         } else if matches!(
             self.active_command,
             Some(
@@ -8203,7 +8179,10 @@ impl eframe::App for VibocerosApp {
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
-        if self.unjoin_prompt.is_none() && self.shrink_prompt_mode().is_none() {
+        if self.unjoin_prompt.is_none()
+            && self.shrink_prompt_mode().is_none()
+            && !self.picking_extract_faces()
+        {
             self.component_selection.valid_picks(&self.document);
         }
         let component_highlights = self.component_selection.highlights(&self.document);
@@ -8229,6 +8208,13 @@ impl eframe::App for VibocerosApp {
                     && !end_analysis_picking)
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
+        let component_pick = component_pick.or_else(|| {
+            (self.picking_extract_faces()
+                && model_input_active
+                && self.plane_prompt.is_none()
+                && !end_analysis_picking)
+                .then_some(crate::viewport::ComponentPickFilter::Faces)
+        });
         let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
@@ -8554,6 +8540,7 @@ mod tests {
     mod draft_angle;
     mod evaluate_point;
     mod evaluate_uv;
+    mod extract_surface;
     mod group_prompt;
     mod interface;
     mod intersect_two_sets;
@@ -10280,7 +10267,7 @@ mod tests {
     }
 
     #[test]
-    fn interactive_surface_face_click_targets_the_clicked_object() {
+    fn interactive_extract_surface_face_click_targets_the_clicked_object() {
         let mut app = test_app();
         app.execute_command("SrfPt 0,0,0 1,0,0 1,1,0 0,1,0");
         let first = app.document.objects().next().unwrap().id();
@@ -10296,6 +10283,9 @@ mod tests {
             .unwrap();
         assert!(app.try_start_interactive_command("ExtractSrf Copy=No"));
         app.accept_face_click(second, 0);
+        assert!(app.document.object(second).is_some());
+        app.command_input.clear();
+        app.run_command();
         assert!(app.document.object(first).is_some());
         assert!(app.document.object(second).is_none());
         assert_eq!(app.document.undo_label(), Some("ExtractSrf"));
@@ -10313,7 +10303,7 @@ mod tests {
     }
 
     #[test]
-    fn interactive_extract_surface_uses_one_face_location_pick() {
+    fn interactive_extract_surface_accumulates_a_face_location_until_enter() {
         let mut app = test_app();
         app.execute_command("SrfPt 0,0,2 4,0,2 4,3,2 0,3,2");
         let source = app.document.objects().next().unwrap().id();
@@ -10329,8 +10319,11 @@ mod tests {
                 output_on_current_layer: false,
             })
         );
-        assert!(app.command_log.back().unwrap().contains("face location"));
+        assert!(app.command_log.back().unwrap().contains("select faces"));
         app.accept_drafting_point(point(2.0, 1.0, 5.0));
+        assert!(app.document.object(source).is_some());
+        app.command_input.clear();
+        app.run_command();
 
         assert_eq!(app.active_command, None);
         assert!(app.document.object(source).is_none());
