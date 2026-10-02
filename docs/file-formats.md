@@ -2,6 +2,21 @@
 
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
+## Opening and saving 3DM files
+
+`Open3dm path` (or `Open path`) replaces the current document; `Import3dm path`
+merges a file into it. In the application, `SaveAs path.3dm` names the current
+file, and `Save` writes later changes to it. Saving over an existing file keeps
+the previous version beside it with the `.3dmbak` extension. `Export3dm path`
+writes the model without changing the application's current file name.
+
+Save and export preserve working viewport cameras, titles, construction planes,
+display modes, and grid settings. Open restores the views, layout, active
+viewport, maximized state, and active layer. `ReadViewportsFromFile path.3dm`
+copies views and layout into the current document without importing objects.
+
+## Paths and export behavior
+
 File commands preserve internal filename whitespace. Use double quotes around
 a filename to preserve leading/trailing whitespace or make the path explicit,
 for example `ExportStl Binary "parts/two  spaces.stl"`. Backslashes are literal,

@@ -1,91 +1,12 @@
 # Viboceros
 
-An open-source CAD application in Rust, working toward a clean reimplementation
-of Rhinoceros 3D. It has a modular geometry kernel, a command-driven egui/wgpu
-interface, multiple viewports, snapping, layers, groups, and undo/redo.
-Attribute and geometry user text can be edited with commands and retained in 3DM
-files; attribute text can also be searched. `NamedView Save`, `NamedView Restore`,
-`NamedView List`, and `NamedView Import path.3dm` manage camera views.
-`Export3dm` and `Import3dm` preserve them with their construction planes.
-`NamedCPlane Save`, `Restore`, and `Import path.3dm` manage reusable construction
-planes through 3DM files.
-`Open3dm path` (or `Open path`) replaces
-the current document; `Import3dm path` merges a 3DM into it.
-`SaveAs path.3dm` names the current file; `Save` writes later changes to it and
-keeps the previous version as a `.3dmbak` file. Save and export preserve the
-working viewport cameras, titles, construction planes, display modes, and grid
-settings. Open restores the views, layout, active viewport, maximized state,
-and active layer. `ReadViewportsFromFile path.3dm` copies views and layout into
-the current document. `3View`, `4View`, and `MaxViewport` change the layout;
-`4View Projection=FirstAngle|ThirdAngle` restores either standard arrangement.
-`SynchronizeCPlanes [source] [SetView=Yes|No]` aligns standard view planes to a
-source viewport's construction plane.
-`CopyCPlaneToAll` and `CopyCPlaneSettingsToAll` copy from a picked viewport;
-press Enter to use the active viewport.
-`CPlane All point` and `CPlane Through All point` move every viewport's
-construction plane origin while retaining its own axes.
-At either point prompt, `All` toggles its setting; `All=Yes|No` selects it.
-`CPlane View` aligns the active plane to the stored camera target and screen axes,
-including off-axis targets imported from 3DM.
-`SetView World TwoPointPerspective` enables a level perspective camera;
-named and working 3DM views retain its projection and shifted frustum.
-`Zoom Extents` and `Zoom Selected` fit parallel, perspective, and two-point
-views with Rhino-matched framing and cleared shifted frusta. Viewport redraw
-refreshes document clipping after navigation and scene edits; GPU faces, wires,
-points, and click/area selection obey those near/far planes. Crossing selection
-accepts visible portions; window selection requires the whole object inside.
-Center and Mid-only snaps can return clipped targets discovered from a visible
-part of their source curve.
-Circle/ellipse centers on the camera plane are excluded; admitted singular snap
-targets keep their labels.
-`SetView World Top|Bottom|Front|Back|Right|Left` preserves framing and the CPlane origin.
-Bare `SetView` offers typed or clickable CPlane/World choices; Enter/Esc cancels
-the view prompt and resumes the unfinished command.
-View options persist the `Named views set CPlane` and `Named views set projection`
-settings for named-view restoration and World presets.
-`CPlane Object` aligns it to a line, polyline, polycurve, NURBS curve, circle, arc,
-ellipse, surface, or picked mesh/B-rep face.
-`CPlane Curve` places it perpendicular to a curve at a picked station.
-`CPlane Surface` places a tangent plane at a chosen point on a surface or B-rep face, with `IgnoreTrims` for underlying-surface picks.
-Plain `4View` restores the most recently selected projection and resets its views.
-`SplitViewportHorizontal` and `SplitViewportVertical` divide the active view.
-`NewViewport` opens a centered Top view over the model viewport area.
-`CloseViewport` removes the active view, preserving covered layouts or filling tiled gaps.
-The model-view tabs below the workspace select views, including views covered by
-overlapping windows. Double-click a tab to rename it; right-click for view
-actions, or use the mouse wheel over the tabs to cycle views.
-`ViewportTabs Show|Hide|Toggle` controls the tab strip.
-`ViewportTabs Align=Bottom|Top|Left|Right` moves it to a window edge.
-`-ViewportProperties Title="name"` names the active view for selection and saving.
-`Export3dm` leaves the current file name unchanged. `SetActiveViewport name`
-selects a viewport; `SetMaximizedViewport name` selects and maximizes it. Both
-also accept a viewport number.
+An open-source CAD application in Rust, working toward a reimplementation of
+Rhinoceros 3D. It combines a modular geometry kernel with a command-driven
+egui/wgpu interface, multiple viewports, snapping, layers, groups, and undo/redo.
 
-This is an early implementation. It supports analytic and NURBS geometry,
-trimmed B-reps, polygon meshes, and an expanding command set. 3DM and STL
-interchange are available; STEP imports meshes or supported native planar and
-NURBS B-reps and exports faceted shells or supported native B-reps. Full Rhino
+The project is in early development. Analytic and NURBS geometry, trimmed B-reps,
+meshes, and 3DM/STL/STEP interchange are supported with limitations; full Rhino
 compatibility is still in progress.
-
-[`Untrim`](docs/commands/untrim.md) restores picked exterior trim runs or holes,
-with immediate edits, remembered options, retained trim objects and local Undo.
-Rectangular partial restoration has verified native edge ordering. Multi-face
-exterior picks are ignored, matching the recorded Rhino cases.
-[`UntrimAll`](docs/commands/untrim-all.md) removes all trims from standalone
-surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exterior
-boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.
-The [hole-removal geometry API](docs/geometry/remove-holes.md) closes selected
-interior holes and removes joined hole walls while preserving exact source data.
-[`UntrimHoles`](docs/commands/untrim-holes.md) accepts Ctrl/Command+Shift component
-preselection and viewport edge/face clicks or rectangles, retains trim objects,
-and groups accepted picks into one external Undo step.
-[`UnjoinEdge`](docs/commands/unjoin-edge.md) separates selected joined edges into
-exact B-rep components, with modifier clicks and rectangles, source attributes,
-and one batch Undo step.
-
-[`ShrinkTrimmedSrf` and `ShrinkTrimmedSrfToEdge`](docs/commands/shrink-trimmed-surfaces.md)
-reduce underlying surfaces while preserving visible trims, topology and object
-metadata, with whole-polysurface selection and batch Undo.
 
 ## Build and run
 
@@ -96,49 +17,14 @@ git submodule update --init --recursive
 cargo run --release
 ```
 
-Linux supports Wayland and X11; wgpu uses Vulkan when available. Enter commands
-such as `Line 0,0,0 10,5,0`, or enter `Line` to pick points in a viewport.
-`Circle 3Point 4,0,0 0,4,0 -4,0,0` constructs a circle through three world points.
-`Circle 3Point 4,0,0 0,4,0 Radius=5 0,0,0` fixes its radius and center direction.
-`Circle 0,0,0 Diameter=6` creates a radius-three circle; Circle also accepts
-`Circumference=` and `Area=` sizes, including at its interactive prompt.
-`Circle Vertical 1,2,3 5,2,3` draws a circle perpendicular to the construction
-plane; enter a radius before the direction point to fix its size.
-`Circle Orientation 1,2,3 1,3,3 4` chooses a plane normal from the second point.
-Select two open curves, then use `Match Continuity=Tangency PreserveOtherEnd=Position`
-to edit the first curve at the nearest pair of ends. `Pick1=` and `Pick2=` choose
-other ends; single-span curves currently support position, tangent, and curvature
-matching.
-Multi-span curves also support position matching with endpoint trimming, and
-tangent or curvature matching. When the source has too few controls to preserve
-the requested opposite end, Match adds controls before editing its end. For
-five-control cubic and four- or five-control quadratic G2 matches preserving
-far G2, it uses a uniform curve fitted at Greville parameters; other short
-sources use knot insertion.
-`AverageCurves=Yes` moves both curves for position, tangent, or curvature
-matching and keeps the change in one undo step. Average curvature matching can
-preserve the far position or tangent of multi-span curves.
-It also preserves far curvature on both edited multi-span curves, refining
-either curve when needed.
-Enter `Help` to list commands, or `Help UI` for display and drafting controls.
+Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-## Development
-
-Release-mode tests keep the exhaustive exact-arithmetic checks practical.
-
-```sh
-cargo test --workspace --release
-cargo clippy --workspace --all-targets -- -D warnings
-cargo fmt --all -- --check
-python3 -m unittest discover -s tools/rhino_oracle -t .
-```
+## Documentation
 
 - [Command reference and examples](docs/commands/README.md)
-- [Command completion, history, and file paths](docs/command-line.md)
 - [Viewport controls and drafting](docs/interface.md)
-- [Viewport caching and performance checks](docs/viewport-caching.md)
-- [Opt-in offscreen GPU tests](docs/gpu-tests.md)
-- [Imported surface shading and mesh checks](docs/imported-shading.md)
+- [Command input, completion, history, and file paths](docs/command-line.md)
 - [File formats and limitations](docs/file-formats.md)
 - [Architecture and implementation status](docs/architecture.md)
+- [Development and testing](docs/development.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)
