@@ -145,4 +145,14 @@ def face_picking_request():
     return dict(protocol_version=1,iterations=1,operations=operations)
 
 
+def picking_control_request():
+    """Same sources and input driver, with one unmodified whole-object click."""
+    result=face_picking_request();result['operations']=result['operations'][:1]
+    operation=result['operations'][0]
+    operation['id']='standard-plain-click-control'
+    operation['steps'][0]['modifiers']='plain'
+    operation['undo_redo']=False
+    return result
+
+
 if __name__=='__main__':print(json.dumps(request(),indent=2))

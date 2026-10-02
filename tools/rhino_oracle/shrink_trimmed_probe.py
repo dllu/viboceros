@@ -83,6 +83,12 @@ def run(operation,tolerance,host):
             mode=Rhino.Display.DisplayModeDescription.FindByName('Shaded')
             if mode is None:raise ValueError('shaded mode unavailable for shrink face picking')
             fixture.doc.Views.ActiveView.ActiveViewport.DisplayMode=mode;fixture.doc.Views.Redraw()
+            view=fixture.doc.Views.ActiveView;viewport=view.ActiveViewport
+            for step,point in zip(steps,points):
+                pixel=viewport.WorldToClient(point[0]);source,index=step['component']
+                fixture.verify_face_pick(source,index,view,viewport,int(pixel.X),int(pixel.Y))
+                host['_record_progress']('verified shrink face frustum %d:%d viewport=%s point=%d,%d' %
+                    (source,index,str(viewport.Id),int(pixel.X),int(pixel.Y)))
         before=fixture.snapshot();components=fixture.components();marker='Viboceros '+command+' '+str(host['System'].Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
         if steps:

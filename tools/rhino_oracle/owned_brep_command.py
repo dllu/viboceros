@@ -99,6 +99,45 @@ class OwnedBrepCommand:
             for reference in references:reference.Dispose()
             context.Dispose()
 
+    def verify_face_pick(self, source, face_index, view, viewport, x, y):
+        """Verify an owned shaded object hit and intersection with its face.
+
+        This verifies the input location; a command can still reject that face.
+        No selection or geometry is changed, and every reference is released.
+        """
+        Rhino,System=self.Rhino,self.System
+        obj=self.doc.Objects.FindId(self.ids[source])
+        if obj is None:raise ValueError('owned face pick source missing')
+        if type(face_index) is not int or not 0<=face_index<obj.Geometry.Faces.Count:
+            raise ValueError('owned face pick index outside source')
+        context=Rhino.Input.Custom.PickContext();resources=[context]
+        try:
+            context.View=view;context.PickStyle=Rhino.Input.Custom.PickStyle.PointPick
+            context.PickMode=Rhino.Input.Custom.PickMode.Shaded
+            context.PickGroupsEnabled=False;context.SubObjectSelectionEnabled=True
+            ok,line=viewport.GetFrustumLine(x,y)
+            if not ok:raise ValueError('owned face pick ray unavailable')
+            context.PickLine=line
+            context.SetPickTransform(viewport.GetPickTransform(System.Drawing.Rectangle(x-4,y-4,8,8)))
+            context.UpdateClippingPlanes()
+            references=list(self.doc.Objects.PickObjects(context) or [])
+            resources.extend(references)
+            if not any(reference.ObjectId==obj.Id for reference in references):
+                raise ValueError('public shaded picker missed owned face source')
+            ray=Rhino.Geometry.LineCurve(line)
+            resources.append(ray)
+            ok,curves,points=Rhino.Geometry.Intersect.Intersection.CurveBrepFace(
+                ray,obj.Geometry.Faces[face_index],self.doc.ModelAbsoluteTolerance)
+            resources.extend(curves or [])
+            if not ok or not points:
+                raise ValueError('public pick ray missed intended owned face')
+        finally:
+            failures=[]
+            for resource in reversed(resources):
+                try:resource.Dispose()
+                except Exception as error:failures.append(str(error))
+            if failures:raise ValueError('owned face pick cleanup failed: '+str(failures))
+
     def __enter__(self):return self
 
     def __exit__(self, *exception):

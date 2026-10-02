@@ -4,14 +4,14 @@ import unittest
 from pathlib import Path
 from .client import OracleProtocolError, _owned_artifact_request
 from .shrink_trimmed_probe import validate
-from .shrink_trimmed_cases import request, extended_request, geometry_request, face_request, face_picking_request
+from .shrink_trimmed_cases import request, extended_request, geometry_request, face_request, face_picking_request, picking_control_request
 from .shrink_trimmed_capture import validate_request
 from .shrink_trimmed_replay import canonical_response
 
 
 class ShrinkTrimmedTests(unittest.TestCase):
     def test_saved_sources_are_generated_without_native_outputs(self):
-        for name,make in [('shrink_trimmed_surfaces',request),('shrink_trimmed_history',extended_request),('shrink_trimmed_geometry',geometry_request),('shrink_trimmed_faces',face_request),('shrink_trimmed_face_picking',face_picking_request)]:
+        for name,make in [('shrink_trimmed_surfaces',request),('shrink_trimmed_history',extended_request),('shrink_trimmed_geometry',geometry_request),('shrink_trimmed_faces',face_request),('shrink_trimmed_face_picking',face_picking_request),('shrink_trimmed_picking_control',picking_control_request)]:
             saved=json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved,make())
             with _owned_artifact_request(saved) as owned:

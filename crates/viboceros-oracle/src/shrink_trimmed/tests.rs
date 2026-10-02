@@ -40,6 +40,15 @@ fn independent_sources_match_both_native_shrink_commands_and_history() {
             include_str!("../../../../tools/rhino_oracle/observations/shrink_trimmed_faces.json"),
             22,
         ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/shrink_trimmed_picking_control.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/shrink_trimmed_picking_control.json"
+            ),
+            1,
+        ),
     ] {
         let request: ProbeRequest = serde_json::from_str(input).unwrap();
         let expected: Value = serde_json::from_str(capture).unwrap();

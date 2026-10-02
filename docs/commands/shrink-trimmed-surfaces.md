@@ -59,7 +59,7 @@ changed source geometry or tolerance and preserves Redo on a no-op.
 
 ## Verification and limits
 
-154 saved Rhino 8.32 command cases cover both whole-object selection workflows,
+155 saved Rhino 8.32 command cases cover both whole-object selection workflows,
 rectangular and curved trims, holes, rotated circles and ellipses, cubic polynomial and
 signed rational boundaries, paraboloids, reversed faces, multiple/disconnected
 faces, joined faces, periodic cylinder seams, partial cylinder intervals,
@@ -75,6 +75,9 @@ The independent source fixtures are
 [additional geometry](../../tools/rhino_oracle/fixtures/shrink_trimmed_geometry.json).
 The [face fixture](../../tools/rhino_oracle/fixtures/shrink_trimmed_faces.json) adds
 native preselection observations and component clearing through Undo/Redo.
+A [plain-click control](../../tools/rhino_oracle/fixtures/shrink_trimmed_picking_control.json)
+uses the experimental input driver to select a whole polysurface and finish with
+Enter inside a script, without Undo/Redo. Both faces shrink in this control.
 Corresponding raw captures reside in `tools/rhino_oracle/observations/`.
 Replay compares complete surface/curve definitions, raw numeric topology
 indices, selection, identity, attributes, and memberships at absolute epsilon
@@ -95,11 +98,23 @@ cargo test -p viboceros shrink --bin viboceros
 
 Application tests cover modifier clicks, toggles, face rectangles, cancellation,
 mixed selection, stale geometry, and external Undo/Redo. Native mouse input is
-not yet verified: the experimental
+verified for the plain-click control only. The experimental
 [picking fixture](../../tools/rhino_oracle/fixtures/shrink_trimmed_face_picking.json)
-currently times out after delivering its first click under Wine. Failed runs
-publish no observations and are not used as compatibility evidence. This remains
-a verification gap for command-first face picking.
+has a first Ctrl+Shift case that stalls under Wine, both inside a script and from
+Idle. A read-only guard confirms that the public shaded picker
+finds the owned object and its pick ray intersects the intended trimmed face.
+Mouse callbacks record Ctrl+Shift and viewport coordinates while Rhino
+remains in object selection; no persistent face selection is observed. The guard
+checks the input location, not command eligibility or which overlapping face is
+frontmost. Failed runs publish no observations and are not used as compatibility
+evidence. Command-first face picking remains a verification gap.
+
+To repeat the successful input control in a private display:
+
+```sh
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.shrink_trimmed_capture tools/rhino_oracle/fixtures/shrink_trimmed_picking_control.json --timeout 120
+python3 -m tools.rhino_oracle.shrink_trimmed_replay tools/rhino_oracle/fixtures/shrink_trimmed_picking_control.json tools/rhino_oracle/observations/shrink_trimmed_picking_control.json
+```
 
 The stated cases do not establish behavior for every imported surface
 representation or trim encoding. The geometry API exposes no side-disable mask.

@@ -1,0 +1,4304 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "id": "standard-plain-click-control",
+      "value": {
+        "component_selection": {
+          "before": [],
+          "after": []
+        },
+        "succeeded": true,
+        "selection_steps": [
+          []
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "name": "Pause",
+            "selected": []
+          },
+          {
+            "result": "Success",
+            "name": "ShrinkTrimmedSrf",
+            "selected": []
+          }
+        ],
+        "after": [
+          {
+            "color": [
+              11,
+              30,
+              50
+            ],
+            "color_source": "ColorFromObject",
+            "current_layer": true,
+            "source": 1,
+            "geometry": {
+              "untrimmed": [
+                false
+              ],
+              "type": "brep",
+              "definition": {
+                "faces": [
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            40.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            50.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            40.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            50.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        0.0,
+                        10.0
+                      ],
+                      "knots_u": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ]
+                    }
+                  }
+                ],
+                "topology": {
+                  "solid": false,
+                  "faces": [
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                0,
+                                1
+                              ],
+                              "edge": 0
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                1,
+                                2
+                              ],
+                              "edge": 1
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                2,
+                                3
+                              ],
+                              "edge": 2
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                3,
+                                0
+                              ],
+                              "edge": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    }
+                  ],
+                  "vertices": 4,
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      0
+                    ]
+                  ]
+                },
+                "vertices": [
+                  {
+                    "point": [
+                      42.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      48.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      48.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      42.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  }
+                ],
+                "edges": [
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              42.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              48.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              48.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              48.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              48.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              42.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              42.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              42.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  }
+                ]
+              }
+            },
+            "groups": [
+              1
+            ],
+            "name": "source-1",
+            "selected": false
+          },
+          {
+            "color": [
+              10,
+              30,
+              50
+            ],
+            "color_source": "ColorFromObject",
+            "current_layer": true,
+            "source": 0,
+            "geometry": {
+              "untrimmed": [
+                true,
+                true
+              ],
+              "type": "brep",
+              "definition": {
+                "faces": [
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 5,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 3,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            2.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        2.0,
+                        8.0
+                      ],
+                      "knots_u": [
+                        2.0,
+                        2.0,
+                        8.0,
+                        8.0
+                      ]
+                    }
+                  },
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 5,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 3,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            22.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            28.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            22.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            28.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        2.0,
+                        8.0
+                      ],
+                      "knots_u": [
+                        2.0,
+                        2.0,
+                        8.0,
+                        8.0
+                      ]
+                    }
+                  }
+                ],
+                "topology": {
+                  "solid": false,
+                  "faces": [
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                0,
+                                1
+                              ],
+                              "edge": 0
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                1,
+                                2
+                              ],
+                              "edge": 1
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                2,
+                                3
+                              ],
+                              "edge": 2
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                3,
+                                0
+                              ],
+                              "edge": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    },
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                4,
+                                5
+                              ],
+                              "edge": 4
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                5,
+                                6
+                              ],
+                              "edge": 5
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                6,
+                                7
+                              ],
+                              "edge": 6
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                7,
+                                4
+                              ],
+                              "edge": 7
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    }
+                  ],
+                  "vertices": 8,
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      7,
+                      4
+                    ]
+                  ]
+                },
+                "vertices": [
+                  {
+                    "point": [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      2.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      22.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      28.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      28.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      22.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  }
+                ],
+                "edges": [
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              2.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              8.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              8.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              8.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              8.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              2.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              2.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              2.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              22.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              28.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              28.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              28.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              28.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              22.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              22.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              22.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  }
+                ]
+              }
+            },
+            "groups": [
+              0
+            ],
+            "name": "source-0",
+            "selected": false
+          }
+        ],
+        "before": [
+          {
+            "color": [
+              10,
+              30,
+              50
+            ],
+            "color_source": "ColorFromObject",
+            "current_layer": true,
+            "source": 0,
+            "geometry": {
+              "untrimmed": [
+                false,
+                false
+              ],
+              "type": "brep",
+              "definition": {
+                "faces": [
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        0.0,
+                        10.0
+                      ],
+                      "knots_u": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ]
+                    }
+                  },
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            20.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            20.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            30.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        0.0,
+                        10.0
+                      ],
+                      "knots_u": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ]
+                    }
+                  }
+                ],
+                "topology": {
+                  "solid": false,
+                  "faces": [
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                0,
+                                1
+                              ],
+                              "edge": 0
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                1,
+                                2
+                              ],
+                              "edge": 1
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                2,
+                                3
+                              ],
+                              "edge": 2
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                3,
+                                0
+                              ],
+                              "edge": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    },
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                4,
+                                5
+                              ],
+                              "edge": 4
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                5,
+                                6
+                              ],
+                              "edge": 5
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                6,
+                                7
+                              ],
+                              "edge": 6
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                7,
+                                4
+                              ],
+                              "edge": 7
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    }
+                  ],
+                  "vertices": 8,
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      7,
+                      4
+                    ]
+                  ]
+                },
+                "vertices": [
+                  {
+                    "point": [
+                      2.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      8.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      2.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      22.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      28.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      28.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      22.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  }
+                ],
+                "edges": [
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              2.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              8.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              8.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              8.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              8.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              2.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              2.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              2.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              22.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              28.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              28.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              28.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              28.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              22.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              22.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              22.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  }
+                ]
+              }
+            },
+            "groups": [
+              0
+            ],
+            "name": "source-0",
+            "selected": false
+          },
+          {
+            "color": [
+              11,
+              30,
+              50
+            ],
+            "color_source": "ColorFromObject",
+            "current_layer": true,
+            "source": 1,
+            "geometry": {
+              "untrimmed": [
+                false
+              ],
+              "type": "brep",
+              "definition": {
+                "faces": [
+                  {
+                    "loops": [
+                      [
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 4,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 6,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  8.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        },
+                        {
+                          "tolerance": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": 1,
+                          "definition": {
+                            "knots": [
+                              0.0,
+                              0.0,
+                              1.0,
+                              1.0
+                            ],
+                            "degree": 1,
+                            "control_points": [
+                              {
+                                "point": [
+                                  2.0,
+                                  10.0
+                                ],
+                                "weight": 1.0
+                              },
+                              {
+                                "point": [
+                                  2.0,
+                                  0.0
+                                ],
+                                "weight": 1.0
+                              }
+                            ],
+                            "domain": [
+                              0.0,
+                              1.0
+                            ]
+                          }
+                        }
+                      ]
+                    ],
+                    "definition": {
+                      "knots_v": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": [
+                        1,
+                        1
+                      ],
+                      "control_points": [
+                        {
+                          "point": [
+                            40.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            50.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            40.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            50.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain_v": [
+                        0.0,
+                        10.0
+                      ],
+                      "control_count": [
+                        2,
+                        2
+                      ],
+                      "domain_u": [
+                        0.0,
+                        10.0
+                      ],
+                      "knots_u": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ]
+                    }
+                  }
+                ],
+                "topology": {
+                  "solid": false,
+                  "faces": [
+                    {
+                      "loops": [
+                        {
+                          "outer": true,
+                          "trims": [
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                0,
+                                1
+                              ],
+                              "edge": 0
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                1,
+                                2
+                              ],
+                              "edge": 1
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                2,
+                                3
+                              ],
+                              "edge": 2
+                            },
+                            {
+                              "type": "Boundary",
+                              "reversed": false,
+                              "vertices": [
+                                3,
+                                0
+                              ],
+                              "edge": 3
+                            }
+                          ]
+                        }
+                      ],
+                      "reversed": false
+                    }
+                  ],
+                  "vertices": 4,
+                  "edges": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      0
+                    ]
+                  ]
+                },
+                "vertices": [
+                  {
+                    "point": [
+                      42.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      48.0,
+                      0.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      48.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  },
+                  {
+                    "point": [
+                      42.0,
+                      10.0,
+                      0.0
+                    ],
+                    "tolerance": 0.0
+                  }
+                ],
+                "edges": [
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          2.0,
+                          2.0,
+                          8.0,
+                          8.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              42.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              48.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          2.0,
+                          8.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          0.0,
+                          0.0,
+                          10.0,
+                          10.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              48.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              48.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          0.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -8.0,
+                          -8.0,
+                          -2.0,
+                          -2.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              48.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              42.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -8.0,
+                          -2.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  },
+                  {
+                    "curve": {
+                      "definition": {
+                        "knots": [
+                          -10.0,
+                          -10.0,
+                          -0.0,
+                          -0.0
+                        ],
+                        "degree": 1,
+                        "control_points": [
+                          {
+                            "point": [
+                              42.0,
+                              10.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          },
+                          {
+                            "point": [
+                              42.0,
+                              0.0,
+                              0.0
+                            ],
+                            "weight": 1.0
+                          }
+                        ],
+                        "domain": [
+                          -10.0,
+                          -0.0
+                        ]
+                      }
+                    },
+                    "tolerance": 0.0
+                  }
+                ]
+              }
+            },
+            "groups": [
+              1
+            ],
+            "name": "source-1",
+            "selected": false
+          }
+        ],
+        "history": "Command: _ShrinkTrimmedSrf\nSelect trimmed surfaces to shrink: _Pause\nSelect trimmed surfaces to shrink\nSelect trimmed surfaces to shrink. Press Enter when done\nShrunk 2 surfaces.\nCreating meshes... Press Esc to cancel",
+        "constructed": [
+          {
+            "untrimmed": [
+              false,
+              false
+            ],
+            "type": "brep",
+            "definition": {
+              "faces": [
+                {
+                  "loops": [
+                    [
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 4,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 6,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      }
+                    ]
+                  ],
+                  "definition": {
+                    "knots_v": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ],
+                    "degree": [
+                      1,
+                      1
+                    ],
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "domain_v": [
+                      0.0,
+                      10.0
+                    ],
+                    "control_count": [
+                      2,
+                      2
+                    ],
+                    "domain_u": [
+                      0.0,
+                      10.0
+                    ],
+                    "knots_u": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ]
+                  }
+                },
+                {
+                  "loops": [
+                    [
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 4,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 6,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      }
+                    ]
+                  ],
+                  "definition": {
+                    "knots_v": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ],
+                    "degree": [
+                      1,
+                      1
+                    ],
+                    "control_points": [
+                      {
+                        "point": [
+                          20.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          30.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          20.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          30.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "domain_v": [
+                      0.0,
+                      10.0
+                    ],
+                    "control_count": [
+                      2,
+                      2
+                    ],
+                    "domain_u": [
+                      0.0,
+                      10.0
+                    ],
+                    "knots_u": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ]
+                  }
+                }
+              ],
+              "topology": {
+                "solid": false,
+                "faces": [
+                  {
+                    "loops": [
+                      {
+                        "outer": true,
+                        "trims": [
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              0,
+                              1
+                            ],
+                            "edge": 0
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              1,
+                              2
+                            ],
+                            "edge": 1
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              2,
+                              3
+                            ],
+                            "edge": 2
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              3,
+                              0
+                            ],
+                            "edge": 3
+                          }
+                        ]
+                      }
+                    ],
+                    "reversed": false
+                  },
+                  {
+                    "loops": [
+                      {
+                        "outer": true,
+                        "trims": [
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              4,
+                              5
+                            ],
+                            "edge": 4
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              5,
+                              6
+                            ],
+                            "edge": 5
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              6,
+                              7
+                            ],
+                            "edge": 6
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              7,
+                              4
+                            ],
+                            "edge": 7
+                          }
+                        ]
+                      }
+                    ],
+                    "reversed": false
+                  }
+                ],
+                "vertices": 8,
+                "edges": [
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    3
+                  ],
+                  [
+                    3,
+                    0
+                  ],
+                  [
+                    4,
+                    5
+                  ],
+                  [
+                    5,
+                    6
+                  ],
+                  [
+                    6,
+                    7
+                  ],
+                  [
+                    7,
+                    4
+                  ]
+                ]
+              },
+              "vertices": [
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    8.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    22.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    28.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    28.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    22.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                }
+              ],
+              "edges": [
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        2.0,
+                        2.0,
+                        8.0,
+                        8.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            2.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        2.0,
+                        8.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            8.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        0.0,
+                        10.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -8.0,
+                        -8.0,
+                        -2.0,
+                        -2.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            8.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -8.0,
+                        -2.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -10.0,
+                        -10.0,
+                        -0.0,
+                        -0.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            2.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -10.0,
+                        -0.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        2.0,
+                        2.0,
+                        8.0,
+                        8.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            22.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            28.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        2.0,
+                        8.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            28.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            28.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        0.0,
+                        10.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -8.0,
+                        -8.0,
+                        -2.0,
+                        -2.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            28.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            22.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -8.0,
+                        -2.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -10.0,
+                        -10.0,
+                        -0.0,
+                        -0.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            22.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            22.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -10.0,
+                        -0.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                }
+              ]
+            }
+          },
+          {
+            "untrimmed": [
+              false
+            ],
+            "type": "brep",
+            "definition": {
+              "faces": [
+                {
+                  "loops": [
+                    [
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 4,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 6,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                8.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      },
+                      {
+                        "tolerance": [
+                          0.0,
+                          0.0
+                        ],
+                        "iso": 1,
+                        "definition": {
+                          "knots": [
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0
+                          ],
+                          "degree": 1,
+                          "control_points": [
+                            {
+                              "point": [
+                                2.0,
+                                10.0
+                              ],
+                              "weight": 1.0
+                            },
+                            {
+                              "point": [
+                                2.0,
+                                0.0
+                              ],
+                              "weight": 1.0
+                            }
+                          ],
+                          "domain": [
+                            0.0,
+                            1.0
+                          ]
+                        }
+                      }
+                    ]
+                  ],
+                  "definition": {
+                    "knots_v": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ],
+                    "degree": [
+                      1,
+                      1
+                    ],
+                    "control_points": [
+                      {
+                        "point": [
+                          40.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          50.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          40.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          50.0,
+                          10.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "domain_v": [
+                      0.0,
+                      10.0
+                    ],
+                    "control_count": [
+                      2,
+                      2
+                    ],
+                    "domain_u": [
+                      0.0,
+                      10.0
+                    ],
+                    "knots_u": [
+                      0.0,
+                      0.0,
+                      10.0,
+                      10.0
+                    ]
+                  }
+                }
+              ],
+              "topology": {
+                "solid": false,
+                "faces": [
+                  {
+                    "loops": [
+                      {
+                        "outer": true,
+                        "trims": [
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              0,
+                              1
+                            ],
+                            "edge": 0
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              1,
+                              2
+                            ],
+                            "edge": 1
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              2,
+                              3
+                            ],
+                            "edge": 2
+                          },
+                          {
+                            "type": "Boundary",
+                            "reversed": false,
+                            "vertices": [
+                              3,
+                              0
+                            ],
+                            "edge": 3
+                          }
+                        ]
+                      }
+                    ],
+                    "reversed": false
+                  }
+                ],
+                "vertices": 4,
+                "edges": [
+                  [
+                    0,
+                    1
+                  ],
+                  [
+                    1,
+                    2
+                  ],
+                  [
+                    2,
+                    3
+                  ],
+                  [
+                    3,
+                    0
+                  ]
+                ]
+              },
+              "vertices": [
+                {
+                  "point": [
+                    42.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    48.0,
+                    0.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    48.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                },
+                {
+                  "point": [
+                    42.0,
+                    10.0,
+                    0.0
+                  ],
+                  "tolerance": 0.0
+                }
+              ],
+              "edges": [
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        2.0,
+                        2.0,
+                        8.0,
+                        8.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            42.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            48.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        2.0,
+                        8.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        0.0,
+                        0.0,
+                        10.0,
+                        10.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            48.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            48.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        0.0,
+                        10.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -8.0,
+                        -8.0,
+                        -2.0,
+                        -2.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            48.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            42.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -8.0,
+                        -2.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                },
+                {
+                  "curve": {
+                    "definition": {
+                      "knots": [
+                        -10.0,
+                        -10.0,
+                        -0.0,
+                        -0.0
+                      ],
+                      "degree": 1,
+                      "control_points": [
+                        {
+                          "point": [
+                            42.0,
+                            10.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            42.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "domain": [
+                        -10.0,
+                        -0.0
+                      ]
+                    }
+                  },
+                  "tolerance": 0.0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino"
+}
