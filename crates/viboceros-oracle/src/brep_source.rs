@@ -71,6 +71,9 @@ pub(super) enum Primitive {
     Sphere {
         radius: f64,
     },
+    Torus {
+        radii: [f64; 2],
+    },
     Compound {
         parts: Vec<BrepSourceFixture>,
     },
@@ -120,6 +123,14 @@ impl BrepCommandSource {
                     tolerance,
                 )?)
             }
+            Self::Primitive(Primitive::Torus { radii }) => Geometry::Brep(Brep::try_surface_face(
+                NurbsSurface::try_torus(
+                    viboceros_command::CommandContext::default().construction_plane,
+                    radii[0],
+                    radii[1],
+                )?,
+                tolerance,
+            )?),
             Self::Primitive(Primitive::Compound { parts }) => {
                 if parts.is_empty()
                     || parts.len() > 8

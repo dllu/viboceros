@@ -344,6 +344,23 @@ the dedicated `run_headless.sh` Xvfb display. Direct Python API calls to
 `OracleClient.run_rhino` on Linux require an Xvfb session established by this
 wrapper. Replay and native-only modes do not launch Rhino.
 
+For experiments that change application preferences or remembered command
+defaults, use a private settings scheme:
+
+```python
+client = OracleClient(settings_scheme="VibocerosOracleCopy_20261002")
+observed = client.run_rhino(request)
+```
+
+Run this Python code through `tools/rhino_oracle/run_headless.sh exec` as usual.
+Scheme names must start with `VibocerosOracle`, followed by 1–64 ASCII letters,
+digits, underscores, or hyphens. The client passes a single `/scheme=` launcher
+argument. Rhino stores the scheme's options separately, as documented in
+[McNeel's startup options](https://docs.mcneel.com/rhino/8/help/en-us/information/startingrhino.htm).
+This launch path has run a geometry probe in Rhino 8.32. It does not establish
+the behavior of any remembered option. Run native captures sequentially within
+a Wine prefix.
+
 The [Match fixture](../tools/rhino_oracle/fixtures/curve_match_geometry.json)
 contains 33 live Rhino `CreateMatchCurve` cases for single-span line, polynomial,
 and rational curves across end orientation, continuity, and preserved opposite

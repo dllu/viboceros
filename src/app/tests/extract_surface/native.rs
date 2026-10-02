@@ -88,9 +88,26 @@ fn extract_surface_viewport_sequences_geometry_metadata_and_history_match_native
         "../../../../tools/rhino_oracle/observations/extract_srf_picking.json"
     ))
     .unwrap();
+    replay_viewport_sequences(request, observed, 32);
+}
+
+#[test]
+fn extract_surface_curved_viewport_sequences_match_native_mouse_runs() {
+    let request: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/extract_srf_curved_picking.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/extract_srf_curved_picking.json"
+    ))
+    .unwrap();
+    replay_viewport_sequences(request, observed, 38);
+}
+
+fn replay_viewport_sequences(request: Value, observed: Value, count: usize) {
     let operations = request["operations"].as_array().unwrap();
     let results = observed["results"].as_array().unwrap();
-    assert_eq!(operations.len(), 32);
+    assert_eq!(operations.len(), count);
     assert_eq!(results.len(), operations.len());
     assert_eq!(observed["engine"], "rhino");
     for (operation, row) in operations.iter().zip(results) {
@@ -137,8 +154,22 @@ fn extract_surface_viewport_sequences_geometry_metadata_and_history_match_native
             ),
         );
         assert!(app.picking_extract_faces(), "{label}");
-        let mut view = Viewport::new(ViewKind::Top);
-        view.display_mode = DisplayMode::Shaded;
+        let view_kind = match operation["view"].as_str().unwrap_or("Top") {
+            "Top" => ViewKind::Top,
+            "Bottom" => ViewKind::Bottom,
+            "Front" => ViewKind::Front,
+            "Back" => ViewKind::Back,
+            "Left" => ViewKind::Left,
+            "Right" => ViewKind::Right,
+            other => panic!("{label}: unsupported view {other}"),
+        };
+        let mut view = Viewport::new(view_kind);
+        view.display_mode = match operation["display"].as_str().unwrap_or("Shaded") {
+            "Shaded" => DisplayMode::Shaded,
+            "Ghosted" => DisplayMode::Ghosted,
+            "Wireframe" => DisplayMode::Wireframe,
+            other => panic!("{label}: unsupported display {other}"),
+        };
         let context = egui::Context::default();
         let mut time = 0.;
         frame(
@@ -186,9 +217,13 @@ fn extract_surface_viewport_sequences_geometry_metadata_and_history_match_native
                     let face = &brep.faces()[index];
                     let surface = face.surface();
                     let (u, v) = (surface.domain_u(), surface.domain_v());
+                    let fraction = step["fraction"]
+                        .as_array()
+                        .map(|values| [values[0].as_f64().unwrap(), values[1].as_f64().unwrap()])
+                        .unwrap_or([0.3, 0.3]);
                     let (u, v) = (
-                        *u.start() + 0.3 * (*u.end() - *u.start()),
-                        *v.start() + 0.3 * (*v.end() - *v.start()),
+                        *u.start() + fraction[0] * (*u.end() - *u.start()),
+                        *v.start() + fraction[1] * (*v.end() - *v.start()),
                     );
                     assert!(
                         face.contains_parameters(u, v, app.document.tolerance())

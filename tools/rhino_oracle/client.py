@@ -6,6 +6,7 @@ import copy
 import json
 import math
 import os
+import re
 import signal
 import shutil
 import subprocess
@@ -113,7 +114,14 @@ class OracleClient:
         self,
         repo_root: str | os.PathLike[str] | None = None,
         launcher: str | os.PathLike[str] | None = None,
+        settings_scheme: str | None = None,
     ) -> None:
+        if settings_scheme is not None and (
+            not isinstance(settings_scheme, str)
+            or re.fullmatch(r"VibocerosOracle[A-Za-z0-9_-]{1,64}", settings_scheme) is None
+        ):
+            raise OracleProtocolError("invalid private Rhino settings scheme")
+        self.settings_scheme = settings_scheme
         self.repo_root = (
             Path(repo_root).resolve()
             if repo_root is not None
@@ -519,6 +527,8 @@ class OracleClient:
                 "/nosplash",
                 f"/runscript={macro}",
             ]
+            if self.settings_scheme is not None:
+                command.insert(3, "/scheme=" + self.settings_scheme)
             existing_pids = _rhino_process_ids()
             launch_timeout = min(timeout, 60.0)
             completed = _run_logged(

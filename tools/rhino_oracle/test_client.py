@@ -36,6 +36,28 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_private_settings_scheme_names_are_bounded_and_cannot_inject_arguments(self):
+        self.assertEqual(OracleClient(settings_scheme='VibocerosOracleCopy_1').settings_scheme,'VibocerosOracleCopy_1')
+        self.assertIsNone(OracleClient().settings_scheme)
+        for invalid in ['Default','',True,'VibocerosOracle','VibocerosOracle../Default',
+                'VibocerosOracleCopy /runscript=unsafe','VibocerosOracle'+'a'*65]:
+            with self.subTest(invalid=invalid),self.assertRaises(OracleProtocolError):OracleClient(settings_scheme=invalid)
+
+    @unittest.skipUnless(Path('/proc').is_dir(), 'startup process check uses procfs')
+    def test_private_settings_scheme_is_one_explicit_launcher_argument(self):
+        client=OracleClient(launcher='/bin/true',settings_scheme='VibocerosOracleCopy_1')
+        completed=subprocess.CompletedProcess(['true'],0,stdout='',stderr='')
+        with (patch('tools.rhino_oracle.client.RHINO_STARTUP_GRACE_SECONDS',0.0),
+              patch('tools.rhino_oracle.client._rhino_process_ids',return_value=set()),
+              patch('tools.rhino_oracle.client._ui_fallback_enabled',return_value=False),
+              patch('tools.rhino_oracle.client._run_logged',return_value=completed) as launch,
+              patch.dict(os.environ,{'DISPLAY':':101','VIBOCEROS_ORACLE_HEADLESS':':101'}),
+              self.assertRaisesRegex(OracleError,'Rhino process never appeared')):
+            client.run_rhino(dict(protocol_version=1,iterations=1,operations=[]),120)
+        arguments=launch.call_args.args[0]
+        self.assertEqual(arguments[3],'/scheme=VibocerosOracleCopy_1')
+        self.assertTrue(arguments[4].startswith('/runscript='))
+
     @unittest.skipUnless(sys.platform.startswith("linux"), "Xvfb is required on Linux")
     def test_direct_rhino_api_rejects_visible_display_before_launch(self):
         client = OracleClient(launcher="/bin/true")

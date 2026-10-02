@@ -99,10 +99,11 @@ class OwnedBrepCommand:
             for reference in references:reference.Dispose()
             context.Dispose()
 
-    def verify_face_pick(self, source, face_index, view, viewport, x, y):
-        """Verify an owned shaded object hit and intersection with its face.
+    def verify_face_pick(self, source, face_index, view, viewport, x, y, shaded=True):
+        """Verify a ray/face intersection, optionally with a shaded object hit.
 
         This verifies the input location; a command can still reject that face.
+        Wireframe can certify the ray without requiring cached render meshes.
         No selection or geometry is changed, and every reference is released.
         """
         Rhino,System=self.Rhino,self.System
@@ -110,20 +111,22 @@ class OwnedBrepCommand:
         if obj is None:raise ValueError('owned face pick source missing')
         if type(face_index) is not int or not 0<=face_index<obj.Geometry.Faces.Count:
             raise ValueError('owned face pick index outside source')
-        context=Rhino.Input.Custom.PickContext();resources=[context]
+        resources=[]
         try:
-            context.View=view;context.PickStyle=Rhino.Input.Custom.PickStyle.PointPick
-            context.PickMode=Rhino.Input.Custom.PickMode.Shaded
-            context.PickGroupsEnabled=False;context.SubObjectSelectionEnabled=True
             ok,line=viewport.GetFrustumLine(x,y)
             if not ok:raise ValueError('owned face pick ray unavailable')
-            context.PickLine=line
-            context.SetPickTransform(viewport.GetPickTransform(System.Drawing.Rectangle(x-4,y-4,8,8)))
-            context.UpdateClippingPlanes()
-            references=list(self.doc.Objects.PickObjects(context) or [])
-            resources.extend(references)
-            if not any(reference.ObjectId==obj.Id for reference in references):
-                raise ValueError('public shaded picker missed owned face source')
+            if shaded:
+                context=Rhino.Input.Custom.PickContext();resources.append(context)
+                context.View=view;context.PickStyle=Rhino.Input.Custom.PickStyle.PointPick
+                context.PickMode=Rhino.Input.Custom.PickMode.Shaded
+                context.PickGroupsEnabled=False;context.SubObjectSelectionEnabled=True
+                context.PickLine=line
+                context.SetPickTransform(viewport.GetPickTransform(System.Drawing.Rectangle(x-4,y-4,8,8)))
+                context.UpdateClippingPlanes()
+                references=list(self.doc.Objects.PickObjects(context) or [])
+                resources.extend(references)
+                if not any(reference.ObjectId==obj.Id for reference in references):
+                    raise ValueError('public shaded picker missed owned face source')
             ray=Rhino.Geometry.LineCurve(line)
             resources.append(ray)
             ok,curves,points=Rhino.Geometry.Intersect.Intersection.CurveBrepFace(

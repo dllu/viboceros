@@ -4,7 +4,7 @@ import re
 
 def validate(operation):
     required={'op','id','sources','components','copy','output_current','source_layer','undo_redo'}
-    optional={'pick','steps','finish'}
+    optional={'pick','steps','finish','view','display'}
     if (not isinstance(operation,dict) or set(operation)-optional!=required
             or operation.get('op')!='extract_srf_command'
             or not isinstance(operation.get('id'),str)
@@ -21,6 +21,9 @@ def validate(operation):
         if not operation['components'] or set(operation)&optional:
             raise ValueError('ExtractSrf preselection requires face targets only')
     elif operation.get('pick')=='sequence':
+        if (operation.get('view','Top') not in ('Top','Bottom','Front','Back','Left','Right')
+                or operation.get('display','Shaded') not in ('Shaded','Ghosted','Wireframe')):
+            raise ValueError('invalid ExtractSrf viewport')
         steps=operation.get('steps')
         if (operation['components'] or not isinstance(steps,list) or not 1<=len(steps)<=64
                 or operation.get('finish') not in ('Enter','Cancel')):
@@ -28,11 +31,16 @@ def validate(operation):
         for index,step in enumerate(steps):
             if not isinstance(step,dict):raise ValueError('invalid ExtractSrf mouse target')
             if step.get('kind')=='click':
-                if (set(step)!={'kind','component','modifiers'} or step['modifiers'] not in ('plain','ctrl','shift','sub')
+                if (set(step)-{'fraction'}!={'kind','component','modifiers'} or step['modifiers'] not in ('plain','ctrl','shift','sub')
                         or not isinstance(step['component'],list) or len(step['component'])!=2
                         or any(type(i) is not int or i<0 for i in step['component'])
                         or step['component'][0]>=len(operation['sources'])):
                     raise ValueError('invalid ExtractSrf mouse target')
+                if 'fraction' in step:
+                    fraction=step['fraction']
+                    if (not isinstance(fraction,list) or len(fraction)!=2
+                            or any(type(v) not in (int,float) or not 0<v<1 for v in fraction)):
+                        raise ValueError('invalid ExtractSrf parameter fraction')
             elif step.get('kind')=='window':
                 corners=step.get('corners')
                 if (set(step)!={'kind','corners','modifiers'} or step['modifiers'] not in ('plain','ctrl','shift','sub')
@@ -86,20 +94,22 @@ def run(operation,tolerance,host):
                     source,index=step['component'];obj=doc.Objects.FindId(fixture.ids[source])
                     if index>=obj.Geometry.Faces.Count:raise ValueError('ExtractSrf mouse face outside source')
                     face=obj.Geometry.Faces[index]
+                    fractions=[step['fraction']] if 'fraction' in step else [(u,v) for u in (.3,.5,.7) for v in (.3,.5,.7)]
                     uv=next(((face.Domain(0).ParameterAt(u),face.Domain(1).ParameterAt(v))
-                        for u in (.3,.5,.7) for v in (.3,.5,.7)
+                        for u,v in fractions
                         if str(face.IsPointOnFace(face.Domain(0).ParameterAt(u),face.Domain(1).ParameterAt(v)))=='Interior'),None)
                     if uv is None:raise ValueError('ExtractSrf face has no certified interior pick')
                     points.append([face.PointAt(*uv)])
-                Rhino.RhinoApp.RunScript('_SetView _World _Top',False);Rhino.RhinoApp.RunScript('_Zoom _Extents',False)
-                mode=Rhino.Display.DisplayModeDescription.FindByName('Shaded')
-                if mode is None:raise ValueError('shaded mode unavailable for extraction')
+                Rhino.RhinoApp.RunScript('_SetView _World _'+operation.get('view','Top'),False);Rhino.RhinoApp.RunScript('_Zoom _Extents',False)
+                mode=Rhino.Display.DisplayModeDescription.FindByName(operation.get('display','Shaded'))
+                if mode is None:raise ValueError('display mode unavailable for extraction')
                 doc.Views.ActiveView.ActiveViewport.DisplayMode=mode;doc.Views.Redraw()
                 view=doc.Views.ActiveView;viewport=view.ActiveViewport
                 for step,point in zip(steps,points):
                     if step['kind']!='click':continue
                     pixel=viewport.WorldToClient(point[0]);source,index=step['component']
-                    fixture.verify_face_pick(source,index,view,viewport,int(pixel.X),int(pixel.Y))
+                    fixture.verify_face_pick(source,index,view,viewport,int(pixel.X),int(pixel.Y),
+                        shaded=operation.get('display','Shaded')!='Wireframe')
                     host['_record_progress']('verified extraction face frustum %d:%d viewport=%s point=%d,%d' %
                         (source,index,str(viewport.Id),int(pixel.X),int(pixel.Y)))
             before=fixture.snapshot();components=fixture.components()

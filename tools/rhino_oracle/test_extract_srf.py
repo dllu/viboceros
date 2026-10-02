@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import Mock
 
 from .client import _owned_artifact_request
-from .extract_srf_cases import request,picking_request
+from .extract_srf_cases import request,picking_request,curved_picking_request
 from .extract_srf_probe import validate
 from .extract_srf_capture import capture,validate_request
 from .extract_srf_replay import canonical_response
@@ -41,6 +41,33 @@ class ExtractSrfTests(unittest.TestCase):
             with self.assertRaises(ValueError):validate_request(invalid)
             invalid=copy.deepcopy(prepared);invalid['operations'][1]['id']=invalid['operations'][0]['id']
             with self.assertRaises(ValueError):validate_request(invalid)
+
+    def test_saved_curved_mouse_inputs_prescribe_owned_views_and_interior_parameters(self):
+        saved=json.loads(Path(__file__).with_name('fixtures').joinpath('extract_srf_curved_picking.json').read_text())
+        self.assertEqual(saved,curved_picking_request())
+        self.assertEqual(len(saved['operations']),38)
+        with _owned_artifact_request(saved) as prepared:validate_request(prepared)
+        self.assertEqual({op['view'] for op in saved['operations']},{'Top','Bottom','Front','Back','Left','Right'})
+        self.assertEqual({op['display'] for op in saved['operations']},{'Shaded','Ghosted','Wireframe'})
+        self.assertTrue(all(not op['components'] and op['pick']=='sequence' for op in saved['operations']))
+        self.assertNotIn('artifact_path',json.dumps(saved))
+
+    def test_view_display_and_parameter_fractions_reject_unbounded_input(self):
+        with _owned_artifact_request(curved_picking_request()) as prepared:
+            operation=prepared['operations'][0]
+            for key,value in [('view','Perspective'),('view',None),('view',[]),
+                    ('display','Rendered'),('display',False),('display',{})]:
+                invalid=copy.deepcopy(operation);invalid[key]=value
+                with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(invalid)
+            for fraction in [None,[],[.5],[.5,.5,.5],[False,.5],[0,.5],[1,.5],[-1,.5],
+                    [float('nan'),.5],[.5,float('inf')],['0.5',.5],(.5,.5)]:
+                invalid=copy.deepcopy(operation);invalid['steps'][0]['fraction']=fraction
+                with self.subTest(fraction=fraction),self.assertRaises(ValueError):validate(invalid)
+        with _owned_artifact_request(request()) as prepared:
+            operation=prepared['operations'][0]
+            for key,value in [('view','Top'),('display','Shaded')]:
+                invalid=copy.deepcopy(operation);invalid[key]=value
+                with self.subTest(key=key),self.assertRaises(ValueError):validate(invalid)
 
     def test_incomplete_exports_never_reach_rhino(self):
         client=Mock();client.run_viboceros.return_value=dict(protocol_version=1,engine='viboceros',iterations=1,results=[])

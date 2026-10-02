@@ -73,11 +73,28 @@ class OwnedBrepFacePickTests(unittest.TestCase):
             with self.subTest(failure=failure):
                 fixture,viewport,context,references,ray,overlap,intersection,face=self.fixture(**{failure:False})
                 with self.assertRaises(ValueError):fixture.verify_face_pick(0,0,'view',viewport,40,60)
-                context.Dispose.assert_called_once()
+                if failure=='available':context.Dispose.assert_not_called()
+                else:context.Dispose.assert_called_once()
                 if failure!='available':
                     for reference in references:reference.Dispose.assert_called_once()
                 if failure in ('success','points'):
                     ray.Dispose.assert_called_once();overlap.Dispose.assert_called_once()
+
+    def test_wireframe_ray_certification_does_not_depend_on_render_mesh_picks(self):
+        fixture,viewport,context,references,ray,overlap,intersection,face=self.fixture(owned=False)
+        fixture.verify_face_pick(0,0,'view',viewport,40,60,shaded=False)
+        intersection.assert_called_once_with(ray,face,.002)
+        fixture.doc.Objects.PickObjects.assert_not_called()
+        context.Dispose.assert_not_called()
+        for resource in [ray,overlap]:resource.Dispose.assert_called_once()
+        for reference in references:reference.Dispose.assert_not_called()
+        for failure in ('available','success','points'):
+            fixture,viewport,context,references,ray,overlap,intersection,face=self.fixture(**{failure:False})
+            with self.subTest(failure=failure),self.assertRaises(ValueError):
+                fixture.verify_face_pick(0,0,'view',viewport,40,60,shaded=False)
+            fixture.doc.Objects.PickObjects.assert_not_called()
+            if failure!='available':
+                ray.Dispose.assert_called_once();overlap.Dispose.assert_called_once()
 
     def test_missing_source_and_invalid_indices_fail_before_allocating_context(self):
         for index in (-1,1,True):

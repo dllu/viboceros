@@ -84,4 +84,53 @@ def picking_request():
     return dict(protocol_version=1,iterations=1,operations=operations)
 
 
+def curved_picking_request():
+    """Curved inputs, parameter fractions and views fixed before native capture."""
+    parents=geometry_request()['operations']
+    def part(name):return copy.deepcopy(next(op for op in parents if op['id']=='standard-'+name+'-pre-1')['sources'][0]['brep'])
+    disjoint=next(op for op in request()['operations'] if op['id']=='disjoint-first-copy-0-current-0')
+    sheet=copy.deepcopy(disjoint['sources'][0]['brep']['source']['parts'][1])
+    def compound(source):return dict(brep=dict(source=dict(type='compound',parts=[source,copy.deepcopy(sheet)])))
+    cylinder,partial=part('cylinder-band'),part('cylinder-partial')
+    signed=part('signed-cubic')
+    sphere=dict(source=dict(type='sphere',radius=3))
+    torus=dict(source=dict(type='torus',radii=[5,1.5]))
+    surface=dict(degree_u=2,degree_v=2,control_point_count_u=3,control_point_count_v=3,
+        knots_u=[0,0,0,10,10,10],knots_v=[0,0,0,10,10,10],control_points=[
+            dict(point=[i*5,j*5,.1*(i*5-5)**2+.15*(j*5-5)**2],weight=1+.2*i+.1*j)
+            for j in range(3) for i in range(3)])
+    warped=dict(source=dict(type='surface_face',surface=surface))
+    cases=[]
+    for view,fraction in [('Front',[.75,.5]),('Back',[.25,.5]),('Left',[.5,.5]),('Right',[.05,.5])]:
+        for display in ('Shaded','Ghosted','Wireframe'):
+            cases.append(('cylinder-'+view+'-'+display,cylinder,view,display,fraction))
+    for view in ('Top','Bottom','Front'):
+        for display in ('Shaded','Ghosted'):
+            # In Front, U=.5 lies on the projected silhouette: rounding to a
+            # native pixel can miss the exact face. Use a visible interior ray.
+            cases.append(('torus-'+view+'-'+display,torus,view,display,[.3 if view=='Front' else .5,.125]))
+        for display in ('Shaded','Wireframe'):
+            cases.append(('sphere-'+view+'-'+display,sphere,view,display,[.25,.75]))
+    for display in ('Shaded','Ghosted'):cases.append(('signed-'+display,signed,'Top',display,[.45,.4]))
+    for view in ('Top','Front'):
+        for display in ('Shaded','Ghosted'):cases.append(('warped-'+view+'-'+display,warped,view,display,[.3,.3]))
+    cases.extend([('partial-Back',partial,'Back','Shaded',[.3,.5]),('partial-Right',partial,'Right','Ghosted',[.3,.5])])
+    operations=[]
+    def operation(name,source,view,display,steps,copying=False):
+        return dict(op='extract_srf_command',id='curved-'+name,sources=[compound(copy.deepcopy(source))],
+            components=[],copy=copying,output_current=copying,source_layer=True,undo_redo=True,
+            pick='sequence',steps=steps,finish='Enter',view=view,display=display)
+    def click(face,fraction,modifier='plain'):
+        return dict(kind='click',component=[0,face],modifiers=modifier,fraction=fraction)
+    for name,source,view,display,fraction in cases:
+        operations.append(operation(name,source,view,display,[click(0,fraction)],display=='Ghosted'))
+    for name,source,fraction in [('torus',torus,[.5,.125]),('sphere',sphere,[.25,.75])]:
+        operations.append(operation(name+'-both',source,'Top','Shaded',[click(0,fraction),click(1,[.3,.3])]))
+        operations.append(operation(name+'-remove',source,'Top','Shaded',[click(0,fraction),click(1,[.3,.3]),click(0,fraction,'ctrl')]))
+    for name,source,view,fraction in [('cylinder',cylinder,'Front',[.75,.5]),('sphere',sphere,'Top',[.25,.75])]:
+        reversed_source=copy.deepcopy(source);reversed_source['reversed']=True
+        operations.append(operation(name+'-reversed',reversed_source,view,'Shaded',[click(0,fraction)]))
+    return dict(protocol_version=1,iterations=1,operations=operations)
+
+
 if __name__=='__main__':print(json.dumps(request(),indent=2))

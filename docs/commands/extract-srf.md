@@ -9,7 +9,8 @@ preselection is also accepted. Picks can span multiple objects; geometry stays
 unchanged while picking. Escape cancels; `None` cancels and clears selection.
 
 Enter `Copy=Yes|No` or `OutputLayer=Input|Current` while selecting, including after
-face preselection. Copy defaults to No and the output layer defaults to Input.
+face preselection. Interactive defaults currently start at Copy=No and
+OutputLayer=Input.
 With Copy=Yes, sources remain unchanged. Otherwise an unextracted remainder
 retains the source identity, attributes, and group memberships; a fully extracted
 source is deleted. Extracted faces inherit source attributes, become selected,
@@ -83,6 +84,27 @@ Rhino's `None` cancels extraction and invokes `SelNone`; our UI follows that
 behavior. Undo/Redo is checked for every completed extraction. Cancelled commands
 leave geometry unchanged and create no extraction history.
 
+The [38 additional physical sequences](../../tools/rhino_oracle/fixtures/extract_srf_curved_picking.json)
+and their [native observations](../../tools/rhino_oracle/observations/extract_srf_curved_picking.json)
+cover these curved inputs. Each source combines the measured face with a separate
+planar face; these are polysurface face tests, not standalone-surface picking tests.
+
+| Input | Views | Display modes |
+| --- | --- | --- |
+| Cylinder band | Front, Back, Left, Right | Shaded, Ghosted, Wireframe |
+| Torus | Top, Bottom, Front | Shaded, Ghosted |
+| Sphere | Top, Bottom, Front | Shaded, Wireframe |
+| Warped rational patch | Top, Front | Shaded, Ghosted |
+| Signed rational trim on a planar face | Top | Shaded, Ghosted |
+| Partial cylinder | Back, Right | Shaded in Back; Ghosted in Right |
+
+Further sequences select both faces, remove the curved face with Ctrl, and
+extract reversed cylinder and sphere faces. Both Copy modes and output layers
+are exercised; every extraction includes Undo/Redo. Explicit parameter fractions
+prescribe click locations before capture. Fractions must lie inside the face's
+trim and yield a certified native pixel ray through that face. Silhouette targets
+that miss after pixel rounding are rejected before clicking.
+
 The physical cases replay through a headless application test. Independent input
 recipes construct the source document. Press, move, and release events go through
 egui and the viewport component picker, then through the application's command
@@ -97,13 +119,17 @@ exposes `ExtractFixture::prepare_document` and
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.extract_srf_capture tools/rhino_oracle/fixtures/extract_srf_picking.json --timeout 300
 cargo test -p viboceros extract_surface_viewport_sequences --bin viboceros
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.extract_srf_capture tools/rhino_oracle/fixtures/extract_srf_curved_picking.json --timeout 300
+cargo test -p viboceros extract_surface_curved_viewport_sequences --bin viboceros
 ```
 
 All live captures run in a private Xvfb display and accept input only in the
-newly owned Rhino window. Face-click locations are checked through public shaded
-pick-frustum and face-intersection APIs before clicking. Mouse/key handlers and
+newly owned Rhino window. All face-click locations are checked through the public
+face-intersection API before clicking. Shaded and Ghosted also require a public
+shaded-object pick; Wireframe uses the certified ray without requiring cached
+render meshes. These checks certify input locations; command selection is measured
+from the actual delivered mouse events. Mouse/key handlers and
 pressed modifiers are released on failures; incomplete sequences are rejected.
 
-The physical matrix covers planar sources in a shaded Top view. Other views,
-curved-face mouse picking, native SubD editing, shared `RememberCopyOptions`
-memory, and every imported trim representation remain unverified by these cases.
+Perspective picking, native SubD editing, remembered Copy/output-layer defaults,
+and every imported trim representation remain unverified by these cases.
