@@ -1,6 +1,9 @@
 //! Exact boundary restoration and interior-hole removal.
 use super::*;
 
+mod boundary;
+mod selection;
+pub use boundary::BrepBoundaryRestoration;
 #[cfg(test)]
 mod tests;
 

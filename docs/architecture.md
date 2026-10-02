@@ -238,6 +238,13 @@ then uses the same read-only preparation for postselection rectangles and its
 command history group for immediate edits. Component selection never selects a
 parent object or restores itself through Undo.
 
+`brep/untrim/{selection,boundary}` classifies exact native UV trims and restores
+connected outer runs or joined interior holes. `command/untrim_edge` holds shared
+source snapshots and stages geometry/retained objects before an atomic commit.
+The shared `app/untrim_holes` prompt also drives Untrim, clearing its ignored
+preselection and using independent remembered AllSimilar/KeepTrimObjects options.
+See [Untrim coverage and topology limits](commands/untrim.md).
+
 `brep/unjoin` splits edge uses and local vertex fans with index tables and
 union/find, then validates exact connected components. `command/unjoin_edge`
 stages complete multi-object edits and metadata inheritance. `app/unjoin_edge`

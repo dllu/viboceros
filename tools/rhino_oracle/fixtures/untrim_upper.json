@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "untrim_command",
+      "id": "tube-upper-hole-similar-0-keep-0-mouse",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          5
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true,
+      "view": "oblique"
+    },
+    {
+      "op": "untrim_command",
+      "id": "tube-upper-hole-similar-0-keep-1-mouse",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          5
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": true,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true,
+      "view": "oblique"
+    },
+    {
+      "op": "untrim_command",
+      "id": "tube-upper-hole-similar-1-keep-0-mouse",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          5
+        ]
+      ],
+      "all_similar": true,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true,
+      "view": "oblique"
+    },
+    {
+      "op": "untrim_command",
+      "id": "tube-upper-hole-similar-1-keep-1-mouse",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          5
+        ]
+      ],
+      "all_similar": true,
+      "keep_trim_objects": true,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true,
+      "view": "oblique"
+    }
+  ]
+}

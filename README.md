@@ -67,6 +67,10 @@ interchange are available; STEP imports meshes or supported native planar and
 NURBS B-reps and exports faceted shells or supported native B-reps. Full Rhino
 compatibility is still in progress.
 
+[`Untrim`](docs/commands/untrim.md) restores picked exterior trim runs or holes,
+with immediate edits, remembered options, retained trim objects and local Undo.
+Partial exterior results preserve source edge order; numeric component index
+parity and joined exterior restoration remain unfinished.
 [`UntrimAll`](docs/commands/untrim-all.md) removes all trims from standalone
 surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exterior
 boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.

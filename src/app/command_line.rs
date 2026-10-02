@@ -176,8 +176,8 @@ impl VibocerosApp {
                         "IntersectTwoSets"
                     } else if let Some(prompt) = &self.edge_prompt {
                         prompt.name()
-                    } else if self.hole_prompt.is_some() {
-                        "UntrimHoles"
+                    } else if let Some(prompt) = &self.hole_prompt {
+                        prompt.name()
                     } else if self.unjoin_prompt.is_some() {
                         "UnjoinEdge"
                     } else if self.component_selection.has_choices() {

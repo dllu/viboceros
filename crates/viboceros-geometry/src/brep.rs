@@ -47,7 +47,7 @@ mod trim_image;
 mod trim_iso;
 mod trim_region;
 mod untrim;
-pub use untrim::BrepHoleRemoval;
+pub use untrim::{BrepBoundaryRestoration, BrepHoleRemoval};
 mod unjoin;
 mod validate;
 

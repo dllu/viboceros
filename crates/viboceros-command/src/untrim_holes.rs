@@ -332,7 +332,7 @@ impl UntrimHolesSelection {
     }
 }
 
-fn retained_hole_geometry(
+pub(super) fn retained_hole_geometry(
     brep: &Brep,
     face_index: usize,
     loop_index: usize,

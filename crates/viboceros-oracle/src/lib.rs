@@ -94,6 +94,7 @@ mod undo_selection;
 mod unjoin_edge_command;
 mod unjoin_edges;
 mod untrim;
+mod untrim_edge;
 mod untrim_holes;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
@@ -194,6 +195,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: unjoin_edges::UnjoinEdgesFixture,
+    },
+    UntrimCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: untrim_edge::UntrimEdgeFixture,
     },
     UntrimHolesCommand {
         id: String,
@@ -2049,6 +2055,7 @@ impl Operation {
             | Self::BrepRemoveHoles { id, .. }
             | Self::BrepUnjoinEdges { id, .. }
             | Self::UnjoinEdgeCommand { id, .. }
+            | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::MergeEdgeCommand { id, .. }
@@ -2429,6 +2436,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::BrepRemoveHoles { .. }
                 | Operation::BrepUnjoinEdges { .. }
                 | Operation::UnjoinEdgeCommand { .. }
+                | Operation::UntrimCommand { .. }
                 | Operation::UntrimHolesCommand { .. }
         ) && request.iterations != 1
         {
@@ -2470,6 +2478,7 @@ fn execute(
         Operation::UnjoinEdgeCommand { fixture, .. } => {
             unjoin_edge_command::run(fixture, tolerance)?
         }
+        Operation::UntrimCommand { fixture, .. } => untrim_edge::run(fixture, tolerance)?,
         Operation::UntrimHolesCommand { fixture, .. } => untrim_holes::run(fixture, tolerance)?,
         Operation::UntrimAllCommand { fixture, .. } => {
             untrim::run(fixture, tolerance, "UntrimAll")?

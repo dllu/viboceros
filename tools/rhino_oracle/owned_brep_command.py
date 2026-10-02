@@ -1,0 +1,87 @@
+"""Owned B-rep command fixtures and complete native document observations."""
+
+
+class OwnedBrepCommand:
+    def __init__(self, host):
+        self.host=host;self.Rhino=host['Rhino'];self.System=host['System']
+        self.doc=self.Rhino.RhinoDoc.ActiveDoc
+        self.settings=self.Rhino.DocObjects.ObjectEnumeratorSettings()
+        self.settings.NormalObjects=self.settings.HiddenObjects=self.settings.LockedObjects=True
+        self.original=set(obj.Id for obj in self.objects())
+        self.selection=[obj.Id for obj in self.objects() if obj.IsSelected(False)]
+        self.ids=[];self.groups=[];self.owned=[]
+
+    def objects(self): return list(self.doc.Objects.GetObjectList(self.settings))
+
+    def geometry(self, geometry):
+        if isinstance(geometry,self.Rhino.Geometry.Brep):
+            return dict(type='brep',definition=self.host['_interchange_brep_record'](geometry,include_samples=False),untrimmed=[bool(face.IsSurface) for face in geometry.Faces])
+        if isinstance(geometry,self.Rhino.Geometry.Curve):
+            return dict(type='curve',definition=self.host['_nurbs_curve_definition'](geometry))
+        raise ValueError('unexpected component command geometry')
+
+    def setup(self, sources):
+        self.doc.Objects.UnselectAll();constructed=[]
+        for index,source in enumerate(sources):
+            path=source['brep']['artifact_path']
+            if path.startswith('/'):path='Z:'+path.replace('/','\\')
+            model=self.Rhino.FileIO.File3dm.Read(path)
+            if model is None:raise ValueError('cannot read owned component source')
+            try:
+                entries=list(model.Objects)
+                if len(entries)!=1:raise ValueError('component source requires one object')
+                geometry=entries[0].Geometry.Duplicate()
+            finally:model.Dispose()
+            self.owned.append(geometry)
+            if not isinstance(geometry,self.Rhino.Geometry.Brep) or not geometry.IsValid:
+                raise ValueError('invalid component command B-rep')
+            constructed.append(self.geometry(geometry))
+            attributes=self.Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.Name='source-%d'%index
+                attributes.ObjectColor=self.System.Drawing.Color.FromArgb(10+index,30,50)
+                attributes.ColorSource=self.Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                key=self.doc.Objects.AddBrep(geometry,attributes,None,False,False)
+            finally:attributes.Dispose()
+            if key==self.System.Guid.Empty:raise ValueError('component source insertion failed')
+            self.ids.append(key)
+            group=self.doc.Groups.Add('Viboceros component '+str(self.System.Guid.NewGuid()),[key])
+            if group<0:raise ValueError('component source grouping failed')
+            self.groups.append(group)
+        return constructed
+
+    def snapshot(self):
+        result=[]
+        for obj in sorted((obj for obj in self.objects() if obj.Id not in self.original),key=lambda obj:obj.RuntimeSerialNumber):
+            attributes=obj.Attributes
+            result.append(dict(source=self.ids.index(obj.Id) if obj.Id in self.ids else None,selected=bool(obj.IsSelected(False)),
+                name=attributes.Name,color=[int(attributes.ObjectColor.R),int(attributes.ObjectColor.G),int(attributes.ObjectColor.B)],
+                color_source=str(attributes.ColorSource),current_layer=attributes.LayerIndex==self.doc.Layers.CurrentLayerIndex,
+                groups=sorted(self.groups.index(group) for group in (attributes.GetGroupList() or []) if group in self.groups),geometry=self.geometry(obj.Geometry)))
+        return result
+
+    def components(self):
+        kinds={'BrepEdge':'edge','BrepFace':'face'};result=[]
+        for source,key in enumerate(self.ids):
+            obj=self.doc.Objects.FindId(key)
+            if obj is None:continue
+            for component in (obj.GetSelectedSubObjects() or []):
+                result.append([source,kinds[str(component.ComponentIndexType)],int(component.Index)])
+        return sorted(result)
+
+    def __enter__(self):return self
+
+    def __exit__(self, *exception):
+        errors=[]
+        def cleanup(action):
+            try:action()
+            except Exception as error:errors.append(str(error))
+        cleanup(lambda:self.Rhino.RhinoApp.RunScript('!',False))
+        created=[]
+        cleanup(lambda:created.extend(obj for obj in self.objects() if obj.Id not in self.original))
+        for obj in created:cleanup(lambda obj=obj:self.doc.Objects.Delete(obj.Id,True))
+        for group in self.groups:cleanup(lambda group=group:self.doc.Groups.Delete(group))
+        cleanup(self.doc.Objects.UnselectAll)
+        for key in self.selection:cleanup(lambda key=key:self.doc.Objects.Select(key))
+        for geometry in reversed(self.owned):cleanup(geometry.Dispose)
+        if errors:raise ValueError('component command cleanup failed: '+str(errors))

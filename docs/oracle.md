@@ -2327,6 +2327,27 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_history.json tools/rhino_oracle/observations/untrim_holes_history.json --timeout 300
 ```
 
+## Picked boundary restoration
+
+General [Untrim](commands/untrim.md) has 105 saved private-Xvfb cases:
+71 preselection/mouse cases, six partial exterior variants, four opposite tube
+opening picks, and 24 local Undo/Enter/Escape sequences. All sources are exported
+independently before Rhino starts. The driver gates inputs on public command
+lifecycle events and records complete per-click and per-Undo geometry.
+
+Replay retains control nets, knots, scalar intervals, face sense, vertex records,
+UV trims, metadata and the complete incidence graph. Partial edits retain Rust
+source edge order, which differs from Rhino's allocation. Their spatial edge
+indices are compared through an explicit bijection by trim traversal; numeric
+component index parity remains unfinished. Complete restoration cases additionally
+assert native table order in Rust tests. History captures are split into bounded
+owned jobs, and each finished batch is saved before the next begins.
+
+```sh
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_components.json tools/rhino_oracle/observations/untrim_components.json
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_history.json tools/rhino_oracle/observations/untrim_history.json
+```
+
 ## Joined edge separation
 
 `brep_unjoin_edges` compares the public geometry API on independently built,

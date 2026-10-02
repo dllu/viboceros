@@ -1,4 +1,5 @@
 use super::*;
+use crate::Polyline3;
 
 #[test]
 fn selected_hole_removal_preserves_outer_geometry_and_discards_unused_topology() {
@@ -525,4 +526,208 @@ fn closed_surface_hole_survives_restoration_with_shared_seam_and_native_interval
             .contains_parameters(3.5, 1.5, Tolerance::DEFAULT)
             .unwrap()
     );
+}
+
+#[test]
+fn untrim_selection_separates_opposite_runs_and_wraps_connected_corners() {
+    for (bounds, pick, expected) in [
+        ([[2., 8.], [0., 10.]], 1, vec![1]),
+        ([[0., 8.], [0., 8.]], 1, vec![1, 2]),
+        ([[2., 10.], [2., 10.]], 3, vec![0, 3]),
+        ([[2., 8.], [2., 8.]], 2, vec![0, 1, 2, 3]),
+    ] {
+        let source = Brep::try_rectangular_surface_face(
+            surface(),
+            bounds[0][0]..=bounds[0][1],
+            bounds[1][0]..=bounds[1][1],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let before = source.clone();
+        assert_eq!(
+            source.untrim_boundary_trims(0, 0, pick, false).unwrap(),
+            expected.iter().map(|&trim| (0, trim)).collect::<Vec<_>>()
+        );
+        let all = source.untrim_boundary_trims(0, 0, pick, true).unwrap();
+        assert_eq!(all, (0..4).map(|trim| (0, trim)).collect::<Vec<_>>());
+        assert_eq!(source, before);
+    }
+}
+
+#[test]
+fn untrim_selection_uses_native_uv_not_curve_intervals_or_cached_iso() {
+    let surface = surface().try_reparameterized(2.0..=4., -3.0..=5.).unwrap();
+    let mut source =
+        Brep::try_rectangular_surface_face(surface, 2.4..=3.6, -3.0..=5., Tolerance::DEFAULT)
+            .unwrap();
+    for trim in &mut source.faces[0].loops[0].trims {
+        trim.iso = SurfaceIso::NotIso;
+        let domain = trim.curve.domain();
+        let knots = trim
+            .curve
+            .knots()
+            .iter()
+            .map(|&knot| -10. + 40. * (knot - domain.start()) / (domain.end() - domain.start()))
+            .collect();
+        trim.curve = NurbsCurve2::try_new_rational(
+            trim.curve.degree(),
+            trim.curve.control_points().to_vec(),
+            knots,
+        )
+        .unwrap();
+    }
+    assert_eq!(
+        source.untrim_boundary_trims(0, 0, 0, true).unwrap(),
+        (0..4).map(|trim| (0, trim)).collect::<Vec<_>>()
+    );
+    assert_eq!(
+        source.untrim_boundary_trims(0, 0, 2, false).unwrap(),
+        (0..4).map(|trim| (0, trim)).collect::<Vec<_>>()
+    );
+    assert_eq!(
+        source.untrim_boundary_trims(0, 0, 1, true).unwrap(),
+        (0..4).map(|trim| (0, trim)).collect::<Vec<_>>()
+    );
+    assert_eq!(
+        source.untrim_boundary_trims(0, 0, 3, false).unwrap(),
+        vec![(0, 3)]
+    );
+}
+
+#[test]
+fn untrim_selection_keeps_outer_and_hole_scopes_separate_and_checks_all_indices() {
+    let rectangle = |a, b| {
+        Polyline3::try_new(
+            vec![
+                point(a, a),
+                point(b, a),
+                point(b, b),
+                point(a, b),
+                point(a, a),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_native_nurbs()
+        .unwrap()
+    };
+    let source = Brep::try_planar_face_with_holes(
+        &rectangle(1., 9.),
+        &[rectangle(3., 5.), rectangle(6., 8.)],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    source.validate(Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        source.untrim_boundary_trims(0, 0, 0, true).unwrap(),
+        vec![(0, 0)]
+    );
+    assert_eq!(
+        source.untrim_boundary_trims(0, 1, 0, false).unwrap(),
+        vec![(1, 0)]
+    );
+    assert_eq!(
+        source.untrim_boundary_trims(0, 2, 0, true).unwrap(),
+        vec![(1, 0), (2, 0)]
+    );
+    let before = source.clone();
+    for (face, ring, trim) in [(1, 0, 0), (0, 3, 0), (0, 0, 1), (0, 1, 1)] {
+        assert!(
+            source
+                .untrim_boundary_trims(face, ring, trim, true)
+                .is_err()
+        );
+        assert_eq!(source, before);
+    }
+}
+
+#[test]
+fn picked_outer_runs_restore_exact_natural_paths_and_preserve_retained_fragments() {
+    for (bounds, pick, area, partial) in [
+        ([[2., 8.], [0., 10.]], 1, 80., true),
+        ([[2., 8.], [0., 10.]], 3, 80., true),
+        ([[0., 10.], [2., 8.]], 0, 80., true),
+        ([[0., 10.], [2., 8.]], 2, 80., true),
+        ([[0., 8.], [0., 8.]], 1, 100., false),
+        ([[2., 10.], [0., 10.]], 3, 100., false),
+    ] {
+        for reversed in [false, true] {
+            let source = Brep::try_rectangular_surface_face_with_orientation(
+                surface(),
+                bounds[0][0]..=bounds[0][1],
+                bounds[1][0]..=bounds[1][1],
+                reversed,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let before = source.clone();
+            let edit = source
+                .try_untrim_boundary(0, 0, pick, false, Tolerance::DEFAULT)
+                .unwrap()
+                .unwrap();
+            let output = edit.brep();
+            output.validate(Tolerance::DEFAULT).unwrap();
+            assert_eq!(source, before);
+            assert_eq!(output.faces[0].surface, source.faces[0].surface);
+            assert_eq!(output.faces[0].reversed, reversed);
+            assert!((output.area(Tolerance::DEFAULT).unwrap() - area).abs() < 1e-9);
+            assert_eq!(edit.removed_boundaries(), &[(0, 0)]);
+            assert!(edit.removed_faces().is_empty());
+            if partial {
+                assert_eq!(output.vertices.len(), 6);
+                assert_eq!(output.edges.len(), 6);
+                for (old, new) in source
+                    .edges
+                    .iter()
+                    .enumerate()
+                    .filter(|(i, _)| *i != pick)
+                    .zip(&output.edges)
+                {
+                    assert_eq!(old.1.curve, new.curve);
+                }
+                assert_eq!(output.vertices[..4], source.vertices);
+                assert!(output.faces[0].loops[0].trims.iter().skip(3).all(|trim| {
+                    source.faces[0].loops[0]
+                        .trims
+                        .iter()
+                        .any(|old| old.curve == trim.curve)
+                }));
+            } else {
+                assert_eq!(output, &source.try_untrim_all(Tolerance::DEFAULT).unwrap());
+            }
+            let all = source
+                .try_untrim_boundary(0, 0, pick, true, Tolerance::DEFAULT)
+                .unwrap()
+                .unwrap();
+            assert_eq!(
+                all.brep(),
+                &source.try_untrim_all(Tolerance::DEFAULT).unwrap()
+            );
+        }
+    }
+}
+
+#[test]
+fn general_untrim_holes_reuses_joined_topology_traversal_and_validates_before_edits() {
+    let source = source(false);
+    let before = source.clone();
+    let edit = source
+        .try_untrim_boundary(0, 1, 0, true, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        edit.brep(),
+        &source
+            .try_remove_all_holes(Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap()
+    );
+    for (face, boundary, trim) in [(1, 0, 0), (0, 2, 0), (0, 1, 4)] {
+        assert!(
+            source
+                .try_untrim_boundary(face, boundary, trim, false, Tolerance::DEFAULT)
+                .is_err()
+        );
+        assert_eq!(source, before);
+    }
 }

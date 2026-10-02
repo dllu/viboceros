@@ -8573,6 +8573,7 @@ mod tests {
     mod single_span_selection;
     mod split_edge;
     mod unjoin_edge;
+    mod untrim_edge;
     mod untrim_holes;
     use super::*;
     use std::collections::BTreeSet;
