@@ -160,6 +160,7 @@ mod set_point;
 mod set_view;
 mod snapping;
 mod toolbar;
+mod untrim_holes;
 mod viewport_layout;
 mod zoom_target;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
@@ -1793,6 +1794,7 @@ pub struct VibocerosApp {
     group_prompt: Option<group_prompt::GroupPrompt>,
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
+    hole_prompt: Option<untrim_holes::HolePrompt>,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
@@ -1878,6 +1880,7 @@ impl VibocerosApp {
             group_prompt: None,
             intersection_prompt: None,
             edge_prompt: None,
+            hole_prompt: None,
             curve_points: Vec::new(),
             points_session: None,
             evaluate_uv_session: None,
@@ -2022,7 +2025,7 @@ impl VibocerosApp {
         if self.try_continue_intersection_prompt(&input) {
             return;
         }
-        if self.try_continue_edge_command(&input) {
+        if self.try_continue_hole_command(&input) || self.try_continue_edge_command(&input) {
             return;
         }
         if self.try_continue_points(&input)
@@ -2062,7 +2065,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_edge_command(&input)
+        if self.try_start_hole_command(&input)
+            || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
             || self.try_start_object_prompt(&input)
@@ -2449,7 +2453,7 @@ impl VibocerosApp {
 
     fn try_execute_command(&mut self, input: &str) -> bool {
         self.selection_menu = None;
-        if self.try_continue_edge_command(input) {
+        if self.try_continue_hole_command(input) || self.try_continue_edge_command(input) {
             return true;
         }
         if self.try_continue_points(input)
@@ -4549,6 +4553,7 @@ impl VibocerosApp {
         self.cancel_group_prompt(announce);
         self.cancel_intersection_prompt(announce);
         self.finish_edge_command(announce);
+        self.finish_hole_command(announce);
         let command = self.active_command.take();
         if matches!(
             command,
@@ -7723,7 +7728,11 @@ impl VibocerosApp {
                 self.run_command();
             }
         } else if let Some(picks) = output.edge_click {
-            self.accept_edge_click(picks);
+            if self.hole_prompt.is_some() {
+                self.accept_hole_edges(picks);
+            } else {
+                self.accept_edge_click(picks);
+            }
         } else if let Some(parameter) = output.edge_parameter {
             self.accept_split_parameter(parameter);
         } else if let Some((object, face)) = output.face_click {
@@ -7898,6 +7907,7 @@ impl VibocerosApp {
             || self.group_prompt.is_some()
             || self.intersection_prompt.is_some()
             || self.edge_prompt.is_some()
+            || self.hole_prompt.is_some()
         {
             self.cancel_interactive_command(true);
         } else {
@@ -7936,6 +7946,7 @@ impl eframe::App for VibocerosApp {
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
+            && self.hole_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && self.document.selected_object_count() > 0
@@ -8083,6 +8094,12 @@ impl eframe::App for VibocerosApp {
             } else {
                 FacePickMode::MeshAndBrepAny
             })
+        } else if self
+            .hole_prompt
+            .as_ref()
+            .is_some_and(untrim_holes::HolePrompt::picking_faces)
+        {
+            Some(FacePickMode::SurfaceAndBrepAny)
         } else if matches!(
             self.active_command,
             Some(
@@ -8116,10 +8133,14 @@ impl eframe::App for VibocerosApp {
             (model_input_active || plane_object_pick)
                 && (self.plane_prompt.is_none() || plane_object_pick)
         });
-        let edge_pick = self
+        let edge_pick = (self
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
+            || self
+                .hole_prompt
+                .as_ref()
+                .is_some_and(untrim_holes::HolePrompt::picking_edges))
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -8139,10 +8160,13 @@ impl eframe::App for VibocerosApp {
             }
             _ => None,
         };
-        let edge_highlights = self
+        let mut edge_highlights = self
             .edge_prompt
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
+        if let Some(prompt) = &self.hole_prompt {
+            edge_highlights.extend(prompt.highlights());
+        }
         let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
@@ -8485,6 +8509,7 @@ mod tests {
     mod set_view;
     mod single_span_selection;
     mod split_edge;
+    mod untrim_holes;
     use super::*;
     use std::collections::BTreeSet;
     use viboceros_document::{ColorRgb, Geometry};
@@ -8548,6 +8573,7 @@ mod tests {
             group_prompt: None,
             intersection_prompt: None,
             edge_prompt: None,
+            hole_prompt: None,
             points_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

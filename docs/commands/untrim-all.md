@@ -32,7 +32,7 @@ Whole polysurfaces are rejected, matching Rhino's whole-object filter.
 Polysurface face subobject selection, hatches, and automatic crease-splitting
 settings remain pending. [UntrimBorder](untrim-border.md) preserves interior
 holes while restoring the exterior. [UntrimHoles](untrim-holes.md) offers typed
-component hole removal; its viewport workflow and `Untrim` remain pending.
+and viewport component hole removal. `Untrim` remains pending.
 
 ## Verification
 

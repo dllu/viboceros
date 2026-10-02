@@ -31,7 +31,7 @@ still create undoable replacements.
 
 Whole polysurfaces are rejected. Face subobject selection, hatches, and automatic
 crease-splitting settings remain pending. [UntrimHoles](untrim-holes.md) offers
-typed component hole removal; its viewport workflow remains pending.
+typed and viewport component hole removal.
 
 ## Verification
 

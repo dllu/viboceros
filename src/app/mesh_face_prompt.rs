@@ -33,6 +33,14 @@ impl VibocerosApp {
             }
             return;
         }
+        if self
+            .hole_prompt
+            .as_ref()
+            .is_some_and(super::untrim_holes::HolePrompt::picking_faces)
+        {
+            self.accept_hole_component(object, viboceros_command::UntrimHolesComponent::Face(face));
+            return;
+        }
         match self.active_command {
             Some(InteractiveCommand::DomainFace) => {
                 self.finish_domain_face_index(face);

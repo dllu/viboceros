@@ -235,6 +235,24 @@ impl UntrimHolesSelection {
         run_command_transaction(document, "UntrimHoles", |document| self.apply(document))
     }
 
+    pub fn commit_in_group(
+        &self,
+        document: &mut Document,
+        group: &mut viboceros_document::HistoryGroup,
+    ) -> Result<UntrimHolesResult, CommandError> {
+        document.begin_group_transaction(group)?;
+        match self.apply(document) {
+            Ok(result) => {
+                document.commit_group_transaction(group)?;
+                Ok(result)
+            }
+            Err(error) => {
+                document.rollback_transaction()?;
+                Err(error)
+            }
+        }
+    }
+
     fn apply(&self, document: &mut Document) -> Result<UntrimHolesResult, CommandError> {
         self.validate_source(document)?;
         let mut result = UntrimHolesResult {
@@ -323,6 +341,44 @@ pub(super) struct UntrimHolesCommand {
 impl Command for UntrimHolesCommand {
     fn name(&self) -> &'static str {
         "UntrimHoles"
+    }
+
+    fn component_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|argument| argument.parse::<ObjectId>().is_ok())
+        {
+            return Ok(None);
+        }
+        let options = parse_options(arguments, self.options.get())?;
+        Ok(Some(ComponentSelectionPrompt {
+            command: self.name(),
+            kind: if options.all {
+                ComponentSelectionKind::BrepFace
+            } else {
+                ComponentSelectionKind::BrepEdge
+            },
+            options: vec![
+                BooleanSelectionOption {
+                    name: "All",
+                    aliases: &[],
+                    value: options.all,
+                },
+                BooleanSelectionOption {
+                    name: "KeepTrimObjects",
+                    aliases: &[],
+                    value: options.keep_trim_objects,
+                },
+            ],
+            numbers: vec![NumberSelectionOption {
+                name: "MaximumEdgeLength",
+                value: options.maximum_edge_length,
+                minimum: 0.,
+            }],
+        }))
     }
 
     fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {

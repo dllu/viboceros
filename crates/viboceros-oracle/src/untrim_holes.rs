@@ -18,6 +18,8 @@ pub struct UntrimHolesFixture {
     source_layer: bool,
     #[serde(default)]
     undo_after: Vec<usize>,
+    #[serde(default)]
+    undo_redo: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -53,7 +55,6 @@ pub(super) fn run(
             .any(|pick| *pick == 0 || *pick > f.components.len())
         || !f.undo_after.windows(2).all(|pair| pair[0] < pair[1])
         || (!f.undo_after.is_empty() && f.pick != Pick::Mouse)
-        || (f.pick == Pick::Preselect && f.components.len() > 1)
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid hole command component sequence",
@@ -96,41 +97,90 @@ pub(super) fn run(
     // Transient component preselection never selects the parent object.
     let before = untrim::snapshot(&document, &ids, &groups)?;
     document.clear_history()?;
-    let mut changed = Vec::new();
+    let mut group = document.begin_history_group("UntrimHoles")?;
+    let preselected = f.components.iter().copied().collect::<BTreeSet<_>>();
+    // Native rejects multiple distinct preselected components before editing.
+    let rejected_preselection = f.pick == Pick::Preselect && preselected.len() > 1;
     for (pick, &(source, component)) in f.components.iter().enumerate() {
-        // Native mouse coordinates are computed on the original source. Until
-        // dynamic component mapping is implemented, reject changed topology
-        // instead of reinterpreting an original index on compacted geometry.
-        if f.pick == Pick::Mouse
-            && document
-                .object(ids[source])
-                .is_none_or(|object| object.geometry() != &source_geometry[source])
-        {
+        let Geometry::Brep(original) = &source_geometry[source] else {
+            unreachable!()
+        };
+        let count = if f.all {
+            original.faces().len()
+        } else {
+            original.edges().len()
+        };
+        if component >= count {
             return Err(ProbeError::FixtureInvariant(
-                "hole mouse replay needs original component topology",
+                "hole component outside source",
             ));
         }
-        let prior = untrim::snapshot(&document, &ids, &groups)?;
-        registry.execute(
-            &mut document,
-            &format!("UntrimHoles {} {component}", ids[source]),
-        )?;
-        let after = untrim::snapshot(&document, &ids, &groups)?;
-        changed.push(prior != after);
-        if f.undo_after.contains(&(pick + 1)) {
-            if changed.pop() == Some(true) {
-                document.undo()?;
-            } else {
-                return Err(ProbeError::FixtureInvariant(
-                    "internal Undo has no accepted edit",
-                ));
-            }
+        if rejected_preselection || (f.pick == Pick::Preselect && pick != 0) {
+            continue;
+        }
+        let Geometry::Brep(current) = document.object(ids[source]).unwrap().geometry() else {
+            unreachable!()
+        };
+        // Mouse fixtures refer to original spatial components. Match the exact
+        // surviving source curve/surface after compaction, never reuse its index.
+        let candidates = if current == original {
+            vec![component]
+        } else if f.all {
+            current
+                .faces()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, face)| {
+                    (face.surface() == original.faces()[component].surface()
+                        && face.is_reversed() == original.faces()[component].is_reversed())
+                    .then_some(index)
+                })
+                .collect::<Vec<_>>()
+        } else {
+            current
+                .edges()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, edge)| {
+                    (edge.curve() == original.edges()[component].curve()).then_some(index)
+                })
+                .collect::<Vec<_>>()
+        };
+        let [index] = candidates.as_slice() else {
+            return Err(ProbeError::FixtureInvariant(
+                "hole mouse component has no unique surviving match",
+            ));
+        };
+        let component = if f.all {
+            viboceros_command::UntrimHolesComponent::Face(*index)
+        } else {
+            viboceros_command::UntrimHolesComponent::Edge(*index)
+        };
+        viboceros_command::UntrimHolesSelection::prepare(
+            &document,
+            ids[source],
+            component,
+            options,
+        )?
+        .commit_in_group(&mut document, &mut group)?;
+        if f.undo_after.contains(&(pick + 1)) && !document.undo_history_group(&mut group)? {
+            return Err(ProbeError::FixtureInvariant(
+                "internal Undo has no accepted edit",
+            ));
         }
     }
-    Ok((
-        json!({"constructed": constructed, "before": before,
-        "after": untrim::snapshot(&document, &ids, &groups)?,
-        "succeeded": f.finish == Finish::Enter}),
-        0,
-    ))
+    let after = untrim::snapshot(&document, &ids, &groups)?;
+    let mut result = json!({"constructed": constructed, "before": before,
+        "after": after, "succeeded": !rejected_preselection && f.finish == Finish::Enter});
+    if f.undo_redo {
+        let tested = before != after;
+        result["history_tested"] = json!(tested);
+        if tested {
+            document.undo()?;
+            result["undo"] = Value::Array(untrim::snapshot(&document, &ids, &groups)?);
+            document.redo()?;
+            result["redo"] = Value::Array(untrim::snapshot(&document, &ids, &groups)?);
+        }
+    }
+    Ok((result, 0))
 }

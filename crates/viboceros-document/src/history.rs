@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use uuid::Uuid;
 
 use super::{Document, DocumentError, Group, GroupId, Layer, LayerId, Object, ObjectId};
 
@@ -9,6 +10,7 @@ pub(super) const HISTORY_LIMIT: usize = 100;
 
 #[derive(Clone, Debug)]
 pub(super) struct HistoryEntry {
+    pub id: Uuid,
     pub label: String,
     pub edits: Vec<Edit>,
     pub object_ids: BTreeSet<ObjectId>,
@@ -18,6 +20,7 @@ pub(super) struct HistoryEntry {
 
 #[derive(Clone, Debug)]
 pub(super) struct PendingTransaction {
+    pub group: Option<Uuid>,
     pub label: String,
     pub edits: Vec<Edit>,
     pub object_ids: BTreeSet<ObjectId>,
@@ -28,11 +31,23 @@ pub(super) struct PendingTransaction {
     pub previous_selection_order_before: Vec<ObjectId>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub(super) struct History {
+    pub version: Uuid,
     pub undo: Vec<HistoryEntry>,
     pub redo: Vec<HistoryEntry>,
     pub active: Option<PendingTransaction>,
+}
+
+impl Default for History {
+    fn default() -> Self {
+        Self {
+            version: Uuid::new_v4(),
+            undo: Vec::new(),
+            redo: Vec::new(),
+            active: None,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

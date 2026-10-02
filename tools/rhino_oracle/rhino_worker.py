@@ -16489,7 +16489,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command") and
+        if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command") and
                 op.get("undo_redo", False) for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))

@@ -4,6 +4,11 @@ use super::*;
 fn actual_component_commands_match_complete_native_geometry_and_object_metadata() {
     for (input, capture, count) in [
         (
+            include_str!("../../../../tools/rhino_oracle/fixtures/untrim_holes_history.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/untrim_holes_history.json"),
+            16,
+        ),
+        (
             include_str!("../../../../tools/rhino_oracle/fixtures/untrim_holes_components.json"),
             include_str!(
                 "../../../../tools/rhino_oracle/observations/untrim_holes_components.json"
@@ -33,7 +38,7 @@ fn actual_component_commands_match_complete_native_geometry_and_object_metadata(
         {
             assert_eq!(actual.id, native["id"]);
             let mut expected = native["value"].clone();
-            for diagnostic in ["events", "history"] {
+            for diagnostic in ["events", "history", "undo_events", "redo_events"] {
                 expected.as_object_mut().unwrap().remove(diagnostic);
             }
             crate::test_json::close(&actual.value, &expected, &actual.id, 1e-9, 0.);
@@ -73,11 +78,12 @@ fn invalid_sequences_and_ambiguous_iterations_are_rejected() {
     .unwrap();
     assert!(run_request(&request).is_err());
 
-    for pick in ["preselect", "mouse"] {
-        let fixture = json!({"sources":[{"brep":{"source":{"type":"solid_tube","radii":[2.,5.],"height":8.}}}],
-            "all":false,"components":[[0,3],[0,3]],"maximum_edge_length":0.,
-            "keep_trim_objects":false,"pick":pick});
-        let fixture: UntrimHolesFixture = serde_json::from_value(fixture).unwrap();
-        assert!(run(&fixture, Tolerance::DEFAULT).is_err());
-    }
+    let mut repeated = json!({"sources":[{"brep":{"source":{"type":"solid_tube","radii":[2.,5.],"height":8.}}}],
+        "all":false,"components":[[0,3],[0,3]],"maximum_edge_length":0.,
+        "keep_trim_objects":false,"pick":"preselect"});
+    let fixture: UntrimHolesFixture = serde_json::from_value(repeated.clone()).unwrap();
+    assert!(run(&fixture, Tolerance::DEFAULT).is_ok());
+    repeated["pick"] = json!("mouse");
+    let fixture: UntrimHolesFixture = serde_json::from_value(repeated).unwrap();
+    assert!(run(&fixture, Tolerance::DEFAULT).is_err());
 }

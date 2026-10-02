@@ -10,6 +10,7 @@ from .untrim_holes_cases import request
 from .untrim_holes_capture import capture
 from .untrim_holes_undo_cases import request as undo_request
 from .untrim_holes_limits_cases import request as limits_request
+from .untrim_holes_history_cases import request as history_request
 from .untrim_replay import replay
 
 
@@ -92,6 +93,7 @@ class UntrimHolesProbeTests(unittest.TestCase):
                         dict(components=[[False, 0]]), dict(components=[[0, 1]] * 65),
                         dict(components=[[0, 3, 1]]), dict(pick="point"), dict(finish="Delete"),
                         dict(id="x _Delete"), dict(source_layer=1), dict(extra=1),
+                        dict(undo_redo=1), dict(undo_redo="Yes"), dict(undo_redo=None),
                         dict(maximum_edge_length=-1), dict(maximum_edge_length=True),
                         dict(maximum_edge_length=math.nan), dict(maximum_edge_length=math.inf),
                         dict(maximum_edge_length=10 ** 400),
@@ -178,6 +180,31 @@ class UntrimHolesProbeTests(unittest.TestCase):
             self.assertEqual(len(source["geometry"]["definition"]["faces"][0]["loops"]),
                 1 if admitted else 2)
             if not admitted: self.assertEqual(value["after"], value["before"])
+
+    def test_native_multiple_picks_share_one_external_undo_and_preselection_rejects_distinct_components(self):
+        root = Path(__file__).parent
+        fixture = json.loads((root / "fixtures/untrim_holes_history.json").read_text())
+        observed = json.loads((root / "observations/untrim_holes_history.json").read_text())
+        self.assertEqual(history_request(), fixture)
+        self.assertEqual(len(observed["results"]), 16)
+        for op, row in zip(fixture["operations"], observed["results"]):
+            self.assertEqual(op["id"], row["id"])
+            value = row["value"]
+            rejected = op["pick"] == "preselect" and len(set(map(tuple, op["components"]))) > 1
+            self.assertEqual(value["succeeded"], not rejected and op["finish"] == "Enter")
+            self.assertEqual(value["history_tested"], not rejected)
+            if rejected:
+                self.assertEqual(value["before"], value["after"])
+                self.assertEqual(value["events"][-1]["result"], "Failure")
+            else:
+                self.assertEqual(value["undo"], value["before"])
+                self.assertEqual(value["redo"], value["after"])
+                self.assertEqual(value["undo_events"][-1]["result"], "Success")
+                self.assertEqual(value["redo_events"][-1]["result"], "Success")
+                if op.get("undo_after"):
+                    self.assertEqual(len(value["after"]), 2)
+                    source = next(obj for obj in value["after"] if obj["source"] == 0)
+                    self.assertEqual(len(source["geometry"]["definition"]["faces"][0]["loops"]), 2)
 
 
 if __name__ == "__main__": unittest.main()

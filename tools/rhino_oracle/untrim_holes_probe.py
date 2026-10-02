@@ -6,12 +6,13 @@ import re
 
 def validate(operation):
     required = {"op", "id", "sources", "all", "components", "maximum_edge_length", "keep_trim_objects", "pick"}
-    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish", "undo_after"} != required
+    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish", "undo_after", "undo_redo"} != required
             or operation.get("op") != "untrim_holes_command"
             or not isinstance(operation.get("id"), str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None
             or type(operation["all"]) is not bool or type(operation["keep_trim_objects"]) is not bool
             or type(operation.get("source_layer", False)) is not bool
+            or type(operation.get("undo_redo", False)) is not bool
             or operation["pick"] not in ("preselect", "mouse")
             or operation.get("finish", "Enter") not in ("Enter", "Cancel")
             or not isinstance(operation["sources"], list) or not 1 <= len(operation["sources"]) <= 8):
@@ -96,6 +97,8 @@ def run(operation, tolerance, host):
     from join_probe import observe_command
     validate(operation)
     Rhino, System = host["Rhino"], host["System"]
+    if operation.get("undo_redo", False) and Rhino.Commands.Command.InCommand():
+        raise ValueError("hole history requires idle execution outside RunPythonScript")
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
@@ -202,8 +205,19 @@ def run(operation, tolerance, host):
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
         if len(history) != 2: raise ValueError("hole history marker missing")
         for event in events: event.pop("objects", None)
-        return dict(constructed=constructed, before=before, after=after,
-            succeeded=succeeded, events=events, history=history[1].strip()), 0
+        result = dict(constructed=constructed, before=before, after=after,
+            succeeded=succeeded, events=events, history=history[1].strip())
+        if operation.get("undo_redo", False):
+            result["history_tested"] = before != after
+            if result["history_tested"]:
+                for command in ("Undo", "Redo"):
+                    ok, state, event = observe_command(Rhino.Commands.Command, command,
+                        lambda command=command: Rhino.RhinoApp.RunScript("_" + command, True), snapshot, lambda: [], True)
+                    if not ok: raise ValueError("hole history command failed: " + command)
+                    result[command.lower()] = snapshot()
+                    for record in event: record.pop("objects", None)
+                    result[command.lower() + "_events"] = event
+        return result, 0
     finally:
         errors = []
         def cleanup(action):

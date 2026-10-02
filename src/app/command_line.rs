@@ -44,6 +44,7 @@ impl VibocerosApp {
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
+            && self.hole_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
     }
@@ -173,6 +174,8 @@ impl VibocerosApp {
                         "IntersectTwoSets"
                     } else if let Some(prompt) = &self.edge_prompt {
                         prompt.name()
+                    } else if self.hole_prompt.is_some() {
+                        "UntrimHoles"
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -240,6 +243,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.edge_prompt {
                                 prompt.hint()
+                            } else if let Some(prompt) = &self.hole_prompt {
+                                prompt.hint()
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -279,6 +284,7 @@ impl VibocerosApp {
                 });
                 if self.set_view_prompt.is_none() {
                     self.show_edge_choices(ui);
+                    self.show_hole_choices(ui);
                 }
                 self.show_set_view_choices(ui);
                 let idle = self.command_line_idle();

@@ -1,4 +1,4 @@
-"""Capture the pending native command using independently exported owned sources."""
+"""Capture native hole commands using independently exported owned sources."""
 import argparse
 import json
 

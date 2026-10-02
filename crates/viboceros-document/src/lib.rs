@@ -6,6 +6,8 @@ mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
 mod groups;
 mod history;
+mod history_group;
+pub use history_group::HistoryGroup;
 mod object_admission;
 mod object_copy;
 mod object_deletion;
@@ -465,6 +467,7 @@ impl Document {
             label
         };
         self.history.active = Some(PendingTransaction {
+            group: None,
             label,
             edits: Vec::new(),
             object_ids: BTreeSet::new(),
@@ -479,6 +482,14 @@ impl Document {
 
     /// Commits the active transaction, returning whether it contained edits.
     pub fn commit_transaction(&mut self) -> Result<bool, DocumentError> {
+        if self
+            .history
+            .active
+            .as_ref()
+            .is_some_and(|transaction| transaction.group.is_some())
+        {
+            return Err(DocumentError::HistoryGroupStale);
+        }
         let transaction = self
             .history
             .active
@@ -495,6 +506,7 @@ impl Document {
             return Ok(false);
         }
         self.push_new_undo(HistoryEntry {
+            id: Uuid::new_v4(),
             label: transaction.label,
             edits: transaction.edits,
             object_ids: transaction.object_ids,
@@ -574,6 +586,7 @@ impl Document {
         let label = entry.label.clone();
         self.update_last_changed_objects(&entry);
         self.history.redo.push(entry);
+        self.history.version = Uuid::new_v4();
         self.prune_selection_after_history_preserving(&unchanged_selection);
         Ok(Some(label))
     }
@@ -1654,6 +1667,7 @@ impl Document {
                 return;
             }
             self.push_new_undo(HistoryEntry {
+                id: Uuid::new_v4(),
                 label: label.to_owned(),
                 edits: vec![edit],
                 object_ids: BTreeSet::from([object_id]),
@@ -1668,6 +1682,7 @@ impl Document {
             return;
         }
         self.push_new_undo(HistoryEntry {
+            id: Uuid::new_v4(),
             label: label.to_owned(),
             edits: vec![edit],
             object_ids,
@@ -1706,6 +1721,7 @@ impl Document {
             self.history.undo.remove(0);
         }
         self.history.undo.push(entry);
+        self.history.version = Uuid::new_v4();
     }
 }
 
@@ -1717,6 +1733,8 @@ impl Default for Document {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum DocumentError {
+    #[error("the incremental command's history changed; finish it and start again")]
+    HistoryGroupStale,
     #[error("invalid user text: {0}")]
     InvalidUserText(&'static str),
 

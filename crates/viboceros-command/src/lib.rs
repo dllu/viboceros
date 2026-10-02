@@ -53,8 +53,12 @@ mod patch_single_face;
 use patch_single_face::PatchSingleFaceCommand;
 mod triangulate_nonplanar_quads;
 use triangulate_nonplanar_quads::TriangulateNonPlanarQuadsCommand;
+mod component_selection;
 mod mesh_to_nurb;
 mod object_selection;
+pub use component_selection::{
+    ComponentSelectionKind, ComponentSelectionPrompt, NumberSelectionOption,
+};
 mod quadrangulate_mesh;
 pub use object_selection::{
     BooleanSelectionMenu, BooleanSelectionOption, ChoiceSelectionOption, ObjectSelectionFilter,
@@ -287,6 +291,14 @@ pub trait Command: Send + Sync {
         &self,
         _arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(None)
+    }
+
+    /// Reads command-owned component filters and options without accepting them.
+    fn component_selection_prompt(
+        &self,
+        _arguments: &[&str],
+    ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
         Ok(None)
     }
 

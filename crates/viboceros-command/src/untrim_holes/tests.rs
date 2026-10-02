@@ -1,5 +1,58 @@
 use super::*;
 
+#[test]
+fn component_prompt_reads_options_without_accepting_them_and_reflects_typed_command_memory() {
+    let registry = CommandRegistry::with_builtins();
+    let staged = registry
+        .component_selection_prompt("_-UntrimHoles All=Yes MaximumEdgeLength=7 KeepTrimObjects=Yes")
+        .unwrap()
+        .unwrap();
+    assert_eq!(staged.kind, ComponentSelectionKind::BrepFace);
+    assert_eq!(staged.numbers[0].value, 7.);
+    assert_eq!(
+        registry
+            .component_selection_prompt("UntrimHoles")
+            .unwrap()
+            .unwrap()
+            .kind,
+        ComponentSelectionKind::BrepEdge
+    );
+    registry
+        .accept_object_selection_input(&staged.command_line())
+        .unwrap();
+    assert_eq!(
+        registry
+            .component_selection_prompt("UntrimHoles")
+            .unwrap()
+            .unwrap(),
+        staged
+    );
+    assert!(
+        registry
+            .component_selection_prompt("UntrimHoles MaximumEdgeLength=-1")
+            .is_err()
+    );
+    assert_eq!(
+        registry
+            .component_selection_prompt("UntrimHoles")
+            .unwrap()
+            .unwrap(),
+        staged
+    );
+    assert!(
+        registry
+            .component_selection_prompt("UntrimHoles 00000000-0000-0000-0000-000000000000 1")
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        registry
+            .component_selection_prompt("Point")
+            .unwrap()
+            .is_none()
+    );
+}
+
 fn tube(document: &mut Document) -> ObjectId {
     let brep = Brep::try_tube(
         CommandContext::default().construction_plane,

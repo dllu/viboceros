@@ -428,7 +428,9 @@ class OracleClient:
             if brep_join_commands or any(op.get("op") in ("brep_join", "merge_edges_command", "merge_edge_command", "split_edge_command", "brep_merge_edge") for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("brep_join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
-            if any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command") for op in request.get("operations", [])):
+            if any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command") or
+                   (op.get("op") == "untrim_holes_command" and op.get("undo_redo", False))
+                   for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("merge_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "split_edge_command" for op in request.get("operations", [])):

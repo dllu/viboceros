@@ -2,7 +2,12 @@
 
 [Command reference](README.md)
 
-The typed command accepts one accessible surface/B-rep component:
+Run `UntrimHoles` to pick accessible surface/B-rep edges in a viewport.
+`All=Yes` switches to face picking, including polysurface faces. Overlapping
+edges offer numbered choices with hover highlighting. The command line and
+small option buttons accept `All`, `MaximumEdgeLength`, and `KeepTrimObjects`;
+bare option names open value subprompts. Enter keeps a subprompt's current value.
+Typed invocation accepts one component:
 
 ```text
 UntrimHoles object-id component-index All=No MaximumEdgeLength=0 KeepTrimObjects=Yes
@@ -34,13 +39,25 @@ component tools. `commit` applies it immediately. Geometry, tolerance, visibilit
 and locking changes invalidate prepared picks before any edit. The source is
 unchanged when preparation or commit fails.
 
-The viewport prompt, option subprompts, component preselection, window selection,
-and grouping multiple accepted picks into native command history remain pending.
-Native Esc keeps accepted edits; the saved cases also cover internal Undo and
-repicking. The oracle replays those component sequences through typed edits and
-document history; these comparisons do not certify a viewport workflow.
-The native replay rejects simultaneous multi-component preselection and mouse
-indices on edited topology until those mappings are implemented.
+Each viewport pick applies immediately. `Undo` during the prompt discards the
+last accepted pick and its retained objects. Enter, Esc, and starting another
+geometry command finish the prompt and keep completed edits. One subsequent
+external Undo/Redo restores the entire command, including ordering and metadata.
+View and CPlane commands preserve the picking session. Other document edits
+invalidate its continuation token, so local Undo cannot reverse a foreign edit.
+`commit_in_group` exposes this behavior through `Document::begin_history_group`.
+No edit transaction remains open while waiting for the next pick.
+
+The 110 saved native cases include 16 multiple-pick and external Undo/Redo
+captures. Multiple distinct preselected components make Rhino return Failure
+without edits; duplicate references to one component are processed once. The
+oracle reproduces those outcomes and matches surviving original components
+after topology compaction by exact curves/surfaces. Ambiguous or missing
+surviving components are rejected. Viewport component preselection and window
+selection remain pending. Rust viewport tests cover postselection, options,
+ambiguity, cancellation, CPlane interaction, and local/external Undo; the native
+captures compare geometry and metadata through the command API, not pixel input
+in Viboceros. Native option changes between accepted picks remain unmeasured.
 
 See [kernel and native evidence](../geometry/remove-holes.md). All live captures
 use private Xvfb displays. Replaying saved observations requires no Rhino GUI:
@@ -48,7 +65,9 @@ use private Xvfb displays. Replaying saved observations requires no Rhino GUI:
 ```sh
 cargo test -p viboceros-command untrim_holes
 cargo test -p viboceros-oracle untrim_holes
+cargo test -p viboceros app::tests::untrim_holes
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_components.json tools/rhino_oracle/observations/untrim_holes_components.json --timeout 300
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_undo.json tools/rhino_oracle/observations/untrim_holes_undo.json --timeout 300
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_limits.json tools/rhino_oracle/observations/untrim_holes_limits.json --timeout 300
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_history.json tools/rhino_oracle/observations/untrim_holes_history.json --timeout 300
 ```

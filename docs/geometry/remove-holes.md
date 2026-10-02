@@ -41,10 +41,10 @@ python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/brep_remove_hol
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/brep_remove_holes.json --absolute-epsilon 1e-9 --relative-epsilon 0 --timeout 300
 ```
 
-These are geometry API comparisons. [Typed UntrimHoles](../commands/untrim-holes.md)
-now supports component edits and retained trim objects. Its viewport workflow
-and history grouping remain under implementation. Harness timings are untimed
-and make no speed claim.
+These are geometry API comparisons. [UntrimHoles](../commands/untrim-holes.md)
+supports typed and viewport component edits, retained trim objects, and grouped
+history. Component preselection and window selection remain pending. Harness
+timings are untimed and make no speed claim.
 
 ## Native command evidence
 
@@ -78,10 +78,17 @@ cancels only the worker's owned private window.
 The [eight Undo recipes](../../tools/rhino_oracle/fixtures/untrim_holes_undo.json)
 and [native capture](../../tools/rhino_oracle/observations/untrim_holes_undo.json)
 also verify restoring the last edit, deleting its retained objects, and repicking
-before Enter or Esc. These records do not certify the pending viewport workflow,
-window selection, external command history grouping, or option changes between
-picks. Reproduce them with independently exported owned sources:
+before Enter or Esc. The [16 history recipes](../../tools/rhino_oracle/fixtures/untrim_holes_history.json)
+and [native capture](../../tools/rhino_oracle/observations/untrim_holes_history.json)
+verify that multiple picks share one external Undo/Redo record, including when
+Esc finishes or local Undo discards the second pick. Multiple distinct
+preselected components return Failure without edits; duplicate references to a
+single component are accepted once. The viewport uses the same prepared edit
+and incremental history API. Component preselection, window selection, and
+native option changes between picks remain pending. Reproduce the captures with
+independently exported owned sources:
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.untrim_holes_capture tools/rhino_oracle/fixtures/untrim_holes_components.json --timeout 300
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.untrim_holes_capture tools/rhino_oracle/fixtures/untrim_holes_history.json --timeout 300
 ```

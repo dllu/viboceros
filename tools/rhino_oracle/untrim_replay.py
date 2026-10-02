@@ -23,7 +23,7 @@ def canonical_response(request, response):
         if row.get("id")!=op["id"]:
             raise OracleProtocolError("untrim operation order mismatch")
         value=row["value"]
-        for field in ("events","history"):value.pop(field,None)
+        for field in ("events","history","undo_events","redo_events"):value.pop(field,None)
         if any(source.get("type")=="box" for source in op["sources"]):
             if op["sources"]!=[dict(type="box")] or value.get("succeeded") is not False:
                 raise OracleProtocolError("expected rejected whole-box selection")
