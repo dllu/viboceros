@@ -103,7 +103,7 @@ pub(super) fn run(
     ))
 }
 
-fn snapshot(
+pub(super) fn snapshot(
     document: &Document,
     ids: &[ObjectId],
     groups: &[viboceros_document::GroupId],
@@ -133,7 +133,10 @@ fn snapshot(
     }))}).collect()
 }
 
-fn geometry_record(geometry: &Geometry, tolerance: Tolerance) -> Result<Value, ProbeError> {
+pub(super) fn geometry_record(
+    geometry: &Geometry,
+    tolerance: Tolerance,
+) -> Result<Value, ProbeError> {
     Ok(match geometry {
         Geometry::Point(point) => json!({"type":"point", "point":point.to_array()}),
         Geometry::NurbsSurface(surface) => {

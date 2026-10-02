@@ -282,6 +282,42 @@ mod tests {
     use super::*;
 
     #[test]
+    fn split_polygon_hole_source_preserves_every_serialized_coefficient() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/brep_remove_holes.json"
+        ))
+        .unwrap();
+        let mut source = request["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|operation| operation["id"] == "hole-all")
+            .unwrap()["source"]
+            .clone();
+        source["splits"] = json!([[1, [1., 2., 3.]]]);
+        let fixture: BrepSourceFixture = serde_json::from_value(source).unwrap();
+        let brep = fixture.build(Tolerance::DEFAULT).unwrap();
+        let artifact = OracleTemporaryFile::new("split-polygon-hole");
+        let result = write_shared_artifact(
+            &Geometry::Brep(brep.clone()),
+            artifact.path.to_str().unwrap(),
+            Tolerance::DEFAULT,
+        );
+        let model = viboceros_io::read_3dm_file(&artifact.path, Tolerance::DEFAULT).unwrap();
+        let viboceros_io::ThreeDmGeometry::Brep(restored) = &model.objects[0].geometry else {
+            panic!("B-rep");
+        };
+        crate::test_json::close(
+            &super::super::brep_interchange::geometry_record(&brep).unwrap(),
+            &super::super::brep_interchange::geometry_record(restored).unwrap(),
+            "split polygon hole roundtrip",
+            2e-12,
+            1e-14,
+        );
+        result.unwrap();
+    }
+
+    #[test]
     fn compound_sources_preserve_part_order_and_sense_and_bound_nesting() {
         let box_source = json!({"source":{"type":"box","min":[0,0,0],"max":[1,1,1]}});
         let source = json!({"type":"compound","parts":[box_source,{

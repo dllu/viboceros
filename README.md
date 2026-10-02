@@ -72,6 +72,8 @@ surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exteri
 boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.
 The [hole-removal geometry API](docs/geometry/remove-holes.md) closes selected
 interior holes and removes joined hole walls while preserving exact source data.
+[`UntrimHoles`](docs/commands/untrim-holes.md) exposes typed face/edge edits with
+retained trim objects; its viewport workflow remains in progress.
 
 ## Build and run
 

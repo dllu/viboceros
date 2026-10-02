@@ -2304,11 +2304,19 @@ absolute epsilon `1e-9` and relative epsilon zero. Selecting one opening of a
 joined through hole removes its wall and closes both openings. Disconnected
 caps are edited independently. Empty and outer-only selections return no result;
 the all-hole overload copies no-hole sources unchanged. This untimed API probe
-does not establish interactive `UntrimHoles` parity. Its component-selection,
-length-filter, retained-object, and history workflows remain under development.
+does not establish interactive `UntrimHoles` parity. The
+[typed component command](commands/untrim-holes.md) now matches 94 native
+cases: 44 face/edge cases, eight internal Undo/repicking cases, and 42 split-edge
+perimeter-limit cases, including exact retained
+curves and wall B-reps, source identity and metadata, current-layer defaults,
+and edits surviving Esc. Viewport selection and command history grouping remain
+under development. Raw events/history are retained as diagnostics; only those
+fields are omitted from the complete geometry/metadata comparison.
 
 ```sh
 python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/brep_remove_holes.json --observations tools/rhino_oracle/observations/brep_remove_holes.json --absolute-epsilon 1e-9 --relative-epsilon 0 --timeout 300
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_components.json tools/rhino_oracle/observations/untrim_holes_components.json --timeout 300
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_undo.json tools/rhino_oracle/observations/untrim_holes_undo.json --timeout 300
 ```
 
 ## Timing interpretation

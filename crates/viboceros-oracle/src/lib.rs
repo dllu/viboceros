@@ -92,6 +92,7 @@ mod test_json;
 mod trimmed_brep;
 mod undo_selection;
 mod untrim;
+mod untrim_holes;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
@@ -182,6 +183,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    UntrimHolesCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: untrim_holes::UntrimHolesFixture,
+    },
     BrepRemoveHoles {
         id: String,
         #[serde(flatten)]
@@ -2029,6 +2035,7 @@ impl Operation {
             | Self::CapCommand { id, .. }
             | Self::BrepMergeEdge { id, .. }
             | Self::BrepRemoveHoles { id, .. }
+            | Self::UntrimHolesCommand { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::MergeEdgeCommand { id, .. }
             | Self::SplitEdgeCommand { id, .. }
@@ -2406,6 +2413,7 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::UntrimAllCommand { .. }
                 | Operation::UntrimBorderCommand { .. }
                 | Operation::BrepRemoveHoles { .. }
+                | Operation::UntrimHolesCommand { .. }
         ) && request.iterations != 1
         {
             return Err(ProbeError::FixtureInvariant(
@@ -2442,6 +2450,7 @@ fn execute(
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
         Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
+        Operation::UntrimHolesCommand { fixture, .. } => untrim_holes::run(fixture, tolerance)?,
         Operation::UntrimAllCommand { fixture, .. } => {
             untrim::run(fixture, tolerance, "UntrimAll")?
         }

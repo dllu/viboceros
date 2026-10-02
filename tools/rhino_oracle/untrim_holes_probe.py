@@ -6,7 +6,7 @@ import re
 
 def validate(operation):
     required = {"op", "id", "sources", "all", "components", "maximum_edge_length", "keep_trim_objects", "pick"}
-    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish"} != required
+    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish", "undo_after"} != required
             or operation.get("op") != "untrim_holes_command"
             or not isinstance(operation.get("id"), str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None
@@ -29,6 +29,10 @@ def validate(operation):
                 or any(type(i) is not int or i < 0 for i in pair)
                 or pair[0] >= len(operation["sources"]) for pair in components)):
         raise ValueError("invalid hole component selection")
+    undo = operation.get("undo_after", [])
+    if (not isinstance(undo, list) or any(type(i) is not int or not 1 <= i <= len(components) for i in undo)
+            or undo != sorted(set(undo)) or (undo and operation["pick"] != "mouse")):
+        raise ValueError("invalid internal hole Undo sequence")
     for source in operation["sources"]:
         if not isinstance(source, dict) or set(source) != {"brep"} or not isinstance(source["brep"], dict):
             raise ValueError("hole command requires explicit shared B-rep sources")
@@ -41,7 +45,9 @@ def drive(operation, points, host):
     """Deliver one click only after its Pause appears in the owned command history."""
     Rhino, System = host["Rhino"], host["System"]
     suffix = " _" + operation.get("finish", "Enter")
-    script = "_UntrimHoles" + " _Pause" * len(points) + suffix
+    script = "_UntrimHoles" + "".join(" _Pause" + (
+        " _Undo" if index + 1 in operation.get("undo_after", []) else "")
+        for index in range(len(points))) + suffix
     if not points: return Rhino.RhinoApp.RunScript(script, True)
     import clr
     clr.AddReference("System.Windows.Forms")

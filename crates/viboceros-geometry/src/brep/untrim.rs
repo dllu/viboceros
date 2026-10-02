@@ -4,6 +4,35 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
+/// Validated hole-removal geometry and the original topology it removed.
+/// Opening indices refer only to surviving faces; wall indices refer to deleted
+/// source faces. Callers can retain exact trim curves or detached wall geometry
+/// without guessing the traversal from differences between compacted tables.
+#[derive(Clone, Debug, PartialEq)]
+pub struct BrepHoleRemoval {
+    brep: Brep,
+    removed_faces: Vec<usize>,
+    removed_openings: Vec<(usize, usize)>,
+}
+
+impl BrepHoleRemoval {
+    pub fn brep(&self) -> &Brep {
+        &self.brep
+    }
+
+    pub fn into_brep(self) -> Brep {
+        self.brep
+    }
+
+    pub fn removed_faces(&self) -> &[usize] {
+        &self.removed_faces
+    }
+
+    pub fn removed_openings(&self) -> &[(usize, usize)] {
+        &self.removed_openings
+    }
+}
+
 impl Brep {
     /// Removes all interior holes, including faces joined to their boundaries.
     /// A source without holes is returned as an unchanged independent copy.
@@ -42,6 +71,19 @@ impl Brep {
         holes: &[(usize, usize)],
         tolerance: Tolerance,
     ) -> Result<Option<Self>, GeometryError> {
+        Ok(self
+            .try_remove_holes_with_topology(holes, tolerance)?
+            .map(BrepHoleRemoval::into_brep))
+    }
+
+    /// The selected-hole operation with original wall and opening indices.
+    /// Indices are unique and ordered by their original face/loop table order.
+    /// Validation and no-op behavior match [`Self::try_remove_holes`].
+    pub fn try_remove_holes_with_topology(
+        &self,
+        holes: &[(usize, usize)],
+        tolerance: Tolerance,
+    ) -> Result<Option<BrepHoleRemoval>, GeometryError> {
         let mut removed = self
             .faces
             .iter()
@@ -119,7 +161,28 @@ impl Brep {
                 face
             })
             .collect::<Vec<_>>();
-        compact_retained_faces(self, faces, tolerance).map(Some)
+        let brep = compact_retained_faces(self, faces, tolerance)?;
+        let removed_faces = deleted_faces
+            .iter()
+            .enumerate()
+            .filter_map(|(face, deleted)| deleted.then_some(face))
+            .collect();
+        let removed_openings = removed
+            .iter()
+            .enumerate()
+            .filter(|(face, _)| !deleted_faces[*face])
+            .flat_map(|(face, loops)| {
+                loops
+                    .iter()
+                    .enumerate()
+                    .filter_map(move |(boundary, removed)| removed.then_some((face, boundary)))
+            })
+            .collect();
+        Ok(Some(BrepHoleRemoval {
+            brep,
+            removed_faces,
+            removed_openings,
+        }))
     }
 
     /// Wraps a surface as one natural face using its original U/V intervals

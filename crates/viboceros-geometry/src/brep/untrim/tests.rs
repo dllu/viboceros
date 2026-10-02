@@ -5,11 +5,18 @@ fn selected_hole_removal_preserves_outer_geometry_and_discards_unused_topology()
     for reversed in [false, true] {
         let original = source(reversed);
         let saved = original.clone();
+        let removal = original
+            .try_remove_holes_with_topology(&[(0, 1), (0, 1)], Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert!(removal.removed_faces().is_empty());
+        assert_eq!(removal.removed_openings(), &[(0, 1)]);
         let result = original
             .try_remove_holes(&[(0, 1), (0, 1)], Tolerance::DEFAULT)
             .unwrap()
             .unwrap();
         assert_eq!(original, saved);
+        assert_eq!(removal.brep(), &result);
         assert_eq!(result.vertices, original.vertices[..1]);
         assert_eq!(result.edges.len(), 1);
         assert_eq!(result.edges[0].curve, original.edges[1].curve);
@@ -67,6 +74,13 @@ fn one_joined_opening_removes_its_wall_and_both_cap_holes_exactly() {
         .try_remove_holes(&[(2, 1)], Tolerance::DEFAULT)
         .unwrap()
         .unwrap();
+    let removal = tube
+        .try_remove_holes_with_topology(&[(3, 1)], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    assert_eq!(removal.brep(), &result);
+    assert_eq!(removal.removed_faces(), &[1]);
+    assert_eq!(removal.removed_openings(), &[(2, 1), (3, 1)]);
     assert_eq!(
         tube.try_remove_holes(&[(3, 1)], Tolerance::DEFAULT)
             .unwrap(),

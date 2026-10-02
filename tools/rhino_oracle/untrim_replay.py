@@ -1,4 +1,4 @@
-"""Replay saved UntrimAll/UntrimBorder captures from source-only native requests.
+"""Replay saved UntrimAll/UntrimBorder/UntrimHoles command captures.
 
 Command events/history remain evidence in the raw capture, not comparison
 outputs. Independent box factories are compared for rejection and unchanged
@@ -8,8 +8,9 @@ import argparse
 import copy
 import json
 
-from .client import OracleClient, OracleProtocolError, compare_responses, load_request
+from .client import OracleClient, OracleProtocolError, compare_responses, load_request, _owned_artifact_request
 from .untrim_probe import validate
+from .untrim_holes_probe import validate as validate_holes
 
 
 def canonical_response(request, response):
@@ -23,7 +24,7 @@ def canonical_response(request, response):
             raise OracleProtocolError("untrim operation order mismatch")
         value=row["value"]
         for field in ("events","history"):value.pop(field,None)
-        if any(source["type"]=="box" for source in op["sources"]):
+        if any(source.get("type")=="box" for source in op["sources"]):
             if op["sources"]!=[dict(type="box")] or value.get("succeeded") is not False:
                 raise OracleProtocolError("expected rejected whole-box selection")
             before,after=value["before"],value["after"]
@@ -41,9 +42,11 @@ def replay(request, observed, client=None, timeout=180):
             or request["iterations"]!=1 or not request.get("operations")
             or observed.get("engine")!="rhino"):
         raise OracleProtocolError("expected one-iteration untrim request and Rhino capture")
-    for operation in request["operations"]:validate(operation)
-    expected=canonical_response(request,observed)
-    native=(client or OracleClient()).run_viboceros(copy.deepcopy(request),timeout)
+    with _owned_artifact_request(request) as prepared:
+        for operation in prepared["operations"]:
+            (validate_holes if operation.get("op")=="untrim_holes_command" else validate)(operation)
+        expected=canonical_response(request,observed)
+        native=(client or OracleClient()).run_viboceros(prepared,timeout)
     return compare_responses(canonical_response(request,native),expected,1e-9,0.)
 
 

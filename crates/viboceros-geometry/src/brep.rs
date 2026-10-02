@@ -44,8 +44,10 @@ mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;
 mod trim_image;
+mod trim_iso;
 mod trim_region;
 mod untrim;
+pub use untrim::BrepHoleRemoval;
 mod validate;
 
 #[cfg(test)]

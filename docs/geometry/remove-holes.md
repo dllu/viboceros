@@ -13,6 +13,11 @@ from retained edge uses. The complete output is validated before return. Inputs
 are immutable. Invalid indices return an error, repeated indices select once,
 and a selection containing only outer loops or no loops returns `None`.
 
+`try_remove_holes_with_topology` also returns original wall-face indices and
+removed openings on surviving faces, each in source table order. Commands use
+this validated traversal result to retain exact wall geometry and naked-hole
+curves without inferring topology from compacted output tables.
+
 `Brep::try_remove_all_holes(tolerance)` selects every inner loop. Unlike the
 selected-loop overload, it returns an unchanged independent copy when the
 source has no holes. These behaviors match the public RhinoCommon
@@ -36,17 +41,17 @@ python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/brep_remove_hol
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/brep_remove_holes.json --absolute-epsilon 1e-9 --relative-epsilon 0 --timeout 300
 ```
 
-These are geometry API comparisons. The interactive `UntrimHoles` command,
-its face/edge selection, maximum-edge-length filter, retained trim objects,
-and command history remain under implementation. The command is not registered
-as a completed feature. Harness timings are untimed and make no speed claim.
+These are geometry API comparisons. [Typed UntrimHoles](../commands/untrim-holes.md)
+now supports component edits and retained trim objects. Its viewport workflow
+and history grouping remain under implementation. Harness timings are untimed
+and make no speed claim.
 
 ## Native command evidence
 
 The [44 component recipes](../../tools/rhino_oracle/fixtures/untrim_holes_components.json)
 and [native command capture](../../tools/rhino_oracle/observations/untrim_holes_components.json)
 record actual `UntrimHoles` executions with face/edge preselection and owned
-mouse input. They establish the next implementation requirements:
+mouse input. Typed component edits match their complete geometry and metadata:
 
 - `All=Yes` picks individual faces; whole-object `SelID` picks are ignored.
 - Preselected components are edited before the first prompt, using remembered
@@ -57,11 +62,25 @@ mouse input. They establish the next implementation requirements:
   B-rep wall geometry for joined holes, with current-layer defaults and no
   source name, color source, or groups.
 
+The [42 split-edge recipes](../../tools/rhino_oracle/fixtures/untrim_holes_limits.json)
+and [native capture](../../tools/rhino_oracle/observations/untrim_holes_limits.json)
+show that the filter uses the whole hole perimeter, including all edges.
+An eight-unit square is rejected at `7.999` and admitted at `8.0`; a ten-unit
+rectangle is rejected at `9.999` and admitted at `10.0`, even when its picked
+edge is only one unit long. Retained curves preserve trim order and source
+parameter intervals. Split UV trims are classified from their complete control
+nets so the shared 3dm export preserves isoparametric flags exactly.
+
 The helper uses a shaded viewport for interior face mouse picks and requests
 each real click only after its corresponding command prompt. A stalled pick
-cancels only the worker's owned private window. These records do not prove the
-pending Viboceros command, internal Undo, window selection, or option changes
-between picks. Reproduce them with independently exported owned sources:
+cancels only the worker's owned private window.
+
+The [eight Undo recipes](../../tools/rhino_oracle/fixtures/untrim_holes_undo.json)
+and [native capture](../../tools/rhino_oracle/observations/untrim_holes_undo.json)
+also verify restoring the last edit, deleting its retained objects, and repicking
+before Enter or Esc. These records do not certify the pending viewport workflow,
+window selection, external command history grouping, or option changes between
+picks. Reproduce them with independently exported owned sources:
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.untrim_holes_capture tools/rhino_oracle/fixtures/untrim_holes_components.json --timeout 300

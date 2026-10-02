@@ -198,13 +198,22 @@ impl Brep {
                                 .collect::<Result<Vec<_>, _>>()?,
                             curve.knots().to_vec(),
                         )?;
+                        // A non-isoparametric source edge can become several
+                        // isoparametric trims when split at its polygon knots.
+                        // Classify the complete exact UV control net; samples
+                        // cannot certify a constant parameter coordinate.
+                        let iso = if trim.iso == SurfaceIso::NotIso {
+                            trim_iso::classify(&curve, &face.surface)
+                        } else {
+                            trim.iso
+                        };
                         trims.push(BrepTrim::try_new(
                             oriented_edge_vertices(&edges[edge], trim.reversed_3d),
                             Some(edge),
                             trim.reversed_3d,
                             curve,
                             trim.trim_type,
-                            trim.iso,
+                            iso,
                             trim.tolerance,
                         )?);
                     }

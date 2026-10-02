@@ -30,8 +30,8 @@ all retained curves and object ordering. Already natural exterior boundaries
 still create undoable replacements.
 
 Whole polysurfaces are rejected. Face subobject selection, hatches, and automatic
-crease-splitting settings remain pending. `UntrimHoles` needs hole-edge selection,
-the All option, and maximum-edge-length filtering; it remains pending.
+crease-splitting settings remain pending. [UntrimHoles](untrim-holes.md) offers
+typed component hole removal; its viewport workflow remains pending.
 
 ## Verification
 
