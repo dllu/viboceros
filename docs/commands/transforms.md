@@ -13,6 +13,11 @@ to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
 axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
 independent world x/y/z factors; all scale variants accept `Copy=Yes`.
 
+Scale, Scale1D, Scale2D, Rotate, Rotate3D, and Shear support
+[repeated interactive copies](transform-copy.md): edit `Copy=Yes` at the prompt,
+keep entering targets, and finish with Enter or Escape. Accepted edits share
+one Undo entry. Mirror supports Copy editing and finishes after one result.
+
 A completed `Copy` leaves its original preselection unchanged; new copies are
 unselected. With multiple sources, copied [group memberships](../groups.md)
 retain their per-object order in fresh, automatically named groups. A single

@@ -1,5 +1,56 @@
 use super::*;
 
+#[test]
+fn repeated_transform_steps_share_one_history_entry_and_failed_steps_preserve_preferences() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = source();
+    let before = document.objects().cloned().collect::<Vec<_>>();
+    registry
+        .execute(&mut document, "RememberCopyOptions No")
+        .unwrap();
+    registry.begin_copy_options("Scale");
+    let mut group = document.begin_history_group("Scale").unwrap();
+    for input in ["Scale 0,0,0 2 Copy=Yes", "Scale 0,0,0 3 Copy=Yes"] {
+        registry
+            .execute_in_history_group(&mut document, input, CommandContext::default(), &mut group)
+            .unwrap();
+    }
+    let after = document.objects().cloned().collect::<Vec<_>>();
+    assert_eq!(after.len(), 3);
+    assert!(
+        registry
+            .execute_in_history_group(
+                &mut document,
+                "Scale 0,0,0 0 Copy=No",
+                CommandContext::default(),
+                &mut group
+            )
+            .is_err()
+    );
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+    assert!(document.history_group_is_current(&group));
+    registry
+        .execute(&mut document, "RememberCopyOptions Yes")
+        .unwrap();
+    assert_eq!(registry.copy_default("Scale"), Some(true));
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!document.can_undo());
+    assert!(
+        registry
+            .execute_in_history_group(
+                &mut document,
+                "Scale 0,0,0 4 Copy=Yes",
+                CommandContext::default(),
+                &mut group
+            )
+            .is_err()
+    );
+    assert_eq!(document.redo_label(), Some("Scale"));
+    registry.execute(&mut document, "Redo").unwrap();
+    assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+}
+
 fn source() -> Document {
     let mut document = Document::default();
     let id = document

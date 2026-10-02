@@ -1634,7 +1634,7 @@ impl Document {
         match edit {
             Edit::ObjectsRemoved(removed) => removed.ids.clone(),
             Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
-            Edit::GroupInserted { id, .. } => self
+            Edit::GroupInserted { id, .. } | Edit::GroupDefinitionRetained { id } => self
                 .group(*id)
                 .map(|group| group.members.clone())
                 .unwrap_or_default(),

@@ -2,6 +2,8 @@
 use super::*;
 
 #[cfg(test)]
+mod replay_tests;
+#[cfg(test)]
 mod tests;
 
 /// Owned continuation token. No transaction stays open between accepted picks.
@@ -13,6 +15,8 @@ pub struct HistoryGroup {
     label: String,
     checkpoints: Vec<Checkpoint>,
     last_changed_before: BTreeSet<ObjectId>,
+    keep_created_groups: bool,
+    renew_changed_order: bool,
 }
 
 #[derive(Debug)]
@@ -26,6 +30,19 @@ struct Checkpoint {
 impl HistoryGroup {
     pub fn can_undo(&self) -> bool {
         !self.checkpoints.is_empty()
+    }
+
+    /// Copied group definitions remain addressable, empty, after Undo. Only
+    /// accepted steps retain definitions; a failed pending step still rolls
+    /// back its newly allocated groups completely.
+    pub fn keep_created_group_definitions(&mut self) {
+        self.keep_created_groups = true;
+    }
+
+    /// Accepted geometry replacements renew object creation order, retaining
+    /// identities and recording the ordering change in the same history step.
+    pub fn renew_changed_object_order(&mut self) {
+        self.renew_changed_order = true;
     }
 }
 
@@ -46,6 +63,8 @@ impl Document {
             },
             checkpoints: Vec::new(),
             last_changed_before: self.last_changed_objects.clone(),
+            keep_created_groups: false,
+            renew_changed_order: false,
         })
     }
 
@@ -84,7 +103,41 @@ impl Document {
         {
             return Err(DocumentError::HistoryGroupStale);
         }
-        let transaction = self.history.active.take().unwrap();
+        if group.renew_changed_order {
+            let changed = self
+                .history
+                .active
+                .as_ref()
+                .unwrap()
+                .edits
+                .iter()
+                .filter_map(|edit| {
+                    if let Edit::ObjectChanged { id, .. } = edit {
+                        Some(*id)
+                    } else {
+                        None
+                    }
+                })
+                .collect::<BTreeSet<_>>();
+            if !changed.is_empty() {
+                let alive = self
+                    .objects
+                    .iter()
+                    .filter_map(|object| changed.contains(&object.id).then_some(object.id))
+                    .collect::<Vec<_>>();
+                self.move_objects_to_end(alive)?;
+            }
+        }
+        let mut transaction = self.history.active.take().unwrap();
+        if group.keep_created_groups {
+            for edit in &mut transaction.edits {
+                if let Edit::GroupInserted { id, .. } = edit
+                    && self.group(*id).is_some()
+                {
+                    *edit = Edit::GroupDefinitionRetained { id: *id };
+                }
+            }
+        }
         if transaction.selection_before.is_subset(&self.selection) {
             self.previous_selection = transaction.previous_selection_before;
             self.previous_selection_order = transaction.previous_selection_order_before;

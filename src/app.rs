@@ -164,6 +164,7 @@ mod set_point;
 mod set_view;
 mod snapping;
 mod toolbar;
+mod transform_prompt;
 mod unjoin_edge;
 mod untrim_holes;
 mod viewport_layout;
@@ -1805,6 +1806,7 @@ pub struct VibocerosApp {
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
+    transform_session: Option<transform_prompt::TransformSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
@@ -1894,6 +1896,7 @@ impl VibocerosApp {
             component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
+            transform_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -2047,7 +2050,8 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.try_continue_points(&input)
+        if self.try_continue_transform(&input)
+            || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
             || self.try_continue_length(&input)
@@ -2482,7 +2486,8 @@ impl VibocerosApp {
         {
             return true;
         }
-        if self.try_continue_points(input)
+        if self.try_continue_transform(input)
+            || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
             || self.try_continue_length(input)
@@ -2565,6 +2570,12 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        let transform_copy = transform_prompt::supports_name(&normalized).then(|| {
+            transform_prompt::copy_option(
+                &arguments,
+                self.commands.copy_default(&normalized).unwrap(),
+            )
+        });
         if matches!(normalized.as_str(), "radius" | "diameter")
             && arguments.is_empty()
             && viboceros_command::preselected_circular_radius(&self.document)
@@ -4410,7 +4421,11 @@ impl VibocerosApp {
                 tangent: None,
             }
         } else {
-            if !arguments.is_empty() {
+            if !arguments.is_empty()
+                && (!transform_prompt::supports_name(&normalized)
+                    || normalized == "rotate3d"
+                    || transform_prompt::copy_option(&arguments, false).is_none())
+            {
                 return false;
             }
             match normalized.as_str() {
@@ -4542,6 +4557,11 @@ impl VibocerosApp {
                 return true;
             }
         }
+        if transform_prompt::supports(command)
+            && !self.start_transform_session(command, transform_copy.flatten().unwrap())
+        {
+            return true;
+        }
         if let InteractiveCommand::EvaluateUv { options } = command {
             self.push_log(options.command_line());
         }
@@ -4556,6 +4576,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        let transform_applied = self.finish_transform_session();
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
         }
@@ -4596,11 +4617,12 @@ impl VibocerosApp {
             && announce
             && command != InteractiveCommand::Points
         {
-            let action = if matches!(command, InteractiveCommand::EvaluateUv { .. }) {
-                "Finished"
-            } else {
-                "Cancelled"
-            };
+            let action =
+                if transform_applied || matches!(command, InteractiveCommand::EvaluateUv { .. }) {
+                    "Finished"
+                } else {
+                    "Cancelled"
+                };
             self.push_log(format!("{action} {}", command.name()));
         }
     }
@@ -6850,6 +6872,9 @@ impl VibocerosApp {
                 center: Some(center),
                 reference: None,
             } => {
+                if let Some(result) = self.apply_numeric_scale_direction(command, point) {
+                    return result;
+                }
                 if center.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: scale reference must differ from its center".to_owned());
                     return false;
@@ -6874,14 +6899,16 @@ impl VibocerosApp {
                     self.push_log("Error: scale target must differ from its center".to_owned());
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "{} {} {} {}",
-                    kind.name(),
-                    format_model_point(center),
-                    format_model_point(reference),
-                    format_model_point(point)
-                ));
+                return self.apply_transform_step(
+                    &format!(
+                        "{} {} {} {}",
+                        kind.name(),
+                        format_model_point(center),
+                        format_model_point(reference),
+                        format_model_point(point)
+                    ),
+                    command,
+                );
             }
             InteractiveCommand::Rotate { center: None, .. } => {
                 let command = InteractiveCommand::Rotate {
@@ -6918,13 +6945,15 @@ impl VibocerosApp {
                     self.push_log("Error: rotate target must differ from its center".to_owned());
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Rotate {} {} {}",
-                    format_model_point(center),
-                    format_model_point(reference),
-                    format_model_point(point)
-                ));
+                return self.apply_transform_step(
+                    &format!(
+                        "Rotate {} {} {}",
+                        format_model_point(center),
+                        format_model_point(reference),
+                        format_model_point(point)
+                    ),
+                    command,
+                );
             }
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
@@ -6961,14 +6990,16 @@ impl VibocerosApp {
                         self.active_command = None;
                         return false;
                     };
-                    self.active_command = None;
-                    self.execute_command(&format!(
-                        "Rotate3D {} {} {} {}",
-                        format_model_point(axis_start),
-                        format_model_point(axis_end),
-                        format_model_point(reference),
-                        format_model_point(point)
-                    ));
+                    return self.apply_transform_step(
+                        &format!(
+                            "Rotate3D {} {} {} {}",
+                            format_model_point(axis_start),
+                            format_model_point(axis_end),
+                            format_model_point(reference),
+                            format_model_point(point)
+                        ),
+                        command,
+                    );
                 }
             }
             InteractiveCommand::Mirror { start: None } => {
@@ -6982,12 +7013,14 @@ impl VibocerosApp {
                     self.push_log("Error: mirror axis points must differ".to_owned());
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Mirror {} {}",
-                    format_model_point(start),
-                    format_model_point(point)
-                ));
+                return self.apply_transform_step(
+                    &format!(
+                        "Mirror {} {}",
+                        format_model_point(start),
+                        format_model_point(point)
+                    ),
+                    command,
+                );
             }
             InteractiveCommand::Shear { origin: None, .. } => {
                 let command = InteractiveCommand::Shear {
@@ -7026,13 +7059,15 @@ impl VibocerosApp {
                     self.push_log("Error: shear target must differ from its origin".to_owned());
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Shear {} {} {}",
-                    format_model_point(origin),
-                    format_model_point(reference),
-                    format_model_point(point)
-                ));
+                return self.apply_transform_step(
+                    &format!(
+                        "Shear {} {} {}",
+                        format_model_point(origin),
+                        format_model_point(reference),
+                        format_model_point(point)
+                    ),
+                    command,
+                );
             }
             InteractiveCommand::ExtrudeCurve {
                 base: None,
@@ -8583,6 +8618,7 @@ mod tests {
     mod shrink_trimmed;
     mod single_span_selection;
     mod split_edge;
+    mod transform_copy;
     mod unjoin_edge;
     mod untrim_edge;
     mod untrim_holes;
@@ -8654,6 +8690,7 @@ mod tests {
             unjoin_prompt: None,
             component_selection: Default::default(),
             points_session: None,
+            transform_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),

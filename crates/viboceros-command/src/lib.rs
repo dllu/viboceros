@@ -1297,7 +1297,7 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, false)
+        self.execute_invocation(document, input, context, false, None)
     }
 
     pub fn execute_postselected(
@@ -1306,7 +1306,20 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, true)
+        self.execute_invocation(document, input, context, true, None)
+    }
+
+    /// Accept one atomic step of an already-started interactive command.
+    /// Failed steps roll back without undoing prior steps. The caller starts
+    /// Copy preferences once; subsequent steps do not reset disabled defaults.
+    pub fn execute_in_history_group(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+        group: &mut viboceros_document::HistoryGroup,
+    ) -> Result<String, CommandError> {
+        self.execute_invocation(document, input, context, false, Some(group))
     }
 
     fn execute_invocation(
@@ -1315,6 +1328,7 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
         postselected: bool,
+        group: Option<&mut viboceros_document::HistoryGroup>,
     ) -> Result<String, CommandError> {
         let mut tokens = input.trim_start().splitn(2, char::is_whitespace);
         let name = tokens
@@ -1333,11 +1347,20 @@ impl CommandRegistry {
             .copied()
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
         let command = &self.commands[index];
+        if group.is_some() && !command.records_history() {
+            return Err(CommandError::Usage(
+                "history groups require an editing command",
+            ));
+        }
         let arguments = command.parse_arguments(tokens.next().unwrap_or(""))?;
         let (arguments, copy) = if let Some(default) = command.copy_option_default() {
             copy_options::arguments(
                 &arguments,
-                self.copy_preferences.begin(command.name(), default),
+                if group.is_some() {
+                    self.copy_preferences.peek(command.name(), default)
+                } else {
+                    self.copy_preferences.begin(command.name(), default)
+                },
             )
         } else {
             (arguments, None)
@@ -1349,7 +1372,23 @@ impl CommandRegistry {
                 command.run_in_context(document, &arguments, context)
             }
         };
-        let result = if command.records_history() {
+        let result = if let Some(group) = group {
+            document.begin_group_transaction(group)?;
+            match run(document) {
+                Ok(message) => {
+                    document.commit_group_transaction(group)?;
+                    Ok(message)
+                }
+                Err(error) => {
+                    if command.commits_on_error(&error) {
+                        document.commit_group_transaction(group)?;
+                    } else {
+                        document.rollback_transaction()?;
+                    }
+                    Err(error)
+                }
+            }
+        } else if command.records_history() {
             run_command_transaction_with_policy(document, command.name(), run, |error| {
                 command.commits_on_error(error)
             })

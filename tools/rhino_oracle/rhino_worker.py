@@ -6341,6 +6341,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get("op") == "transform_copy_command":
+        import transform_copy_probe
+        return transform_copy_probe.run(operation, globals())
     if operation.get("op") == "copy_options_command":
         import copy_options_probe
         return copy_options_probe.run(operation, globals())
@@ -16507,6 +16510,10 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
+        if not at_idle and any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
         if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command") and
                 op.get("undo_redo", False) for op in request.get("operations", [])):
             import merge_edges_probe

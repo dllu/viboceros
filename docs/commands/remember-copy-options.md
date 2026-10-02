@@ -41,10 +41,13 @@ Invalid options, ineligible selections, and failed geometry edits do not accept
 an edited Copy value. With remembering disabled, the command-start reset still
 applies to a failed command.
 
-The GUI's ExtractSrf, SetPt, and RemoveFromGroup prompts use the shared defaults
-and save completed choices. Other implemented transform prompts apply saved
-choices when executing their completed point input. Their interactive Copy
-option editing and repeated target workflows are not complete. Use explicit
+The GUI's ExtractSrf, SetPt, RemoveFromGroup, Scale, Scale1D, Scale2D, Rotate,
+Rotate3D, Mirror, and Shear prompts use the shared defaults and save completed
+choices. The affine prompts support [Copy editing and repeated targets](transform-copy.md).
+Each accepted target saves its choice; a later transient option edit followed
+by Enter or Escape does not replace it. Other implemented transform prompts
+apply saved choices when executing their completed point input; their option
+editing and repeated target workflows remain incomplete. Use explicit
 `Copy=` in full command invocations for deterministic scripts. Preferences
 currently last for the application session and are not saved across restarts.
 
@@ -72,7 +75,9 @@ Scale reports `Success`. Our single-target registry returns success for the
 completed edit. Replay verifies the edit separately from that native termination
 status. This capture does not verify repeated-copy history grouping, native
 Undo/Redo, restart persistence, or option lifetime for the remaining commands
-in the table. Core tests cover history independence and aliases, and application
+in the table. A separate [49-case interactive transform capture](transform-copy.md#verification-and-limits)
+verifies repetition, SelLast, and native Undo/Redo for seven commands.
+Core tests cover history independence and aliases, and application
 tests cover prompt completion and cancellation.
 
 ```sh

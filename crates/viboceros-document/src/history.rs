@@ -112,6 +112,11 @@ pub(super) enum Edit {
         id: GroupId,
         stored: Option<Group>,
     },
+    /// Accepted copies keep their group definitions across history replay;
+    /// object membership edits still replay normally.
+    GroupDefinitionRetained {
+        id: GroupId,
+    },
     GroupRemoved {
         index: usize,
         id: GroupId,
@@ -211,6 +216,11 @@ impl Edit {
             Self::GroupInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted group was already stored")?;
                 *stored = Some(remove_group(document, *index, *id)?);
+            }
+            Self::GroupDefinitionRetained { id } => {
+                document
+                    .group(*id)
+                    .ok_or(DocumentError::GroupNotFound(*id))?;
             }
             Self::GroupRemoved { index, stored, .. } => {
                 let group = stored.take().ok_or(DocumentError::HistoryInvariant(
@@ -316,6 +326,11 @@ impl Edit {
                     "inserted group was not stored",
                 ))?;
                 insert_at(&mut document.groups, *index, group)?;
+            }
+            Self::GroupDefinitionRetained { id } => {
+                document
+                    .group(*id)
+                    .ok_or(DocumentError::GroupNotFound(*id))?;
             }
             Self::GroupRemoved { index, id, stored } => {
                 ensure_empty(stored, "removed group was already stored")?;

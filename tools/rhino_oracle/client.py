@@ -216,6 +216,12 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
+        if any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
+            from .transform_copy_capture import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError("transform Copy probes require a private Rhino settings scheme")
+            validate_request(request)
+
         if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
             from .copy_options_probe import validate
             if self.settings_scheme is None:
@@ -514,6 +520,11 @@ class OracleClient:
                 for name in ("extract_srf_probe.py", "owned_brep_command.py", "join_probe.py", "shrink_face_input.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
+                for name in ("transform_copy_probe.py", "join_probe.py", "merge_edges_probe.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
+
             if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
                 for name in ("copy_options_probe.py", "owned_brep_command.py", "join_probe.py"):
                     helper = Path(__file__).with_name(name)
