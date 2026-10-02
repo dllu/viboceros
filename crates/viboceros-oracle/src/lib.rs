@@ -91,6 +91,8 @@ mod solid_orientation;
 mod test_json;
 mod trimmed_brep;
 mod undo_selection;
+mod unjoin_edge_command;
+mod unjoin_edges;
 mod untrim;
 mod untrim_holes;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
@@ -183,6 +185,16 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    UnjoinEdgeCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: unjoin_edge_command::UnjoinEdgeFixture,
+    },
+    BrepUnjoinEdges {
+        id: String,
+        #[serde(flatten)]
+        fixture: unjoin_edges::UnjoinEdgesFixture,
+    },
     UntrimHolesCommand {
         id: String,
         #[serde(flatten)]
@@ -2035,6 +2047,8 @@ impl Operation {
             | Self::CapCommand { id, .. }
             | Self::BrepMergeEdge { id, .. }
             | Self::BrepRemoveHoles { id, .. }
+            | Self::BrepUnjoinEdges { id, .. }
+            | Self::UnjoinEdgeCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
             | Self::MergeEdgesCommand { id, .. }
             | Self::MergeEdgeCommand { id, .. }
@@ -2413,6 +2427,8 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::UntrimAllCommand { .. }
                 | Operation::UntrimBorderCommand { .. }
                 | Operation::BrepRemoveHoles { .. }
+                | Operation::BrepUnjoinEdges { .. }
+                | Operation::UnjoinEdgeCommand { .. }
                 | Operation::UntrimHolesCommand { .. }
         ) && request.iterations != 1
         {
@@ -2450,6 +2466,10 @@ fn execute(
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
         Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
+        Operation::BrepUnjoinEdges { fixture, .. } => unjoin_edges::run(fixture, tolerance)?,
+        Operation::UnjoinEdgeCommand { fixture, .. } => {
+            unjoin_edge_command::run(fixture, tolerance)?
+        }
         Operation::UntrimHolesCommand { fixture, .. } => untrim_holes::run(fixture, tolerance)?,
         Operation::UntrimAllCommand { fixture, .. } => {
             untrim::run(fixture, tolerance, "UntrimAll")?

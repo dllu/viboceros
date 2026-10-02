@@ -178,6 +178,7 @@ mod connect;
 mod fillet;
 mod fillet_corners;
 mod flip;
+mod unjoin_edge;
 mod untrim;
 mod untrim_holes;
 use blend::BlendCurveCommand;
@@ -186,6 +187,7 @@ use connect::ConnectCommand;
 use fillet::FilletCommand;
 use fillet_corners::FilletCornersCommand;
 use flip::FlipCommand;
+pub use unjoin_edge::{UnjoinEdgeResult, UnjoinEdgeSelection};
 use untrim::UntrimCommand;
 pub use untrim_holes::{
     UntrimHolesComponent, UntrimHolesOptions, UntrimHolesResult, UntrimHolesSelection,
@@ -950,6 +952,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(untrim_holes::UntrimHolesCommand::default())
+            .expect("unique built-in command");
+        registry
+            .register(unjoin_edge::UnjoinEdgeCommand)
             .expect("unique built-in command");
         registry
             .register(UnifyMeshNormalsCommand)
@@ -17810,6 +17815,10 @@ pub enum CommandError {
     UntrimHolesMultipleComponents,
     #[error("UntrimHoles source or tolerance changed; pick the component again")]
     UntrimHolesStale,
+    #[error("UnjoinEdge requires accessible surface or polysurface edge components")]
+    UnjoinEdgeUnavailable,
+    #[error("UnjoinEdge source or tolerance changed; select the edges again")]
+    UnjoinEdgeStale,
 
     #[error("none of the selected objects can be exploded")]
     NoExplodableObjects,
@@ -18619,7 +18628,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Blend, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, Unlock, UnlockSelected, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
+            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Blend, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarSrf, Point, PointCloud, PointGrid, Points, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, UnjoinEdge, Unlock, UnlockSelected, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
         );
     }
 

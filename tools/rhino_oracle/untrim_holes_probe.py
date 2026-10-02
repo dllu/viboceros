@@ -53,14 +53,16 @@ def validate(operation):
             raise ValueError("hole command requires an owned source artifact")
 
 
-def drive(operation, points, host):
-    """Deliver one click only after its Pause appears in the owned command history."""
+def drive(operation, points, host, command="UntrimHoles"):
+    """Deliver clicks and finish keys only inside the owned command prompt."""
     Rhino, System = host["Rhino"], host["System"]
     suffix = " _" + operation.get("finish", "Enter")
-    script = "_UntrimHoles" + "".join(" _Pause" + (
+    script = "_" + command + "".join(" _Pause" + (
         " _Undo" if index + 1 in operation.get("undo_after", []) else "")
         for index in range(len(points))) + suffix
-    if operation["pick"] == "window": script = "_UntrimHoles"
+    batch = operation["pick"] == "window" or command == "UnjoinEdge"
+    if batch: script = "_" + command
+    if command == "UnjoinEdge": script += " _Pause"
     if not points: return Rhino.RhinoApp.RunScript(script, True)
     import clr
     clr.AddReference("System.Windows.Forms")
@@ -78,7 +80,7 @@ def drive(operation, points, host):
             if (System.DateTime.UtcNow - progress_time[0]).TotalSeconds > 15:
                 raise ValueError("hole component pick was not accepted within 15 seconds")
             index = len(sent)
-            if operation["pick"] == "window" and index == len(points):
+            if batch and index == len(points):
                 if not finish_sent and (System.DateTime.UtcNow - progress_time[0]).TotalSeconds > 1:
                     with open(path, "a") as stream:
                         stream.write("PICK @hole-finish:%s:%s 1 1\n" % (operation["id"], operation.get("finish", "Enter")))
@@ -86,7 +88,10 @@ def drive(operation, points, host):
                     finish_sent.append(True)
                 return
             if index >= len(points): return
-            if operation["pick"] != "window" and history[len(start):].count("_Pause") < index + 1: return
+            if command == "UnjoinEdge":
+                if "Select edges to unjoin" not in history[len(start):]: return
+                if sent and (System.DateTime.UtcNow - progress_time[0]).TotalSeconds < 1: return
+            elif operation["pick"] != "window" and history[len(start):].count("_Pause") < index + 1: return
             view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
             viewport = view.ActiveViewport
             pixel = viewport.WorldToClient(points[index])
@@ -116,7 +121,7 @@ def drive(operation, points, host):
     try:
         timer.Start()
         result = Rhino.RhinoApp.RunScript(script, True)
-        if errors or len(sent) != len(points): raise ValueError("incomplete hole mouse input: " + str(errors))
+        if errors or len(sent) != len(points): raise ValueError("incomplete component mouse input: " + str(errors) + "; sent: " + str(sent) + "; finish: " + str(finish_sent) + "; history: " + Rhino.RhinoApp.CommandHistoryWindowText[len(start):][-2000:])
         return result
     finally:
         timer.Stop(); timer.Tick -= tick; timer.Dispose()

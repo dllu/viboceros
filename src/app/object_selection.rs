@@ -155,7 +155,8 @@ impl VibocerosApp {
         {
             return None;
         }
-        if self.edge_prompt.is_some() || self.hole_prompt.is_some() {
+        if self.edge_prompt.is_some() || self.hole_prompt.is_some() || self.unjoin_prompt.is_some()
+        {
             return None;
         }
         if self.picking_alignment_curve() {

@@ -238,6 +238,15 @@ then uses the same read-only preparation for postselection rectangles and its
 command history group for immediate edits. Component selection never selects a
 parent object or restores itself through Undo.
 
+`brep/unjoin` splits edge uses and local vertex fans with index tables and
+union/find, then validates exact connected components. `command/unjoin_edge`
+stages complete multi-object edits and metadata inheritance. `app/unjoin_edge`
+applies eligible preselection immediately and collects postselection until
+Enter, checking source snapshots before one atomic batch history record.
+Independent Python capture and Rust replay modules compare public API and
+actual command results from identically exported inputs; see
+[edge separation](geometry/unjoin-edges.md).
+
 `app/edge_commands` shares component ambiguity, hover highlighting and stale
 candidate checks for [MergeEdge](commands/merge-edge.md) and
 [SplitEdge](commands/split-edge.md). Command-owned prepared selections keep

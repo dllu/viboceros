@@ -161,6 +161,7 @@ mod set_point;
 mod set_view;
 mod snapping;
 mod toolbar;
+mod unjoin_edge;
 mod untrim_holes;
 mod viewport_layout;
 mod zoom_target;
@@ -1796,6 +1797,7 @@ pub struct VibocerosApp {
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
+    unjoin_prompt: Option<Tolerance>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
@@ -1883,6 +1885,7 @@ impl VibocerosApp {
             intersection_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
+            unjoin_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
@@ -2029,6 +2032,7 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_component_choice(&input)
+            || self.try_continue_unjoin_command(&input)
             || self.try_continue_hole_command(&input)
             || self.try_continue_edge_command(&input)
         {
@@ -2072,6 +2076,7 @@ impl VibocerosApp {
         }
         self.command_input.clear();
         if self.try_start_hole_command(&input)
+            || self.try_start_unjoin_command(&input)
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
@@ -2460,6 +2465,7 @@ impl VibocerosApp {
     fn try_execute_command(&mut self, input: &str) -> bool {
         self.selection_menu = None;
         if self.try_continue_component_choice(input)
+            || self.try_continue_unjoin_command(input)
             || self.try_continue_hole_command(input)
             || self.try_continue_edge_command(input)
         {
@@ -4551,6 +4557,9 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        if self.unjoin_prompt.is_some() {
+            self.finish_unjoin_command(false);
+        }
         self.set_view_prompt = None;
         self.cancel_end_analysis_pick(false);
         self.snaps.model_override = None;
@@ -7927,6 +7936,7 @@ impl VibocerosApp {
             || self.intersection_prompt.is_some()
             || self.edge_prompt.is_some()
             || self.hole_prompt.is_some()
+            || self.unjoin_prompt.is_some()
         {
             self.cancel_interactive_command(true);
         } else if self.component_selection.has_choices() {
@@ -7970,6 +7980,7 @@ impl eframe::App for VibocerosApp {
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.hole_prompt.is_none()
+            && self.unjoin_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && self.document.selected_object_count() > 0
@@ -8190,19 +8201,32 @@ impl eframe::App for VibocerosApp {
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
+        if self.unjoin_prompt.is_none() {
+            self.component_selection.valid_picks(&self.document);
+        }
         let component_highlights = self.component_selection.highlights(&self.document);
         let component_preselection = self.component_preselection_available();
-        let component_pick = self.hole_prompt.as_ref().and_then(|prompt| {
-            if !model_input_active || self.plane_prompt.is_some() || end_analysis_picking {
-                None
-            } else if prompt.picking_edges() {
-                Some(crate::viewport::ComponentPickFilter::Edges)
-            } else if prompt.picking_faces() {
-                Some(crate::viewport::ComponentPickFilter::Faces)
-            } else {
-                None
-            }
-        });
+        let component_pick = self
+            .hole_prompt
+            .as_ref()
+            .and_then(|prompt| {
+                if !model_input_active || self.plane_prompt.is_some() || end_analysis_picking {
+                    None
+                } else if prompt.picking_edges() {
+                    Some(crate::viewport::ComponentPickFilter::Edges)
+                } else if prompt.picking_faces() {
+                    Some(crate::viewport::ComponentPickFilter::Faces)
+                } else {
+                    None
+                }
+            })
+            .or_else(|| {
+                (self.unjoin_prompt.is_some()
+                    && model_input_active
+                    && self.plane_prompt.is_none()
+                    && !end_analysis_picking)
+                    .then_some(crate::viewport::ComponentPickFilter::Edges)
+            });
         let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
@@ -8548,6 +8572,7 @@ mod tests {
     mod set_view;
     mod single_span_selection;
     mod split_edge;
+    mod unjoin_edge;
     mod untrim_holes;
     use super::*;
     use std::collections::BTreeSet;
@@ -8613,6 +8638,7 @@ mod tests {
             intersection_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
+            unjoin_prompt: None,
             component_selection: Default::default(),
             points_session: None,
             evaluate_uv_session: None,

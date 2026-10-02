@@ -214,6 +214,21 @@ class OracleClient:
                 raise OracleProtocolError("hole removal requires one iteration")
             for operation in request["operations"]:
                 if operation.get("op") == "brep_remove_holes": validate(operation)
+        if any(op.get("op") == "brep_unjoin_edges" for op in request.get("operations", [])):
+            from .unjoin_edges_probe import validate
+            if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
+                raise OracleProtocolError("edge separation requires one iteration")
+            for operation in request["operations"]:
+                if operation.get("op") == "brep_unjoin_edges": validate(operation)
+        if any(op.get("op") == "unjoin_edge_command" for op in request.get("operations", [])):
+            from .unjoin_edge_command_probe import validate
+            if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
+                raise OracleProtocolError("edge separation commands require one iteration")
+            for operation in request["operations"]:
+                if operation.get("op") == "unjoin_edge_command": validate(operation)
+            if any(op.get("pick") == "mouse" for op in request["operations"]):
+                from .hole_picking import HolePicker
+                interaction = HolePicker()
         if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
             from .document_brep_probe import validate
             for operation in request["operations"]:
@@ -429,7 +444,7 @@ class OracleClient:
                 helper = Path(__file__).with_name("brep_join_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command") or
-                   (op.get("op") == "untrim_holes_command" and op.get("undo_redo", False))
+                   (op.get("op") in ("untrim_holes_command", "unjoin_edge_command") and op.get("undo_redo", False))
                    for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("merge_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -443,6 +458,13 @@ class OracleClient:
             if any(op.get("op") == "brep_remove_holes" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("remove_holes_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "brep_unjoin_edges" for op in request.get("operations", [])):
+                helper = Path(__file__).with_name("unjoin_edges_probe.py")
+                shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get("op") == "unjoin_edge_command" for op in request.get("operations", [])):
+                for name in ("unjoin_edge_command_probe.py", "join_probe.py", "untrim_holes_probe.py"):
+                    helper = Path(__file__).with_name(name)
+                    shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("generate_document_units_reference.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -609,7 +631,7 @@ def _owned_artifact_request(request):
                 operation["artifact_path"] = str(Path(job) / f"orientation-{index}.3dm")
             elif operation.get("op") in ("document_brep", "document_brep_import"):
                 operation["artifact_path"] = str(Path(job) / f"document-brep-{index}.3dm")
-            elif operation.get("op") in ("brep_merge_edge", "brep_remove_holes"):
+            elif operation.get("op") in ("brep_merge_edge", "brep_remove_holes", "brep_unjoin_edges"):
                 source = operation.get("source")
                 if not isinstance(source, Mapping):
                     raise OracleProtocolError("B-rep operation requires a source object")
@@ -617,7 +639,7 @@ def _owned_artifact_request(request):
             elif operation.get("op") == "brep_join":
                 operation["artifact_paths"] = [str(Path(job) / f"join-{index}-{part}.3dm")
                     for part in range(len(_artifact_sources(operation)))]
-            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command"):
+            elif operation.get("op") in ("join_command", "merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command"):
                 for part, original_source in enumerate(_artifact_sources(operation)):
                     source = copy.deepcopy(original_source)
                     operation["sources"][part] = source

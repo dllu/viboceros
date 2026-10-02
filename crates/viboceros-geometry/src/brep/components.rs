@@ -17,12 +17,22 @@ impl Brep {
     /// containment, or establish that a component bounds a valid solid. Storage
     /// is linear in faces and edges; union/find work is near-linear in trim uses.
     pub fn edge_connected_face_components(&self) -> Vec<Vec<usize>> {
+        self.edge_connected_face_components_where(|_| true)
+    }
+
+    pub(super) fn edge_connected_face_components_where(
+        &self,
+        include: impl Fn(usize) -> bool,
+    ) -> Vec<Vec<usize>> {
         let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
         let mut ranks = vec![0_u8; self.faces.len()];
         let mut first = vec![usize::MAX; self.edges.len()];
         for (face, value) in self.faces.iter().enumerate() {
             for trim in value.loops.iter().flat_map(|boundary| &boundary.trims) {
                 let Some(edge) = trim.edge else { continue };
+                if !include(edge) {
+                    continue;
+                }
                 if first[edge] == usize::MAX {
                     first[edge] = face;
                 } else {

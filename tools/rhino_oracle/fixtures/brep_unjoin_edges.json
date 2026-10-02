@@ -1,0 +1,727 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-empty",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": []
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-one",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-corner-two",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-corner-three",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0,
+        3,
+        8
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-cap",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-cap-reverse",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-duplicate",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0,
+        0,
+        3,
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-all",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        }
+      },
+      "edges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-reversed",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        },
+        "reversed": true
+      },
+      "edges": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-split-one",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        },
+        "splits": [
+          [
+            0,
+            [
+              0.5,
+              1.5
+            ]
+          ]
+        ]
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "box-split-chain",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ]
+        },
+        "splits": [
+          [
+            0,
+            [
+              0.5,
+              1.5
+            ]
+          ]
+        ]
+      },
+      "edges": [
+        0,
+        12,
+        13
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "pair-joined",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ],
+          "keep_faces": [
+            0,
+            2
+          ]
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "pair-naked",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ],
+          "keep_faces": [
+            0,
+            2
+          ]
+        }
+      },
+      "edges": [
+        1
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "pair-mixed",
+      "source": {
+        "source": {
+          "type": "box",
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            5.0
+          ],
+          "keep_faces": [
+            0,
+            2
+          ]
+        }
+      },
+      "edges": [
+        1,
+        0,
+        2
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-outer-seam",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        1
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-inner-seam",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        4
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-outer-circle",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-inner-circle",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        3
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-bottom",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-all",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "tube-mixed-reverse",
+      "source": {
+        "source": {
+          "type": "solid_tube",
+          "radii": [
+            2.0,
+            5.0
+          ],
+          "height": 8.0
+        }
+      },
+      "edges": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "sphere-seam",
+      "source": {
+        "source": {
+          "type": "sphere",
+          "radius": 5.0
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "nonmanifold-shared",
+      "source": {
+        "source": {
+          "type": "mesh_brep",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              2.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "nonmanifold-all",
+      "source": {
+        "source": {
+          "type": "mesh_brep",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ],
+            [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              2.0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      },
+      "edges": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "compound-one",
+      "source": {
+        "source": {
+          "type": "compound",
+          "parts": [
+            {
+              "source": {
+                "type": "box",
+                "min": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  2.0,
+                  3.0,
+                  5.0
+                ]
+              }
+            },
+            {
+              "source": {
+                "type": "box",
+                "min": [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  12.0,
+                  3.0,
+                  5.0
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "edges": [
+        0
+      ]
+    },
+    {
+      "op": "brep_unjoin_edges",
+      "id": "compound-caps",
+      "source": {
+        "source": {
+          "type": "compound",
+          "parts": [
+            {
+              "source": {
+                "type": "box",
+                "min": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  2.0,
+                  3.0,
+                  5.0
+                ]
+              }
+            },
+            {
+              "source": {
+                "type": "box",
+                "min": [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  12.0,
+                  3.0,
+                  5.0
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "edges": [
+        0,
+        1,
+        2,
+        3,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ]
+}

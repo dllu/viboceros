@@ -48,6 +48,7 @@ mod trim_iso;
 mod trim_region;
 mod untrim;
 pub use untrim::BrepHoleRemoval;
+mod unjoin;
 mod validate;
 
 #[cfg(test)]
@@ -469,7 +470,7 @@ impl BrepFace {
     }
 
     /// Whether this face covers its complete underlying surface domain with
-    /// only the four natural boundary, seam, or singular trims.
+    /// only natural boundary, seam, or singular trims, including split sides.
     pub fn is_untrimmed(&self, tolerance: Tolerance) -> Result<bool, GeometryError> {
         face_covers_full_surface_domain(self, tolerance)
     }
@@ -8959,7 +8960,7 @@ pub(crate) fn face_covers_full_surface_domain(
     face: &BrepFace,
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {
-    if face.loops.len() != 1 || face.loops[0].trims.len() != 4 {
+    if face.loops.len() != 1 || face.loops[0].trims.len() < 4 {
         return Ok(false);
     }
     let domain_u = face.surface.domain_u();
@@ -8970,32 +8971,88 @@ pub(crate) fn face_covers_full_surface_domain(
         Point2::try_new(*domain_u.end(), *domain_v.end())?,
         Point2::try_new(*domain_u.start(), *domain_v.end())?,
     ];
-    let mut seen = [false; 4];
-    for trim in &face.loops[0].trims {
-        let side = match trim.iso {
-            SurfaceIso::South => 0,
-            SurfaceIso::East => 1,
-            SurfaceIso::North => 2,
-            SurfaceIso::West => 3,
-            SurfaceIso::NotIso | SurfaceIso::InteriorUConstant | SurfaceIso::InteriorVConstant => {
+    let side_of = |iso| match iso {
+        SurfaceIso::South => Some(0),
+        SurfaceIso::East => Some(1),
+        SurfaceIso::North => Some(2),
+        SurfaceIso::West => Some(3),
+        _ => None,
+    };
+    // Most natural faces have four trims. Keep that common query free of
+    // allocation; only fragmented sides need interval tables and sorting.
+    if face.loops[0].trims.len() == 4 {
+        let mut seen = [false; 4];
+        for trim in &face.loops[0].trims {
+            let Some(side) = side_of(trim.iso) else {
+                return Ok(false);
+            };
+            if seen[side] {
                 return Ok(false);
             }
-        };
-        if seen[side] {
-            return Ok(false);
+            seen[side] = true;
+            let allowed = [
+                tolerance.absolute().max(trim.tolerance[0]),
+                tolerance.absolute().max(trim.tolerance[1]),
+            ];
+            if !parameter_points_near(trim.curve.start_point()?, corners[side], allowed)
+                || !parameter_points_near(trim.curve.end_point()?, corners[(side + 1) % 4], allowed)
+            {
+                return Ok(false);
+            }
         }
-        seen[side] = true;
+        return Ok(seen.into_iter().all(|side| side));
+    }
+    let mut intervals: [Vec<(Real, Real, Real)>; 4] = std::array::from_fn(|_| Vec::new());
+    for trim in &face.loops[0].trims {
+        let Some(side) = side_of(trim.iso) else {
+            return Ok(false);
+        };
         let allowed = [
             tolerance.absolute().max(trim.tolerance[0]),
             tolerance.absolute().max(trim.tolerance[1]),
         ];
-        if !parameter_points_near(trim.curve.start_point()?, corners[side], allowed)
-            || !parameter_points_near(trim.curve.end_point()?, corners[(side + 1) % 4], allowed)
+        let start = trim.curve.start_point()?;
+        let end = trim.curve.end_point()?;
+        let axis = side % 2;
+        let constant = 1 - axis;
+        if (start.to_array()[constant] - corners[side].to_array()[constant]).abs()
+            > allowed[constant]
+            || (end.to_array()[constant] - corners[side].to_array()[constant]).abs()
+                > allowed[constant]
+        {
+            return Ok(false);
+        }
+        let direction = if side < 2 { 1. } else { -1. };
+        let a = direction * start.to_array()[axis];
+        let b = direction * end.to_array()[axis];
+        if a >= b {
+            return Ok(false);
+        }
+        intervals[side].push((a, b, allowed[axis]));
+    }
+    for (side, ranges) in intervals.iter_mut().enumerate() {
+        if ranges.is_empty() {
+            return Ok(false);
+        }
+        ranges.sort_by(|a, b| a.0.total_cmp(&b.0));
+        let direction = if side < 2 { 1. } else { -1. };
+        let axis = side % 2;
+        let mut cursor = direction * corners[side].to_array()[axis];
+        let mut previous_tolerance = tolerance.absolute();
+        for &(a, b, allowed) in ranges.iter() {
+            if (a - cursor).abs() > allowed.max(previous_tolerance) {
+                return Ok(false);
+            }
+            cursor = b;
+            previous_tolerance = allowed;
+        }
+        if (cursor - direction * corners[(side + 1) % 4].to_array()[axis]).abs()
+            > previous_tolerance
         {
             return Ok(false);
         }
     }
-    Ok(seen.into_iter().all(|side| side))
+    Ok(true)
 }
 
 fn sample_trim_loop(

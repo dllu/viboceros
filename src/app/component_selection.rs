@@ -8,6 +8,7 @@ use viboceros_document::GeometrySnapshot;
 #[derive(Debug, Default)]
 pub(super) struct ComponentSelection {
     picks: BTreeMap<ComponentPick, GeometrySnapshot>,
+    order: Vec<ComponentPick>,
     candidates: Vec<(ComponentPick, GeometrySnapshot)>,
     hover: Option<ComponentPick>,
 }
@@ -19,10 +20,16 @@ impl ComponentSelection {
     pub(super) fn valid_picks(&mut self, document: &Document) -> Vec<ComponentPick> {
         self.picks
             .retain(|pick, snapshot| current(document, *pick, snapshot));
+        self.order.retain(|pick| self.picks.contains_key(pick));
         self.picks.keys().copied().collect()
     }
     pub(super) fn highlights(&mut self, document: &Document) -> Vec<ComponentPick> {
-        let mut picks = self.valid_picks(document);
+        let mut picks = self
+            .picks
+            .iter()
+            .filter(|(pick, snapshot)| current(document, **pick, snapshot))
+            .map(|(pick, _)| *pick)
+            .collect::<Vec<_>>();
         if let Some(hover) = self.hover.filter(|hover| {
             self.candidates
                 .iter()
@@ -41,8 +48,22 @@ impl ComponentSelection {
         picks.dedup();
         picks
     }
+    pub(super) fn checked_picks(
+        &self,
+        document: &Document,
+    ) -> Result<Vec<ComponentPick>, &'static str> {
+        if self
+            .picks
+            .iter()
+            .any(|(pick, snapshot)| !current(document, *pick, snapshot))
+        {
+            return Err("component source changed; select the edges again");
+        }
+        Ok(self.order.clone())
+    }
     pub(super) fn clear(&mut self) {
         self.picks.clear();
+        self.order.clear();
         self.clear_choices();
     }
     pub(super) fn clear_choices(&mut self) {
@@ -61,7 +82,12 @@ impl ComponentSelection {
             .collect::<Result<Vec<_>, _>>()?;
         self.clear_choices();
         for (pick, snapshot) in staged {
-            if !toggle || self.picks.remove(&pick).is_none() {
+            if toggle && self.picks.remove(&pick).is_some() {
+                self.order.retain(|old| *old != pick);
+            } else {
+                if !self.picks.contains_key(&pick) {
+                    self.order.push(pick);
+                }
                 self.picks.insert(pick, snapshot);
             }
         }
@@ -113,6 +139,7 @@ impl VibocerosApp {
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.hole_prompt.is_none()
+            && self.unjoin_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && self.end_analysis_pick.is_none()
@@ -124,7 +151,7 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
-        if !click.preselection {
+        if !click.preselection && self.unjoin_prompt.is_none() {
             if self
                 .hole_prompt
                 .as_ref()
@@ -155,15 +182,19 @@ impl VibocerosApp {
             }
             return;
         }
-        if !self.component_preselection_available() {
+        if click.preselection && !self.component_preselection_available() {
             return;
         }
-        match click.picks.as_slice() {
+        let picks = if self.unjoin_prompt.is_some() {
+            self.unjoinable_picks(click.picks)
+        } else {
+            click.picks
+        };
+        match picks.as_slice() {
             [] => self.component_selection.clear_choices(),
-            [_] => self.select_components(click.picks, true),
+            [_] => self.select_components(picks, click.preselection),
             _ => {
-                match click
-                    .picks
+                match picks
                     .into_iter()
                     .map(|pick| source(&self.document, pick).map(|snapshot| (pick, snapshot)))
                     .collect::<Result<Vec<_>, _>>()
@@ -211,6 +242,9 @@ impl VibocerosApp {
             if self.component_preselection_available() {
                 self.select_components(window.picks, false);
             }
+        } else if self.unjoin_prompt.is_some() {
+            let picks = self.unjoinable_picks(window.picks);
+            self.select_components(picks, false);
         } else {
             self.accept_hole_rectangle(window.picks);
         }
@@ -242,7 +276,7 @@ impl VibocerosApp {
             .cloned();
         match candidate {
             Some((pick, snapshot)) if current(&self.document, pick, &snapshot) => {
-                self.select_components(vec![pick], true)
+                self.select_components(vec![pick], self.unjoin_prompt.is_none())
             }
             Some(_) => {
                 self.component_selection.clear_choices();

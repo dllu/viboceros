@@ -1,0 +1,2735 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "unjoin_edge_command",
+      "id": "box-one-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "box-cap-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "box-cap-Cancel",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "box-all-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          11
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "box-empty-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "pair-naked-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ],
+              "keep_faces": [
+                0,
+                2
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          1
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "pair-joined-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ],
+              "keep_faces": [
+                0,
+                2
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "tube-outer-seam-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          1
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "tube-bottom-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "solid_tube",
+              "radii": [
+                2.0,
+                5.0
+              ],
+              "height": 8.0
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "nonmanifold-shared-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  2.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ],
+                [
+                  1,
+                  0,
+                  3
+                ],
+                [
+                  0,
+                  1,
+                  4
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "wrong-face",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "kind": "face"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "wrong-object",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "object_preselect": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-source-reverse-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                10.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                12.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-source-reverse-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                10.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                12.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-plane-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-plane-Cancel",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-strip-0-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-strip-0-Cancel",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-strip-1-Enter",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-strip-1-Cancel",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "mouse-two-source-reverse",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-3-2-1-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-1-2",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-3",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-3-4",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-2-3-4",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-3-8",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-3-0-2-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-3-0-1-2",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-11-10-9-8-7-6-5-4-3-2-1-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          11
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6-7",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6-7-8",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6-7-8-9",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6-7-8-9-10",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          10
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "order-0-1-2-3-4-5-6-7-8-9-10-11",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          11
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-pre",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-mouse-2-7-8",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-mouse-8-7-2",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-mouse-2-7",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-mouse-7-2",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "mouse"
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-three-0",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                10.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                12.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-three-1",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                2.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "box",
+              "min": [
+                10.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                12.0,
+                3.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ],
+      "components": [
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true
+    }
+  ]
+}

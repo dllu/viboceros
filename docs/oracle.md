@@ -2327,6 +2327,34 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_history.json tools/rhino_oracle/observations/untrim_holes_history.json --timeout 300
 ```
 
+## Joined edge separation
+
+`brep_unjoin_edges` compares the public geometry API on independently built,
+identically exported sources. `unjoin_edge_command` compares actual command
+preselection and owned mouse batches, including genuine external Undo/Redo.
+The saved corpora contain 26 API and 48 command cases. Complete edge/vertex
+tables, surface control nets, UV trims, tolerances, object metadata, source
+identities, and transient component selection remain in the comparison.
+Only command lifecycle events and diagnostic history are excluded.
+
+The command's copied-edge order differs from the API's input order. Captures
+measure preselected batch sizes through twelve and two-/three-edge mouse
+orders, including split shared edges and multiple sources. See
+[command behavior and remaining limits](commands/unjoin-edge.md) and the
+[geometry kernel](geometry/unjoin-edges.md).
+
+The capture helper exports and validates all independent source responses
+before starting Rhino. Owned paths replace caller paths and are cleaned after
+the job. Mouse batches use one command pause, then an owned Enter/Escape event
+to finish the multi-selection prompt. All live captures use private Xvfb.
+
+```sh
+python3 -m unittest tools.rhino_oracle.test_unjoin_edges
+python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/brep_unjoin_edges.json tools/rhino_oracle/observations/brep_unjoin_edges.json
+python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/unjoin_edge_command.json tools/rhino_oracle/observations/unjoin_edge_command.json
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.unjoin_edges_capture tools/rhino_oracle/fixtures/unjoin_edge_command.json --timeout 300
+```
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

@@ -3,6 +3,27 @@
 use super::Brep;
 
 impl Brep {
+    /// Flags edges shared by distinct faces in one traversal. Same-face seams
+    /// are excluded, even when their edge has multiple trim uses.
+    pub fn edges_shared_by_distinct_faces(&self) -> Vec<bool> {
+        let mut first = vec![usize::MAX; self.edges.len()];
+        let mut shared = vec![false; self.edges.len()];
+        for (index, face) in self.faces.iter().enumerate() {
+            for edge in face
+                .loops
+                .iter()
+                .flat_map(|boundary| &boundary.trims)
+                .filter_map(|trim| trim.edge)
+            {
+                if first[edge] == usize::MAX {
+                    first[edge] = index;
+                } else if first[edge] != index {
+                    shared[edge] = true;
+                }
+            }
+        }
+        shared
+    }
     /// Exact trim-use counts in edge-index order, computed in one traversal.
     /// Prefer this to repeated `edge_use_count` calls when inspecting all edges.
     /// Singular trims have no edge and do not contribute.
@@ -96,6 +117,7 @@ mod tests {
                 for brep in [source.clone(), source.reversed(), flipped_face] {
                     let uses = brep.trim_uses();
                     let counts = brep.edge_use_counts();
+                    let shared = brep.edges_shared_by_distinct_faces();
                     assert_eq!(counts.len(), brep.edges.len());
                     let mut expected_manifold = true;
                     let mut expected_closed = true;
@@ -107,6 +129,12 @@ mod tests {
                             .collect::<Vec<_>>();
                         assert_eq!(brep.edge_use_count(edge), Some(edge_uses.len()));
                         assert_eq!(count, edge_uses.len());
+                        assert_eq!(
+                            shared[edge],
+                            edge_uses.first().is_some_and(|first| edge_uses
+                                .iter()
+                                .any(|usage| usage.face != first.face))
+                        );
                         expected_manifold &= edge_uses.len() <= 2;
                         expected_closed &= edge_uses.len() == 2;
                         expected_solid &= edge_uses.len() == 2

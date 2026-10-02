@@ -45,6 +45,7 @@ impl VibocerosApp {
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
             && self.hole_prompt.is_none()
+            && self.unjoin_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.component_selection.has_choices()
@@ -177,6 +178,8 @@ impl VibocerosApp {
                         prompt.name()
                     } else if self.hole_prompt.is_some() {
                         "UntrimHoles"
+                    } else if self.unjoin_prompt.is_some() {
+                        "UnjoinEdge"
                     } else if self.component_selection.has_choices() {
                         "Select component"
                     } else {
@@ -248,6 +251,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {
                                 prompt.hint()
+                            } else if self.unjoin_prompt.is_some() {
+                                "Select joined edges; Enter applies, Esc cancels"
                             } else if self.component_selection.has_choices() {
                                 "Choose a component by number, or pick again"
                             } else if self.active_command.is_some() {

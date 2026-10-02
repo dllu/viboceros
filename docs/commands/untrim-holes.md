@@ -77,7 +77,8 @@ topology compaction by exact curves/surfaces, rejecting ambiguous or missing
 matches. Rust tests also exercise real egui click/drag events, options, ambiguity,
 cancellation, CPlane interaction, stale sources, and local/external Undo. Native
 option changes between accepted picks remain unmeasured. Generic mesh/SubD
-component preselection and consumers beyond UntrimHoles remain pending.
+component preselection remains pending. [UnjoinEdge](unjoin-edge.md) also
+consumes surface/B-rep component preselection.
 
 See [kernel and native evidence](../geometry/remove-holes.md). All live captures
 use private Xvfb displays. Replaying saved observations requires no Rhino GUI:

@@ -30,6 +30,7 @@ Rhino's complete command set is still a work in progress.
 - [Merge redundant surface/B-rep edges](merge-edges.md)
 - [Merge a selected edge or its immediate neighbors](merge-edge.md)
 - [Split a selected surface/B-rep edge](split-edge.md)
+- [Separate joined surface/B-rep edges](unjoin-edge.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
@@ -269,6 +270,7 @@ OffsetMultiple 1 6,0,0 OffsetCount=3
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]
+UnjoinEdge object-id edge-index[,edge-index...] [object-id edge-index[,edge-index...] ...]
 Explode
 Length
 Curvature MarkCurvature=No 2,0,0
