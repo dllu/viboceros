@@ -93,3 +93,51 @@ fn natural_seams_and_singularities_are_noops() {
         }
     }
 }
+
+#[test]
+fn selected_face_crop_preserves_unselected_faces_and_shared_topology() {
+    let first =
+        Brep::try_rectangular_surface_face(surface(), 2.0..=8., 1.0..=7., Tolerance::DEFAULT)
+            .unwrap();
+    let second = first
+        .transformed(
+            AffineTransform3::from_translation(Vector3::try_new(20., 0., 0.).unwrap()),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+    let original = Brep::try_combine(vec![first, second], Tolerance::DEFAULT).unwrap();
+    for mode in [
+        BrepSurfaceShrinkMode::Standard,
+        BrepSurfaceShrinkMode::ToEdge,
+    ] {
+        let result = original
+            .try_shrunk_surface_faces(&[0, 0], mode, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(result.faces()[0].surface().domain_u(), 2.0..=8.);
+        assert_eq!(result.faces()[1], original.faces()[1]);
+        assert_eq!(result.edges(), original.edges());
+        assert_eq!(result.vertices(), original.vertices());
+        assert_eq!(
+            original
+                .try_shrunk_surface_faces(&[], mode, Tolerance::DEFAULT)
+                .unwrap(),
+            original
+        );
+        assert!(matches!(
+            original.try_shrunk_surface_faces(&[0, 2], mode, Tolerance::DEFAULT),
+            Err(GeometryError::BrepFaceIndexOutOfRange {
+                face: 2,
+                face_count: 2
+            })
+        ));
+        let all = result
+            .try_shrunk_surface_faces(&[1], mode, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(
+            all,
+            original
+                .try_shrunk_surfaces(mode, Tolerance::DEFAULT)
+                .unwrap()
+        );
+    }
+}

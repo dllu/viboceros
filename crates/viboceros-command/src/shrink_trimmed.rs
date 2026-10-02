@@ -2,6 +2,18 @@
 use super::*;
 use viboceros_geometry::BrepSurfaceShrinkMode;
 
+mod selection;
+pub use selection::ShrinkTrimmedSelection;
+
+const FACE_USAGE: &str = "ShrinkTrimmedSrf object-id face-index[,face-index...] [object-id face-index[,face-index...] ...]";
+
+fn command_name(mode: BrepSurfaceShrinkMode) -> &'static str {
+    match mode {
+        BrepSurfaceShrinkMode::Standard => "ShrinkTrimmedSrf",
+        BrepSurfaceShrinkMode::ToEdge => "ShrinkTrimmedSrfToEdge",
+    }
+}
+
 #[cfg(test)]
 mod tests;
 
@@ -9,16 +21,17 @@ pub(super) struct ShrinkTrimmedCommand(pub(super) BrepSurfaceShrinkMode);
 
 impl Command for ShrinkTrimmedCommand {
     fn name(&self) -> &'static str {
-        match self.0 {
-            BrepSurfaceShrinkMode::Standard => "ShrinkTrimmedSrf",
-            BrepSurfaceShrinkMode::ToEdge => "ShrinkTrimmedSrfToEdge",
-        }
+        command_name(self.0)
     }
 
     fn object_selection_prompt(
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if !arguments.is_empty() && self.0 == BrepSurfaceShrinkMode::Standard {
+            parse_faces(arguments)?;
+            return Ok(None);
+        }
         require_consumed(arguments, 0, self.name())?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
@@ -51,64 +64,33 @@ impl ShrinkTrimmedCommand {
         arguments: &[&str],
         postselected: bool,
     ) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, self.name())?;
-        if document.selected_object_count() == 0 {
-            return Err(CommandError::NoObjectsSelected);
+        if self.0 == BrepSurfaceShrinkMode::ToEdge {
+            require_consumed(arguments, 0, self.name())?;
         }
-        let tolerance = document.tolerance();
-        let sources = document.selected_objects().collect::<Vec<_>>();
-        let mut staged = Vec::new();
-        let mut retained = Vec::new();
-        let mut shrunk = 0usize;
-        let mut unchanged = 0usize;
-        let mut eligible = Vec::new();
-        for object in sources {
-            let converted;
-            let brep = match object.geometry() {
-                Geometry::Brep(brep) => brep,
-                Geometry::NurbsSurface(surface) => {
-                    converted = Brep::try_surface_face_with_native_edge_parameters(
-                        surface.clone(),
-                        tolerance,
-                    )?;
-                    &converted
-                }
-                _ => {
-                    retained.push(object.id());
-                    continue;
-                }
-            };
-            eligible.push(object.id());
-            let result = brep.try_shrunk_surfaces(self.0, tolerance)?;
-            let count = result
-                .faces()
-                .iter()
-                .zip(brep.faces())
-                .filter(|(a, b)| a.surface() != b.surface())
-                .count();
-            shrunk += count;
-            unchanged += brep.faces().len() - count;
-            if count == 0 {
-                retained.push(object.id());
-            } else {
-                staged.push((object.id(), Geometry::Brep(result)));
-            }
-        }
-        if eligible.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let order = staged.iter().map(|(id, _)| *id).collect::<Vec<_>>();
-        if postselected && !staged.is_empty() {
-            document.release_command_selection_on_history_replay(eligible)?;
-            document.clear_selection();
-        }
-        document.replace_object_geometries(staged)?;
-        document.move_objects_to_end_in_order(order)?;
-        if postselected {
-            document.select_command_results(retained)?;
-        }
-        Ok(format!(
-            "Shrunk {shrunk} surface(s); {unchanged} already shrunk"
-        ))
+        let faces = parse_faces(arguments)?;
+        ShrinkTrimmedSelection::prepare(document, self.0, faces)?.apply(document, postselected)
     }
+}
+
+fn parse_faces(arguments: &[&str]) -> Result<Vec<(ObjectId, usize)>, CommandError> {
+    if !arguments.len().is_multiple_of(2) {
+        return Err(CommandError::Usage(FACE_USAGE));
+    }
+    let mut result = Vec::new();
+    for pair in arguments.chunks_exact(2) {
+        let id = pair[0]
+            .parse::<ObjectId>()
+            .map_err(|_| CommandError::Usage(FACE_USAGE))?;
+        for face in pair[1].split(',') {
+            if result.len() >= 100_000 {
+                return Err(CommandError::Usage(FACE_USAGE));
+            }
+            result.push((
+                id,
+                face.parse::<usize>()
+                    .map_err(|_| CommandError::Usage(FACE_USAGE))?,
+            ));
+        }
+    }
+    Ok(result)
 }

@@ -79,3 +79,87 @@ fn already_shrunk_command_preserves_redo_and_selection() {
     doc.redo().unwrap();
     assert!(doc.object(peer).is_some());
 }
+
+#[test]
+fn face_targets_stage_atomically_preserve_neighbors_and_reject_stale_sources() {
+    let mut doc = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    let part =
+        Brep::try_rectangular_surface_face(plane(), 0.2..=0.8, 0.1..=0.9, doc.tolerance()).unwrap();
+    let source = Brep::try_combine(vec![part.clone(), part.reversed()], doc.tolerance()).unwrap();
+    let id = doc.add_geometry(Geometry::Brep(source.clone())).unwrap();
+    let whole = doc.add_geometry(Geometry::Brep(source.clone())).unwrap();
+    let group = doc.add_group(Some("Faces".into()), [id, whole]).unwrap();
+    doc.clear_history().unwrap();
+    assert!(
+        registry
+            .execute(&mut doc, &format!("ShrinkTrimmedSrf {id} 0,2"))
+            .is_err()
+    );
+    assert!(!doc.can_undo());
+    assert_eq!(
+        doc.object(id).unwrap().geometry(),
+        &Geometry::Brep(source.clone())
+    );
+    doc.select_objects_direct([whole], SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut doc, &format!("ShrinkTrimmedSrf {id} 0,0"))
+        .unwrap();
+    let Geometry::Brep(result) = doc.object(id).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(result.faces()[1], source.faces()[1]);
+    assert_eq!(result.edges(), source.edges());
+    assert_eq!(doc.object(id).unwrap().group_ids(), &[group]);
+    assert!(doc.is_selected(whole));
+    assert!(!doc.is_selected(id));
+    doc.undo().unwrap();
+    assert_eq!(
+        doc.object(id).unwrap().geometry(),
+        &Geometry::Brep(source.clone())
+    );
+    assert!(!doc.can_undo());
+    assert!(doc.can_redo());
+    let plan =
+        ShrinkTrimmedSelection::prepare(&doc, BrepSurfaceShrinkMode::Standard, [(id, 1)]).unwrap();
+    doc.replace_object_geometries([(id, Geometry::Brep(source.reversed()))])
+        .unwrap();
+    let changed = doc.objects().cloned().collect::<Vec<_>>();
+    assert!(matches!(
+        plan.commit(&mut doc, true),
+        Err(CommandError::ShrinkTrimmedStale)
+    ));
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), changed);
+    assert!(
+        registry
+            .execute(&mut doc, &format!("ShrinkTrimmedSrfToEdge {id} 0"))
+            .is_err()
+    );
+}
+
+#[test]
+fn natural_face_noop_preserves_redo_and_preparation_rejects_changed_tolerance() {
+    let mut doc = Document::default();
+    let id = doc.add_geometry(Geometry::NurbsSurface(plane())).unwrap();
+    let peer = doc
+        .add_geometry(Geometry::Point(Point3::try_new(20., 0., 0.).unwrap()))
+        .unwrap();
+    doc.undo().unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let plan =
+        ShrinkTrimmedSelection::prepare(&doc, BrepSurfaceShrinkMode::Standard, [(id, 0)]).unwrap();
+    plan.commit(&mut doc, false).unwrap();
+    assert_eq!(doc.object(id).unwrap(), &before);
+    assert!(doc.can_redo());
+    doc.redo().unwrap();
+    assert!(doc.object(peer).is_some());
+    let plan =
+        ShrinkTrimmedSelection::prepare(&doc, BrepSurfaceShrinkMode::Standard, [(id, 0)]).unwrap();
+    doc.set_tolerance(Tolerance::try_new(0.01, 1e-6, 0.001).unwrap());
+    assert!(matches!(
+        plan.commit(&mut doc, false),
+        Err(CommandError::ShrinkTrimmedStale)
+    ));
+    assert_eq!(doc.object(id).unwrap(), &before);
+}

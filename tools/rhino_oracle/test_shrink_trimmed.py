@@ -4,14 +4,14 @@ import unittest
 from pathlib import Path
 from .client import OracleProtocolError, _owned_artifact_request
 from .shrink_trimmed_probe import validate
-from .shrink_trimmed_cases import request, extended_request, geometry_request
+from .shrink_trimmed_cases import request, extended_request, geometry_request, face_request, face_picking_request
 from .shrink_trimmed_capture import validate_request
 from .shrink_trimmed_replay import canonical_response
 
 
 class ShrinkTrimmedTests(unittest.TestCase):
     def test_saved_sources_are_generated_without_native_outputs(self):
-        for name,make in [('shrink_trimmed_surfaces',request),('shrink_trimmed_history',extended_request),('shrink_trimmed_geometry',geometry_request)]:
+        for name,make in [('shrink_trimmed_surfaces',request),('shrink_trimmed_history',extended_request),('shrink_trimmed_geometry',geometry_request),('shrink_trimmed_faces',face_request),('shrink_trimmed_face_picking',face_picking_request)]:
             saved=json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved,make())
             with _owned_artifact_request(saved) as owned:
@@ -27,8 +27,23 @@ class ShrinkTrimmedTests(unittest.TestCase):
                 with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(invalid)
             invalid=copy.deepcopy(owned);invalid['iterations']=2
             with self.assertRaises(ValueError):validate_request(invalid)
+
+    def test_rejects_invalid_face_and_mouse_targets_before_launch(self):
+        with _owned_artifact_request(face_request()) as owned:
+            op=owned['operations'][0]
+            for key,value in [('components',[]),('components',[[0,True]]),('components',[[1,0]]),
+                    ('components',[[0,-1]]),('objects',[True]),('objects',[0,0]),
+                    ('objects',[2]),('pick','unsupported'),('finish','Undo'),('preselect',False)]:
+                invalid=copy.deepcopy(op);invalid[key]=value
+                with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(invalid)
             invalid=copy.deepcopy(owned);invalid['operations'][1]['id']=invalid['operations'][0]['id']
             with self.assertRaises(ValueError):validate_request(invalid)
+        with _owned_artifact_request(face_picking_request()) as owned:
+            op=owned['operations'][0]
+            for key,value in [('steps',[]),('components',[[0,0]]),('preselect',True),
+                    ('steps',[dict(kind='click',component=[0,0],modifiers='unsafe')])]:
+                invalid=copy.deepcopy(op);invalid[key]=value
+                with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(invalid)
 
     def test_identity_sort_does_not_normalize_geometry_or_numeric_indices(self):
         req=dict(operations=[dict(id='case',sources=[{},{}])])

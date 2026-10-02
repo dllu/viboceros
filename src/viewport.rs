@@ -1089,7 +1089,16 @@ impl Viewport {
                         (input.component_preselection
                             && modifiers.shift
                             && (modifiers.ctrl || modifiers.command))
-                            .then_some((ComponentPickFilter::Any, true))
+                            .then_some((
+                                if input.object_filter
+                                    == Some(ObjectSelectionFilter::SurfaceComponents)
+                                {
+                                    ComponentPickFilter::Faces
+                                } else {
+                                    ComponentPickFilter::Any
+                                },
+                                true,
+                            ))
                     })
             })
             .flatten();

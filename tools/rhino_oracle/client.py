@@ -235,6 +235,9 @@ class OracleClient:
                 raise OracleProtocolError("shrink commands require one iteration")
             for operation in request["operations"]:
                 if operation.get("op") in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command"): validate(operation)
+            if any(op.get("pick") == "sequence" for op in request["operations"]):
+                from .component_picking import ComponentPicker
+                interaction = ComponentPicker()
         if any(op.get("op") == "untrim_command" for op in request.get("operations", [])):
             from .untrim_component_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -483,7 +486,7 @@ class OracleClient:
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") for op in request.get("operations", [])):
-                for name in ("shrink_trimmed_probe.py", "owned_brep_command.py", "join_probe.py"):
+                for name in ("shrink_trimmed_probe.py", "owned_brep_command.py", "join_probe.py", "shrink_face_input.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "untrim_command" for op in request.get("operations", [])):

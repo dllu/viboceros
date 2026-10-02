@@ -9,6 +9,17 @@ from .hole_picking import HolePicker
 
 class ComponentPicker(HolePicker):
     def send_input(self, name, x, y, window):
+        if name.startswith('@component-finish:'):
+            match = re.fullmatch(r'@component-finish:[A-Za-z0-9_.-]{1,100}:(Enter|Cancel)', name)
+            if match is None: raise ValueError('invalid owned component finish')
+            key = 'Return' if match[1] == 'Enter' else 'Escape'
+            subprocess.run(['xdotool', 'windowactivate', '--sync', window], check=True, timeout=10)
+            try:
+                subprocess.run(['xdotool', 'keydown', key], check=True, timeout=10)
+                time.sleep(.15)
+            finally:
+                subprocess.run(['xdotool', 'keyup', key], check=True, timeout=10)
+            return True
         if not name.startswith('@component-'):
             return super().send_input(name, x, y, window)
         if name.startswith('@component-key:'):

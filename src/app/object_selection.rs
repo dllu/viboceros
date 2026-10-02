@@ -51,6 +51,11 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "ShrinkTrimmedSrf"
+            && self.phase == ObjectPromptPhase::Selecting
+        {
+            return "Select surfaces or polysurfaces; Ctrl/Command+Shift selects faces; Enter applies, Esc cancels";
+        }
         if self.special_selection.is_some() {
             return "Select objects; SelAll or SelNone adjusts selection; Enter finishes, Esc cancels";
         }
@@ -498,6 +503,9 @@ impl VibocerosApp {
             return self.continue_cloud_removal(input, pending);
         }
         if input.is_empty() {
+            if self.finish_shrink_faces(pending.postselected) {
+                return true;
+            }
             if matches!(
                 pending.phase,
                 ObjectPromptPhase::Menu(_) | ObjectPromptPhase::Choice(_)
@@ -675,6 +683,9 @@ impl VibocerosApp {
             }
             if normalized == "selnone" {
                 self.document.clear_selection();
+                if self.shrink_prompt_mode().is_some() {
+                    self.component_selection.clear();
+                }
             } else {
                 let ids = self
                     .document
@@ -926,6 +937,12 @@ impl VibocerosApp {
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
         if let Some(pending) = self.object_prompt.take() {
+            if matches!(
+                pending.description.command,
+                "ShrinkTrimmedSrf" | "ShrinkTrimmedSrfToEdge"
+            ) {
+                self.component_selection.clear();
+            }
             if let Some(selection_before) = pending.selection_before {
                 if let Err(error) = self
                     .document

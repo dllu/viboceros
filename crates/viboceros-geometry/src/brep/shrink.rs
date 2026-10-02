@@ -31,9 +31,43 @@ impl Brep {
         mode: BrepSurfaceShrinkMode,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.shrink_surfaces(mode, tolerance, None)
+    }
+
+    /// Restrict only the indexed faces, preserving every unselected face and
+    /// all shared vertices and spatial edges. Duplicate indices are accepted
+    /// once. All indices are checked before cropping; an empty list is a no-op.
+    pub fn try_shrunk_surface_faces(
+        &self,
+        faces: &[usize],
+        mode: BrepSurfaceShrinkMode,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut selected = vec![false; self.faces.len()];
+        for &face in faces {
+            let entry = selected
+                .get_mut(face)
+                .ok_or(GeometryError::BrepFaceIndexOutOfRange {
+                    face,
+                    face_count: self.faces.len(),
+                })?;
+            *entry = true;
+        }
+        self.shrink_surfaces(mode, tolerance, Some(&selected))
+    }
+
+    fn shrink_surfaces(
+        &self,
+        mode: BrepSurfaceShrinkMode,
+        tolerance: Tolerance,
+        selected: Option<&[bool]>,
+    ) -> Result<Self, GeometryError> {
         let mut result = self.clone();
         let mut changed = false;
-        for face in &mut result.faces {
+        for (index, face) in result.faces.iter_mut().enumerate() {
+            if selected.is_some_and(|selected| !selected[index]) {
+                continue;
+            }
             let outer = &face.loops[0];
             let mut bounds = None;
             let mut iso_ends = None;

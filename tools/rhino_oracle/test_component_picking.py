@@ -7,6 +7,23 @@ from .component_picking import ComponentPicker
 
 
 class ComponentPickingTests(unittest.TestCase):
+    def test_component_finish_keys_are_scoped_and_released_on_failure(self):
+        for value,key in [('Enter','Return'),('Cancel','Escape')]:
+            for fail in (False,True):
+                calls=[]
+                def run(command,**kwargs):
+                    calls.append(command)
+                    if fail and command[1]=='keydown':raise subprocess.CalledProcessError(1,command)
+                with patch('tools.rhino_oracle.component_picking.subprocess.run',side_effect=run),patch('tools.rhino_oracle.component_picking.time.sleep'):
+                    if fail:
+                        with self.assertRaises(subprocess.CalledProcessError):ComponentPicker().send_input('@component-finish:owned:'+value,'1','1','123')
+                    else:ComponentPicker().send_input('@component-finish:owned:'+value,'1','1','123')
+                self.assertEqual(calls[0],['xdotool','windowactivate','--sync','123'])
+                self.assertEqual(calls[-1],['xdotool','keyup',key])
+        with patch('tools.rhino_oracle.component_picking.subprocess.run') as run:
+            with self.assertRaises(ValueError):ComponentPicker().send_input('@component-finish:owned:Delete','1','1','123')
+            run.assert_not_called()
+
     def test_modifier_sequence_activates_owned_window_and_releases_on_failure(self):
         for kind in ('click','window'):
             for modifiers, keys in [('plain',[]),('ctrl',['ctrl']),('shift',['shift']),('sub',['ctrl','shift']),('alt',['alt'])]:

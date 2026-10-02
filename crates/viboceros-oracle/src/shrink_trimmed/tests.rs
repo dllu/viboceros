@@ -35,6 +35,11 @@ fn independent_sources_match_both_native_shrink_commands_and_history() {
             ),
             44,
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/shrink_trimmed_faces.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/shrink_trimmed_faces.json"),
+            22,
+        ),
     ] {
         let request: ProbeRequest = serde_json::from_str(input).unwrap();
         let expected: Value = serde_json::from_str(capture).unwrap();
@@ -106,4 +111,36 @@ fn shrink_results_roundtrip_3dm_with_tight_trims_seams_signed_weights_and_shared
         count += 1;
     }
     assert_eq!(count, 5);
+    let faces: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/shrink_trimmed_faces.json"
+    ))
+    .unwrap();
+    let mut partial = 0;
+    for operation in faces.operations {
+        let Operation::ShrinkTrimmedSrfCommand { id, fixture } = operation else {
+            continue;
+        };
+        if !["standard-joined-faces-0", "standard-disjoint-faces-0"].contains(&id.as_str()) {
+            continue;
+        }
+        let result = fixture.sources[0]
+            .brep
+            .build(Tolerance::DEFAULT)
+            .unwrap()
+            .try_shrunk_surface_faces(
+                &[0],
+                viboceros_geometry::BrepSurfaceShrinkMode::Standard,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        let file = OracleTemporaryFile::new("shrink-partial-result");
+        crate::brep_source::write_shared_artifact(
+            &Geometry::Brep(result),
+            file.path.to_str().unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        partial += 1;
+    }
+    assert_eq!(partial, 2);
 }

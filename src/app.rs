@@ -129,6 +129,7 @@ impl SelectionMenu {
 
 mod command_line;
 mod component_selection;
+mod shrink_trimmed;
 #[cfg(test)]
 use command_line::command_completions;
 mod align;
@@ -2075,7 +2076,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_hole_command(&input)
+        if self.try_start_shrink_faces(&input)
+            || self.try_start_hole_command(&input)
             || self.try_start_unjoin_command(&input)
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
@@ -8201,7 +8203,7 @@ impl eframe::App for VibocerosApp {
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
-        if self.unjoin_prompt.is_none() {
+        if self.unjoin_prompt.is_none() && self.shrink_prompt_mode().is_none() {
             self.component_selection.valid_picks(&self.document);
         }
         let component_highlights = self.component_selection.highlights(&self.document);

@@ -66,7 +66,7 @@ impl ComponentSelection {
             .iter()
             .any(|(pick, snapshot)| !current(document, *pick, snapshot))
         {
-            return Err("component source changed; select the edges again");
+            return Err("component source changed; select the components again");
         }
         Ok(self.order.clone())
     }
@@ -149,7 +149,9 @@ impl VibocerosApp {
             && self.selection_menu.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
-            && self.object_prompt.is_none()
+            && (self.object_prompt.is_none()
+                || self.shrink_prompt_mode()
+                    == Some(viboceros_geometry::BrepSurfaceShrinkMode::Standard))
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()

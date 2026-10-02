@@ -179,6 +179,7 @@ mod fillet;
 mod fillet_corners;
 mod flip;
 mod shrink_trimmed;
+pub use shrink_trimmed::ShrinkTrimmedSelection;
 mod unjoin_edge;
 mod untrim;
 mod untrim_edge;
@@ -17837,6 +17838,10 @@ pub enum CommandError {
     UnjoinEdgeUnavailable,
     #[error("UnjoinEdge source or tolerance changed; select the edges again")]
     UnjoinEdgeStale,
+    #[error("ShrinkTrimmedSrf requires accessible surface or polysurface faces")]
+    ShrinkTrimmedUnavailable,
+    #[error("shrink source or tolerance changed; select surfaces or faces again")]
+    ShrinkTrimmedStale,
 
     #[error("none of the selected objects can be exploded")]
     NoExplodableObjects,

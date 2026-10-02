@@ -103,4 +103,46 @@ def geometry_request():
     return dict(protocol_version=1,iterations=1,operations=operations)
 
 
+def face_request():
+    from .untrim_multiface_cases import request as multiface_request
+    parents=request()['operations']+geometry_request()['operations']
+    def source(name):
+        return copy.deepcopy(next(op for op in parents if op['id']=='standard-'+name+'-pre-1')['sources'][0])
+    disjoint=dict(brep=copy.deepcopy(next(op for op in multiface_request()['operations']
+        if op['id']=='multi-disconnected-similar-0-keep-0')['sources'][0]['brep']))
+    operations=[]
+    for edge in (False,True):
+        prefix='edge' if edge else 'standard'
+        op_name='shrink_trimmed_srf_to_edge_command' if edge else 'shrink_trimmed_srf_command'
+        for name,src,faces in [('annulus',source('annulus'),[0]),('joined',source('joined'),[0]),
+                ('joined',source('joined'),[1]),('joined',source('joined'),[0,1]),
+                ('disjoint',disjoint,[0]),('disjoint',disjoint,[1]),('disjoint',disjoint,[0,1]),
+                ('natural',source('natural'),[0]),('reversed-hole',source('reversed-hole'),[0])]:
+            operations.append(dict(op=op_name,id=prefix+'-'+name+'-faces-'+''.join(map(str,faces)),
+                sources=[copy.deepcopy(src)],preselect=True,order=[0],undo_redo=True,
+                components=[[0,i] for i in faces]))
+        for faces in ([1],[1,1,0]):
+            operations.append(dict(op=op_name,id=prefix+'-mixed-whole-faces-'+''.join(map(str,faces)),
+                sources=[source('annulus'),copy.deepcopy(disjoint)],preselect=True,order=[0,1],undo_redo=True,
+                components=[[1,i] for i in faces],objects=[0]))
+    return dict(protocol_version=1,iterations=1,operations=operations)
+
+
+def face_picking_request():
+    import copy
+    source=next(op for op in face_request()['operations'] if op['id']=='standard-disjoint-faces-0')['sources'][0]
+    disjoint=copy.deepcopy(source)
+    operations=[]
+    distant=copy.deepcopy(disjoint['brep']['source']['parts'][1])
+    for cp in distant['source']['surface']['control_points']:cp['point'][0]+=20.
+    for name,steps,cancel in [('first',[(0,0,'sub')],False),('second',[(0,1,'sub')],False),
+            ('both',[(0,0,'sub'),(0,1,'sub')],False),('toggle',[(0,0,'sub'),(0,0,'sub'),(0,1,'sub')],False),
+            ('cancel',[(0,0,'sub')],True),('mixed',[(1,0,'plain'),(0,1,'sub')],False)]:
+        operations.append(dict(op='shrink_trimmed_srf_command',id='standard-face-clicks-'+name,
+            sources=[copy.deepcopy(disjoint),dict(brep=copy.deepcopy(distant))],preselect=False,order=[0,1],undo_redo=True,
+            components=[],pick='sequence',finish='Cancel' if cancel else 'Enter',
+            steps=[dict(kind='click',component=[s,f],modifiers=m) for s,f,m in steps]))
+    return dict(protocol_version=1,iterations=1,operations=operations)
+
+
 if __name__=='__main__':print(json.dumps(request(),indent=2))
