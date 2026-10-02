@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 from unittest.mock import Mock
 
-from .untrim_component_cases import request, partial_request, history_request, upper_request
+from .untrim_component_cases import request, partial_request, history_request, upper_request, edge_order_request, curved_partial_request
 from .untrim_component_capture import capture
 from .untrim_component_probe import validate
 from .client import OracleProtocolError
@@ -14,6 +14,29 @@ ROOT=Path(__file__).parent
 
 
 class UntrimComponentTests(unittest.TestCase):
+    def test_polynomial_and_rational_partial_sources_regenerate(self):
+        fixture=json.loads((ROOT/'fixtures/untrim_curved_partial.json').read_text())
+        observed=json.loads((ROOT/'observations/untrim_curved_partial.json').read_text())
+        self.assertEqual(curved_partial_request(),fixture)
+        self.assertEqual(len(observed['results']),8)
+        self.assertEqual([op['id'] for op in fixture['operations']],[row['id'] for row in observed['results']])
+        client=Mock();client.run_viboceros.return_value=dict(copy.deepcopy(observed),engine='viboceros')
+        self.assertTrue(replay(fixture,observed,client).passed)
+
+    def test_every_rectangular_source_edge_permutation_regenerates(self):
+        from itertools import permutations
+        fixture=json.loads((ROOT/'fixtures/untrim_ordering.json').read_text())
+        observed=json.loads((ROOT/'observations/untrim_ordering.json').read_text())
+        self.assertEqual(edge_order_request(),fixture)
+        self.assertEqual(len(observed['results']),100)
+        self.assertEqual([op['id'] for op in fixture['operations']],[row['id'] for row in observed['results']])
+        for side in ('south','east','north','west'):
+            orders=[tuple(op['sources'][0]['brep']['edge_order']) for op in fixture['operations']
+                if op['id'].startswith('order-'+side+'-') and 'splits' not in op['sources'][0]['brep']]
+            self.assertEqual(len(orders),24);self.assertEqual(set(orders),set(permutations(range(4))))
+        client=Mock();client.run_viboceros.return_value=dict(copy.deepcopy(observed),engine='viboceros')
+        self.assertTrue(replay(fixture,observed,client).passed)
+
     def test_native_local_undo_removes_retained_objects_and_escape_keeps_edits(self):
         fixture=json.loads((ROOT/'fixtures/untrim_history.json').read_text())
         observed=json.loads((ROOT/'observations/untrim_history.json').read_text())
@@ -44,12 +67,20 @@ class UntrimComponentTests(unittest.TestCase):
         self.assertEqual(partial_request(),fixture);self.assertEqual(len(observed['results']),6)
         client=Mock();client.run_viboceros.return_value=dict(copy.deepcopy(observed),engine='viboceros')
         self.assertTrue(replay(fixture,observed,client).passed)
-        for field in ('incidence','weight','uv','input_state'):
+        for field in ('incidence','weight','uv','input_state','component_order'):
             bad=copy.deepcopy(observed);value=bad['results'][0]['value'];g=value['after'][0]['geometry']['definition']
             if field=='incidence':g['topology']['edges'][0][0]=1
             elif field=='weight':g['edges'][0]['curve']['definition']['control_points'][0]['weight']=2.
             elif field=='uv':g['faces'][0]['loops'][0][0]['definition']['domain'][0]+=1.
-            else:value['input_states'][0][0]['groups']=[]
+            elif field=='input_state':value['input_states'][0][0]['groups']=[]
+            else:
+                # A consistent graph permutation must still fail: downstream
+                # commands address these spatial components by numeric index.
+                for edges in (g['edges'],g['topology']['edges']):edges[0],edges[1]=edges[1],edges[0]
+                for face in g['topology']['faces']:
+                    for ring in face['loops']:
+                        for trim in ring['trims']:
+                            if trim['edge'] in (0,1):trim['edge']=1-trim['edge']
             self.assertFalse(replay(fixture,bad,client).passed,field)
     def test_independent_sources_and_immediate_geometry_states_regenerate(self):
         fixture=json.loads((ROOT/'fixtures/untrim_components.json').read_text())

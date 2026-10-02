@@ -1,6 +1,7 @@
 """Source-only exterior-chain, interior-hole, and joined-wall Untrim cases."""
 import copy
 import json
+from itertools import permutations
 from .untrim_cases import request as surface_request
 
 
@@ -76,6 +77,45 @@ def upper_request():
     for op in request()['operations']:
         if op['id'].startswith('tube-hole') and op['pick']=='mouse':
             op=copy.deepcopy(op);op['id']=op['id'].replace('tube-hole','tube-upper-hole');op['components']=[[0,5]];ops.append(op)
+    return dict(protocol_version=1,iterations=1,operations=ops)
+
+
+def edge_order_request():
+    bases=partial_request()['operations'];ops=[]
+    orders=[('source',[0,1,2,3]),('reverse',[3,2,1,0]),('mixed',[1,3,0,2])]
+    orders.extend((''.join(map(str,order)),list(order)) for order in permutations(range(4))
+        if list(order) not in [item[1] for item in orders[:3]])
+    for name,label in [('east-reversed','east'),('west','west'),('north','north'),('south','south')]:
+        base=next(op for op in bases if op['id']=='partial-'+name)
+        for order_name,order in orders:
+            op=copy.deepcopy(base);op['id']='order-'+label+'-'+order_name
+            brep=op['sources'][0]['brep'];brep.pop('reversed',None);brep['edge_order']=order
+            op['components']=[[0,order.index(base['components'][0][1])]];ops.append(op)
+    base=next(op for op in bases if op['id']=='partial-east-reversed')
+    for label,splits in [('south',[[0,[4.]]]),('north',[[2,[-6.]]]),
+            ('both',[[0,[4.,6.]],[2,[-6.,-4.]]]),('picked',[[1,[3.,7.]]])]:
+        op=copy.deepcopy(base);op['id']='order-east-split-'+label
+        brep=op['sources'][0]['brep'];brep.pop('reversed',None);brep['splits']=splits;ops.append(op)
+    return dict(protocol_version=1,iterations=1,operations=ops)
+
+
+def curved_partial_request():
+    bases=partial_request()['operations'];ops=[]
+    source_cases=surface_request()['operations']
+    polynomial=copy.deepcopy(next(op for op in source_cases if op['id']=='paraboloid-annulus-keep-0-pre-0')['sources'][0]['surface'])
+    rational=copy.deepcopy(bases[0]['sources'][0]['brep']['source']['surface'])
+    for index,point in enumerate(rational['control_points']):
+        point['weight']=1.+.25*(index%3);point['point'][2]=float(index%2)
+    for label,surface,ranges in [('polynomial',polynomial,[-1.,1.]),('rational',rational,[0.,10.])]:
+        lo,hi=ranges;inner=[lo+.2*(hi-lo),lo+.8*(hi-lo)]
+        for name,side in [('east-reversed',1),('west',3),('north',2),('south',0)]:
+            op=copy.deepcopy(next(op for op in bases if op['id']=='partial-'+name))
+            op['id']='curved-'+label+'-'+name.replace('-reversed','')
+            brep=op['sources'][0]['brep'];brep.pop('reversed',None)
+            brep['source']['surface']=copy.deepcopy(surface)
+            brep['source']['trim_bounds']=[inner,ranges] if side%2 else [ranges,inner]
+            order=[2,0,3,1];brep['edge_order']=order;op['components']=[[0,order.index(side)]]
+            ops.append(op)
     return dict(protocol_version=1,iterations=1,operations=ops)
 
 

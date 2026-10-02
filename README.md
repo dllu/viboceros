@@ -69,8 +69,8 @@ compatibility is still in progress.
 
 [`Untrim`](docs/commands/untrim.md) restores picked exterior trim runs or holes,
 with immediate edits, remembered options, retained trim objects and local Undo.
-Partial exterior results preserve source edge order; numeric component index
-parity and joined exterior restoration remain unfinished.
+Rectangular partial restoration has verified native edge ordering. Joined exterior
+restoration remains unfinished; see the command's coverage notes.
 [`UntrimAll`](docs/commands/untrim-all.md) removes all trims from standalone
 surfaces. [`UntrimBorder`](docs/commands/untrim-border.md) restores their exterior
 boundary while preserving holes. Both offer `KeepTrimObjects=Yes|No`.

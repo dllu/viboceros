@@ -1,0 +1,918 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "untrim_command",
+      "id": "curved-polynomial-east",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 2,
+                "degree_v": 2,
+                "control_point_count_u": 3,
+                "control_point_count_v": 3,
+                "control_points": [
+                  {
+                    "point": [
+                      -1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      -1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      -2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots_u": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ],
+                "knots_v": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "trim_bounds": [
+                [
+                  -0.6,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0,
+                  1.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-polynomial-west",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 2,
+                "degree_v": 2,
+                "control_point_count_u": 3,
+                "control_point_count_v": 3,
+                "control_points": [
+                  {
+                    "point": [
+                      -1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      -1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      -2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots_u": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ],
+                "knots_v": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "trim_bounds": [
+                [
+                  -0.6,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0,
+                  1.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-polynomial-north",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 2,
+                "degree_v": 2,
+                "control_point_count_u": 3,
+                "control_point_count_v": 3,
+                "control_points": [
+                  {
+                    "point": [
+                      -1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      -1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      -2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots_u": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ],
+                "knots_v": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "trim_bounds": [
+                [
+                  -1.0,
+                  1.0
+                ],
+                [
+                  -0.6,
+                  0.6000000000000001
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-polynomial-south",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 2,
+                "degree_v": 2,
+                "control_point_count_u": 3,
+                "control_point_count_v": 3,
+                "control_points": [
+                  {
+                    "point": [
+                      -1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      -1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      -1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      0,
+                      -2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      -1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      0,
+                      1,
+                      0
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "point": [
+                      1,
+                      1,
+                      2
+                    ],
+                    "weight": 1
+                  }
+                ],
+                "knots_u": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ],
+                "knots_v": [
+                  -1,
+                  -1,
+                  -1,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "trim_bounds": [
+                [
+                  -1.0,
+                  1.0
+                ],
+                [
+                  -0.6,
+                  0.6000000000000001
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          1
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-rational-east",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 1,
+                "degree_v": 1,
+                "control_point_count_u": 2,
+                "control_point_count_v": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      1.0
+                    ],
+                    "weight": 1.25
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0.0
+                    ],
+                    "weight": 1.5
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      1.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "knots_u": [
+                  0,
+                  0,
+                  10,
+                  10
+                ],
+                "knots_v": [
+                  0,
+                  0,
+                  10,
+                  10
+                ]
+              },
+              "trim_bounds": [
+                [
+                  2.0,
+                  8.0
+                ],
+                [
+                  0.0,
+                  10.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          3
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-rational-west",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 1,
+                "degree_v": 1,
+                "control_point_count_u": 2,
+                "control_point_count_v": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      1.0
+                    ],
+                    "weight": 1.25
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0.0
+                    ],
+                    "weight": 1.5
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      1.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "knots_u": [
+                  0,
+                  0,
+                  10,
+                  10
+                ],
+                "knots_v": [
+                  0,
+                  0,
+                  10,
+                  10
+                ]
+              },
+              "trim_bounds": [
+                [
+                  2.0,
+                  8.0
+                ],
+                [
+                  0.0,
+                  10.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          2
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-rational-north",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 1,
+                "degree_v": 1,
+                "control_point_count_u": 2,
+                "control_point_count_v": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      1.0
+                    ],
+                    "weight": 1.25
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0.0
+                    ],
+                    "weight": 1.5
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      1.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "knots_u": [
+                  0,
+                  0,
+                  10,
+                  10
+                ],
+                "knots_v": [
+                  0,
+                  0,
+                  10,
+                  10
+                ]
+              },
+              "trim_bounds": [
+                [
+                  0.0,
+                  10.0
+                ],
+                [
+                  2.0,
+                  8.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          0
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    },
+    {
+      "op": "untrim_command",
+      "id": "curved-rational-south",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "surface_face",
+              "surface": {
+                "degree_u": 1,
+                "degree_v": 1,
+                "control_point_count_u": 2,
+                "control_point_count_v": 2,
+                "control_points": [
+                  {
+                    "point": [
+                      0,
+                      0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10,
+                      0,
+                      1.0
+                    ],
+                    "weight": 1.25
+                  },
+                  {
+                    "point": [
+                      0,
+                      10,
+                      0.0
+                    ],
+                    "weight": 1.5
+                  },
+                  {
+                    "point": [
+                      10,
+                      10,
+                      1.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "knots_u": [
+                  0,
+                  0,
+                  10,
+                  10
+                ],
+                "knots_v": [
+                  0,
+                  0,
+                  10,
+                  10
+                ]
+              },
+              "trim_bounds": [
+                [
+                  0.0,
+                  10.0
+                ],
+                [
+                  2.0,
+                  8.0
+                ]
+              ]
+            },
+            "edge_order": [
+              2,
+              0,
+              3,
+              1
+            ]
+          }
+        }
+      ],
+      "components": [
+        [
+          0,
+          1
+        ]
+      ],
+      "all_similar": false,
+      "keep_trim_objects": false,
+      "pick": "mouse",
+      "finish": "Enter",
+      "undo_redo": true
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 use super::*;
 
 mod boundary;
+mod ordering;
 mod selection;
 pub use boundary::BrepBoundaryRestoration;
 #[cfg(test)]

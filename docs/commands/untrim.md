@@ -24,10 +24,16 @@ command history group.
 
 Interior picks support joined hole walls. Exterior picks support standalone
 faces, including exact partial restoration between natural UV boundaries.
-Partial restoration retains original spatial edge table order; Rhino allocates
-those edge slots differently. Saved replay compares the full geometry and
-incidence graph under an explicit bijective edge permutation. Spatial component
-index parity for partial results remains unfinished.
+Four-edge rectangular UV loops reproduce native spatial edge indices for all 24
+source edge orders. Saved
+cases also cover split source edges, shifted UV domains, reversed face sense,
+and polynomial and rational surfaces. The allocation policy remaps references
+after exact geometry construction. Replay compares every edge record and numeric
+component index directly, with no normalization.
+
+Other initial edge layouts, additional hole-edge allocation classes, and reversed
+spatial proxies have unverified numeric component ordering. Loops outside the
+rectangular allocation policy retain source edge order.
 
 Joined trimmed exterior restoration, partial paths across seams or singularities,
 and multi-edge rectangle picks remain unsupported. Unsupported edits leave the
@@ -38,9 +44,11 @@ singular trims through the validated natural-face constructor.
 
 Source recipes and raw Rhino 8 observations are in
 `tools/rhino_oracle/{fixtures,observations}/untrim_components.json` and
-`untrim_partial.json`, `untrim_upper.json`, and `untrim_history.json`. The 105 cases
-include complete control nets, scalar intervals,
-topology, metadata, per-click geometry and external Undo/Redo. Native geometry is
+`untrim_partial.json`, `untrim_upper.json`, `untrim_history.json`,
+`untrim_ordering.json`, and `untrim_curved_partial.json`. The 213 cases include
+96 rectangular source permutations, four split-edge cases, eight curved-surface
+partial edits, and the original 105 command cases. They retain complete control
+nets, scalar intervals, topology, metadata, per-click geometry and external Undo/Redo. Native geometry is
 never used as an input recipe.
 
 Live captures use private Xvfb and at most eight cases per owned Rhino process:
@@ -49,4 +57,5 @@ Live captures use private Xvfb and at most eight cases per owned Rhino process:
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.untrim_component_capture tools/rhino_oracle/fixtures/untrim_components.json
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_components.json tools/rhino_oracle/observations/untrim_components.json
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_history.json tools/rhino_oracle/observations/untrim_history.json
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_ordering.json tools/rhino_oracle/observations/untrim_ordering.json
 ```

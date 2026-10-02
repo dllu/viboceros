@@ -14,38 +14,6 @@ from .untrim_holes_probe import validate as validate_holes
 from .untrim_component_probe import validate as validate_edge
 
 
-def edge_traversal(value):
-    """Bijectively number edges by trim traversal, preserving every graph record.
-
-    General Untrim's partial edits retain Rust source edge order. Rhino allocates
-    different slots. This comparison checks geometry and complete incidence;
-    it does not assert parity of those numeric spatial component indices.
-    """
-    if isinstance(value,list):
-        for item in value:edge_traversal(item)
-    elif isinstance(value,dict):
-        if value.get('type')=='brep':
-            definition=value['definition'];order=[]
-            topology=definition['topology']
-            for face in topology['faces']:
-                for ring in face['loops']:
-                    for trim in ring['trims']:
-                        index=trim['edge']
-                        if index is not None and index not in order:order.append(index)
-            count=len(definition['edges'])
-            if sorted(order)!=list(range(count)) or len(topology['edges'])!=count:
-                raise OracleProtocolError('Untrim edge traversal is not a topology bijection')
-            inverse={old:new for new,old in enumerate(order)}
-            definition['edges']=[definition['edges'][old] for old in order]
-            topology['edges']=[topology['edges'][old] for old in order]
-            for face in topology['faces']:
-                for ring in face['loops']:
-                    for trim in ring['trims']:
-                        if trim['edge'] is not None:trim['edge']=inverse[trim['edge']]
-        else:
-            for item in value.values():edge_traversal(item)
-
-
 def canonical_response(request, response):
     operations=request["operations"]
     if (response.get("protocol_version")!=1 or response.get("iterations")!=1
@@ -57,7 +25,6 @@ def canonical_response(request, response):
             raise OracleProtocolError("untrim operation order mismatch")
         value=row["value"]
         for field in ("events","history","undo_events","redo_events"):value.pop(field,None)
-        if op['op']=='untrim_command':edge_traversal(value)
         if any(source.get("type")=="box" for source in op["sources"]):
             if op["sources"]!=[dict(type="box")] or value.get("succeeded") is not False:
                 raise OracleProtocolError("expected rejected whole-box selection")

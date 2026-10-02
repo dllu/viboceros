@@ -2329,23 +2329,27 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 
 ## Picked boundary restoration
 
-General [Untrim](commands/untrim.md) has 105 saved private-Xvfb cases:
+General [Untrim](commands/untrim.md) has 213 saved private-Xvfb cases:
 71 preselection/mouse cases, six partial exterior variants, four opposite tube
-opening picks, and 24 local Undo/Enter/Escape sequences. All sources are exported
-independently before Rhino starts. The driver gates inputs on public command
+opening picks, 24 local Undo/Enter/Escape sequences, 96 rectangular source
+permutations, four split-edge variants and eight polynomial/rational surface
+partial edits. All sources are exported independently before Rhino starts.
+The driver gates inputs on public command
 lifecycle events and records complete per-click and per-Undo geometry.
 
 Replay retains control nets, knots, scalar intervals, face sense, vertex records,
-UV trims, metadata and the complete incidence graph. Partial edits retain Rust
-source edge order, which differs from Rhino's allocation. Their spatial edge
-indices are compared through an explicit bijection by trim traversal; numeric
-component index parity remains unfinished. Complete restoration cases additionally
-assert native table order in Rust tests. History captures are split into bounded
-owned jobs, and each finished batch is saved before the next begins.
+UV trims, metadata and the complete incidence graph, including native edge-table
+order and numeric component indices. The rectangular allocation policy stores
+only measured component ordering classes; geometry is constructed independently.
+No edge permutation is applied during comparison. Other partial-loop allocation
+classes remain unverified, as detailed in the command's coverage notes.
+Captures are split into bounded owned jobs, and each finished batch is saved
+before the next begins.
 
 ```sh
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_components.json tools/rhino_oracle/observations/untrim_components.json
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_history.json tools/rhino_oracle/observations/untrim_history.json
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_ordering.json tools/rhino_oracle/observations/untrim_ordering.json
 ```
 
 ## Joined edge separation

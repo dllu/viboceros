@@ -30,9 +30,10 @@ impl Brep {
     /// run also restores the complete boundary when no other trimmed run remains.
     /// Holes preserve exact geometry and traverse joined walls.
     ///
-    /// Partial exterior edits retain existing topology in source order, then
-    /// append exact natural isocurve fragments. Complete restoration reuses the
-    /// first removed spatial edge slot, then appends natural edges. Joined
+    /// Rectangular partial edits with four initial side edges and forward spatial
+    /// proxies reproduce native edge allocation. Other partial loops retain
+    /// source order and append natural fragments. Complete restoration reuses
+    /// the first removed spatial edge slot, then appends natural edges. Joined
     /// natural picks are unchanged. Joined trimmed exterior restoration and
     /// partial runs across seams/singularities return an error. Sources are
     /// unchanged on failure; complete results are validated before return.
@@ -298,6 +299,10 @@ impl Brep {
             replacements[i].2.edge = Some(work.edges.len());
             work.edges.push(replacements[i].1.clone());
         }
+        let mut new_edges = [None; 4];
+        for (side, _, trim) in &replacements {
+            new_edges[*side] = trim.edge;
+        }
         let mut trims = replacements
             .into_iter()
             .map(|(_, _, trim)| trim)
@@ -308,6 +313,7 @@ impl Brep {
             index = (index + 1) % n;
         }
         work.faces[0].loops[0] = BrepLoop::try_new(BrepLoopType::Outer, trims)?;
+        super::ordering::apply(self, marked, new_edges, &mut work);
         compact_retained_faces(&work, work.faces.clone(), tolerance)
     }
 }

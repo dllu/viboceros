@@ -676,14 +676,15 @@ fn picked_outer_runs_restore_exact_natural_paths_and_preserve_retained_fragments
             if partial {
                 assert_eq!(output.vertices.len(), 6);
                 assert_eq!(output.edges.len(), 6);
-                for (old, new) in source
+                for old in source
                     .edges
                     .iter()
                     .enumerate()
                     .filter(|(i, _)| *i != pick)
-                    .zip(&output.edges)
+                    .map(|(_, edge)| edge)
                 {
-                    assert_eq!(old.1.curve, new.curve);
+                    let retained = output.edges.iter().find(|edge| edge.curve == old.curve);
+                    assert_eq!(retained, Some(old));
                 }
                 assert_eq!(output.vertices[..4], source.vertices);
                 assert!(output.faces[0].loops[0].trims.iter().skip(3).all(|trim| {
@@ -730,4 +731,29 @@ fn general_untrim_holes_reuses_joined_topology_traversal_and_validates_before_ed
         );
         assert_eq!(source, before);
     }
+}
+
+#[test]
+fn partial_untrim_preserves_a_reversed_spatial_proxy_and_its_trim_sense() {
+    let mut source =
+        Brep::try_rectangular_surface_face(surface(), 2.0..=8., 0.0..=10., Tolerance::DEFAULT)
+            .unwrap();
+    source.edges[0].curve = source.edges[0].curve.reversed().unwrap();
+    source.edges[0].vertices.reverse();
+    source.faces[0].loops[0].trims[0].reversed_3d = true;
+    source.validate(Tolerance::DEFAULT).unwrap();
+    let original = source.clone();
+    let restored = source
+        .try_untrim_boundary(0, 0, 1, false, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap()
+        .into_brep();
+    assert_eq!(source, original);
+    assert_eq!(restored.edges[0], source.edges[0]);
+    assert_eq!(
+        restored.faces[0].loops[0].trims.last().unwrap(),
+        &source.faces[0].loops[0].trims[0]
+    );
+    restored.validate(Tolerance::DEFAULT).unwrap();
+    assert!((restored.area(Tolerance::DEFAULT).unwrap() - 80.).abs() < 1e-9);
 }

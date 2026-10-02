@@ -33,8 +33,11 @@ def drive(operation, points, host, command, snapshot, states, undo_states):
                     if ack!=pending[0]:return
                     acknowledged.append(True);clock[0]=System.DateTime.UtcNow;return
                 if elapsed<.6:return
-                if pending_kind[0]=='click':states.append(snapshot())
-                else:undo_states.append(snapshot());undone.append(len(states))
+                with open(progress,'a') as stream:stream.write('SNAPSHOT %s begin\n'%pending[0]);stream.flush()
+                state=snapshot()
+                if pending_kind[0]=='click':states.append(state)
+                else:undo_states.append(state);undone.append(len(states))
+                with open(progress,'a') as stream:stream.write('SNAPSHOT %s complete\n'%pending[0]);stream.flush()
                 pending[:]=[];acknowledged[:]=[];pending_kind[:]=[]
             index=len(states)
             name='@hole-finish:%s:%s'%(operation['id'],operation['finish']);x=y=1
