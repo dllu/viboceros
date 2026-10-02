@@ -53,8 +53,10 @@ mod imported_shading_tests;
 mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
+mod component_picking;
 mod curve_sampling;
 mod edge_picking;
+pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
 mod edge_point;
 use curve_sampling::ViewportCurve;
 pub use edge_picking::EdgePick;
@@ -301,6 +303,9 @@ pub struct ViewportInput<'a> {
     pub preview_curve: Option<&'a NurbsCurve>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
+    pub component_preselection: bool,
+    pub component_pick: Option<ComponentPickFilter>,
+    pub component_highlights: &'a [ComponentPick],
     pub edge_highlights: &'a [EdgePick],
     pub edge_endpoints: Option<[Point3; 2]>,
     pub edge_curve: Option<&'a NurbsCurve>,
@@ -349,6 +354,9 @@ impl Default for ViewportInput<'_> {
             preview_curve: None,
             face_pick: None,
             edge_pick: false,
+            component_preselection: false,
+            component_pick: None,
+            component_highlights: &[],
             edge_highlights: &[],
             edge_endpoints: None,
             edge_curve: None,
@@ -372,6 +380,8 @@ pub struct ViewportOutput {
     pub edge_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
     pub face_hit_point: Option<Point3>,
+    pub component_click: Option<ComponentClick>,
+    pub component_window: Option<ComponentWindow>,
     pub picked_point: Option<Point3>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
@@ -455,6 +465,7 @@ pub struct Viewport {
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
     selection_drag_start: Option<Pos2>,
+    component_drag: Option<component_picking::ComponentDrag>,
     lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
     navigation_drag_start: Option<CameraSnapshot>,
@@ -511,6 +522,7 @@ impl Viewport {
             target: NaVector3::zeros(),
             last_rect: None,
             selection_drag_start: None,
+            component_drag: None,
             lasso_drag_path: Vec::new(),
             zoom_window_start: None,
             navigation_drag_start: None,
@@ -1055,7 +1067,51 @@ impl Viewport {
             }
         }
 
-        let component_input = input.face_pick.is_some()
+        let component_available = !input.zoom_window
+            && input.zoom_target.is_none()
+            && input.circular_selection.is_none()
+            && input.fence_selection.is_none()
+            && input.lasso_selection.is_none()
+            && !drafting.active;
+        if self.component_drag.is_some_and(|drag| {
+            !component_available
+                || (drag.preselection && !input.component_preselection)
+                || (!drag.preselection && input.component_pick != Some(drag.filter))
+        }) {
+            self.component_drag = None;
+        }
+        let component_hover_mode = component_available
+            .then(|| {
+                input
+                    .component_pick
+                    .map(|filter| (filter, false))
+                    .or_else(|| {
+                        (input.component_preselection
+                            && modifiers.shift
+                            && (modifiers.ctrl || modifiers.command))
+                            .then_some((ComponentPickFilter::Any, true))
+                    })
+            })
+            .flatten();
+        if response.hovered()
+            && ui.input(|input| input.pointer.button_pressed(PointerButton::Primary))
+        {
+            self.component_drag = component_hover_mode.and_then(|(filter, preselection)| {
+                response
+                    .interact_pointer_pos()
+                    .map(|start| component_picking::ComponentDrag {
+                        start,
+                        filter,
+                        preselection,
+                    })
+            });
+        }
+        let component_mode = self
+            .component_drag
+            .map(|drag| (drag.filter, drag.preselection))
+            .or(component_hover_mode);
+        let component_input = component_mode.is_some()
+            || input.face_pick.is_some()
             || input.edge_pick
             || input.edge_curve.is_some()
             || input.point_cloud_remove_target.is_some();
@@ -1081,6 +1137,43 @@ impl Viewport {
             self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
         }
         let selection_pointer = response.interact_pointer_pos();
+        let component_window = if response.drag_stopped_by(PointerButton::Primary) {
+            self.component_drag.take().and_then(|drag| {
+                let end = selection_pointer?;
+                let mode = input
+                    .rect_selection_mode
+                    .unwrap_or(RectSelectionMode::Automatic);
+                let crossing = mode.crossing(is_crossing_selection(drag.start, end));
+                Some(ComponentWindow {
+                    picks: self.components_in_rectangle(
+                        rect,
+                        Rect::from_two_pos(drag.start, end),
+                        document,
+                        drag.filter,
+                        crossing,
+                        mode.inverted(),
+                    ),
+                    preselection: drag.preselection,
+                    crossing,
+                    inverted: mode.inverted(),
+                })
+            })
+        } else {
+            None
+        };
+        let component_click = if response.clicked_by(PointerButton::Primary) {
+            component_mode.and_then(|(filter, preselection)| {
+                selection_pointer.map(|pointer| ComponentClick {
+                    picks: self.pick_components(pointer, rect, document, filter),
+                    preselection,
+                })
+            })
+        } else {
+            None
+        };
+        if ui.input(|input| input.pointer.button_released(PointerButton::Primary)) {
+            self.component_drag = None;
+        }
         let lasso_capture = matches!(
             input.lasso_selection,
             Some(LassoSelectionInput::Capture { .. })
@@ -1312,7 +1405,8 @@ impl Viewport {
         ) && !input.zoom_window
             && input.zoom_target.is_none()
             && !drafting.active;
-        let selection_pick = if (selecting || object_prompt_selecting)
+        let selection_pick = if component_mode.is_none()
+            && (selecting || object_prompt_selecting)
             && input.rect_selection_mode.is_none()
             && response.clicked_by(PointerButton::Primary)
         {
@@ -1360,6 +1454,13 @@ impl Viewport {
             input.selection_preview,
             input.selection_preview_ids,
         );
+        self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        if let Some((filter, _)) = component_hover_mode
+            && let Some(pointer) = response.hover_pos()
+        {
+            let hover = self.pick_components(pointer, rect, document, filter);
+            self.paint_component_highlights(&painter, rect, document, &hover);
+        }
         for (index, marker) in input.end_markers.iter().enumerate() {
             if let Some(pixel) = self.project(marker.point, rect) {
                 let color = if let Some(color) = input.end_marker_color {
@@ -1474,6 +1575,11 @@ impl Viewport {
         if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
             self.paint_selection_window(&painter, start, end, input.rect_selection_mode);
         }
+        if let (Some(drag), Some(end)) = (self.component_drag, selection_pointer)
+            && response.dragged_by(PointerButton::Primary)
+        {
+            self.paint_selection_window(&painter, drag.start, end, input.rect_selection_mode);
+        }
         if let Some(CircularSelectionInput::PickRadius { center, mode }) = input.circular_selection
             && let Some(edge) = response.hover_pos()
         {
@@ -1580,6 +1686,7 @@ impl Viewport {
         );
 
         let face_hit = (input.face_pick.is_some()
+            && component_mode.is_none()
             && !input.zoom_window
             && input.zoom_target.is_none()
             && response.clicked_by(PointerButton::Primary))
@@ -1619,6 +1726,7 @@ impl Viewport {
                 .then_some(edge_parameter)
                 .flatten(),
             edge_click: (input.edge_pick
+                && component_mode.is_none()
                 && !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Primary))
@@ -1630,7 +1738,10 @@ impl Viewport {
             }),
             face_click,
             face_hit_point,
+            component_click,
+            component_window,
             picked_point: (response.clicked_by(PointerButton::Primary)
+                && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),

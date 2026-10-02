@@ -67,7 +67,7 @@ fn parse_options(
     Ok(options)
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum UntrimHolesComponent {
     Edge(usize),
     Face(usize),
@@ -94,6 +94,57 @@ pub struct UntrimHolesResult {
 }
 
 impl UntrimHolesSelection {
+    /// Filters component preselection by the remembered All setting, ignoring
+    /// wrong kinds and duplicates. Native rejects multiple eligible components.
+    /// Rectangle selection uses the same preparation and keeps its prompt on
+    /// rejection. All indices are checked before any geometry is prepared.
+    pub fn prepare_preselected(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, UntrimHolesComponent)>,
+        options: UntrimHolesOptions,
+    ) -> Result<Option<Self>, CommandError> {
+        options.validate()?;
+        let mut accepted = BTreeSet::new();
+        for (object, component) in picks {
+            if !document.is_object_selectable(object) {
+                return Err(CommandError::UntrimHolesUnavailable);
+            }
+            let geometry = document
+                .object(object)
+                .ok_or(CommandError::UntrimHolesUnavailable)?
+                .geometry();
+            let converted;
+            let brep = match geometry {
+                Geometry::Brep(brep) => brep,
+                Geometry::NurbsSurface(surface) => {
+                    converted = Brep::try_surface_face_with_native_edge_parameters(
+                        surface.clone(),
+                        document.tolerance(),
+                    )?;
+                    &converted
+                }
+                _ => return Err(CommandError::UntrimHolesUnavailable),
+            };
+            let (valid, matches) = match component {
+                UntrimHolesComponent::Edge(index) => (index < brep.edges().len(), !options.all),
+                UntrimHolesComponent::Face(index) => (index < brep.faces().len(), options.all),
+            };
+            if !valid {
+                return Err(CommandError::UntrimHolesUnavailable);
+            }
+            if matches {
+                accepted.insert((object, component));
+            }
+        }
+        match accepted.len() {
+            0 => Ok(None),
+            1 => {
+                let (object, component) = accepted.into_iter().next().unwrap();
+                Self::prepare(document, object, component, options).map(Some)
+            }
+            _ => Err(CommandError::UntrimHolesMultipleComponents),
+        }
+    }
     pub fn prepare(
         document: &Document,
         object: ObjectId,

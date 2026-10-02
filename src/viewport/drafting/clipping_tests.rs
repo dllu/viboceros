@@ -401,6 +401,7 @@ fn camera_plane_targets_match_rhino_conic_admission_and_keep_singular_overlay_la
             "{}",
             row["id"]
         );
+        output.drop_without_applying_deltas();
     }
     assert_eq!(misses, 4);
 }
@@ -453,5 +454,6 @@ fn admitted_behind_camera_snaps_keep_their_overlay_labels() {
             egui::Shape::Text(text) if text.galley.text() == label)),
             "{name}"
         );
+        output.drop_without_applying_deltas();
     }
 }

@@ -68,10 +68,57 @@ impl VibocerosApp {
         let options = UntrimHolesOptions::default()
             .updated(line.split_once(' ').unwrap().1)
             .expect("validated command-owned options");
+        let remembered = self
+            .commands
+            .component_selection_prompt("UntrimHoles")
+            .expect("built-in prompt")
+            .expect("component prompt")
+            .command_line();
+        let remembered = UntrimHolesOptions::default()
+            .updated(remembered.split_once(' ').unwrap().1)
+            .expect("remembered options");
+        let picks = self
+            .component_selection
+            .valid_picks(&self.document)
+            .into_iter()
+            .map(|pick| {
+                (
+                    pick.object,
+                    match pick.kind {
+                        viboceros_command::ComponentSelectionKind::BrepEdge => {
+                            UntrimHolesComponent::Edge(pick.index)
+                        }
+                        viboceros_command::ComponentSelectionKind::BrepFace => {
+                            UntrimHolesComponent::Face(pick.index)
+                        }
+                    },
+                )
+            });
+        // Rhino handles preselection before the command's option tokens.
+        let prepared = UntrimHolesSelection::prepare_preselected(&self.document, picks, remembered);
         self.cancel_interactive_command(false);
+        self.component_selection.clear();
+        self.document.clear_selection();
+        let prepared = match prepared {
+            Ok(prepared) => prepared,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+        };
         match self.document.begin_history_group("UntrimHoles") {
-            Ok(group) => {
-                self.document.clear_selection();
+            Ok(mut group) => {
+                if let Some(prepared) = prepared {
+                    match prepared.commit_in_group(&mut self.document, &mut group) {
+                        Ok(result) => self.log_hole_result(result),
+                        Err(error) => {
+                            self.push_log(format!("Error: {error}"));
+                            self.command_input.clear();
+                            return true;
+                        }
+                    }
+                }
                 self.commands
                     .accept_object_selection_input(&line)
                     .expect("validated prompt");
@@ -250,14 +297,56 @@ impl VibocerosApp {
         match UntrimHolesSelection::prepare(&self.document, object, component, prompt.options)
             .and_then(|selection| selection.commit_in_group(&mut self.document, &mut prompt.group))
         {
-            Ok(result) => self.push_log(format!(
-                "Removed {} hole opening(s) and {} wall face(s); retained {} trim object(s)",
-                result.removed_openings,
-                result.removed_faces,
-                result.retained.len()
-            )),
+            Ok(result) => self.log_hole_result(result),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+    }
+
+    pub(super) fn accept_hole_rectangle(&mut self, picks: Vec<crate::viewport::ComponentPick>) {
+        let Some(prompt) = &mut self.hole_prompt else {
+            return;
+        };
+        if prompt.question.is_some() {
+            return;
+        }
+        if !self.document.history_group_is_current(&prompt.group) {
+            self.finish_hole_command(false);
+            self.push_log("History changed; start UntrimHoles again".into());
+            return;
+        }
+        prompt.candidates = None;
+        let picks = picks.into_iter().map(|pick| {
+            (
+                pick.object,
+                match pick.kind {
+                    viboceros_command::ComponentSelectionKind::BrepEdge => {
+                        UntrimHolesComponent::Edge(pick.index)
+                    }
+                    viboceros_command::ComponentSelectionKind::BrepFace => {
+                        UntrimHolesComponent::Face(pick.index)
+                    }
+                },
+            )
+        });
+        match UntrimHolesSelection::prepare_preselected(&self.document, picks, prompt.options) {
+            Ok(Some(selection)) => {
+                match selection.commit_in_group(&mut self.document, &mut prompt.group) {
+                    Ok(result) => self.log_hole_result(result),
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+            }
+            Ok(None) => {}
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+    }
+
+    fn log_hole_result(&mut self, result: viboceros_command::UntrimHolesResult) {
+        self.push_log(format!(
+            "Removed {} hole opening(s) and {} wall face(s); retained {} trim object(s)",
+            result.removed_openings,
+            result.removed_faces,
+            result.retained.len()
+        ));
     }
 
     pub(super) fn finish_hole_command(&mut self, announce: bool) {

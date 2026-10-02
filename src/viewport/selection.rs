@@ -125,7 +125,7 @@ impl ProjectedPrimitives {
         }
     }
 
-    fn add_triangle(&mut self, vertices: [Option<Pos2>; 3]) {
+    pub(super) fn add_triangle(&mut self, vertices: [Option<Pos2>; 3]) {
         let [Some(first), Some(second), Some(third)] = vertices else {
             return;
         };
@@ -135,7 +135,7 @@ impl ProjectedPrimitives {
         self.triangles.push([first, second, third]);
     }
 
-    fn is_windowed_by(&self, selection: Rect) -> bool {
+    pub(super) fn is_windowed_by(&self, selection: Rect) -> bool {
         !self.depth_clipped
             && !self.points.is_empty()
             && self.points.iter().all(|point| selection.contains(*point))
@@ -209,12 +209,17 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
-    fn add_selection_point(&self, projected: &mut ProjectedPrimitives, point: Point3, rect: Rect) {
+    pub(super) fn add_selection_point(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        point: Point3,
+        rect: Rect,
+    ) {
         projected.depth_clipped |= !self.point_within_display_depth(point);
         projected.add_point(self.project_selection_point(point, rect));
     }
 
-    fn add_selection_segment(
+    pub(super) fn add_selection_segment(
         &self,
         projected: &mut ProjectedPrimitives,
         start: Point3,

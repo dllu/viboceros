@@ -1,7 +1,7 @@
 //! Command-owned options for component picking, shared by GUI and typed input.
 use super::*;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ComponentSelectionKind {
     BrepEdge,
     BrepFace,

@@ -1,6 +1,63 @@
 use super::*;
 
 #[test]
+fn preselection_filters_kinds_and_duplicates_before_atomic_single_component_preparation() {
+    let mut doc = Document::default();
+    let id = tube(&mut doc);
+    CommandRegistry::with_builtins()
+        .execute(&mut doc, "Point 9,8,7")
+        .unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    let defaults = UntrimHolesOptions::default();
+    assert!(
+        UntrimHolesSelection::prepare_preselected(
+            &doc,
+            [
+                (id, UntrimHolesComponent::Face(0)),
+                (id, UntrimHolesComponent::Face(1))
+            ],
+            defaults
+        )
+        .unwrap()
+        .is_none()
+    );
+    assert!(
+        UntrimHolesSelection::prepare_preselected(
+            &doc,
+            [(id, UntrimHolesComponent::Edge(3)); 2],
+            defaults
+        )
+        .unwrap()
+        .is_some()
+    );
+    assert!(matches!(
+        UntrimHolesSelection::prepare_preselected(
+            &doc,
+            [
+                (id, UntrimHolesComponent::Edge(3)),
+                (id, UntrimHolesComponent::Edge(4))
+            ],
+            defaults
+        ),
+        Err(CommandError::UntrimHolesMultipleComponents)
+    ));
+    assert!(
+        UntrimHolesSelection::prepare_preselected(
+            &doc,
+            [
+                (id, UntrimHolesComponent::Edge(3)),
+                (id, UntrimHolesComponent::Face(100))
+            ],
+            defaults
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(doc.can_redo());
+}
+
+#[test]
 fn component_prompt_reads_options_without_accepting_them_and_reflects_typed_command_memory() {
     let registry = CommandRegistry::with_builtins();
     let staged = registry

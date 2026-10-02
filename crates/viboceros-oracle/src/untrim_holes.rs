@@ -1,5 +1,6 @@
 //! Component command comparisons from independently built, exactly shared inputs.
 use super::*;
+mod window;
 
 #[cfg(test)]
 mod tests;
@@ -20,6 +21,11 @@ pub struct UntrimHolesFixture {
     undo_after: Vec<usize>,
     #[serde(default)]
     undo_redo: bool,
+    preselect_kind: Option<Kind>,
+    #[serde(default)]
+    trace_components: bool,
+    window: Option<[[f64; 3]; 2]>,
+    window_subobjects: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -32,6 +38,28 @@ struct Source {
 enum Pick {
     Preselect,
     Mouse,
+    Window,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+enum Kind {
+    Edge,
+    Face,
+}
+impl Kind {
+    fn component(self, index: usize) -> viboceros_command::UntrimHolesComponent {
+        match self {
+            Self::Edge => viboceros_command::UntrimHolesComponent::Edge(index),
+            Self::Face => viboceros_command::UntrimHolesComponent::Face(index),
+        }
+    }
+    fn name(self) -> &'static str {
+        match self {
+            Self::Edge => "edge",
+            Self::Face => "face",
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq)]
@@ -55,6 +83,15 @@ pub(super) fn run(
             .any(|pick| *pick == 0 || *pick > f.components.len())
         || !f.undo_after.windows(2).all(|pair| pair[0] < pair[1])
         || (!f.undo_after.is_empty() && f.pick != Pick::Mouse)
+        || (f.preselect_kind.is_some() && f.pick != Pick::Preselect)
+        || (f.pick == Pick::Window && (f.window.is_none() || !f.components.is_empty()))
+        || (f.pick != Pick::Window && (f.window.is_some() || f.window_subobjects.is_some()))
+        || f.window.is_some_and(|corners| {
+            corners
+                .iter()
+                .flatten()
+                .any(|v| !v.is_finite() || v.abs() > 1e6)
+        })
     {
         return Err(ProbeError::FixtureInvariant(
             "invalid hole command component sequence",
@@ -98,14 +135,37 @@ pub(super) fn run(
     let before = untrim::snapshot(&document, &ids, &groups)?;
     document.clear_history()?;
     let mut group = document.begin_history_group("UntrimHoles")?;
-    let preselected = f.components.iter().copied().collect::<BTreeSet<_>>();
-    // Native rejects multiple distinct preselected components before editing.
-    let rejected_preselection = f.pick == Pick::Preselect && preselected.len() > 1;
+    let kind = f
+        .preselect_kind
+        .unwrap_or(if f.all { Kind::Face } else { Kind::Edge });
+    let mut rejected_preselection = false;
+    if f.pick != Pick::Mouse {
+        let picks = if f.pick == Pick::Preselect {
+            f.components
+                .iter()
+                .map(|&(source, index)| (ids[source], kind.component(index)))
+                .collect()
+        } else {
+            window::picks(&document, &ids, f.window.unwrap(), f.all)?
+        };
+        match viboceros_command::UntrimHolesSelection::prepare_preselected(
+            &document, picks, options,
+        ) {
+            Ok(Some(selection)) => {
+                selection.commit_in_group(&mut document, &mut group)?;
+            }
+            Ok(None) => {}
+            Err(CommandError::UntrimHolesMultipleComponents) => {
+                rejected_preselection = f.pick == Pick::Preselect;
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
     for (pick, &(source, component)) in f.components.iter().enumerate() {
         let Geometry::Brep(original) = &source_geometry[source] else {
             unreachable!()
         };
-        let count = if f.all {
+        let count = if kind == Kind::Face {
             original.faces().len()
         } else {
             original.edges().len()
@@ -115,7 +175,7 @@ pub(super) fn run(
                 "hole component outside source",
             ));
         }
-        if rejected_preselection || (f.pick == Pick::Preselect && pick != 0) {
+        if f.pick != Pick::Mouse {
             continue;
         }
         let Geometry::Brep(current) = document.object(ids[source]).unwrap().geometry() else {
@@ -172,6 +232,20 @@ pub(super) fn run(
     let after = untrim::snapshot(&document, &ids, &groups)?;
     let mut result = json!({"constructed": constructed, "before": before,
         "after": after, "succeeded": !rejected_preselection && f.finish == Finish::Enter});
+    if f.trace_components {
+        let selected = if f.pick == Pick::Preselect {
+            f.components
+                .iter()
+                .copied()
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .map(|(source, index)| json!([source, kind.name(), index]))
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
+        result["component_selection"] = json!({"before":selected,"after":[]});
+    }
     if f.undo_redo {
         let tested = before != after;
         result["history_tested"] = json!(tested);
@@ -180,6 +254,10 @@ pub(super) fn run(
             result["undo"] = Value::Array(untrim::snapshot(&document, &ids, &groups)?);
             document.redo()?;
             result["redo"] = Value::Array(untrim::snapshot(&document, &ids, &groups)?);
+            if f.trace_components {
+                result["component_selection"]["undo"] = json!([]);
+                result["component_selection"]["redo"] = json!([]);
+            }
         }
     }
     Ok((result, 0))

@@ -6,17 +6,28 @@ import re
 
 def validate(operation):
     required = {"op", "id", "sources", "all", "components", "maximum_edge_length", "keep_trim_objects", "pick"}
-    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish", "undo_after", "undo_redo"} != required
+    if (not isinstance(operation, dict) or set(operation) - {"source_layer", "finish", "undo_after", "undo_redo", "preselect_kind", "trace_components", "window", "window_subobjects"} != required
             or operation.get("op") != "untrim_holes_command"
             or not isinstance(operation.get("id"), str)
             or re.match(r"^[A-Za-z0-9_.-]{1,100}\Z", operation["id"]) is None
             or type(operation["all"]) is not bool or type(operation["keep_trim_objects"]) is not bool
             or type(operation.get("source_layer", False)) is not bool
             or type(operation.get("undo_redo", False)) is not bool
-            or operation["pick"] not in ("preselect", "mouse")
+            or type(operation.get("trace_components", False)) is not bool
+            or type(operation.get("window_subobjects", False)) is not bool
+            or operation["pick"] not in ("preselect", "mouse", "window")
+            or ("preselect_kind" in operation and (operation["pick"] != "preselect" or operation["preselect_kind"] not in ("edge", "face")))
             or operation.get("finish", "Enter") not in ("Enter", "Cancel")
             or not isinstance(operation["sources"], list) or not 1 <= len(operation["sources"]) <= 8):
         raise ValueError("invalid hole command fixture")
+    if operation["pick"] == "window":
+        window = operation.get("window")
+        if (operation["components"] or not isinstance(window, list) or len(window) != 2
+                or any(not isinstance(point, list) or len(point) != 3
+                    or any(type(value) not in (int, float) or not -1e6 <= value <= 1e6 for value in point) for point in window)):
+            raise ValueError("invalid hole selection window")
+    elif "window" in operation or "window_subobjects" in operation:
+        raise ValueError("window requires a window pick")
     maximum = operation["maximum_edge_length"]
     try:
         finite = type(maximum) in (int, float) and not math.isnan(maximum) and not math.isinf(maximum)
@@ -49,6 +60,7 @@ def drive(operation, points, host):
     script = "_UntrimHoles" + "".join(" _Pause" + (
         " _Undo" if index + 1 in operation.get("undo_after", []) else "")
         for index in range(len(points))) + suffix
+    if operation["pick"] == "window": script = "_UntrimHoles"
     if not points: return Rhino.RhinoApp.RunScript(script, True)
     import clr
     clr.AddReference("System.Windows.Forms")
@@ -57,7 +69,7 @@ def drive(operation, points, host):
     timer.Interval = 100
     start = Rhino.RhinoApp.CommandHistoryWindowText
     progress_time = [System.DateTime.UtcNow]
-    sent, errors = [], []
+    sent, errors, finish_sent = [], [], []
     path = os.path.join(os.path.dirname(os.path.abspath(host["__file__"])), "worker-progress.log")
     def tick(sender, event):
         try:
@@ -66,7 +78,15 @@ def drive(operation, points, host):
             if (System.DateTime.UtcNow - progress_time[0]).TotalSeconds > 15:
                 raise ValueError("hole component pick was not accepted within 15 seconds")
             index = len(sent)
-            if index >= len(points) or history[len(start):].count("_Pause") < index + 1: return
+            if operation["pick"] == "window" and index == len(points):
+                if not finish_sent and (System.DateTime.UtcNow - progress_time[0]).TotalSeconds > 1:
+                    with open(path, "a") as stream:
+                        stream.write("PICK @hole-finish:%s:%s 1 1\n" % (operation["id"], operation.get("finish", "Enter")))
+                        stream.flush()
+                    finish_sent.append(True)
+                return
+            if index >= len(points): return
+            if operation["pick"] != "window" and history[len(start):].count("_Pause") < index + 1: return
             view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
             viewport = view.ActiveViewport
             pixel = viewport.WorldToClient(points[index])
@@ -74,10 +94,19 @@ def drive(operation, points, host):
             if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
                 raise ValueError("hole pick lies outside the owned viewport")
             screen = view.ClientToScreen(System.Drawing.Point(x, y))
+            name = "@hole:%s:%d" % (operation["id"], index)
+            if operation["pick"] == "window":
+                end = viewport.WorldToClient(points[1])
+                if not 1 <= end.X < viewport.Size.Width - 1 or not 1 <= end.Y < viewport.Size.Height - 1:
+                    raise ValueError("hole window lies outside the owned viewport")
+                end = view.ClientToScreen(System.Drawing.Point(int(end.X), int(end.Y)))
+                name = "@hole-window:%s:%s:%d:%d" % (operation["id"],
+                    "sub" if operation.get("window_subobjects", False) else "plain", end.X, end.Y)
             with open(path, "a") as stream:
-                stream.write("PICK @hole:%s:%d %d %d\n" % (operation["id"], index, screen.X, screen.Y))
+                stream.write("PICK %s %d %d\n" % (name, screen.X, screen.Y))
                 stream.flush()
             sent.append(index)
+            if operation["pick"] == "window": sent.append(1)
             progress_time[0] = System.DateTime.UtcNow
         except Exception as error:
             errors.append(str(error)); timer.Stop()
@@ -124,6 +153,15 @@ def run(operation, tolerance, host):
                 groups=sorted(groups.index(g) for g in (attrs.GetGroupList() or []) if g in groups),
                 geometry=geometry(obj.Geometry)))
         return result
+    def selected_components():
+        result = []
+        kinds = {"BrepFace": "face", "BrepEdge": "edge"}
+        for source, key in enumerate(ids):
+            for component in (document.Objects.FindId(key).GetSelectedSubObjects() or []):
+                kind = str(component.ComponentIndexType)
+                if kind not in kinds: raise ValueError("unexpected selected component kind")
+                result.append([source, kinds[kind], int(component.Index)])
+        return sorted(result)
     try:
         document.Objects.UnselectAll()
         # Native preselected holes are processed immediately, before the first
@@ -172,10 +210,11 @@ def run(operation, tolerance, host):
         points = []
         for source_index, component_index in operation["components"]:
             obj = document.Objects.FindId(ids[source_index])
-            records = obj.Geometry.Faces if operation["all"] else obj.Geometry.Edges
+            face_kind = operation.get("preselect_kind", "face" if operation["all"] else "edge") == "face"
+            records = obj.Geometry.Faces if face_kind else obj.Geometry.Edges
             if component_index >= records.Count: raise ValueError("hole component outside source")
             if operation["pick"] == "preselect":
-                kind = Rhino.Geometry.ComponentIndexType.BrepFace if operation["all"] else Rhino.Geometry.ComponentIndexType.BrepEdge
+                kind = Rhino.Geometry.ComponentIndexType.BrepFace if face_kind else Rhino.Geometry.ComponentIndexType.BrepEdge
                 component = Rhino.Geometry.ComponentIndex(kind, component_index)
                 if obj.SelectSubObject(component, True, True, False) == 0: raise ValueError("hole component preselection failed")
             elif operation["all"]:
@@ -188,18 +227,22 @@ def run(operation, tolerance, host):
             else:
                 edge = records[component_index]
                 points.append(edge.PointAt(edge.Domain.ParameterAt(.375)))
-        if operation["pick"] == "mouse":
+        if operation["pick"] == "window":
+            points = [Rhino.Geometry.Point3d(*point) for point in operation["window"]]
+        if operation["pick"] in ("mouse", "window"):
             Rhino.RhinoApp.RunScript("_SetView _World _Top", False)
             Rhino.RhinoApp.RunScript("_Zoom _Extents", False)
+            if operation["pick"] == "window": Rhino.RhinoApp.RunScript("_Zoom _Out", False)
             if operation["all"]:
                 mode = Rhino.Display.DisplayModeDescription.FindByName("Shaded")
                 if mode is None: raise ValueError("shaded mode unavailable for face picking")
                 document.Views.ActiveView.ActiveViewport.DisplayMode = mode
             document.Views.Redraw()
         before = snapshot()
+        components_before = selected_components() if operation.get("trace_components") else None
         marker = "Viboceros UntrimHoles " + str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
-        action = (lambda: drive(operation, points, host)) if operation["pick"] == "mouse" else (
+        action = (lambda: drive(operation, points, host)) if operation["pick"] in ("mouse", "window") else (
             lambda: Rhino.RhinoApp.RunScript("_UntrimHoles _" + operation.get("finish", "Enter"), True))
         succeeded, after, events = observe_command(Rhino.Commands.Command, "UntrimHoles", action, snapshot, lambda: [], True)
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
@@ -207,6 +250,8 @@ def run(operation, tolerance, host):
         for event in events: event.pop("objects", None)
         result = dict(constructed=constructed, before=before, after=after,
             succeeded=succeeded, events=events, history=history[1].strip())
+        if operation.get("trace_components"):
+            result["component_selection"] = dict(before=components_before, after=selected_components())
         if operation.get("undo_redo", False):
             result["history_tested"] = before != after
             if result["history_tested"]:
@@ -217,6 +262,8 @@ def run(operation, tolerance, host):
                     result[command.lower()] = snapshot()
                     for record in event: record.pop("objects", None)
                     result[command.lower() + "_events"] = event
+                    if operation.get("trace_components"):
+                        result["component_selection"][command.lower()] = selected_components()
         return result, 0
     finally:
         errors = []

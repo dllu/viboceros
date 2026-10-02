@@ -128,6 +128,7 @@ impl SelectionMenu {
 }
 
 mod command_line;
+mod component_selection;
 #[cfg(test)]
 use command_line::command_completions;
 mod align;
@@ -1795,6 +1796,7 @@ pub struct VibocerosApp {
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
+    component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
@@ -1881,6 +1883,7 @@ impl VibocerosApp {
             intersection_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
+            component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
             evaluate_uv_session: None,
@@ -2025,7 +2028,10 @@ impl VibocerosApp {
         if self.try_continue_intersection_prompt(&input) {
             return;
         }
-        if self.try_continue_hole_command(&input) || self.try_continue_edge_command(&input) {
+        if self.try_continue_component_choice(&input)
+            || self.try_continue_hole_command(&input)
+            || self.try_continue_edge_command(&input)
+        {
             return;
         }
         if self.try_continue_points(&input)
@@ -2453,7 +2459,10 @@ impl VibocerosApp {
 
     fn try_execute_command(&mut self, input: &str) -> bool {
         self.selection_menu = None;
-        if self.try_continue_hole_command(input) || self.try_continue_edge_command(input) {
+        if self.try_continue_component_choice(input)
+            || self.try_continue_hole_command(input)
+            || self.try_continue_edge_command(input)
+        {
             return true;
         }
         if self.try_continue_points(input)
@@ -7314,6 +7323,9 @@ impl VibocerosApp {
             self.select_prompt_objects(click.object_id, click.mode);
             return;
         }
+        if click.mode == viboceros_document::SelectionMode::Replace {
+            self.component_selection.clear();
+        }
         match click.object_id {
             Some(id) => match self.document.select_object(id, click.mode) {
                 Ok(count) => self.push_log(format!("Selected {count} object(s)")),
@@ -7672,6 +7684,9 @@ impl VibocerosApp {
             (false, true) => "inverse window",
             (true, true) => "inverse crossing",
         };
+        if selection.mode == viboceros_document::SelectionMode::Replace {
+            self.component_selection.clear();
+        }
         match self
             .document
             .select_objects(selection.object_ids, selection.mode)
@@ -7727,6 +7742,10 @@ impl VibocerosApp {
             } else {
                 self.run_command();
             }
+        } else if let Some(click) = output.component_click {
+            self.accept_component_click(click);
+        } else if let Some(window) = output.component_window {
+            self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
             if self.hole_prompt.is_some() {
                 self.accept_hole_edges(picks);
@@ -7910,8 +7929,12 @@ impl VibocerosApp {
             || self.hole_prompt.is_some()
         {
             self.cancel_interactive_command(true);
+        } else if self.component_selection.has_choices() {
+            self.component_selection.clear_choices();
         } else {
-            let count = self.document.clear_selection();
+            let components = self.component_selection.valid_picks(&self.document).len();
+            self.component_selection.clear();
+            let count = self.document.clear_selection() + components;
             if count > 0 {
                 self.push_log(format!("Deselected {count} object(s)"));
             }
@@ -8167,6 +8190,19 @@ impl eframe::App for VibocerosApp {
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
+        let component_highlights = self.component_selection.highlights(&self.document);
+        let component_preselection = self.component_preselection_available();
+        let component_pick = self.hole_prompt.as_ref().and_then(|prompt| {
+            if !model_input_active || self.plane_prompt.is_some() || end_analysis_picking {
+                None
+            } else if prompt.picking_edges() {
+                Some(crate::viewport::ComponentPickFilter::Edges)
+            } else if prompt.picking_faces() {
+                Some(crate::viewport::ComponentPickFilter::Faces)
+            } else {
+                None
+            }
+        });
         let fence_selection = if end_analysis_picking || !model_input_active {
             None
         } else {
@@ -8338,6 +8374,9 @@ impl eframe::App for VibocerosApp {
                             point_cloud_highlights: &point_cloud_highlights,
                             preview_curve: preview_curve.as_deref(),
                             face_pick,
+                            component_preselection,
+                            component_pick,
+                            component_highlights: &component_highlights,
                             edge_pick,
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
@@ -8574,6 +8613,7 @@ mod tests {
             intersection_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
+            component_selection: Default::default(),
             points_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

@@ -237,15 +237,17 @@ fn drawing_refreshes_clipping_and_keeps_camera_model_and_plane_history_separate(
     let histories = (view.view_undo.clone(), view.view_redo.clone());
     let context = egui::Context::default();
     let size = view.last_rect.unwrap().size();
-    let _ = context.run_ui(
-        egui::RawInput {
-            screen_rect: Some(Rect::from_min_size(Pos2::ZERO, size)),
-            ..Default::default()
-        },
-        |ui| {
-            view.show(ui, &document, ViewportInput::default(), &[], 0, false);
-        },
-    );
+    context
+        .run_ui(
+            egui::RawInput {
+                screen_rect: Some(Rect::from_min_size(Pos2::ZERO, size)),
+                ..Default::default()
+            },
+            |ui| {
+                view.show(ui, &document, ViewportInput::default(), &[], 0, false);
+            },
+        )
+        .drop_without_applying_deltas();
     assert_eq!(
         view.frustum_near,
         row["clipping"]["redraw_steps"][0]["after"]["frustum"][4]

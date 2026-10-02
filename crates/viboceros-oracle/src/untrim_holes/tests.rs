@@ -4,6 +4,11 @@ use super::*;
 fn actual_component_commands_match_complete_native_geometry_and_object_metadata() {
     for (input, capture, count) in [
         (
+            include_str!("../../../../tools/rhino_oracle/fixtures/untrim_holes_selection.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/untrim_holes_selection.json"),
+            26,
+        ),
+        (
             include_str!("../../../../tools/rhino_oracle/fixtures/untrim_holes_history.json"),
             include_str!("../../../../tools/rhino_oracle/observations/untrim_holes_history.json"),
             16,
@@ -86,4 +91,22 @@ fn invalid_sequences_and_ambiguous_iterations_are_rejected() {
     repeated["pick"] = json!("mouse");
     let fixture: UntrimHolesFixture = serde_json::from_value(repeated).unwrap();
     assert!(run(&fixture, Tolerance::DEFAULT).is_err());
+
+    let windows: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/untrim_holes_selection.json"
+    ))
+    .unwrap();
+    let window = windows["operations"][6].clone();
+    for (key, value) in [
+        ("components", json!([[0, 1]])),
+        ("window", json!(null)),
+        ("window", json!([[0., 0., 0.], [2e6, 1., 0.]])),
+        ("preselect_kind", json!("edge")),
+        ("pick", json!("mouse")),
+    ] {
+        let mut invalid = window.clone();
+        invalid[key] = value;
+        let fixture: UntrimHolesFixture = serde_json::from_value(invalid).unwrap();
+        assert!(run(&fixture, Tolerance::DEFAULT).is_err(), "{key}");
+    }
 }

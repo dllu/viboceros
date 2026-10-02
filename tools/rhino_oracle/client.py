@@ -236,9 +236,9 @@ class OracleClient:
                 raise OracleProtocolError("hole commands require one iteration")
             for operation in request["operations"]:
                 if operation.get("op") == "untrim_holes_command": validate(operation)
-            if any(op.get("pick") == "mouse" for op in request["operations"]):
-                from .group_picking import IdlePicker
-                interaction = IdlePicker()
+            if any(op.get("pick") in ("mouse", "window") for op in request["operations"]):
+                from .hole_picking import HolePicker
+                interaction = HolePicker()
         if any(op.get("op") == "view_camera_probe" for op in request.get("operations", [])):
             from .view_camera_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:

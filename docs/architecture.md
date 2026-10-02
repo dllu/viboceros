@@ -206,6 +206,7 @@ state into document transactions:
 | `viewport/screen` | Shared clipping, containment, and screen-distance predicates |
 | `viewport/selection` | Object filters, click dispatch, and window/crossing selection |
 | `viewport/picking` | Face hit metrics and depth interpolation |
+| `viewport/component_picking` | Surface/B-rep component clicks, rectangles, depth clipping, and highlight overlays |
 | `viewport/edge_picking`, `viewport/edge_point` | Boundary-component capture and constrained screen-space edge locations |
 | `viewport/scene` | Object display, shading, depth staging, and GPU buffers |
 | `viewport/drafting` | Cursor resolution, construction-plane grid, and drafting overlays |
@@ -229,6 +230,13 @@ inverse perspective interpolation between Near and Mid/Center hover admission.
 It avoids uniform sampling for a straight locus with a projectable endpoint;
 see [straight-line snap correctness](projected-line-snaps.md) for the exact
 reference corpus, numerical regressions and remaining projection limits.
+
+`app/component_selection` keeps transient surface/B-rep component picks and
+ambiguity outside document history, with shared geometry snapshots to invalidate
+stale indices. `app/untrim_holes` consumes preselection with remembered options,
+then uses the same read-only preparation for postselection rectangles and its
+command history group for immediate edits. Component selection never selects a
+parent object or restores itself through Undo.
 
 `app/edge_commands` shares component ambiguity, hover highlighting and stale
 candidate checks for [MergeEdge](commands/merge-edge.md) and

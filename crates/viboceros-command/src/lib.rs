@@ -17806,6 +17806,8 @@ pub enum CommandError {
 
     #[error("UntrimHoles requires an accessible face with All=Yes or edge with All=No")]
     UntrimHolesUnavailable,
+    #[error("select exactly one eligible hole component")]
+    UntrimHolesMultipleComponents,
     #[error("UntrimHoles source or tolerance changed; pick the component again")]
     UntrimHolesStale,
 

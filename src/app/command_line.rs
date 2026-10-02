@@ -35,7 +35,7 @@ impl CommandLineState {
 }
 
 impl VibocerosApp {
-    fn command_line_idle(&self) -> bool {
+    pub(super) fn command_line_idle(&self) -> bool {
         self.end_analysis_pick.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
@@ -47,6 +47,7 @@ impl VibocerosApp {
             && self.hole_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
+            && !self.component_selection.has_choices()
     }
 
     pub(super) fn remember_command_input(&mut self, input: &str) {
@@ -176,6 +177,8 @@ impl VibocerosApp {
                         prompt.name()
                     } else if self.hole_prompt.is_some() {
                         "UntrimHoles"
+                    } else if self.component_selection.has_choices() {
+                        "Select component"
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -245,6 +248,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {
                                 prompt.hint()
+                            } else if self.component_selection.has_choices() {
+                                "Choose a component by number, or pick again"
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -285,6 +290,7 @@ impl VibocerosApp {
                 if self.set_view_prompt.is_none() {
                     self.show_edge_choices(ui);
                     self.show_hole_choices(ui);
+                    self.show_component_choices(ui);
                 }
                 self.show_set_view_choices(ui);
                 let idle = self.command_line_idle();

@@ -11,10 +11,41 @@ from .untrim_holes_capture import capture
 from .untrim_holes_undo_cases import request as undo_request
 from .untrim_holes_limits_cases import request as limits_request
 from .untrim_holes_history_cases import request as history_request
+from .untrim_holes_selection_cases import request as selection_request
 from .untrim_replay import replay
 
 
 class UntrimHolesProbeTests(unittest.TestCase):
+    def test_selection_sources_regenerate_and_native_component_state_is_transient(self):
+        root = Path(__file__).parent
+        fixture = json.loads((root / "fixtures/untrim_holes_selection.json").read_text())
+        observed = json.loads((root / "observations/untrim_holes_selection.json").read_text())
+        self.assertEqual(selection_request(), fixture)
+        self.assertEqual(len(observed['results']), 26)
+        for op,row in zip(fixture['operations'],observed['results']):
+            self.assertEqual(op['id'],row['id'])
+            value = row['value']; components = value['component_selection']
+            self.assertEqual(components['after'], [])
+            self.assertEqual(components['before'], [pair[:1]+[op['preselect_kind']]+pair[1:] for pair in op['components']] if op['pick']=='preselect' else [])
+            changed = op['pick']=='preselect' and op['preselect_kind']==('face' if op['all'] else 'edge') and len(op['components'])==1
+            if op['pick']=='window':
+                changed = op['all'] and op['id'].endswith(('cross','whole')) or not op['all'] and (op['id'].endswith('first') or op['id']=='window-cancel-all-0')
+            self.assertEqual(value['before'] != value['after'], changed, op['id'])
+            if value['history_tested']:
+                self.assertEqual(value['undo'],value['before']); self.assertEqual(value['redo'],value['after'])
+                self.assertEqual(components['undo'],[]); self.assertEqual(components['redo'],[])
+
+    def test_preselection_kind_and_rectangles_have_strict_input_boundaries(self):
+        base = self.fixture()
+        for kind in ('edge','face'): validate(dict(base,preselect_kind=kind,trace_components=True))
+        window = dict(base,pick='window',components=[],window=[[0.,1.,0.],[2.,3.,0.]],window_subobjects=True)
+        validate(window)
+        for changes in [dict(window=None), dict(window=[[0,1],[2,3]]), dict(window=[[True,1,0],[2,3,0]]),
+            dict(window=[[math.nan,1,0],[2,3,0]]), dict(window=[[math.inf,1,0],[2,3,0]]),
+            dict(window=[[1e7,1,0],[2,3,0]]),dict(components=[[0,1]]),dict(preselect_kind='edge'),dict(window_subobjects=1),dict(undo_after=[1])]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError): validate(dict(window,**changes))
+        for changes in [dict(window=[[0,1,0],[2,3,0]]),dict(window_subobjects=False),dict(preselect_kind='vertex'),dict(trace_components=1)]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError): validate(dict(base,**changes))
     def test_recorded_sources_regenerate_and_native_edits_survive_escape(self):
         root = Path(__file__).parent
         fixture = json.loads((root / "fixtures/untrim_holes_components.json").read_text())

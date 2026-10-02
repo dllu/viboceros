@@ -3,6 +3,9 @@
 [Command reference](README.md)
 
 Run `UntrimHoles` to pick accessible surface/B-rep edges in a viewport.
+Ctrl+Shift (Command+Shift on macOS) click or drag selects components before
+starting the command. Edge clicks take priority over faces and toggle selection;
+rectangles add components. Hidden or locked sources cannot be selected.
 `All=Yes` switches to face picking, including polysurface faces. Overlapping
 edges offer numbered choices with hover highlighting. The command line and
 small option buttons accept `All`, `MaximumEdgeLength`, and `KeepTrimObjects`;
@@ -48,16 +51,33 @@ invalidate its continuation token, so local Undo cannot reverse a foreign edit.
 `commit_in_group` exposes this behavior through `Document::begin_history_group`.
 No edit transaction remains open while waiting for the next pick.
 
-The 110 saved native cases include 16 multiple-pick and external Undo/Redo
-captures. Multiple distinct preselected components make Rhino return Failure
-without edits; duplicate references to one component are processed once. The
-oracle reproduces those outcomes and matches surviving original components
-after topology compaction by exact curves/surfaces. Ambiguous or missing
-surviving components are rejected. Viewport component preselection and window
-selection remain pending. Rust viewport tests cover postselection, options,
-ambiguity, cancellation, CPlane interaction, and local/external Undo; the native
-captures compare geometry and metadata through the command API, not pixel input
-in Viboceros. Native option changes between accepted picks remain unmeasured.
+Preselection uses the remembered options before accepting new option tokens.
+Only edges qualify when All=No; only faces qualify when All=Yes. Other component
+kinds are ignored. Multiple distinct eligible components make Rhino return
+Failure without edits; duplicate references to one component are processed once.
+Invoking the command clears component selection, including rejected and ignored
+selections. External Undo/Redo does not restore that transient selection.
+
+During the prompt, drag left-to-right to enclose a component or right-to-left to
+cross it. Rectangle selection accepts exactly one eligible component; several
+eligible components leave geometry unchanged and keep the prompt active. Four
+edges of one split hole still count as four components. Partial windows do not
+select an entire face; a crossing rectangle can select its filled area in Shaded
+or Ghosted mode. Inverse window and crossing modes share the object-selection
+predicates. Ctrl+Shift and plain rectangles have the same measured command result.
+
+The 136 saved native cases include 16 multiple-pick/history captures and 26
+component-selection captures. New rectangles start on empty space to avoid an
+immediate face pick. They compare geometry, attributes, and transient component
+selection before/after the command and external Undo/Redo. The offline rectangle
+probe covers Top-view planar polygons with bilinear surfaces; unsupported sources
+are rejected. Production viewport selection uses projected real edges, face
+meshes, and depth clipping. Mouse sequences match surviving components after
+topology compaction by exact curves/surfaces, rejecting ambiguous or missing
+matches. Rust tests also exercise real egui click/drag events, options, ambiguity,
+cancellation, CPlane interaction, stale sources, and local/external Undo. Native
+option changes between accepted picks remain unmeasured. Generic mesh/SubD
+component preselection and consumers beyond UntrimHoles remain pending.
 
 See [kernel and native evidence](../geometry/remove-holes.md). All live captures
 use private Xvfb displays. Replaying saved observations requires no Rhino GUI:
@@ -70,4 +90,5 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_undo.json tools/rhino_oracle/observations/untrim_holes_undo.json --timeout 300
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_limits.json tools/rhino_oracle/observations/untrim_holes_limits.json --timeout 300
 python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_history.json tools/rhino_oracle/observations/untrim_holes_history.json --timeout 300
+python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_holes_selection.json tools/rhino_oracle/observations/untrim_holes_selection.json --timeout 300
 ```
