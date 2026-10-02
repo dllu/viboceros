@@ -1,6 +1,6 @@
 //! Component command comparisons from independently built, exactly shared inputs.
 use super::*;
-mod window;
+pub(super) mod window;
 
 #[cfg(test)]
 mod tests;

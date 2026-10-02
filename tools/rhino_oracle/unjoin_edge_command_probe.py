@@ -4,18 +4,43 @@ import re
 
 def validate(operation):
     required={'op','id','sources','components','finish','undo_redo'}
-    if (not isinstance(operation,dict) or set(operation)-{'kind','object_preselect','pick'}!=required
+    if (not isinstance(operation,dict) or set(operation)-{'kind','object_preselect','pick','steps'}!=required
             or operation.get('op')!='unjoin_edge_command' or not isinstance(operation.get('id'),str)
             or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z',operation['id']) is None
             or operation.get('finish') not in ('Enter','Cancel')
             or type(operation.get('undo_redo')) is not bool or type(operation.get('object_preselect',False)) is not bool
             or operation.get('kind','edge') not in ('edge','face')
-            or operation.get('pick','preselect') not in ('preselect','mouse')
+            or operation.get('pick','preselect') not in ('preselect','mouse','sequence')
             or (operation.get('kind')=='face' and operation.get('pick','preselect')!='preselect')
             or not isinstance(operation.get('sources'),list) or not 1<=len(operation['sources'])<=8
             or not isinstance(operation.get('components'),list) or len(operation['components'])>100000
             or any(not isinstance(pair,list) or len(pair)!=2 or any(type(v) is not int or v<0 for v in pair) or pair[0]>=len(operation['sources']) for pair in operation['components'])):
         raise ValueError('invalid UnjoinEdge command fixture')
+    if operation.get('pick') == 'sequence':
+        steps = operation.get('steps')
+        if operation['components'] or operation.get('object_preselect') or not isinstance(steps, list) or not 1 <= len(steps) <= 64:
+            raise ValueError('invalid UnjoinEdge input sequence')
+        for position,step in enumerate(steps):
+            if isinstance(step, dict) and step.get('kind') == 'key':
+                if set(step) != {'kind','value'} or step.get('value') not in ('None','Undo'):
+                    raise ValueError('invalid UnjoinEdge sequence key')
+                if step['value']=='None' and (position!=len(steps)-1 or operation['finish']!='Cancel'):
+                    raise ValueError('None terminates an UnjoinEdge sequence')
+                continue
+            if not isinstance(step, dict) or step.get('modifiers') not in ('plain','ctrl','shift','sub','alt'):
+                raise ValueError('invalid UnjoinEdge input modifier')
+            if step.get('kind') == 'click':
+                pair = step.get('component')
+                if (set(step) != {'kind','component','modifiers'} or not isinstance(pair, list) or len(pair) != 2
+                        or any(type(v) is not int or v < 0 for v in pair) or pair[0] >= len(operation['sources'])):
+                    raise ValueError('invalid UnjoinEdge sequence click')
+            elif step.get('kind') == 'window':
+                corners = step.get('corners')
+                if (set(step) != {'kind','corners','modifiers'} or not isinstance(corners, list) or len(corners) != 2
+                        or any(not isinstance(p, list) or len(p) != 3 or any(type(v) not in (int,float) or not -1e6 <= v <= 1e6 for v in p) for p in corners)):
+                    raise ValueError('invalid UnjoinEdge sequence window')
+            else: raise ValueError('invalid UnjoinEdge sequence step')
+    elif 'steps' in operation: raise ValueError('steps require a sequence pick')
     for source in operation['sources']:
         if (not isinstance(source,dict) or set(source)!={'brep'} or not isinstance(source['brep'],dict)
                 or not isinstance(source['brep'].get('artifact_path'),(str,type(u''))) or not source['brep']['artifact_path']):
@@ -89,7 +114,22 @@ def run(operation,tolerance,host):
             for key in ids: doc.Objects.Select(key)
         before=snapshot(); selection_before=components();marker='Viboceros UnjoinEdge '+str(System.Guid.NewGuid());Rhino.RhinoApp.WriteLine(marker)
         Rhino.RhinoApp.WriteLine('Component enumeration: '+str([[int(component.Index) for component in (doc.Objects.FindId(key).GetSelectedSubObjects() or [])] for key in ids]))
-        if operation.get('pick')=='mouse':
+        trace=[]
+        if operation.get('pick')=='sequence':
+            from unjoin_edge_input import drive
+            points=[]
+            for step in operation['steps']:
+                if step['kind']=='click':
+                    source,index=step['component'];g=doc.Objects.FindId(ids[source]).Geometry
+                    if index>=g.Edges.Count: raise ValueError('component outside source')
+                    edge=g.Edges[index];points.append([edge.PointAt(edge.Domain.ParameterAt(.375))])
+                elif step['kind']=='window': points.append([Rhino.Geometry.Point3d(*point) for point in step['corners']])
+                else: points.append([])
+            Rhino.RhinoApp.RunScript('_SetView _World _Top',False);Rhino.RhinoApp.RunScript('_Zoom _Extents',False)
+            for unused in range(3): Rhino.RhinoApp.RunScript('_Zoom _Out',False)
+            doc.Views.Redraw()
+            action=lambda: drive(operation,points,host,components,trace)
+        elif operation.get('pick')=='mouse':
             from untrim_holes_probe import drive
             Rhino.RhinoApp.RunScript('_SetView _World _Top',False);Rhino.RhinoApp.RunScript('_Zoom _Extents',False);doc.Views.Redraw()
             action=lambda: drive(dict(operation,pick='mouse'),points,host,'UnjoinEdge')
@@ -99,6 +139,7 @@ def run(operation,tolerance,host):
         if len(history)!=2: raise ValueError('history marker missing')
         for event in events: event.pop('objects',None)
         result=dict(constructed=constructed,before=before,after=after,succeeded=succeeded,events=events,history=history[1].strip(),component_selection=dict(before=selection_before,after=components()))
+        if operation.get('pick')=='sequence': result['selection_steps']=trace
         if operation['undo_redo']:
             result['history_tested']=[{k:v for k,v in obj.items() if k!='selected'} for obj in before]!=[{k:v for k,v in obj.items() if k!='selected'} for obj in after]
             if result['history_tested']:

@@ -3,9 +3,18 @@
 [Command reference](README.md)
 
 Run `UnjoinEdge` and click joined B-rep edges, or select them with rectangles.
-Enter applies the batch; Escape or `Cancel` discards it. Overlapping candidates
-offer numbered choices with highlighting. View and CPlane commands preserve the
-selection prompt. A new geometry command cancels the pending batch.
+Enter applies the batch; Escape, `Cancel`, or `None` discards it. Overlapping
+candidates offer numbered choices with highlighting. View and CPlane commands preserve the
+selection prompt. A new geometry command cancels the pending batch. `Undo` at
+the selection prompt leaves the batch and earlier document history unchanged.
+
+During command selection, plain and Shift clicks add eligible edges. Ctrl
+(Command on macOS) clicks and rectangles remove matching edges; Ctrl+Shift
+clicks toggle individual edges, while Ctrl+Shift rectangles add them. Alt clicks
+suppress selection; Alt rectangles still add. Left-to-right windows require
+full enclosure, and right-to-left crossing rectangles select intersecting edges.
+Removed edges lose their batch position; reselecting them appends them. Modifier
+intent is retained from pointer press through release and numbered choices.
 
 Ctrl+Shift (Command+Shift on macOS) selects surface/B-rep components before
 starting the command. Eligible preselected edges apply immediately and finish
@@ -45,17 +54,27 @@ multiple sources, cancellation, metadata, and genuine external Undo/Redo.
 Full geometry definitions, source identities, ordering, and transient component
 state are compared. The public geometry API has a separate
 [26-case corpus](../geometry/unjoin-edges.md).
-Postselection removal with modifier keys and native rectangle captures remain
-pending; current postselection clicks and rectangles add eligible edges.
+An additional [42 native selection sequences](../../tools/rhino_oracle/fixtures/unjoin_edge_selection.json)
+cover modifier clicks, windows and crossings, deselection/reselection, split
+shared edges, multiple sources, `None`, prompt `Undo`, and external history. Each
+intermediate component selection and complete output topology is compared.
+The independent rectangle replay adapter accepts planar polygon sources; the
+production viewport uses projected edges, clipping, and its real display mesh.
 Single-source preselection ordering is measured through twelve edges, with
 two- and three-edge mouse orders and two-source batches. Larger mixed batches
 and reference platforms beyond this Rhino 8.32 Wine host remain unmeasured.
+
+Release replay of all 116 edge-separation cases and 136 existing hole-removal
+cases matches with zero numeric difference (absolute epsilon `1e-9`, relative
+epsilon zero). The UI suite passes 785 tests with 13 ignored; all 528 Python
+tests pass. Clippy completes with existing warnings.
 
 ```sh
 cargo test -p viboceros-command unjoin_edge
 cargo test -p viboceros app::tests::unjoin_edge
 cargo test -p viboceros-oracle unjoin_edge_command
 python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/unjoin_edge_command.json tools/rhino_oracle/observations/unjoin_edge_command.json
+python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/unjoin_edge_selection.json tools/rhino_oracle/observations/unjoin_edge_selection.json
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.unjoin_edges_capture tools/rhino_oracle/fixtures/unjoin_edge_command.json --timeout 300
 ```
 

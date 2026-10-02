@@ -7,6 +7,7 @@ from unittest.mock import Mock
 from .client import OracleError, OracleProtocolError
 from .unjoin_edges_cases import request as api_request
 from .unjoin_edge_command_cases import request as command_request
+from .unjoin_edge_selection_cases import request as selection_request
 from .unjoin_edges_capture import capture
 from .unjoin_edges_probe import validate as validate_api
 from .unjoin_edge_command_probe import validate as validate_command
@@ -16,6 +17,61 @@ ROOT = Path(__file__).parent
 
 
 class UnjoinEdgesTests(unittest.TestCase):
+    def test_selection_sequences_regenerate_and_preserve_each_native_step(self):
+        fixture=json.loads((ROOT/'fixtures/unjoin_edge_selection.json').read_text())
+        observed=json.loads((ROOT/'observations/unjoin_edge_selection.json').read_text())
+        self.assertEqual(selection_request(),fixture)
+        self.assertEqual(len(observed['results']),42)
+        values={row['id']:row['value'] for row in observed['results']}
+        for op,row in zip(fixture['operations'],observed['results']):
+            self.assertEqual(op['id'],row['id']);value=row['value']
+            self.assertEqual(len(value['selection_steps']),len(op['steps']))
+            self.assertEqual(value['component_selection']['before'],[])
+            self.assertEqual(value['component_selection']['after'],[])
+            for selected in value['selection_steps']:
+                self.assertEqual(selected,sorted(selected))
+                self.assertEqual(len(selected),len(set(map(tuple,selected))))
+                for source,kind,index in selected:
+                    self.assertEqual(kind,'edge')
+                    self.assertLess(index,len(value['constructed'][source]['definition']['edges']))
+            if value['history_tested']:
+                self.assertTrue(value['succeeded'])
+                self.assertEqual(value['undo'],value['before']);self.assertEqual(value['redo'],value['after'])
+            else:self.assertEqual(value['before'],value['after'])
+        both=[[0,'edge',2],[0,'edge',6]]
+        for name in ('click-ctrl','click-sub','window-ctrl','cross-ctrl'):
+            self.assertEqual(values[name]['selection_steps'][-1],[[0,'edge',6]])
+        for name in ('window-sub','cross-sub','readd','sub-repeat','window-alt'):
+            self.assertEqual(values[name]['selection_steps'][-1],both)
+        self.assertEqual(values['partial-window']['selection_steps'],[[]])
+        self.assertEqual(values['partial-cross']['selection_steps'],[[[0,'edge',2]]])
+        self.assertEqual(values['unselected-ctrl']['selection_steps'][-1],[[0,'edge',2]])
+        self.assertEqual(values['unselected-alt']['selection_steps'][-1],[[0,'edge',2]])
+        self.assertEqual(values['empty-alt']['selection_steps'],[[]])
+        self.assertEqual(values['key-Undo']['selection_steps'][1:], [both,both,both])
+        for name in ('key-None','key-None-empty'):
+            self.assertFalse(values[name]['succeeded']);self.assertFalse(values[name]['history_tested'])
+            self.assertEqual(values[name]['selection_steps'][-1],[])
+
+    def test_sequence_validation_rejects_unbounded_or_output_driven_input(self):
+        base=selection_request()['operations'][0]
+        base['sources'][0]['brep']['artifact_path']='/owned/source.3dm'
+        validate_command(base)
+        for changes in (dict(steps=[]),dict(steps=None),dict(steps=base['steps']*22),dict(components=[[0,2]]),dict(object_preselect=True),dict(kind='face'),dict(pick='mouse')):
+            with self.subTest(changes=changes),self.assertRaises(ValueError):validate_command(dict(base,**changes))
+        for step in [dict(kind='click',component=[1,2],modifiers='plain'),dict(kind='click',component=[0,True],modifiers='plain'),dict(kind='click',component=[0,-1],modifiers='plain'),dict(kind='click',component=[0,2],modifiers='invalid'),dict(kind='click',component=[0,2],modifiers='plain',expected=[2]),dict(kind='window',corners=[[0,0,0],[float('nan'),1,0]],modifiers='plain'),dict(kind='window',corners=[[0,0,0],[1e7,1,0]],modifiers='plain'),dict(kind='window',corners=[[0,0,0],[True,1,0]],modifiers='plain'),dict(kind='key',value='_Delete'),dict(kind='key',value='Undo',modifiers='plain'),dict(kind='key',value='None')]:
+            with self.subTest(step=step),self.assertRaises(ValueError):validate_command(dict(base,steps=[step]))
+        validate_command(dict(base,steps=[dict(kind='key',value='Undo')]))
+        validate_command(dict(base,steps=[dict(kind='key',value='None')],finish='Cancel'))
+        with self.assertRaises(ValueError):validate_command(dict(base,steps=[dict(kind='key',value='None'),dict(kind='key',value='Undo')],finish='Cancel'))
+
+    def test_intermediate_selection_stays_in_full_saved_comparison(self):
+        request=selection_request();observed=json.loads((ROOT/'observations/unjoin_edge_selection.json').read_text())
+        client=Mock();client.run_viboceros.return_value=dict(observed,engine='viboceros')
+        self.assertTrue(replay(request,observed,client).passed)
+        bad=copy.deepcopy(observed);bad['results'][0]['value']['selection_steps'][0]=[]
+        self.assertFalse(replay(request,bad,client).passed)
+
     def test_sources_regenerate_and_native_api_never_mutates_source(self):
         fixture = json.loads((ROOT/'fixtures/brep_unjoin_edges.json').read_text())
         observed = json.loads((ROOT/'observations/brep_unjoin_edges.json').read_text())

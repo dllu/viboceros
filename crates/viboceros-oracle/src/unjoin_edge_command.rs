@@ -17,6 +17,7 @@ pub struct UnjoinEdgeFixture {
     object_preselect: bool,
     #[serde(default)]
     pick: Pick,
+    steps: Option<Vec<Step>>,
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 struct Source {
@@ -40,6 +41,36 @@ enum Pick {
     #[default]
     Preselect,
     Mouse,
+    Sequence,
+}
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+enum Step {
+    Key {
+        value: Key,
+    },
+    Click {
+        component: (usize, usize),
+        modifiers: Modifiers,
+    },
+    Window {
+        corners: [[f64; 3]; 2],
+        modifiers: Modifiers,
+    },
+}
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+enum Key {
+    None,
+    Undo,
+}
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+enum Modifiers {
+    Plain,
+    Ctrl,
+    Shift,
+    Sub,
+    Alt,
 }
 pub(super) fn run(f: &UnjoinEdgeFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
     if !(1..=8).contains(&f.sources.len())
@@ -47,9 +78,51 @@ pub(super) fn run(f: &UnjoinEdgeFixture, tolerance: Tolerance) -> Result<(Value,
         || f.components
             .iter()
             .any(|(source, _)| *source >= f.sources.len())
-        || (f.pick == Pick::Mouse && f.kind != Kind::Edge)
+        || (f.pick != Pick::Preselect && f.kind != Kind::Edge)
     {
         return Err(ProbeError::FixtureInvariant("invalid UnjoinEdge selection"));
+    }
+    match (&f.steps, f.pick) {
+        (Some(steps), Pick::Sequence)
+            if (1..=64).contains(&steps.len())
+                && f.components.is_empty()
+                && !f.object_preselect =>
+        {
+            for (position, step) in steps.iter().enumerate() {
+                match step {
+                    Step::Key { value: Key::None }
+                        if position + 1 != steps.len() || f.finish != Finish::Cancel =>
+                    {
+                        return Err(ProbeError::FixtureInvariant(
+                            "None terminates an UnjoinEdge sequence",
+                        ));
+                    }
+                    Step::Click {
+                        component: (source, _),
+                        ..
+                    } if *source >= f.sources.len() => {
+                        return Err(ProbeError::FixtureInvariant(
+                            "UnjoinEdge sequence source outside document",
+                        ));
+                    }
+                    Step::Window { corners, .. }
+                        if corners
+                            .iter()
+                            .flatten()
+                            .any(|v| !v.is_finite() || v.abs() > 1e6) =>
+                    {
+                        return Err(ProbeError::FixtureInvariant("invalid UnjoinEdge window"));
+                    }
+                    _ => (),
+                }
+            }
+        }
+        (None, Pick::Preselect | Pick::Mouse) => (),
+        _ => {
+            return Err(ProbeError::FixtureInvariant(
+                "invalid UnjoinEdge input sequence",
+            ));
+        }
     }
     let mut document = Document::new(tolerance);
     let mut ids = Vec::new();
@@ -108,7 +181,10 @@ pub(super) fn run(f: &UnjoinEdgeFixture, tolerance: Tolerance) -> Result<(Value,
     } else {
         Vec::new()
     };
-    let picks = if f.kind == Kind::Edge {
+    let mut trace = Vec::new();
+    let picks = if f.pick == Pick::Sequence {
+        sequence(&document, &ids, f.steps.as_ref().unwrap(), &mut trace)?
+    } else if f.kind == Kind::Edge {
         // Native preselection enumerates component tables; mouse selection
         // retains click order. The public command processes document order.
         if f.pick == Pick::Preselect {
@@ -138,6 +214,9 @@ pub(super) fn run(f: &UnjoinEdgeFixture, tolerance: Tolerance) -> Result<(Value,
     let after = untrim::snapshot(&document, &ids, &groups)?;
     let mut result = json!({"constructed":constructed,"before":before,"after":after,
         "succeeded":succeeded,"component_selection":{"before":selected,"after":[]}});
+    if f.pick == Pick::Sequence {
+        result["selection_steps"] = json!(trace);
+    }
     if f.undo_redo {
         result["history_tested"] = json!(succeeded);
         if succeeded {
@@ -150,4 +229,91 @@ pub(super) fn run(f: &UnjoinEdgeFixture, tolerance: Tolerance) -> Result<(Value,
         }
     }
     Ok((result, 0))
+}
+
+fn sequence(
+    document: &Document,
+    ids: &[ObjectId],
+    steps: &[Step],
+    trace: &mut Vec<Value>,
+) -> Result<Vec<(usize, usize)>, ProbeError> {
+    let joined = ids
+        .iter()
+        .map(|&id| {
+            let Geometry::Brep(brep) = document.object(id).unwrap().geometry() else {
+                unreachable!()
+            };
+            brep.edges_shared_by_distinct_faces()
+        })
+        .collect::<Vec<_>>();
+    let mut selected = Vec::new();
+    for step in steps {
+        if let Step::Key { value } = step {
+            if *value == Key::None {
+                selected.clear();
+            }
+            trace.push(json!(
+                selected
+                    .iter()
+                    .copied()
+                    .collect::<BTreeSet<_>>()
+                    .into_iter()
+                    .map(|(source, edge)| json!([source, "edge", edge]))
+                    .collect::<Vec<_>>()
+            ));
+            continue;
+        }
+        let (picks, modifiers, click) = match step {
+            Step::Key { .. } => unreachable!(),
+            Step::Click {
+                component: (source, edge),
+                modifiers,
+            } => {
+                if *edge >= joined[*source].len() {
+                    return Err(ProbeError::FixtureInvariant(
+                        "UnjoinEdge component outside source",
+                    ));
+                }
+                (vec![(*source, *edge)], *modifiers, true)
+            }
+            Step::Window { corners, modifiers } => {
+                let picks = crate::untrim_holes::window::picks(document, ids, *corners, false)?
+                    .into_iter()
+                    .map(|(id, component)| {
+                        let viboceros_command::UntrimHolesComponent::Edge(edge) = component else {
+                            unreachable!()
+                        };
+                        (ids.iter().position(|key| *key == id).unwrap(), edge)
+                    })
+                    .collect();
+                (picks, *modifiers, false)
+            }
+        };
+        for pair in picks
+            .into_iter()
+            .filter(|&(source, edge)| joined[source][edge])
+        {
+            if click && modifiers == Modifiers::Alt {
+                continue;
+            }
+            let existing = selected.iter().position(|old| *old == pair);
+            let remove = modifiers == Modifiers::Ctrl
+                || (click && modifiers == Modifiers::Sub && existing.is_some());
+            if remove {
+                if let Some(index) = existing {
+                    selected.remove(index);
+                }
+            } else if existing.is_none() {
+                selected.push(pair);
+            }
+        }
+        let sorted = selected.iter().copied().collect::<BTreeSet<_>>();
+        trace.push(json!(
+            sorted
+                .into_iter()
+                .map(|(source, edge)| json!([source, "edge", edge]))
+                .collect::<Vec<_>>()
+        ));
+    }
+    Ok(selected)
 }

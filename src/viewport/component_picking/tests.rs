@@ -206,7 +206,8 @@ fn subobject_gesture_keeps_press_modifiers_until_release_and_does_not_select_par
                 kind: ComponentSelectionKind::BrepEdge,
                 index: 1
             }],
-            preselection: true
+            preselection: true,
+            modifiers: sub,
         })
     );
     assert!(
@@ -218,7 +219,14 @@ fn subobject_gesture_keeps_press_modifiers_until_release_and_does_not_select_par
 
 #[test]
 fn rectangle_gesture_dispatches_once_after_release_without_object_selection() {
-    for preselection in [false, true] {
+    for (preselection, press_modifiers) in [
+        (true, egui::Modifiers::CTRL | egui::Modifiers::SHIFT),
+        (false, egui::Modifiers::NONE),
+        (false, egui::Modifiers::CTRL),
+        (false, egui::Modifiers::SHIFT),
+        (false, egui::Modifiers::CTRL | egui::Modifiers::SHIFT),
+        (false, egui::Modifiers::ALT),
+    ] {
         let (doc, id) = fixture();
         let mut view = Viewport::new(ViewKind::Top);
         let context = egui::Context::default();
@@ -270,11 +278,7 @@ fn rectangle_gesture_dispatches_once_after_release_without_object_selection() {
             pressed,
             modifiers,
         };
-        let modifiers = if preselection {
-            sub
-        } else {
-            egui::Modifiers::NONE
-        };
+        let modifiers = if preselection { sub } else { press_modifiers };
         let (output, _) = frame(
             vec![
                 egui::Event::PointerMoved(start),
@@ -297,6 +301,7 @@ fn rectangle_gesture_dispatches_once_after_release_without_object_selection() {
                     index: 1
                 }],
                 preselection,
+                modifiers,
                 crossing: false,
                 inverted: false
             })
@@ -306,5 +311,77 @@ fn rectangle_gesture_dispatches_once_after_release_without_object_selection() {
                 && output.selection_window.is_none()
                 && output.component_click.is_none()
         );
+    }
+}
+
+#[test]
+fn command_click_retains_press_modifiers_after_keyboard_release() {
+    for modifiers in [
+        egui::Modifiers::CTRL,
+        egui::Modifiers::SHIFT,
+        egui::Modifiers::CTRL | egui::Modifiers::SHIFT,
+        egui::Modifiers::ALT,
+    ] {
+        let (doc, id) = fixture();
+        let mut view = Viewport::new(ViewKind::Top);
+        let context = egui::Context::default();
+        let mut frame = |mut events: Vec<egui::Event>, modifiers| {
+            events.insert(0, egui::Event::ModifiersChanged(modifiers));
+            let mut output = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(rect()),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        output = view.show(
+                            ui,
+                            &doc,
+                            ViewportInput {
+                                component_pick: Some(ComponentPickFilter::Edges),
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            (output, view.last_rect.unwrap())
+        };
+        let (_, area) = frame(vec![], egui::Modifiers::NONE);
+        let pointer = Viewport::new(ViewKind::Top)
+            .project(point(4., 3.), area)
+            .unwrap();
+        let button = |pressed, modifiers| egui::Event::PointerButton {
+            pos: pointer,
+            button: PointerButton::Primary,
+            pressed,
+            modifiers,
+        };
+        frame(
+            vec![egui::Event::PointerMoved(pointer), button(true, modifiers)],
+            modifiers,
+        );
+        let (output, _) = frame(
+            vec![button(false, egui::Modifiers::NONE)],
+            egui::Modifiers::NONE,
+        );
+        assert_eq!(
+            output.component_click,
+            Some(ComponentClick {
+                picks: vec![ComponentPick {
+                    object: id,
+                    kind: ComponentSelectionKind::BrepEdge,
+                    index: 1
+                }],
+                preselection: false,
+                modifiers
+            })
+        );
+        assert!(output.selection_click.is_none() && output.picked_point.is_none());
     }
 }

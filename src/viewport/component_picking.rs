@@ -20,12 +20,14 @@ pub enum ComponentPickFilter {
 pub struct ComponentClick {
     pub picks: Vec<ComponentPick>,
     pub preselection: bool,
+    pub modifiers: egui::Modifiers,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComponentWindow {
     pub picks: Vec<ComponentPick>,
     pub preselection: bool,
+    pub modifiers: egui::Modifiers,
     pub crossing: bool,
     pub inverted: bool,
 }
@@ -35,6 +37,7 @@ pub(super) struct ComponentDrag {
     pub start: Pos2,
     pub filter: ComponentPickFilter,
     pub preselection: bool,
+    pub modifiers: egui::Modifiers,
 }
 
 impl From<EdgePick> for ComponentPick {

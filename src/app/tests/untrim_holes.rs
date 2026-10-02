@@ -252,6 +252,7 @@ fn preselect(app: &mut VibocerosApp, picks: Vec<crate::viewport::ComponentPick>)
         component_window: Some(crate::viewport::ComponentWindow {
             picks,
             preselection: true,
+            modifiers: egui::Modifiers::NONE,
             crossing: false,
             inverted: false
         }),
@@ -353,6 +354,7 @@ fn component_click_toggles_ambiguity_is_readonly_and_geometry_changes_invalidate
         app.accept_component_click(crate::viewport::ComponentClick {
             picks,
             preselection: true,
+            modifiers: egui::Modifiers::NONE,
         })
     };
     press(&mut app, vec![component(first)]);

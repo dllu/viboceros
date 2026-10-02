@@ -226,9 +226,9 @@ class OracleClient:
                 raise OracleProtocolError("edge separation commands require one iteration")
             for operation in request["operations"]:
                 if operation.get("op") == "unjoin_edge_command": validate(operation)
-            if any(op.get("pick") == "mouse" for op in request["operations"]):
-                from .hole_picking import HolePicker
-                interaction = HolePicker()
+            if any(op.get("pick") in ("mouse", "sequence") for op in request["operations"]):
+                from .component_picking import ComponentPicker
+                interaction = ComponentPicker()
         if any(op.get("op") in ("document_brep", "document_brep_import") for op in request.get("operations", [])):
             from .document_brep_probe import validate
             for operation in request["operations"]:
@@ -252,8 +252,10 @@ class OracleClient:
             for operation in request["operations"]:
                 if operation.get("op") == "untrim_holes_command": validate(operation)
             if any(op.get("pick") in ("mouse", "window") for op in request["operations"]):
-                from .hole_picking import HolePicker
-                interaction = HolePicker()
+                # The shared picker also accepts sequenced UnjoinEdge inputs
+                # when a protocol request mixes these component commands.
+                from .component_picking import ComponentPicker
+                interaction = ComponentPicker()
         if any(op.get("op") == "view_camera_probe" for op in request.get("operations", [])):
             from .view_camera_probe import validate
             if type(request.get("iterations", 1)) is not int or request.get("iterations", 1) != 1:
@@ -462,7 +464,7 @@ class OracleClient:
                 helper = Path(__file__).with_name("unjoin_edges_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "unjoin_edge_command" for op in request.get("operations", [])):
-                for name in ("unjoin_edge_command_probe.py", "join_probe.py", "untrim_holes_probe.py"):
+                for name in ("unjoin_edge_command_probe.py", "join_probe.py", "untrim_holes_probe.py", "unjoin_edge_input.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "document_units" for op in request.get("operations", [])):

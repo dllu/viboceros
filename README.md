@@ -76,7 +76,8 @@ interior holes and removes joined hole walls while preserving exact source data.
 preselection and viewport edge/face clicks or rectangles, retains trim objects,
 and groups accepted picks into one external Undo step.
 [`UnjoinEdge`](docs/commands/unjoin-edge.md) separates selected joined edges into
-exact B-rep components, preserving source attributes and one batch Undo step.
+exact B-rep components, with modifier clicks and rectangles, source attributes,
+and one batch Undo step.
 
 ## Build and run
 

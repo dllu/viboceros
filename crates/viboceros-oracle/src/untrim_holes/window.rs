@@ -6,7 +6,7 @@ use viboceros_command::UntrimHolesComponent;
 
 type Point = [f64; 2];
 
-pub(super) fn picks(
+pub(crate) fn picks(
     document: &Document,
     ids: &[ObjectId],
     corners: [[f64; 3]; 2],

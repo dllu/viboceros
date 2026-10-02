@@ -51,6 +51,11 @@ impl VibocerosApp {
             self.finish_unjoin_command(false);
             return true;
         }
+        if input.trim_start_matches('_').eq_ignore_ascii_case("Undo") {
+            self.push_log("Select joined edges in a viewport; Enter applies, Esc cancels".into());
+            self.command_input.clear();
+            return true;
+        }
         if input
             .split_whitespace()
             .next()

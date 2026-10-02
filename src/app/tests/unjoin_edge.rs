@@ -26,7 +26,8 @@ fn click(app: &mut VibocerosApp, picks: Vec<ComponentPick>, preselection: bool) 
     assert!(app.handle_viewport_action(ViewportOutput {
         component_click: Some(ComponentClick {
             picks,
-            preselection
+            preselection,
+            modifiers: egui::Modifiers::NONE,
         }),
         ..Default::default()
     }));
@@ -36,6 +37,7 @@ fn window(app: &mut VibocerosApp, picks: Vec<ComponentPick>, preselection: bool)
         component_window: Some(ComponentWindow {
             picks,
             preselection,
+            modifiers: egui::Modifiers::NONE,
             crossing: true,
             inverted: false
         }),
@@ -307,4 +309,215 @@ fn view_and_cplane_commands_preserve_selection_and_new_geometry_commands_cancel_
     assert!(app.unjoin_prompt.is_none());
     submit(&mut app, "Undo");
     assert_eq!(objects(&app), before);
+}
+
+#[test]
+fn modifiers_remove_toggle_and_readd_components_without_affecting_geometry_history() {
+    let mut app = test_app();
+    let first = cube(&mut app, 0.);
+    let second = cube(&mut app, 10.);
+    let other = ComponentPick { index: 1, ..first };
+    app.document.clear_history().unwrap();
+    let before = objects(&app);
+    submit(&mut app, "UnjoinEdge");
+    window(&mut app, vec![first, other, second], false);
+    let ctrl = egui::Modifiers {
+        ctrl: true,
+        ..Default::default()
+    };
+    let sub = egui::Modifiers {
+        ctrl: true,
+        shift: true,
+        ..Default::default()
+    };
+    app.accept_component_click(ComponentClick {
+        picks: vec![first],
+        preselection: false,
+        modifiers: ctrl,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [other, second]
+    );
+    app.accept_component_click(ComponentClick {
+        picks: vec![first],
+        preselection: false,
+        modifiers: ctrl,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [other, second]
+    );
+    app.accept_component_click(ComponentClick {
+        picks: vec![first],
+        preselection: false,
+        modifiers: sub,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [other, second, first]
+    );
+    app.accept_component_click(ComponentClick {
+        picks: vec![first],
+        preselection: false,
+        modifiers: sub,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [other, second]
+    );
+    app.accept_component_window(ComponentWindow {
+        picks: vec![first, other],
+        preselection: false,
+        modifiers: sub,
+        crossing: true,
+        inverted: false,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [other, second, first]
+    );
+    app.accept_component_window(ComponentWindow {
+        picks: vec![first, other],
+        preselection: false,
+        modifiers: ctrl,
+        crossing: false,
+        inverted: false,
+    });
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [second]
+    );
+    assert_eq!(objects(&app), before);
+    assert!(!app.document.can_undo());
+    submit(&mut app, "Cancel");
+    assert_eq!(objects(&app), before);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn ambiguous_removal_retains_its_action_and_validates_the_chosen_source() {
+    let mut app = test_app();
+    let first = cube(&mut app, 0.);
+    let second = cube(&mut app, 10.);
+    submit(&mut app, "UnjoinEdge");
+    window(&mut app, vec![first, second], false);
+    let remove = |app: &mut VibocerosApp| {
+        app.accept_component_click(ComponentClick {
+            picks: vec![first, second],
+            preselection: false,
+            modifiers: egui::Modifiers {
+                ctrl: true,
+                ..Default::default()
+            },
+        })
+    };
+    remove(&mut app);
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [first, second]
+    );
+    submit(&mut app, "2");
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [first]
+    );
+    remove(&mut app);
+    app.document
+        .set_objects_locked([first.object], true)
+        .unwrap();
+    submit(&mut app, "1");
+    assert!(!app.component_selection.has_choices());
+    assert!(app.command_log.back().unwrap().contains("Source changed"));
+    app.document
+        .set_objects_locked([first.object], false)
+        .unwrap();
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [first]
+    );
+    submit(&mut app, "Cancel");
+}
+
+#[test]
+fn alt_click_suppresses_selection_and_does_not_open_ambiguity_choices() {
+    let mut app = test_app();
+    let first = cube(&mut app, 0.);
+    let second = cube(&mut app, 10.);
+    submit(&mut app, "UnjoinEdge");
+    let alt = |app: &mut VibocerosApp, picks| {
+        app.accept_component_click(ComponentClick {
+            picks,
+            preselection: false,
+            modifiers: egui::Modifiers::ALT,
+        })
+    };
+    alt(&mut app, vec![first]);
+    assert!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap()
+            .is_empty()
+    );
+    click(&mut app, vec![first], false);
+    alt(&mut app, vec![first, second]);
+    assert!(!app.component_selection.has_choices());
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [first]
+    );
+    submit(&mut app, "Cancel");
+}
+
+#[test]
+fn undo_at_the_component_prompt_keeps_the_batch_and_prior_history_none_cancels() {
+    let mut app = test_app();
+    let first = cube(&mut app, 0.);
+    let second = ComponentPick { index: 1, ..first };
+    let before = objects(&app);
+    let undo_label = app.document.undo_label().map(str::to_owned);
+    submit(&mut app, "UnjoinEdge");
+    window(&mut app, vec![first, second], false);
+    submit(&mut app, "_Undo");
+    assert!(app.unjoin_prompt.is_some());
+    assert_eq!(objects(&app), before);
+    assert_eq!(app.document.undo_label(), undo_label.as_deref());
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [first, second]
+    );
+    submit(&mut app, "None");
+    assert!(app.unjoin_prompt.is_none());
+    assert_eq!(objects(&app), before);
+    assert_eq!(app.document.undo_label(), undo_label.as_deref());
+    assert!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap()
+            .is_empty()
+    );
+    submit(&mut app, "Undo");
+    assert!(app.document.objects().next().is_none());
 }

@@ -1,0 +1,4465 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "unjoin_edge_command",
+      "id": "click-plain",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "click-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "click-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "click-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "click-alt",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "alt"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-plain",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "partial-window",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              1.3,
+              0.0
+            ],
+            [
+              2.2,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "partial-cross",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-two",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "unselected-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "empty-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "unselected-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "empty-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "unselected-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "empty-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "unselected-alt",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "alt"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "empty-alt",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "alt"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "readd",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "ctrl"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "sub-repeat",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "sub"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "clear-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "remove-readd-window",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "cross-plain",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-empty-plain",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "cross-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-empty-ctrl",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "cross-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-empty-sub",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "sub"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "cross-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-empty-shift",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "shift"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-window",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-cross",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              2.5,
+              0.0
+            ],
+            [
+              1.8,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "split-remove-middle",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ]
+              ]
+            },
+            "splits": [
+              [
+                2,
+                [
+                  0.25,
+                  0.75
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              2.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              2.2,
+              1.3,
+              0.0
+            ],
+            [
+              1.8,
+              0.7,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-source-window",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  16.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  16.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              14.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "two-source-remove",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        },
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  12.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  14.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  16.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  16.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            1,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              11.8,
+              2.5,
+              0.0
+            ],
+            [
+              12.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "ctrl"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "key-Undo",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "Undo"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-alt",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Enter",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "alt"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "window-empty-alt",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "window",
+          "corners": [
+            [
+              1.8,
+              2.5,
+              0.0
+            ],
+            [
+              4.2,
+              -0.5,
+              0.0
+            ]
+          ],
+          "modifiers": "alt"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "key-None",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "click",
+          "component": [
+            0,
+            2
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "click",
+          "component": [
+            0,
+            6
+          ],
+          "modifiers": "plain"
+        },
+        {
+          "kind": "key",
+          "value": "None"
+        }
+      ]
+    },
+    {
+      "op": "unjoin_edge_command",
+      "id": "key-None-empty",
+      "sources": [
+        {
+          "brep": {
+            "source": {
+              "type": "mesh_brep",
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  2.0,
+                  0.0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                [
+                  1,
+                  4,
+                  5,
+                  2
+                ],
+                [
+                  4,
+                  6,
+                  7,
+                  5
+                ]
+              ]
+            }
+          }
+        }
+      ],
+      "components": [],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "pick": "sequence",
+      "steps": [
+        {
+          "kind": "key",
+          "value": "None"
+        }
+      ]
+    }
+  ]
+}

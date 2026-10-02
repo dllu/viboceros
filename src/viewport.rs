@@ -1103,13 +1103,15 @@ impl Viewport {
                         start,
                         filter,
                         preselection,
+                        modifiers,
                     })
             });
         }
         let component_mode = self
             .component_drag
-            .map(|drag| (drag.filter, drag.preselection))
-            .or(component_hover_mode);
+            .map(|drag| (drag.filter, drag.preselection, drag.modifiers))
+            .or(component_hover_mode
+                .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
             || input.face_pick.is_some()
             || input.edge_pick
@@ -1154,6 +1156,7 @@ impl Viewport {
                         mode.inverted(),
                     ),
                     preselection: drag.preselection,
+                    modifiers: drag.modifiers,
                     crossing,
                     inverted: mode.inverted(),
                 })
@@ -1162,10 +1165,11 @@ impl Viewport {
             None
         };
         let component_click = if response.clicked_by(PointerButton::Primary) {
-            component_mode.and_then(|(filter, preselection)| {
+            component_mode.and_then(|(filter, preselection, modifiers)| {
                 selection_pointer.map(|pointer| ComponentClick {
                     picks: self.pick_components(pointer, rect, document, filter),
                     preselection,
+                    modifiers,
                 })
             })
         } else {

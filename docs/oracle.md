@@ -2332,8 +2332,11 @@ python3 -m tools.rhino_oracle.untrim_replay tools/rhino_oracle/fixtures/untrim_h
 `brep_unjoin_edges` compares the public geometry API on independently built,
 identically exported sources. `unjoin_edge_command` compares actual command
 preselection and owned mouse batches, including genuine external Undo/Redo.
-The saved corpora contain 26 API and 48 command cases. Complete edge/vertex
-tables, surface control nets, UV trims, tolerances, object metadata, source
+The saved corpora contain 26 API cases, 48 preselection/mouse command cases,
+and [42 sequenced selection cases](../tools/rhino_oracle/fixtures/unjoin_edge_selection.json).
+The latter mix modifier clicks and rectangles with `None` and prompt `Undo`;
+each accepted input records the native SDK component selection. Complete
+edge/vertex tables, surface control nets, UV trims, tolerances, object metadata, source
 identities, and transient component selection remain in the comparison.
 Only command lifecycle events and diagnostic history are excluded.
 
@@ -2346,12 +2349,20 @@ orders, including split shared edges and multiple sources. See
 The capture helper exports and validates all independent source responses
 before starting Rhino. Owned paths replace caller paths and are cleaned after
 the job. Mouse batches use one command pause, then an owned Enter/Escape event
-to finish the multi-selection prompt. All live captures use private Xvfb.
+to finish the multi-selection prompt. Sequence markers include a bounded step
+index so repeated identical gestures are delivered independently. Inputs are
+acknowledged before taking mouse/Undo selection snapshots; terminal `None`
+is observed after command exit. Snapshots never drive input. The whitelist
+permits modifier gestures and `None`/`Undo` keys only,
+and owned key/button releases run even when an earlier release fails.
+The independent rectangle adapter rejects tilted or nonlinear sources.
+All live captures use private Xvfb.
 
 ```sh
 python3 -m unittest tools.rhino_oracle.test_unjoin_edges
 python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/brep_unjoin_edges.json tools/rhino_oracle/observations/brep_unjoin_edges.json
 python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/unjoin_edge_command.json tools/rhino_oracle/observations/unjoin_edge_command.json
+python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/unjoin_edge_selection.json tools/rhino_oracle/observations/unjoin_edge_selection.json
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.unjoin_edges_capture tools/rhino_oracle/fixtures/unjoin_edge_command.json --timeout 300
 ```
 
