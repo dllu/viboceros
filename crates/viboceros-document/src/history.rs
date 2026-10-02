@@ -52,6 +52,10 @@ impl Default for History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    /// Command-first picks are transient even for unchanged peers.
+    SelectionReleasedOnReplay {
+        ids: Vec<ObjectId>,
+    },
     ObjectsRemoved(Box<super::object_deletion::RemovedObjects>),
     ToleranceChanged {
         tolerance: viboceros_geometry::Tolerance,
@@ -131,6 +135,11 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::SelectionReleasedOnReplay { ids } => {
+                for id in ids {
+                    document.selection.remove(id);
+                }
+            }
             Self::ObjectsRemoved(removed) => removed.restore(document)?,
             Self::ToleranceChanged { tolerance } => {
                 std::mem::swap(&mut document.tolerance, tolerance);
@@ -229,6 +238,11 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::SelectionReleasedOnReplay { ids } => {
+                for id in ids {
+                    document.selection.remove(id);
+                }
+            }
             Self::ObjectsRemoved(removed) => removed.remove(document)?,
             Self::ToleranceChanged { tolerance } => {
                 std::mem::swap(&mut document.tolerance, tolerance);

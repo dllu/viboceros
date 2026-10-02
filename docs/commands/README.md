@@ -23,6 +23,7 @@ Rhino's complete command set is still a work in progress.
 - [Surfaces and solids](surfaces.md)
 - [Circular pipe surfaces and solids](pipe.md)
 - [Cap planar surface, B-rep, and mesh holes](cap.md)
+- [Shrink underlying trimmed surfaces](shrink-trimmed-surfaces.md)
 - [Remove all surface trims](untrim-all.md)
 - [Restore exterior surface boundaries](untrim-border.md)
 - [Remove interior holes by face or edge](untrim-holes.md)
@@ -267,6 +268,8 @@ Offset 1 1,2,0 Corner=Round
 Offset 1 1,2,0 Corner=None
 Offset ThroughPoint=2,2,0
 OffsetMultiple 1 6,0,0 OffsetCount=3
+ShrinkTrimmedSrf
+ShrinkTrimmedSrfToEdge
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]

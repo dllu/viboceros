@@ -86,6 +86,7 @@ mod object_layout;
 mod object_source;
 mod plane_arrays;
 mod remove_holes;
+mod shrink_trimmed;
 mod solid_orientation;
 #[cfg(test)]
 mod test_json;
@@ -195,6 +196,16 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: unjoin_edges::UnjoinEdgesFixture,
+    },
+    ShrinkTrimmedSrfCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: shrink_trimmed::ShrinkFixture,
+    },
+    ShrinkTrimmedSrfToEdgeCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: shrink_trimmed::ShrinkFixture,
     },
     UntrimCommand {
         id: String,
@@ -2055,6 +2066,8 @@ impl Operation {
             | Self::BrepRemoveHoles { id, .. }
             | Self::BrepUnjoinEdges { id, .. }
             | Self::UnjoinEdgeCommand { id, .. }
+            | Self::ShrinkTrimmedSrfCommand { id, .. }
+            | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
             | Self::MergeEdgesCommand { id, .. }
@@ -2436,6 +2449,8 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
                 | Operation::BrepRemoveHoles { .. }
                 | Operation::BrepUnjoinEdges { .. }
                 | Operation::UnjoinEdgeCommand { .. }
+                | Operation::ShrinkTrimmedSrfCommand { .. }
+                | Operation::ShrinkTrimmedSrfToEdgeCommand { .. }
                 | Operation::UntrimCommand { .. }
                 | Operation::UntrimHolesCommand { .. }
         ) && request.iterations != 1
@@ -2477,6 +2492,12 @@ fn execute(
         Operation::BrepUnjoinEdges { fixture, .. } => unjoin_edges::run(fixture, tolerance)?,
         Operation::UnjoinEdgeCommand { fixture, .. } => {
             unjoin_edge_command::run(fixture, tolerance)?
+        }
+        Operation::ShrinkTrimmedSrfCommand { fixture, .. } => {
+            shrink_trimmed::run(fixture, tolerance, "ShrinkTrimmedSrf")?
+        }
+        Operation::ShrinkTrimmedSrfToEdgeCommand { fixture, .. } => {
+            shrink_trimmed::run(fixture, tolerance, "ShrinkTrimmedSrfToEdge")?
         }
         Operation::UntrimCommand { fixture, .. } => untrim_edge::run(fixture, tolerance)?,
         Operation::UntrimHolesCommand { fixture, .. } => untrim_holes::run(fixture, tolerance)?,

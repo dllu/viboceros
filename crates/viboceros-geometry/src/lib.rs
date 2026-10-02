@@ -82,9 +82,9 @@ pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepBoundaryRestoration, BrepEdge, BrepEdgeMergeScope, BrepFace, BrepHoleRemoval,
-    BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepSolidOrientation, BrepTrim,
-    BrepTrimType, BrepVertex, RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso,
-    join_breps, join_breps_with_report,
+    BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepSolidOrientation,
+    BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceIso, join_breps, join_breps_with_report,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,

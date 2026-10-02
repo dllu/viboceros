@@ -1,6 +1,8 @@
 //! Group-aware picking uses each seed's last ordered membership, not graph closure.
 use super::*;
 mod objects;
+#[cfg(test)]
+mod replay_tests;
 pub(super) fn selected_objects(document: &Document) -> impl Iterator<Item = &Object> {
     objects::SelectedObjects::new(document)
 }
@@ -21,6 +23,32 @@ impl Document {
             .map(|index| self.objects[index].id)
             .collect();
         Ok(self.update_selection(selected))
+    }
+
+    /// Record command-first picking as transient during Undo and Redo, including
+    /// accepted peers whose geometry did not change. Requires an active editing
+    /// transaction; this marker alone should not represent an editing command.
+    /// Call before replacement edits and release current selection before
+    /// recording those replacements. Unrelated selections remain untouched.
+    pub fn release_command_selection_on_history_replay(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        let indices = self.resolve_object_indices(ids)?;
+        let ids = indices
+            .into_iter()
+            .map(|i| self.objects[i].id)
+            .collect::<Vec<_>>();
+        if !ids.is_empty() {
+            self.record_edit(
+                "Release command picks",
+                Edit::SelectionReleasedOnReplay { ids },
+            );
+        }
+        Ok(())
     }
 
     /// Attribute/layer changes prune individual objects, without group expansion.

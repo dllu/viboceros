@@ -8570,6 +8570,7 @@ mod tests {
     mod rhino_curve_prompt;
     mod set_point;
     mod set_view;
+    mod shrink_trimmed;
     mod single_span_selection;
     mod split_edge;
     mod unjoin_edge;

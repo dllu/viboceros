@@ -234,3 +234,9 @@ an exact degree-matched straight tangent span. `Merge=No` retains the source
 and creates the extension as a separate patch with matching attributes and
 group membership. Tensor structure, identity, attributes, groups, selection,
 and undo are preserved.
+
+## Shrink underlying trimmed surfaces
+
+`ShrinkTrimmedSrf` and `ShrinkTrimmedSrfToEdge` crop underlying NURBS domains
+while preserving visible trims and topology. Both support whole surfaces and
+polysurfaces; see [behavior, verification, and limits](shrink-trimmed-surfaces.md).

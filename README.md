@@ -83,6 +83,10 @@ and groups accepted picks into one external Undo step.
 exact B-rep components, with modifier clicks and rectangles, source attributes,
 and one batch Undo step.
 
+[`ShrinkTrimmedSrf` and `ShrinkTrimmedSrfToEdge`](docs/commands/shrink-trimmed-surfaces.md)
+reduce underlying surfaces while preserving visible trims, topology and object
+metadata, with whole-polysurface selection and batch Undo.
+
 ## Build and run
 
 Install Rust 1.95 or newer, CMake, and a C++17 compiler, then run:

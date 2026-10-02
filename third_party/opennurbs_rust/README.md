@@ -21,3 +21,13 @@ nonfinite inputs and uses the measured Rhino `ViewportInfo` default of 0.0005
 for an invalid ratio constraint. Viboceros's document clipping padding and
 frustum intersection implementation remain in `src/viewport/clipping.rs`;
 those are independently calibrated/implemented from public outputs and math.
+
+`brep_shrink.rs` adapts the interval policy of `ON_Brep::ShrinkSurface` from
+`opennurbs_brep.cpp` at the same pinned revision under the [MIT license](LICENSE).
+It retains outer bounds, conditional 1% padding, surface-side suppression,
+domain intersection, and the `2^-32` relative stopping rule. It returns intervals
+instead of mutating native surfaces and omits the unexposed side-disable mask.
+Its margin switch supports the independently observed `ToEdge` command. The
+kernel computes tight runtime UV bounds independently (rather than using the
+archive's control-point box), crops exact NURBS surfaces, updates isoparametric
+flags, and validates retained topology. No proprietary Rhino source was used.

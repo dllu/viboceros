@@ -2430,3 +2430,28 @@ original timings; geometry replay tests do not compare those elapsed times.
 Before making a kernel-performance claim, audit the specific operation's
 timing boundaries, match copying/extraction/cleanup work, use release-mode
 native builds and sufficient iterations, and report the host/emulation setup.
+
+## Shrink trimmed surfaces
+
+Both [shrink commands](commands/shrink-trimmed-surfaces.md) have 132 independent
+private-Xvfb cases: 60 base, 28 history/order, and 44 additional geometry cases.
+Sources use the shared B-rep recipe and are exported/validated before Rhino
+reads owned 3DM artifacts. Captures record complete raw definitions and topology,
+attributes, groups, selection, command events, history, Undo and Redo.
+
+`shrink_trimmed_cases.py` regenerates each source-only matrix;
+`shrink_trimmed_capture.py` bounds each owned Rhino process to eight cases.
+`shrink_trimmed_replay.py` compares all geometry and numeric indices at `1e-9`
+absolute epsilon and zero relative epsilon. Snapshot order alone is matched by
+source identity: repeated identical inputs with fresh UUIDs demonstrate varying
+native renewal order. Raw observations retain chronological order. The geometry
+matrix covers rational rotated bounds, signed weights, exact multi-span crops,
+joined topology, seams, singularities, and UV origins at `1e12`.
+
+```sh
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.shrink_trimmed_capture tools/rhino_oracle/fixtures/shrink_trimmed_surfaces.json --timeout 300
+python3 -m tools.rhino_oracle.shrink_trimmed_replay tools/rhino_oracle/fixtures/shrink_trimmed_surfaces.json tools/rhino_oracle/observations/shrink_trimmed_surfaces.json
+```
+
+Face subobjects and disabling individual shrink sides remain outside this
+coverage. These captures establish the stated cases, not full Rhino parity.

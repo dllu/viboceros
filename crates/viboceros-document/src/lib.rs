@@ -1645,7 +1645,8 @@ impl Document {
             Edit::ObjectsCleared { stored_objects, .. } => {
                 stored_objects.iter().map(|object| object.id).collect()
             }
-            Edit::ObjectInserted { .. }
+            Edit::SelectionReleasedOnReplay { .. }
+            | Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }
             | Edit::ObjectChanged { .. }
             | Edit::ObjectPropertiesChanged { .. }

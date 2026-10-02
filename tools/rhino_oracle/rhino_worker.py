@@ -6648,6 +6648,9 @@ def _execute(operation, iterations, tolerance):
     if operation["op"] == "unjoin_edge_command":
         import unjoin_edge_command_probe
         return unjoin_edge_command_probe.run(operation, tolerance, globals())
+    if operation["op"] in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command"):
+        import shrink_trimmed_probe
+        return shrink_trimmed_probe.run(operation, tolerance, globals())
     if operation["op"] == "untrim_command":
         import untrim_component_probe
         return untrim_component_probe.run(operation, tolerance, globals())
@@ -16498,7 +16501,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command") and
+        if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command") and
                 op.get("undo_redo", False) for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
