@@ -1,13 +1,21 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
 use super::display_cache::DisplayGeometry;
+use super::mirror_preview::ReflectedObjects;
 use super::*;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use viboceros_document::ColorRgb;
+use viboceros_geometry::AffineTransform3;
 
 const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
+
+#[derive(Clone, Copy)]
+struct MeshReflection {
+    transform: AffineTransform3,
+    reverse_normals: bool,
+}
 
 fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
     [vector.x as f32, vector.y as f32, vector.z as f32]
@@ -89,20 +97,35 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 struct DisplayObject {
     geometry: Rc<DisplayGeometry>,
     color: Color32,
+    face_color: Color32,
+    draw_faces: bool,
     highlighted: bool,
     member_colors_enabled: bool,
+    face_member_colors_enabled: bool,
     width: f32,
     point_radius: f32,
+    reflection: Option<AffineTransform3>,
 }
 
 impl PartialEq for DisplayObject {
     fn eq(&self, other: &Self) -> bool {
         Rc::ptr_eq(&self.geometry, &other.geometry)
             && self.color == other.color
+            && self.face_color == other.face_color
+            && self.draw_faces == other.draw_faces
             && self.highlighted == other.highlighted
             && self.member_colors_enabled == other.member_colors_enabled
+            && self.face_member_colors_enabled == other.face_member_colors_enabled
             && self.width == other.width
             && self.point_radius == other.point_radius
+            && self.reflection == other.reflection
+    }
+}
+
+impl DisplayObject {
+    fn display_point(&self, point: Point3) -> Option<Point3> {
+        self.reflection
+            .map_or(Some(point), |map| map.transform_point(point).ok())
     }
 }
 
@@ -230,12 +253,13 @@ impl Viewport {
         viewport_index: usize,
         preview: Option<ObjectSelectionFilter>,
         preview_ids: &[ObjectId],
+        reflection: Option<ReflectedObjects<'_>>,
     ) {
         crate::viewport_gpu::paint(
             painter,
             rect,
             viewport_index,
-            self.object_scene_with_preview(rect, document, preview, preview_ids),
+            self.object_scene_with_reflection(rect, document, preview, preview_ids, reflection),
         );
     }
 
@@ -244,6 +268,7 @@ impl Viewport {
         self.object_scene_with_preview(rect, document, None, &[])
     }
 
+    #[cfg(test)]
     pub(super) fn object_scene_with_preview(
         &self,
         rect: Rect,
@@ -251,9 +276,22 @@ impl Viewport {
         preview: Option<ObjectSelectionFilter>,
         preview_ids: &[ObjectId],
     ) -> Arc<GpuViewportScene> {
+        self.object_scene_with_reflection(rect, document, preview, preview_ids, None)
+    }
+
+    fn object_scene_with_reflection(
+        &self,
+        rect: Rect,
+        document: &Document,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
+        reflection: Option<ReflectedObjects<'_>>,
+    ) -> Arc<GpuViewportScene> {
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
+        let sources =
+            reflection.map(|preview| preview.sources.iter().copied().collect::<HashSet<_>>());
         let mut cache = self.display_cache.borrow_mut();
         for object in document.objects() {
             let attributes = object.attributes();
@@ -280,7 +318,11 @@ impl Viewport {
                 color = color_with_alpha(color, 110);
             }
             let highlighted = preview_ids.contains(&object.id());
-            let selected = highlighted || (preview.is_none() && document.is_selected(object.id()));
+            let reflected = sources
+                .as_ref()
+                .is_some_and(|ids| ids.contains(&object.id()));
+            let selected = highlighted
+                || (!reflected && preview.is_none() && document.is_selected(object.id()));
             if highlighted && preview.is_none() {
                 color = PICK_PREVIEW_COLOR;
             } else if selected {
@@ -291,15 +333,43 @@ impl Viewport {
                 DisplayMode::Shaded => 2.25,
                 DisplayMode::Ghosted => 1.25,
             } + if selected { 1.5 } else { 0.0 };
-            objects.push(DisplayObject {
+            let mut display = DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
+                face_color: color,
+                draw_faces: true,
                 highlighted,
                 member_colors_enabled: !selected
                     && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
+                face_member_colors_enabled: !selected
+                    && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
-            });
+                reflection: None,
+            };
+            if reflected {
+                let reflection = reflection.unwrap();
+                objects.push(DisplayObject {
+                    geometry: Rc::clone(&display.geometry),
+                    color: SELECTED_COLOR,
+                    face_color: display.face_color,
+                    draw_faces: true,
+                    highlighted: true,
+                    member_colors_enabled: false,
+                    face_member_colors_enabled: display.face_member_colors_enabled,
+                    width: width + 1.5,
+                    point_radius: 3.5,
+                    reflection: Some(reflection.transform),
+                });
+                display.draw_faces = false;
+                if reflection.reference_sources {
+                    display.color = LOCKED_COLOR;
+                    display.member_colors_enabled = false;
+                }
+                objects.push(display);
+            } else {
+                objects.push(display);
+            }
         }
         objects.sort_by_key(|object| object.highlighted);
         cache.retain_visible(&visible);
@@ -321,7 +391,9 @@ impl Viewport {
             let display = &object.geometry;
             match &*display.geometry {
                 Geometry::Point(point) => {
-                    self.add_gpu_point(&mut scene, rect, *point, 4.5, object.color)
+                    if let Some(point) = object.display_point(*point) {
+                        self.add_gpu_point(&mut scene, rect, point, 4.5, object.color);
+                    }
                 }
                 Geometry::PointCloud(cloud) => {
                     for (index, point) in cloud.points().iter().enumerate() {
@@ -346,23 +418,36 @@ impl Viewport {
                         } else {
                             object.color
                         };
-                        self.add_gpu_point(&mut scene, rect, *point, object.point_radius, color);
+                        if let Some(point) = object.display_point(*point) {
+                            self.add_gpu_point(&mut scene, rect, point, object.point_radius, color);
+                        }
                     }
                 }
                 _ => {
                     if self.display_mode != DisplayMode::Wireframe
+                        && object.draw_faces
                         && let Some(mesh) = display.mesh()
                     {
                         self.add_gpu_mesh_faces_with_normals(
                             &mut scene,
                             mesh,
                             display.normals(),
-                            object.color,
-                            object.member_colors_enabled,
+                            object.face_color,
+                            object.face_member_colors_enabled,
+                            object.reflection.map(|transform| MeshReflection {
+                                transform,
+                                // Raw meshes/surfaces keep face/parameter
+                                // order. B-reps reverse face orientation.
+                                reverse_normals: !matches!(&*display.geometry, Geometry::Brep(_)),
+                            }),
                         );
                     }
                     for &[a, b] in display.wires() {
-                        self.add_gpu_line(&mut scene, rect, a, b, object.width, object.color);
+                        if let (Some(a), Some(b)) =
+                            (object.display_point(a), object.display_point(b))
+                        {
+                            self.add_gpu_line(&mut scene, rect, a, b, object.width, object.color);
+                        }
                     }
                 }
             }
@@ -473,6 +558,7 @@ impl Viewport {
             &smooth_corner_normals(mesh),
             color,
             true,
+            None,
         );
     }
 
@@ -483,6 +569,7 @@ impl Viewport {
         corner_normals: &[[NaVector3<Real>; 3]],
         color: Color32,
         member_colors_enabled: bool,
+        reflection: Option<MeshReflection>,
     ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
             color_with_alpha(color, 35)
@@ -491,9 +578,29 @@ impl Viewport {
         };
         let gpu_color = color_to_gpu(face_color);
         for (triangle_index, normals) in corner_normals.iter().enumerate() {
-            let Some(points) = mesh.triangle_points(triangle_index) else {
+            let Some(mut points) = mesh.triangle_points(triangle_index) else {
                 continue;
             };
+            let mut normals = *normals;
+            if let Some(reflection) = reflection {
+                let [Ok(a), Ok(b), Ok(c)] =
+                    points.map(|point| reflection.transform.transform_point(point))
+                else {
+                    continue;
+                };
+                let [Ok(na), Ok(nb), Ok(nc)] = normals.map(|normal| {
+                    reflection
+                        .transform
+                        .transform_vector(Vector3::try_new(normal.x, normal.y, normal.z)?)
+                }) else {
+                    continue;
+                };
+                points = [a, b, c];
+                normals = [na, nb, nc].map(|n| NaVector3::new(n.x(), n.y(), n.z()));
+                if reflection.reverse_normals {
+                    normals = normals.map(|n| -n);
+                }
+            }
             let clipped = self.clip_triangle(points);
             if clipped[0].is_none() {
                 continue;
@@ -563,6 +670,9 @@ impl Viewport {
         }
     }
 }
+
+#[cfg(test)]
+mod mirror_tests;
 
 #[cfg(test)]
 mod tests {

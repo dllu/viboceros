@@ -6747,6 +6747,9 @@ def _execute(operation, iterations, tolerance):
     if kind == "angle_cursor_diagnostic":
         from angle_cursor_probe import run
         return run(operation, globals())
+    if kind == 'mirror_preview':
+        from mirror_preview_probe import run
+        return run(operation, globals())
     if kind == "control_point_prompt":
         return _control_point_prompt(operation)
     if kind == "interpolation_point_prompt":

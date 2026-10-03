@@ -8,6 +8,31 @@ pub(super) struct TransformSession {
     applied: bool,
     factor: Option<f64>,
     sources: Vec<ObjectId>,
+    preview: Option<viboceros_geometry::AffineTransform3>,
+}
+
+impl TransformSession {
+    pub(super) fn mirror_preview(
+        &self,
+        command: Option<InteractiveCommand>,
+    ) -> Option<crate::viewport::MirrorPreview<'_>> {
+        use viboceros_command::mirror::MirrorPointPlane;
+        let plane = match command? {
+            InteractiveCommand::Mirror { start: Some(start) } => {
+                MirrorPointPlane::TwoPoint { start }
+            }
+            InteractiveCommand::MirrorThreePoint {
+                points: [Some(origin), Some(x)],
+            } => MirrorPointPlane::ThreePoint { origin, x },
+            _ => return None,
+        };
+        Some(crate::viewport::MirrorPreview {
+            plane,
+            sources: &self.sources,
+            copy: self.copy,
+            last_transform: self.preview,
+        })
+    }
 }
 
 pub(super) fn supports(command: InteractiveCommand) -> bool {
@@ -61,6 +86,20 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
 }
 
 impl VibocerosApp {
+    pub(super) fn update_mirror_preview(
+        &mut self,
+        preview: Option<viboceros_geometry::AffineTransform3>,
+    ) -> bool {
+        let Some(session) = self.transform_session.as_mut() else {
+            return false;
+        };
+        if session.mirror_preview(self.active_command).is_none() || session.preview == preview {
+            return false;
+        }
+        session.preview = preview;
+        true
+    }
+
     pub(super) fn start_transform_session(
         &mut self,
         command: InteractiveCommand,
@@ -82,6 +121,7 @@ impl VibocerosApp {
                                 .then_some(object.id())
                         })
                         .collect(),
+                    preview: None,
                 });
                 self.push_log(format!(
                     "Copy={} (edit with Copy=Yes|No)",

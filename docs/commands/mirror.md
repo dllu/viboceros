@@ -78,9 +78,36 @@ bounding boxes are raw telemetry and can shift after float-precision meshing.
 
 These witnesses verify affine maps and document behavior, without exhaustively
 comparing every curve, surface, or mesh representation. History-linked planar
-targets, subcurve input, command-first source selection, and native mirrored-object
-previews remain incomplete. Mouse-based point-defined plane picks and near-collinear
-acceptance thresholds are not measured by this capture.
+targets, subcurve input, and command-first source selection remain incomplete.
+Near-collinear acceptance thresholds are not measured by these captures.
+
+## Live viewport preview
+
+After the first axis point, moving the cursor previews the reflected objects in
+all viewports. `3Point` starts its preview after the second plane point. The preview
+uses the resolved drafting point, including object snaps, coordinate filters, and
+point constraints, and the picking viewport's construction plane.
+
+Reflected wires and points use the selection color. Shaded and ghosted reflected
+faces retain their object or layer color. Original objects remain visible as wires:
+`Copy=Yes` retains their display color for the two-point plane, while `Copy=No` and
+`3Point` use gray reference wires. Changing Copy updates the display immediately.
+Coincident or collinear final points retain the last valid preview; accepting a
+point still runs the command's independent validity checks. Leaving the viewports
+retains the preview, and completion or cancellation removes it.
+
+Previews transform cached wire samples, display meshes, and normals while staging
+the GPU scene. Mouse movement does not clone model geometry, retessellate surfaces,
+edit selection, change persistent command defaults, or create history entries.
+Clipping includes reflected bounds so previews can extend beyond the source scene.
+
+The [15 native preview cases](../../tools/rhino_oracle/fixtures/mirror_preview.json)
+cover two-point and three-point planes, Copy settings, all three display modes,
+cancellation, and movement from a valid plane onto a degenerate final point.
+[Raw observations](../../tools/rhino_oracle/observations/mirror_preview.json) retain
+pending document snapshots, final bounds, calibrated cursor locations, and checksums
+of private Xvfb framebuffer captures. These are behavioral witnesses, not a claim
+of pixel-identical Rhino rendering or exhaustive geometry coverage.
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.transform_copy_capture tools/rhino_oracle/fixtures/mirror_planes.json --scheme VibocerosOracleMirrorPlanesFresh --timeout 300
@@ -89,6 +116,11 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.transform_
 cargo test -p viboceros mirror_plane_options --bin viboceros
 cargo test -p viboceros mirror_object_ --bin viboceros
 python3 -m unittest tools.rhino_oracle.test_transform_copy
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.mirror_preview_input tools/rhino_oracle/fixtures/mirror_preview.json --output /tmp/mirror_preview.json --scheme VibocerosOracleMirrorPreview --timeout 240
+cargo test -p viboceros --bin viboceros mirror_preview
+cargo test -p viboceros --bin viboceros gpu_mirror_preview -- --ignored --nocapture
+python3 -m unittest tools.rhino_oracle.test_mirror_preview
 ```
 
-Use a fresh private scheme and the dedicated Xvfb wrapper for capture.
+Use a private oracle settings scheme and the dedicated Xvfb wrapper for capture.
+Preview capture additionally requires Pillow and xdotool on the host.

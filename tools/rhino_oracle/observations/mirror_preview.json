@@ -1,0 +1,3449 @@
+{
+  "engine": "rhino",
+  "protocol_version": 1,
+  "results": [
+    {
+      "id": "twopoint_wireframe_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "10a4cafa-5a9e-44dc-8dc0-f65760a1b7b6",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "511b8649-60f9-4163-ae23-a4c55c399aae",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "75b1f0ce-d400-49ee-86c3-80aacca2eda2",
+            "type": "Brep"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "10a4cafa-5a9e-44dc-8dc0-f65760a1b7b6",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "511b8649-60f9-4163-ae23-a4c55c399aae",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "75b1f0ce-d400-49ee-86c3-80aacca2eda2",
+            "type": "Brep"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "10a4cafa-5a9e-44dc-8dc0-f65760a1b7b6",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "255c99ad-c0f9-4896-ad48-cfffa4107892",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "4298c48f-ad29-4866-b9d1-2489c8a44a81",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "511b8649-60f9-4163-ae23-a4c55c399aae",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "75b1f0ce-d400-49ee-86c3-80aacca2eda2",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "d894147d-d3a2-4f3a-909e-780aa831675b",
+            "type": "Brep"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "c443c429d718ef8636a255f0697905d63d1c2c62dc9237bf3768af2e36b253e7",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_wireframe_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "twopoint_wireframe_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1eedec1b-c612-4060-80f9-2834122b141f",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "758b7345-26ad-4fb1-a566-0d1171052754",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "ae2bffd6-1d00-4932-8f39-3513b28e1ef4",
+            "type": "Brep"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1eedec1b-c612-4060-80f9-2834122b141f",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "758b7345-26ad-4fb1-a566-0d1171052754",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "ae2bffd6-1d00-4932-8f39-3513b28e1ef4",
+            "type": "Brep"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1eedec1b-c612-4060-80f9-2834122b141f",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "758b7345-26ad-4fb1-a566-0d1171052754",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "ae2bffd6-1d00-4932-8f39-3513b28e1ef4",
+            "type": "Brep"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "1ae02303ca6384d8260ff8fdc615c1c8b09af6c14be6995fd5491ec84a58bd40",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_wireframe_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "twopoint_shaded_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "dc341601-c2b8-4b8e-a8ae-c147b6eca5a7",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e36bc583-7306-4bf8-9c60-ca35b995ebc4",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e491cf96-f02c-4d97-9cd3-7714006bba02",
+            "type": "Point"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "dc341601-c2b8-4b8e-a8ae-c147b6eca5a7",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e36bc583-7306-4bf8-9c60-ca35b995ebc4",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e491cf96-f02c-4d97-9cd3-7714006bba02",
+            "type": "Point"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "2928e13e-9c43-4841-8589-e24723348035",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "57cc946b-5125-47e4-81af-0a679e2c4a16",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "a361d2d0-e7a0-41a7-967b-71c615333b4e",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "dc341601-c2b8-4b8e-a8ae-c147b6eca5a7",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e36bc583-7306-4bf8-9c60-ca35b995ebc4",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "e491cf96-f02c-4d97-9cd3-7714006bba02",
+            "type": "Point"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "5c37c3208a30ea3336a1de497bd342006b5754f408a9017690c2d7b0057b5622",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_shaded_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "twopoint_shaded_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "287d9b8b-7d20-4766-80eb-c313fcd5ace0",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "68cccf83-5ad0-4c6f-9c56-5883b94b4871",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "c1be6269-bbbf-4eba-8345-fa0ab4c20a4e",
+            "type": "Curve"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "287d9b8b-7d20-4766-80eb-c313fcd5ace0",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "68cccf83-5ad0-4c6f-9c56-5883b94b4871",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "c1be6269-bbbf-4eba-8345-fa0ab4c20a4e",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "287d9b8b-7d20-4766-80eb-c313fcd5ace0",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "68cccf83-5ad0-4c6f-9c56-5883b94b4871",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "c1be6269-bbbf-4eba-8345-fa0ab4c20a4e",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "42f20768c572248430be235c9163492311600908e2ffa860f76444b095b0b1a3",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_shaded_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "twopoint_ghosted_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6065c4ca-bb99-42d9-a935-2f028227025f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "619f7a40-4a6d-4c71-99c7-0b803ef6e90c",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "db48c075-222a-4b67-88dc-8805ba68b869",
+            "type": "Curve"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6065c4ca-bb99-42d9-a935-2f028227025f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "619f7a40-4a6d-4c71-99c7-0b803ef6e90c",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "db48c075-222a-4b67-88dc-8805ba68b869",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "0f920407-978b-4fed-b822-f099bbcd0789",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "44430e9f-e365-4de1-8564-2fc144a80da7",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6065c4ca-bb99-42d9-a935-2f028227025f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "619f7a40-4a6d-4c71-99c7-0b803ef6e90c",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "a52d7fc5-1f77-4b51-b0ad-ace05f5b59fb",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "db48c075-222a-4b67-88dc-8805ba68b869",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "719c72e525b71881bb5e5c367433d8fe884c2b2359fd457e7bbdffcbeeb7ab27",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_ghosted_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "twopoint_ghosted_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1d106d33-6d8a-4de5-bab9-dbc9b649d556",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "3cb6cc5c-6f7a-443b-8ca8-37192ae8b34e",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "aed717bf-b6f3-4d75-8033-4e43cc55b07a",
+            "type": "Brep"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1d106d33-6d8a-4de5-bab9-dbc9b649d556",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "3cb6cc5c-6f7a-443b-8ca8-37192ae8b34e",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "aed717bf-b6f3-4d75-8033-4e43cc55b07a",
+            "type": "Brep"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "1d106d33-6d8a-4de5-bab9-dbc9b649d556",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "3cb6cc5c-6f7a-443b-8ca8-37192ae8b34e",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "aed717bf-b6f3-4d75-8033-4e43cc55b07a",
+            "type": "Brep"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "436bd507f11c73bc16c744b6f2ab16bb2dbb138e26bb2333135de87c91240f3b",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/twopoint_ghosted_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_wireframe_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "155d4ad0-b875-4da9-bb1a-488c2a30fd3c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "21771948-bcdd-49c6-8de2-8d7d19a8af7a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "b4bc3256-a2e5-42a0-8333-5b18f010658c",
+            "type": "Curve"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "155d4ad0-b875-4da9-bb1a-488c2a30fd3c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "21771948-bcdd-49c6-8de2-8d7d19a8af7a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "b4bc3256-a2e5-42a0-8333-5b18f010658c",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "155d4ad0-b875-4da9-bb1a-488c2a30fd3c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "21771948-bcdd-49c6-8de2-8d7d19a8af7a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "2e29ad03-c951-4115-9179-9a3ab2145014",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "7acc02e8-ffb0-4d46-9dae-86f5ec221f35",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "a869ccd3-38b4-46ee-b55f-6f63216faaa4",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "b4bc3256-a2e5-42a0-8333-5b18f010658c",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "ce4a4f4df01de7fab7e0dfc9a1b4cd18fd17f9837e87a443a965a311a947bbc7",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_wireframe_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_wireframe_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "7dd31a54-c806-4722-9e01-92792eb5af5e",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a7ccb452-122b-4277-bc47-f63869e88fef",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "d2caa0e6-0e01-4000-adab-b599bed3cad4",
+            "type": "Brep"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "7dd31a54-c806-4722-9e01-92792eb5af5e",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a7ccb452-122b-4277-bc47-f63869e88fef",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "d2caa0e6-0e01-4000-adab-b599bed3cad4",
+            "type": "Brep"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "7dd31a54-c806-4722-9e01-92792eb5af5e",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a7ccb452-122b-4277-bc47-f63869e88fef",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "d2caa0e6-0e01-4000-adab-b599bed3cad4",
+            "type": "Brep"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "ce4a4f4df01de7fab7e0dfc9a1b4cd18fd17f9837e87a443a965a311a947bbc7",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_wireframe_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_shaded_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "89304202-f997-409e-8174-a476c3dbf969",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "bf5598e2-ffc4-43e1-90cd-4da0297390ba",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "da9acf92-7db0-4b1b-a275-52ed94440e5a",
+            "type": "Curve"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "89304202-f997-409e-8174-a476c3dbf969",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "bf5598e2-ffc4-43e1-90cd-4da0297390ba",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "da9acf92-7db0-4b1b-a275-52ed94440e5a",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "0bddd650-ae2f-4e5d-a4f6-a5d4c0aa3395",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "459fe20d-6704-47db-98cb-6fa312aa2de2",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "831a2759-f1e6-4546-a843-e9b772539f7d",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "89304202-f997-409e-8174-a476c3dbf969",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "bf5598e2-ffc4-43e1-90cd-4da0297390ba",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "da9acf92-7db0-4b1b-a275-52ed94440e5a",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "c6e388bbc5471ada4eb9d4e1239c225f784d750253a5f4ccf14222dfcf5a2228",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_shaded_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_shaded_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "34c290f2-b5a4-4a54-8c6a-6f9ca94e851c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ba790f90-c2de-4794-a449-de44711d031a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ef9d326a-11c1-4736-a5e5-d16eda321eb0",
+            "type": "Curve"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "34c290f2-b5a4-4a54-8c6a-6f9ca94e851c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ba790f90-c2de-4794-a449-de44711d031a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ef9d326a-11c1-4736-a5e5-d16eda321eb0",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "34c290f2-b5a4-4a54-8c6a-6f9ca94e851c",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ba790f90-c2de-4794-a449-de44711d031a",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "ef9d326a-11c1-4736-a5e5-d16eda321eb0",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "c6e388bbc5471ada4eb9d4e1239c225f784d750253a5f4ccf14222dfcf5a2228",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_shaded_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_ghosted_copy",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "4b0e3ebb-564f-43b5-b5b6-206c0b7721aa",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6236c924-382a-4c39-8585-8b9b6be6d6f0",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6416322a-6614-459c-b3c6-9ec349260f95",
+            "type": "Curve"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=Yes )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "4b0e3ebb-564f-43b5-b5b6-206c0b7721aa",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6236c924-382a-4c39-8585-8b9b6be6d6f0",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6416322a-6614-459c-b3c6-9ec349260f95",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "4b0e3ebb-564f-43b5-b5b6-206c0b7721aa",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6236c924-382a-4c39-8585-8b9b6be6d6f0",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "6416322a-6614-459c-b3c6-9ec349260f95",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": false,
+            "id": "908307a6-46e9-44ea-8c69-81f857bec9e4",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "9f1109e0-f454-48e7-970b-e907a9570885",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false,
+            "id": "f030b8a4-4b57-4177-b85f-1a686c8efd6a",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "a6e8e86e9744034011a6e1d8a8225d9b887ef9de849be9d8685a396e1f1ce201",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_ghosted_copy.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "threepoint_ghosted_move",
+      "value": {
+        "success": true,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "64fad693-3c45-416b-a034-437bd9c24739",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d7e7e8ff-3de9-46dd-8828-a5a145de1f63",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "f4182b3c-cf96-40b4-93b7-b30ca03a7c3b",
+            "type": "Curve"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "64fad693-3c45-416b-a034-437bd9c24739",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d7e7e8ff-3de9-46dd-8828-a5a145de1f63",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "f4182b3c-cf96-40b4-93b7-b30ca03a7c3b",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                -4.0,
+                -5.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "64fad693-3c45-416b-a034-437bd9c24739",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              [
+                -3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d7e7e8ff-3de9-46dd-8828-a5a145de1f63",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                -4.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -2.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "f4182b3c-cf96-40b4-93b7-b30ca03a7c3b",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "a6e8e86e9744034011a6e1d8a8225d9b887ef9de849be9d8685a396e1f1ce201",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/threepoint_ghosted_move.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "cancel_shaded",
+      "value": {
+        "success": false,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            68.55194805194807
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "52cafb9b-7256-483e-9a97-867d0a48b552",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6e37d944-75f8-415a-a4e3-e467a5cdeb3f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d02da50-7985-4e53-8d58-0ea6eb66b5c9",
+            "type": "Point"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "52cafb9b-7256-483e-9a97-867d0a48b552",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6e37d944-75f8-415a-a4e3-e467a5cdeb3f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d02da50-7985-4e53-8d58-0ea6eb66b5c9",
+            "type": "Point"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "52cafb9b-7256-483e-9a97-867d0a48b552",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "6e37d944-75f8-415a-a4e3-e467a5cdeb3f",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d02da50-7985-4e53-8d58-0ea6eb66b5c9",
+            "type": "Point"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "42f20768c572248430be235c9163492311600908e2ffa860f76444b095b0b1a3",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/cancel_shaded.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "degenerate_twopoint",
+      "value": {
+        "success": false,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            195.5
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "7bbf11b5-b9d7-4871-9f95-943b356f4d3b",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a2ea089d-381c-463a-9fbe-fc99edcd0ea3",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d4a09377-9a55-4d2a-aced-c61563f9df5d",
+            "type": "Curve"
+          }
+        ],
+        "history": "End of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "7bbf11b5-b9d7-4871-9f95-943b356f4d3b",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a2ea089d-381c-463a-9fbe-fc99edcd0ea3",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d4a09377-9a55-4d2a-aced-c61563f9df5d",
+            "type": "Curve"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "7bbf11b5-b9d7-4871-9f95-943b356f4d3b",
+            "type": "Brep"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "a2ea089d-381c-463a-9fbe-fc99edcd0ea3",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "d4a09377-9a55-4d2a-aced-c61563f9df5d",
+            "type": "Curve"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "9f236a08b12b6af115bd31d00281c6e00d1b9ef510de82cebc25614ba44bc7df",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/degenerate_twopoint.png"
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "degenerate_threepoint",
+      "value": {
+        "success": false,
+        "calibration": {
+          "rect": [
+            901,
+            217,
+            1609,
+            608
+          ],
+          "valid_screen": [
+            1255,
+            285
+          ],
+          "regions": {
+            "source_point": [
+              430.16883116883116,
+              119.33116883116884
+            ],
+            "reflected_point": [
+              277.83116883116884,
+              119.33116883116884
+            ],
+            "source_box": [
+              430.16883116883116,
+              297.05844155844153
+            ],
+            "reflected_box": [
+              277.83116883116884,
+              297.05844155844153
+            ]
+          },
+          "aim_client": [
+            354.0,
+            195.5
+          ]
+        },
+        "pending": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "76d2173f-0e00-45ea-b47b-9488a3cc4ac1",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d7bfa26-fdc4-4906-a525-8a67a97cc9b1",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "c478224c-7b12-4f10-b265-17da03c3b9cc",
+            "type": "Brep"
+          }
+        ],
+        "history": "Third point of mirror plane ( Copy=No )\n",
+        "before": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "76d2173f-0e00-45ea-b47b-9488a3cc4ac1",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d7bfa26-fdc4-4906-a525-8a67a97cc9b1",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "c478224c-7b12-4f10-b265-17da03c3b9cc",
+            "type": "Brep"
+          }
+        ],
+        "after": [
+          {
+            "bounds": [
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "76d2173f-0e00-45ea-b47b-9488a3cc4ac1",
+            "type": "Curve"
+          },
+          {
+            "bounds": [
+              [
+                3.0,
+                3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true,
+            "id": "8d7bfa26-fdc4-4906-a525-8a67a97cc9b1",
+            "type": "Point"
+          },
+          {
+            "bounds": [
+              [
+                2.0,
+                -5.0,
+                0.0
+              ],
+              [
+                4.0,
+                -3.0,
+                2.0
+              ]
+            ],
+            "selected": true,
+            "id": "c478224c-7b12-4f10-b265-17da03c3b9cc",
+            "type": "Brep"
+          }
+        ],
+        "framebuffer": {
+          "sha256": "9699d098502c224e064bbc555c626e7d61678dadc9e29dd553b490c40c6d4a24",
+          "size": [
+            708,
+            391
+          ],
+          "path": "mirror_preview/degenerate_threepoint.png"
+        }
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001"
+}

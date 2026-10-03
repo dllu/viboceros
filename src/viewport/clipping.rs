@@ -375,12 +375,59 @@ impl Viewport {
             .reduce(|a, b| a.union(b).expect("finite document bounds"))
     }
 
+    #[cfg(test)]
     pub(super) fn refresh_clipping(
         &mut self,
         document: &Document,
         rect: Rect,
     ) -> Result<bool, &'static str> {
-        let bounds = self.visible_document_bounds(document);
+        self.refresh_clipping_with_reflection(document, rect, None)
+    }
+
+    pub(super) fn refresh_clipping_with_reflection(
+        &mut self,
+        document: &Document,
+        rect: Rect,
+        reflection: Option<super::mirror_preview::ReflectedObjects<'_>>,
+    ) -> Result<bool, &'static str> {
+        let mut bounds = self.visible_document_bounds(document);
+        if let Some(reflection) = reflection {
+            let mut cache = self.display_cache.borrow_mut();
+            for id in reflection.sources {
+                let Some(object) = document.object(*id).filter(|object| {
+                    object.attributes().is_visible()
+                        && document
+                            .layer(object.attributes().layer_id())
+                            .is_some_and(|l| l.is_visible())
+                }) else {
+                    continue;
+                };
+                let source = cache.get(object, document.tolerance()).bounds();
+                let min = source.min().to_array();
+                let max = source.max().to_array();
+                let corners = (0..8)
+                    .map(|mask| {
+                        let coordinates = std::array::from_fn(|axis| {
+                            if mask & (1 << axis) == 0 {
+                                min[axis]
+                            } else {
+                                max[axis]
+                            }
+                        });
+                        reflection
+                            .transform
+                            .transform_point(Point3::try_from(coordinates).unwrap())
+                    })
+                    .collect::<Result<Vec<_>, _>>();
+                if let Ok(corners) = corners
+                    && let Ok(reflected) = BoundingBox3::from_points(corners)
+                    && self.gpu_position(reflected.min()).is_some()
+                    && self.gpu_position(reflected.max()).is_some()
+                {
+                    bounds = Some(bounds.map_or(reflected, |b| b.union(reflected).unwrap()));
+                }
+            }
+        }
         let key = ClipRefreshKey {
             camera: self.camera_snapshot(),
             size: [rect.width(), rect.height()],

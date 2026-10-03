@@ -8174,6 +8174,11 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         };
+        let mirror_preview = self
+            .transform_session
+            .as_ref()
+            .and_then(|session| session.mirror_preview(self.active_command))
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let insert_surface_pick = model_input_active
             && matches!(
                 self.active_command,
@@ -8486,6 +8491,7 @@ impl eframe::App for VibocerosApp {
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
                             preview_curve: preview_curve.as_deref(),
+                            mirror_preview,
                             face_pick,
                             component_preselection,
                             component_pick,
@@ -8552,6 +8558,11 @@ impl eframe::App for VibocerosApp {
         }
         let mut handled_action = false;
         for (index, output) in viewport_outputs.into_iter().enumerate() {
+            if let Some(preview) = output.mirror_preview
+                && self.update_mirror_preview(preview)
+            {
+                ui.ctx().request_repaint();
+            }
             if output.activated {
                 self.active_viewport = index;
             }
@@ -8649,6 +8660,7 @@ mod tests {
     mod length;
     mod merge_edge;
     mod mesh_face_prompt;
+    mod mirror_preview;
     mod named_cplane;
     mod named_view;
     mod nurbs_selection;

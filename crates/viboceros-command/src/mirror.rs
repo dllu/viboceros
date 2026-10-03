@@ -39,6 +39,49 @@ impl MirrorPlaneOption {
     }
 }
 
+/// A point-defined plane awaiting its final point. Preview and execution use
+/// the same construction-plane projection and degeneracy checks.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum MirrorPointPlane {
+    TwoPoint { start: Point3 },
+    ThreePoint { origin: Point3, x: Point3 },
+}
+
+impl MirrorPointPlane {
+    pub fn plane_at(
+        self,
+        frame: Frame3,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> Result<viboceros_geometry::Plane, GeometryError> {
+        let (origin, normal) = match self {
+            Self::TwoPoint { start } => (
+                start,
+                frame
+                    .z_axis()
+                    .as_vector()
+                    .cross(super::plane_transforms::plane_vector(frame, start, point)?)?
+                    .normalized(tolerance)?,
+            ),
+            Self::ThreePoint { origin, x } => (
+                origin,
+                Frame3::try_from_points(origin, x, point, tolerance)?.z_axis(),
+            ),
+        };
+        Ok(viboceros_geometry::Plane::new(origin, normal))
+    }
+
+    pub fn reflection_at(
+        self,
+        frame: Frame3,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> Result<AffineTransform3, GeometryError> {
+        let plane = self.plane_at(frame, point, tolerance)?;
+        AffineTransform3::try_reflection(plane.origin(), plane.normal())
+    }
+}
+
 /// An unselected, selectable planar surface or B-rep face supplies the plane.
 /// Picking it never adds the target to the transform sources. A polysurface
 /// requires an explicit face; reflection is independent of face orientation.
@@ -216,20 +259,24 @@ impl Command for MirrorCommand {
                 let (start, consumed) = parse_point(points)?;
                 let (end, end_consumed) = parse_point(&points[consumed..])?;
                 require_consumed(points, consumed + end_consumed, USAGE)?;
-                let normal = frame
-                    .z_axis()
-                    .as_vector()
-                    .cross(super::plane_transforms::plane_vector(frame, start, end)?)?
-                    .normalized(document.tolerance())?;
-                (start, normal)
+                let plane = MirrorPointPlane::TwoPoint { start }.plane_at(
+                    frame,
+                    end,
+                    document.tolerance(),
+                )?;
+                (plane.origin(), plane.normal())
             }
             MirrorPlaneOption::ThreePoint => {
                 let (origin, consumed) = parse_point(points)?;
                 let (x, x_consumed) = parse_point(&points[consumed..])?;
                 let (y, y_consumed) = parse_point(&points[consumed + x_consumed..])?;
                 require_consumed(points, consumed + x_consumed + y_consumed, USAGE)?;
-                let plane = Frame3::try_from_points(origin, x, y, document.tolerance())?;
-                (origin, plane.z_axis())
+                let plane = MirrorPointPlane::ThreePoint { origin, x }.plane_at(
+                    frame,
+                    y,
+                    document.tolerance(),
+                )?;
+                (plane.origin(), plane.normal())
             }
             MirrorPlaneOption::Object => {
                 let (id, face) = object_target(points)?;

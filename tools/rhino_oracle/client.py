@@ -216,6 +216,11 @@ class OracleClient:
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
         interaction = None
+        if any(op.get('op') == 'mirror_preview' for op in request.get('operations', [])):
+            from .mirror_preview_input import MirrorPreviewPicker
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Mirror previews require a private Rhino settings scheme')
+            interaction = MirrorPreviewPicker(request)
         if any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
             from .transform_copy_capture import validate_request
             if self.settings_scheme is None:
@@ -475,6 +480,9 @@ class OracleClient:
             if any(op.get("op") == "angle_cursor_diagnostic" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("angle_cursor_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
+            if any(op.get('op') == 'mirror_preview' for op in request.get('operations', [])):
+                helper = Path(__file__).with_name('mirror_preview_probe.py')
+                shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -653,6 +661,8 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
+        if any(op.get('op') == 'mirror_preview' for op in request.get('operations', [])):
+            interaction.record_diagnostics(response)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)
         if any("open_confirmation" in op for op in request.get("operations", [])):

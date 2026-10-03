@@ -1,0 +1,128 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_wireframe_copy",
+      "copy": true,
+      "plane": "TwoPoint",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_wireframe_move",
+      "copy": false,
+      "plane": "TwoPoint",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_shaded_copy",
+      "copy": true,
+      "plane": "TwoPoint",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_shaded_move",
+      "copy": false,
+      "plane": "TwoPoint",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_ghosted_copy",
+      "copy": true,
+      "plane": "TwoPoint",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "twopoint_ghosted_move",
+      "copy": false,
+      "plane": "TwoPoint",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_wireframe_copy",
+      "copy": true,
+      "plane": "ThreePoint",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_wireframe_move",
+      "copy": false,
+      "plane": "ThreePoint",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_shaded_copy",
+      "copy": true,
+      "plane": "ThreePoint",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_shaded_move",
+      "copy": false,
+      "plane": "ThreePoint",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_ghosted_copy",
+      "copy": true,
+      "plane": "ThreePoint",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "threepoint_ghosted_move",
+      "copy": false,
+      "plane": "ThreePoint",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "cancel_shaded",
+      "copy": false,
+      "plane": "TwoPoint",
+      "display_mode": "Shaded",
+      "finish": "Cancel"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "degenerate_twopoint",
+      "copy": false,
+      "plane": "TwoPoint",
+      "display_mode": "Shaded",
+      "finish": "Cancel",
+      "cursor": "Degenerate"
+    },
+    {
+      "op": "mirror_preview",
+      "id": "degenerate_threepoint",
+      "copy": false,
+      "plane": "ThreePoint",
+      "display_mode": "Shaded",
+      "finish": "Cancel",
+      "cursor": "Degenerate"
+    }
+  ]
+}

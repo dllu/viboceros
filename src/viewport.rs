@@ -33,6 +33,8 @@ use drafting::clip_drafting_line;
 #[cfg(test)]
 use viboceros_drafting::TrackAxis;
 mod display_cache;
+mod mirror_preview;
+pub(crate) use mirror_preview::MirrorPreview;
 mod extents;
 pub(crate) use extents::ZoomExtentsBorders;
 mod end_markers;
@@ -301,6 +303,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
+    pub mirror_preview: Option<MirrorPreview<'a>>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
     pub component_preselection: bool,
@@ -352,6 +355,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
+            mirror_preview: None,
             face_pick: None,
             edge_pick: false,
             component_preselection: false,
@@ -383,6 +387,9 @@ pub struct ViewportOutput {
     pub component_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
     pub picked_point: Option<Point3>,
+    /// Outer Some means the hovered viewport evaluated the current cursor;
+    /// inner None means no valid reflection has been previewed yet.
+    pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
@@ -1038,7 +1045,12 @@ impl Viewport {
         let rect = response.rect;
         self.last_rect = Some(rect);
         // Redraw refreshes saved clip metadata without entering camera history.
-        let _ = self.refresh_clipping(document, rect);
+        let previous_reflection = input.mirror_preview.and_then(|preview| {
+            preview
+                .resolve(None, self.construction_plane(), document.tolerance())
+                .0
+        });
+        let _ = self.refresh_clipping_with_reflection(document, rect, previous_reflection);
         let redraw_camera = self.camera_snapshot();
 
         let modifiers = ui.input(|input| input.modifiers);
@@ -1382,7 +1394,7 @@ impl Viewport {
         });
 
         if self.camera_snapshot() != redraw_camera {
-            let _ = self.refresh_clipping(document, rect);
+            let _ = self.refresh_clipping_with_reflection(document, rect, previous_reflection);
         }
         let drafting_cursor = if drafting.active
             && !component_input
@@ -1411,6 +1423,17 @@ impl Viewport {
             && response.hovered()
         {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+        }
+        let (mirror_preview, mirror_preview_update) =
+            input.mirror_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor.map(|cursor| cursor.point),
+                    self.construction_plane(),
+                    document.tolerance(),
+                )
+            });
+        if mirror_preview_update.is_some() {
+            let _ = self.refresh_clipping_with_reflection(document, rect, mirror_preview);
         }
         let object_prompt_selecting = matches!(
             input.face_pick,
@@ -1466,6 +1489,7 @@ impl Viewport {
             viewport_index,
             input.selection_preview,
             input.selection_preview_ids,
+            mirror_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
         if let Some((filter, _)) = component_hover_mode
@@ -1723,6 +1747,7 @@ impl Viewport {
             && response.clicked_by(PointerButton::Primary)
             && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
         ViewportOutput {
+            mirror_preview: mirror_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
                     .interact_pointer_pos()
