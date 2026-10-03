@@ -117,7 +117,7 @@ pub fn point_morph(
     target: TaperDistance,
     options: TaperOptions,
     context: CommandContext,
-) -> Result<TaperPointMorph, CommandError> {
+) -> Result<TaperPointMorph, GeometryError> {
     let axis = start.vector_to(end)?;
     let length = axis.length()?;
     let normal = axis.normalized_nonzero()?.as_vector();

@@ -17,6 +17,9 @@ Rigid and Undo/Redo. Follow-on [Taper command tests](commands/taper.md) use 90
 geometry recipes and a 33-step preference/history workflow, including signed
 distances, radial point picks, construction planes and a fitting sweep. Native
 precision diagnostics are retained in the [provenance](taper-command-provenance.json).
+Another 30 [Taper cursor captures](taper-preview.md) constrain quick previews,
+display modes and axis-normal mouse planes, with six earlier plane diagnostics
+retained separately. All were captured using private Xvfb settings schemes.
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.

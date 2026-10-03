@@ -108,7 +108,9 @@ finite-axis blending, linear extrapolation, extreme-range fallbacks and measured
 rigid poses. Its [command adapter](commands/taper.md) resolves signed distances
 and construction-plane or picked Flat directions, stages geometry atomically,
 and retains sources for repeated copies. All flags save on successful outer
-completion, outside document history. Live Taper previews remain pending.
+completion, outside document history. Its [live preview](taper-preview.md) shares
+prepared morph cages, preserves pending isocurves in all display modes and uses
+an axis-normal radius mouse plane with an edge-on construction-plane fallback.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

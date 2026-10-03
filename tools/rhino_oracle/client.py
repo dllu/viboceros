@@ -287,6 +287,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'taper_preview' for op in request.get('operations', [])):
+            from .taper_preview_input import TaperPreviewPicker
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Taper previews require a private settings scheme')
+            interaction=TaperPreviewPicker(request)
         if any(op.get('op') == 'bend_preview' for op in request.get('operations', [])):
             from .bend_preview_input import BendPreviewPicker
             if self.settings_scheme is None:
@@ -603,6 +608,9 @@ class OracleClient:
             if any(op.get('op') == 'twist_preview' for op in request.get('operations',[])):
                 for name in ('twist_preview_probe.py','twist_command_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'taper_preview' for op in request.get('operations', [])):
+                for name in ('taper_preview_probe.py','number_token.py','twist_command_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'bend_preview' for op in request.get('operations', [])):
                 for name in ('bend_preview_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'viewport_capture.py', 'named_view_policy_probe.py', 'view_camera_probe.py', 'shrink_face_input.py', 'snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
@@ -787,7 +795,7 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
-        if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview') for op in request.get('operations', [])):
+        if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview') for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)

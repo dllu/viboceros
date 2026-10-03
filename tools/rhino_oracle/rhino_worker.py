@@ -6783,6 +6783,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'twist_preview':
         from twist_preview_probe import run
         return run(operation,globals())
+    if kind == 'taper_preview':
+        from taper_preview_probe import run
+        return run(operation, globals())
     if kind == 'bend_preview':
         from bend_preview_probe import run
         return run(operation, globals())

@@ -52,6 +52,11 @@ that collapses at that crossing may fail validation.
 
 ## Measured compatibility and limits
 
+[Live cursor previews](../taper-preview.md) share prepared display cages with
+Twist and Bend. Radius guides and pending geometry follow the same resolved
+point used for a click. Thirty private native captures constrain curve and
+surface cages, grouped rigid placements, display modes and radius mouse planes.
+
 Private Xvfb captures from Rhino **8.32.26160.13001** retain 90 geometry recipes
 and 33 preference/history steps. They cover points, lines, curves, a surface,
 solid boxes and colored quad meshes, all flags, repeated Copy, signed distances,
@@ -65,8 +70,8 @@ stops refining below `1e-5` in the retained tolerance sweep. The command applies
 this floor independently of the kernel's explicit fitting tolerance contract.
 
 Validation uses sampled witnesses and finite fitting budgets. It is not a
-continuous error certificate or exhaustive Rhino parity. Live cursor previews,
-additional axis construction options and complex trimmed shape compatibility
+continuous error certificate or exhaustive Rhino parity. Additional axis
+construction options and complex trimmed shape compatibility
 remain pending. Native source workflows use preselection; command-first input
 is checked in application tests.
 

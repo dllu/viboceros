@@ -123,6 +123,15 @@ impl Viewport {
                 planar: true,
                 ..drafting
             });
+        // Taper's radius getter uses a plane normal to its axis. In an
+        // edge-on view it falls back to the CPlane through this radius origin.
+        let drafting = input
+            .taper_preview
+            .map_or(drafting, |preview| DraftingInput {
+                anchor: Some(preview.anchor()),
+                planar: true,
+                ..drafting
+            });
         let filter = input.point_filter;
         let constraint = input.point_constraint;
         let definition = input.affine_preview.map(|p| p.definition);
@@ -139,6 +148,7 @@ impl Viewport {
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
             .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
+            .or_else(|| input.taper_preview.and_then(|p| p.mouse_plane()))
         else {
             return cursor;
         };
@@ -148,7 +158,7 @@ impl Viewport {
         let (origin, direction) = self.drafting_view_line_relative_to(anchor, pointer, rect)?;
         let denominator = direction.dot(normal.as_vector()).ok()?;
         if denominator.abs() <= 1e-12 * direction.length().ok()? {
-            return None;
+            return input.taper_preview.and(cursor);
         }
         let distance = -origin.dot(normal.as_vector()).ok()? / denominator;
         let point = anchor

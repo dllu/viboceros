@@ -8648,6 +8648,12 @@ impl eframe::App for VibocerosApp {
                 self.commands.transform_scalar_default("Bend"),
             )
         });
+        let taper_preview = self.taper_session.as_ref().and_then(|s| {
+            s.preview(
+                self.active_command,
+                self.viewports[self.active_viewport].construction_plane(),
+            )
+        });
         let angle_plane = matches!(
             self.active_command,
             Some(InteractiveCommand::Twist {
@@ -8793,6 +8799,7 @@ impl eframe::App for VibocerosApp {
                             affine_preview,
                             twist_preview,
                             bend_preview,
+                            taper_preview,
                             face_pick,
                             component_preselection,
                             component_pick,
@@ -8881,6 +8888,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(point) = output.bend_preview
                 && self.update_bend_preview(point)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(point) = output.taper_preview
+                && self.update_taper_preview(point)
             {
                 ui.ctx().request_repaint();
             }

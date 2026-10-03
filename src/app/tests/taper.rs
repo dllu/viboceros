@@ -1,6 +1,43 @@
 use super::*;
 use viboceros_command::taper::{TaperDistance, TaperOptions};
 
+#[test]
+fn taper_preview_clears_between_radius_phases_and_copy_placements() {
+    let mut app = test_app();
+    let source = app
+        .document
+        .add_geometry(Geometry::Point(Point3::try_new(2., 1., 5.).unwrap()))
+        .unwrap();
+    app.document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.object(source).unwrap().geometry().clone();
+    assert!(app.try_start_interactive_command("Taper"));
+    for p in [[0., 0., 0.], [0., 0., 10.]] {
+        assert!(app.accept_drafting_point(Point3::try_from(p).unwrap()));
+    }
+    let cursor = Point3::try_new(1., 0., 10.).unwrap();
+    assert!(app.taper_preview().unwrap().initial.is_none());
+    assert!(app.update_taper_preview(Some(cursor)));
+    assert!(app.try_continue_taper("2"));
+    assert_eq!(app.taper_preview().unwrap().last_point, None);
+    assert!(app.update_taper_preview(Some(cursor)));
+    assert_eq!(app.document.object(source).unwrap().geometry(), &before);
+    assert!(!app.document.can_undo());
+    assert!(app.try_continue_taper("Copy=Yes"));
+    assert!(app.accept_drafting_point(cursor));
+    assert_eq!(app.document.objects().count(), 2);
+    assert_eq!(app.taper_preview().unwrap().last_point, None);
+    assert!(app.update_taper_preview(Some(cursor)));
+    assert!(app.try_continue_taper("Cancel"));
+    assert!(app.taper_preview().is_none());
+    assert_eq!(app.document.objects().count(), 2);
+    app.execute_command("Undo");
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.document.object(source).unwrap().geometry(), &before);
+}
+
 fn preference_sources(
     app: &mut VibocerosApp,
 ) -> std::collections::BTreeMap<&'static str, Vec<ObjectId>> {

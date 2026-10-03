@@ -42,9 +42,11 @@ mod morph_preview;
 mod object_preview;
 #[cfg(test)]
 mod preview_test_support;
+pub(crate) mod taper_preview;
 pub(crate) mod twist_preview;
 pub(crate) use affine_preview::AffinePreview;
 pub(crate) use bend_preview::{BendPreview, BendPreviewCache};
+pub(crate) use taper_preview::{TaperPreview, TaperPreviewCache};
 pub(crate) use twist_preview::{TwistPreview, TwistPreviewCache};
 pub(crate) mod translation_preview;
 pub(crate) use translation_preview::TranslationPreview;
@@ -323,6 +325,7 @@ pub struct ViewportInput<'a> {
     pub affine_preview: Option<AffinePreview<'a>>,
     pub twist_preview: Option<TwistPreview<'a>>,
     pub bend_preview: Option<BendPreview<'a>>,
+    pub taper_preview: Option<TaperPreview<'a>>,
     pub angle_plane: Option<Frame3>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
@@ -382,6 +385,7 @@ impl Default for ViewportInput<'_> {
             affine_preview: None,
             twist_preview: None,
             bend_preview: None,
+            taper_preview: None,
             angle_plane: None,
             face_pick: None,
             edge_pick: false,
@@ -421,6 +425,7 @@ pub struct ViewportOutput {
     pub affine_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub twist_preview: Option<Option<Real>>,
     pub bend_preview: Option<Option<Point3>>,
+    pub taper_preview: Option<Option<Point3>>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
@@ -1101,6 +1106,9 @@ impl Viewport {
         let previous_bend = input
             .bend_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_taper = input
+            .taper_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
@@ -1110,6 +1118,11 @@ impl Viewport {
             })
             .or_else(|| {
                 previous_bend.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                previous_taper.as_ref().map(|p| {
                     object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
                 })
             });
@@ -1567,6 +1580,20 @@ impl Viewport {
                     &self.display_cache,
                 )
             });
+        let (taper_preview, taper_preview_update) =
+            input.taper_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
         let object_preview = mirror_preview
             .or(translation_preview)
             .or(affine_preview)
@@ -1580,12 +1607,18 @@ impl Viewport {
                 bend_preview.as_ref().map(|p| {
                     object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
                 })
+            })
+            .or_else(|| {
+                taper_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
             });
         if mirror_preview_update.is_some()
             || translation_preview_update.is_some()
             || affine_preview_update.is_some()
             || twist_preview_update.is_some()
             || bend_preview_update.is_some()
+            || taper_preview_update.is_some()
         {
             let _ = self.refresh_clipping_with_preview(document, rect, object_preview);
         }
@@ -1758,6 +1791,12 @@ impl Viewport {
             }
         }
         if let Some(cursor) = drafting_cursor {
+            // Radius guides display the radial projection even when an
+            // edge-on fallback or object snap supplies an off-plane point.
+            let cursor = input
+                .taper_preview
+                .and_then(|preview| preview.radius_point(cursor.point))
+                .map_or(cursor, |point| drafting::DraftingCursor { point, ..cursor });
             let paint_input = input.bend_preview.map_or(drafting, |p| DraftingInput {
                 anchor: Some(p.start),
                 ..drafting
@@ -1767,11 +1806,14 @@ impl Viewport {
                 rect,
                 paint_input,
                 cursor,
-                input.bend_preview.is_none(),
+                input.bend_preview.is_none() && input.taper_preview.is_none(),
             );
         }
         if let Some(preview) = input.bend_preview {
             self.paint_bend_guide(&painter, rect, preview, bend_preview.as_deref());
+        }
+        if let Some(preview) = input.taper_preview {
+            self.paint_taper_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
         }
         if let Some(cursor) = zoom_target_cursor {
             self.paint_drafting(&painter, rect, zoom_drafting, cursor);
@@ -1919,6 +1961,7 @@ impl Viewport {
             affine_preview: affine_preview_update,
             twist_preview: twist_preview_update,
             bend_preview: bend_preview_update,
+            taper_preview: taper_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
                     .interact_pointer_pos()

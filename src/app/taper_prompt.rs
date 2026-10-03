@@ -11,8 +11,53 @@ pub(super) struct TaperSession {
     initial_options: TaperOptions,
     preserve_available: bool,
     context: Option<viboceros_command::CommandContext>,
+    preview_point: Option<Point3>,
+    preview_cache: std::cell::RefCell<crate::viewport::TaperPreviewCache>,
+}
+impl TaperSession {
+    pub(super) fn preview(
+        &self,
+        command: Option<InteractiveCommand>,
+        cplane: Frame3,
+    ) -> Option<crate::viewport::TaperPreview<'_>> {
+        let InteractiveCommand::Taper {
+            points: [Some(start), Some(end)],
+            initial,
+            options,
+        } = command?
+        else {
+            return None;
+        };
+        Some(crate::viewport::TaperPreview {
+            sources: &self.sources,
+            start,
+            end,
+            initial,
+            options,
+            cplane: self.context.map_or(cplane, |c| c.construction_plane),
+            last_point: self.preview_point,
+            cache: &self.preview_cache,
+        })
+    }
 }
 impl VibocerosApp {
+    pub(super) fn taper_preview(&self) -> Option<crate::viewport::TaperPreview<'_>> {
+        self.taper_session.as_ref()?.preview(
+            self.active_command,
+            self.viewports[self.active_viewport].construction_plane(),
+        )
+    }
+    pub(super) fn update_taper_preview(&mut self, point: Option<Point3>) -> bool {
+        if self.taper_preview().is_none() {
+            return false;
+        }
+        let session = self.taper_session.as_mut().unwrap();
+        if session.preview_point == point {
+            return false;
+        }
+        session.preview_point = point;
+        true
+    }
     pub(super) fn start_taper_session(&mut self, picked: Option<Vec<ObjectId>>) -> bool {
         let group = match self.document.begin_history_group("Taper") {
             Ok(group) => group,
@@ -43,6 +88,8 @@ impl VibocerosApp {
             initial_options: self.commands.taper_options_default(),
             preserve_available,
             context: None,
+            preview_point: None,
+            preview_cache: Default::default(),
         });
         true
     }
@@ -251,6 +298,7 @@ impl VibocerosApp {
                 return false;
             }
             self.taper_session.as_mut().unwrap().context = Some(context);
+            self.taper_session.as_mut().unwrap().preview_point = None;
             self.active_command = Some(InteractiveCommand::Taper {
                 points: [Some(start), Some(end)],
                 initial: Some(distance),
@@ -289,6 +337,7 @@ impl VibocerosApp {
         ) {
             Ok(message) => {
                 session.placed = true;
+                session.preview_point = None;
                 if options.copy {
                     self.commands
                         .remember_taper_completion_options(session.initial_options);
