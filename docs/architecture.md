@@ -105,7 +105,10 @@ The [geometry oracle](bend-geometry.md) retains point and command witnesses;
 including cached boundary variants for Shaded and Ghosted views.
 The [Taper kernel](taper-geometry.md) adds radial and flat point maps with cubic
 finite-axis blending, linear extrapolation, extreme-range fallbacks and measured
-rigid poses. The Taper document command and interactive workflow remain pending.
+rigid poses. Its [command adapter](commands/taper.md) resolves signed distances
+and construction-plane or picked Flat directions, stages geometry atomically,
+and retains sources for repeated copies. All flags save on successful outer
+completion, outside document history. Live Taper previews remain pending.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

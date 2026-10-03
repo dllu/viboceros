@@ -1,0 +1,90 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-0",
+      "shape": "Points",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    },
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-1",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    },
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-2",
+      "shape": "Curve",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    },
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-3",
+      "shape": "Surface",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    },
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-4",
+      "shape": "Box",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    },
+    {
+      "op": "taper_geometry_command",
+      "id": "taper-identity-5",
+      "shape": "Mesh",
+      "copy": false,
+      "rigid": false,
+      "flat": false,
+      "infinite": false,
+      "preserve": false,
+      "grouped": false,
+      "start_distance": 2.0,
+      "end_distance": 2.0,
+      "finish": "Complete"
+    }
+  ]
+}

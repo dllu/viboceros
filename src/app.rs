@@ -166,6 +166,7 @@ mod radius;
 mod set_point;
 mod set_view;
 mod snapping;
+mod taper_prompt;
 mod toolbar;
 mod transform_prompt;
 mod transform_sources;
@@ -630,6 +631,11 @@ enum InteractiveCommand {
         points: [Option<Point3>; 2],
         options: viboceros_command::bend::BendOptions,
     },
+    Taper {
+        points: [Option<Point3>; 2],
+        initial: Option<viboceros_command::taper::TaperDistance>,
+        options: viboceros_command::taper::TaperOptions,
+    },
     Mirror {
         start: Option<Point3>,
     },
@@ -754,6 +760,7 @@ impl InteractiveCommand {
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Twist { .. } => "Twist",
             Self::Bend { .. } => "Bend",
+            Self::Taper { .. } => "Taper",
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
@@ -1418,6 +1425,18 @@ impl InteractiveCommand {
                     "Bend: pick the through point; Copy, Rigid, LimitToSpine, Angle, Symmetric, PreserveStructure, NonAttenuated"
                 }
             },
+            Self::Taper {
+                points, initial, ..
+            } => match (points, initial) {
+                ([None, _], _) => "Taper: pick the axis start (Esc to cancel)",
+                ([Some(_), None], _) => "Taper: pick the axis end (Esc to cancel)",
+                ([Some(_), Some(_)], None) => {
+                    "Taper: enter or pick the start distance; Copy, Rigid, Flat, Infinite, PreserveStructure"
+                }
+                ([Some(_), Some(_)], Some(_)) => {
+                    "Taper: enter or pick the end distance; Copy, Rigid, Flat, Infinite, PreserveStructure"
+                }
+            },
             Self::Mirror { start: None } => {
                 "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis, Object (Esc to cancel)"
             }
@@ -1568,6 +1587,9 @@ impl InteractiveCommand {
                 ..
             }
             | Self::Bend {
+                points: [None, _], ..
+            }
+            | Self::Taper {
                 points: [None, _], ..
             }
             | Self::Mirror { start: None }
@@ -1738,6 +1760,14 @@ impl InteractiveCommand {
                 points: [Some(start), _, _],
                 ..
             } => Some(start),
+            Self::Taper {
+                points: [Some(start), end],
+                initial,
+                ..
+            } => Some(match (end, initial) {
+                (Some(end), Some(_)) => end,
+                _ => start,
+            }),
             Self::Bend {
                 points: [Some(start), end],
                 ..
@@ -1883,6 +1913,7 @@ pub struct VibocerosApp {
     transform_session: Option<transform_prompt::TransformSession>,
     twist_session: Option<twist_prompt::TwistSession>,
     bend_session: Option<bend_prompt::BendSession>,
+    taper_session: Option<taper_prompt::TaperSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -1976,6 +2007,7 @@ impl VibocerosApp {
             transform_session: None,
             twist_session: None,
             bend_session: None,
+            taper_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -2134,6 +2166,7 @@ impl VibocerosApp {
             || self.try_continue_transform(&input)
             || self.try_continue_twist(&input)
             || self.try_continue_bend(&input)
+            || self.try_continue_taper(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -2573,6 +2606,7 @@ impl VibocerosApp {
             || self.try_continue_transform(input)
             || self.try_continue_twist(input)
             || self.try_continue_bend(input)
+            || self.try_continue_taper(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
@@ -2744,6 +2778,21 @@ impl VibocerosApp {
             }
             InteractiveCommand::Bend {
                 points: [None; 2],
+                options,
+            }
+        } else if normalized == "taper" {
+            let Ok((positional, options)) = viboceros_command::taper::TaperOptions::from_arguments(
+                &arguments,
+                self.commands.taper_options_default(),
+            ) else {
+                return false;
+            };
+            if !positional.is_empty() {
+                return false;
+            }
+            InteractiveCommand::Taper {
+                points: [None; 2],
+                initial: None,
                 options,
             }
         } else if normalized == "align" {
@@ -4643,7 +4692,9 @@ impl VibocerosApp {
             || translation_prompt::supports(command)
             || matches!(
                 command,
-                InteractiveCommand::Twist { .. } | InteractiveCommand::Bend { .. }
+                InteractiveCommand::Twist { .. }
+                    | InteractiveCommand::Bend { .. }
+                    | InteractiveCommand::Taper { .. }
             ))
             && self.document.selected_object_count() == 0
         {
@@ -4667,6 +4718,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Twist { .. }
                 | InteractiveCommand::Bend { .. }
+                | InteractiveCommand::Taper { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::MirrorThreePoint { .. }
                 | InteractiveCommand::MirrorObject
@@ -4733,6 +4785,10 @@ impl VibocerosApp {
             if !self.start_bend_session(picked_sources) {
                 return true;
             }
+        } else if matches!(command, InteractiveCommand::Taper { .. }) {
+            if !self.start_taper_session(picked_sources) {
+                return true;
+            }
         } else if translation_prompt::supports(command) {
             if !self.start_translation_session(
                 command,
@@ -4777,6 +4833,7 @@ impl VibocerosApp {
         }
         self.twist_session = None;
         self.finish_bend_session(false);
+        self.finish_taper_session(false);
         self.set_view_prompt = None;
         if std::mem::take(&mut self.remember_copy_prompt) && announce {
             self.push_log("Cancelled RememberCopyOptions".into());
@@ -7154,6 +7211,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
             InteractiveCommand::Bend { .. } => return self.accept_bend_point(point),
+            InteractiveCommand::Taper { .. } => return self.accept_taper_point(point),
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
                 if point_count == 1
@@ -8941,6 +8999,7 @@ mod tests {
     mod shrink_trimmed;
     mod single_span_selection;
     mod split_edge;
+    mod taper;
     mod transform_copy;
     mod translation_preview;
     mod twist;
@@ -9018,6 +9077,7 @@ mod tests {
             transform_session: None,
             twist_session: None,
             bend_session: None,
+            taper_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

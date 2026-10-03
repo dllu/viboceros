@@ -4,9 +4,9 @@
 
 `TaperPointMorph` is an independent Rust implementation of the public
 [TaperSpaceMorph constructor](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.morphs.taperspacemorph/taperspacemorph).
-It accepts an axis, start/end radii, Flat and Infinite choices. Taper's document
-command and interactive prompts are still pending; this kernel and its oracle
-provide the foundation for them.
+It accepts an axis, start/end radii, Flat and Infinite choices. The
+[Taper command](commands/taper.md) adds distance picks, construction-plane Flat
+direction, atomic document edits and interactive repeated copies.
 
 ## Point map
 
@@ -30,7 +30,9 @@ Public SDK construction requires both radii and axis length to exceed `2^-32`.
 Signed/zero radii and shorter axes are invalid. The kernel reports construction
 errors; the matching oracle protocol returns unchanged points for an invalid
 definition, as the measured SDK does. `try_from_frame` instead accepts positive
-finite mathematical lengths and radii below the SDK cutoff.
+finite mathematical lengths and radii below the SDK cutoff. The command frame
+constructor accepts signed distances above the native absolute zero cutoff;
+this is a separate contract from the positive-only public SDK constructor.
 
 The ordinary map caches the radius change and uses floating-point projections.
 Overflowing ratios/displacements, underflowing blend products and severe
@@ -49,8 +51,9 @@ use fitting regardless of PreserveStructure.
 Rigid placement maps a supplied object/group bounds center and builds a rotation
 from the measured forward world-axis derivative policy shared with Twist and
 attenuated Bend. One grouped native point command constrains this pose at `1e-7`.
-Other rigid shapes, singular frames and command group/history rules need further
-command captures.
+Follow-on [command captures](commands/taper.md) constrain rigid curves, surfaces,
+boxes and meshes, along with group and history rules. Singular rigid frames
+remain limited by the shared pose validation.
 
 ## Evidence and limits
 
@@ -69,9 +72,10 @@ geometry matches the diagnostic, and Undo/Redo now restores the expected states.
 Two earlier helper compatibility failures produced no successful captures.
 
 The fitted-line and preserved-control tests check kernel contracts separately
-from native fitting. Final native curve/surface/B-rep output, flat point-pick
-orientation, command preferences, repeated targets and live previews remain
-pending. These witnesses do not establish exhaustive Taper or Rhino parity.
+from native fitting. Follow-on [command evidence](taper-command-provenance.json)
+adds native curve/surface/B-rep samples, flat point picks, construction planes,
+preferences and repeated targets. Live previews remain pending. These witnesses
+do not establish exhaustive Taper or Rhino parity.
 
 A release Rust point-batch run (1,000 iterations) measured 4.35–319.88 ns per
 point across 20 valid primary cases, with median 36.16 ns. Timings include result

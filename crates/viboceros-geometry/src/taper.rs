@@ -57,7 +57,54 @@ impl TaperPointMorph {
                 context: "taper definition",
             });
         }
-        Ok(Self {
+        Ok(Self::from_validated_frame(
+            frame,
+            length,
+            start_radius,
+            end_radius,
+            flat,
+            infinite,
+        ))
+    }
+
+    /// Actual commands accept signed distances but reject values within the
+    /// native zero cutoff. SDK construction above retains its positive rule.
+    pub fn try_for_command_frame(
+        frame: Frame3,
+        length: Real,
+        start_radius: Real,
+        end_radius: Real,
+        flat: bool,
+        infinite: bool,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            [length, start_radius, end_radius],
+            "taper command definition",
+        )?;
+        if length <= SDK_ZERO || start_radius.abs() <= SDK_ZERO || end_radius.abs() <= SDK_ZERO {
+            return Err(GeometryError::Degenerate {
+                context: "taper command definition",
+            });
+        }
+        Ok(Self::from_validated_frame(
+            frame,
+            length,
+            start_radius,
+            end_radius,
+            flat,
+            infinite,
+        ))
+    }
+
+    fn from_validated_frame(
+        frame: Frame3,
+        length: Real,
+        start_radius: Real,
+        end_radius: Real,
+        flat: bool,
+        infinite: bool,
+    ) -> Self {
+        Self {
             frame,
             length,
             start_radius,
@@ -66,7 +113,11 @@ impl TaperPointMorph {
             flat,
             infinite,
             preserve_structure: false,
-        })
+        }
+    }
+
+    pub fn is_identity(self) -> bool {
+        self.start_radius == self.end_radius
     }
 
     pub fn with_preserve_structure(mut self, preserve: bool) -> Self {
@@ -75,7 +126,7 @@ impl TaperPointMorph {
     }
 
     pub fn rigid_transform(self, center: Point3) -> Result<AffineTransform3, GeometryError> {
-        if self.start_radius == self.end_radius {
+        if self.is_identity() {
             Ok(AffineTransform3::identity())
         } else {
             crate::morph::rigid_transform(&self, center)
@@ -135,7 +186,7 @@ impl TaperPointMorph {
 
 impl PointMorph for TaperPointMorph {
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
-        if self.start_radius == self.end_radius {
+        if self.is_identity() {
             return Ok(point);
         }
         let normal = self.frame.z_axis().as_vector();
@@ -188,7 +239,9 @@ impl PointMorph for TaperPointMorph {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve, GeometryError> {
-        if self.preserve_structure {
+        if self.is_identity() {
+            Ok(curve.clone())
+        } else if self.preserve_structure {
             self.morph_nurbs_curve_controls(curve)
         } else {
             crate::morph::fit_curve(self, curve, tolerance)
@@ -200,7 +253,9 @@ impl PointMorph for TaperPointMorph {
         surface: &NurbsSurface,
         tolerance: Tolerance,
     ) -> Result<NurbsSurface, GeometryError> {
-        if self.preserve_structure {
+        if self.is_identity() {
+            Ok(surface.clone())
+        } else if self.preserve_structure {
             self.morph_nurbs_surface_controls(surface)
         } else {
             crate::morph::fit_surface(self, surface, tolerance)
@@ -208,6 +263,9 @@ impl PointMorph for TaperPointMorph {
     }
 
     fn morph_brep(&self, brep: &Brep, tolerance: Tolerance) -> Result<Brep, GeometryError> {
+        if self.is_identity() {
+            return Ok(brep.clone());
+        }
         brep.morphed(
             &self.with_preserve_structure(self.preserve_structure && brep.faces().len() == 1),
             tolerance,

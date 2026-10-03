@@ -9,6 +9,8 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 
 [Bend](bend.md) deforms objects along a circular spine, with through-point or
 fixed-angle construction, rigid groups and repeated copies.
+[Taper](taper.md) deforms radial distances along an axis, with flat direction
+picks, construction-plane orientation and repeated copies.
 [Twist](twist.md) supports axis-angle or reference-direction deformation and
 live object previews.
 

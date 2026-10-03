@@ -1,0 +1,254 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "taper_options_command",
+      "id": "taper-preferences",
+      "steps": [
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Flat": true
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Flat": true
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Infinite": true
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Infinite": true
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": true
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": true
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Copy": false,
+            "Rigid": true,
+            "Flat": true,
+            "Infinite": true,
+            "PreserveStructure": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Copy": false,
+            "Rigid": false,
+            "Flat": false,
+            "Infinite": false,
+            "PreserveStructure": false
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Box",
+          "options": {
+            "Copy": false,
+            "Rigid": false,
+            "Flat": false,
+            "Infinite": false
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": false
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": true
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {
+            "Copy": false
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Points",
+          "options": {
+            "Copy": true,
+            "Rigid": false,
+            "Flat": false,
+            "Infinite": false,
+            "PreserveStructure": false
+          },
+          "finish": "CopyThenCancel",
+          "pending_options": {
+            "Rigid": true,
+            "Flat": true,
+            "Infinite": true,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Points",
+          "options": {
+            "Copy": true,
+            "Rigid": false,
+            "Flat": false,
+            "Infinite": false,
+            "PreserveStructure": false
+          },
+          "finish": "CopyThenEnter",
+          "pending_options": {
+            "Rigid": true,
+            "Flat": true,
+            "Infinite": true,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Taper",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        }
+      ]
+    }
+  ]
+}

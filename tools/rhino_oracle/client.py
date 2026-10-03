@@ -215,6 +215,20 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'taper_options_command' for op in request.get('operations', [])):
+            from .taper_options_probe import validate
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Taper preferences require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'taper_options_command':
+                    validate(op)
+        if any(op.get('op') == 'taper_geometry_command' for op in request.get('operations', [])):
+            from .taper_command_probe import validate
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Taper geometry commands require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'taper_geometry_command':
+                    validate(op)
         if any(op.get('op') in ('taper_points', 'taper_command_points') for op in request.get('operations', [])):
             from .taper_probe import validate
             for op in request['operations']:
@@ -573,6 +587,12 @@ class OracleClient:
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') in ('taper_points', 'taper_command_points') for op in request.get('operations', [])):
                 for name in ('taper_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'taper_options_command' for op in request.get('operations', [])):
+                for name in ('taper_options_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
+            if any(op.get('op') == 'taper_geometry_command' for op in request.get('operations', [])):
+                for name in ('taper_command_probe.py', 'number_token.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'bend_geometry_command' for op in request.get('operations', [])):
                 for name in ('bend_command_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):

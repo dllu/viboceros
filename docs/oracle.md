@@ -13,7 +13,10 @@ constrain live previews, display modes and the spine-start mouse plane.
 The [Taper foundation](taper-geometry.md) retains 51 SDK point maps and six owned
 native point commands on private Xvfb. The Python/Rust `taper_points` protocol
 replays validity and coordinates; command snapshots constrain Copy, grouped
-Rigid and Undo/Redo. The Taper document command is still pending.
+Rigid and Undo/Redo. Follow-on [Taper command tests](commands/taper.md) use 90
+geometry recipes and a 33-step preference/history workflow, including signed
+distances, radial point picks, construction planes and a fitting sweep. Native
+precision diagnostics are retained in the [provenance](taper-command-provenance.json).
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.
