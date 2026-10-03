@@ -2689,10 +2689,7 @@ impl VibocerosApp {
             }
         }
         let command = if normalized == "twist" {
-            let default = viboceros_command::twist::TwistOptions {
-                copy: self.commands.copy_default("Twist").unwrap_or(false),
-                ..Default::default()
-            };
+            let default = self.commands.twist_options_default();
             let Ok((positional, options)) =
                 viboceros_command::twist::TwistOptions::from_arguments(&arguments, default)
             else {

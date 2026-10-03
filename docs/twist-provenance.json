@@ -1,15 +1,18 @@
 {
   "cases": {
     "twist_command": 36,
+    "twist_fitting_command": 18,
+    "twist_options_command": 39,
     "twist_points": 14,
     "twist_preview": 32,
     "twist_preview_edges": 1,
     "twist_repeat_command": 4,
-    "twist_rigid_command": 12
+    "twist_rigid_command": 12,
+    "twist_tight_command": 12
   },
   "command_comparison": {
     "notes": [
-      "The fitting cases use document tolerance 1e-5 for each independent fitted result.",
+      "Actual command captures observe a fitting tolerance floor of 1e-5 for Line, cubic Curve, Surface and Box; kernel explicit fitters retain their requested tolerance contract. Curves, surface samples, box face correspondence and solid incidence are compared at twice the effective command tolerance, including 12 tight and 18 fitting-policy cases.",
       "Preserved curves and surfaces retain the Rust source degrees and full knots exactly. Native control positions and knot values use 1e-11; independent line-length domains can differ by approximately 2e-15.",
       "Complete preserved NURBS structure, sampled curves and faces, solid box incidence, mesh colors, names, groups, selection, Undo and Redo are checked.",
       "Native groups are normalized to retained object-table indices for comparing membership; UUID ordering is not compared.",
@@ -18,7 +21,7 @@
       "Native RhinoCommon mesh alpha is opacity; regression setup converts it to the kernel/OpenNURBS transparency convention. Retained raw observations are unchanged."
     ],
     "positions": {
-      "fitted_curve_surface": 2e-05,
+      "fitted_curve_surface": "2 * max(document_absolute_tolerance, 1e-5)",
       "float_mesh": 1e-06,
       "point": 1e-11,
       "preserved_structure": 1e-11,
@@ -27,11 +30,53 @@
     "runner": "cargo test -p viboceros-command --lib twist"
   },
   "engine_version": "8.32.26160.13001",
+  "fitting_observations": {
+    "command_tolerances": [
+      0.01,
+      0.001,
+      0.0001,
+      1e-05,
+      1e-07,
+      1e-08,
+      1e-09,
+      1e-10,
+      1e-11
+    ],
+    "notes": [
+      "Each source family has identical command geometry at tolerances of 1e-5 and below. Coarser tolerance captures return different definitions.",
+      "Public SDK Morph has QuickPreview=False, explicit requested Tolerance and independent owned source duplicates. Reported Tolerance remains the requested value; geometry refinement stops at the measured floor.",
+      "SDK Line, Curve and single-face Surface records equal command output. SDK Box caps can have a cubic control layout where the actual command retains a bilinear cap.",
+      "The 65 retained native curve samples differ from the smooth mathematical map by approximately 5.05e-6 to 6.04e-6 in the finite Line, cubic Curve and Infinite Line cases. This is sampled evidence, not a continuous error certificate."
+    ],
+    "runner": "python3 -m unittest tools.rhino_oracle.test_twist",
+    "sdk_tolerances": [
+      0.01,
+      0.001,
+      0.0001,
+      1e-05,
+      1e-07,
+      1e-09
+    ]
+  },
   "point_comparison": {
     "absolute_epsilon": 1e-11,
     "max_absolute_error": 5.329070518200751e-15,
     "passed": true,
     "relative_epsilon": 1e-12
+  },
+  "preferences_comparison": {
+    "geometry_absolute_epsilon": 1e-07,
+    "measured_twist_starts": 32,
+    "notes": [
+      "Private settings scheme and Xvfb. Every step retains before/after actual cancelled prompt queries, full owned model snapshots and terminal command events.",
+      "Non-Copy options are saved after successful placements and zero angles. Unplaced cancelled changes are discarded. A cancelled Copy batch retains its accepted geometry and placement options while discarding later unplaced changes.",
+      "Undo, Redo and an actual New command preserve preferences. RememberCopyOptions governs Copy independently of the other booleans.",
+      "Interactive replay compares defaults, point/curve geometry, unchanged box extents and topology counts, object order and selection. Exact NURBS layouts remain covered by the scripted command regressions.",
+      "Bare preselected Twist Redo clears source selection; explicit source reselection after Undo is retained. The separate document marker test checks unchanged reselection, deselection and unrelated peers.",
+      "These workflows do not establish persistence across Rhino process restarts or arbitrary failures, units, complex sources, command interactions or full parity."
+    ],
+    "runner": "cargo test -p viboceros --bin viboceros app::tests::twist",
+    "steps": 39
   },
   "preview_comparison": {
     "notes": [
@@ -53,12 +98,17 @@
   "retained_file_sha256": {
     "docs/twist-point-comparison.json": "140d5e15207aa52270556fddc7eb9b695eefe732ef9f0566d0c6c72bbbc18a59",
     "tools/rhino_oracle/fixtures/twist_command.json": "da9f9cb4dcb5bd894d81d1c266d373063470b04e3b82cb03f68f03232bc30b51",
+    "tools/rhino_oracle/fixtures/twist_fitting_command.json": "e6d93fcd47cdee1195877dd3f71ae5377406e1d8a1744d030ab4b123de5a4f31",
+    "tools/rhino_oracle/fixtures/twist_options_command.json": "75d9a202b3577c16a8e3feedd3503d83033664ccf5a2b5864021cd2d70213a07",
     "tools/rhino_oracle/fixtures/twist_points.json": "d370773e3a0d9808564aad75b46b78d678f229fcfbdcaa1a74cac3526b8de1ed",
     "tools/rhino_oracle/fixtures/twist_preview.json": "aff0ea59adf3cbc1016ea4e57ef5217d76353a8ab633c75d2cd3d332119936a5",
     "tools/rhino_oracle/fixtures/twist_preview_edges.json": "72899fc6c5d5971f26482967b160e5c20fa61218dc2f4e8661f2c549498e14eb",
     "tools/rhino_oracle/fixtures/twist_repeat_command.json": "637f5bf4338ed9574d30bb2e2624faff77591d58a46c1637ef2edb4e225487a4",
     "tools/rhino_oracle/fixtures/twist_rigid_command.json": "9cc170be38de802aeb16d75c59d5b09462b2864dfd25a082d35d2c97bcea9047",
+    "tools/rhino_oracle/fixtures/twist_tight_command.json": "398075046d4e44e72fde8d3dfce4cf92e9042cc3e8dd52100f2b8c76bb81c757",
     "tools/rhino_oracle/observations/twist_command.json": "63550214a885a70872dbc94aa8940e63bc606b9851213874012c7da322653395",
+    "tools/rhino_oracle/observations/twist_fitting_command.json": "72abe8a977dd5505c178cb67137be2319708e3b4924b86b2ffc9ec64d3d1284e",
+    "tools/rhino_oracle/observations/twist_options_command.json": "d800b1be95c6c91f5d225cf4ada755454a4daf0805eb77adf88fad982e719346",
     "tools/rhino_oracle/observations/twist_points.json": "bbf86b3d06427b4b6c7681a1c51aa6212eb6c8d30831dfe5a0cec866ac0cda44",
     "tools/rhino_oracle/observations/twist_points_performance.json": "021e3ac1fb57db354bb22e3f22f522c633fc2ccbc39b6a387589e319fd218268",
     "tools/rhino_oracle/observations/twist_points_rust_performance.json": "f91053d3d0da4a25e0561aa2f272856fb7b3f5ebbf9e8a67f689015ae54792e2",
@@ -98,7 +148,8 @@
     "tools/rhino_oracle/observations/twist_preview_edges.json": "2f45bfc2c3b2e8043000c11bce3b5e313c0da2d55970c2288f81b643fbb0c666",
     "tools/rhino_oracle/observations/twist_preview_edges/Twist_2_Box_Wireframe.png": "67497b6d836076d6e0c8e01ef9d7bdbb59f23a935bbb6772c44b90e7831d0976",
     "tools/rhino_oracle/observations/twist_repeat_command.json": "c499f7dd22b9998b9851f1bead46b11b4bf8ea26cd931011048a854e826cb11f",
-    "tools/rhino_oracle/observations/twist_rigid_command.json": "4e3662c20e08297903a63ca2c7fc0895d93a54b9121e7a2a55b2dcab36e01c50"
+    "tools/rhino_oracle/observations/twist_rigid_command.json": "4e3662c20e08297903a63ca2c7fc0895d93a54b9121e7a2a55b2dcab36e01c50",
+    "tools/rhino_oracle/observations/twist_tight_command.json": "f6a252936b41b75d57bda4c2549bcaac7318ed5231e06f970bf5ed2c521f96f2"
   },
   "scope": "Independent public TwistSpaceMorph point maps and actual Twist command captures in an owned private Xvfb Rhino session. No proprietary source was inspected.",
   "timing": {

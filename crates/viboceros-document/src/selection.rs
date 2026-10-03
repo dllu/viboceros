@@ -51,6 +51,53 @@ impl Document {
         Ok(())
     }
 
+    /// Record after preselected geometry replacements: Undo restores their
+    /// source selection, while Redo clears it unless explicitly reselected.
+    pub fn release_transform_selection_on_history_replay(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        let ids = self
+            .resolve_object_indices(ids)?
+            .into_iter()
+            .map(|i| self.objects[i].id)
+            .collect::<Vec<_>>();
+        if !ids.is_empty() {
+            self.record_edit(
+                "Release transform selection",
+                Edit::TransformSelectionReleasedOnReplay {
+                    ids,
+                    reselected: None,
+                },
+            );
+        }
+        Ok(())
+    }
+
+    /// Explicit selection updates undone replacements even if the final set
+    /// equals the one restored by Undo. Internal cleanup never accepts a pick.
+    pub(super) fn update_picked_selection(&mut self, next: BTreeSet<ObjectId>) -> usize {
+        self.record_picked_selection(&next);
+        self.update_selection(next)
+    }
+
+    pub(super) fn record_picked_selection(&mut self, next: &BTreeSet<ObjectId>) {
+        if self.history.active.is_some() {
+            return;
+        }
+        for entry in &mut self.history.redo {
+            for edit in &mut entry.edits {
+                if let Edit::TransformSelectionReleasedOnReplay { ids, reselected } = edit {
+                    *reselected =
+                        Some(ids.iter().copied().filter(|id| next.contains(id)).collect());
+                }
+            }
+        }
+    }
+
     /// Attribute/layer changes prune individual objects, without group expansion.
     /// History replay has a separate group-aware cleanup policy below.
     pub(super) fn prune_selection(&mut self) {

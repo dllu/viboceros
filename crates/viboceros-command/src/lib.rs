@@ -430,6 +430,7 @@ pub struct CommandRegistry {
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
+    twist_preferences: std::sync::Arc<twist::TwistPreferences>,
 }
 
 impl CommandRegistry {
@@ -1254,7 +1255,7 @@ impl CommandRegistry {
             .register(ShearCommand)
             .expect("unique built-in command");
         registry
-            .register(twist::TwistCommand::default())
+            .register(twist::TwistCommand(registry.twist_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(ProjectToConstructionPlaneCommand)

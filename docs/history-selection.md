@@ -20,6 +20,14 @@ Successful transaction rollback restores its original selection snapshot without
 eligibility pruning, so rejecting a command cannot discard an unchanged locked
 peer or alter selection memories and the redo stack.
 
+For preselected [Twist](commands/twist.md) replacements, a trailing replay marker
+restores source selection on Undo and clears it on bare Redo. Explicit picking
+after Undo, including repeating the same selected set, overrides that release.
+The marker records only its source IDs and preserves unrelated selections.
+Internal eligibility pruning never counts as a new pick. A retained 39-step
+native workflow checks this behavior alongside command option memory and
+accepted Copy cancellation.
+
 The selection at the actual object edit matters:
 
 | Command | Source after Undo | Output after Redo |

@@ -1,0 +1,150 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "twist_command",
+      "id": "tight-0",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-07
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-1",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-08
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-2",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-3",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-10
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-4",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-11
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-5",
+      "shape": "Curve",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-07
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-6",
+      "shape": "Curve",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-7",
+      "shape": "Curve",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-11
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-8",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": true,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-9",
+      "shape": "Line",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": true,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-11
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-10",
+      "shape": "Surface",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "twist_command",
+      "id": "tight-11",
+      "shape": "Box",
+      "copy": false,
+      "rigid": false,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "tolerance": 1e-09
+    }
+  ]
+}

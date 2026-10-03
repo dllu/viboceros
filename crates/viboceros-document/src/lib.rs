@@ -847,7 +847,7 @@ impl Document {
 
     pub fn clear_selection(&mut self) -> usize {
         let count = self.selection.len();
-        self.update_selection(BTreeSet::new());
+        self.update_picked_selection(BTreeSet::new());
         count
     }
 
@@ -858,7 +858,7 @@ impl Document {
             .filter(|object| self.object_is_selectable(object))
             .map(|object| object.id)
             .collect();
-        self.update_selection(selection)
+        self.update_picked_selection(selection)
     }
 
     pub fn invert_selection(&mut self) -> usize {
@@ -870,7 +870,7 @@ impl Document {
             })
             .map(|object| object.id)
             .collect();
-        self.update_selection(selection)
+        self.update_picked_selection(selection)
     }
 
     pub fn select_object(
@@ -1136,6 +1136,7 @@ impl Document {
                 .chain(target_order.into_iter().filter(|id| !current.contains(id)))
                 .collect()
         };
+        self.record_picked_selection(&next);
         self.selection = next;
         if deselect_others && !current.is_empty() {
             self.previous_selection = current;
@@ -1173,7 +1174,7 @@ impl Document {
                 }
             }
         }
-        self.update_selection(next)
+        self.update_picked_selection(next)
     }
 
     /// Atomically sets object-level visibility without changing geometry,
@@ -1658,6 +1659,7 @@ impl Document {
                 stored_objects.iter().map(|object| object.id).collect()
             }
             Edit::SelectionReleasedOnReplay { .. }
+            | Edit::TransformSelectionReleasedOnReplay { .. }
             | Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }
             | Edit::ObjectChanged { .. }

@@ -316,7 +316,7 @@ fn compare_geometry(
     }
 }
 #[test]
-fn replay_thirty_six_actual_twist_commands_and_twelve_rigid_placements() {
+fn replay_actual_twist_commands_rigid_placements_and_fitting_tolerances() {
     let registry = CommandRegistry::with_builtins();
     for (fixtures, observations) in [
         (
@@ -326,6 +326,14 @@ fn replay_thirty_six_actual_twist_commands_and_twelve_rigid_placements() {
         (
             include_str!("../../../../tools/rhino_oracle/fixtures/twist_rigid_command.json"),
             include_str!("../../../../tools/rhino_oracle/observations/twist_rigid_command.json"),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/twist_tight_command.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/twist_tight_command.json"),
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/twist_fitting_command.json"),
+            include_str!("../../../../tools/rhino_oracle/observations/twist_fitting_command.json"),
         ),
     ] {
         let f: Value = serde_json::from_str(fixtures).unwrap();
@@ -378,7 +386,7 @@ fn replay_thirty_six_actual_twist_commands_and_twelve_rigid_placements() {
             {
                 1e-11
             } else {
-                2e-5
+                2. * op["tolerance"].as_f64().unwrap_or(1e-5).max(1e-5)
             };
             for (i, (actual, record)) in doc
                 .objects()
@@ -470,6 +478,81 @@ fn twist_invalid_inputs_leave_geometry_and_history_unchanged() {
         Point3::try_new(2_f64.sqrt() / 2., 3. * 2_f64.sqrt() / 2., 5.).unwrap(),
         1e-12,
         "reference angle",
+    );
+}
+
+#[test]
+fn twist_scripted_preferences_are_shared_across_documents_and_isolated_between_registries() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let id = doc
+        .add_geometry(Geometry::Point(Point3::try_new(2., 1., 5.).unwrap()))
+        .unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    registry
+        .execute(
+            &mut doc,
+            "Twist 0,0,0 0,0,10 0 Rigid=Yes Infinite=Yes PreserveStructure=Yes",
+        )
+        .unwrap();
+    let expected = TwistOptions {
+        rigid: true,
+        infinite: true,
+        preserve_structure: true,
+        copy: false,
+    };
+    assert_eq!(registry.twist_options_default(), expected);
+    for input in [
+        "Twist 0,0,0 0,0,0 45 Rigid=No Infinite=No PreserveStructure=No",
+        "Twist 0,0,0 0,0,10 NaN Rigid=No",
+        "Twist 0,0,0 0,0,10 45 Rigid=Maybe",
+    ] {
+        assert!(registry.execute(&mut doc, input).is_err());
+        assert_eq!(registry.twist_options_default(), expected);
+        assert_eq!(registry.transform_scalar_default("Twist"), Some(0.));
+    }
+    registry.execute(&mut doc, "Twist 0,0,0 0,0,10 90").unwrap();
+    near(
+        match doc.object(id).unwrap().geometry() {
+            Geometry::Point(p) => *p,
+            _ => unreachable!(),
+        },
+        Point3::try_new(2_f64.sqrt() / 2., 3. * 2_f64.sqrt() / 2., 5.).unwrap(),
+        1e-7,
+        "remembered Infinite/Rigid",
+    );
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(registry.twist_options_default(), expected);
+    registry.execute(&mut doc, "Redo").unwrap();
+    assert_eq!(registry.twist_options_default(), expected);
+    let mut other = Document::default();
+    let other_id = other
+        .add_geometry(Geometry::Point(Point3::try_new(2., 1., 2.5).unwrap()))
+        .unwrap();
+    other
+        .select_object(other_id, SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut other, "_-Twist 0,0,0 0,0,10 90")
+        .unwrap();
+    let Geometry::Point(point) = other.object(other_id).unwrap().geometry() else {
+        panic!();
+    };
+    let angle = std::f64::consts::FRAC_PI_8;
+    near(
+        *point,
+        Point3::try_new(
+            2. * angle.cos() - angle.sin(),
+            2. * angle.sin() + angle.cos(),
+            2.5,
+        )
+        .unwrap(),
+        1e-7,
+        "new document Infinite",
+    );
+    assert_eq!(
+        CommandRegistry::with_builtins().twist_options_default(),
+        TwistOptions::default()
     );
 }
 
@@ -579,7 +662,7 @@ fn failed_mixed_point_and_collapsing_mesh_twist_is_atomic() {
                 .execute(
                     &mut doc,
                     &format!(
-                        "Twist 0,0,0 0,0,10 90 Copy={}",
+                        "Twist 0,0,0 0,0,10 90 Infinite=Yes Copy={}",
                         if copy { "Yes" } else { "No" }
                     )
                 )
@@ -607,6 +690,8 @@ fn failed_mixed_point_and_collapsing_mesh_twist_is_atomic() {
                 .collect::<std::collections::BTreeSet<_>>()
         );
         assert_eq!(doc.selected_object_count(), 2);
+        assert_eq!(registry.twist_options_default(), TwistOptions::default());
+        assert_eq!(registry.transform_scalar_default("Twist"), None);
     }
 }
 

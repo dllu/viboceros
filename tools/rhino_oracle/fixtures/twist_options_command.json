@@ -1,0 +1,303 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "twist_options_command",
+      "id": "twist-preferences",
+      "steps": [
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Rigid": false
+          },
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Infinite": true
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Infinite": false
+          },
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": true
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": false
+          },
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true,
+            "Infinite": true,
+            "PreserveStructure": true
+          },
+          "finish": "Complete",
+          "degrees": 90
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Rigid": false,
+            "Infinite": false,
+            "PreserveStructure": false
+          },
+          "finish": "ReferenceCancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": true
+          },
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Twist",
+          "shape": "Box",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Box",
+          "options": {
+            "Rigid": true,
+            "Infinite": true
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Points",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": false
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Rigid": false,
+            "Infinite": false
+          },
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": true
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete",
+          "degrees": 45
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {
+            "Copy": false
+          },
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Twist",
+          "shape": "Points",
+          "finish": "CopyThenCancel",
+          "degrees": 90,
+          "options": {
+            "Copy": true,
+            "Rigid": false,
+            "Infinite": false,
+            "PreserveStructure": false
+          },
+          "pending_options": {
+            "Rigid": true,
+            "Infinite": true,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Twist",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 90
+        }
+      ]
+    }
+  ]
+}

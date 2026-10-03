@@ -62,3 +62,49 @@ fn shrink_pick_release_validates_all_ids_before_recording() {
     doc.commit_transaction().unwrap();
     assert!(!doc.can_undo());
 }
+
+#[test]
+fn preselected_transform_replay_accepts_explicit_reselection_after_undo() {
+    let mut doc = Document::default();
+    let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());
+    let source = doc.add_geometry(point(0.)).unwrap();
+    let peer = doc.add_geometry(point(1.)).unwrap();
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    assert!(matches!(
+        doc.release_transform_selection_on_history_replay([source]),
+        Err(DocumentError::NoActiveTransaction)
+    ));
+    doc.begin_transaction("Transform").unwrap();
+    let before = format!("{doc:?}");
+    assert!(
+        doc.release_transform_selection_on_history_replay([source, ObjectId(Uuid::new_v4())])
+            .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    doc.replace_object_geometries([(source, point(2.))])
+        .unwrap();
+    doc.release_transform_selection_on_history_replay([source])
+        .unwrap();
+    doc.commit_transaction().unwrap();
+    doc.undo().unwrap();
+    assert!(doc.is_selected(source));
+    doc.redo().unwrap();
+    assert!(!doc.is_selected(source));
+    doc.undo().unwrap();
+    assert!(doc.is_selected(source));
+    // A repeated selection is intentional even though membership does not change.
+    doc.select_object(source, SelectionMode::Replace).unwrap();
+    doc.redo().unwrap();
+    assert!(doc.is_selected(source));
+    doc.undo().unwrap();
+    doc.select_object(peer, SelectionMode::Replace).unwrap();
+    doc.redo().unwrap();
+    assert!(!doc.is_selected(source));
+    assert!(doc.is_selected(peer));
+    assert_eq!(doc.object(source).unwrap().geometry(), &point(2.));
+    doc.undo().unwrap();
+    doc.clear_selection();
+    doc.redo().unwrap();
+    assert_eq!(doc.selected_object_count(), 0);
+}

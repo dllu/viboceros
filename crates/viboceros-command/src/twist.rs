@@ -6,6 +6,11 @@ use viboceros_geometry::{BoundingBox3, TwistPointMorph};
 
 pub const USAGE: &str = "Twist axis-start axis-end angle | axis-start axis-end reference target [Copy=Yes|No] [Rigid=Yes|No] [Infinite=Yes|No] [PreserveStructure=Yes|No]";
 
+// Actual commands and public non-preview SDK morphs stop refining below 1e-5
+// in the retained Line/Curve/Surface/Box captures. This command compatibility
+// policy leaves the kernel's explicit fitting tolerance contract unchanged.
+const MINIMUM_FITTING_TOLERANCE: Real = 1e-5;
+
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct TwistOptions {
     pub copy: bool,
@@ -86,6 +91,14 @@ pub fn deformed_geometries(
         document.tolerance(),
     )?
     .with_preserve_structure(options.preserve_structure);
+    let fitting_tolerance = Tolerance::try_new(
+        document
+            .tolerance()
+            .absolute()
+            .max(MINIMUM_FITTING_TOLERANCE),
+        document.tolerance().relative(),
+        document.tolerance().angular(),
+    )?;
     let mut group_bounds = BTreeMap::new();
     if options.rigid && degrees != 0. {
         for id in ids {
@@ -128,7 +141,18 @@ pub fn deformed_geometries(
                     .geometry()
                     .transformed(transform, document.tolerance())?
             } else {
-                object.geometry().morphed(&morph, document.tolerance())?
+                let needs_fit = !options.preserve_structure
+                    || matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() > 1);
+                let tolerance = if needs_fit
+                    && !matches!(
+                        object.geometry(),
+                        Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_)
+                    ) {
+                    fitting_tolerance
+                } else {
+                    document.tolerance()
+                };
+                object.geometry().morphed(&morph, tolerance)?
             };
             Ok((*id, geometry))
         })
@@ -152,8 +176,33 @@ pub fn reference_angle(
     .map(Real::to_degrees)
 }
 
+/// Successful choices belong to the application, independently of model history.
 #[derive(Default)]
-pub(super) struct TwistCommand(remembered::Remembered<Option<Real>>);
+pub(super) struct TwistPreferences {
+    scalar: remembered::Remembered<Option<Real>>,
+    options: remembered::Remembered<TwistOptions>,
+}
+
+impl CommandRegistry {
+    /// Read the last successful choices. Copy follows RememberCopyOptions.
+    pub fn twist_options_default(&self) -> TwistOptions {
+        TwistOptions {
+            copy: self.copy_default("Twist").unwrap_or(false),
+            ..self.twist_preferences.options.get()
+        }
+    }
+}
+
+pub(super) struct TwistCommand(pub(super) std::sync::Arc<TwistPreferences>);
+impl TwistCommand {
+    fn remember_success(&self, degrees: Real, options: TwistOptions) {
+        self.0.scalar.set(Some(degrees));
+        self.0.options.set(TwistOptions {
+            copy: false,
+            ..options
+        });
+    }
+}
 impl Command for TwistCommand {
     fn name(&self) -> &'static str {
         "Twist"
@@ -162,15 +211,14 @@ impl Command for TwistCommand {
         CommandHistoryPolicy::TransformedObjects
     }
     fn scalar_default(&self) -> Option<Real> {
-        self.0.get()
+        self.0.scalar.get()
     }
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let (arguments, mut sources) = transform_arguments(document, arguments, USAGE)?;
-        let (positional, options) =
-            TwistOptions::from_arguments(&arguments, TwistOptions::default())?;
+        let (positional, options) = TwistOptions::from_arguments(&arguments, self.0.options.get())?;
         let (start, n) = parse_point(&positional)?;
         let (end, m) = parse_point(&positional[n..])?;
         let remaining = &positional[n + m..];
@@ -183,8 +231,8 @@ impl Command for TwistCommand {
             reference_angle(start, end, reference, target, document.tolerance())?
         };
         let staged = deformed_geometries(document, &sources.ids, start, end, degrees, options)?;
-        self.0.set(Some(degrees));
         if degrees == 0. {
+            self.remember_success(degrees, options);
             return Ok(format!(
                 "Twisted {} object(s) by 0 degrees",
                 sources.ids.len()
@@ -212,9 +260,10 @@ impl Command for TwistCommand {
                 // A trailing replay marker lets Undo restore the recorded source
                 // selection, while Redo releases it after restoring the deformation.
                 document
-                    .release_command_selection_on_history_replay(sources.ids.iter().copied())?;
+                    .release_transform_selection_on_history_replay(sources.ids.iter().copied())?;
             }
         }
+        self.remember_success(degrees, options);
         Ok(format!(
             "Twisted {count} object(s) by {degrees:.6} degrees{}",
             if options.copy {

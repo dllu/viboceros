@@ -9,7 +9,7 @@ SHAPES = ("Points", "Line", "Curve", "Surface", "Box", "Mesh")
 def validate(op):
     if (
         not isinstance(op, dict)
-        or set(op) - {"axis", "offset_z", "tolerance", "angles"}
+        or set(op) - {"axis", "offset_z", "tolerance", "angles", "sdk_fit"}
         != {
             "op",
             "id",
@@ -41,7 +41,8 @@ def validate(op):
         or abs(op.get("offset_z", 0.0)) > 100
         or math.isnan(op.get("offset_z", 0.0))
         or type(op.get("tolerance", 1e-5)) not in (int, float)
-        or not 1e-7 <= op.get("tolerance", 1e-5) <= 0.01
+        or not 1e-12 <= op.get("tolerance", 1e-5) <= 0.01
+        or type(op.get("sdk_fit", False)) is not bool
     ):
         raise ValueError("invalid Twist preset placement")
     if "angles" in op and (
@@ -125,6 +126,51 @@ def repeat_request():
             for i, angles in enumerate([[180.0], [90.0], [-90.0], [0.0, 180.0]])
         ],
     )
+
+
+def tight_request():
+    r = request()
+    cases = []
+    for shape, tolerances, infinite in [
+        ("Line", [1e-7, 1e-8, 1e-9, 1e-10, 1e-11], False),
+        ("Curve", [1e-7, 1e-9, 1e-11], False),
+        ("Line", [1e-9, 1e-11], True),
+        ("Surface", [1e-9], False),
+        ("Box", [1e-9], False),
+    ]:
+        source = next(op for op in r["operations"] if op["shape"] == shape)
+        for tolerance in tolerances:
+            cases.append(
+                dict(
+                    source,
+                    id="tight-" + str(len(cases)),
+                    tolerance=tolerance,
+                    infinite=infinite,
+                )
+            )
+    return dict(r, operations=cases)
+
+
+def fitting_request():
+    r = request()
+    cases = []
+    for shape, tolerances in [
+        ("Line", [0.01, 0.001, 0.0001, 1e-5, 1e-7, 1e-9]),
+        ("Curve", [0.01, 0.001, 0.0001, 1e-5, 1e-7, 1e-9]),
+        ("Surface", [0.01, 1e-5, 1e-9]),
+        ("Box", [0.01, 1e-5, 1e-9]),
+    ]:
+        source = next(op for op in r["operations"] if op["shape"] == shape)
+        for tolerance in tolerances:
+            cases.append(
+                dict(
+                    source,
+                    id="fit-" + str(len(cases)),
+                    tolerance=tolerance,
+                    sdk_fit=True,
+                )
+            )
+    return dict(r, operations=cases)
 
 
 def source_geometry(shape, host):
@@ -297,6 +343,44 @@ def run(op, host):
         finally:
             doc.EndUndoRecord(serial)
         before = snapshot()
+        sdk_fit = None
+        if op.get("sdk_fit", False):
+            morph = Rhino.Geometry.Morphs.TwistSpaceMorph()
+            try:
+                start, end = {
+                    "Z": ([0, 0, 0], [0, 0, 10]),
+                    "LongZ": ([0, 0, 0], [0, 0, 20]),
+                    "Reverse": ([0, 0, 10], [0, 0, 0]),
+                    "Spatial": ([1, 2, 3], [5, 6, 11]),
+                }[op.get("axis", "Z")]
+                morph.TwistAxis = Rhino.Geometry.Line(
+                    host["_point"](start), host["_point"](end)
+                )
+                morph.TwistAngleRadians = math.radians(op["degrees"])
+                morph.InfiniteTwist = op["infinite"]
+                morph.PreserveStructure = op["preserve"]
+                morph.QuickPreview = False
+                morph.Tolerance = op.get("tolerance", 1e-5)
+                results = []
+                for source in owned:
+                    duplicate = (
+                        source.ToNurbsCurve()
+                        if isinstance(source, Rhino.Geometry.Curve)
+                        else source.Duplicate()
+                    )
+                    try:
+                        succeeded = bool(morph.Morph(duplicate))
+                        results.append(
+                            dict(
+                                success=succeeded,
+                                geometry=geometry_record(duplicate, host),
+                            )
+                        )
+                    finally:
+                        duplicate.Dispose()
+                sdk_fit = dict(tolerance=float(morph.Tolerance), results=results)
+            finally:
+                morph.Dispose()
         options = " ".join(
             "_" + name + "=_" + ("Yes" if op[key] else "No")
             for name, key in [
@@ -357,6 +441,8 @@ def run(op, host):
             events=events,
             history=history,
         )
+        if sdk_fit is not None:
+            value["sdk_fit"] = sdk_fit
         import json
 
         json.dumps(value, allow_nan=False)

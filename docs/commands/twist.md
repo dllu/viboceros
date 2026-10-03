@@ -31,6 +31,15 @@ layers and group topology survive; copied objects have independent group
 records and remain unselected, while their sources retain selection. The
 shared RememberCopyOptions setting applies to Copy.
 
+Rigid, Infinite and PreserveStructure remember their last successful values,
+including zero-angle runs. Cancelled option edits are discarded. Accepted Copy
+placements remember their choices even when Escape ends the batch; edits after
+the last placement are discarded. Undo, Redo and a new document retain these
+application preferences. Independent application instances start with No.
+With preselected sources and Copy=No, Undo restores source selection; Redo releases
+it unless the source was explicitly selected again after Undo. Unrelated selection
+survives.
+
 ## Live preview
 
 After choosing the first reference direction, mouse motion draws temporary
@@ -67,6 +76,15 @@ its unit dual normal, and orthonormalize. The measured difference step is
 `sqrt(max(abs(center coordinates)) * 1.490116119385e-8 + 2^-32)`.
 No proprietary code was inspected.
 
+Fitted command geometry uses absolute tolerance `max(document tolerance, 1e-5)`.
+Retained command captures show identical fitted results from `1e-5` down to
+`1e-11`; public SDK captures confirm the floor through `1e-9`. Larger tolerances
+produce coarser results. Native curve
+samples differ from the exact point map by approximately `5–6e-6` in these
+cases, despite tighter document settings. Points, meshes, rigid placements and
+preserved controls keep their existing policies. The kernel's explicit morph
+fitters continue to honor their requested tolerance or return an error.
+
 Private Xvfb captures from Rhino **8.32.26160.13001** retain:
 
 - [14 public SDK point maps](../../tools/rhino_oracle/fixtures/twist_points.json),
@@ -84,6 +102,18 @@ Private Xvfb captures from Rhino **8.32.26160.13001** retain:
 - [Four repeated Copy batches](../../tools/rhino_oracle/fixtures/twist_repeat_command.json),
   retaining source selection, independent groups, zero-angle suppression,
   Undo and Redo.
+- [12 tight-tolerance commands](../../tools/rhino_oracle/fixtures/twist_tight_command.json)
+  and [18 fitting-policy cases](../../tools/rhino_oracle/fixtures/twist_fitting_command.json),
+  covering finite/Infinite curves, a surface and a solid box. Sample comparisons
+  use `2 * max(document tolerance, 1e-5)`, allowing independent fit errors.
+  Public SDK curve and single-face geometry records equal command outputs;
+  SDK box caps can retain a different degree/control layout.
+- [A 39-step preference workflow](../../tools/rhino_oracle/fixtures/twist_options_command.json)
+  checks completion, zero angles, cancellation before/after a reference,
+  accepted Copy followed by cancellation, hidden polysurface options,
+  RememberCopyOptions, Undo/Redo, explicit reselection and a new document.
+  Interactive Rust replay compares all defaults, object order, sampled geometry
+  and selection with the terminal snapshots.
 - [32 interactive previews](../../tools/rhino_oracle/fixtures/twist_preview.json),
   with raw PNGs, pending model snapshots, completed geometry and public SDK
   control cages. These cover the three display modes, PreserveStructure, rigid
@@ -107,11 +137,11 @@ comparison bounds.
 Curves and surfaces use the existing sampled adaptive morph fitters, capped at
 512 curve controls, 256 controls per surface axis and one million surface
 samples. Shared B-rep edges and fitted surfaces must validate together at the
-document tolerance. This is sampled validation, not a continuous error proof.
-Tight tolerances, cardinal cleanup transitions, singular rational geometry,
-collapsed mesh facets or exhausted fitting budgets can return an error.
-Preserved trimmed faces must still pass assembly validation. Remembered non-Copy
-options remain unimplemented. Preview cages approximate the deformation and
+effective command fitting tolerance. This is sampled validation, not a continuous
+error proof. The kernel's tighter explicit fits, cardinal cleanup transitions,
+singular rational geometry, collapsed mesh facets or exhausted fitting budgets
+can return an error. Preserved trimmed faces still pass assembly validation at
+the document tolerance. Preview cages approximate the deformation and
 can differ from fitted or preserved accepted geometry. Failed cage preparation
 retains the previous display. Rational and higher-degree patches use mapped
 controls as a display approximation; their native preview policy and arbitrary

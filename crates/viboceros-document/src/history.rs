@@ -56,6 +56,12 @@ pub(super) enum Edit {
     SelectionReleasedOnReplay {
         ids: Vec<ObjectId>,
     },
+    /// A replacement clears its replay selection unless the user selects it
+    /// again after Undo. Explicit picking may repeat an already selected set.
+    TransformSelectionReleasedOnReplay {
+        ids: Vec<ObjectId>,
+        reselected: Option<BTreeSet<ObjectId>>,
+    },
     ObjectsRemoved(Box<super::object_deletion::RemovedObjects>),
     ToleranceChanged {
         tolerance: viboceros_geometry::Tolerance,
@@ -141,6 +147,12 @@ impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
             Self::SelectionReleasedOnReplay { ids } => {
+                for id in ids {
+                    document.selection.remove(id);
+                }
+            }
+            Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
+                *reselected = None;
                 for id in ids {
                     document.selection.remove(id);
                 }
@@ -251,6 +263,18 @@ impl Edit {
             Self::SelectionReleasedOnReplay { ids } => {
                 for id in ids {
                     document.selection.remove(id);
+                }
+            }
+            Self::TransformSelectionReleasedOnReplay { ids, reselected } => {
+                for id in ids {
+                    document.selection.remove(id);
+                }
+                if let Some(reselected) = reselected {
+                    for id in reselected.iter().copied() {
+                        if document.selection.insert(id) {
+                            document.selection_order.push(id);
+                        }
+                    }
                 }
             }
             Self::ObjectsRemoved(removed) => removed.remove(document)?,

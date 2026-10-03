@@ -225,6 +225,15 @@ class OracleClient:
                     raise OracleProtocolError("Twist commands require one iteration")
                 for op in cases:
                     (twist_probe if family=="twist_points" else twist_command_probe).validate(op)
+        if any(op.get('op') == 'twist_options_command' for op in request.get('operations', [])):
+            from .twist_options_probe import validate
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Twist preferences require a private Rhino settings scheme')
+            if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Twist preferences require one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'twist_options_command':
+                    validate(op)
         interaction = None
         if any(op.get('op') == 'twist_preview' for op in request.get('operations', [])):
             from .twist_preview_input import TwistPreviewPicker
@@ -509,9 +518,11 @@ class OracleClient:
             if any(op.get('op') == 'translation_preview' for op in request.get('operations',[])):
                 for name in ('translation_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
-            if any(op.get('op') == 'twist_command' for op in request.get('operations',[])):
+            if any(op.get('op') in ('twist_command', 'twist_options_command') for op in request.get('operations',[])):
                 for name in ('twist_command_probe.py','join_probe.py','merge_edges_probe.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'twist_options_command' for op in request.get('operations', [])):
+                helper=Path(__file__).with_name('twist_options_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'twist_points' for op in request.get('operations',[])):
                 helper=Path(__file__).with_name('twist_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'twist_preview' for op in request.get('operations',[])):
