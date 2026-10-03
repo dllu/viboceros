@@ -1,6 +1,7 @@
 # Transform copies and history
 
-[Transform commands](transforms.md) · [Copy preferences](remember-copy-options.md)
+[Transform commands](transforms.md) · [Copy preferences](remember-copy-options.md) ·
+[Scalar defaults](transform-defaults.md)
 
 With objects selected, start `Scale`, `Scale1D`, `Scale2D`, `Rotate`,
 `Rotate3D`, or `Shear`, then edit `Copy=Yes` at the point prompt. Each accepted
@@ -84,9 +85,10 @@ they do not cover every curve, surface, or mesh representation. Automatic
 centers use the kernel's tight World bounds for supported geometry; native
 center comparisons here cover points only. Existing
 [plane transform tests](../plane-transforms.md) cover additional CPlane geometry.
-This capture does not measure viewport mouse picks, default factors/angles
-accepted with Enter before the first edit, general calculator expressions, or
-every invalid input. Those workflows remain incomplete. ScaleNU and orientation
+The separate [scalar-default session](transform-defaults.md) verifies Enter
+before the first edit. This capture does not measure viewport mouse picks,
+general calculator expressions, or every invalid input. Those workflows remain
+incomplete. ScaleNU and orientation
 prompts do not yet support this repeated target session, and other transform
 commands retain their separate history policies. Shared Copy preferences are
 currently session-only.

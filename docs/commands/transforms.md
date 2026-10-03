@@ -14,6 +14,8 @@ axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
 independent world x/y/z factors; all scale variants accept `Copy=Yes`.
 At the initial Scale, Scale1D, or Scale2D base-point prompt, Enter uses the
 combined World bounding-box center of the selected geometry.
+At the first factor or angle prompt, Enter accepts the
+[remembered scalar default](transform-defaults.md), when available.
 
 Scale, Scale1D, Scale2D, Rotate, Rotate3D, and Shear support
 [repeated interactive copies](transform-copy.md): edit `Copy=Yes` at the prompt,

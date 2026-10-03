@@ -50,6 +50,28 @@ fn rejected_targets_and_escape_keep_accepted_edits_and_last_successful_copy_choi
     assert_eq!(app.document.objects().len(), 3);
 }
 
+#[test]
+fn empty_command_input_accepts_scalar_defaults_and_shows_the_pending_value() {
+    let mut app = test_app();
+    enter(&mut app, "Point 2,3,4");
+    enter(&mut app, "SelAll");
+    enter(&mut app, "Scale 0,0,0 3");
+    enter(&mut app, "Undo");
+    enter(&mut app, "Scale");
+    enter(&mut app, "w0,0,0");
+    assert_eq!(
+        app.transform_default_hint().as_deref(),
+        Some("Enter accepts the default: 3")
+    );
+    enter(&mut app, ""); // The command field submitted by the real Enter key.
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), Some("Scale"));
+    let Geometry::Point(point) = app.document.objects().next().unwrap().geometry() else {
+        panic!("point")
+    };
+    assert_eq!(point.to_array(), [6., 9., 12.]);
+}
+
 fn snapshot(app: &VibocerosApp, sources: &[ObjectId]) -> Value {
     let objects = app.document.objects().collect::<Vec<_>>();
     let groups = app.document.groups().collect::<Vec<_>>();
@@ -132,10 +154,23 @@ fn exact_and_near_identity_transform_prompts_and_invocations_match_native() {
     }
 }
 
+#[test]
+fn transform_scalar_defaults_and_cancellation_match_self_seeded_native_sessions() {
+    for invocation in [Invocation::Prompt, Invocation::RegistrySeeds] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_default.json"),
+            include_str!("../../../tools/rhino_oracle/observations/transform_copy_default.json"),
+            80,
+            invocation,
+        );
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Invocation {
     Prompt,
     Registry,
+    RegistrySeeds,
 }
 
 fn replay_native(request: &str, observed: &str, count: usize, invocation: Invocation) {
@@ -147,11 +182,18 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
     assert_eq!(results.len(), operations.len());
     assert_eq!(observed["engine"], "rhino");
     let mut failures = Vec::new();
+    let mut commands = None;
     for (operation, row) in operations.iter().zip(results) {
         let label = operation["id"].as_str().unwrap();
         assert_eq!(row["id"], label);
         let expected = &row["value"];
         let mut app = test_app();
+        if let Some(registry) = commands.take() {
+            // The native capture cleans up owned sources between cases while
+            // retaining its command-instance preferences. Use fresh documents
+            // with the same registry; no measured defaults seed this state.
+            app.commands = registry;
+        }
         // Match the native SDK source construction record. Keeping this
         // baseline also exercises SelLast when the tested transform is a no-op.
         app.document
@@ -232,8 +274,20 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             }
         };
         compare(snapshot(&app, &sources), "before", &mut failures);
-        match invocation {
-            Invocation::Prompt => {
+        let use_registry = match invocation {
+            Invocation::Prompt => false,
+            Invocation::Registry => true,
+            Invocation::RegistrySeeds => {
+                operation["finish"] == "Automatic"
+                    && !operation["inputs"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|input| input == "Enter")
+            }
+        };
+        match use_registry {
+            false => {
                 enter(&mut app, operation["command"].as_str().unwrap());
                 assert!(
                     app.transform_session.is_some(),
@@ -247,7 +301,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     enter(&mut app, operation["finish"].as_str().unwrap());
                 }
             }
-            Invocation::Registry => {
+            true => {
                 let input = std::iter::once(operation["command"].as_str().unwrap())
                     .chain(
                         operation["inputs"]
@@ -291,6 +345,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                 "{label}: canceled or identity command recorded history"
             );
         }
+        commands = Some(app.commands);
     }
     assert!(failures.is_empty(), "native differences: {failures:?}");
 }

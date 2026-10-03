@@ -119,5 +119,46 @@ def identity_request():
     return dict(protocol_version=1, iterations=1, operations=operations)
 
 
+def default_request():
+    """Ordered, self-seeded sessions measure scalar memory without telemetry inputs."""
+    operations = []
+    for name in ['Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Shear']:
+        axis = ['w0,0,0', 'w0,0,1'] if name == 'Rotate3D' else ['w0,0,0', 'w1,0,0'] if name == 'Shear' else ['w0,0,0']
+        references = ['w1,1,0'] if name == 'Shear' else ['w1,0,0', 'w0,1,0'] if name.startswith('Rotate') else ['w1,0,0', 'w2,0,0']
+        repeated = ['w1,-1,0'] if name == 'Shear' else ['w1,0,0', 'w0,-1,0'] if name.startswith('Rotate') else ['w1,0,0', 'w3,0,0']
+        number = ['3', 'w1,0,0'] if name == 'Scale1D' else ['30'] if name.startswith('Rotate') or name == 'Shear' else ['3']
+        default = ['Enter', 'w1,0,0'] if name == 'Scale1D' else ['Enter']
+        def add(suffix, tail, copy=False, finish=None):
+            operations.append(dict(op='transform_copy_command', id=name.lower()+'-'+suffix,
+                command=name, inputs=axis+['Copy=Yes' if copy else 'Copy=No']+tail,
+                selected=[0, 1], grouped=False,
+                sources=[[2., 3., 4.], [5., -1., 2.], [8., 7., -3.]],
+                finish=finish or ('Enter' if copy else 'Automatic'), undo_redo=True, sel_last=True))
+        add('initial-default', default)
+        add('seed-reference', references)
+        add('default-after-reference', default)
+        add('seed-number', number)
+        add('default-after-number', default, copy=True)
+        add('seed-reference-cancel', repeated, copy=True, finish='Cancel')
+        add('default-after-reference-cancel', default)
+        add('cancel-before-edit', [], copy=True, finish='Cancel')
+        add('default-after-no-edit', default, copy=True)
+        if name == 'Scale1D':
+            add('number-before-direction-cancel', ['4'], copy=True, finish='Cancel')
+            add('default-after-direction-cancel', default)
+        if name.startswith('Scale'):
+            add('zero-before-finish-cancel', ['0'], copy=True, finish='Cancel')
+            add('default-after-zero', default)
+            add('seed-negative-factor', ['-2', 'w1,0,0'] if name == 'Scale1D' else ['-2'])
+            add('default-after-negative', default, copy=True)
+        if name.startswith('Rotate'):
+            for label, points in [('left-to-up', ['w-1,0,0', 'w0,1,0']),
+                                  ('down-to-up', ['w0,-1,0', 'w0,1,0']),
+                                  ('up-to-diagonal', ['w0,1,0', 'w1,1,0'])]:
+                add('seed-'+label, points)
+                add('default-after-'+label, default)
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
 if __name__ == '__main__':
     print(json.dumps(request(), indent=2))

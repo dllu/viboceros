@@ -249,8 +249,19 @@ impl VibocerosApp {
         if !ready_for_scalar || session.factor.is_some() {
             return false;
         }
-        let Ok(value) = input.parse::<f64>() else {
-            return false;
+        let value = if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
+            let Some(value) = self.commands.transform_scalar_default(command.name()) else {
+                // Fresh rotation commands and Shear have no angle default.
+                self.cancel_interactive_command(true);
+                self.command_input.clear();
+                return true;
+            };
+            value
+        } else {
+            let Ok(value) = input.parse::<f64>() else {
+                return false;
+            };
+            value
         };
         if !value.is_finite() {
             self.push_log("Error: transform values must be finite".into());
@@ -262,6 +273,8 @@ impl VibocerosApp {
                 kind: InteractiveScaleKind::OneDimensional,
                 ..
             } => {
+                self.commands
+                    .remember_pending_transform_scalar(command.name(), value);
                 self.transform_session.as_mut().unwrap().factor = Some(value);
                 self.push_log(format!(
                     "Scale factor {value}; pick a direction (Copy=Yes keeps accepting directions)"
@@ -298,6 +311,33 @@ impl VibocerosApp {
         self.apply_transform_step(&script, command);
         self.command_input.clear();
         true
+    }
+
+    pub(super) fn transform_default_hint(&self) -> Option<String> {
+        let command = self.active_command?;
+        let session = self.transform_session.as_ref()?;
+        if session.applied || session.factor.is_some() {
+            return None;
+        }
+        let ready = matches!(
+            command,
+            InteractiveCommand::Scale {
+                center: Some(_),
+                reference: None,
+                ..
+            } | InteractiveCommand::Rotate {
+                center: Some(_),
+                reference: None
+            } | InteractiveCommand::Rotate3D {
+                points: [Some(_), Some(_), None]
+            }
+        );
+        if !ready {
+            return None;
+        }
+        self.commands
+            .transform_scalar_default(command.name())
+            .map(|value| format!("Enter accepts the default: {value}"))
     }
 
     /// Accepted edits already belong to ordinary history; dropping the token

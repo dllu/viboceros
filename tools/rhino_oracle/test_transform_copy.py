@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
-from .transform_copy_cases import request, script_request, center_request, identity_request
+from .transform_copy_cases import request, script_request, center_request, identity_request, default_request
 from .transform_copy_probe import validate
 
 
@@ -16,7 +16,8 @@ class TransformCopyTests(unittest.TestCase):
     def test_script_and_center_workflows_prescribe_inputs_before_measurement(self):
         for name, factory, count in [('transform_copy_script', script_request, 56),
                                      ('transform_copy_center', center_request, 18),
-                                     ('transform_copy_identity', identity_request, 64)]:
+                                     ('transform_copy_identity', identity_request, 64),
+                                     ('transform_copy_default', default_request, 80)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)

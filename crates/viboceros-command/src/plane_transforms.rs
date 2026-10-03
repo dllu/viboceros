@@ -1,9 +1,13 @@
 //! Construction-plane-dependent affine commands; document mutation is shared.
 use super::*;
 
-pub(super) struct ScaleTwoDimensionalCommand;
+pub(super) struct ScaleTwoDimensionalCommand(pub(super) remembered::Remembered<Option<Real>>);
 
 impl Command for ScaleTwoDimensionalCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.0.get()
+    }
+
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::TransformedObjects
     }
@@ -31,7 +35,7 @@ impl Command for ScaleTwoDimensionalCommand {
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_nonzero_scale(remaining[0])?
+            parse_nonzero_scale(remaining[0])?.abs()
         } else {
             let (reference, reference_consumed) = parse_point(remaining)?;
             let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
@@ -42,6 +46,7 @@ impl Command for ScaleTwoDimensionalCommand {
             )?;
             scale_factor_from_reference(center, reference, target, document.tolerance())?
         };
+        self.0.set(Some(factor));
         let frame = context.construction_plane.with_origin(center);
         let transform = if factor == 1.0 {
             AffineTransform3::identity()
@@ -56,9 +61,14 @@ impl Command for ScaleTwoDimensionalCommand {
     }
 }
 
-pub(super) struct RotateCommand;
+#[derive(Default)]
+pub(super) struct RotateCommand(remembered::Remembered<Option<Real>>);
 
 impl Command for RotateCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.0.get()
+    }
+
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::TransformedObjects
     }
@@ -85,24 +95,28 @@ impl Command for RotateCommand {
         let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
-        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?.to_radians()
-        } else {
-            let (reference, reference_consumed) = parse_point(remaining)?;
-            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
-            require_consumed(
-                remaining,
-                reference_consumed + target_consumed,
-                ROTATE_USAGE,
-            )?;
-            plane_angle(
-                context.construction_plane,
-                center,
-                reference,
-                target,
-                document.tolerance(),
-            )?
-        };
+        let (angle_radians, default_degrees) =
+            if remaining.len() == 1 && !remaining[0].contains(',') {
+                let degrees = parse_finite_real(remaining[0])?;
+                (degrees.to_radians(), degrees)
+            } else {
+                let (reference, reference_consumed) = parse_point(remaining)?;
+                let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+                require_consumed(
+                    remaining,
+                    reference_consumed + target_consumed,
+                    ROTATE_USAGE,
+                )?;
+                let radians = plane_angle(
+                    context.construction_plane,
+                    center,
+                    reference,
+                    target,
+                    document.tolerance(),
+                )?;
+                (radians, radians.to_degrees())
+            };
+        self.0.set(Some(default_degrees));
         let axis = context.construction_plane.z_axis();
         let transform = command_rotation(center, axis, angle_radians)?;
         let (transformed, copied) =

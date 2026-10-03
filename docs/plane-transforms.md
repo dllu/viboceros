@@ -72,8 +72,9 @@ is checked per dot product, so heavy tilt does not erase an otherwise resolved
 turn direction. These diagnostics are not claimed to
 agree at the ordinary comparison epsilon.
 
-[Custom viewport planes](cplane.md) are editable. Mirror's axis/three-point options, repeated interactive
-copies, rigid Shear, scalar constraints during point prompts, and singular
+[Custom viewport planes](cplane.md) are editable. Repeated interactive copies and
+[scalar defaults](commands/transform-defaults.md) have separate native session
+coverage. Mirror's axis/three-point options, rigid Shear, and singular
 projections that collapse validated geometry remain incomplete. Other transforms
 retain their individually documented coordinate policies; rectangular and polar
 arrays now have a separate [construction-plane policy](plane-arrays.md).

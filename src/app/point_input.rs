@@ -159,6 +159,9 @@ impl VibocerosApp {
             self.point_filter = None;
             self.point_constraint = None;
             self.command_input.clear();
+            if let Some(hint) = self.transform_default_hint() {
+                self.push_log(hint);
+            }
             true
         } else {
             false

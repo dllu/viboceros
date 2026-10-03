@@ -12,6 +12,8 @@ use history_policy::{apply_transform_with_renewal, transform_source_ids};
 mod rotation_policy;
 use rotation_policy::command_rotation;
 mod layout_units;
+#[cfg(test)]
+mod transform_default_tests;
 pub use align::{AlignmentMode, AlignmentOptions};
 mod curve_options;
 mod interchange;
@@ -375,6 +377,18 @@ pub trait Command: Send + Sync {
     /// Replay behavior for both full invocations and incremental prompt steps.
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::Ordinary
+    }
+
+    /// Last accepted factor or angle in the command's numeric input units.
+    /// None means Enter has no scalar value to accept at the initial prompt.
+    fn scalar_default(&self) -> Option<Real> {
+        None
+    }
+
+    /// Accept a scalar before a required direction pick. Most commands accept
+    /// their scalar as part of the complete invocation instead.
+    fn remember_pending_scalar(&self, _value: Real) -> bool {
+        false
     }
 
     /// Commands with a Rhino-style partial result can report failure after
@@ -1207,22 +1221,26 @@ impl CommandRegistry {
             .register(ArrayPolarCommand)
             .expect("unique built-in command");
         registry
-            .register(ScaleCommand)
+            .register(ScaleCommand(remembered::Remembered::new(Some(1.0))))
             .expect("unique built-in command");
         registry
-            .register(ScaleOneDimensionalCommand)
+            .register(ScaleOneDimensionalCommand(remembered::Remembered::new(
+                Some(1.0),
+            )))
             .expect("unique built-in command");
         registry
-            .register(ScaleTwoDimensionalCommand)
+            .register(ScaleTwoDimensionalCommand(remembered::Remembered::new(
+                Some(1.0),
+            )))
             .expect("unique built-in command");
         registry
             .register(ScaleNonUniformCommand)
             .expect("unique built-in command");
         registry
-            .register(RotateCommand)
+            .register(RotateCommand::default())
             .expect("unique built-in command");
         registry
-            .register(RotateThreeDimensionalCommand)
+            .register(RotateThreeDimensionalCommand::default())
             .expect("unique built-in command");
         registry
             .register(MirrorCommand)
@@ -1436,6 +1454,23 @@ impl CommandRegistry {
         command
             .copy_option_default()
             .map(|default| self.copy_preferences.peek(command.name(), default))
+    }
+
+    /// A command-instance scalar preference, independent of document history.
+    pub fn transform_scalar_default(&self, name: &str) -> Option<Real> {
+        self.commands
+            .get(*self.lookup.get(&normalize_command_name(name))?)?
+            .scalar_default()
+    }
+
+    /// Scale1D accepts its factor before a direction is picked, even if that
+    /// later pick is canceled. Reject nonfinite values before touching memory.
+    pub fn remember_pending_transform_scalar(&self, name: &str, value: Real) -> bool {
+        value.is_finite()
+            && self
+                .lookup
+                .get(&normalize_command_name(name))
+                .is_some_and(|index| self.commands[*index].remember_pending_scalar(value))
     }
 
     /// Start an interactive command, including the reset when remembering is off.
@@ -16470,9 +16505,13 @@ const SCALE_1D_USAGE: &str =
 const SCALE_2D_USAGE: &str = "Scale2D center factor | center reference target [Copy=Yes|No]";
 const SCALE_NU_USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [Copy=Yes|No]";
 
-struct ScaleCommand;
+struct ScaleCommand(remembered::Remembered<Option<Real>>);
 
 impl Command for ScaleCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.0.get()
+    }
+
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::TransformedObjects
     }
@@ -16491,13 +16530,14 @@ impl Command for ScaleCommand {
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_nonzero_scale(remaining[0])?
+            parse_nonzero_scale(remaining[0])?.abs()
         } else {
             let (reference, reference_consumed) = parse_point(remaining)?;
             let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
             require_consumed(remaining, reference_consumed + target_consumed, SCALE_USAGE)?;
             scale_factor_from_reference(center, reference, target, document.tolerance())?
         };
+        self.0.set(Some(factor));
         let transform = AffineTransform3::try_uniform_scale(center, factor)?;
         let (transformed, copied) =
             apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
@@ -16507,9 +16547,18 @@ impl Command for ScaleCommand {
     }
 }
 
-struct ScaleOneDimensionalCommand;
+struct ScaleOneDimensionalCommand(remembered::Remembered<Option<Real>>);
 
 impl Command for ScaleOneDimensionalCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.0.get()
+    }
+
+    fn remember_pending_scalar(&self, value: Real) -> bool {
+        self.0.set(Some(value));
+        true
+    }
+
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::TransformedObjects
     }
@@ -16555,6 +16604,7 @@ impl Command for ScaleOneDimensionalCommand {
             )?;
             (reference, factor)
         };
+        self.0.set(Some(factor));
         let direction = origin
             .vector_to(direction_point)?
             .normalized(document.tolerance())?;
@@ -16606,9 +16656,14 @@ const ROTATE_3D_USAGE: &str =
 const MIRROR_USAGE: &str = "Mirror axis-start axis-end [Copy=Yes|No]";
 const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference target [Copy=Yes|No]";
 
-struct RotateThreeDimensionalCommand;
+#[derive(Default)]
+struct RotateThreeDimensionalCommand(remembered::Remembered<Option<Real>>);
 
 impl Command for RotateThreeDimensionalCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.0.get()
+    }
+
     fn history_policy(&self) -> CommandHistoryPolicy {
         CommandHistoryPolicy::TransformedObjects
     }
@@ -16631,18 +16686,23 @@ impl Command for RotateThreeDimensionalCommand {
         let axis = axis_start
             .vector_to(axis_end)?
             .normalized(document.tolerance())?;
-        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?.to_radians()
-        } else {
-            let (reference, reference_consumed) = parse_point(remaining)?;
-            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
-            require_consumed(
-                remaining,
-                reference_consumed + target_consumed,
-                ROTATE_3D_USAGE,
-            )?;
-            axis_rotation_angle(axis_start, axis, reference, target, document.tolerance())?
-        };
+        let (angle_radians, default_degrees) =
+            if remaining.len() == 1 && !remaining[0].contains(',') {
+                let degrees = parse_finite_real(remaining[0])?;
+                (degrees.to_radians(), degrees)
+            } else {
+                let (reference, reference_consumed) = parse_point(remaining)?;
+                let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+                require_consumed(
+                    remaining,
+                    reference_consumed + target_consumed,
+                    ROTATE_3D_USAGE,
+                )?;
+                let radians =
+                    axis_rotation_angle(axis_start, axis, reference, target, document.tolerance())?;
+                (radians, radians.to_degrees())
+            };
+        self.0.set(Some(default_degrees));
         let transform = command_rotation(axis_start, axis, angle_radians)?;
         let (transformed, copied) =
             apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
@@ -44223,9 +44283,11 @@ mod tests {
             _ => panic!("expected a point"),
         };
 
+        let history_before = document.undo_label().map(str::to_owned);
         registry.execute(&mut document, "Scale 1,1 -1").unwrap();
-        assert_eq!(position(&document), Point3::try_new(0.0, 1.0, 0.0).unwrap());
-        registry.execute(&mut document, "Undo").unwrap();
+        // Native Scale uses the factor's magnitude, so -1 is an identity edit.
+        assert_eq!(position(&document), Point3::try_new(2.0, 1.0, 0.0).unwrap());
+        assert_eq!(document.undo_label(), history_before.as_deref());
         registry.execute(&mut document, "Scale 1,1 2").unwrap();
         assert_eq!(position(&document), Point3::try_new(3.0, 1.0, 0.0).unwrap());
         assert_eq!(document.undo_label(), Some("Scale"));
