@@ -5,6 +5,49 @@ fn point(x: f64) -> Geometry {
 }
 
 #[test]
+fn ordered_affine_sets_preserve_pick_order_groups_duplicates_and_history() {
+    let mut document = Document::default();
+    let ids = [0., 1., 2.].map(|x| document.add_geometry(point(x)).unwrap());
+    document.add_group(None, [ids[0], ids[2]]).unwrap();
+    document.add_group(None, [ids[2]]).unwrap();
+    document.clear_history().unwrap();
+    let before = document.objects.clone();
+    let before_groups = document.groups.clone();
+    let copies = document
+        .copy_objects_with_transforms_and_groups_in_order(
+            [ids[2], ids[0], ids[2]],
+            &[AffineTransform3::identity(); 2],
+            CopyGroupPolicy::Preserve,
+        )
+        .unwrap();
+    assert_eq!(copies.len(), 4);
+    for batch in copies.chunks_exact(2) {
+        for (id, source) in batch.iter().zip([ids[2], ids[0]]) {
+            assert_eq!(
+                document.object(*id).unwrap().geometry(),
+                document.object(source).unwrap().geometry()
+            );
+        }
+        let first = document.object(batch[0]).unwrap().group_ids();
+        let second = document.object(batch[1]).unwrap().group_ids();
+        assert_eq!(first.len(), 2);
+        assert_eq!(second, &first[..1]);
+    }
+    assert_ne!(
+        document.object(copies[0]).unwrap().group_ids(),
+        document.object(copies[2]).unwrap().group_ids()
+    );
+    let after = document.objects.clone();
+    let after_groups = document.groups.clone();
+    document.undo().unwrap();
+    assert_eq!(document.objects, before);
+    assert_eq!(document.groups, before_groups);
+    document.redo().unwrap();
+    assert_eq!(document.objects, after);
+    assert_eq!(document.groups, after_groups);
+}
+
+#[test]
 fn repeated_source_pieces_keep_input_order_metadata_and_exact_history() {
     let mut document = Document::default();
     let ids = (0..20)

@@ -191,9 +191,10 @@ impl Command for MirrorCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        let (arguments, selected) = transform_arguments(document, arguments, USAGE)?;
         let mut positional = Vec::new();
         let mut copy = None;
-        for argument in arguments {
+        for argument in &arguments {
             if let Some((name, value)) = argument.split_once('=')
                 && option_name_eq(name, "Copy")
             {
@@ -206,21 +207,6 @@ impl Command for MirrorCommand {
             }
         }
         let copy = copy.unwrap_or(false);
-        let mut source_override = None;
-        positional.retain(|argument| {
-            if let Some((name, value)) = argument.split_once('=')
-                && option_name_eq(name, "Sources")
-            {
-                if source_override.is_some() {
-                    source_override = Some("");
-                } else {
-                    source_override = Some(value);
-                }
-                false
-            } else {
-                true
-            }
-        });
         let (option, points) = positional
             .first()
             .and_then(|token| MirrorPlaneOption::from_token(token))
@@ -229,31 +215,6 @@ impl Command for MirrorCommand {
                 |option| (option, &positional[1..]),
             );
         let frame = context.construction_plane;
-        let selected = if let Some(sources) = source_override {
-            if option != MirrorPlaneOption::Object {
-                return Err(CommandError::Usage(USAGE));
-            }
-            let ids = sources
-                .split(',')
-                .map(|source| {
-                    source
-                        .parse::<ObjectId>()
-                        .map_err(|_| CommandError::Usage(USAGE))
-                })
-                .collect::<Result<BTreeSet<_>, _>>()?;
-            if ids.is_empty()
-                || ids.len() != sources.split(',').count()
-                || ids.iter().any(|id| !document.is_object_selectable(*id))
-            {
-                return Err(CommandError::Usage(USAGE));
-            }
-            document
-                .objects()
-                .filter_map(|object| ids.contains(&object.id()).then_some(object.id()))
-                .collect::<Vec<_>>()
-        } else {
-            transform_source_ids(document)?
-        };
         let (origin, normal) = match option {
             MirrorPlaneOption::TwoPoint => {
                 let (start, consumed) = parse_point(points)?;

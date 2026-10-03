@@ -16,15 +16,28 @@ def finite(value):
 def validate(operation):
     if (not isinstance(operation, dict)
             or not {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'} <= set(operation)
-            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target'}
+            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target', 'source_selection'}
             or operation['op'] != 'transform_copy_command'
             or not isinstance(operation['id'], str) or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z', operation['id']) is None
             or operation['command'] not in COMMANDS
             or not isinstance(operation['sources'], list) or not 1 <= len(operation['sources']) <= 16
             or any(type(operation[key]) is not bool for key in ('grouped', 'undo_redo', 'sel_last'))
             or operation['finish'] not in ('Enter', 'Cancel', 'Automatic')
-            or not isinstance(operation['inputs'], list) or not 1 <= len(operation['inputs']) <= 32):
+            or not isinstance(operation['inputs'], list)
+            or not (0 if 'source_selection' in operation else 1) <= len(operation['inputs']) <= 32):
         raise ValueError('invalid transform Copy workflow')
+    if 'source_selection' in operation:
+        steps = operation['source_selection']
+        if not isinstance(steps, list) or not 1 <= len(steps) <= 32:
+            raise ValueError('invalid transform source selection steps')
+        for step in steps:
+            if type(step) is int and 0 <= step < len(operation['sources']):
+                continue
+            if isinstance(step, str) and step in ('SelAll', 'SelNone', 'Enter', 'Cancel', 'Copy=Yes', 'Copy=No', '3Point', 'XAxis', 'YAxis', 'ZAxis', 'Object'):
+                continue
+            raise ValueError('source selection requires bounded owned indices or named inputs')
+        if operation.get('selected'):
+            raise ValueError('command-first transform requires empty preselection')
     if 'mirror_target' in operation:
         if __package__:
             from .mirror_object_probe import validate_target
@@ -39,8 +52,8 @@ def validate(operation):
         if (not isinstance(source, list) or len(source) != 3
                 or any(not finite(value) for value in source)):
             raise ValueError('transform sources require finite points')
-    selected = operation.get('selected', list(range(len(operation['sources']))))
-    if (not isinstance(selected, list) or not selected
+    selected = operation.get('selected', [] if 'source_selection' in operation else list(range(len(operation['sources']))))
+    if (not isinstance(selected, list) or (not selected and 'source_selection' not in operation)
             or any(type(index) is not int or not 0 <= index < len(operation['sources']) for index in selected)
             or len(set(selected)) != len(selected)):
         raise ValueError('invalid transform preselection')
@@ -135,12 +148,17 @@ def run_owned(operation, host, target=None):
                 ids.append(key)
             if operation['grouped'] and doc.Groups.Add('RepeatSource_'+operation['id'], ids) < 0:
                 raise ValueError('transform source grouping failed')
-            for index in operation.get('selected', list(range(len(ids)))):
+            for index in operation.get('selected', [] if 'source_selection' in operation else list(range(len(ids)))):
                 doc.Objects.Select(ids[index])
         finally:
             doc.EndUndoRecord(serial)
         before = snapshot()
         tokens = []
+        for step in operation.get('source_selection', []):
+            if type(step) is int:
+                tokens.append('_SelID '+str(ids[step]))
+            else:
+                tokens.append('_'+step.replace('=Yes', '=_Yes').replace('=No', '=_No'))
         for token in operation['inputs']:
             if token == 'Target':
                 tokens.append('_SelID '+str(target['id']) if target['pick'] == 'id' else '_Pause')
@@ -157,7 +175,9 @@ def run_owned(operation, host, target=None):
             from mirror_object_probe import click_target
             action = lambda: click_target(operation, target, host, macro)
         succeeded, after, events = observe_command(Rhino.Commands.Command, operation['command'],
-            action, snapshot, lambda: [], True)
+            action, snapshot,
+            lambda: [ids.index(obj.Id) if obj.Id in ids else None for obj in objects() if obj.IsSelected(False)]
+                if 'source_selection' in operation else [], True)
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         last = undo = redo = None
         if operation['sel_last']:

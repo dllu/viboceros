@@ -98,6 +98,9 @@ impl PendingObjectCommand {
                 ObjectSelectionWorkflow::QuestionAfterSelection { .. } => {
                     "Select objects; Enter continues, Esc cancels selection"
                 }
+                ObjectSelectionWorkflow::PointInputAfterSelection => {
+                    "Select objects; Enter continues to transform points, Esc cancels"
+                }
             },
             ObjectPromptPhase::Options
                 if self.description.workflow
@@ -437,6 +440,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.try_continue_transform_source_prompt(input) {
+            return true;
+        }
         let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };
@@ -1053,7 +1059,14 @@ impl VibocerosApp {
         } else {
             mode
         };
-        match self.document.select_objects_direct(ids, mode) {
+        let result = if self.object_prompt.as_ref().is_some_and(|prompt| {
+            prompt.description.workflow == ObjectSelectionWorkflow::PointInputAfterSelection
+        }) {
+            self.document.select_objects(ids, mode)
+        } else {
+            self.document.select_objects_direct(ids, mode)
+        };
+        match result {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
         }

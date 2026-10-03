@@ -34,14 +34,15 @@ the last successful edit; toggling Copy and finishing without another edit
 does not replace that preference. A rejected target leaves earlier edits and
 the active prompt intact.
 
-Originals remain selected and copies are unselected. Copies inherit object
+Preselected originals remain selected and copies are unselected. Command-first
+selection has distinct [cleanup and Undo rules](transform-sources.md). Copies inherit object
 names, color sources, colors, and layers. Multiple selected sources recreate
 their group memberships for each copy. A single selected source produces an
 ungrouped copy and corresponding empty group definitions, including when its
 group has unselected peers. Undo retains new group definitions empty.
 
-These seven affine commands enumerate selected inputs in document object order,
-regardless of their selection order. An in-place edit renews all selected
+These seven affine commands enumerate preselected inputs in document object order.
+Command-first sources follow pick order. An in-place edit renews all selected
 originals after untouched objects, including points fixed by a nonidentity
 map. An exact identity map skips in-place replacement; Copy=Yes still creates
 copies. SelLast recalls all accepted copies in a repeated batch. These history

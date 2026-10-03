@@ -269,9 +269,9 @@ impl Document {
         GroupNames::default().next(self)
     }
 
-    /// Recreates touched definitions on first use, walking sources in document
+    /// Recreates touched definitions on first use, walking sources in copy
     /// order and memberships in each source's order. Call in the copy transaction
-    /// with validated source/destination indices in source-table order. Destinations
+    /// with validated, unique source/destination indices. Destinations
     /// must be freshly inserted, ungrouped objects; neither table is reordered.
     pub(super) fn copy_group_memberships(
         &mut self,
@@ -279,7 +279,6 @@ impl Document {
         assign_memberships: bool,
         names: &mut GroupNames,
     ) -> Result<(), DocumentError> {
-        debug_assert!(copies.windows(2).all(|pair| pair[0].0 < pair[1].0));
         let mut mapped = BTreeMap::new();
         for &(source_index, copy_index) in copies {
             debug_assert!(source_index < copy_index);

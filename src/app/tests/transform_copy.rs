@@ -119,6 +119,168 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
 }
 
 #[test]
+fn command_first_transform_selection_order_cancellation_and_history_match_native() {
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_sources.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_sources.json"),
+        61,
+        Invocation::Prompt,
+    );
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_sources_identity.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_sources_identity.json"),
+        12,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn transform_source_mouse_picks_expand_groups_while_selid_is_direct_and_escape_obeys_phase() {
+    let mut app = test_app();
+    let ids = [0., 1., 2.].map(|x| {
+        app.document
+            .add_geometry(Geometry::Point(point(x, 0., 0.)))
+            .unwrap()
+    });
+    app.document.add_group(None, [ids[0], ids[2]]).unwrap();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Mirror Copy=No 3Point");
+    assert!(app.object_prompt.is_some());
+    assert_eq!(
+        app.viewport_object_filter(),
+        Some(viboceros_command::ObjectSelectionFilter::Any)
+    );
+    enter(&mut app, "Copy=No");
+    assert_eq!(app.commands.copy_default("Mirror"), Some(true));
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[2]),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[0], ids[2]]
+    );
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Remove,
+    });
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, &format!("SelID {}", ids[2]));
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[2]]
+    );
+    app.cancel_current_prompt_or_selection();
+    assert!(app.object_prompt.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert!(!app.document.can_undo());
+
+    enter(&mut app, "Mirror");
+    enter(&mut app, &format!("SelID {}", ids[2]));
+    enter(&mut app, &format!("SelID {}", ids[1]));
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert_eq!(
+        app.active_command,
+        Some(InteractiveCommand::Mirror { start: None })
+    );
+    app.cancel_current_prompt_or_selection();
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[2], ids[1]]
+    );
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn failed_postselected_transform_preserves_picks_and_accepted_copies() {
+    let mut app = test_app();
+    let ids = [0., 1., 2.].map(|x| {
+        app.document
+            .add_geometry(Geometry::Point(point(x, 1., 0.)))
+            .unwrap()
+    });
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Scale");
+    for id in [ids[2], ids[0]] {
+        enter(&mut app, &format!("SelID {id}"));
+    }
+    enter(&mut app, "Enter");
+    assert!(app.command_input.is_empty());
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "Copy=Yes");
+    enter(&mut app, "2");
+    let accepted = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Copy=No");
+    enter(&mut app, "NaN");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        accepted
+    );
+    assert_eq!(app.document.selected_object_count(), 2);
+    assert!(app.document.is_selected(ids[2]) && app.document.is_selected(ids[0]));
+    assert!(app.active_command.is_some());
+    enter(&mut app, "3");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+    let after = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "SelLast");
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 3);
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+}
+
+#[test]
+fn postselected_transform_edits_restricted_group_peers_and_rolls_back_geometry_failure() {
+    for copy in [false, true] {
+        let mut app = test_app();
+        let ids = [2., 3.].map(|x| {
+            app.document
+                .add_geometry(Geometry::Point(point(x, 1., 0.)))
+                .unwrap()
+        });
+        app.document.add_group(None, ids).unwrap();
+        app.document.set_objects_locked([ids[1]], true).unwrap();
+        app.document.clear_history().unwrap();
+        enter(&mut app, "Scale");
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(ids[0]),
+            mode: SelectionMode::Replace,
+        });
+        assert_eq!(app.document.selected_object_count(), 2);
+        enter(&mut app, "Enter");
+        enter(&mut app, "w0,0,0");
+        enter(&mut app, if copy { "Copy=Yes" } else { "Copy=No" });
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        enter(&mut app, "1e308");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(app.document.selected_object_count(), 2);
+        assert!(app.active_command.is_some());
+        assert!(!app.document.can_undo());
+        enter(&mut app, "2");
+        if copy {
+            enter(&mut app, "Enter");
+        }
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert_eq!(
+            app.document.selected_object_count(),
+            if copy { 2 } else { 0 }
+        );
+        assert_eq!(app.document.objects().len(), if copy { 4 } else { 2 });
+        assert_eq!(
+            app.document.objects().last().unwrap().geometry(),
+            &Geometry::Point(point(6., 2., 0.))
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(app.document.selected_object_count(), 0);
+    }
+}
+
+#[test]
 fn complete_transform_invocations_geometry_selection_groups_and_history_match_native() {
     replay_native(
         include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_script.json"),
@@ -503,7 +665,13 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     .map(|index| sources[index.as_u64().unwrap() as usize])
                     .collect::<Vec<_>>()
             })
-            .unwrap_or_else(|| sources.clone());
+            .unwrap_or_else(|| {
+                if operation.get("source_selection").is_some() {
+                    Vec::new()
+                } else {
+                    sources.clone()
+                }
+            });
         app.document
             .select_objects_direct(selected, SelectionMode::Replace)
             .unwrap();
@@ -568,11 +736,27 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     consumed
                 } else {
                     enter(&mut app, operation["command"].as_str().unwrap());
-                    assert!(
-                        app.transform_session.is_some(),
-                        "{label}: {:?}",
-                        app.command_log
-                    );
+                    if let Some(steps) = operation.get("source_selection") {
+                        assert!(
+                            app.object_prompt.is_some(),
+                            "{label}: {:?}",
+                            app.command_log
+                        );
+                        assert!(app.transform_session.is_none());
+                        for step in steps.as_array().unwrap() {
+                            if let Some(index) = step.as_u64() {
+                                enter(&mut app, &format!("SelID {}", sources[index as usize]));
+                            } else {
+                                enter(&mut app, step.as_str().unwrap());
+                            }
+                        }
+                    } else {
+                        assert!(
+                            app.transform_session.is_some(),
+                            "{label}: {:?}",
+                            app.command_log
+                        );
+                    }
                     0
                 };
                 for input in inputs.iter().skip(consumed) {
@@ -623,7 +807,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             }
         }
         assert!(
-            app.active_command.is_none(),
+            app.active_command.is_none() && app.object_prompt.is_none(),
             "{label}: {:?}",
             app.command_log
         );

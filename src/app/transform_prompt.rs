@@ -8,6 +8,7 @@ pub(super) struct TransformSession {
     applied: bool,
     factor: Option<f64>,
     sources: Vec<ObjectId>,
+    postselected: bool,
     preview: Option<viboceros_geometry::AffineTransform3>,
 }
 
@@ -104,6 +105,7 @@ impl VibocerosApp {
         &mut self,
         command: InteractiveCommand,
         copy: bool,
+        picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
         match self.document.begin_history_group(command.name()) {
             Ok(group) => {
@@ -112,15 +114,17 @@ impl VibocerosApp {
                     copy,
                     applied: false,
                     factor: None,
-                    sources: self
-                        .document
-                        .objects()
-                        .filter_map(|object| {
-                            self.document
-                                .is_selected(object.id())
-                                .then_some(object.id())
-                        })
-                        .collect(),
+                    postselected: picked_sources.is_some(),
+                    sources: picked_sources.unwrap_or_else(|| {
+                        self.document
+                            .objects()
+                            .filter_map(|object| {
+                                self.document
+                                    .is_selected(object.id())
+                                    .then_some(object.id())
+                            })
+                            .collect()
+                    }),
                     preview: None,
                 });
                 self.push_log(format!(
@@ -145,9 +149,14 @@ impl VibocerosApp {
             return false;
         };
         let display_input = format!("{input} Copy={}", if session.copy { "Yes" } else { "No" });
-        let input = if continuation == InteractiveCommand::MirrorObject {
+        let input = if session.postselected || continuation == InteractiveCommand::MirrorObject {
             format!(
-                "{display_input} Sources={}",
+                "{display_input} {}={}",
+                if session.postselected {
+                    "PickedSources"
+                } else {
+                    "Sources"
+                },
                 session
                     .sources
                     .iter()

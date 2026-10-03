@@ -113,6 +113,8 @@ pub struct BooleanSelectionMenu {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ObjectSelectionWorkflow {
     OptionsDuringSelection,
+    /// Accepts source objects before handing control to a point prompt.
+    PointInputAfterSelection,
     ConfirmAfterSelection,
     /// A single Yes/No answer executes immediately; Enter uses its current value.
     ChooseBooleanAfterSelection,

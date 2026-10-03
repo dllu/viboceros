@@ -256,3 +256,51 @@ def mirror_object_request():
 
 if __name__ == '__main__':
     print(json.dumps(request(), indent=2))
+
+
+def sources_request():
+    """Command-first picks in reverse table order, including empty/cancel phases."""
+    operations = []
+    sources = [[2, 3, 4], [-1, 2, 3], [5, -2, 1], [1, 1, 1]]
+    def add(command, suffix, selection, inputs, finish='Automatic', grouped=False, history=True):
+        operations.append(dict(op='transform_copy_command', id=command.lower()+'-'+suffix,
+            command=command, sources=copying.deepcopy(sources), grouped=grouped,
+            source_selection=selection, inputs=inputs, finish=finish,
+            undo_redo=history, sel_last=history))
+    for command in ['Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Mirror', 'Shear']:
+        for choice in ['Yes', 'No']:
+            for grouped in [False, True]:
+                inputs = ['w0,0,0', 'Copy='+choice, '2']
+                if command == 'Scale1D': inputs += ['w1,0,0']
+                elif command == 'Rotate': inputs[-1] = '30'
+                elif command == 'Rotate3D': inputs = ['w0,0,0', 'w0,0,1', 'Copy='+choice, '30']
+                elif command == 'Mirror': inputs = ['Copy='+choice, 'w0,0,0', 'w0,1,0']
+                elif command == 'Shear': inputs = ['w0,0,0', 'Copy='+choice, 'w1,0,0', '30']
+                add(command, choice.lower()+'-'+str(grouped), [2, 0, 'Enter'], inputs,
+                    'Enter' if choice == 'Yes' and command != 'Mirror' else 'Automatic', grouped)
+        for suffix, selection, inputs, finish in [
+            ('empty-enter', ['Enter'], [], 'Automatic'),
+            ('empty-cancel', ['Cancel'], [], 'Automatic'),
+            ('picked-cancel', [0, 'Cancel'], [], 'Automatic'),
+            ('point-cancel', [0, 'Enter'], ['w0,0,0'], 'Cancel')]:
+            add(command, suffix, selection, inputs, finish, history=False)
+    add('Mirror', 'rejected-selection-options', ['Copy=No', '3Point', 0, 'Enter'],
+        ['Copy=Yes', 'w0,0,0', 'w0,1,0'])
+    add('Mirror', 'selection-all', ['SelAll', 'Enter'], ['Copy=No', 'w0,0,0', 'w0,1,0'], grouped=True)
+    add('Mirror', 'selection-none', [0, 'SelNone', 'Enter'], [], history=False)
+    add('Mirror', 'selection-none-reselect', [0, 'SelNone', 2, 'Enter'], ['Copy=No', 'w0,0,0', 'w0,1,0'])
+    add('Mirror', 'selection-plane-shortcut', [0, 'Enter'], ['Copy=No', 'ZAxis'])
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
+def sources_identity_request():
+    """Identity maps retain command-first picks and skip in-place history."""
+    operations = []
+    for operation in sources_request()['operations']:
+        if not operation['id'].endswith('-True') or operation['command'] == 'Mirror':
+            continue
+        operation['id'] += '-identity'
+        scalar = '1' if operation['command'].startswith('Scale') else '0'
+        operation['inputs'] = [scalar if token in ('2', '30') else token for token in operation['inputs']]
+        operations.append(operation)
+    return dict(protocol_version=1, iterations=1, operations=operations)

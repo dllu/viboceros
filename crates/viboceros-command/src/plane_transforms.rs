@@ -30,8 +30,8 @@ impl Command for ScaleTwoDimensionalCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_2D_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, SCALE_2D_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_2D_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
@@ -54,7 +54,7 @@ impl Command for ScaleTwoDimensionalCommand {
             AffineTransform3::try_frame_mapping(frame, frame, [factor, factor, 1.0])?
         };
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) in two dimensions by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -91,8 +91,8 @@ impl Command for RotateCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, ROTATE_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, ROTATE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let (angle_radians, default_degrees) =
@@ -120,7 +120,7 @@ impl Command for RotateCommand {
         let axis = context.construction_plane.z_axis();
         let transform = command_rotation(center, axis, angle_radians)?;
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Rotated {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees(),
@@ -153,8 +153,8 @@ impl Command for ShearCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SHEAR_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, SHEAR_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, SHEAR_USAGE)?;
         let (origin, origin_consumed) = parse_point(&positional)?;
         let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;
         let consumed = origin_consumed + reference_consumed;
@@ -211,7 +211,7 @@ impl Command for ShearCommand {
             document.tolerance(),
         )?;
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Sheared {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees()

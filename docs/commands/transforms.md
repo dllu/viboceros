@@ -7,6 +7,9 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 
 ## Interactive transforms
 
+Scale, Scale1D, Scale2D, Rotate, Rotate3D, Mirror, and Shear can also start with
+no objects selected: [pick sources first, then Enter](transform-sources.md).
+
 With objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
 `Rotate` to pick center/reference/target points, `Mirror` to pick a two-point

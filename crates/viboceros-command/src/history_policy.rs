@@ -2,9 +2,73 @@
 use super::CommandError;
 use viboceros_document::{
     CopyGroupPolicy, Document, DocumentError, HistoryGroup, ObjectId, ReplacementHistory,
-    SelectionMode,
 };
 use viboceros_geometry::AffineTransform3;
+
+/// Source order belongs to GetObject for command-first picks, and to the
+/// object table for preselection. Explicit sources also survive Mirror Object
+/// clearing the live selection while its plane target is being picked.
+pub(super) struct TransformSources {
+    ids: Vec<ObjectId>,
+    postselected: bool,
+}
+
+pub(super) fn transform_arguments<'a>(
+    document: &Document,
+    arguments: &[&'a str],
+    usage: &'static str,
+) -> Result<(Vec<&'a str>, TransformSources), CommandError> {
+    let mut positional = Vec::new();
+    let mut sources = None;
+    for argument in arguments {
+        if let Some((name, value)) = argument.split_once('=')
+            && (super::option_name_eq(name, "Sources")
+                || super::option_name_eq(name, "PickedSources"))
+        {
+            if sources.is_some() {
+                return Err(CommandError::Usage(usage));
+            }
+            let ids = value
+                .split(',')
+                .map(|id| id.parse::<ObjectId>())
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|_| CommandError::Usage(usage))?;
+            let unique = ids
+                .iter()
+                .copied()
+                .collect::<std::collections::BTreeSet<_>>();
+            if ids.is_empty() || unique.len() != ids.len() {
+                return Err(CommandError::Usage(usage));
+            }
+            let postselected = super::option_name_eq(name, "PickedSources");
+            let mut remaining = unique;
+            for object in document.selectable_objects() {
+                remaining.remove(&object.id());
+            }
+            // A picked group's restricted peers are editable while selected,
+            // under the same document policy as ordinary preselection.
+            if postselected {
+                for id in document.selected_object_ids() {
+                    remaining.remove(&id);
+                }
+            }
+            if !remaining.is_empty() {
+                return Err(CommandError::Usage(usage));
+            }
+            sources = Some(TransformSources { ids, postselected });
+        } else {
+            positional.push(*argument);
+        }
+    }
+    let sources = match sources {
+        Some(sources) => sources,
+        None => TransformSources {
+            ids: transform_source_ids(document)?,
+            postselected: false,
+        },
+    };
+    Ok((positional, sources))
+}
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum CommandHistoryPolicy {
@@ -26,12 +90,16 @@ impl CommandHistoryPolicy {
 
 pub(super) fn apply_transform_with_renewal(
     document: &mut Document,
-    selected: &[ObjectId],
+    sources: &TransformSources,
     transform: AffineTransform3,
     copy: bool,
 ) -> Result<(usize, usize), DocumentError> {
+    let selected = &sources.ids;
     if !copy && transform == AffineTransform3::identity() {
         return Ok((selected.len(), 0));
+    }
+    if sources.postselected {
+        document.release_command_selection_on_history_replay(selected.iter().copied())?;
     }
     if copy {
         // A single picked source allocates definitions without copying its
@@ -41,12 +109,20 @@ pub(super) fn apply_transform_with_renewal(
         } else {
             CopyGroupPolicy::Preserve
         };
-        let copies = document.copy_objects_with_transforms_and_groups(
-            selected.iter().copied(),
-            &[transform],
-            policy,
-        )?;
-        document.select_objects_direct(selected.iter().copied(), SelectionMode::Replace)?;
+        let copies = if sources.postselected {
+            document.copy_objects_with_transforms_and_groups_in_order(
+                selected.iter().copied(),
+                &[transform],
+                policy,
+            )?
+        } else {
+            document.copy_objects_with_transforms_and_groups(
+                selected.iter().copied(),
+                &[transform],
+                policy,
+            )?
+        };
+        document.select_command_results(selected.iter().copied())?;
         Ok((selected.len(), copies.len()))
     } else {
         let transformed = document.transform_objects_with_history(
@@ -54,6 +130,10 @@ pub(super) fn apply_transform_with_renewal(
             transform,
             ReplacementHistory::EveryReplacement,
         )?;
+        document.move_objects_to_end_in_order(selected.iter().copied())?;
+        if sources.postselected {
+            document.clear_selection();
+        }
         Ok((transformed, 0))
     }
 }

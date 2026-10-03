@@ -34,10 +34,42 @@ impl Document {
         transforms: &[AffineTransform3],
         group_policy: CopyGroupPolicy,
     ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_affine_sets(ids, transforms, group_policy, false)
+    }
+
+    /// Copies sources in the caller's pick order, coalescing duplicate IDs at
+    /// their first occurrence. Each transform still creates independent groups.
+    pub fn copy_objects_with_transforms_and_groups_in_order(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transforms: &[AffineTransform3],
+        group_policy: CopyGroupPolicy,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_affine_sets(ids, transforms, group_policy, true)
+    }
+
+    fn copy_affine_sets(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transforms: &[AffineTransform3],
+        group_policy: CopyGroupPolicy,
+        input_order: bool,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
         if transforms.is_empty() {
             return Ok(Vec::new());
         }
-        let sources = self.resolve_object_indices(ids)?;
+        let sources = if input_order {
+            let mut ranks = BTreeMap::new();
+            for id in ids {
+                let rank = ranks.len();
+                ranks.entry(id).or_insert(rank);
+            }
+            let mut sources = self.resolve_object_indices(ranks.keys().copied())?;
+            sources.sort_unstable_by_key(|index| ranks[&self.objects[*index].id]);
+            sources
+        } else {
+            self.resolve_object_indices(ids)?
+        };
         for index in &sources {
             self.ensure_object_editable(&self.objects[*index])?;
         }

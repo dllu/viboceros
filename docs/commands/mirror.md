@@ -78,7 +78,8 @@ bounding boxes are raw telemetry and can shift after float-precision meshing.
 
 These witnesses verify affine maps and document behavior, without exhaustively
 comparing every curve, surface, or mesh representation. History-linked planar
-targets, subcurve input, and command-first source selection remain incomplete.
+targets and subcurve input remain incomplete. [Command-first source selection](transform-sources.md)
+is supported, including Copy choices, object order, cancellation, and history.
 Near-collinear acceptance thresholds are not measured by these captures.
 
 ## Live viewport preview

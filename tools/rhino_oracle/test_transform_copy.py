@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
-from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request, mirror_object_request
+from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request, mirror_object_request, sources_request, sources_identity_request
 from .transform_copy_probe import validate
 
 
@@ -20,7 +20,9 @@ class TransformCopyTests(unittest.TestCase):
                                      ('transform_copy_default', default_request, 80),
                                      ('mirror_planes', mirror_request, 64),
                                      ('mirror_enter', mirror_enter_request, 5),
-                                     ('mirror_object', mirror_object_request, 70)]:
+                                     ('mirror_object', mirror_object_request, 70),
+                                     ('transform_sources', sources_request, 61),
+                                     ('transform_sources_identity', sources_identity_request, 12)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)
@@ -28,6 +30,19 @@ class TransformCopyTests(unittest.TestCase):
             observed = json.loads(Path(__file__).with_name('observations').joinpath(name+'.json').read_text())
             client = Mock(settings_scheme='VibocerosOracleTest', run_rhino=Mock(return_value=observed))
             self.assertEqual(capture(saved, client), observed)
+
+    def test_source_selection_is_bounded_to_owned_ids_and_named_inputs(self):
+        for steps in [[], [True], [-1], [4], ['Delete'], ['0 _Delete'], [None], [0]*33, 'SelAll']:
+            invalid = sources_request()
+            invalid['operations'][0]['source_selection'] = steps
+            client = Mock(settings_scheme='VibocerosOracleTest')
+            with self.subTest(steps=steps), self.assertRaises(ValueError):
+                capture(invalid, client)
+            client.run_rhino.assert_not_called()
+        invalid = sources_request()
+        invalid['operations'][0]['selected'] = [0]
+        with self.assertRaises(ValueError):
+            validate_request(invalid)
 
     def test_mirror_options_are_bounded_and_witnesses_are_affinely_independent(self):
         operation = mirror_request()['operations'][0]

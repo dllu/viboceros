@@ -166,6 +166,7 @@ mod set_view;
 mod snapping;
 mod toolbar;
 mod transform_prompt;
+mod transform_sources;
 mod unjoin_edge;
 mod untrim_holes;
 mod viewport_layout;
@@ -2581,11 +2582,20 @@ impl VibocerosApp {
     }
 
     fn try_start_interactive_command(&mut self, input: &str) -> bool {
+        self.try_start_interactive_command_with_sources(input, None)
+    }
+
+    fn try_start_interactive_command_with_sources(
+        &mut self,
+        input: &str,
+        picked_sources: Option<Vec<ObjectId>>,
+    ) -> bool {
         let mut tokens = input.split_whitespace();
         let Some(name) = tokens.next() else {
             return false;
         };
         let arguments = tokens.collect::<Vec<_>>();
+        let has_start_arguments = !arguments.is_empty();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
         let mirror_mode = if normalized == "mirror" {
             viboceros_command::mirror::start_options(&arguments, false)
@@ -4522,7 +4532,16 @@ impl VibocerosApp {
             self.start_extract_faces(copy, output_on_current_layer);
             return true;
         }
-        self.commands.begin_copy_options(command.name());
+        if picked_sources.is_none() {
+            self.commands.begin_copy_options(command.name());
+        }
+        if transform_prompt::supports(command) && self.document.selected_object_count() == 0 {
+            self.start_transform_source_prompt(command.name());
+            if has_start_arguments {
+                self.push_log("Select objects first; Enter continues to transform options".into());
+            }
+            return true;
+        }
         if matches!(
             command,
             InteractiveCommand::Move { .. }
@@ -4586,7 +4605,11 @@ impl VibocerosApp {
             }
         }
         if transform_prompt::supports(command)
-            && !self.start_transform_session(command, transform_copy.flatten().unwrap())
+            && !self.start_transform_session(
+                command,
+                transform_copy.flatten().unwrap(),
+                picked_sources,
+            )
         {
             return true;
         }
@@ -12069,7 +12092,13 @@ mod tests {
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
-            assert!(app.command_log.back().unwrap().contains("no objects"));
+            if transform_prompt::supports_name(&command.to_ascii_lowercase()) {
+                assert!(app.object_prompt.is_some());
+                assert!(app.transform_session.is_none());
+                app.cancel_interactive_command(false);
+            } else {
+                assert!(app.command_log.back().unwrap().contains("no objects"));
+            }
         }
         // ExtractSrf supports command-first component selection.
         assert!(app.try_start_interactive_command("ExtractSrf"));

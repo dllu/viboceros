@@ -8,7 +8,7 @@ use border::{DuplicateBorderCommand, DuplicateBorderOutputLayer, DuplicateFaceBo
 mod arrays;
 mod history_policy;
 pub use history_policy::CommandHistoryPolicy;
-use history_policy::{apply_transform_with_renewal, transform_source_ids};
+use history_policy::{apply_transform_with_renewal, transform_arguments};
 mod rotation_policy;
 use rotation_policy::command_rotation;
 mod layout_units;
@@ -16526,8 +16526,8 @@ impl Command for ScaleCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, SCALE_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
@@ -16541,7 +16541,7 @@ impl Command for ScaleCommand {
         self.0.set(Some(factor));
         let transform = AffineTransform3::try_uniform_scale(center, factor)?;
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) uniformly by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -16573,8 +16573,8 @@ impl Command for ScaleOneDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_1D_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, SCALE_1D_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_1D_USAGE)?;
         let (origin, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
 
@@ -16611,7 +16611,7 @@ impl Command for ScaleOneDimensionalCommand {
             .normalized(document.tolerance())?;
         let transform = AffineTransform3::try_directional_scale(origin, direction, factor)?;
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) in one direction by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -16677,8 +16677,8 @@ impl Command for RotateThreeDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_3D_USAGE)?;
+        let (arguments, selected) = transform_arguments(document, arguments, ROTATE_3D_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(&arguments, ROTATE_3D_USAGE)?;
         let (axis_start, start_consumed) = parse_point(&positional)?;
         let (axis_end, end_consumed) = parse_point(&positional[start_consumed..])?;
         let consumed = start_consumed + end_consumed;
@@ -16705,7 +16705,7 @@ impl Command for RotateThreeDimensionalCommand {
         self.0.set(Some(default_degrees));
         let transform = command_rotation(axis_start, axis, angle_radians)?;
         let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Rotated {transformed} object(s) around a 3D axis by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees(),
