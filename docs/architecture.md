@@ -76,6 +76,11 @@ point phases. The transform session keeps the original source IDs when Object
 selection clears highlighting, passing them through an internal `Sources=`
 registry argument independently of the plane target.
 Both share document mutation and copy/group transactions with other affine commands.
+Move/Copy and Mirror use a shared rigid display-instance path in `viewport/scene`.
+Their prompt sessions retain the last valid map, while the viewport resolves it
+from the drafting cursor and reuses cached source samples, meshes, and normals.
+Previews never install geometry snapshots or history entries; see
+[display caching](viewport-caching.md) and [Move/Copy previews](commands/move-copy.md#live-previews).
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

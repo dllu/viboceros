@@ -1,4 +1,5 @@
 //! Mirror previews apply reflections to cached display samples, never the document.
+use super::object_preview::TransformedObjects;
 use super::*;
 use viboceros_command::mirror::MirrorPointPlane;
 use viboceros_geometry::AffineTransform3;
@@ -11,15 +12,6 @@ pub(crate) struct MirrorPreview<'a> {
     pub last_transform: Option<AffineTransform3>,
 }
 
-/// Only orthogonal reflections reach the renderer. Display meshes and wire
-/// samples stay shared; the renderer accounts for each geometry's face winding.
-#[derive(Clone, Copy, Debug)]
-pub(super) struct ReflectedObjects<'a> {
-    pub sources: &'a [ObjectId],
-    pub reference_sources: bool,
-    pub transform: AffineTransform3,
-}
-
 impl<'a> MirrorPreview<'a> {
     pub(super) fn resolve(
         self,
@@ -27,7 +19,7 @@ impl<'a> MirrorPreview<'a> {
         frame: Frame3,
         tolerance: Tolerance,
     ) -> (
-        Option<ReflectedObjects<'a>>,
+        Option<TransformedObjects<'a>>,
         Option<Option<AffineTransform3>>,
     ) {
         // Native Mirror retains its last valid shape at coincident or
@@ -40,11 +32,12 @@ impl<'a> MirrorPreview<'a> {
         });
         let transform = update.unwrap_or(self.last_transform);
         (
-            transform.map(|transform| ReflectedObjects {
-                sources: self.sources,
-                reference_sources: !self.copy
-                    || matches!(self.plane, MirrorPointPlane::ThreePoint { .. }),
-                transform,
+            transform.map(|transform| {
+                TransformedObjects::reflection(
+                    self.sources,
+                    !self.copy || matches!(self.plane, MirrorPointPlane::ThreePoint { .. }),
+                    transform,
+                )
             }),
             update,
         )

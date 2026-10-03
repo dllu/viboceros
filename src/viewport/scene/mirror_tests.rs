@@ -48,15 +48,11 @@ fn mirror_preview_reuses_samples_meshes_and_normals_across_mouse_moves_and_views
             }
             .resolve(Some(cursor), WorldPlane::Top.frame(), document.tolerance())
             .0;
-            let current = view.object_scene_with_reflection(rect(), &document, None, &[], preview);
+            let current = view.object_scene_with_transform(rect(), &document, None, &[], preview);
             let cached = view.cached_scene.borrow();
             let objects = &cached.as_ref().unwrap().key.objects;
             assert_eq!(objects.len(), ids.len() * 2);
-            for (index, original) in objects
-                .iter()
-                .filter(|o| o.reflection.is_none())
-                .enumerate()
-            {
+            for (index, original) in objects.iter().filter(|o| o.transform.is_none()).enumerate() {
                 let reflected = &objects[ids.len() + index];
                 assert!(Rc::ptr_eq(&original.geometry, &reflected.geometry));
                 assert!(!original.draw_faces);
@@ -78,7 +74,7 @@ fn mirror_preview_reuses_samples_meshes_and_normals_across_mouse_moves_and_views
             drop(cached);
             assert!(Arc::ptr_eq(
                 &current,
-                &view.object_scene_with_reflection(rect(), &document, None, &[], preview)
+                &view.object_scene_with_transform(rect(), &document, None, &[], preview)
             ));
         }
     }
@@ -119,16 +115,12 @@ fn mirror_preview_shaded_faces_keep_object_color_and_transform_normals() {
     let mut builder = GpuSceneBuilder::new();
     view.add_gpu_mesh_faces(&mut builder, &expected_mesh, Color32::from_rgb(200, 80, 60));
     let expected = builder.finish(&view, rect(), false);
-    let actual = view.object_scene_with_reflection(
+    let actual = view.object_scene_with_transform(
         rect(),
         &document,
         None,
         &[],
-        Some(ReflectedObjects {
-            sources: &[id],
-            reference_sources: true,
-            transform: map,
-        }),
+        Some(TransformedObjects::reflection(&[id], true, map)),
     );
     assert_eq!(actual.triangles.len(), 3); // Original faces are suppressed.
     for vertex in &actual.triangles {
@@ -170,20 +162,17 @@ fn mirror_preview_clipping_includes_reflected_bounds_and_restores_document_bound
         document.tolerance(),
     )
     .unwrap();
-    let preview = Some(ReflectedObjects {
-        sources: &[id],
-        reference_sources: true,
-        transform: map,
-    });
+    let sources = [id];
+    let preview = Some(TransformedObjects::reflection(&sources, true, map));
     view.refresh_clipping(&document, rect()).unwrap();
     let original = (view.frustum_near, view.frustum_far);
-    let before = view.object_scene_with_reflection(rect(), &document, None, &[], preview);
+    let before = view.object_scene_with_transform(rect(), &document, None, &[], preview);
     // Top looks down world Z: its encoded GPU depth is negative model Z.
     let reflected_depth = -before.points[1].position_size[2];
     assert!(reflected_depth > before.uniform.clip_depth[1]);
-    view.refresh_clipping_with_reflection(&document, rect(), preview)
+    view.refresh_clipping_with_transform(&document, rect(), preview)
         .unwrap();
-    let after = view.object_scene_with_reflection(rect(), &document, None, &[], preview);
+    let after = view.object_scene_with_transform(rect(), &document, None, &[], preview);
     assert_eq!(after.points.len(), 2);
     for point in &after.points {
         let depth = -point.position_size[2];
@@ -256,10 +245,10 @@ fn gpu_mirror_preview_renders_selected_reflections_source_wires_and_display_mode
                         WorldPlane::Top.frame(),
                         document.tolerance(),
                     );
-                    view.refresh_clipping_with_reflection(&document, rect, preview)
+                    view.refresh_clipping_with_transform(&document, rect, preview)
                         .unwrap();
                     let scene =
-                        view.object_scene_with_reflection(rect, &document, None, &[], preview);
+                        view.object_scene_with_transform(rect, &document, None, &[], preview);
                     let pixels = renderer.render_cached(&scene);
                     let pixel_at = |point| {
                         let pixel = view.project(point, rect).unwrap();

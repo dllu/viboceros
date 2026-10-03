@@ -41,6 +41,26 @@ Free mouse line picks use the closest point to the 3D viewing line, so they work
 with an edge-on CPlane and perspective views. Typed points and object snaps
 supply explicit 3D coordinates.
 
+## Live previews
+
+After accepting a base, moving the cursor previews the source geometry at the
+resolved destination, including snaps, completed point filters, Vertical,
+Normal, and Copy's repetition constraints. The preview uses the original
+sources and original base throughout a Copy session. Previously accepted
+copies remain ordinary document objects.
+
+Move leaves gray source wires; Copy leaves wires in the source colors. Target
+points and outlines use selection yellow. Shaded and Ghosted target faces keep
+their source colors. Normal temporarily highlights its reference without
+changing model selection. Source faces are suppressed during the preview.
+
+Hovering does not edit geometry or history. The last valid preview stays visible
+when the pointer leaves the viewports or a translation would overflow. Point
+filters retain that preview while waiting for their source pick. Clicking accepts
+the resolved destination; Escape removes the preview and keeps accepted copies.
+All views share cached source samples, tessellation, and normals; cursor motion
+stages transformed display instances without rebuilding kernel geometry.
+
 ## Move Normal
 
 At Move's base prompt, enter `Normal`, select a curve, surface, or polysurface,
@@ -105,21 +125,29 @@ SelLast, Undo, Redo, and command events.
 | [20 Normal input cases](../../tools/rhino_oracle/fixtures/move_normal_edges.json) | [Results](../../tools/rhino_oracle/observations/move_normal_edges.json) | Actual reference and base clicks in Top/Perspective, surface orientation, IgnoreTrims options. |
 | [8 Normal trim cases](../../tools/rhino_oracle/fixtures/move_normal_trims.json) | [Results](../../tools/rhino_oracle/observations/move_normal_trims.json) | IgnoreTrims on a trimmed curved surface; typed points outside the retained face; selection and history. |
 | [8 Normal default cases](../../tools/rhino_oracle/fixtures/move_normal_defaults.json) | [Results](../../tools/rhino_oracle/observations/move_normal_defaults.json) | Enter locks distance while the next point chooses direction; negative moves and zero defaults. |
+| [36 preview cases](../../tools/rhino_oracle/fixtures/translation_preview.json) | [Results and PNGs](../../tools/rhino_oracle/observations/translation_preview.json) | Pending source geometry, actual calibrated cursor inputs, Move/Copy source styling, three display modes, Vertical/Normal, repeated copies, and cancellation. |
 
 App comparisons use 1e-9 absolute coordinate tolerance, with 2e-8 for free curve
 mouse picks. Those locations are bounded screen-space minimizations; Rhino's
 circle pick also differs from the analytic ray reference by more than 1e-9.
 Raw observations are retained. The command registry also
 replays applicable full invocations independently of the point prompt.
+The preview captures compare point/curve coordinates and public B-rep vertices
+at 1e-9. Native shaded box bounds show small rounding beyond their vertex extrema,
+so that separate bounds comparison allows 5e-7.
 
-SubD normal references, SubCrv/subobject transforms, direct dragging/nudging, and live source
-geometry previews remain unimplemented. Native mouse/window source ordering has
+SubD normal references, SubCrv/subobject transforms, and direct dragging/nudging
+remain unimplemented. Native mouse/window source ordering has
 not been exhaustively measured.
 
 ```sh
 cargo test -p viboceros --bin viboceros move_copy
+cargo test -p viboceros --bin viboceros translation_preview
+cargo test -p viboceros --bin viboceros gpu_translation_preview -- --ignored --nocapture
 python3 -m unittest tools.rhino_oracle.test_transform_copy
+python3 -m unittest tools.rhino_oracle.test_translation_preview
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.transform_copy_capture tools/rhino_oracle/fixtures/translation.json --scheme VibocerosOracleMirrorPreview --timeout 300
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.translation_preview_input tools/rhino_oracle/fixtures/translation_preview.json --output /tmp/translation_preview.json --scheme VibocerosOracleMirrorPreview --timeout 300
 ```
 
 Published option descriptions: [Rhino Move help](https://docs.mcneel.com/rhino/8/help/en-us/commands/move.htm),

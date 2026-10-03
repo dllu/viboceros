@@ -12,9 +12,22 @@ pub(super) struct TranslationSession {
     pub(super) normal: Option<move_normal::MoveNormal>,
     pub(super) placement: Option<CopyPlacement>,
     pub(super) applied: bool,
+    preview: Option<viboceros_geometry::AffineTransform3>,
 }
 
 impl TranslationSession {
+    pub(super) fn preview(&self) -> Option<crate::viewport::TranslationPreview<'_>> {
+        Some(crate::viewport::TranslationPreview {
+            sources: &self.sources,
+            base: self.placement?.base(),
+            copy: self.copy,
+            reference: self
+                .normal
+                .as_ref()
+                .and_then(|normal| normal.target.map(|(id, _)| id)),
+            last_transform: self.preview,
+        })
+    }
     pub(super) fn set_base(&mut self, base: Point3) {
         self.placement = Some(CopyPlacement::new(base));
     }
@@ -90,6 +103,19 @@ pub(super) fn start_options(name: &str, arguments: &[&str]) -> Option<(bool, boo
 }
 
 impl VibocerosApp {
+    pub(super) fn update_translation_preview(
+        &mut self,
+        preview: Option<viboceros_geometry::AffineTransform3>,
+    ) -> bool {
+        let Some(session) = self.translation_session.as_mut() else {
+            return false;
+        };
+        if session.placement.is_none() || session.preview == preview {
+            return false;
+        }
+        session.preview = preview;
+        true
+    }
     pub(super) fn start_translation_session(
         &mut self,
         command: InteractiveCommand,
@@ -123,6 +149,7 @@ impl VibocerosApp {
             normal: None,
             placement: None,
             applied: false,
+            preview: None,
         });
         true
     }

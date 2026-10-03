@@ -12,11 +12,12 @@ from .group_picking import IdlePicker
 from .mirror_preview_probe import validate_request
 
 
-class MirrorPreviewPicker(IdlePicker):
-    def __init__(self, request):
-        validate_request(request)
+class CursorPreviewPicker(IdlePicker):
+    def __init__(self, request, family, validator):
+        validator(request)
         super().__init__()
-        self.cases = {'@mirror-preview:' + op['id']: op for op in request['operations']}
+        self.family=family
+        self.cases = {'@'+family+'-preview:' + op['id']: op for op in request['operations']}
         self.moved = {}
         self.degenerate = set()
         self.images = {}
@@ -27,13 +28,13 @@ class MirrorPreviewPicker(IdlePicker):
 
     def send_input(self, name, x, y, window):
         if name not in self.cases:
-            raise OracleProtocolError('unexpected Mirror preview marker')
+            raise OracleProtocolError('unexpected '+self.family+' preview marker')
         case = self.cases[name]
         if name in self.images:
             previous, px, py, _ = self.moved[name]
             if (window, x, y) != (previous, px, py):
                 raise OracleProtocolError('owned preview target changed before final input')
-            ready = self.job / ('mirror-preview-ready-' + case['id'] + '.json')
+            ready = self.job / (self.family+'-preview-ready-' + case['id'] + '.json')
             if not ready.exists():
                 return False
             if json.loads(ready.read_text()) != case['id']:
@@ -41,7 +42,7 @@ class MirrorPreviewPicker(IdlePicker):
             action = ['click', '1'] if case['finish'] == 'Click' else ['key', '--clearmodifiers', 'Escape']
             subprocess.run(['xdotool', 'windowactivate', '--sync', window] + action, check=True, timeout=10)
             return True
-        metadata = json.loads((self.job / ('mirror-preview-' + case['id'] + '.json')).read_text())
+        metadata = json.loads((self.job / (self.family+'-preview-' + case['id'] + '.json')).read_text())
         if name not in self.moved:
             mx, my = metadata['valid_screen'] if case.get('cursor') == 'Degenerate' else (int(x), int(y))
             subprocess.run(['xdotool', 'windowactivate', '--sync', window,
@@ -70,22 +71,27 @@ class MirrorPreviewPicker(IdlePicker):
         data = buffer.getvalue()
         self.images[name] = dict(png_base64=base64.b64encode(data).decode('ascii'),
                                  sha256=hashlib.sha256(data).hexdigest(), size=list(bitmap.size))
-        captured = self.job / ('mirror-preview-captured-' + case['id'] + '.json')
+        captured = self.job / (self.family+'-preview-captured-' + case['id'] + '.json')
         temporary = captured.with_suffix('.json.tmp')
         temporary.write_text(json.dumps(case['id']), encoding='utf-8')
         os.replace(temporary, captured)
         return False
 
     def record_diagnostics(self, response):
-        if ['@mirror-preview:' + row['id'] for row in response['results']] != list(self.cases):
-            raise OracleProtocolError('Mirror preview response order differs')
+        if ['@'+self.family+'-preview:' + row['id'] for row in response['results']] != list(self.cases):
+            raise OracleProtocolError(self.family+' preview response order differs')
         for row in response['results']:
-            name = '@mirror-preview:' + row['id']
+            name = '@'+self.family+'-preview:' + row['id']
             if (name not in self.seen or name not in self.images or not isinstance(row['value'], dict)
                     or 'framebuffer' in row['value']):
-                raise OracleProtocolError('Mirror response lacks owned preview capture')
+                raise OracleProtocolError(self.family+' response lacks owned preview capture')
         for row in response['results']:
-            row['value']['framebuffer'] = self.images['@mirror-preview:' + row['id']]
+            row['value']['framebuffer'] = self.images['@'+self.family+'-preview:' + row['id']]
+
+
+class MirrorPreviewPicker(CursorPreviewPicker):
+    def __init__(self,request):
+        super().__init__(request,'mirror',validate_request)
 
 
 def main():

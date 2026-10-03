@@ -42,6 +42,17 @@ Metadata, object iteration, and per-object cache lookup remain work on every rep
 Other costs include per-primitive camera/depth preparation and uploads for a moving
 view, triangle sorting in ghosted mode, tessellation memory, and four prepared
 scenes. Geometry stays alive while history, a reader, or a cached scene owns it.
+
+[Move/Copy](commands/move-copy.md#live-previews) and
+[Mirror](commands/mirror.md) preview rigid instances of that same cached geometry.
+Original wires and transformed targets share samples, meshes, and smooth normals
+across all four views. The scene key includes the transform and source styling;
+an unchanged preview also reuses GPU buffers. Preview bounds participate in clip
+refresh without entering view history. Completion or cancellation restores the
+document's display and clipping. Translation preserves normals; reflection
+handles the existing mesh/surface versus B-rep orientation policy. General
+nonuniform scale and shear previews would need different normal handling.
+
 This is not an asynchronous mesher or a camera-uniform-only renderer:
 current large-coordinate precision guarantees require view-dependent f64
 rebasing and depth encoding before f32 GPU submission.
@@ -106,3 +117,11 @@ tests. The [public pick captures](oracle.md#selection-at-the-depth-planes)
 record 1,296 paired primitive/document results on private Xvfb. Formatting and
 workspace all-target Clippy passed with existing warnings; GPU code and the
 previous offscreen verification remain unchanged in this selection change.
+
+Rigid-preview follow-up: 843 ordinary application tests and 597 Python tests
+passed, with 36 new Move/Copy captures taken entirely in private Xvfb.
+Both explicit preview GPU tests passed on NVIDIA GB10/Vulkan, driver 610.57.04,
+covering Mirror and translation in three display modes and both linear and sRGB
+targets. Formatting and application all-target Clippy passed with existing
+warnings. Cache sharing, unchanged-frame GPU reuse, normals, clipping restoration,
+and pending model state are covered; no new performance comparison is claimed.

@@ -1,0 +1,330 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Top_Wireframe_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Perspective_Wireframe_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Vertical_Front_Wireframe_Click",
+      "command": "Move",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Top_Wireframe_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Perspective_Wireframe_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Vertical_Front_Wireframe_Click",
+      "command": "Copy",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Repeat_Top_Wireframe_Click",
+      "command": "Copy",
+      "placement": "Repeat",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_FromLastPoint_Top_Wireframe_Click",
+      "command": "Copy",
+      "placement": "FromLastPoint",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDistance_Top_Wireframe_Click",
+      "command": "Copy",
+      "placement": "UseLastDistance",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDirection_Top_Wireframe_Click",
+      "command": "Copy",
+      "placement": "UseLastDirection",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Normal_Top_Wireframe_Click",
+      "command": "Move",
+      "placement": "Normal",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Top_Shaded_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Perspective_Shaded_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Vertical_Front_Shaded_Click",
+      "command": "Move",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Top_Shaded_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Perspective_Shaded_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Vertical_Front_Shaded_Click",
+      "command": "Copy",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Repeat_Top_Shaded_Click",
+      "command": "Copy",
+      "placement": "Repeat",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_FromLastPoint_Top_Shaded_Click",
+      "command": "Copy",
+      "placement": "FromLastPoint",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDistance_Top_Shaded_Click",
+      "command": "Copy",
+      "placement": "UseLastDistance",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDirection_Top_Shaded_Click",
+      "command": "Copy",
+      "placement": "UseLastDirection",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Normal_Top_Shaded_Click",
+      "command": "Move",
+      "placement": "Normal",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Top_Ghosted_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Perspective_Ghosted_Click",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Vertical_Front_Ghosted_Click",
+      "command": "Move",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Top_Ghosted_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Perspective_Ghosted_Click",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Perspective",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Vertical_Front_Ghosted_Click",
+      "command": "Copy",
+      "placement": "Vertical",
+      "view": "Front",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Repeat_Top_Ghosted_Click",
+      "command": "Copy",
+      "placement": "Repeat",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_FromLastPoint_Top_Ghosted_Click",
+      "command": "Copy",
+      "placement": "FromLastPoint",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDistance_Top_Ghosted_Click",
+      "command": "Copy",
+      "placement": "UseLastDistance",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_UseLastDirection_Top_Ghosted_Click",
+      "command": "Copy",
+      "placement": "UseLastDirection",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Normal_Top_Ghosted_Click",
+      "command": "Move",
+      "placement": "Normal",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Click"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Move_Free_Top_Shaded_Cancel",
+      "command": "Move",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Cancel"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Free_Top_Shaded_Cancel",
+      "command": "Copy",
+      "placement": "Free",
+      "view": "Top",
+      "display_mode": "Shaded",
+      "finish": "Cancel"
+    },
+    {
+      "op": "translation_preview",
+      "id": "Copy_Repeat_Top_Ghosted_Cancel",
+      "command": "Copy",
+      "placement": "Repeat",
+      "view": "Top",
+      "display_mode": "Ghosted",
+      "finish": "Cancel"
+    }
+  ]
+}

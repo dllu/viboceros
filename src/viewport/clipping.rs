@@ -381,19 +381,19 @@ impl Viewport {
         document: &Document,
         rect: Rect,
     ) -> Result<bool, &'static str> {
-        self.refresh_clipping_with_reflection(document, rect, None)
+        self.refresh_clipping_with_transform(document, rect, None)
     }
 
-    pub(super) fn refresh_clipping_with_reflection(
+    pub(super) fn refresh_clipping_with_transform(
         &mut self,
         document: &Document,
         rect: Rect,
-        reflection: Option<super::mirror_preview::ReflectedObjects<'_>>,
+        transform: Option<super::object_preview::TransformedObjects<'_>>,
     ) -> Result<bool, &'static str> {
         let mut bounds = self.visible_document_bounds(document);
-        if let Some(reflection) = reflection {
+        if let Some(transform) = transform {
             let mut cache = self.display_cache.borrow_mut();
-            for id in reflection.sources {
+            for id in transform.sources {
                 let Some(object) = document.object(*id).filter(|object| {
                     object.attributes().is_visible()
                         && document
@@ -414,17 +414,17 @@ impl Viewport {
                                 max[axis]
                             }
                         });
-                        reflection
+                        transform
                             .transform
                             .transform_point(Point3::try_from(coordinates).unwrap())
                     })
                     .collect::<Result<Vec<_>, _>>();
                 if let Ok(corners) = corners
-                    && let Ok(reflected) = BoundingBox3::from_points(corners)
-                    && self.gpu_position(reflected.min()).is_some()
-                    && self.gpu_position(reflected.max()).is_some()
+                    && let Ok(transformed) = BoundingBox3::from_points(corners)
+                    && self.gpu_position(transformed.min()).is_some()
+                    && self.gpu_position(transformed.max()).is_some()
                 {
-                    bounds = Some(bounds.map_or(reflected, |b| b.union(reflected).unwrap()));
+                    bounds = Some(bounds.map_or(transformed, |b| b.union(transformed).unwrap()));
                 }
             }
         }
