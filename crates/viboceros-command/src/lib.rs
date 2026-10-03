@@ -170,6 +170,7 @@ pub mod interface;
 pub mod mirror;
 mod plane_primitives;
 mod plane_transforms;
+pub mod point_transform;
 use mirror::MirrorCommand;
 pub mod set_point;
 pub mod set_view;
@@ -16546,11 +16547,12 @@ impl Command for ScaleOneDimensionalCommand {
                 reference_consumed + target_consumed,
                 SCALE_1D_USAGE,
             )?;
-            let factor = scale_factor_from_reference_allow_zero(
+            let factor = scale1d_factor_from_reference(
                 origin,
                 reference,
                 target,
                 document.tolerance(),
+                false,
             )?;
             (reference, factor)
         };
@@ -17332,6 +17334,26 @@ fn parse_transform_copy_arguments<'a>(
         }
     }
     Ok((positional, copy))
+}
+
+/// Point targets are projected onto Scale1D's reference axis. The side of
+/// the base does not change the sign; signed scaling uses a numeric factor.
+fn scale1d_factor_from_reference(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+    allow_zero: bool,
+) -> Result<Real, CommandError> {
+    let reference_vector = center.vector_to(reference)?;
+    let direction = reference_vector.normalized(tolerance)?;
+    let factor =
+        center.vector_to(target)?.dot(direction.as_vector())?.abs() / reference_vector.length()?;
+    if factor.is_finite() && (factor > 0. || allow_zero && factor == 0.) {
+        Ok(factor)
+    } else {
+        Err(CommandError::InvalidScaleFactor(format!("{factor}")))
+    }
 }
 
 fn scale_factor_from_reference(

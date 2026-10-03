@@ -6753,6 +6753,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'translation_preview':
         from translation_preview_probe import run
         return run(operation,globals())
+    if kind == 'affine_preview':
+        from affine_preview_probe import run
+        return run(operation,globals())
     if kind == "control_point_prompt":
         return _control_point_prompt(operation)
     if kind == "interpolation_point_prompt":

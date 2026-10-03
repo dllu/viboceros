@@ -13,6 +13,59 @@ pub(super) struct TransformSession {
 }
 
 impl TransformSession {
+    pub(super) fn affine_preview(
+        &self,
+        command: Option<InteractiveCommand>,
+        plane: Frame3,
+    ) -> Option<crate::viewport::AffinePreview<'_>> {
+        use viboceros_command::point_transform::PointTransform;
+        let definition = match command? {
+            InteractiveCommand::Scale {
+                kind,
+                center: Some(center),
+                reference: Some(reference),
+            } => match kind {
+                InteractiveScaleKind::Uniform => PointTransform::Scale { center, reference },
+                InteractiveScaleKind::OneDimensional => {
+                    PointTransform::Scale1D { center, reference }
+                }
+                InteractiveScaleKind::TwoDimensional => {
+                    PointTransform::Scale2D { center, reference }
+                }
+            },
+            InteractiveCommand::Scale {
+                kind: InteractiveScaleKind::OneDimensional,
+                center: Some(center),
+                reference: None,
+            } => PointTransform::Scale1DDirection {
+                center,
+                factor: self.factor?,
+            },
+            InteractiveCommand::Rotate {
+                center: Some(center),
+                reference: Some(reference),
+            } => PointTransform::Rotate { center, reference },
+            InteractiveCommand::Rotate3D {
+                points: [Some(start), Some(end), Some(reference)],
+            } => PointTransform::Rotate3D {
+                start,
+                end,
+                reference,
+            },
+            InteractiveCommand::Shear {
+                origin: Some(origin),
+                reference: Some(reference),
+            } => PointTransform::Shear { origin, reference },
+            _ => return None,
+        };
+        Some(crate::viewport::AffinePreview {
+            sources: &self.sources,
+            definition,
+            frame: (!matches!(definition, PointTransform::Scale2D { .. })).then_some(plane),
+            copy: self.copy,
+            last_transform: self.preview,
+        })
+    }
     pub(super) fn mirror_preview(
         &self,
         command: Option<InteractiveCommand>,
@@ -87,6 +140,28 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
 }
 
 impl VibocerosApp {
+    pub(super) fn affine_preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
+        self.transform_session.as_ref()?.affine_preview(
+            self.active_command,
+            self.drafting_plane
+                .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane()),
+        )
+    }
+
+    pub(super) fn update_affine_preview(
+        &mut self,
+        preview: Option<viboceros_geometry::AffineTransform3>,
+    ) -> bool {
+        if self.affine_preview().is_none() {
+            return false;
+        }
+        let session = self.transform_session.as_mut().unwrap();
+        if session.preview == preview {
+            return false;
+        }
+        session.preview = preview;
+        true
+    }
     pub(super) fn update_mirror_preview(
         &mut self,
         preview: Option<viboceros_geometry::AffineTransform3>,
@@ -168,7 +243,15 @@ impl VibocerosApp {
             display_input.clone()
         };
         let context = viboceros_command::CommandContext {
-            construction_plane: self.viewports[self.active_viewport].construction_plane(),
+            construction_plane: if matches!(
+                continuation,
+                InteractiveCommand::Rotate { .. } | InteractiveCommand::Shear { .. }
+            ) {
+                self.drafting_plane
+                    .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane())
+            } else {
+                self.viewports[self.active_viewport].construction_plane()
+            },
         };
         match self.commands.execute_in_history_group(
             &mut self.document,

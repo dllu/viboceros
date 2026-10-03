@@ -142,6 +142,21 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let point = if !typed {
+            match self
+                .affine_preview()
+                .and_then(|p| p.definition.mouse_line(self.document.tolerance()))
+                .map_or(Ok(point), |line| line.resolve(point))
+            {
+                Ok(point) => point,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            }
+        } else {
+            point
+        };
         self.accept_drafting_point(point)
     }
 

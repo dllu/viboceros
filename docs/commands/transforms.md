@@ -24,6 +24,8 @@ Scale, Scale1D, Scale2D, Rotate, Rotate3D, and Shear support
 [repeated interactive copies](transform-copy.md): edit `Copy=Yes` at the prompt,
 keep entering targets, and finish with Enter or Escape. Accepted edits share
 one Undo entry. Mirror supports Copy editing and finishes after one result.
+Final point prompts provide [live object previews](affine-previews.md) in all
+viewports, including numeric Scale1D direction picks.
 
 `Move` and `Copy` support [automatic bases, Vertical, and repeated Copy
 placements](move-copy.md). Copy retains its sources as selection and leaves new

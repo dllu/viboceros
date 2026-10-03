@@ -8252,6 +8252,18 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|session| session.preview())
             .filter(|_| model_input_active && self.plane_prompt.is_none());
+        let affine_preview = self
+            .transform_session
+            .as_ref()
+            .and_then(|session| {
+                session.affine_preview(
+                    self.active_command,
+                    self.drafting_plane.unwrap_or_else(|| {
+                        self.viewports[self.active_viewport].construction_plane()
+                    }),
+                )
+            })
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let insert_surface_pick = model_input_active
             && matches!(
                 self.active_command,
@@ -8591,6 +8603,7 @@ impl eframe::App for VibocerosApp {
                             preview_curve: preview_curve.as_deref(),
                             mirror_preview,
                             translation_preview,
+                            affine_preview,
                             face_pick,
                             component_preselection,
                             component_pick,
@@ -8664,6 +8677,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(preview) = output.translation_preview
                 && self.update_translation_preview(preview)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(preview) = output.affine_preview
+                && self.update_affine_preview(preview)
             {
                 ui.ctx().request_repaint();
             }
@@ -8744,6 +8762,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod affine_preview;
     mod align;
     mod angle;
     mod area;
@@ -12435,11 +12454,16 @@ mod tests {
         assert_eq!(app.document.undo_label(), Some("Scale"));
         app.document.undo().unwrap();
 
+        let scale1d_history_before = app.document.undo_label().map(str::to_owned);
         assert!(app.try_start_interactive_command("Scale1D"));
         app.accept_drafting_point(point(0.0, 0.0, 0.0));
         app.accept_drafting_point(point(1.0, 0.0, 0.0));
-        app.accept_drafting_point(point(0.0, 0.0, 0.0));
-        assert_eq!(position(&app), point(0.0, 1.0, 0.0));
+        // Native picked zero targets are rejected; numeric zero factors remain supported.
+        assert!(!app.accept_drafting_point(point(0.0, 0.0, 0.0)));
+        assert_eq!(position(&app), point(2.0, 1.0, 0.0));
+        assert_eq!(app.document.undo_label(), scale1d_history_before.as_deref());
+        assert!(app.accept_drafting_point(point(3.0, 5.0, 0.0)));
+        assert_eq!(position(&app), point(6.0, 1.0, 0.0));
         assert_eq!(app.document.undo_label(), Some("Scale1D"));
         app.document.undo().unwrap();
 

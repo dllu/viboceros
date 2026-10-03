@@ -159,10 +159,6 @@ impl Command for ShearCommand {
         let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;
         let consumed = origin_consumed + reference_consumed;
         let remaining = &positional[consumed..];
-        let reference_vector = origin.vector_to(reference)?;
-        let reference_unit = reference_vector
-            .normalized(document.tolerance())?
-            .as_vector();
         let plane = context.construction_plane;
         let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
             parse_finite_real(remaining[0])?.to_radians()
@@ -172,42 +168,13 @@ impl Command for ShearCommand {
             // Shear's picked angle is spatial; its sign comes from the
             // construction-plane normal. atan2 avoids acos's near-parallel
             // loss of precision, while retaining the measured 3D angle.
-            let target_unit = origin
-                .vector_to(target)?
-                .normalized(document.tolerance())?
-                .as_vector();
-            let cross = reference_unit.cross(target_unit)?;
-            let angle = cross
-                .length()?
-                .atan2(reference_unit.dot(target_unit)?.clamp(-1.0, 1.0));
-            // Parallel projected references use the positive branch. Ignore
-            // only unit-vector roundoff here: a tiny spurious negative sign
-            // must not reverse a large spatial shear angle.
-            if projected_turn_sign(plane, reference_unit, target_unit)? < 0.0 {
-                -angle
-            } else {
-                angle
-            }
+            shear_reference_angle(plane, origin, reference, target, document.tolerance())?
         };
-        let reference_direction = plane_vector(context.construction_plane, origin, reference)?
-            .normalized(document.tolerance())?;
-        let shear_direction = context
-            .construction_plane
-            .z_axis()
-            .as_vector()
-            .cross(reference_direction.as_vector())?
-            .normalized_nonzero()?;
-        // Rhino's reference direction is unitized before its projection.
-        // Its horizontal length is therefore the required obliquity scale.
-        let in_plane = reference_unit
-            .dot(plane.x_axis().as_vector())?
-            .hypot(reference_unit.dot(plane.y_axis().as_vector())?);
-        let factor = angle_radians.tan() / in_plane;
-        let transform = AffineTransform3::try_shear(
+        let transform = shear_map(
+            plane,
             origin,
-            reference_direction,
-            shear_direction,
-            factor,
+            reference,
+            angle_radians,
             document.tolerance(),
         )?;
         let (transformed, copied) =
@@ -263,7 +230,7 @@ pub(super) fn plane_vector(
     zero.vector_to(plane.with_origin(zero).point_at([x, y, 0.0])?)
 }
 
-fn plane_angle(
+pub(super) fn plane_angle(
     plane: Frame3,
     center: Point3,
     reference: Point3,
@@ -283,6 +250,64 @@ fn plane_angle(
         .dot(from.cross(to)?)?
         .clamp(-1.0, 1.0);
     Ok(sine.atan2(cosine))
+}
+
+pub(super) fn shear_reference_angle(
+    plane: Frame3,
+    origin: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, GeometryError> {
+    let reference_unit = origin
+        .vector_to(reference)?
+        .normalized(tolerance)?
+        .as_vector();
+    let target_unit = origin.vector_to(target)?.normalized(tolerance)?.as_vector();
+    let cross = reference_unit.cross(target_unit)?;
+    let angle = cross
+        .length()?
+        .atan2(reference_unit.dot(target_unit)?.clamp(-1., 1.));
+    // Nearly parallel projected directions use the positive branch; the
+    // sign predicate rejects only uncertainty from unit-vector rounding.
+    Ok(
+        if projected_turn_sign(plane, reference_unit, target_unit)? < 0. {
+            -angle
+        } else {
+            angle
+        },
+    )
+}
+
+pub(super) fn shear_map(
+    plane: Frame3,
+    origin: Point3,
+    reference: Point3,
+    angle: Real,
+    tolerance: Tolerance,
+) -> Result<AffineTransform3, GeometryError> {
+    let reference_unit = origin
+        .vector_to(reference)?
+        .normalized(tolerance)?
+        .as_vector();
+    let reference_direction = plane_vector(plane, origin, reference)?.normalized(tolerance)?;
+    let shear_direction = plane
+        .z_axis()
+        .as_vector()
+        .cross(reference_direction.as_vector())?
+        .normalized_nonzero()?;
+    // Unitize the spatial reference before projection: its planar length
+    // supplies the measured obliquity correction.
+    let in_plane = reference_unit
+        .dot(plane.x_axis().as_vector())?
+        .hypot(reference_unit.dot(plane.y_axis().as_vector())?);
+    AffineTransform3::try_shear(
+        origin,
+        reference_direction,
+        shear_direction,
+        angle.tan() / in_plane,
+        tolerance,
+    )
 }
 
 fn projected_turn_sign(plane: Frame3, from: Vector3, to: Vector3) -> Result<Real, GeometryError> {

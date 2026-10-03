@@ -225,6 +225,10 @@ class OracleClient:
             from .translation_preview_input import TranslationPreviewPicker
             if self.settings_scheme is None:raise OracleProtocolError('translation previews require a private scheme')
             interaction=TranslationPreviewPicker(request)
+        if any(op.get('op') == 'affine_preview' for op in request.get('operations',[])):
+            from .affine_preview_input import AffinePreviewPicker
+            if self.settings_scheme is None:raise OracleProtocolError('affine previews require a private scheme')
+            interaction=AffinePreviewPicker(request)
         if any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
             from .transform_copy_capture import validate_request
             if self.settings_scheme is None:
@@ -490,6 +494,9 @@ class OracleClient:
             if any(op.get('op') == 'translation_preview' for op in request.get('operations',[])):
                 for name in ('translation_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'affine_preview' for op in request.get('operations',[])):
+                for name in ('affine_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get("op") == "mesh_snap_settings" or "snap_to_meshes" in op for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("mesh_snap_settings_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -668,7 +675,7 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
-        if any(op.get('op') in ('mirror_preview','translation_preview') for op in request.get('operations', [])):
+        if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview') for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)

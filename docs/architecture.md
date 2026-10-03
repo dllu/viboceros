@@ -76,11 +76,15 @@ point phases. The transform session keeps the original source IDs when Object
 selection clears highlighting, passing them through an internal `Sources=`
 registry argument independently of the plane target.
 Both share document mutation and copy/group transactions with other affine commands.
-Move/Copy and Mirror use a shared rigid display-instance path in `viewport/scene`.
-Their prompt sessions retain the last valid map, while the viewport resolves it
-from the drafting cursor and reuses cached source samples, meshes, and normals.
-Previews never install geometry snapshots or history entries; see
-[display caching](viewport-caching.md) and [Move/Copy previews](commands/move-copy.md#live-previews).
+Move/Copy, Mirror, and Scale/Rotate/Shear use a shared affine display-instance
+path in `viewport/scene`. The command crate's `point_transform` module resolves
+point-prompt maps without editing the document or command defaults. Prompt
+sessions keep the displayed map; the viewport resolves cursor constraints and
+reuses cached source samples, meshes, and normals. A prepared kernel cofactor
+map supplies normals under nonuniform scaling, shear, and reflection. Previews
+never install geometry snapshots or history entries; see
+[display caching](viewport-caching.md), [Move/Copy previews](commands/move-copy.md#live-previews),
+and [affine previews](commands/affine-previews.md).
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

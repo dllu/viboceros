@@ -1,5 +1,7 @@
 use nalgebra::Matrix3;
+mod normal;
 mod orientation;
+pub use normal::AffineNormalTransform3;
 
 use crate::{Frame3, GeometryError, Plane, Point3, Real, UnitVector3, Vector3, require_finite};
 
@@ -294,7 +296,7 @@ impl AffineTransform3 {
 
     /// Returns whether the linear part reverses orientation. Singular maps do
     /// not have a well-defined orientation and are rejected.
-    pub(crate) fn orientation_reversing(self) -> Result<bool, GeometryError> {
+    pub fn orientation_reversing(self) -> Result<bool, GeometryError> {
         match orientation::determinant_sign(self.linear_rows()) {
             std::cmp::Ordering::Less => Ok(true),
             std::cmp::Ordering::Greater => Ok(false),

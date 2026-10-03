@@ -7,13 +7,14 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use viboceros_document::ColorRgb;
-use viboceros_geometry::AffineTransform3;
+use viboceros_geometry::{AffineNormalTransform3, AffineTransform3};
 
 const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
 
 #[derive(Clone, Copy)]
-struct RigidMeshTransform {
+struct AffineMeshTransform {
     transform: AffineTransform3,
+    normals: AffineNormalTransform3,
     reverse_normals: bool,
 }
 
@@ -395,6 +396,8 @@ impl Viewport {
             return Arc::clone(&previous.scene);
         }
         let mut scene = GpuSceneBuilder::new();
+        let normal_transform =
+            transform.map(|preview| AffineNormalTransform3::new(preview.transform));
         for object in &key.objects {
             let display = &object.geometry;
             match &*display.geometry {
@@ -442,12 +445,13 @@ impl Viewport {
                             display.normals(),
                             object.face_color,
                             object.face_member_colors_enabled,
-                            object.transform.map(|transform| RigidMeshTransform {
+                            object.transform.map(|transform| AffineMeshTransform {
                                 transform,
+                                normals: normal_transform.unwrap(),
                                 // Raw meshes/surfaces keep face/parameter
                                 // order. B-reps reverse face orientation.
                                 reverse_normals: object.reversing
-                                    && !matches!(&*display.geometry, Geometry::Brep(_)),
+                                    && matches!(&*display.geometry, Geometry::Brep(_)),
                             }),
                         );
                     }
@@ -578,7 +582,7 @@ impl Viewport {
         corner_normals: &[[NaVector3<Real>; 3]],
         color: Color32,
         member_colors_enabled: bool,
-        transform: Option<RigidMeshTransform>,
+        transform: Option<AffineMeshTransform>,
     ) {
         let face_color = if self.display_mode == DisplayMode::Ghosted {
             color_with_alpha(color, 35)
@@ -599,13 +603,16 @@ impl Viewport {
                 };
                 let [Ok(na), Ok(nb), Ok(nc)] = normals.map(|normal| {
                     transform
-                        .transform
-                        .transform_vector(Vector3::try_new(normal.x, normal.y, normal.z)?)
+                        .normals
+                        .transform_normal(Vector3::try_new(normal.x, normal.y, normal.z)?)
                 }) else {
                     continue;
                 };
                 points = [a, b, c];
-                normals = [na, nb, nc].map(|n| NaVector3::new(n.x(), n.y(), n.z()));
+                normals = [na, nb, nc].map(|n| {
+                    let n = n.as_vector();
+                    NaVector3::new(n.x(), n.y(), n.z())
+                });
                 if transform.reverse_normals {
                     normals = normals.map(|n| -n);
                 }
@@ -945,3 +952,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod affine_tests;

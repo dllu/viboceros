@@ -1,0 +1,1528 @@
+{
+  "results": [
+    {
+      "value": {
+        "succeeded": true,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.5,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <1> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <1> ( Copy=No  Rigid=No ): w4,0,0\nSecond reference point ( Copy=No  Rigid=No ): w2,5,0\nCommand: _Cancel",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                0.5,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-0",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "succeeded": true,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.5,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <0.5> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <0.5> ( Copy=No  Rigid=No ): w4,0,0\nSecond reference point ( Copy=No  Rigid=No ): w-2,5,0\nCommand: _Cancel",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                0.5,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-1",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "succeeded": true,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.52,
+                    0.0,
+                    -0.23999999999999996
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    -0.23999999999999996,
+                    0.0,
+                    0.8799999999999999
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <0.5> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <0.5> ( Copy=No  Rigid=No ): w4,0,2\nSecond reference point ( Copy=No  Rigid=No ): w2,5,0\nCommand: _Cancel",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                0.52,
+                0.0,
+                -0.23999999999999996
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                -0.23999999999999996,
+                0.0,
+                0.8799999999999999
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-2",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "succeeded": true,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.84,
+                    0.0,
+                    -0.07999999999999996
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    -0.07999999999999996,
+                    0.0,
+                    0.96
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <0.4> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <0.4> ( Copy=No  Rigid=No ): w4,0,2\nSecond reference point ( Copy=No  Rigid=No ): w-2,5,-4\nCommand: _Cancel",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                0.84,
+                0.0,
+                -0.07999999999999996
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                -0.07999999999999996,
+                0.0,
+                0.96
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-3",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "succeeded": false,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <0.8> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <0.8> ( Copy=No  Rigid=No ): w4,0,0\nSecond reference point ( Copy=No  Rigid=No ): w0,0,0",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-4",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "succeeded": false,
+        "events": [
+          {
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-0",
+                  "source": 0
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    11,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-1",
+                  "source": 1
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    12,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-2",
+                  "source": 2
+                },
+                {
+                  "groups": [],
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "color_source": "ColorFromObject",
+                  "current_layer": true,
+                  "color": [
+                    13,
+                    30,
+                    50
+                  ],
+                  "selected": true,
+                  "name": "source-3",
+                  "source": 3
+                }
+              ]
+            },
+            "name": "Scale1D",
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Scale1D\nBase point. Press Enter for automatic. ( Copy=No  Rigid=No ): w0,0,0\nScale factor or first reference point <0.8> ( Copy=No  Rigid=No ): _Copy=_No\nScale factor or first reference point <0.8> ( Copy=No  Rigid=No ): w4,0,2\nSecond reference point ( Copy=No  Rigid=No ): w0,0,0",
+        "undo": null,
+        "redo": null,
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "group_names": [],
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-0",
+              "source": 0
+            },
+            {
+              "groups": [],
+              "point": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                11,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-1",
+              "source": 1
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                12,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-2",
+              "source": 2
+            },
+            {
+              "groups": [],
+              "point": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "color_source": "ColorFromObject",
+              "current_layer": true,
+              "color": [
+                13,
+                30,
+                50
+              ],
+              "selected": true,
+              "name": "source-3",
+              "source": 3
+            }
+          ]
+        },
+        "last": null
+      },
+      "id": "scale1d-projection-5",
+      "elapsed_ns": 0
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino"
+}

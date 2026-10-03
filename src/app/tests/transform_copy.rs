@@ -121,6 +121,18 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
 }
 
 #[test]
+fn scale1d_typed_projection_and_rejected_zero_targets_match_six_native_captures() {
+    for invocation in [Invocation::Prompt, Invocation::Registry] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/scale1d_projection.json"),
+            include_str!("../../../tools/rhino_oracle/observations/scale1d_projection.json"),
+            6,
+            invocation,
+        );
+    }
+}
+
+#[test]
 fn move_copy_placement_selection_order_options_and_history_match_native() {
     for invocation in [Invocation::Prompt, Invocation::TranslationRegistry] {
         replay_native(
@@ -1162,9 +1174,12 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                 let context = viboceros_command::CommandContext {
                     construction_plane: app.viewports[app.active_viewport].construction_plane(),
                 };
-                app.commands
-                    .execute_in_context(&mut app.document, &input, context)
-                    .unwrap();
+                let result = app
+                    .commands
+                    .execute_in_context(&mut app.document, &input, context);
+                if let Err(error) = result {
+                    assert_eq!(expected["succeeded"], false, "{label}: {error}");
+                }
             }
         }
         assert!(
@@ -1186,7 +1201,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             compare(snapshot(&app, &sources), "undo", &mut failures);
             enter(&mut app, "Redo");
             compare(snapshot(&app, &sources), "redo", &mut failures);
-        } else {
+        } else if operation["undo_redo"] == true {
             assert!(
                 app.document.undo_label() == Some("Transform source setup"),
                 "{label}: canceled or identity command recorded history"

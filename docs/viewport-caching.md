@@ -43,15 +43,19 @@ Other costs include per-primitive camera/depth preparation and uploads for a mov
 view, triangle sorting in ghosted mode, tessellation memory, and four prepared
 scenes. Geometry stays alive while history, a reader, or a cached scene owns it.
 
-[Move/Copy](commands/move-copy.md#live-previews) and
-[Mirror](commands/mirror.md) preview rigid instances of that same cached geometry.
-Original wires and transformed targets share samples, meshes, and smooth normals
-across all four views. The scene key includes the transform and source styling;
-an unchanged preview also reuses GPU buffers. Preview bounds participate in clip
-refresh without entering view history. Completion or cancellation restores the
-document's display and clipping. Translation preserves normals; reflection
-handles the existing mesh/surface versus B-rep orientation policy. General
-nonuniform scale and shear previews would need different normal handling.
+[Move/Copy](commands/move-copy.md#live-previews), [Mirror](commands/mirror.md),
+and [Scale/Rotate/Shear](commands/affine-previews.md) preview affine instances of
+that same cached geometry. Original wires and transformed targets share samples,
+meshes, and smooth normals across all four views. The scene key includes the
+transform and source styling; an unchanged preview also reuses GPU buffers.
+Preview bounds participate in clip refresh without entering view history.
+Completion or cancellation restores the document's display and clipping.
+A prepared cofactor map transforms cached normals under nonuniform scale, shear,
+and reflection, including the mesh/surface versus B-rep orientation policy.
+Exact rational minors avoid overflow, underflow, and cancellation for extreme
+coefficients; ordinary per-corner evaluation uses bounded floating-point products.
+Near-null directions use an exact fallback. Collapsed normals omit their faces.
+Cached smoothing groups remain those of the source tessellation during deformation.
 
 This is not an asynchronous mesher or a camera-uniform-only renderer:
 current large-coordinate precision guarantees require view-dependent f64

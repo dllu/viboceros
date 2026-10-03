@@ -36,7 +36,9 @@ use viboceros_drafting::TrackAxis;
 mod display_cache;
 mod mirror_preview;
 pub(crate) use mirror_preview::MirrorPreview;
+pub(crate) mod affine_preview;
 mod object_preview;
+pub(crate) use affine_preview::AffinePreview;
 pub(crate) mod translation_preview;
 pub(crate) use translation_preview::TranslationPreview;
 mod extents;
@@ -311,6 +313,7 @@ pub struct ViewportInput<'a> {
     pub preview_curve: Option<&'a NurbsCurve>,
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
+    pub affine_preview: Option<AffinePreview<'a>>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
     pub component_preselection: bool,
@@ -366,6 +369,7 @@ impl Default for ViewportInput<'_> {
             preview_curve: None,
             mirror_preview: None,
             translation_preview: None,
+            affine_preview: None,
             face_pick: None,
             edge_pick: false,
             component_preselection: false,
@@ -401,6 +405,7 @@ pub struct ViewportOutput {
     /// inner None means no valid reflection has been previewed yet.
     pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub translation_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
+    pub affine_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
@@ -1067,6 +1072,13 @@ impl Viewport {
                 input
                     .translation_preview
                     .and_then(|preview| preview.resolve(None).0)
+            })
+            .or_else(|| {
+                input.affine_preview.and_then(|preview| {
+                    preview
+                        .resolve(None, self.construction_plane(), document.tolerance())
+                        .0
+                })
             });
         let _ = self.refresh_clipping_with_transform(document, rect, previous_preview);
         let redraw_camera = self.camera_snapshot();
@@ -1420,15 +1432,7 @@ impl Viewport {
             && input.zoom_target.is_none()
         {
             response.hover_pos().and_then(|pointer| {
-                self.translation_drafting_cursor(
-                    pointer,
-                    rect,
-                    document,
-                    drafting,
-                    input.point_filter,
-                    input.point_constraint,
-                    input.translation_constraint,
-                )
+                self.affine_drafting_cursor(pointer, rect, document, drafting, &input)
             })
         } else {
             None
@@ -1488,8 +1492,25 @@ impl Viewport {
                     document,
                 )
             });
-        let object_preview = mirror_preview.or(translation_preview);
-        if mirror_preview_update.is_some() || translation_preview_update.is_some() {
+        let (affine_preview, affine_preview_update) =
+            input.affine_preview.map_or((None, None), |preview| {
+                self.resolve_affine_preview(
+                    preview,
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|cursor| cursor.point),
+                    document,
+                )
+            });
+        let object_preview = mirror_preview.or(translation_preview).or(affine_preview);
+        if mirror_preview_update.is_some()
+            || translation_preview_update.is_some()
+            || affine_preview_update.is_some()
+        {
             let _ = self.refresh_clipping_with_transform(document, rect, object_preview);
         }
         let object_prompt_selecting = matches!(
@@ -1806,6 +1827,7 @@ impl Viewport {
         ViewportOutput {
             mirror_preview: mirror_preview_update,
             translation_preview: translation_preview_update,
+            affine_preview: affine_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
                     .interact_pointer_pos()

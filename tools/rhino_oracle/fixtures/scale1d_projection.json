@@ -1,0 +1,228 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-0",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,0",
+        "w2,5,0"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-1",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,0",
+        "w-2,5,0"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-2",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,2",
+        "w2,5,0"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-3",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,2",
+        "w-2,5,-4"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-4",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,0",
+        "w0,0,0"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-projection-5",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w4,0,2",
+        "w0,0,0"
+      ],
+      "finish": "Cancel",
+      "grouped": false,
+      "sel_last": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "undo_redo": false
+    }
+  ]
+}

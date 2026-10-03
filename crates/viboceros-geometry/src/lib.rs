@@ -185,7 +185,7 @@ pub use spiral::{
 pub use surface_curvature::SurfaceCurvature;
 pub use sweep::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
 pub use tolerance::Tolerance;
-pub use transform::AffineTransform3;
+pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};
 
 /// Scalar type used throughout the geometry kernel.

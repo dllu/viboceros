@@ -1,4 +1,4 @@
-//! Rigid display instances share original geometry, samples, and tessellation.
+//! Affine display instances share original geometry, samples, and tessellation.
 use super::*;
 use viboceros_geometry::AffineTransform3;
 
