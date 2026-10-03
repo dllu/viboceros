@@ -1,0 +1,2310 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "scale-factor-1.00000000000001-copy-false",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.00000000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-factor-1.00000000000001-copy-true",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.00000000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-factor-1.000000001-copy-false",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-factor-1.000000001-copy-true",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-factor-1.00000000000001-copy-false",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.00000000000001",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-factor-1.00000000000001-copy-true",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.00000000000001",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-factor-1.000000001-copy-false",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.000000001",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-factor-1.000000001-copy-true",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.000000001",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-factor-1.00000000000001-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.00000000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-factor-1.00000000000001-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.00000000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-factor-1.000000001-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-factor-1.000000001-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.000000001"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-tilted-unit-factor-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-tilted-unit-factor-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle--360-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "-360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle--360-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "-360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-720-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "720"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-720-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "720"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-1e-12-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-1e-12-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-8e-7-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "8e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-8e-7-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "8e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-9e-7-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "9e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-9e-7-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "9e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360.0000008-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "360.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360.0000008-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "360.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360.0000009-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "360.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-360.0000009-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "360.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000008-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "90.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000008-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000009-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "90.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000009-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-1.2e-6-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1.2e-6"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-1.2e-6-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1.2e-6"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000012-copy-false",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "90.0000012"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-angle-90.0000012-copy-true",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90.0000012"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle--360-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "-360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle--360-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "-360"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-720-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "720"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-720-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "720"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-1e-12-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-1e-12-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-8e-7-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "8e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-8e-7-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "8e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-9e-7-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "9e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-9e-7-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "9e-7"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360.0000008-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "360.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360.0000008-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "360.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360.0000009-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "360.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-360.0000009-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "360.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000008-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "90.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000008-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90.0000008"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000009-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "90.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000009-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90.0000009"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-1.2e-6-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "1.2e-6"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-1.2e-6-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "1.2e-6"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000012-copy-false",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "90.0000012"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-angle-90.0000012-copy-true",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90.0000012"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-angle-1e-12-copy-false",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-angle-1e-12-copy-true",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "1e-12"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    }
+  ]
+}

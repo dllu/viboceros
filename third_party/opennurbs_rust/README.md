@@ -31,3 +31,10 @@ Its margin switch supports the independently observed `ToEdge` command. The
 kernel computes tight runtime UV bounds independently (rather than using the
 archive's control-point box), crops exact NURBS surfaces, updates isoparametric
 flags, and validates retained topology. No proprietary Rhino source was used.
+
+`rotation.rs` adapts cardinal-angle noise cleanup from `ON_Xform::Rotation` in
+`opennurbs_xform.cpp` at the same pinned revision under the [MIT license](LICENSE),
+retaining the source copyright and disclaimer. It receives Rust sine/cosine
+outputs, omits the native normalization of supplied components, and returns
+only snapped components. Rotate and Rotate3D use it at the command layer;
+the general geometry kernel preserves small rotations without this cutoff.

@@ -1,0 +1,1987 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "scale-grouped-copy",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-peer-in-place",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-peer-copy",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-partial-group-copy",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-references-in-place",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "w2,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-reversed-copy",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-identity-in-place",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-grouped-copy",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-peer-in-place",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "2",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-peer-copy",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-partial-group-copy",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2",
+        "w1,0,0"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-references-in-place",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "w2,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-reversed-copy",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2",
+        "w1,0,0"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-identity-in-place",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-grouped-copy",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-peer-in-place",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-peer-copy",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-partial-group-copy",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-references-in-place",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "w2,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-reversed-copy",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "2"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-identity-in-place",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-grouped-copy",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-peer-in-place",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-peer-copy",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-partial-group-copy",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-references-in-place",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-reversed-copy",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-identity-in-place",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-grouped-copy",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-peer-in-place",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-peer-copy",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-partial-group-copy",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-references-in-place",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "w1,0,0",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-reversed-copy",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "90"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-identity-in-place",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=No",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-grouped-copy",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-peer-in-place",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-peer-copy",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-partial-group-copy",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w0,1,0"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-references-in-place",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-reversed-copy",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w0,1,0"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-identity-in-place",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          0.0,
+          3.0,
+          4.0
+        ],
+        [
+          0.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-grouped-copy",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "45"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-peer-in-place",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "45"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-peer-copy",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "45"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-partial-group-copy",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "45"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-references-in-place",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "w1,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-reversed-copy",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "45"
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-identity-in-place",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=No",
+        "w1,0,0",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-identity-copy",
+      "command": "Scale",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-identity-copy",
+      "command": "Scale1D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-identity-copy",
+      "command": "Scale2D",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "1"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate-identity-copy",
+      "command": "Rotate",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "rotate3d-identity-copy",
+      "command": "Rotate3D",
+      "inputs": [
+        "w0,0,0",
+        "w0,0,1",
+        "Copy=Yes",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-identity-copy",
+      "command": "Mirror",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w0,1,0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          0.0,
+          3.0,
+          4.0
+        ],
+        [
+          0.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "shear-identity-copy",
+      "command": "Shear",
+      "inputs": [
+        "w0,0,0",
+        "Copy=Yes",
+        "w1,0,0",
+        "0"
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    }
+  ]
+}

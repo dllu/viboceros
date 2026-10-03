@@ -14,7 +14,8 @@ def finite(value):
 
 def validate(operation):
     if (not isinstance(operation, dict)
-            or set(operation) != {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'}
+            or not {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'} <= set(operation)
+            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane'}
             or operation['op'] != 'transform_copy_command'
             or not isinstance(operation['id'], str) or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z', operation['id']) is None
             or operation['command'] not in COMMANDS
@@ -27,10 +28,22 @@ def validate(operation):
         if (not isinstance(source, list) or len(source) != 3
                 or any(not finite(value) for value in source)):
             raise ValueError('transform sources require finite points')
+    selected = operation.get('selected', list(range(len(operation['sources']))))
+    if (not isinstance(selected, list) or not selected
+            or any(type(index) is not int or not 0 <= index < len(operation['sources']) for index in selected)
+            or len(set(selected)) != len(selected)):
+        raise ValueError('invalid transform preselection')
+    if 'cplane' in operation:
+        plane = operation['cplane']
+        if (not isinstance(plane, dict) or set(plane) != {'origin', 'x_axis', 'y_axis'}
+                or any(not isinstance(values, list) or len(values) != 3 or any(not finite(value) for value in values) for values in plane.values())
+                or any(abs(sum(value*value for value in plane[key])-1) > 1e-9 for key in ('x_axis', 'y_axis'))
+                or abs(sum(x*y for x, y in zip(plane['x_axis'], plane['y_axis']))) > 1e-9):
+            raise ValueError('invalid transform construction plane')
     for token in operation['inputs']:
         if not isinstance(token, str) or not 1 <= len(token) <= 100:
             raise ValueError('invalid transform input')
-        if token in ('Copy=Yes', 'Copy=No', 'Undo'):
+        if token in ('Copy=Yes', 'Copy=No', 'Undo', 'Enter'):
             continue
         coordinates = token[1:] if token.startswith('w') else token
         if re.match(r'^[-+0-9.eE]+(?:,[-+0-9.eE]+){0,2}\Z', coordinates) is None:
@@ -76,7 +89,13 @@ def run(operation, host):
         return dict(objects=rows, groups=[dict(members=[index for index, obj in enumerate(owned)
             if group in (obj.Attributes.GetGroupList() or [])]) for group in owned_groups])
     try:
-        doc.Views.ActiveView.ActiveViewport.SetConstructionPlane(Rhino.Geometry.Plane.WorldXY)
+        plane = Rhino.Geometry.Plane.WorldXY
+        if 'cplane' in operation:
+            values = operation['cplane']
+            plane = Rhino.Geometry.Plane(host['_point'](values['origin']), host['_vector'](values['x_axis']), host['_vector'](values['y_axis']))
+            if not plane.IsValid:
+                raise ValueError('invalid transform construction plane')
+        doc.Views.ActiveView.ActiveViewport.SetConstructionPlane(plane)
         doc.Objects.UnselectAll()
         serial = doc.BeginUndoRecord('Viboceros transform sources')
         try:
@@ -92,15 +111,16 @@ def run(operation, host):
                 if key == System.Guid.Empty:
                     raise ValueError('transform source insertion failed')
                 ids.append(key)
-                doc.Objects.Select(key)
             if operation['grouped'] and doc.Groups.Add('RepeatSource_'+operation['id'], ids) < 0:
                 raise ValueError('transform source grouping failed')
+            for index in operation.get('selected', list(range(len(ids)))):
+                doc.Objects.Select(ids[index])
         finally:
             doc.EndUndoRecord(serial)
         before = snapshot()
         tokens = []
         for token in operation['inputs']:
-            tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token == 'Undo' else token)
+            tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') else token)
         macro = '_'+operation['command']+' '+' '.join(tokens)
         if operation['finish'] != 'Automatic':
             macro += ' _'+operation['finish']

@@ -8,11 +8,35 @@ from unittest.mock import Mock, patch
 
 from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
-from .transform_copy_cases import request
+from .transform_copy_cases import request, script_request, center_request, identity_request
 from .transform_copy_probe import validate
 
 
 class TransformCopyTests(unittest.TestCase):
+    def test_script_and_center_workflows_prescribe_inputs_before_measurement(self):
+        for name, factory, count in [('transform_copy_script', script_request, 56),
+                                     ('transform_copy_center', center_request, 18),
+                                     ('transform_copy_identity', identity_request, 64)]:
+            saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
+            self.assertEqual(saved, factory())
+            self.assertEqual(len(saved['operations']), count)
+            validate_request(saved)
+            observed = json.loads(Path(__file__).with_name('observations').joinpath(name+'.json').read_text())
+            client = Mock(settings_scheme='VibocerosOracleTest', run_rhino=Mock(return_value=observed))
+            self.assertEqual(capture(saved, client), observed)
+
+    def test_preselection_and_plane_fields_are_bounded_before_launch(self):
+        for key, values in [('selected', [[], [True], [-1], [3], [0, 0], '0']),
+                            ('cplane', [None, {}, dict(origin=[0, 0, 0], x_axis=[1, 0, 0], y_axis=[1, 0, 0]),
+                                        dict(origin=[0, 0, 0], x_axis=[True, 0, 0], y_axis=[0, 1, 0])])]:
+            for value in values:
+                invalid = script_request()
+                invalid['operations'][0][key] = value
+                client = Mock(settings_scheme='VibocerosOracleTest')
+                with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                    capture(invalid, client)
+                client.run_rhino.assert_not_called()
+
     def test_fixture_is_independently_prescribed(self):
         saved = json.loads(Path(__file__).with_name('fixtures').joinpath('transform_copy.json').read_text())
         self.assertEqual(saved, request())

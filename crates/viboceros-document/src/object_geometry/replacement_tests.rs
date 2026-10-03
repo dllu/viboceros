@@ -69,6 +69,54 @@ fn explicit_equal_replacements_preserve_objects_and_exchange_history_selection()
 }
 
 #[test]
+fn explicit_transform_replacements_preserve_metadata_and_validate_before_touching_redo() {
+    let (mut doc, ids) = document();
+    doc.set_object_geometry_user_text(ids, "GeometryTag", Some("retained"))
+        .unwrap();
+    doc.add_geometry(point(3.)).unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(
+        doc.transform_objects(ids, AffineTransform3::identity())
+            .unwrap(),
+        0
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(
+        doc.transform_objects_with_history(
+            [ids[0], ObjectId::new()],
+            AffineTransform3::identity(),
+            ReplacementHistory::EveryReplacement
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    let objects = doc.objects().cloned().collect::<Vec<_>>();
+    assert_eq!(
+        doc.transform_objects_with_history(
+            ids,
+            AffineTransform3::identity(),
+            ReplacementHistory::EveryReplacement
+        )
+        .unwrap(),
+        2
+    );
+    assert!(!doc.can_redo());
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), objects);
+    assert_eq!(doc.undo_label(), Some("Transform objects"));
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), objects);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), objects);
+    for id in ids {
+        assert_eq!(
+            doc.object(id).unwrap().geometry_user_text()["GeometryTag"],
+            "retained"
+        );
+    }
+}
+
+#[test]
 fn equal_replacement_rollback_and_empty_batches_preserve_complete_state() {
     for policy in [
         ReplacementHistory::ChangesOnly,

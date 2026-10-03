@@ -1381,6 +1381,18 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         transform: AffineTransform3,
     ) -> Result<usize, DocumentError> {
+        self.transform_objects_with_history(ids, transform, ReplacementHistory::ChangesOnly)
+    }
+
+    /// Explicitly choose whether equal transformed geometry is an undoable
+    /// replacement. Native transform commands renew every selected object,
+    /// including points on a fixed axis; ordinary kernel edits can skip them.
+    pub fn transform_objects_with_history(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transform: AffineTransform3,
+        history: ReplacementHistory,
+    ) -> Result<usize, DocumentError> {
         let staged = self.stage_object_geometries(ids, |geometry| {
             geometry.transformed(transform, self.tolerance)
         })?;
@@ -1388,7 +1400,7 @@ impl Document {
             staged,
             "Transform objects",
             "Transform object",
-            ReplacementHistory::ChangesOnly,
+            history,
             true,
         )
     }

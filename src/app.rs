@@ -1319,13 +1319,13 @@ impl InteractiveCommand {
                 kind, center: None, ..
             } => match kind {
                 InteractiveScaleKind::Uniform => {
-                    "Scale: pick the center point in the viewport (Esc to cancel)"
+                    "Scale: pick the center, or Enter for the bounding-box center (Esc to cancel)"
                 }
                 InteractiveScaleKind::OneDimensional => {
-                    "Scale1D: pick the origin in the viewport (Esc to cancel)"
+                    "Scale1D: pick the origin, or Enter for the bounding-box center (Esc to cancel)"
                 }
                 InteractiveScaleKind::TwoDimensional => {
-                    "Scale2D: pick the center point in the viewport (Esc to cancel)"
+                    "Scale2D: pick the center, or Enter for the bounding-box center (Esc to cancel)"
                 }
             },
             Self::Scale {

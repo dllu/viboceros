@@ -1,0 +1,774 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "scale-world-center-copy-false",
+      "command": "Scale",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-world-center-copy-true",
+      "command": "Scale",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-world-center-copy-false",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-world-center-copy-true",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-world-center-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-world-center-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-rotated-center-copy-false",
+      "command": "Scale",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-rotated-center-copy-true",
+      "command": "Scale",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-rotated-center-copy-false",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-rotated-center-copy-true",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-rotated-center-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-rotated-center-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.8,
+          0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-tilted-center-copy-false",
+      "command": "Scale",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale-tilted-center-copy-true",
+      "command": "Scale",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-tilted-center-copy-false",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale1d-tilted-center-copy-true",
+      "command": "Scale1D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2",
+        "w6,3,0.5"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-tilted-center-copy-false",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=No",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "scale2d-tilted-center-copy-true",
+      "command": "Scale2D",
+      "inputs": [
+        "Copy=Yes",
+        "Enter",
+        "2"
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ]
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    }
+  ]
+}

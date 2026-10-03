@@ -374,7 +374,9 @@ impl AffineTransform3 {
         Ok(coordinates)
     }
 
-    fn try_with_fixed_point(
+    /// Builds a finite linear map and its translation about a fixed point.
+    /// Translation uses compensated sums with exact fallbacks for cancellation.
+    pub fn try_with_fixed_point(
         linear_rows: [[Real; 3]; 3],
         fixed_point: Point3,
     ) -> Result<Self, GeometryError> {

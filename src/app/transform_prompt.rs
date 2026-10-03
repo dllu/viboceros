@@ -54,9 +54,7 @@ impl VibocerosApp {
         copy: bool,
     ) -> bool {
         match self.document.begin_history_group(command.name()) {
-            Ok(mut group) => {
-                group.keep_created_group_definitions();
-                group.renew_changed_object_order();
+            Ok(group) => {
                 self.transform_session = Some(TransformSession {
                     group,
                     copy,
@@ -173,6 +171,23 @@ impl VibocerosApp {
         }
         let input = input.trim();
         let word = input.trim_start_matches(['_', '-']);
+        if (input.is_empty() || word.eq_ignore_ascii_case("Enter"))
+            && matches!(command, InteractiveCommand::Scale { center: None, .. })
+        {
+            // Rhino's automatic base point uses World bounds even when the
+            // active construction plane is rotated or tilted.
+            match viboceros_command::selected_bounding_box_center(
+                &self.document,
+                viboceros_command::CommandContext::default().construction_plane,
+            ) {
+                Ok(center) => {
+                    self.accept_drafting_point(center);
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            self.command_input.clear();
+            return true;
+        }
         if word.eq_ignore_ascii_case("Cancel")
             || ((input.is_empty() || word.eq_ignore_ascii_case("Enter")) && session.applied)
         {

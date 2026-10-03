@@ -6,6 +6,11 @@ use align_vertices::AlignVerticesCommand;
 mod border;
 use border::{DuplicateBorderCommand, DuplicateBorderOutputLayer, DuplicateFaceBorderCommand};
 mod arrays;
+mod history_policy;
+pub use history_policy::CommandHistoryPolicy;
+use history_policy::{apply_transform_with_renewal, transform_source_ids};
+mod rotation_policy;
+use rotation_policy::command_rotation;
 mod layout_units;
 pub use align::{AlignmentMode, AlignmentOptions};
 mod curve_options;
@@ -98,6 +103,7 @@ use single_spans::ConvertToSingleSpansCommand;
 use split_disjoint_mesh::SplitDisjointMeshCommand;
 use to_nurbs::ToNurbsCommand;
 mod bounding_box;
+pub use bounding_box::selected_bounding_box_center;
 mod distribute;
 mod geometry_selection;
 mod intersect_self;
@@ -364,6 +370,11 @@ pub trait Command: Send + Sync {
     /// Whether successful mutations should be grouped into one undo step.
     fn records_history(&self) -> bool {
         true
+    }
+
+    /// Replay behavior for both full invocations and incremental prompt steps.
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::Ordinary
     }
 
     /// Commands with a Rhino-style partial result can report failure after
@@ -1372,7 +1383,16 @@ impl CommandRegistry {
                 command.run_in_context(document, &arguments, context)
             }
         };
-        let result = if let Some(group) = group {
+        let mut single_group = if group.is_none()
+            && command.records_history()
+            && command.history_policy() != CommandHistoryPolicy::Ordinary
+        {
+            Some(document.begin_history_group(command.name())?)
+        } else {
+            None
+        };
+        let result = if let Some(group) = group.or(single_group.as_mut()) {
+            command.history_policy().configure(group);
             document.begin_group_transaction(group)?;
             match run(document) {
                 Ok(message) => {
@@ -16453,6 +16473,10 @@ const SCALE_NU_USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [Copy=Ye
 struct ScaleCommand;
 
 impl Command for ScaleCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -16462,7 +16486,7 @@ impl Command for ScaleCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -16476,7 +16500,7 @@ impl Command for ScaleCommand {
         };
         let transform = AffineTransform3::try_uniform_scale(center, factor)?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) uniformly by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -16486,6 +16510,10 @@ impl Command for ScaleCommand {
 struct ScaleOneDimensionalCommand;
 
 impl Command for ScaleOneDimensionalCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -16495,7 +16523,7 @@ impl Command for ScaleOneDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_1D_USAGE)?;
         let (origin, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -16532,7 +16560,7 @@ impl Command for ScaleOneDimensionalCommand {
             .normalized(document.tolerance())?;
         let transform = AffineTransform3::try_directional_scale(origin, direction, factor)?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) in one direction by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -16581,6 +16609,10 @@ const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference tar
 struct RotateThreeDimensionalCommand;
 
 impl Command for RotateThreeDimensionalCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -16590,7 +16622,7 @@ impl Command for RotateThreeDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_3D_USAGE)?;
         let (axis_start, start_consumed) = parse_point(&positional)?;
         let (axis_end, end_consumed) = parse_point(&positional[start_consumed..])?;
@@ -16611,9 +16643,9 @@ impl Command for RotateThreeDimensionalCommand {
             )?;
             axis_rotation_angle(axis_start, axis, reference, target, document.tolerance())?
         };
-        let transform = AffineTransform3::try_rotation(axis_start, axis, angle_radians)?;
+        let transform = command_rotation(axis_start, axis, angle_radians)?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Rotated {transformed} object(s) around a 3D axis by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees(),

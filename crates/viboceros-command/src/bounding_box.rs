@@ -5,6 +5,23 @@ mod tests;
 
 const BOUNDING_BOX_USAGE: &str = "BoundingBox [CoordinateSystem=World|CPlane] [Cumulative=Yes|No] [Output=Solids|Meshes|Curves|None]";
 
+/// Center of the combined tight bounds in the supplied coordinate frame.
+/// Uses a nearby working origin to preserve small extents on distant models.
+pub fn selected_bounding_box_center(
+    document: &Document,
+    coordinates: Frame3,
+) -> Result<Point3, CommandError> {
+    if document.selected_objects().next().is_none() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    let bounds = oriented_bounds(
+        document.selected_objects().map(|object| object.geometry()),
+        coordinates,
+        document.tolerance(),
+    )?;
+    Ok(bounds.frame.point_at(bounds.local.center()?.to_array())?)
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum BoundingBoxCoordinateSystem {
     World,

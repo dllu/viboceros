@@ -136,10 +136,24 @@ fn contextual_transforms_preserve_attributes_groups_identity_and_one_step_undo()
             );
             if copy {
                 assert_eq!(document.object(id).unwrap().geometry(), before.geometry());
+                if command != "ProjectToCPlane" {
+                    // Native single-source affine copies omit memberships but
+                    // keep the newly allocated empty definition through Undo.
+                    let output = document.objects().find(|object| object.id() != id).unwrap();
+                    assert!(output.group_ids().is_empty());
+                    assert_eq!(document.groups().last().unwrap().members().len(), 0);
+                }
             }
             registry.execute(&mut document, "Undo").unwrap();
             assert_eq!(document.objects().len(), 1);
-            assert_eq!(document.groups().len(), 1);
+            assert_eq!(
+                document.groups().len(),
+                if copy && command != "ProjectToCPlane" {
+                    2
+                } else {
+                    1
+                }
+            );
             assert_eq!(document.object(id).unwrap(), &before);
             assert_eq!(document.undo_label(), undo.as_deref());
             registry.execute(&mut document, "Redo").unwrap();

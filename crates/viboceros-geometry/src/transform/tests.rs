@@ -439,6 +439,16 @@ fn axis_rotation_uses_rodrigues_formula_about_a_fixed_point() {
 }
 
 #[test]
+fn kernel_rotation_preserves_angles_below_native_command_cleanup() {
+    let axis = UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap();
+    let rotation =
+        AffineTransform3::try_rotation(point(0., 0., 0.), axis, 1e-12_f64.to_radians()).unwrap();
+    assert_ne!(rotation, AffineTransform3::identity());
+    let rotated = rotation.transform_point(point(1e8, 0., 0.)).unwrap();
+    assert!((rotated.to_array()[1] - 1.7453292519943296e-6).abs() < 1e-20);
+}
+
+#[test]
 fn shortest_rotation_maps_parallel_oblique_and_antiparallel_directions() {
     let directions = [
         (

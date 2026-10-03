@@ -4,6 +4,10 @@ use super::*;
 pub(super) struct ScaleTwoDimensionalCommand;
 
 impl Command for ScaleTwoDimensionalCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -22,7 +26,7 @@ impl Command for ScaleTwoDimensionalCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_2D_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -39,9 +43,13 @@ impl Command for ScaleTwoDimensionalCommand {
             scale_factor_from_reference(center, reference, target, document.tolerance())?
         };
         let frame = context.construction_plane.with_origin(center);
-        let transform = AffineTransform3::try_frame_mapping(frame, frame, [factor, factor, 1.0])?;
+        let transform = if factor == 1.0 {
+            AffineTransform3::identity()
+        } else {
+            AffineTransform3::try_frame_mapping(frame, frame, [factor, factor, 1.0])?
+        };
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) in two dimensions by {factor:.6}, creating {copied} copy object(s)"
         ))
@@ -51,6 +59,10 @@ impl Command for ScaleTwoDimensionalCommand {
 pub(super) struct RotateCommand;
 
 impl Command for RotateCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -69,7 +81,7 @@ impl Command for RotateCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -92,9 +104,9 @@ impl Command for RotateCommand {
             )?
         };
         let axis = context.construction_plane.z_axis();
-        let transform = AffineTransform3::try_rotation(center, axis, angle_radians)?;
+        let transform = command_rotation(center, axis, angle_radians)?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Rotated {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees(),
@@ -105,6 +117,10 @@ impl Command for RotateCommand {
 pub(super) struct MirrorCommand;
 
 impl Command for MirrorCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(true)
     }
@@ -123,7 +139,7 @@ impl Command for MirrorCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, MIRROR_USAGE)?;
         let (axis_start, consumed) = parse_point(&positional)?;
         let (axis_end, end_consumed) = parse_point(&positional[consumed..])?;
@@ -140,7 +156,7 @@ impl Command for MirrorCommand {
             .normalized(document.tolerance())?;
         let transform = AffineTransform3::try_reflection(axis_start, normal)?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Mirrored {transformed} object(s), creating {copied} copy object(s)"
         ))
@@ -150,6 +166,10 @@ impl Command for MirrorCommand {
 pub(super) struct ShearCommand;
 
 impl Command for ShearCommand {
+    fn history_policy(&self) -> CommandHistoryPolicy {
+        CommandHistoryPolicy::TransformedObjects
+    }
+
     fn copy_option_default(&self) -> Option<bool> {
         Some(false)
     }
@@ -168,7 +188,7 @@ impl Command for ShearCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let selected = transform_source_ids(document)?;
         let (positional, copy) = parse_transform_copy_arguments(arguments, SHEAR_USAGE)?;
         let (origin, origin_consumed) = parse_point(&positional)?;
         let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;
@@ -226,7 +246,7 @@ impl Command for ShearCommand {
             document.tolerance(),
         )?;
         let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Sheared {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees()

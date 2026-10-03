@@ -2,6 +2,7 @@
 use super::*;
 use serde_json::{Value, json};
 use viboceros_document::ObjectColorSource;
+use viboceros_geometry::Vector3;
 
 #[path = "../../../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
@@ -81,17 +82,68 @@ fn snapshot(app: &VibocerosApp, sources: &[ObjectId]) -> Value {
 
 #[test]
 fn repeated_transform_input_geometry_selection_groups_and_history_match_native() {
-    let request: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/transform_copy.json"
-    ))
-    .unwrap();
-    let observed: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/transform_copy.json"
-    ))
-    .unwrap();
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_copy.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_copy.json"),
+        49,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn complete_transform_invocations_geometry_selection_groups_and_history_match_native() {
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_script.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_copy_script.json"),
+        56,
+        Invocation::Registry,
+    );
+}
+
+#[test]
+fn transform_prompts_with_partial_groups_and_untouched_peers_match_native() {
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_script.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_copy_script.json"),
+        56,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn automatic_scale_centers_with_rotated_and_tilted_planes_match_native() {
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_center.json"),
+        include_str!("../../../tools/rhino_oracle/observations/transform_copy_center.json"),
+        18,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn exact_and_near_identity_transform_prompts_and_invocations_match_native() {
+    for invocation in [Invocation::Prompt, Invocation::Registry] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/transform_copy_identity.json"),
+            include_str!("../../../tools/rhino_oracle/observations/transform_copy_identity.json"),
+            64,
+            invocation,
+        );
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Invocation {
+    Prompt,
+    Registry,
+}
+
+fn replay_native(request: &str, observed: &str, count: usize, invocation: Invocation) {
+    let request: Value = serde_json::from_str(request).unwrap();
+    let observed: Value = serde_json::from_str(observed).unwrap();
     let operations = request["operations"].as_array().unwrap();
     let results = observed["results"].as_array().unwrap();
-    assert_eq!(operations.len(), 49);
+    assert_eq!(operations.len(), count);
     assert_eq!(results.len(), operations.len());
     assert_eq!(observed["engine"], "rhino");
     let mut failures = Vec::new();
@@ -100,7 +152,30 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
         assert_eq!(row["id"], label);
         let expected = &row["value"];
         let mut app = test_app();
+        // Match the native SDK source construction record. Keeping this
+        // baseline also exercises SelLast when the tested transform is a no-op.
+        app.document
+            .begin_transaction("Transform source setup")
+            .unwrap();
         app.active_viewport = 1; // Top; the native probe explicitly uses WorldXY.
+        if let Some(plane) = operation.get("cplane") {
+            let coords = |value: &Value| {
+                [
+                    value[0].as_f64().unwrap(),
+                    value[1].as_f64().unwrap(),
+                    value[2].as_f64().unwrap(),
+                ]
+            };
+            app.viewports[app.active_viewport].set_construction_plane(
+                viboceros_geometry::Frame3::try_from_directions(
+                    Point3::try_from(coords(&plane["origin"])).unwrap(),
+                    Vector3::try_from(coords(&plane["x_axis"])).unwrap(),
+                    Vector3::try_from(coords(&plane["y_axis"])).unwrap(),
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            );
+        }
         let sources = operation["sources"]
             .as_array()
             .unwrap()
@@ -120,7 +195,6 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
                     .document
                     .add_geometry_with_attributes(Geometry::Point(point), attributes)
                     .unwrap();
-                app.document.select_object(id, SelectionMode::Add).unwrap();
                 id
             })
             .collect::<Vec<_>>();
@@ -132,7 +206,21 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
                 )
                 .unwrap();
         }
-        app.document.clear_history().unwrap();
+        let selected = operation
+            .get("selected")
+            .map(|values| {
+                values
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|index| sources[index.as_u64().unwrap() as usize])
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_else(|| sources.clone());
+        app.document
+            .select_objects_direct(selected, SelectionMode::Replace)
+            .unwrap();
+        app.document.commit_transaction().unwrap();
         let compare = |actual: Value, phase: &str, failures: &mut Vec<String>| {
             let path = format!("{label}/{phase}");
             if std::panic::catch_unwind(|| {
@@ -144,17 +232,39 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
             }
         };
         compare(snapshot(&app, &sources), "before", &mut failures);
-        enter(&mut app, operation["command"].as_str().unwrap());
-        assert!(
-            app.transform_session.is_some(),
-            "{label}: {:?}",
-            app.command_log
-        );
-        for input in operation["inputs"].as_array().unwrap() {
-            enter(&mut app, input.as_str().unwrap());
-        }
-        if operation["finish"] != "Automatic" {
-            enter(&mut app, operation["finish"].as_str().unwrap());
+        match invocation {
+            Invocation::Prompt => {
+                enter(&mut app, operation["command"].as_str().unwrap());
+                assert!(
+                    app.transform_session.is_some(),
+                    "{label}: {:?}",
+                    app.command_log
+                );
+                for input in operation["inputs"].as_array().unwrap() {
+                    enter(&mut app, input.as_str().unwrap());
+                }
+                if operation["finish"] != "Automatic" {
+                    enter(&mut app, operation["finish"].as_str().unwrap());
+                }
+            }
+            Invocation::Registry => {
+                let input = std::iter::once(operation["command"].as_str().unwrap())
+                    .chain(
+                        operation["inputs"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|value| value.as_str().unwrap().trim_start_matches('w')),
+                    )
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let context = viboceros_command::CommandContext {
+                    construction_plane: app.viewports[app.active_viewport].construction_plane(),
+                };
+                app.commands
+                    .execute_in_context(&mut app.document, &input, context)
+                    .unwrap();
+            }
         }
         assert!(
             app.active_command.is_none(),
@@ -169,16 +279,16 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
         if !expected["undo"].is_null() {
             enter(&mut app, "Undo");
             assert!(
-                !app.document.can_undo(),
-                "{label}: more than one Undo entry"
+                app.document.undo_label() == Some("Transform source setup"),
+                "{label}: more than one transform Undo entry"
             );
             compare(snapshot(&app, &sources), "undo", &mut failures);
             enter(&mut app, "Redo");
             compare(snapshot(&app, &sources), "redo", &mut failures);
         } else {
             assert!(
-                !app.document.can_undo(),
-                "{label}: canceled command recorded history"
+                app.document.undo_label() == Some("Transform source setup"),
+                "{label}: canceled or identity command recorded history"
             );
         }
     }
