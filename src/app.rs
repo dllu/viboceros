@@ -138,6 +138,7 @@ mod align;
 mod angle;
 mod circle;
 use circle::CircleSizeMode;
+mod bend_prompt;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -625,6 +626,10 @@ enum InteractiveCommand {
         points: [Option<Point3>; 3],
         options: viboceros_command::twist::TwistOptions,
     },
+    Bend {
+        points: [Option<Point3>; 2],
+        options: viboceros_command::bend::BendOptions,
+    },
     Mirror {
         start: Option<Point3>,
     },
@@ -748,6 +753,7 @@ impl InteractiveCommand {
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Twist { .. } => "Twist",
+            Self::Bend { .. } => "Bend",
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
@@ -1402,6 +1408,16 @@ impl InteractiveCommand {
                     "Twist: pick the target reference point (Esc to cancel)"
                 }
             },
+            Self::Bend { points, options } => match points {
+                [None, _] => "Bend: pick the spine start (Esc to cancel)",
+                [Some(_), None] => "Bend: pick the spine end (Esc to cancel)",
+                [Some(_), Some(_)] if matches!(options.angle, Some(angle) if angle != 0.) => {
+                    "Bend: pick the bend direction; Copy, Rigid, Angle, Symmetric, PreserveStructure, NonAttenuated"
+                }
+                [Some(_), Some(_)] => {
+                    "Bend: pick the through point; Copy, Rigid, LimitToSpine, Angle, Symmetric, PreserveStructure, NonAttenuated"
+                }
+            },
             Self::Mirror { start: None } => {
                 "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis, Object (Esc to cancel)"
             }
@@ -1550,6 +1566,9 @@ impl InteractiveCommand {
             | Self::Twist {
                 points: [None, _, _],
                 ..
+            }
+            | Self::Bend {
+                points: [None, _], ..
             }
             | Self::Mirror { start: None }
             | Self::MirrorThreePoint { points: [None, _] }
@@ -1719,6 +1738,13 @@ impl InteractiveCommand {
                 points: [Some(start), _, _],
                 ..
             } => Some(start),
+            Self::Bend {
+                points: [Some(start), end],
+                ..
+            } => Some(match end {
+                Some(end) => end,
+                None => start,
+            }),
         }
     }
 
@@ -1856,6 +1882,7 @@ pub struct VibocerosApp {
     points_session: Option<points::PointsSession>,
     transform_session: Option<transform_prompt::TransformSession>,
     twist_session: Option<twist_prompt::TwistSession>,
+    bend_session: Option<bend_prompt::BendSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -1948,6 +1975,7 @@ impl VibocerosApp {
             points_session: None,
             transform_session: None,
             twist_session: None,
+            bend_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -2105,6 +2133,7 @@ impl VibocerosApp {
         if self.try_continue_translation(&input)
             || self.try_continue_transform(&input)
             || self.try_continue_twist(&input)
+            || self.try_continue_bend(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -2543,6 +2572,7 @@ impl VibocerosApp {
         if self.try_continue_translation(input)
             || self.try_continue_transform(input)
             || self.try_continue_twist(input)
+            || self.try_continue_bend(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
@@ -2700,6 +2730,20 @@ impl VibocerosApp {
             }
             InteractiveCommand::Twist {
                 points: [None; 3],
+                options,
+            }
+        } else if normalized == "bend" {
+            let default = self.commands.bend_options_default();
+            let Ok((positional, options)) =
+                viboceros_command::bend::BendOptions::from_arguments(&arguments, default)
+            else {
+                return false;
+            };
+            if !positional.is_empty() {
+                return false;
+            }
+            InteractiveCommand::Bend {
+                points: [None; 2],
                 options,
             }
         } else if normalized == "align" {
@@ -4597,7 +4641,10 @@ impl VibocerosApp {
         }
         if (transform_prompt::supports(command)
             || translation_prompt::supports(command)
-            || matches!(command, InteractiveCommand::Twist { .. }))
+            || matches!(
+                command,
+                InteractiveCommand::Twist { .. } | InteractiveCommand::Bend { .. }
+            ))
             && self.document.selected_object_count() == 0
         {
             self.start_transform_source_prompt(command.name());
@@ -4619,6 +4666,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Twist { .. }
+                | InteractiveCommand::Bend { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::MirrorThreePoint { .. }
                 | InteractiveCommand::MirrorObject
@@ -4681,6 +4729,10 @@ impl VibocerosApp {
             if !self.start_twist_session(picked_sources) {
                 return true;
             }
+        } else if matches!(command, InteractiveCommand::Bend { .. }) {
+            if !self.start_bend_session(picked_sources) {
+                return true;
+            }
         } else if translation_prompt::supports(command) {
             if !self.start_translation_session(
                 command,
@@ -4724,6 +4776,7 @@ impl VibocerosApp {
             self.finish_unjoin_command(false);
         }
         self.twist_session = None;
+        self.finish_bend_session(false);
         self.set_view_prompt = None;
         if std::mem::take(&mut self.remember_copy_prompt) && announce {
             self.push_log("Cancelled RememberCopyOptions".into());
@@ -7100,6 +7153,7 @@ impl VibocerosApp {
                 );
             }
             InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
+            InteractiveCommand::Bend { .. } => return self.accept_bend_point(point),
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
                 if point_count == 1
@@ -8841,6 +8895,7 @@ mod tests {
     mod align;
     mod angle;
     mod area;
+    mod bend;
     mod bezier_selection;
     mod command_line;
     mod construction_plane;
@@ -8950,6 +9005,7 @@ mod tests {
             points_session: None,
             transform_session: None,
             twist_session: None,
+            bend_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

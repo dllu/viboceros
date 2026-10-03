@@ -2,9 +2,9 @@
 
 `viboceros-geometry::BendPointMorph` implements a circular spine deformation,
 independently derived from public Rhino SDK point maps and owned Bend commands.
-The Python oracle exposes `bend_points` for comparing these maps. The application
-command and interactive viewport adapter are still pending; this page documents
-the geometry foundation, not a completed Bend command.
+The Python oracle exposes `bend_points` for comparing these maps. The
+[Bend command and interactive input](commands/bend.md) now use this foundation;
+live object previews remain pending.
 
 ## Construction
 
@@ -29,8 +29,10 @@ circular region, the map continues along its terminal tangent.
   the center of curvature. It stops at and beyond that center.
 - `rigid_transform(center)` places a group around its mapped bounds center
   using a circular tangent frame for uniform bends and forward derivative
-  frames for attenuated bends. Five retained rigid captures cover both maps
-  and off-spine centers.
+  frames for attenuated bends. Nearly orthogonal sampled frames retain the
+  first two forward directions; other frames average directions with their
+  unit dual normals before orthonormalizing. Native midpoint and nearby-center
+  witnesses constrain the public OpenNURBS frame-validity boundary at `2^-16`.
 
 Native SDK construction requires angle in degrees and circular arc length to
 exceed `2^-32`; explicit angles above one full turn are invalid. Automatically
@@ -46,12 +48,13 @@ NURBS curve/surface fitters. `with_preserve_structure(true)` maps Euclidean
 controls while retaining degree, knots, weights and domains. This control-cage
 approximation does not promise a pointwise fitting tolerance. Generic fitting
 has finite control/sample budgets and can reject singular or oscillatory maps.
-Native curve/surface/B-rep representations, fitting policy and interactive
-previews have not yet been compared for Bend.
+Multi-face B-reps always use fitting, even with PreserveStructure enabled.
+Retained curve/surface/B-rep commands establish a fitting floor of `1e-5`,
+applied only by the command adapter. Interactive previews remain unverified.
 
 ## Captures and comparisons
 
-All 124 operations were captured from licensed Rhino **8.32.26160.13001** in
+The original 124 operations were captured from licensed Rhino **8.32.26160.13001** in
 owned settings schemes on separate Xvfb displays. No proprietary source was
 inspected. Fixtures and raw responses are under
 [`tools/rhino_oracle`](../tools/rhino_oracle/); the
@@ -70,6 +73,19 @@ unchanged in `bend_command_followup.json`. Corrected `Angle value` captures are
 in `bend_angle_command.json`, including two rejected negative-angle attempts.
 The current helper uses the corrected syntax.
 
+An additional [command provenance record](bend-command-provenance.json) retains
+76 geometry/rigid/fitting commands and two preference workflows totaling 41
+steps. All retain terminal events and snapshots; the primary/fitting cases and
+preference workflows also retain prompt transcripts. The earlier 22 rigid
+captures suppress command echo and have empty history strings.
+Independent through-point geometry recipes explicitly set `Angle 0`, because a
+saved positive angle otherwise affects later geometry even when the initial
+prompt displays only `Angle`. The original 42-command capture that omitted
+this reset remains unchanged as `bend_geometry_implicit_angle_command.json`;
+the preference follow-up separately witnesses that remembered-angle behavior.
+Application tests replay all 41 steps, including canceled copies whose geometry
+survives while their completion-only defaults are discarded.
+
 Ordinary point maps are compared at `1e-11`; large-radius and small-angle cases
 use `1e-10` to allow native circle-center subtraction rounding. Rigid placements
 use `1e-7`. These are finite sampled witnesses, not exhaustive compatibility
@@ -86,7 +102,10 @@ speed comparison.
 ```sh
 cargo test -p viboceros-geometry --lib bend::
 cargo test -p viboceros-oracle --lib bend_points::
+cargo test -p viboceros-command bend::tests
+cargo test -p viboceros --bin viboceros app::tests::bend
 python3 -m unittest tools.rhino_oracle.test_bend
+python3 -m unittest tools.rhino_oracle.test_bend_command
 python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/bend_points.json \
   --observations tools/rhino_oracle/observations/bend_points.json \
   --absolute-epsilon 1e-11 --relative-epsilon 1e-12

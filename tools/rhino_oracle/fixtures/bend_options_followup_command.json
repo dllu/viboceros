@@ -1,0 +1,125 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "bend_options_command",
+      "id": "bend-preferences-followup",
+      "steps": [
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "Complete",
+          "degrees": 45,
+          "options": {
+            "Copy": false,
+            "Rigid": false,
+            "PreserveStructure": true,
+            "LimitToSpine": false
+          }
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CompleteThrough",
+          "degrees": 45,
+          "options": {
+            "Copy": false,
+            "LimitToSpine": true
+          }
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "AngleCancel",
+          "degrees": 90,
+          "options": {}
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CompleteThrough",
+          "degrees": 45,
+          "options": {}
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "Complete",
+          "degrees": 0,
+          "options": {}
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CompleteThrough",
+          "degrees": 45,
+          "options": {
+            "LimitToSpine": false
+          }
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": true
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CopyThenCancel",
+          "degrees": 45,
+          "options": {
+            "Copy": true,
+            "Rigid": true,
+            "PreserveStructure": false
+          },
+          "pending_options": {
+            "Rigid": false,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CopyThenEnter",
+          "degrees": 45,
+          "options": {
+            "Copy": true,
+            "Rigid": true,
+            "PreserveStructure": false
+          },
+          "pending_options": {
+            "Rigid": false,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "Complete",
+          "degrees": 45,
+          "options": {
+            "Copy": false,
+            "Rigid": false,
+            "PreserveStructure": true
+          }
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "finish": "CompleteThrough",
+          "degrees": 45,
+          "options": {}
+        }
+      ]
+    }
+  ]
+}

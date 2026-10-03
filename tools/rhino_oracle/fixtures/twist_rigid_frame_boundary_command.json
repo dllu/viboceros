@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "twist_command",
+      "id": "twist-rigid-frame-boundary-0",
+      "shape": "Points",
+      "copy": false,
+      "rigid": true,
+      "preserve": false,
+      "infinite": false,
+      "degrees": -0.001,
+      "grouped": true
+    },
+    {
+      "op": "twist_command",
+      "id": "twist-rigid-frame-boundary-1",
+      "shape": "Points",
+      "copy": false,
+      "rigid": true,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 1e-05,
+      "grouped": true
+    },
+    {
+      "op": "twist_command",
+      "id": "twist-rigid-frame-boundary-2",
+      "shape": "Points",
+      "copy": false,
+      "rigid": true,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 0.001,
+      "grouped": true
+    },
+    {
+      "op": "twist_command",
+      "id": "twist-rigid-frame-boundary-3",
+      "shape": "Points",
+      "copy": false,
+      "rigid": true,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 0.002,
+      "grouped": true
+    },
+    {
+      "op": "twist_command",
+      "id": "twist-rigid-frame-boundary-4",
+      "shape": "Points",
+      "copy": false,
+      "rigid": true,
+      "preserve": false,
+      "infinite": false,
+      "degrees": 0.004,
+      "grouped": true
+    }
+  ]
+}

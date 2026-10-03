@@ -7,6 +7,11 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 
 ## Interactive transforms
 
+[Bend](bend.md) deforms objects along a circular spine, with through-point or
+fixed-angle construction, rigid groups and repeated copies.
+[Twist](twist.md) supports axis-angle or reference-direction deformation and
+live object previews.
+
 Move, Copy, Scale, Scale1D, Scale2D, Rotate, Rotate3D, Mirror, and Shear can start with
 no objects selected: [pick sources first, then Enter](transform-sources.md).
 

@@ -78,6 +78,33 @@ impl Document {
                     .is_some_and(|entry| entry.id == group.id))
     }
 
+    /// Finalize a canceled continuation whose accepted copies survive, while
+    /// retaining the caller's current selection on Undo and Redo. Only the
+    /// current owned history entry can change; model edits and checkpoint
+    /// positions are preserved. Command-first pick cleanup can stay enabled.
+    pub fn retain_history_group_selection_on_replay(
+        &mut self,
+        group: &HistoryGroup,
+    ) -> Result<(), DocumentError> {
+        self.ensure_no_transaction()?;
+        if !self.history_group_is_current(group) {
+            return Err(DocumentError::HistoryGroupStale);
+        }
+        if group.can_undo() {
+            for edit in &mut self.history.undo.last_mut().unwrap().edits {
+                match edit {
+                    Edit::SelectionReleasedOnReplay { ids } => ids.clear(),
+                    Edit::TransformSelectionReleasedOnReplay { ids, reselected } => {
+                        ids.clear();
+                        *reselected = None;
+                    }
+                    _ => {}
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub fn begin_group_transaction(&mut self, group: &HistoryGroup) -> Result<(), DocumentError> {
         self.ensure_no_transaction()?;
         if !self.history_group_is_current(group) {

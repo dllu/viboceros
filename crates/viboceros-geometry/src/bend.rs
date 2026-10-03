@@ -1,8 +1,8 @@
 //! Circular spine bending inferred from public BendSpaceMorph point maps.
 
 use crate::{
-    AffineTransform3, Frame3, GeometryError, NurbsCurve, NurbsSurface, Point3, PointMorph, Real,
-    Tolerance, require_finite,
+    AffineTransform3, Brep, Frame3, GeometryError, NurbsCurve, NurbsSurface, Point3, PointMorph,
+    Real, Tolerance, require_finite,
 };
 
 const SDK_ZERO: Real = 2.3283064365386963e-10;
@@ -281,6 +281,13 @@ impl PointMorph for BendPointMorph {
         } else {
             crate::morph::fit_surface(self, source, tolerance)
         }
+    }
+
+    fn morph_brep(&self, brep: &Brep, tolerance: Tolerance) -> Result<Brep, GeometryError> {
+        brep.morphed(
+            &self.with_preserve_structure(self.preserve_structure && brep.faces().len() == 1),
+            tolerance,
+        )
     }
 }
 

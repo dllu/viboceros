@@ -5,6 +5,58 @@ fn point(x: f64) -> Geometry {
     Geometry::Point(Point3::try_new(x, 0., 0.).unwrap())
 }
 
+#[test]
+fn canceled_copy_continuations_keep_preselection_through_undo_and_redo() {
+    let mut doc = Document::default();
+    let source = doc.add_geometry(point(2.)).unwrap();
+    let peer = doc.add_geometry(point(9.)).unwrap();
+    doc.select_objects_direct([source, peer], SelectionMode::Replace)
+        .unwrap();
+    doc.clear_history().unwrap();
+    let mut group = doc.begin_history_group("Copies").unwrap();
+    doc.begin_group_transaction(&group).unwrap();
+    doc.release_command_selection_on_history_replay([source])
+        .unwrap();
+    let copies = doc.copy_objects_transformed([source], scale(2.)).unwrap();
+    doc.select_command_results([source, peer]).unwrap();
+    doc.commit_group_transaction(&mut group).unwrap();
+    doc.retain_history_group_selection_on_replay(&group)
+        .unwrap();
+    doc.undo().unwrap();
+    assert!(doc.is_selected(source));
+    assert!(doc.is_selected(peer));
+    assert!(doc.object(copies[0]).is_none());
+    doc.redo().unwrap();
+    assert!(doc.is_selected(source));
+    assert!(doc.is_selected(peer));
+    assert!(!doc.is_selected(copies[0]));
+    assert_eq!(doc.object(copies[0]).unwrap().geometry(), &point(4.));
+}
+
+#[test]
+fn canceled_copy_selection_policy_rejects_stale_tokens_without_touching_other_history() {
+    let mut doc = Document::default();
+    let source = doc.add_geometry(point(2.)).unwrap();
+    doc.select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    let mut group = doc.begin_history_group("Copies").unwrap();
+    doc.begin_group_transaction(&group).unwrap();
+    doc.release_command_selection_on_history_replay([source])
+        .unwrap();
+    doc.copy_objects_transformed([source], scale(2.)).unwrap();
+    doc.commit_group_transaction(&mut group).unwrap();
+    doc.add_geometry(point(9.)).unwrap();
+    let before = format!("{doc:?}");
+    assert!(matches!(
+        doc.retain_history_group_selection_on_replay(&group),
+        Err(DocumentError::HistoryGroupStale)
+    ));
+    assert_eq!(format!("{doc:?}"), before);
+    doc.undo().unwrap();
+    doc.undo().unwrap();
+    assert!(!doc.is_selected(source));
+}
+
 fn scale(factor: f64) -> AffineTransform3 {
     AffineTransform3::try_uniform_scale(Point3::try_new(0., 0., 0.).unwrap(), factor).unwrap()
 }

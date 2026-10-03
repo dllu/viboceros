@@ -1,0 +1,159 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-0",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": -1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-1",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": -1e-09
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-2",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": 1e-09
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-3",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": 1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-4",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": false,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": 2.853981633974483
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-5",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "axis": "Reverse"
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-6",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "axis": "Spatial",
+      "offset_z": 4.0
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-rigid-midpoint-7",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": true,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "offset_z": -10.0
+    }
+  ]
+}

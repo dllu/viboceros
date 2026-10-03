@@ -1,0 +1,771 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-0",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-1",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-2",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-3",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-4",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-5",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-6",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-7",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-8",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-9",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-10",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-11",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-12",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-13",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-14",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-15",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-16",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-17",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-18",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-19",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-20",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-21",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-22",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-23",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-24",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-25",
+      "shape": "Mesh",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-26",
+      "shape": "Mesh",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-27",
+      "shape": "Mesh",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-28",
+      "shape": "Mesh",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": true,
+      "non_attenuated": true,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-29",
+      "shape": "Mesh",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": true,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-30",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": false,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-31",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": true,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-32",
+      "shape": "Points",
+      "angle": 0.0,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-33",
+      "shape": "Points",
+      "angle": 45.0,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-34",
+      "shape": "Points",
+      "angle": 90.0,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-35",
+      "shape": "Points",
+      "angle": 180.0,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-36",
+      "shape": "Points",
+      "angle": 45.0,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": false,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-37",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        -10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-38",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        -10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-39",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "axis": "Reverse"
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-40",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "axis": "Spatial"
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-geometry-41",
+      "shape": "Points",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": true,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": true,
+      "targets": [
+        [
+          5.0,
+          0.0,
+          5.0
+        ]
+      ]
+    }
+  ]
+}

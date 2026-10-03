@@ -1,0 +1,60 @@
+{
+  "cases": {
+    "bend_fitting_command": 12,
+    "bend_geometry_command": 42,
+    "bend_limited_rigid_command": 10,
+    "bend_options_command": 1,
+    "bend_options_followup_command": 1,
+    "bend_rigid_frame_boundary_command": 4,
+    "bend_rigid_midpoint_command": 8,
+    "twist_rigid_frame_boundary_command": 5
+  },
+  "comparison": {
+    "application_preference_curve_samples_and_brep_bounds": 2e-05,
+    "fitted_samples": "2 * max(document absolute tolerance, 1e-5)",
+    "mesh_float_positions": 1e-06,
+    "points_and_preserved_controls": 1e-11,
+    "rigid": 1e-07
+  },
+  "engine_version": "8.32.26160.13001",
+  "geometry_commands": 76,
+  "notes": [
+    "Geometry recipes now explicitly reset Angle to zero for independent through-point construction; a saved positive angle otherwise influences geometry before the numeric option is chosen.",
+    "The original 42-command capture is retained unchanged as bend_geometry_implicit_angle_command.json. Its helper omitted Angle when the recipe angle was null and used RunScript echo=False; its history strings are empty. It precedes the explicit reset and transcript capture correction.",
+    "Native Copy group definitions remain empty after Undo. Selection replay differs between successful completion and cancellation with accepted preselected copies.",
+    "Copy, Rigid and PreserveStructure save on successful outer completion; immediately remembered spine, attenuation and numeric angle choices survive cancellation.",
+    "Private settings schemes: VibocerosOracleBendCommands_20261003_v3; VibocerosOracleBendLimitedRigid_20261003; VibocerosOracleBendRigidMidpoint_20261003; VibocerosOracleBendRigidFrameBoundary_20261003; VibocerosOracleBendAngleMemory_20261003.",
+    "OpenNURBS public frame-validity checks corroborate the measured orthogonality boundary.",
+    "Native workflows use preselected objects; the command-first source path has Rust UI tests. Live object previews and mouse construction-plane parity remain pending.",
+    "The earlier 22 Bend rigid captures and five supplementary Twist cases use echo=False and retain empty history strings; their terminal events and geometry snapshots are complete.",
+    "Five signed small-angle Twist rigid-group commands independently verify both sides of the shared orthogonality branch, at rigid coordinate epsilon 1e-7. Their private scheme is VibocerosOracleTwistRigidFrameBoundary_20261003."
+  ],
+  "preference_steps": 41,
+  "preference_workflows": 2,
+  "private_display": true,
+  "scope": "Owned public Bend commands; no proprietary source inspected. Geometry and UI replay cover sampled witnesses, not exhaustive Rhino parity.",
+  "sha256": {
+    "third_party/opennurbs/opennurbs_point.cpp": "7535408fdc27f55c7473fa1a0f7e5ac6d71d3d4da251f9cf5642b96bcbcfcd7f",
+    "tools/rhino_oracle/bend_command_probe.py": "b034c8f01df3ed0cd59cd9a3e931c0ee0b0f0180d98e12e27afddca86eaaff34",
+    "tools/rhino_oracle/bend_options_probe.py": "0fbb7deb6d43d687c9b2537711135a38a0607a602985bc94e2617ae1b8d87b84",
+    "tools/rhino_oracle/fixtures/bend_fitting_command.json": "87ad9d626257fb6662b414d6b36570af37cf18e355429567e08b7e6a97c8299e",
+    "tools/rhino_oracle/fixtures/bend_geometry_command.json": "66334e9622c1cbf80364943946901e205e8fd1f7cbed66f0dd8f263a1c34195e",
+    "tools/rhino_oracle/fixtures/bend_limited_rigid_command.json": "a3e78524d402a3a2f114f876bb795760a0b4df505490f31ba53b9543d8d247be",
+    "tools/rhino_oracle/fixtures/bend_options_command.json": "023ee8b7535e8ae89ec6d5bc04e8dbea2c11322478ba8cf7433fddd8e030aef9",
+    "tools/rhino_oracle/fixtures/bend_options_followup_command.json": "c332f51ea78253b349fd3ec15fd922abec8371a24b25ceea0a5ee141565a460e",
+    "tools/rhino_oracle/fixtures/bend_rigid_frame_boundary_command.json": "02e559972566217b58ad9c83ba16962305345b05a6d619e490e49b2fe7069ddf",
+    "tools/rhino_oracle/fixtures/bend_rigid_midpoint_command.json": "b6a9afcae4557bf18bc941f9f4674d59eed303d82311b1f542d4c86a6738d0a6",
+    "tools/rhino_oracle/fixtures/twist_rigid_frame_boundary_command.json": "2f5477443dd18de195b842dffad6059ec7cdc27d518bb94b0ceaecce34d5e7dc",
+    "tools/rhino_oracle/observations/bend_fitting_command.json": "c417f5b66bd64d4a0f865ba2a0fe6dfb909fbdde23f1b543a7d9f772b242c7bd",
+    "tools/rhino_oracle/observations/bend_geometry_command.json": "5d5faa7f28e31f452cc320129c1a73a38552b7f99cfede49c465e998e37416b5",
+    "tools/rhino_oracle/observations/bend_geometry_implicit_angle_command.json": "26850ebc7ae8a0860a7b11466c285f7b4a848de202932c0b3c697861a15f7fcc",
+    "tools/rhino_oracle/observations/bend_limited_rigid_command.json": "481707e2abb062ce68762859143e6a274c435819140304392c43f5b454a089ce",
+    "tools/rhino_oracle/observations/bend_options_command.json": "54c65d86f3e0d0dfa54aed321fea58b653af6dc31b5e9fa5bcfced884367dab6",
+    "tools/rhino_oracle/observations/bend_options_followup_command.json": "6f9782130fbab00d7085a3aa1bb20df123051dc7b60f25c1f11a6e428570443e",
+    "tools/rhino_oracle/observations/bend_rigid_frame_boundary_command.json": "55d546aea653749974a99db8341d5577e39886ca6cc267fe21a55ef1177cac62",
+    "tools/rhino_oracle/observations/bend_rigid_midpoint_command.json": "beda4ac88238d766fd446fc8593e983f19bd1e70a84fd02f8069478d226c6b3a",
+    "tools/rhino_oracle/observations/twist_rigid_frame_boundary_command.json": "f8185e71eba74f168589c53436ae848f4f234f3eec48b913aadb2ba649d81114",
+    "tools/rhino_oracle/twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf"
+  },
+  "twist_supplementary_commands": 5
+}

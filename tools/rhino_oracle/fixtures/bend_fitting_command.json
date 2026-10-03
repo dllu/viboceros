@@ -1,0 +1,234 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-0",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 0.001
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-1",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-2",
+      "shape": "Line",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-3",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 0.001
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-4",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-5",
+      "shape": "Curve",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-6",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 0.001
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-7",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-8",
+      "shape": "Surface",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-09
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-9",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 0.001
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-10",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-05
+    },
+    {
+      "op": "bend_geometry_command",
+      "id": "bend-fitting-11",
+      "shape": "Box",
+      "angle": null,
+      "through": [
+        10.0,
+        0.0,
+        10.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "limit_to_spine": true,
+      "symmetric": false,
+      "preserve": false,
+      "non_attenuated": false,
+      "grouped": false,
+      "tolerance": 1e-09
+    }
+  ]
+}

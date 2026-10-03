@@ -71,8 +71,12 @@ The public point map uses OpenNURBS cardinal-angle cleanup; the kernel's general
 rotation entry point continues to preserve small angles.
 
 Rigid placement is independently inferred from public outputs: take forward
-world-axis differences at the bounds center, average each unit direction with
-its unit dual normal, and orthonormalize. The measured difference step is
+world-axis differences at the bounds center. Nearly orthogonal sampled frames
+retain their first two directions; other frames average each unit direction
+with its unit dual normal before orthonormalizing. Five supplementary small-angle
+command witnesses test both sides of the shared frame-validity boundary;
+see the [Bend command provenance](../bend-command-provenance.json).
+The measured difference step is
 `sqrt(max(abs(center coordinates)) * 1.490116119385e-8 + 2^-32)`.
 No proprietary code was inspected.
 

@@ -244,6 +244,24 @@ class OracleClient:
             for op in request['operations']:
                 if op.get('op') == 'twist_options_command':
                     validate(op)
+        if any(op.get('op') == 'bend_geometry_command' for op in request.get('operations', [])):
+            from .bend_command_probe import validate
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Bend geometry commands require a private Rhino settings scheme')
+            if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Bend geometry commands require one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'bend_geometry_command':
+                    validate(op)
+        if any(op.get('op') == 'bend_options_command' for op in request.get('operations', [])):
+            from .bend_options_probe import validate
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Bend preferences require a private Rhino settings scheme')
+            if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Bend preferences require one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'bend_options_command':
+                    validate(op)
         interaction = None
         if any(op.get('op') == 'twist_preview' for op in request.get('operations', [])):
             from .twist_preview_input import TwistPreviewPicker
@@ -537,6 +555,12 @@ class OracleClient:
                 helper=Path(__file__).with_name('twist_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') in ('bend_points', 'bend_command_points') for op in request.get('operations', [])):
                 for name in ('bend_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'bend_geometry_command' for op in request.get('operations', [])):
+                for name in ('bend_command_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'bend_options_command' for op in request.get('operations', [])):
+                for name in ('bend_options_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'twist_preview' for op in request.get('operations',[])):
                 for name in ('twist_preview_probe.py','twist_command_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):

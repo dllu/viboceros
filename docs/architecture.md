@@ -95,10 +95,13 @@ source reselection between Undo and Redo without changing ordinary source-pick
 cleanup or unrelated selection.
 Its viewport adapter uses prepared control cages, quick interpolation grids and
 cached trim intervals for wire previews. Rigid instances share source display geometry.
-The [Bend geometry foundation](bend-geometry.md) supplies public SDK point maps
-and separately measured command construction, with retained native validity,
-attenuation and rigid-group witnesses. Its application command and preview
-adapter are pending.
+The [Bend command](commands/bend.md) uses the circular spine morph and the same
+fitters, with atomic staging and grouped rigid poses. Its application adapter
+retains source IDs for repeated copies and distinguishes immediately remembered
+spine/angle choices from options saved on successful completion. A scoped history
+finalization policy retains preselection for canceled copies through Undo/Redo.
+The [geometry oracle](bend-geometry.md) retains point and command witnesses;
+live object previews remain pending.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

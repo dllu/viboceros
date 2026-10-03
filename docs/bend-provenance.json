@@ -12,6 +12,7 @@
     "bend_small_angle_points": 12,
     "bend_validity_points": 5
   },
+  "command_followup_provenance": "bend-command-provenance.json",
   "command_recipes": 48,
   "comparison": {
     "large_radius_small_angle_points": 1e-10,
@@ -19,8 +20,8 @@
       "SDK validity and unchanged samples for invalid morphs are compared exactly.",
       "Large radii amplify native circle-center subtraction rounding.",
       "Ten original Angle=value macro failures are retained unchanged; corrected captures use Angle value. Two corrected negative-angle attempts are rejected.",
-      "Command source/after/Undo/Redo snapshots are native evidence. Kernel regressions compare successful placement coordinates; application command replay is pending.",
-      "Curve/surface/B-rep fitting, option memory, selection lifecycle and viewport previews are not yet measured for Bend.",
+      "These foundation point snapshots constrain placement coordinates; follow-on geometry command and UI replay are recorded in bend-command-provenance.json.",
+      "The foundation point witnesses do not measure fitting or interactive behavior. Follow-on command captures cover fitting, option memory and selection; live previews remain pending.",
       "The helper hash identifies the current corrected helper; the ten earlier Angle=value failures precede that syntax correction."
     ],
     "ordinary_points": 1e-11,

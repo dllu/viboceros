@@ -1,0 +1,222 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "bend_options_command",
+      "id": "bend-preferences",
+      "steps": [
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "LimitToSpine": true
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Symmetric": true
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "PreserveStructure": true
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "NonAttenuated": true
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true,
+            "LimitToSpine": false,
+            "Symmetric": true,
+            "PreserveStructure": true,
+            "NonAttenuated": true
+          },
+          "finish": "Complete",
+          "degrees": 45
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Rigid": false,
+            "LimitToSpine": true,
+            "Symmetric": false,
+            "PreserveStructure": false,
+            "NonAttenuated": false
+          },
+          "finish": "AngleCancel",
+          "degrees": 90
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Complete",
+          "degrees": 0
+        },
+        {
+          "kind": "Bend",
+          "shape": "Box",
+          "options": {
+            "Rigid": false,
+            "LimitToSpine": true,
+            "Symmetric": false,
+            "NonAttenuated": false
+          },
+          "finish": "Complete",
+          "degrees": 45
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": false
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete",
+          "degrees": 45
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": true
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {
+            "Copy": false
+          },
+          "finish": "Cancel",
+          "degrees": 45
+        },
+        {
+          "kind": "Bend",
+          "shape": "Points",
+          "finish": "CopyThenCancel",
+          "degrees": 45,
+          "options": {
+            "Copy": true,
+            "Rigid": false,
+            "LimitToSpine": true,
+            "Symmetric": false,
+            "PreserveStructure": false,
+            "NonAttenuated": false
+          },
+          "pending_options": {
+            "Rigid": true,
+            "LimitToSpine": false,
+            "Symmetric": true,
+            "PreserveStructure": true,
+            "NonAttenuated": true
+          }
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Bend",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Cancel",
+          "degrees": 45
+        }
+      ]
+    }
+  ]
+}
