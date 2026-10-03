@@ -623,6 +623,7 @@ enum InteractiveCommand {
     MirrorThreePoint {
         points: [Option<Point3>; 2],
     },
+    MirrorObject,
     Shear {
         origin: Option<Point3>,
         reference: Option<Point3>,
@@ -738,7 +739,7 @@ impl InteractiveCommand {
             Self::Scale { kind, .. } => kind.name(),
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
-            Self::Mirror { .. } | Self::MirrorThreePoint { .. } => "Mirror",
+            Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
@@ -1383,7 +1384,7 @@ impl InteractiveCommand {
                 }
             },
             Self::Mirror { start: None } => {
-                "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis (Esc to cancel)"
+                "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis, Object (Esc to cancel)"
             }
             Self::Mirror { start: Some(_) } => {
                 "Mirror: pick the second axis point in the viewport (Esc to cancel)"
@@ -1393,6 +1394,7 @@ impl InteractiveCommand {
                 [Some(_), None] => "Mirror 3Point: pick the second plane point (Esc to cancel)",
                 [Some(_), Some(_)] => "Mirror 3Point: pick the third plane point (Esc to cancel)",
             },
+            Self::MirrorObject => "Mirror Object: pick a planar surface or face (Esc to cancel)",
             Self::Shear { origin: None, .. } => {
                 "Shear: pick the fixed origin in the viewport (Esc to cancel)"
             }
@@ -1528,6 +1530,7 @@ impl InteractiveCommand {
             }
             | Self::Mirror { start: None }
             | Self::MirrorThreePoint { points: [None, _] }
+            | Self::MirrorObject
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveToPoint { .. }
@@ -4534,6 +4537,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::MirrorThreePoint { .. }
+                | InteractiveCommand::MirrorObject
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
@@ -7054,6 +7058,7 @@ impl VibocerosApp {
             InteractiveCommand::MirrorThreePoint { points } => {
                 return self.accept_mirror_three_point(points, point);
             }
+            InteractiveCommand::MirrorObject => return false,
             InteractiveCommand::Shear { origin: None, .. } => {
                 let command = InteractiveCommand::Shear {
                     origin: Some(point),
@@ -7249,6 +7254,12 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.picking_mirror_object() {
+            if let Some(id) = click.object_id {
+                self.accept_mirror_object(id, None);
+            }
+            return;
+        }
         if self
             .plane_prompt
             .as_ref()
@@ -8073,6 +8084,7 @@ impl eframe::App for VibocerosApp {
                                     InteractiveCommand::SelVolumePipe { source: None, .. }
                                         | InteractiveCommand::Pipe { source: None, .. }
                                         | InteractiveCommand::SelVolumeObject { .. }
+                                        | InteractiveCommand::MirrorObject
                                 )
                             )
                     },
@@ -8185,7 +8197,9 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
-        let face_pick = if plane_object_pick && !plane_curve_pick {
+        let face_pick = if self.picking_mirror_object() {
+            Some(FacePickMode::SurfaceAndBrepAny)
+        } else if plane_object_pick && !plane_curve_pick {
             Some(if plane_surface_pick {
                 FacePickMode::SurfaceAndBrepAny
             } else {

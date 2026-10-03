@@ -3,7 +3,7 @@ import math
 import re
 
 COMMANDS = ('Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Mirror', 'Shear')
-MIRROR_OPTIONS = ('3Point', 'XAxis', 'YAxis', 'ZAxis')
+MIRROR_OPTIONS = ('3Point', 'XAxis', 'YAxis', 'ZAxis', 'Object')
 
 
 def finite(value):
@@ -16,7 +16,7 @@ def finite(value):
 def validate(operation):
     if (not isinstance(operation, dict)
             or not {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'} <= set(operation)
-            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane'}
+            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target'}
             or operation['op'] != 'transform_copy_command'
             or not isinstance(operation['id'], str) or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z', operation['id']) is None
             or operation['command'] not in COMMANDS
@@ -25,6 +25,16 @@ def validate(operation):
             or operation['finish'] not in ('Enter', 'Cancel', 'Automatic')
             or not isinstance(operation['inputs'], list) or not 1 <= len(operation['inputs']) <= 32):
         raise ValueError('invalid transform Copy workflow')
+    if 'mirror_target' in operation:
+        if __package__:
+            from .mirror_object_probe import validate_target
+        else:
+            from mirror_object_probe import validate_target
+        if operation['command'] != 'Mirror':
+            raise ValueError('plane targets require Mirror')
+        validate_target(operation['mirror_target'])
+        if operation['inputs'].count('Target') > 1:
+            raise ValueError('Mirror target capture delivers one prescribed pick')
     for source in operation['sources']:
         if (not isinstance(source, list) or len(source) != 3
                 or any(not finite(value) for value in source)):
@@ -48,6 +58,8 @@ def validate(operation):
             continue
         if operation['command'] == 'Mirror' and token in MIRROR_OPTIONS:
             continue
+        if token == 'Target' and 'mirror_target' in operation:
+            continue
         coordinates = token[1:] if token.startswith('w') else token
         if re.match(r'^[-+0-9.eE]+(?:,[-+0-9.eE]+){0,2}\Z', coordinates) is None:
             raise ValueError('transform inputs are bounded numeric values or Copy options')
@@ -62,6 +74,13 @@ def validate(operation):
 
 
 def run(operation, host):
+    if 'mirror_target' in operation:
+        from mirror_object_probe import run_with_target
+        return run_with_target(operation, host, run_owned)
+    return run_owned(operation, host)
+
+
+def run_owned(operation, host, target=None):
     from join_probe import observe_command
     validate(operation)
     Rhino, System = host['Rhino'], host['System']
@@ -123,21 +142,29 @@ def run(operation, host):
         before = snapshot()
         tokens = []
         for token in operation['inputs']:
-            tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS else token)
+            if token == 'Target':
+                tokens.append('_SelID '+str(target['id']) if target['pick'] == 'id' else '_Pause')
+            else:
+                tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS else token)
         macro = '_'+operation['command']+' '+' '.join(tokens)
         if operation['finish'] != 'Automatic':
             macro += ' _'+operation['finish']
         marker = 'Viboceros transform '+str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
         host['_record_progress']('transform '+operation['id']+' '+macro)
+        action = lambda: Rhino.RhinoApp.RunScript(macro, True)
+        if target is not None and target['pick'] in ('mouse', 'mouse-sub') and 'Target' in operation['inputs']:
+            from mirror_object_probe import click_target
+            action = lambda: click_target(operation, target, host, macro)
         succeeded, after, events = observe_command(Rhino.Commands.Command, operation['command'],
-            lambda: Rhino.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
+            action, snapshot, lambda: [], True)
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         last = undo = redo = None
         if operation['sel_last']:
             Rhino.RhinoApp.RunScript('_SelLast', True)
             last = snapshot()
-        if operation['undo_redo'] and after != before:
+        geometry_state = lambda state: dict(groups=state['groups'], objects=[dict((key,value) for key,value in obj.items() if key != 'selected') for obj in state['objects']])
+        if operation['undo_redo'] and geometry_state(after) != geometry_state(before):
             Rhino.RhinoApp.RunScript('_Undo', True)
             undo = snapshot()
             Rhino.RhinoApp.RunScript('_Redo', True)

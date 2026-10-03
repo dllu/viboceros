@@ -70,8 +70,11 @@ history. The [plane-primitives module](construction-planes.md) handles orientati
 projection, and native parameter policy for six primitive commands.
 The separate [plane-transforms module](plane-transforms.md) handles reference
 interpretation and affine maps for four transforms. The
-[Mirror module](commands/mirror.md) owns two-point, three-point, and CPlane-axis
-plane interpretation; its app adapter owns option editing and point phases.
+[Mirror module](commands/mirror.md) owns two-point, three-point, CPlane-axis, and
+planar-object interpretation; its app adapter owns options, target picking, and
+point phases. The transform session keeps the original source IDs when Object
+selection clears highlighting, passing them through an internal `Sources=`
+registry argument independently of the plane target.
 Both share document mutation and copy/group transactions with other affine commands.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve

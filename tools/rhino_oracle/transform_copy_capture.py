@@ -29,18 +29,31 @@ def capture(request, client, timeout=300):
     for operation, row in zip(request['operations'], observed['results']):
         value = row['value']
         if (not isinstance(value, dict)
-                or set(value) != {'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'}
+                or set(value) != ({'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'} | ({'target'} if 'mirror_target' in operation else set()))
                 or type(value['succeeded']) is not bool or not isinstance(value['history'], str)
                 or not isinstance(value['events'], list) or not isinstance(value['group_names'], list)
                 or any(not isinstance(name, str) for name in value['group_names'])):
             raise ValueError('invalid transform Copy observation')
+        if 'mirror_target' in operation:
+            target = value['target']
+            fields = {'type', 'selected', 'bounds', 'name', 'groups', 'layer', 'color_source', 'color'}
+            fields |= {'vertices', 'faces'} if operation['mirror_target']['kind'] == 'mesh' else {'definition'}
+            if (not isinstance(target, dict) or set(target) != {'before', 'after'}
+                    or not isinstance(target['before'], dict) or not isinstance(target['after'], dict)
+                    or set(target['before']) != fields or set(target['after']) != fields
+                    or {k:v for k,v in target['after'].items() if k != 'bounds'} != {k:v for k,v in target['before'].items() if k != 'bounds'}
+                    or target['before'].get('selected') is not False
+                    or ('definition' in fields and (not isinstance(target['before']['definition'],dict) or not target['before']['definition']))):
+                raise ValueError('invalid Mirror target observation')
         for key in ('before', 'after'):
             validate_snapshot(value[key], len(operation['sources']))
         if len(value['before']['objects']) != len(operation['sources']):
             raise ValueError('incomplete transform source observation')
+        geometry_state = lambda state: dict(groups=state['groups'], objects=[dict((key,field) for key,field in obj.items() if key != 'selected') for obj in state['objects']])
+        changed = geometry_state(value['after']) != geometry_state(value['before'])
         for key, required in [('last', operation['sel_last']),
-                              ('undo', operation['undo_redo'] and value['after'] != value['before']),
-                              ('redo', operation['undo_redo'] and value['after'] != value['before'])]:
+                              ('undo', operation['undo_redo'] and changed),
+                              ('redo', operation['undo_redo'] and changed)]:
             if required:
                 validate_snapshot(value[key], len(operation['sources']))
             elif value[key] is not None:

@@ -7,6 +7,7 @@ pub(super) struct TransformSession {
     copy: bool,
     applied: bool,
     factor: Option<f64>,
+    sources: Vec<ObjectId>,
 }
 
 pub(super) fn supports(command: InteractiveCommand) -> bool {
@@ -17,6 +18,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
             | InteractiveCommand::Rotate3D { .. }
             | InteractiveCommand::Mirror { .. }
             | InteractiveCommand::MirrorThreePoint { .. }
+            | InteractiveCommand::MirrorObject
             | InteractiveCommand::Shear { .. }
     )
 }
@@ -71,6 +73,15 @@ impl VibocerosApp {
                     copy,
                     applied: false,
                     factor: None,
+                    sources: self
+                        .document
+                        .objects()
+                        .filter_map(|object| {
+                            self.document
+                                .is_selected(object.id())
+                                .then_some(object.id())
+                        })
+                        .collect(),
                 });
                 self.push_log(format!(
                     "Copy={} (edit with Copy=Yes|No)",
@@ -93,7 +104,20 @@ impl VibocerosApp {
         let Some(session) = self.transform_session.as_mut() else {
             return false;
         };
-        let input = format!("{input} Copy={}", if session.copy { "Yes" } else { "No" });
+        let display_input = format!("{input} Copy={}", if session.copy { "Yes" } else { "No" });
+        let input = if continuation == InteractiveCommand::MirrorObject {
+            format!(
+                "{display_input} Sources={}",
+                session
+                    .sources
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(",")
+            )
+        } else {
+            display_input.clone()
+        };
         let context = viboceros_command::CommandContext {
             construction_plane: self.viewports[self.active_viewport].construction_plane(),
         };
@@ -105,13 +129,14 @@ impl VibocerosApp {
         ) {
             Ok(message) => {
                 session.applied = true;
-                self.push_log(format!("> {input}"));
+                self.push_log(format!("> {display_input}"));
                 self.push_log(message);
                 if self.transform_session.as_ref().unwrap().copy
                     && !matches!(
                         continuation,
                         InteractiveCommand::Mirror { .. }
                             | InteractiveCommand::MirrorThreePoint { .. }
+                            | InteractiveCommand::MirrorObject
                     )
                 {
                     self.active_command = Some(continuation);
@@ -177,7 +202,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_transform(&mut self, input: &str) -> bool {
-        if self.try_continue_mirror_option(input) {
+        if self.try_continue_mirror_option(input) || self.try_continue_mirror_target(input) {
             return true;
         }
         let (Some(command), Some(session)) = (self.active_command, self.transform_session.as_ref())
@@ -213,6 +238,7 @@ impl VibocerosApp {
                         command,
                         InteractiveCommand::Mirror { .. }
                             | InteractiveCommand::MirrorThreePoint { .. }
+                            | InteractiveCommand::MirrorObject
                     )))
         {
             self.cancel_interactive_command(true);
@@ -230,7 +256,7 @@ impl VibocerosApp {
             command,
             InteractiveCommand::Rotate3D {
                 points: [_, None, _] | [None, _, _]
-            }
+            } | InteractiveCommand::MirrorObject
         );
         if word.to_ascii_lowercase().starts_with("copy=")
             || word
@@ -239,7 +265,14 @@ impl VibocerosApp {
                 .is_some_and(|name| name.eq_ignore_ascii_case("Copy"))
         {
             if !can_edit_copy {
-                self.push_log("Copy is available after choosing the rotation axis".into());
+                self.push_log(
+                    if command == InteractiveCommand::MirrorObject {
+                        "Set Copy before choosing the Object plane option"
+                    } else {
+                        "Copy is available after choosing the rotation axis"
+                    }
+                    .into(),
+                );
                 self.command_input.clear();
                 return true;
             }

@@ -2,7 +2,7 @@
 use super::*;
 use serde_json::{Value, json};
 use viboceros_document::ObjectColorSource;
-use viboceros_geometry::Vector3;
+use viboceros_geometry::{Brep, NurbsSurface, Polyline3, Vector3};
 
 #[path = "../../../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
@@ -73,7 +73,13 @@ fn empty_command_input_accepts_scalar_defaults_and_shows_the_pending_value() {
 }
 
 fn snapshot(app: &VibocerosApp, sources: &[ObjectId]) -> Value {
-    let objects = app.document.objects().collect::<Vec<_>>();
+    // Mirror Object's independently constructed plane target is checked
+    // separately; these snapshots retain the affine point witnesses.
+    let objects = app
+        .document
+        .objects()
+        .filter(|object| matches!(object.geometry(), Geometry::Point(_)))
+        .collect::<Vec<_>>();
     let groups = app.document.groups().collect::<Vec<_>>();
     json!({
         "objects": objects.iter().map(|object| {
@@ -194,12 +200,216 @@ fn mirror_enter_ends_every_unfinished_point_prompt_without_an_edit() {
     }
 }
 
+#[test]
+fn mirror_object_targets_geometry_selection_groups_and_history_match_native() {
+    for invocation in [
+        Invocation::Prompt,
+        Invocation::InlineMirrorOptions,
+        Invocation::MirrorObjectRegistry,
+    ] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/mirror_object.json"),
+            include_str!("../../../tools/rhino_oracle/observations/mirror_object.json"),
+            70,
+            invocation,
+        );
+    }
+}
+
+#[test]
+fn mirror_object_rejected_targets_preserve_geometry_history_and_pending_source_ids() {
+    let mut app = test_app();
+    enter(&mut app, "Point 2,3,4");
+    enter(&mut app, "Point 13,-4,8");
+    let sources = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let corners = [
+        point(20., -5., 1.),
+        point(30., -5., 1.),
+        point(30., 5., 4.),
+        point(20., 5., 1.),
+    ];
+    let curved = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(
+            NurbsSurface::try_bilinear(corners).unwrap(),
+        ))
+        .unwrap();
+    let mesh = app
+        .document
+        .add_geometry(Geometry::Mesh(
+            TriangleMesh::try_new_faces(
+                corners.to_vec(),
+                vec![MeshFace::Quad([0, 1, 2, 3])],
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_objects_direct(sources.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Mirror Object Copy=Yes");
+    assert!(app.picking_mirror_object());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert!(!app.accept_mirror_object(curved, None));
+    assert!(!app.accept_mirror_object(mesh, Some(0)));
+    assert!(!app.accept_mirror_object(sources[0], None));
+    assert!(app.picking_mirror_object());
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert!(app.transform_session.is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn mirror_object_surface_and_face_picks_use_spatial_planes_and_leave_targets_unchanged() {
+    for face in [None, Some(0)] {
+        let mut app = test_app();
+        enter(&mut app, "Point 2,3,4");
+        let source = app.document.objects().next().unwrap().id();
+        let surface = NurbsSurface::try_bilinear([
+            point(0., 0., 1.),
+            point(5., 0., 1.),
+            point(5., 4., 4.),
+            point(0., 4., 4.),
+        ])
+        .unwrap();
+        let geometry = if face.is_some() {
+            Geometry::Brep(
+                Brep::try_rectangular_surface_face(
+                    surface,
+                    0.0..=1.0,
+                    0.0..=1.0,
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            )
+        } else {
+            Geometry::NurbsSurface(surface)
+        };
+        let target = app.document.add_geometry(geometry).unwrap();
+        let target_before = app.document.object(target).unwrap().clone();
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        enter(&mut app, "_-mIrRoR _Object _Copy=_Yes");
+        assert!(app.picking_mirror_object());
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert!(!app.accept_mirror_object(target, Some(99)));
+        if let Some(face) = face {
+            app.accept_component_face_hit(target, face, None);
+        } else {
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(target),
+                mode: SelectionMode::Replace,
+            });
+        }
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        let copy = app
+            .document
+            .objects()
+            .find(|object| object.id() != source && object.id() != target)
+            .unwrap();
+        let Geometry::Point(p) = copy.geometry() else {
+            panic!("point")
+        };
+        for (actual, expected) in p.to_array().into_iter().zip([2., 3.72, 3.04]) {
+            assert!((actual - expected).abs() < 1e-9);
+        }
+        let copy_id = copy.id();
+        assert_eq!(app.document.object(target), Some(&target_before));
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("Mirror"));
+        enter(&mut app, "SelLast");
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(!app.document.can_undo());
+        enter(&mut app, "Redo");
+        assert!(app.document.is_selected(copy_id));
+        assert!(!app.document.is_selected(source));
+        assert_eq!(app.document.object(target), Some(&target_before));
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Invocation {
     Prompt,
     Registry,
     RegistrySeeds,
     InlineMirrorOptions,
+    MirrorObjectRegistry,
+}
+
+fn mirror_target_geometry(target: &Value, tolerance: viboceros_geometry::Tolerance) -> Geometry {
+    let corners: [Point3; 4] = std::array::from_fn(|index| {
+        let p = &target["corners"][index];
+        point(
+            p[0].as_f64().unwrap(),
+            p[1].as_f64().unwrap(),
+            p[2].as_f64().unwrap(),
+        )
+    });
+    match target["kind"].as_str().unwrap() {
+        "surface" | "curved" => {
+            Geometry::NurbsSurface(NurbsSurface::try_bilinear(corners).unwrap())
+        }
+        "trimmed" => Geometry::Brep(
+            Brep::try_rectangular_surface_face(
+                NurbsSurface::try_bilinear(corners).unwrap(),
+                0.0..=1.0,
+                0.0..=1.0,
+                tolerance,
+            )
+            .unwrap(),
+        ),
+        "box" | "extrusion" => {
+            let [x, y, z] = corners[0].to_array();
+            let [end_x, end_y, _] = corners[2].to_array();
+            let brep = Brep::try_box(
+                viboceros_command::CommandContext::default().construction_plane,
+                [[x, end_x], [y, end_y], [z, z + 6.]],
+                tolerance,
+            )
+            .unwrap();
+            // Prescribed rectangle walls in perimeter order, then bottom and
+            // top. This input construction is independent of the observations.
+            let faces = [2, 5, 3, 4, 0, 1]
+                .map(|index| brep.faces()[index].clone())
+                .to_vec();
+            Geometry::Brep(
+                Brep::try_new(
+                    brep.vertices().to_vec(),
+                    brep.edges().to_vec(),
+                    faces,
+                    tolerance,
+                )
+                .unwrap(),
+            )
+        }
+        "mesh" => Geometry::Mesh(
+            TriangleMesh::try_new_faces(
+                corners.to_vec(),
+                vec![MeshFace::Quad([0, 1, 2, 3])],
+                tolerance,
+            )
+            .unwrap(),
+        ),
+        "curve" => Geometry::Polyline(
+            Polyline3::try_new(corners.into_iter().chain([corners[0]]).collect(), tolerance)
+                .unwrap(),
+        ),
+        _ => panic!("unknown target"),
+    }
 }
 
 fn replay_native(request: &str, observed: &str, count: usize, invocation: Invocation) {
@@ -223,6 +433,12 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             // with the same registry; no measured defaults seed this state.
             app.commands = registry;
         }
+        let target = operation.get("mirror_target").map(|target| {
+            app.document
+                .add_geometry(mirror_target_geometry(target, app.document.tolerance()))
+                .unwrap()
+        });
+        let target_before = target.map(|id| app.document.object(id).unwrap().clone());
         // Match the native SDK source construction record. Keeping this
         // baseline also exercises SelLast when the tested transform is a no-op.
         app.document
@@ -306,6 +522,15 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
         let use_registry = match invocation {
             Invocation::Prompt => false,
             Invocation::InlineMirrorOptions => false,
+            Invocation::MirrorObjectRegistry => {
+                operation["inputs"].as_array().unwrap().len() == 3
+                    && operation["inputs"][1] == "Object"
+                    && operation["inputs"][2] == "Target"
+                    && matches!(
+                        operation["mirror_target"]["kind"].as_str(),
+                        Some("surface" | "trimmed" | "box" | "extrusion")
+                    )
+            }
             Invocation::Registry => true,
             Invocation::RegistrySeeds => {
                 operation["finish"] == "Automatic"
@@ -351,21 +576,42 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     0
                 };
                 for input in inputs.iter().skip(consumed) {
-                    enter(&mut app, input.as_str().unwrap());
+                    if input == "Target" {
+                        let target = target.unwrap();
+                        let recipe = &operation["mirror_target"];
+                        if recipe["pick"] != "id" {
+                            app.accept_component_face_hit(
+                                target,
+                                recipe["face"].as_u64().unwrap() as usize,
+                                None,
+                            );
+                        } else {
+                            enter(&mut app, &target.to_string());
+                        }
+                    } else {
+                        enter(&mut app, input.as_str().unwrap());
+                    }
                 }
                 if operation["finish"] != "Automatic" {
                     enter(&mut app, operation["finish"].as_str().unwrap());
                 }
             }
             true => {
-                let input = std::iter::once(operation["command"].as_str().unwrap())
-                    .chain(
-                        operation["inputs"]
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|value| value.as_str().unwrap().trim_start_matches('w')),
-                    )
+                let input = std::iter::once(operation["command"].as_str().unwrap().to_owned())
+                    .chain(operation["inputs"].as_array().unwrap().iter().map(|value| {
+                        let value = value.as_str().unwrap();
+                        if value == "Target" {
+                            let id = target.unwrap();
+                            let recipe = &operation["mirror_target"];
+                            if recipe["pick"] != "id" {
+                                format!("{id} Face={}", recipe["face"])
+                            } else {
+                                id.to_string()
+                            }
+                        } else {
+                            value.trim_start_matches('w').to_owned()
+                        }
+                    }))
                     .collect::<Vec<_>>()
                     .join(" ");
                 let context = viboceros_command::CommandContext {
@@ -399,6 +645,17 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             assert!(
                 app.document.undo_label() == Some("Transform source setup"),
                 "{label}: canceled or identity command recorded history"
+            );
+        }
+        if let Some(id) = target {
+            assert_eq!(
+                app.document.object(id),
+                target_before.as_ref(),
+                "{label}: plane target was edited"
+            );
+            assert!(
+                !app.document.is_selected(id),
+                "{label}: plane target became a transform source"
             );
         }
         commands = Some(app.commands);

@@ -10,6 +10,10 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.picking_mirror_object() {
+            self.accept_mirror_object(object, Some(face));
+            return;
+        }
         if self
             .plane_prompt
             .as_ref()

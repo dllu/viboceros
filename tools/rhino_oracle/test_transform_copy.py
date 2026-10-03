@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
-from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request
+from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request, mirror_object_request
 from .transform_copy_probe import validate
 
 
@@ -19,7 +19,8 @@ class TransformCopyTests(unittest.TestCase):
                                      ('transform_copy_identity', identity_request, 64),
                                      ('transform_copy_default', default_request, 80),
                                      ('mirror_planes', mirror_request, 64),
-                                     ('mirror_enter', mirror_enter_request, 5)]:
+                                     ('mirror_enter', mirror_enter_request, 5),
+                                     ('mirror_object', mirror_object_request, 70)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)
@@ -34,14 +35,14 @@ class TransformCopyTests(unittest.TestCase):
         b, c, d = [[v-u for u, v in zip(a, point)] for point in [b, c, d]]
         determinant = sum(b[i] * (c[(i+1)%3]*d[(i+2)%3] - c[(i+2)%3]*d[(i+1)%3]) for i in range(3))
         self.assertNotEqual(determinant, 0.)
-        for token in ['3Point', 'XAxis', 'YAxis', 'ZAxis']:
+        for token in ['3Point', 'XAxis', 'YAxis', 'ZAxis', 'Object']:
             invalid = copy.deepcopy(operation)
             invalid['command'] = 'Scale'
             invalid['inputs'] = [token]
             with self.subTest(token=token), self.assertRaises(ValueError):
                 validate(invalid)
         invalid = copy.deepcopy(operation)
-        invalid['inputs'] = ['Object']
+        invalid['inputs'] = ['Target']
         with self.assertRaises(ValueError):
             validate(invalid)
 
@@ -56,6 +57,34 @@ class TransformCopyTests(unittest.TestCase):
                 with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                     capture(invalid, client)
                 client.run_rhino.assert_not_called()
+
+    def test_owned_mirror_target_inputs_are_bounded_before_launch(self):
+        operation=mirror_object_request()['operations'][0]
+        for key,values in [('kind',['Delete',None]),('pick',['unowned',None]),('view',['Perspective','Delete']),
+                           ('face',[True,-1,6]),('corners',[[[float('nan'),0,0]]*4,[[0,0,0]]*3]),
+                           ('menu',['Second','Delete']),('fraction',[[True,0],[.5,2]]),('modifiers',['alt']),('extra',[True])]:
+            for value in values:
+                invalid=copy.deepcopy(operation);invalid['mirror_target'][key]=value
+                with self.subTest(key=key,value=value),self.assertRaises(ValueError):validate(invalid)
+        for inputs in [['Target','Target'],['Target _Delete']]:
+            invalid=copy.deepcopy(operation);invalid['inputs']=inputs
+            with self.assertRaises(ValueError):validate(invalid)
+
+    def test_plane_target_geometry_and_selection_must_remain_unchanged(self):
+        request=mirror_object_request()
+        observed=json.loads(Path(__file__).with_name('observations').joinpath('mirror_object.json').read_text())
+        for mutation in ['selected','definition','missing','missing_geometry','bounds']:
+            invalid=copy.deepcopy(observed);target=invalid['results'][0]['value']['target']['after']
+            if mutation=='selected':target['selected']=True
+            elif mutation=='definition':target['definition']['faces'][0]['definition']['control_points'][0]['point'][0]+=1
+            elif mutation=='missing':del invalid['results'][0]['value']['target']
+            elif mutation=='missing_geometry':
+                del target['definition'];del invalid['results'][0]['value']['target']['before']['definition']
+            else:target['bounds'][0][0]+=1e-7
+            client=Mock(settings_scheme='VibocerosOracleTest',run_rhino=Mock(return_value=invalid))
+            if mutation=='bounds':self.assertEqual(capture(request,client),invalid)
+            else:
+                with self.subTest(mutation=mutation),self.assertRaises(ValueError):capture(request,client)
 
     def test_fixture_is_independently_prescribed(self):
         saved = json.loads(Path(__file__).with_name('fixtures').joinpath('transform_copy.json').read_text())

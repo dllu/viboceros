@@ -1,0 +1,5295 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-surface-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-surface-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-surface-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-surface-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-trimmed-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-trimmed-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-trimmed-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-horizontal-trimmed-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-surface-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-surface-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-surface-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-surface-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-trimmed-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-trimmed-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-trimmed-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-vertical-trimmed-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            7.0
+          ],
+          [
+            20.0,
+            -5.0,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-surface-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-surface-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-surface-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-surface-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-trimmed-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-trimmed-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-trimmed-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-tilted-trimmed-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "trimmed",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-0-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-0-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-0-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-0-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-1-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-1-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-1-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-1-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-2-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-2-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-2-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-2-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-3-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-3-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-3-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-3-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-4-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 4,
+        "view": "Bottom"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-4-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 4,
+        "view": "Bottom"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-4-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 4,
+        "view": "Bottom"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-4-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 4,
+        "view": "Bottom"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-5-False-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 5,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-5-False-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 5,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-5-True-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 5,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-box-5-True-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "box",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 5,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-0-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-0-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 0,
+        "view": "Front",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-1-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-1-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 1,
+        "view": "Right",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-2-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-2-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 2,
+        "view": "Back",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-3-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-extrusion-3-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "extrusion",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "mouse",
+        "face": 3,
+        "view": "Left",
+        "fraction": [
+          0.5,
+          0.0
+        ],
+        "menu": "First"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-curved-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "curved",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            4.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-curved-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "curved",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            4.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-mesh-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "mesh",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-mesh-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "mesh",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-curve-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "curve",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-invalid-curve-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "curve",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-cancel",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-enter",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Enter"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-late",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "w1,2,3",
+        "Object",
+        "w4,2,3"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-copy-edit-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Copy=Yes",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-copy-edit-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Copy=Yes",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-single-group-member",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            26.0,
+            3.0,
+            1.0
+          ],
+          [
+            19.6,
+            7.8,
+            7.0
+          ],
+          [
+            13.6,
+            -0.2,
+            7.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-without-sellast-False",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": false,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-object-without-sellast-True",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Object",
+        "Target"
+      ],
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": false,
+      "mirror_target": {
+        "kind": "surface",
+        "corners": [
+          [
+            20.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            -5.0,
+            1.0
+          ],
+          [
+            30.0,
+            5.0,
+            1.0
+          ],
+          [
+            20.0,
+            5.0,
+            1.0
+          ]
+        ],
+        "pick": "id",
+        "face": 0,
+        "view": "Top"
+      }
+    }
+  ]
+}

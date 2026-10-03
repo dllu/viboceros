@@ -211,5 +211,48 @@ def mirror_enter_request():
     return dict(protocol_version=1, iterations=1, operations=operations)
 
 
+def mirror_object_request():
+    """Surface/face inputs prescribed before any native command measurement."""
+    operations = []
+    horizontal = [[20.,-5.,1.],[30.,-5.,1.],[30.,5.,1.],[20.,5.,1.]]
+    planes = [('horizontal', horizontal),
+              ('vertical', [[20.,-5.,1.],[20.,5.,1.],[20.,5.,7.],[20.,-5.,7.]]),
+              ('tilted', [[20.,-5.,1.],[26.,3.,1.],[19.6,7.8,7.],[13.6,-.2,7.]])]
+    def add(label, kind, corners, inputs=None, copy=False, grouped=False, pick='id', face=0, view='Top', selected=None):
+        operations.append(dict(op='transform_copy_command', id='mirror-object-'+label, command='Mirror',
+            inputs=['Copy=Yes' if copy else 'Copy=No']+(inputs or ['Object','Target']),
+            sources=[[2.,3.,4.],[5.,-1.,2.],[8.,7.,-3.],[-1.,2.,7.],[13.,-4.,8.]],
+            selected=selected or [0,1,2,3], grouped=grouped, finish='Cancel', undo_redo=True, sel_last=True,
+            mirror_target=dict(kind=kind, corners=corners, pick=pick, face=face, view=view)))
+    for plane, corners in planes:
+        for kind in ['surface','trimmed']:
+            for copy in [False,True]:
+                for grouped in [False,True]:
+                    add('%s-%s-%s-%s' % (plane,kind,copy,grouped),kind,corners,copy=copy,grouped=grouped)
+    for face,view in enumerate(['Front','Right','Back','Left','Bottom','Top']):
+        for copy in [False,True]:
+            for grouped in [False,True]:
+                add('box-%d-%s-%s' % (face,copy,grouped),'box',horizontal,copy=copy,grouped=grouped,pick='mouse',face=face,view=view)
+    for face,view in enumerate(['Front','Right','Back','Left']):
+        for copy in [False,True]:
+            add('extrusion-%d-%s' % (face,copy),'extrusion',horizontal,copy=copy,grouped=True,pick='mouse',face=face,view=view)
+            operations[-1]['mirror_target'].update(fraction=[.5,0.],menu='First')
+    for kind in ['curved','mesh','curve']:
+        corners = [p[:] for p in horizontal]
+        if kind == 'curved': corners[2][2] += 3.
+        for copy in [False,True]:
+            add('invalid-%s-%s' % (kind,copy),kind,corners,copy=copy,grouped=True)
+    add('cancel','surface',horizontal,inputs=['Object'],copy=True,grouped=True)
+    add('enter','surface',horizontal,inputs=['Object','Enter'],copy=True,grouped=True)
+    add('late','surface',horizontal,inputs=['w1,2,3','Object','w4,2,3'],grouped=True)
+    for grouped in [False,True]:
+        add('copy-edit-'+str(grouped),'surface',horizontal,inputs=['Object','Copy=Yes','Target'],grouped=grouped)
+    add('single-group-member','surface',planes[2][1],copy=True,grouped=True,selected=[0])
+    for copy in [False,True]:
+        add('without-sellast-'+str(copy),'surface',horizontal,copy=copy)
+        operations[-1]['sel_last'] = False
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
 if __name__ == '__main__':
     print(json.dumps(request(), indent=2))

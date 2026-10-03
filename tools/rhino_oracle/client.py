@@ -221,6 +221,9 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError("transform Copy probes require a private Rhino settings scheme")
             validate_request(request)
+            if any(op.get('mirror_target', {}).get('pick') in ('mouse', 'mouse-sub') for op in request['operations']):
+                from .component_picking import ComponentPicker
+                interaction = ComponentPicker()
 
         if any(op.get("op") == "copy_options_command" for op in request.get("operations", [])):
             from .copy_options_probe import validate
@@ -521,7 +524,7 @@ class OracleClient:
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
-                for name in ("transform_copy_probe.py", "join_probe.py", "merge_edges_probe.py"):
+                for name in ("transform_copy_probe.py", "mirror_object_probe.py", "shrink_face_input.py", "join_probe.py", "merge_edges_probe.py"):
                     helper = Path(__file__).with_name(name)
                     shutil.copyfile(helper, job_path / helper.name)
 

@@ -7,6 +7,27 @@ from .component_picking import ComponentPicker
 
 
 class ComponentPickingTests(unittest.TestCase):
+    def test_selection_menu_choice_requires_the_same_owner_and_a_bounded_rectangle(self):
+        for mode in ('owned','foreign','missing','duplicate','bad_rectangle'):
+            calls=[]
+            def run(command,**kwargs):
+                calls.append(command)
+                if command[1]=='search':
+                    output='' if mode=='missing' else '456 789' if mode=='duplicate' else '456'
+                elif command[1]=='getwindowpid':
+                    output='999' if command[2]!='123' and mode=='foreign' else '111'
+                elif command[1]=='getwindowgeometry':
+                    output='X=100\nY=200\nWIDTH=187\nHEIGHT=%d\n' % (71 if mode!='bad_rectangle' else 1)
+                else:output=''
+                return subprocess.CompletedProcess(command,0,stdout=output)
+            with patch('tools.rhino_oracle.component_picking.subprocess.run',side_effect=run):
+                if mode in ('duplicate','bad_rectangle'):
+                    with self.assertRaises(ValueError):ComponentPicker().send_input('@component-menu:owned:First','1','1','123')
+                else:
+                    self.assertEqual(ComponentPicker().send_input('@component-menu:owned:First','1','1','123'),mode=='owned')
+            gestures=[call for call in calls if 'click' in call]
+            self.assertEqual(gestures,[['xdotool','windowactivate','--sync','456','mousemove','193','212','click','1']] if mode=='owned' else [])
+
     def test_component_finish_keys_are_scoped_and_released_on_failure(self):
         for value,key in [('Enter','Return'),('Cancel','Escape')]:
             for fail in (False,True):
@@ -45,7 +66,7 @@ class ComponentPickingTests(unittest.TestCase):
 
     def test_malformed_markers_never_send_input(self):
         with patch('tools.rhino_oracle.component_picking.subprocess.run') as run:
-            for marker in ['@component-click:owned:0:other','@component-click:owned:0:ctrl:1:2','@component-window:owned:0:plain','@component-window:owned:0:sub:-1:2','@component-click:owned:100:plain','@component-key:owned:0:_Delete']:
+            for marker in ['@component-click:owned:0:other','@component-click:owned:0:ctrl:1:2','@component-window:owned:0:plain','@component-window:owned:0:sub:-1:2','@component-click:owned:100:plain','@component-key:owned:0:_Delete','@component-menu:owned:Delete']:
                 with self.assertRaises(ValueError): ComponentPicker().send_input(marker,'1','2','123')
             run.assert_not_called()
 

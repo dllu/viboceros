@@ -18,7 +18,7 @@ The numeric angle or scale-factor forms remain available as one-line commands.
 | Command | Construction and reference policy |
 | --- | --- |
 | Rotate | Axis through the supplied center, along the plane normal. Picked angles use projected reference directions. |
-| Mirror | Two-point plane through the first point, perpendicular to the CPlane; ignore the second point's normal displacement. [3Point and axis shortcuts](commands/mirror.md) define spatial or CPlane-origin planes. |
+| Mirror | Two-point plane through the first point, perpendicular to the CPlane; ignore the second point's normal displacement. [3Point, axis shortcuts, and Object targets](commands/mirror.md) define spatial or CPlane-origin planes. |
 | Scale2D | Scale along plane X/Y about the supplied center; retain normal displacement. Picked factors use the ratio of full **3D** distances, including normal-only references. |
 | Shear | Shear tangentially to the plane; retain normal displacement. The picked angle is spatial, signed by the plane normal. A tilted reference contributes an additional obliquity factor. |
 | ProjectToCPlane | Project onto the actual plane, including its translated origin. |
