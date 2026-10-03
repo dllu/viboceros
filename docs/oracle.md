@@ -7,7 +7,8 @@ The [Bend oracle](bend-geometry.md) retains 76 public SDK point maps, the origin
 from private Xvfb sessions. SDK maps replay through the Rust/Python protocol;
 command and UI tests compare geometry, attributes, groups, selection, Undo/Redo
 and 41 option/history steps. The [command guide](commands/bend.md) documents
-numeric angle memory and fitting bounds. Live object previews remain pending.
+numeric angle memory and fitting bounds. Another 35 [cursor captures](bend-preview.md)
+constrain live previews, display modes and the spine-start mouse plane.
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.

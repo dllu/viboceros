@@ -8584,6 +8584,12 @@ impl eframe::App for VibocerosApp {
             .twist_session
             .as_ref()
             .and_then(|s| s.preview(self.active_command));
+        let bend_preview = self.bend_session.as_ref().and_then(|s| {
+            s.preview(
+                self.active_command,
+                self.commands.transform_scalar_default("Bend"),
+            )
+        });
         let angle_plane = matches!(
             self.active_command,
             Some(InteractiveCommand::Twist {
@@ -8728,6 +8734,7 @@ impl eframe::App for VibocerosApp {
                             translation_preview,
                             affine_preview,
                             twist_preview,
+                            bend_preview,
                             face_pick,
                             component_preselection,
                             component_pick,
@@ -8811,6 +8818,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(angle) = output.twist_preview
                 && self.update_twist_preview(angle)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(point) = output.bend_preview
+                && self.update_bend_preview(point)
             {
                 ui.ctx().request_repaint();
             }

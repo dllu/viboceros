@@ -10,9 +10,55 @@ pub(super) struct BendSession {
     placed: bool,
     initial_options: BendOptions,
     preserve_available: bool,
+    preview_point: Option<Point3>,
+    preview_cache: std::cell::RefCell<crate::viewport::BendPreviewCache>,
+}
+
+impl BendSession {
+    pub(super) fn preview(
+        &self,
+        command: Option<InteractiveCommand>,
+        remembered_angle: Option<f64>,
+    ) -> Option<crate::viewport::BendPreview<'_>> {
+        let InteractiveCommand::Bend {
+            points: [Some(start), Some(end)],
+            mut options,
+        } = command?
+        else {
+            return None;
+        };
+        options.angle = options.angle.or(remembered_angle);
+        Some(crate::viewport::BendPreview {
+            sources: &self.sources,
+            start,
+            end,
+            options,
+            last_point: self.preview_point,
+            cache: &self.preview_cache,
+        })
+    }
 }
 
 impl VibocerosApp {
+    pub(super) fn bend_preview(&self) -> Option<crate::viewport::BendPreview<'_>> {
+        self.bend_session.as_ref()?.preview(
+            self.active_command,
+            self.commands.transform_scalar_default("Bend"),
+        )
+    }
+
+    pub(super) fn update_bend_preview(&mut self, point: Option<Point3>) -> bool {
+        if self.bend_preview().is_none() {
+            return false;
+        }
+        let session = self.bend_session.as_mut().unwrap();
+        if session.preview_point == point {
+            return false;
+        }
+        session.preview_point = point;
+        true
+    }
+
     pub(super) fn start_bend_session(&mut self, picked: Option<Vec<ObjectId>>) -> bool {
         let group = match self.document.begin_history_group("Bend") {
             Ok(group) => group,
@@ -36,6 +82,8 @@ impl VibocerosApp {
             placed: false,
             initial_options: self.commands.bend_options_default(),
             preserve_available,
+            preview_point: None,
+            preview_cache: Default::default(),
         });
         true
     }
@@ -249,6 +297,7 @@ impl VibocerosApp {
             Ok(message) => {
                 session.placed = true;
                 if options.copy {
+                    session.preview_point = None;
                     self.commands
                         .remember_bend_completion_options(session.initial_options);
                     self.commands

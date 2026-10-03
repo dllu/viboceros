@@ -101,7 +101,8 @@ retains source IDs for repeated copies and distinguishes immediately remembered
 spine/angle choices from options saved on successful completion. A scoped history
 finalization policy retains preselection for canceled copies through Undo/Redo.
 The [geometry oracle](bend-geometry.md) retains point and command witnesses;
-live object previews remain pending.
+[live previews](bend-preview.md) share prepared display cages with Twist,
+including cached boundary variants for Shaded and Ghosted views.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

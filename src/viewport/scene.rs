@@ -422,7 +422,7 @@ impl Viewport {
                 }
                 objects.push(display);
             } else if let Some(deformed) = deformed {
-                // Native Twist keeps the selected originals, including their
+                // Native deformation commands keep selected originals, including their
                 // faces, while the temporary deformation is drawn as colored wires.
                 display.face_member_colors_enabled = !attributes.is_locked() && !layer.is_locked();
                 objects.push(display);

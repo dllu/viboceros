@@ -70,11 +70,20 @@ tolerance. Native definitions stop refining below `1e-5`; the command applies
 that floor while the geometry kernel retains its explicit tolerance contract.
 See the [provenance record](../bend-command-provenance.json).
 
+## Live preview
+
+After accepting the spine, mouse movement previews object-colored wires beside
+the selected sources. Wireframe includes surface isocurves; Shaded and Ghosted
+show pending boundaries and keep the source faces. An on-spine cursor removes
+the pending bend. The free mouse plane passes through the spine start. Preview
+and completion use the same effective numeric angle. See the
+[preview evidence and cache design](../bend-preview.md).
+
 Validation is sampled, with finite fitting budgets; it is not a continuous
 error certificate or exhaustive Rhino parity. The command-first path has Rust
-UI tests, while the native workflows use preselected objects. A live object
-preview, Rhino's mouse construction-plane behavior, complex trimmed shapes and
-angles beyond one turn remain unverified or unimplemented.
+UI tests, while the native workflows use preselected objects. Arbitrary
+construction planes, complex trimmed shapes and angles beyond one turn
+remain unverified or unimplemented.
 
 ```sh
 cargo test -p viboceros-command bend::tests

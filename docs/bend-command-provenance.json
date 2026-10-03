@@ -25,12 +25,13 @@
     "Copy, Rigid and PreserveStructure save on successful outer completion; immediately remembered spine, attenuation and numeric angle choices survive cancellation.",
     "Private settings schemes: VibocerosOracleBendCommands_20261003_v3; VibocerosOracleBendLimitedRigid_20261003; VibocerosOracleBendRigidMidpoint_20261003; VibocerosOracleBendRigidFrameBoundary_20261003; VibocerosOracleBendAngleMemory_20261003.",
     "OpenNURBS public frame-validity checks corroborate the measured orthogonality boundary.",
-    "Native workflows use preselected objects; the command-first source path has Rust UI tests. Live object previews and mouse construction-plane parity remain pending.",
+    "Native workflows use preselected objects; the command-first source path has Rust UI tests. Follow-on cursor captures are recorded in bend-preview-provenance.json.",
     "The earlier 22 Bend rigid captures and five supplementary Twist cases use echo=False and retain empty history strings; their terminal events and geometry snapshots are complete.",
     "Five signed small-angle Twist rigid-group commands independently verify both sides of the shared orthogonality branch, at rigid coordinate epsilon 1e-7. Their private scheme is VibocerosOracleTwistRigidFrameBoundary_20261003."
   ],
   "preference_steps": 41,
   "preference_workflows": 2,
+  "preview_followup_provenance": "bend-preview-provenance.json",
   "private_display": true,
   "scope": "Owned public Bend commands; no proprietary source inspected. Geometry and UI replay cover sampled witnesses, not exhaustive Rhino parity.",
   "sha256": {

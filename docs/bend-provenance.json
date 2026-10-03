@@ -21,7 +21,7 @@
       "Large radii amplify native circle-center subtraction rounding.",
       "Ten original Angle=value macro failures are retained unchanged; corrected captures use Angle value. Two corrected negative-angle attempts are rejected.",
       "These foundation point snapshots constrain placement coordinates; follow-on geometry command and UI replay are recorded in bend-command-provenance.json.",
-      "The foundation point witnesses do not measure fitting or interactive behavior. Follow-on command captures cover fitting, option memory and selection; live previews remain pending.",
+      "The foundation point witnesses do not measure fitting or interactive behavior. Follow-on command captures cover fitting, option memory and selection; live preview evidence is recorded in bend-preview-provenance.json.",
       "The helper hash identifies the current corrected helper; the ten earlier Angle=value failures precede that syntax correction."
     ],
     "ordinary_points": 1e-11,

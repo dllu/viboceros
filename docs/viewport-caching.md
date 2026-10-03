@@ -72,6 +72,11 @@ and GPU-buffer reuse. Twist's temporary wires and points draw in an overlay pass
 with depth writes disabled and world clipping retained. Original shaded faces
 keep their colors and mesh vertex colors, including while selected.
 
+[Bend](bend-preview.md) uses the same prepared morph cache. Its Shaded/Ghosted
+boundary variant is retained beside the Wireframe variant, sharing source cages
+and one mapped surface per cursor point. Invalid through points clear Bend's
+pending display; Twist keeps its last valid angle.
+
 This is not an asynchronous mesher or a camera-uniform-only renderer:
 current large-coordinate precision guarantees require view-dependent f64
 rebasing and depth encoding before f32 GPU submission.

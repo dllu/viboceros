@@ -114,6 +114,15 @@ impl Viewport {
         drafting: DraftingInput,
         input: &ViewportInput<'_>,
     ) -> Option<drafting::DraftingCursor> {
+        // Bend's free mouse plane follows the spine start. Native Top captures
+        // at z=0 and z=3 distinguish this from the last accepted spine end.
+        let drafting = input
+            .bend_preview
+            .map_or(drafting, |preview| DraftingInput {
+                anchor: Some(preview.start),
+                planar: true,
+                ..drafting
+            });
         let filter = input.point_filter;
         let constraint = input.point_constraint;
         let definition = input.affine_preview.map(|p| p.definition);

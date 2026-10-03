@@ -315,3 +315,43 @@ fn bend_angle_prompt_recalls_values_and_zero_restores_through_point_mode() {
     assert!(app.try_continue_bend("Cancel"));
     assert_eq!(app.document.objects().count(), 1);
 }
+
+#[test]
+fn bend_preview_uses_saved_angle_and_resets_after_copies_and_cancellation() {
+    let mut app = test_app();
+    app.execute_command("Point 2,1,5");
+    app.execute_command("SelAll");
+    app.commands.remember_bend_prompt_option(
+        BendOptions {
+            angle: Some(60.),
+            ..Default::default()
+        },
+        "Angle",
+    );
+    assert!(app.try_start_interactive_command("Bend"));
+    assert!(app.bend_preview().is_none());
+    assert!(!app.update_bend_preview(Some(Point3::try_new(10., 0., 10.).unwrap())));
+    for p in [[0., 0., 0.], [0., 0., 10.]] {
+        assert!(app.accept_drafting_point(Point3::try_from(p).unwrap()));
+    }
+    assert_eq!(app.bend_preview().unwrap().options.angle, Some(60.));
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let target = Point3::try_new(10., 0., 10.).unwrap();
+    assert!(app.update_bend_preview(Some(target)));
+    assert!(!app.update_bend_preview(Some(target)));
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(app.try_continue_bend("Angle=0"));
+    assert_eq!(app.bend_preview().unwrap().options.angle, Some(0.));
+    assert!(app.try_continue_bend("Copy=Yes"));
+    assert!(app.accept_drafting_point(target));
+    assert!(app.bend_preview().unwrap().last_point.is_none());
+    assert_eq!(app.document.objects().count(), 2);
+    assert!(app.update_bend_preview(Some(target)));
+    assert!(app.update_bend_preview(None));
+    assert!(app.try_continue_bend("Cancel"));
+    assert!(app.bend_preview().is_none());
+    assert!(!app.update_bend_preview(Some(target)));
+    assert_eq!(app.document.objects().count(), 2);
+    app.execute_command("Undo");
+    assert_eq!(app.document.objects().count(), 1);
+}

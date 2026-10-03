@@ -483,6 +483,17 @@ impl Viewport {
         input: DraftingInput,
         cursor: DraftingCursor,
     ) {
+        self.paint_drafting_with_rubber_band(painter, rect, input, cursor, true);
+    }
+
+    pub(super) fn paint_drafting_with_rubber_band(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        input: DraftingInput,
+        cursor: DraftingCursor,
+        rubber_band: bool,
+    ) {
         const TRACK_COLOR: Color32 = Color32::from_rgb(15, 155, 190);
         const GRID_COLOR: Color32 = Color32::from_rgb(80, 120, 45);
 
@@ -506,7 +517,8 @@ impl Viewport {
             }
         }
 
-        if let Some(anchor) = input.anchor.and_then(|point| self.project(point, rect))
+        if rubber_band
+            && let Some(anchor) = input.anchor.and_then(|point| self.project(point, rect))
             && let Some(target) = self.project(cursor.point, rect)
             && let Some(segment) = clip_drafting_line(anchor, target, rect, false)
         {

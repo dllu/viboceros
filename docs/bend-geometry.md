@@ -4,7 +4,7 @@
 independently derived from public Rhino SDK point maps and owned Bend commands.
 The Python oracle exposes `bend_points` for comparing these maps. The
 [Bend command and interactive input](commands/bend.md) now use this foundation;
-live object previews remain pending.
+[live object previews](bend-preview.md) share prepared cages with Twist.
 
 ## Construction
 
@@ -50,7 +50,8 @@ approximation does not promise a pointwise fitting tolerance. Generic fitting
 has finite control/sample budgets and can reject singular or oscillatory maps.
 Multi-face B-reps always use fitting, even with PreserveStructure enabled.
 Retained curve/surface/B-rep commands establish a fitting floor of `1e-5`,
-applied only by the command adapter. Interactive previews remain unverified.
+applied only by the command adapter. [Preview captures](bend-preview.md) separately
+constrain display approximations and mouse input.
 
 ## Captures and comparisons
 
