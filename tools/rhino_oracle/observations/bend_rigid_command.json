@@ -1,0 +1,6988 @@
+{
+  "results": [
+    {
+      "value": {
+        "history": "Command: _Bend\nStart of spine: w0.0,0.0,0.0\nEnd of spine: w0.0,0.0,10.0\nPoint to bend through ( Copy=No  Rigid=No  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Copy=_No\nPoint to bend through ( Copy=No  Rigid=No  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Rigid=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _LimitToSpine=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Symmetric=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _PreserveStructure=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _NonAttenuated=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): w10.0,0.0,10.0\nMorphed 38 objects.\nCommand: _Enter\nCommand: _Cancel",
+        "success": true,
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "redo": [
+          {
+            "selected": false,
+            "point": [
+              -6.249281761568262,
+              1.0,
+              -10.612956163636547
+            ],
+            "source": 0
+          },
+          {
+            "selected": false,
+            "point": [
+              -3.998392185420987,
+              1.0,
+              -3.9847213974268016
+            ],
+            "source": 1
+          },
+          {
+            "selected": false,
+            "point": [
+              -3.0337252242150132,
+              1.0,
+              -1.144049354765483
+            ],
+            "source": 2
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.390613916744363,
+              1.0,
+              0.7497320070087296
+            ],
+            "source": 3
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.586724782406051,
+              1.0,
+              3.116958709226495
+            ],
+            "source": 4
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.782835648067739,
+              1.0,
+              5.484185411444262
+            ],
+            "source": 5
+          },
+          {
+            "selected": false,
+            "point": [
+              0.02105348627057335,
+              1.0,
+              7.851412113662027
+            ],
+            "source": 6
+          },
+          {
+            "selected": false,
+            "point": [
+              0.8249426206088852,
+              1.0,
+              10.218638815879793
+            ],
+            "source": 7
+          },
+          {
+            "selected": false,
+            "point": [
+              1.4680539280795353,
+              1.0,
+              12.112420177654005
+            ],
+            "source": 8
+          },
+          {
+            "selected": false,
+            "point": [
+              2.43272088928551,
+              1.0,
+              14.953092220315325
+            ],
+            "source": 9
+          },
+          {
+            "selected": false,
+            "point": [
+              4.040499157962134,
+              1.0,
+              19.687545624750857
+            ],
+            "source": 10
+          },
+          {
+            "selected": false,
+            "point": [
+              -4.355500399794049,
+              1.0,
+              -11.256067471107196
+            ],
+            "source": 11
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.104610823646775,
+              1.0,
+              -4.627832704897452
+            ],
+            "source": 12
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.1399438624408003,
+              1.0,
+              -1.787160662236133
+            ],
+            "source": 13
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.49683255497015044,
+              1.0,
+              0.10662069953807984
+            ],
+            "source": 14
+          },
+          {
+            "selected": false,
+            "point": [
+              0.30705657936816166,
+              1.0,
+              2.4738474017558456
+            ],
+            "source": 15
+          },
+          {
+            "selected": false,
+            "point": [
+              1.1109457137064738,
+              1.0,
+              4.841074103973611
+            ],
+            "source": 16
+          },
+          {
+            "selected": false,
+            "point": [
+              1.914834848044786,
+              1.0,
+              7.208300806191378
+            ],
+            "source": 17
+          },
+          {
+            "selected": false,
+            "point": [
+              2.718723982383098,
+              1.0,
+              9.575527508409143
+            ],
+            "source": 18
+          },
+          {
+            "selected": false,
+            "point": [
+              3.3618352898537482,
+              1.0,
+              11.469308870183356
+            ],
+            "source": 19
+          },
+          {
+            "selected": false,
+            "point": [
+              4.326502251059723,
+              1.0,
+              14.309980912844676
+            ],
+            "source": 20
+          },
+          {
+            "selected": false,
+            "point": [
+              5.934280519736347,
+              1.0,
+              19.044434317280206
+            ],
+            "source": 21
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.461719038019836,
+              1.0,
+              -11.899178778577845
+            ],
+            "source": 22
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.2108294618725619,
+              1.0,
+              -5.270944012368101
+            ],
+            "source": 23
+          },
+          {
+            "selected": false,
+            "point": [
+              0.7538374993334125,
+              1.0,
+              -2.4302719697067827
+            ],
+            "source": 24
+          },
+          {
+            "selected": false,
+            "point": [
+              1.3969488068040623,
+              1.0,
+              -0.5364906079325699
+            ],
+            "source": 25
+          },
+          {
+            "selected": false,
+            "point": [
+              2.2008379411423746,
+              1.0,
+              1.830736094285196
+            ],
+            "source": 26
+          },
+          {
+            "selected": false,
+            "point": [
+              3.0047270754806865,
+              1.0,
+              4.197962796502962
+            ],
+            "source": 27
+          },
+          {
+            "selected": false,
+            "point": [
+              3.8086162098189993,
+              1.0,
+              6.565189498720727
+            ],
+            "source": 28
+          },
+          {
+            "selected": false,
+            "point": [
+              4.612505344157311,
+              1.0,
+              8.932416200938494
+            ],
+            "source": 29
+          },
+          {
+            "selected": false,
+            "point": [
+              5.255616651627961,
+              1.0,
+              10.826197562712707
+            ],
+            "source": 30
+          },
+          {
+            "selected": false,
+            "point": [
+              6.220283612833936,
+              1.0,
+              13.666869605374027
+            ],
+            "source": 31
+          },
+          {
+            "selected": false,
+            "point": [
+              7.82806188151056,
+              1.0,
+              18.401323009809555
+            ],
+            "source": 32
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.49683255497015044,
+              0.0,
+              0.10662069953807984
+            ],
+            "source": 33
+          },
+          {
+            "selected": false,
+            "point": [
+              0.30705657936816166,
+              0.0,
+              2.4738474017558456
+            ],
+            "source": 34
+          },
+          {
+            "selected": false,
+            "point": [
+              1.1109457137064738,
+              0.0,
+              4.841074103973611
+            ],
+            "source": 35
+          },
+          {
+            "selected": false,
+            "point": [
+              1.914834848044786,
+              0.0,
+              7.208300806191378
+            ],
+            "source": 36
+          },
+          {
+            "selected": false,
+            "point": [
+              2.718723982383098,
+              0.0,
+              9.575527508409143
+            ],
+            "source": 37
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  -6.249281761568262,
+                  1.0,
+                  -10.612956163636547
+                ],
+                "source": 0
+              },
+              {
+                "selected": true,
+                "point": [
+                  -3.998392185420987,
+                  1.0,
+                  -3.9847213974268016
+                ],
+                "source": 1
+              },
+              {
+                "selected": true,
+                "point": [
+                  -3.0337252242150132,
+                  1.0,
+                  -1.144049354765483
+                ],
+                "source": 2
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.390613916744363,
+                  1.0,
+                  0.7497320070087296
+                ],
+                "source": 3
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.586724782406051,
+                  1.0,
+                  3.116958709226495
+                ],
+                "source": 4
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.782835648067739,
+                  1.0,
+                  5.484185411444262
+                ],
+                "source": 5
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.02105348627057335,
+                  1.0,
+                  7.851412113662027
+                ],
+                "source": 6
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.8249426206088852,
+                  1.0,
+                  10.218638815879793
+                ],
+                "source": 7
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.4680539280795353,
+                  1.0,
+                  12.112420177654005
+                ],
+                "source": 8
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.43272088928551,
+                  1.0,
+                  14.953092220315325
+                ],
+                "source": 9
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.040499157962134,
+                  1.0,
+                  19.687545624750857
+                ],
+                "source": 10
+              },
+              {
+                "selected": true,
+                "point": [
+                  -4.355500399794049,
+                  1.0,
+                  -11.256067471107196
+                ],
+                "source": 11
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.104610823646775,
+                  1.0,
+                  -4.627832704897452
+                ],
+                "source": 12
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.1399438624408003,
+                  1.0,
+                  -1.787160662236133
+                ],
+                "source": 13
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.49683255497015044,
+                  1.0,
+                  0.10662069953807984
+                ],
+                "source": 14
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.30705657936816166,
+                  1.0,
+                  2.4738474017558456
+                ],
+                "source": 15
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.1109457137064738,
+                  1.0,
+                  4.841074103973611
+                ],
+                "source": 16
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.914834848044786,
+                  1.0,
+                  7.208300806191378
+                ],
+                "source": 17
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.718723982383098,
+                  1.0,
+                  9.575527508409143
+                ],
+                "source": 18
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.3618352898537482,
+                  1.0,
+                  11.469308870183356
+                ],
+                "source": 19
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.326502251059723,
+                  1.0,
+                  14.309980912844676
+                ],
+                "source": 20
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.934280519736347,
+                  1.0,
+                  19.044434317280206
+                ],
+                "source": 21
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.461719038019836,
+                  1.0,
+                  -11.899178778577845
+                ],
+                "source": 22
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.2108294618725619,
+                  1.0,
+                  -5.270944012368101
+                ],
+                "source": 23
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.7538374993334125,
+                  1.0,
+                  -2.4302719697067827
+                ],
+                "source": 24
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.3969488068040623,
+                  1.0,
+                  -0.5364906079325699
+                ],
+                "source": 25
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.2008379411423746,
+                  1.0,
+                  1.830736094285196
+                ],
+                "source": 26
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.0047270754806865,
+                  1.0,
+                  4.197962796502962
+                ],
+                "source": 27
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.8086162098189993,
+                  1.0,
+                  6.565189498720727
+                ],
+                "source": 28
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.612505344157311,
+                  1.0,
+                  8.932416200938494
+                ],
+                "source": 29
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.255616651627961,
+                  1.0,
+                  10.826197562712707
+                ],
+                "source": 30
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.220283612833936,
+                  1.0,
+                  13.666869605374027
+                ],
+                "source": 31
+              },
+              {
+                "selected": true,
+                "point": [
+                  7.82806188151056,
+                  1.0,
+                  18.401323009809555
+                ],
+                "source": 32
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.49683255497015044,
+                  0.0,
+                  0.10662069953807984
+                ],
+                "source": 33
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.30705657936816166,
+                  0.0,
+                  2.4738474017558456
+                ],
+                "source": 34
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.1109457137064738,
+                  0.0,
+                  4.841074103973611
+                ],
+                "source": 35
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.914834848044786,
+                  0.0,
+                  7.208300806191378
+                ],
+                "source": 36
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.718723982383098,
+                  0.0,
+                  9.575527508409143
+                ],
+                "source": 37
+              }
+            ],
+            "selected": [],
+            "name": "Bend"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Enter"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              -6.249281761568262,
+              1.0,
+              -10.612956163636547
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -3.998392185420987,
+              1.0,
+              -3.9847213974268016
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -3.0337252242150132,
+              1.0,
+              -1.144049354765483
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.390613916744363,
+              1.0,
+              0.7497320070087296
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.586724782406051,
+              1.0,
+              3.116958709226495
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.782835648067739,
+              1.0,
+              5.484185411444262
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.02105348627057335,
+              1.0,
+              7.851412113662027
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              0.8249426206088852,
+              1.0,
+              10.218638815879793
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              1.4680539280795353,
+              1.0,
+              12.112420177654005
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              2.43272088928551,
+              1.0,
+              14.953092220315325
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              4.040499157962134,
+              1.0,
+              19.687545624750857
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              -4.355500399794049,
+              1.0,
+              -11.256067471107196
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.104610823646775,
+              1.0,
+              -4.627832704897452
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.1399438624408003,
+              1.0,
+              -1.787160662236133
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.49683255497015044,
+              1.0,
+              0.10662069953807984
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.30705657936816166,
+              1.0,
+              2.4738474017558456
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              1.1109457137064738,
+              1.0,
+              4.841074103973611
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              1.914834848044786,
+              1.0,
+              7.208300806191378
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              2.718723982383098,
+              1.0,
+              9.575527508409143
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              3.3618352898537482,
+              1.0,
+              11.469308870183356
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              4.326502251059723,
+              1.0,
+              14.309980912844676
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              5.934280519736347,
+              1.0,
+              19.044434317280206
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.461719038019836,
+              1.0,
+              -11.899178778577845
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.2108294618725619,
+              1.0,
+              -5.270944012368101
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              0.7538374993334125,
+              1.0,
+              -2.4302719697067827
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              1.3969488068040623,
+              1.0,
+              -0.5364906079325699
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.2008379411423746,
+              1.0,
+              1.830736094285196
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              3.0047270754806865,
+              1.0,
+              4.197962796502962
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              3.8086162098189993,
+              1.0,
+              6.565189498720727
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.612505344157311,
+              1.0,
+              8.932416200938494
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              5.255616651627961,
+              1.0,
+              10.826197562712707
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              6.220283612833936,
+              1.0,
+              13.666869605374027
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              7.82806188151056,
+              1.0,
+              18.401323009809555
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.49683255497015044,
+              0.0,
+              0.10662069953807984
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.30705657936816166,
+              0.0,
+              2.4738474017558456
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              1.1109457137064738,
+              0.0,
+              4.841074103973611
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              1.914834848044786,
+              0.0,
+              7.208300806191378
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              2.718723982383098,
+              0.0,
+              9.575527508409143
+            ],
+            "source": 37
+          }
+        ]
+      },
+      "id": "bend-rigid-0",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "history": "Command: _Bend\nStart of spine: w0.0,0.0,0.0\nEnd of spine: w0.0,0.0,10.0\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Copy=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Rigid=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _LimitToSpine=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Symmetric=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _PreserveStructure=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _NonAttenuated=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): w10.0,0.0,10.0\nMorphed 38 objects.\nCommand: _Enter\nCommand: _Cancel",
+        "success": true,
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "redo": [
+          {
+            "selected": false,
+            "point": [
+              -4.5593750617437045,
+              1.0,
+              -10.989763359932613
+            ],
+            "source": 0
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.184469241564342,
+              1.0,
+              -4.404945796379453
+            ],
+            "source": 1
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.1666524614874725,
+              1.0,
+              -1.5828811262852407
+            ],
+            "source": 2
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.48810794143622616,
+              1.0,
+              0.29849532044423377
+            ],
+            "source": 3
+          },
+          {
+            "selected": false,
+            "point": [
+              0.3600727086278317,
+              1.0,
+              2.650215878856077
+            ],
+            "source": 4
+          },
+          {
+            "selected": false,
+            "point": [
+              1.2082533586918895,
+              1.0,
+              5.00193643726792
+            ],
+            "source": 5
+          },
+          {
+            "selected": false,
+            "point": [
+              2.0564340087559474,
+              1.0,
+              7.353656995679763
+            ],
+            "source": 6
+          },
+          {
+            "selected": false,
+            "point": [
+              2.9046146588200052,
+              1.0,
+              9.705377554091607
+            ],
+            "source": 7
+          },
+          {
+            "selected": false,
+            "point": [
+              3.5831591788712522,
+              1.0,
+              11.586754000821081
+            ],
+            "source": 8
+          },
+          {
+            "selected": false,
+            "point": [
+              4.600975958948121,
+              1.0,
+              14.408818670915291
+            ],
+            "source": 9
+          },
+          {
+            "selected": false,
+            "point": [
+              6.297337259076237,
+              1.0,
+              19.112259787738978
+            ],
+            "source": 10
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.6779986150142303,
+              1.0,
+              -11.66830787998386
+            ],
+            "source": 11
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.3030927948348674,
+              1.0,
+              -5.083490316430699
+            ],
+            "source": 12
+          },
+          {
+            "selected": false,
+            "point": [
+              0.714723985242002,
+              1.0,
+              -2.261425646336487
+            ],
+            "source": 13
+          },
+          {
+            "selected": false,
+            "point": [
+              1.3932685052932483,
+              1.0,
+              -0.38004919960701256
+            ],
+            "source": 14
+          },
+          {
+            "selected": false,
+            "point": [
+              2.241449155357306,
+              1.0,
+              1.9716713588048307
+            ],
+            "source": 15
+          },
+          {
+            "selected": false,
+            "point": [
+              3.089629805421364,
+              1.0,
+              4.323391917216674
+            ],
+            "source": 16
+          },
+          {
+            "selected": false,
+            "point": [
+              3.9378104554854216,
+              1.0,
+              6.6751124756285165
+            ],
+            "source": 17
+          },
+          {
+            "selected": false,
+            "point": [
+              4.7859911055494795,
+              1.0,
+              9.02683303404036
+            ],
+            "source": 18
+          },
+          {
+            "selected": false,
+            "point": [
+              5.4645356256007265,
+              1.0,
+              10.908209480769834
+            ],
+            "source": 19
+          },
+          {
+            "selected": false,
+            "point": [
+              6.482352405677595,
+              1.0,
+              13.730274150864044
+            ],
+            "source": 20
+          },
+          {
+            "selected": false,
+            "point": [
+              8.17871370580571,
+              1.0,
+              18.43371526768773
+            ],
+            "source": 21
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.7966221682847556,
+              1.0,
+              -12.346852400035106
+            ],
+            "source": 22
+          },
+          {
+            "selected": false,
+            "point": [
+              1.578283651894607,
+              1.0,
+              -5.762034836481945
+            ],
+            "source": 23
+          },
+          {
+            "selected": false,
+            "point": [
+              2.596100431971476,
+              1.0,
+              -2.9399701663877336
+            ],
+            "source": 24
+          },
+          {
+            "selected": false,
+            "point": [
+              3.2746449520227228,
+              1.0,
+              -1.0585937196582589
+            ],
+            "source": 25
+          },
+          {
+            "selected": false,
+            "point": [
+              4.122825602086781,
+              1.0,
+              1.2931268387535844
+            ],
+            "source": 26
+          },
+          {
+            "selected": false,
+            "point": [
+              4.971006252150838,
+              1.0,
+              3.6448473971654276
+            ],
+            "source": 27
+          },
+          {
+            "selected": false,
+            "point": [
+              5.819186902214897,
+              1.0,
+              5.9965679555772695
+            ],
+            "source": 28
+          },
+          {
+            "selected": false,
+            "point": [
+              6.667367552278954,
+              1.0,
+              8.348288513989115
+            ],
+            "source": 29
+          },
+          {
+            "selected": false,
+            "point": [
+              7.345912072330201,
+              1.0,
+              10.229664960718589
+            ],
+            "source": 30
+          },
+          {
+            "selected": false,
+            "point": [
+              8.36372885240707,
+              1.0,
+              13.0517296308128
+            ],
+            "source": 31
+          },
+          {
+            "selected": false,
+            "point": [
+              10.060090152535185,
+              1.0,
+              17.755170747636484
+            ],
+            "source": 32
+          },
+          {
+            "selected": false,
+            "point": [
+              1.3932685052932483,
+              0.0,
+              -0.38004919960701256
+            ],
+            "source": 33
+          },
+          {
+            "selected": false,
+            "point": [
+              2.241449155357306,
+              0.0,
+              1.9716713588048307
+            ],
+            "source": 34
+          },
+          {
+            "selected": false,
+            "point": [
+              3.089629805421364,
+              0.0,
+              4.323391917216674
+            ],
+            "source": 35
+          },
+          {
+            "selected": false,
+            "point": [
+              3.9378104554854216,
+              0.0,
+              6.6751124756285165
+            ],
+            "source": 36
+          },
+          {
+            "selected": false,
+            "point": [
+              4.7859911055494795,
+              0.0,
+              9.02683303404036
+            ],
+            "source": 37
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  -4.5593750617437045,
+                  1.0,
+                  -10.989763359932613
+                ],
+                "source": 0
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.184469241564342,
+                  1.0,
+                  -4.404945796379453
+                ],
+                "source": 1
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.1666524614874725,
+                  1.0,
+                  -1.5828811262852407
+                ],
+                "source": 2
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.48810794143622616,
+                  1.0,
+                  0.29849532044423377
+                ],
+                "source": 3
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.3600727086278317,
+                  1.0,
+                  2.650215878856077
+                ],
+                "source": 4
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.2082533586918895,
+                  1.0,
+                  5.00193643726792
+                ],
+                "source": 5
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.0564340087559474,
+                  1.0,
+                  7.353656995679763
+                ],
+                "source": 6
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.9046146588200052,
+                  1.0,
+                  9.705377554091607
+                ],
+                "source": 7
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.5831591788712522,
+                  1.0,
+                  11.586754000821081
+                ],
+                "source": 8
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.600975958948121,
+                  1.0,
+                  14.408818670915291
+                ],
+                "source": 9
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.297337259076237,
+                  1.0,
+                  19.112259787738978
+                ],
+                "source": 10
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.6779986150142303,
+                  1.0,
+                  -11.66830787998386
+                ],
+                "source": 11
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.3030927948348674,
+                  1.0,
+                  -5.083490316430699
+                ],
+                "source": 12
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.714723985242002,
+                  1.0,
+                  -2.261425646336487
+                ],
+                "source": 13
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.3932685052932483,
+                  1.0,
+                  -0.38004919960701256
+                ],
+                "source": 14
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.241449155357306,
+                  1.0,
+                  1.9716713588048307
+                ],
+                "source": 15
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.089629805421364,
+                  1.0,
+                  4.323391917216674
+                ],
+                "source": 16
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.9378104554854216,
+                  1.0,
+                  6.6751124756285165
+                ],
+                "source": 17
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.7859911055494795,
+                  1.0,
+                  9.02683303404036
+                ],
+                "source": 18
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.4645356256007265,
+                  1.0,
+                  10.908209480769834
+                ],
+                "source": 19
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.482352405677595,
+                  1.0,
+                  13.730274150864044
+                ],
+                "source": 20
+              },
+              {
+                "selected": true,
+                "point": [
+                  8.17871370580571,
+                  1.0,
+                  18.43371526768773
+                ],
+                "source": 21
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.7966221682847556,
+                  1.0,
+                  -12.346852400035106
+                ],
+                "source": 22
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.578283651894607,
+                  1.0,
+                  -5.762034836481945
+                ],
+                "source": 23
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.596100431971476,
+                  1.0,
+                  -2.9399701663877336
+                ],
+                "source": 24
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.2746449520227228,
+                  1.0,
+                  -1.0585937196582589
+                ],
+                "source": 25
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.122825602086781,
+                  1.0,
+                  1.2931268387535844
+                ],
+                "source": 26
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.971006252150838,
+                  1.0,
+                  3.6448473971654276
+                ],
+                "source": 27
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.819186902214897,
+                  1.0,
+                  5.9965679555772695
+                ],
+                "source": 28
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.667367552278954,
+                  1.0,
+                  8.348288513989115
+                ],
+                "source": 29
+              },
+              {
+                "selected": true,
+                "point": [
+                  7.345912072330201,
+                  1.0,
+                  10.229664960718589
+                ],
+                "source": 30
+              },
+              {
+                "selected": true,
+                "point": [
+                  8.36372885240707,
+                  1.0,
+                  13.0517296308128
+                ],
+                "source": 31
+              },
+              {
+                "selected": true,
+                "point": [
+                  10.060090152535185,
+                  1.0,
+                  17.755170747636484
+                ],
+                "source": 32
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.3932685052932483,
+                  0.0,
+                  -0.38004919960701256
+                ],
+                "source": 33
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.241449155357306,
+                  0.0,
+                  1.9716713588048307
+                ],
+                "source": 34
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.089629805421364,
+                  0.0,
+                  4.323391917216674
+                ],
+                "source": 35
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.9378104554854216,
+                  0.0,
+                  6.6751124756285165
+                ],
+                "source": 36
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.7859911055494795,
+                  0.0,
+                  9.02683303404036
+                ],
+                "source": 37
+              }
+            ],
+            "selected": [],
+            "name": "Bend"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Enter"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              -4.5593750617437045,
+              1.0,
+              -10.989763359932613
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.184469241564342,
+              1.0,
+              -4.404945796379453
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.1666524614874725,
+              1.0,
+              -1.5828811262852407
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.48810794143622616,
+              1.0,
+              0.29849532044423377
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.3600727086278317,
+              1.0,
+              2.650215878856077
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              1.2082533586918895,
+              1.0,
+              5.00193643726792
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0564340087559474,
+              1.0,
+              7.353656995679763
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              2.9046146588200052,
+              1.0,
+              9.705377554091607
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              3.5831591788712522,
+              1.0,
+              11.586754000821081
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              4.600975958948121,
+              1.0,
+              14.408818670915291
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              6.297337259076237,
+              1.0,
+              19.112259787738978
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.6779986150142303,
+              1.0,
+              -11.66830787998386
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.3030927948348674,
+              1.0,
+              -5.083490316430699
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.714723985242002,
+              1.0,
+              -2.261425646336487
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              1.3932685052932483,
+              1.0,
+              -0.38004919960701256
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.241449155357306,
+              1.0,
+              1.9716713588048307
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              3.089629805421364,
+              1.0,
+              4.323391917216674
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              3.9378104554854216,
+              1.0,
+              6.6751124756285165
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              4.7859911055494795,
+              1.0,
+              9.02683303404036
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              5.4645356256007265,
+              1.0,
+              10.908209480769834
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              6.482352405677595,
+              1.0,
+              13.730274150864044
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              8.17871370580571,
+              1.0,
+              18.43371526768773
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.7966221682847556,
+              1.0,
+              -12.346852400035106
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              1.578283651894607,
+              1.0,
+              -5.762034836481945
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.596100431971476,
+              1.0,
+              -2.9399701663877336
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              3.2746449520227228,
+              1.0,
+              -1.0585937196582589
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              4.122825602086781,
+              1.0,
+              1.2931268387535844
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.971006252150838,
+              1.0,
+              3.6448473971654276
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              5.819186902214897,
+              1.0,
+              5.9965679555772695
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              6.667367552278954,
+              1.0,
+              8.348288513989115
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              7.345912072330201,
+              1.0,
+              10.229664960718589
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              8.36372885240707,
+              1.0,
+              13.0517296308128
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              10.060090152535185,
+              1.0,
+              17.755170747636484
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              1.3932685052932483,
+              0.0,
+              -0.38004919960701256
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.241449155357306,
+              0.0,
+              1.9716713588048307
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              3.089629805421364,
+              0.0,
+              4.323391917216674
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              3.9378104554854216,
+              0.0,
+              6.6751124756285165
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              4.7859911055494795,
+              0.0,
+              9.02683303404036
+            ],
+            "source": 37
+          }
+        ]
+      },
+      "id": "bend-rigid-1",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "history": "Command: _Bend\nStart of spine: w0.0,0.0,0.0\nEnd of spine: w0.0,0.0,10.0\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Copy=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Rigid=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _LimitToSpine=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _Symmetric=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _PreserveStructure=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=No ): _NonAttenuated=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): w10.0,0.0,10.0\nMorphed 38 objects.\nCommand: _Enter\nCommand: _Cancel",
+        "success": true,
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "redo": [
+          {
+            "selected": false,
+            "point": [
+              -7.283425404977329,
+              1.0,
+              -10.063955796339869
+            ],
+            "source": 0
+          },
+          {
+            "selected": false,
+            "point": [
+              -4.5574970088147895,
+              1.0,
+              -3.616528838320513
+            ],
+            "source": 1
+          },
+          {
+            "selected": false,
+            "point": [
+              -3.3892419818879866,
+              1.0,
+              -0.8533458563122174
+            ],
+            "source": 2
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.6104052972701184,
+              1.0,
+              0.988776131693313
+            ],
+            "source": 3
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.6368594414977828,
+              1.0,
+              3.291428616700226
+            ],
+            "source": 4
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.6633135857254473,
+              1.0,
+              5.594081101707139
+            ],
+            "source": 5
+          },
+          {
+            "selected": false,
+            "point": [
+              0.31023227004688847,
+              1.0,
+              7.896733586714052
+            ],
+            "source": 6
+          },
+          {
+            "selected": false,
+            "point": [
+              1.2837781258192238,
+              1.0,
+              10.199386071720966
+            ],
+            "source": 7
+          },
+          {
+            "selected": false,
+            "point": [
+              2.062614810437093,
+              1.0,
+              12.041508059726496
+            ],
+            "source": 8
+          },
+          {
+            "selected": false,
+            "point": [
+              3.2308698373638953,
+              1.0,
+              14.804691041734792
+            ],
+            "source": 9
+          },
+          {
+            "selected": false,
+            "point": [
+              5.177961548908566,
+              1.0,
+              19.409996011748618
+            ],
+            "source": 10
+          },
+          {
+            "selected": false,
+            "point": [
+              -5.441303416971799,
+              1.0,
+              -10.842792480957737
+            ],
+            "source": 11
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.715375020809259,
+              1.0,
+              -4.3953655229383815
+            ],
+            "source": 12
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.5471199938824565,
+              1.0,
+              -1.6321825409300859
+            ],
+            "source": 13
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.768283309264588,
+              1.0,
+              0.20993944707544454
+            ],
+            "source": 14
+          },
+          {
+            "selected": false,
+            "point": [
+              0.20526254650774756,
+              1.0,
+              2.5125919320823575
+            ],
+            "source": 15
+          },
+          {
+            "selected": false,
+            "point": [
+              1.178808402280083,
+              1.0,
+              4.8152444170892705
+            ],
+            "source": 16
+          },
+          {
+            "selected": false,
+            "point": [
+              2.152354258052419,
+              1.0,
+              7.1178969020961835
+            ],
+            "source": 17
+          },
+          {
+            "selected": false,
+            "point": [
+              3.125900113824754,
+              1.0,
+              9.420549387103097
+            ],
+            "source": 18
+          },
+          {
+            "selected": false,
+            "point": [
+              3.9047367984426233,
+              1.0,
+              11.262671375108628
+            ],
+            "source": 19
+          },
+          {
+            "selected": false,
+            "point": [
+              5.072991825369426,
+              1.0,
+              14.025854357116923
+            ],
+            "source": 20
+          },
+          {
+            "selected": false,
+            "point": [
+              7.020083536914097,
+              1.0,
+              18.63115932713075
+            ],
+            "source": 21
+          },
+          {
+            "selected": false,
+            "point": [
+              -3.599181428966269,
+              1.0,
+              -11.621629165575605
+            ],
+            "source": 22
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.8732530328037287,
+              1.0,
+              -5.17420220755625
+            ],
+            "source": 23
+          },
+          {
+            "selected": false,
+            "point": [
+              0.29500199412307393,
+              1.0,
+              -2.411019225547954
+            ],
+            "source": 24
+          },
+          {
+            "selected": false,
+            "point": [
+              1.0738386787409424,
+              1.0,
+              -0.5688972375424239
+            ],
+            "source": 25
+          },
+          {
+            "selected": false,
+            "point": [
+              2.0473845345132777,
+              1.0,
+              1.733755247464489
+            ],
+            "source": 26
+          },
+          {
+            "selected": false,
+            "point": [
+              3.0209303902856135,
+              1.0,
+              4.036407732471402
+            ],
+            "source": 27
+          },
+          {
+            "selected": false,
+            "point": [
+              3.9944762460579493,
+              1.0,
+              6.339060217478315
+            ],
+            "source": 28
+          },
+          {
+            "selected": false,
+            "point": [
+              4.968022101830284,
+              1.0,
+              8.64171270248523
+            ],
+            "source": 29
+          },
+          {
+            "selected": false,
+            "point": [
+              5.746858786448154,
+              1.0,
+              10.48383469049076
+            ],
+            "source": 30
+          },
+          {
+            "selected": false,
+            "point": [
+              6.915113813374957,
+              1.0,
+              13.247017672499055
+            ],
+            "source": 31
+          },
+          {
+            "selected": false,
+            "point": [
+              8.862205524919627,
+              1.0,
+              17.85232264251288
+            ],
+            "source": 32
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.768283309264588,
+              0.0,
+              0.20993944707544454
+            ],
+            "source": 33
+          },
+          {
+            "selected": false,
+            "point": [
+              0.20526254650774756,
+              0.0,
+              2.5125919320823575
+            ],
+            "source": 34
+          },
+          {
+            "selected": false,
+            "point": [
+              1.178808402280083,
+              0.0,
+              4.8152444170892705
+            ],
+            "source": 35
+          },
+          {
+            "selected": false,
+            "point": [
+              2.152354258052419,
+              0.0,
+              7.1178969020961835
+            ],
+            "source": 36
+          },
+          {
+            "selected": false,
+            "point": [
+              3.125900113824754,
+              0.0,
+              9.420549387103097
+            ],
+            "source": 37
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  -7.283425404977329,
+                  1.0,
+                  -10.063955796339869
+                ],
+                "source": 0
+              },
+              {
+                "selected": true,
+                "point": [
+                  -4.5574970088147895,
+                  1.0,
+                  -3.616528838320513
+                ],
+                "source": 1
+              },
+              {
+                "selected": true,
+                "point": [
+                  -3.3892419818879866,
+                  1.0,
+                  -0.8533458563122174
+                ],
+                "source": 2
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.6104052972701184,
+                  1.0,
+                  0.988776131693313
+                ],
+                "source": 3
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.6368594414977828,
+                  1.0,
+                  3.291428616700226
+                ],
+                "source": 4
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.6633135857254473,
+                  1.0,
+                  5.594081101707139
+                ],
+                "source": 5
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.31023227004688847,
+                  1.0,
+                  7.896733586714052
+                ],
+                "source": 6
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.2837781258192238,
+                  1.0,
+                  10.199386071720966
+                ],
+                "source": 7
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.062614810437093,
+                  1.0,
+                  12.041508059726496
+                ],
+                "source": 8
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.2308698373638953,
+                  1.0,
+                  14.804691041734792
+                ],
+                "source": 9
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.177961548908566,
+                  1.0,
+                  19.409996011748618
+                ],
+                "source": 10
+              },
+              {
+                "selected": true,
+                "point": [
+                  -5.441303416971799,
+                  1.0,
+                  -10.842792480957737
+                ],
+                "source": 11
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.715375020809259,
+                  1.0,
+                  -4.3953655229383815
+                ],
+                "source": 12
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.5471199938824565,
+                  1.0,
+                  -1.6321825409300859
+                ],
+                "source": 13
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.768283309264588,
+                  1.0,
+                  0.20993944707544454
+                ],
+                "source": 14
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.20526254650774756,
+                  1.0,
+                  2.5125919320823575
+                ],
+                "source": 15
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.178808402280083,
+                  1.0,
+                  4.8152444170892705
+                ],
+                "source": 16
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.152354258052419,
+                  1.0,
+                  7.1178969020961835
+                ],
+                "source": 17
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.125900113824754,
+                  1.0,
+                  9.420549387103097
+                ],
+                "source": 18
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.9047367984426233,
+                  1.0,
+                  11.262671375108628
+                ],
+                "source": 19
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.072991825369426,
+                  1.0,
+                  14.025854357116923
+                ],
+                "source": 20
+              },
+              {
+                "selected": true,
+                "point": [
+                  7.020083536914097,
+                  1.0,
+                  18.63115932713075
+                ],
+                "source": 21
+              },
+              {
+                "selected": true,
+                "point": [
+                  -3.599181428966269,
+                  1.0,
+                  -11.621629165575605
+                ],
+                "source": 22
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.8732530328037287,
+                  1.0,
+                  -5.17420220755625
+                ],
+                "source": 23
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.29500199412307393,
+                  1.0,
+                  -2.411019225547954
+                ],
+                "source": 24
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.0738386787409424,
+                  1.0,
+                  -0.5688972375424239
+                ],
+                "source": 25
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.0473845345132777,
+                  1.0,
+                  1.733755247464489
+                ],
+                "source": 26
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.0209303902856135,
+                  1.0,
+                  4.036407732471402
+                ],
+                "source": 27
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.9944762460579493,
+                  1.0,
+                  6.339060217478315
+                ],
+                "source": 28
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.968022101830284,
+                  1.0,
+                  8.64171270248523
+                ],
+                "source": 29
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.746858786448154,
+                  1.0,
+                  10.48383469049076
+                ],
+                "source": 30
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.915113813374957,
+                  1.0,
+                  13.247017672499055
+                ],
+                "source": 31
+              },
+              {
+                "selected": true,
+                "point": [
+                  8.862205524919627,
+                  1.0,
+                  17.85232264251288
+                ],
+                "source": 32
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.768283309264588,
+                  0.0,
+                  0.20993944707544454
+                ],
+                "source": 33
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.20526254650774756,
+                  0.0,
+                  2.5125919320823575
+                ],
+                "source": 34
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.178808402280083,
+                  0.0,
+                  4.8152444170892705
+                ],
+                "source": 35
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.152354258052419,
+                  0.0,
+                  7.1178969020961835
+                ],
+                "source": 36
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.125900113824754,
+                  0.0,
+                  9.420549387103097
+                ],
+                "source": 37
+              }
+            ],
+            "selected": [],
+            "name": "Bend"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Enter"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              -7.283425404977329,
+              1.0,
+              -10.063955796339869
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -4.5574970088147895,
+              1.0,
+              -3.616528838320513
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -3.3892419818879866,
+              1.0,
+              -0.8533458563122174
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.6104052972701184,
+              1.0,
+              0.988776131693313
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.6368594414977828,
+              1.0,
+              3.291428616700226
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.6633135857254473,
+              1.0,
+              5.594081101707139
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.31023227004688847,
+              1.0,
+              7.896733586714052
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              1.2837781258192238,
+              1.0,
+              10.199386071720966
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              2.062614810437093,
+              1.0,
+              12.041508059726496
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              3.2308698373638953,
+              1.0,
+              14.804691041734792
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              5.177961548908566,
+              1.0,
+              19.409996011748618
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              -5.441303416971799,
+              1.0,
+              -10.842792480957737
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.715375020809259,
+              1.0,
+              -4.3953655229383815
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.5471199938824565,
+              1.0,
+              -1.6321825409300859
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.768283309264588,
+              1.0,
+              0.20993944707544454
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              0.20526254650774756,
+              1.0,
+              2.5125919320823575
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              1.178808402280083,
+              1.0,
+              4.8152444170892705
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              2.152354258052419,
+              1.0,
+              7.1178969020961835
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              3.125900113824754,
+              1.0,
+              9.420549387103097
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              3.9047367984426233,
+              1.0,
+              11.262671375108628
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              5.072991825369426,
+              1.0,
+              14.025854357116923
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              7.020083536914097,
+              1.0,
+              18.63115932713075
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              -3.599181428966269,
+              1.0,
+              -11.621629165575605
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.8732530328037287,
+              1.0,
+              -5.17420220755625
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              0.29500199412307393,
+              1.0,
+              -2.411019225547954
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              1.0738386787409424,
+              1.0,
+              -0.5688972375424239
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0473845345132777,
+              1.0,
+              1.733755247464489
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              3.0209303902856135,
+              1.0,
+              4.036407732471402
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              3.9944762460579493,
+              1.0,
+              6.339060217478315
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.968022101830284,
+              1.0,
+              8.64171270248523
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              5.746858786448154,
+              1.0,
+              10.48383469049076
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              6.915113813374957,
+              1.0,
+              13.247017672499055
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              8.862205524919627,
+              1.0,
+              17.85232264251288
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.768283309264588,
+              0.0,
+              0.20993944707544454
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              0.20526254650774756,
+              0.0,
+              2.5125919320823575
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              1.178808402280083,
+              0.0,
+              4.8152444170892705
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              2.152354258052419,
+              0.0,
+              7.1178969020961835
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              3.125900113824754,
+              0.0,
+              9.420549387103097
+            ],
+            "source": 37
+          }
+        ]
+      },
+      "id": "bend-rigid-2",
+      "elapsed_ns": 0
+    },
+    {
+      "value": {
+        "history": "Command: _Bend\nStart of spine: w0.0,0.0,0.0\nEnd of spine: w0.0,0.0,10.0\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _Copy=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _Rigid=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _LimitToSpine=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _Symmetric=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _PreserveStructure=_No\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): _NonAttenuated=_Yes\nPoint to bend through ( Copy=No  Rigid=Yes  LimitToSpine=No  Angle  Symmetric=No  PreserveStructure=No  NonAttenuated=Yes ): w10.0,0.0,10.0\nMorphed 38 objects.\nCommand: _Enter\nCommand: _Cancel",
+        "success": true,
+        "before": [
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "redo": [
+          {
+            "selected": false,
+            "point": [
+              -5.441303416966625,
+              1.0,
+              -10.842792480960025
+            ],
+            "source": 0
+          },
+          {
+            "selected": false,
+            "point": [
+              -2.7153750208063645,
+              1.0,
+              -4.395365522939704
+            ],
+            "source": 1
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.5471199938805382,
+              1.0,
+              -1.6321825409309958
+            ],
+            "source": 2
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.768283309263321,
+              1.0,
+              0.20993944707480994
+            ],
+            "source": 3
+          },
+          {
+            "selected": false,
+            "point": [
+              0.20526254650820064,
+              1.0,
+              2.512591932082067
+            ],
+            "source": 4
+          },
+          {
+            "selected": false,
+            "point": [
+              1.1788084022797223,
+              1.0,
+              4.815244417089325
+            ],
+            "source": 5
+          },
+          {
+            "selected": false,
+            "point": [
+              2.152354258051244,
+              1.0,
+              7.1178969020965805
+            ],
+            "source": 6
+          },
+          {
+            "selected": false,
+            "point": [
+              3.1259001138227656,
+              1.0,
+              9.420549387103838
+            ],
+            "source": 7
+          },
+          {
+            "selected": false,
+            "point": [
+              3.9047367984399832,
+              1.0,
+              11.262671375109644
+            ],
+            "source": 8
+          },
+          {
+            "selected": false,
+            "point": [
+              5.072991825365809,
+              1.0,
+              14.025854357118352
+            ],
+            "source": 9
+          },
+          {
+            "selected": false,
+            "point": [
+              7.020083536908852,
+              1.0,
+              18.631159327132867
+            ],
+            "source": 10
+          },
+          {
+            "selected": false,
+            "point": [
+              -3.5991814289608195,
+              1.0,
+              -11.621629165577243
+            ],
+            "source": 11
+          },
+          {
+            "selected": false,
+            "point": [
+              -0.8732530328005585,
+              1.0,
+              -5.174202207556922
+            ],
+            "source": 12
+          },
+          {
+            "selected": false,
+            "point": [
+              0.2950019941252675,
+              1.0,
+              -2.411019225548213
+            ],
+            "source": 13
+          },
+          {
+            "selected": false,
+            "point": [
+              1.0738386787424847,
+              1.0,
+              -0.5688972375424074
+            ],
+            "source": 14
+          },
+          {
+            "selected": false,
+            "point": [
+              2.0473845345140065,
+              1.0,
+              1.7337552474648499
+            ],
+            "source": 15
+          },
+          {
+            "selected": false,
+            "point": [
+              3.0209303902855282,
+              1.0,
+              4.036407732472107
+            ],
+            "source": 16
+          },
+          {
+            "selected": false,
+            "point": [
+              3.994476246057049,
+              1.0,
+              6.339060217479364
+            ],
+            "source": 17
+          },
+          {
+            "selected": false,
+            "point": [
+              4.968022101828572,
+              1.0,
+              8.64171270248662
+            ],
+            "source": 18
+          },
+          {
+            "selected": false,
+            "point": [
+              5.746858786445789,
+              1.0,
+              10.483834690492426
+            ],
+            "source": 19
+          },
+          {
+            "selected": false,
+            "point": [
+              6.915113813371614,
+              1.0,
+              13.247017672501133
+            ],
+            "source": 20
+          },
+          {
+            "selected": false,
+            "point": [
+              8.862205524914657,
+              1.0,
+              17.85232264251565
+            ],
+            "source": 21
+          },
+          {
+            "selected": false,
+            "point": [
+              -1.7570594409550138,
+              1.0,
+              -12.40046585019446
+            ],
+            "source": 22
+          },
+          {
+            "selected": false,
+            "point": [
+              0.9688689552052472,
+              1.0,
+              -5.953038892174138
+            ],
+            "source": 23
+          },
+          {
+            "selected": false,
+            "point": [
+              2.1371239821310732,
+              1.0,
+              -3.1898559101654302
+            ],
+            "source": 24
+          },
+          {
+            "selected": false,
+            "point": [
+              2.9159606667482905,
+              1.0,
+              -1.3477339221596247
+            ],
+            "source": 25
+          },
+          {
+            "selected": false,
+            "point": [
+              3.889506522519812,
+              1.0,
+              0.9549185628476324
+            ],
+            "source": 26
+          },
+          {
+            "selected": false,
+            "point": [
+              4.863052378291334,
+              1.0,
+              3.25757104785489
+            ],
+            "source": 27
+          },
+          {
+            "selected": false,
+            "point": [
+              5.836598234062855,
+              1.0,
+              5.560223532862146
+            ],
+            "source": 28
+          },
+          {
+            "selected": false,
+            "point": [
+              6.8101440898343775,
+              1.0,
+              7.862876017869404
+            ],
+            "source": 29
+          },
+          {
+            "selected": false,
+            "point": [
+              7.588980774451596,
+              1.0,
+              9.70499800587521
+            ],
+            "source": 30
+          },
+          {
+            "selected": false,
+            "point": [
+              8.75723580137742,
+              1.0,
+              12.468180987883917
+            ],
+            "source": 31
+          },
+          {
+            "selected": false,
+            "point": [
+              10.704327512920464,
+              1.0,
+              17.07348595789843
+            ],
+            "source": 32
+          },
+          {
+            "selected": false,
+            "point": [
+              1.0738386787424847,
+              0.0,
+              -0.5688972375424074
+            ],
+            "source": 33
+          },
+          {
+            "selected": false,
+            "point": [
+              2.0473845345140065,
+              0.0,
+              1.7337552474648499
+            ],
+            "source": 34
+          },
+          {
+            "selected": false,
+            "point": [
+              3.0209303902855282,
+              0.0,
+              4.036407732472107
+            ],
+            "source": 35
+          },
+          {
+            "selected": false,
+            "point": [
+              3.994476246057049,
+              0.0,
+              6.339060217479364
+            ],
+            "source": 36
+          },
+          {
+            "selected": false,
+            "point": [
+              4.968022101828572,
+              0.0,
+              8.64171270248662
+            ],
+            "source": 37
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "objects": [
+              {
+                "selected": true,
+                "point": [
+                  -5.441303416966625,
+                  1.0,
+                  -10.842792480960025
+                ],
+                "source": 0
+              },
+              {
+                "selected": true,
+                "point": [
+                  -2.7153750208063645,
+                  1.0,
+                  -4.395365522939704
+                ],
+                "source": 1
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.5471199938805382,
+                  1.0,
+                  -1.6321825409309958
+                ],
+                "source": 2
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.768283309263321,
+                  1.0,
+                  0.20993944707480994
+                ],
+                "source": 3
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.20526254650820064,
+                  1.0,
+                  2.512591932082067
+                ],
+                "source": 4
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.1788084022797223,
+                  1.0,
+                  4.815244417089325
+                ],
+                "source": 5
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.152354258051244,
+                  1.0,
+                  7.1178969020965805
+                ],
+                "source": 6
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.1259001138227656,
+                  1.0,
+                  9.420549387103838
+                ],
+                "source": 7
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.9047367984399832,
+                  1.0,
+                  11.262671375109644
+                ],
+                "source": 8
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.072991825365809,
+                  1.0,
+                  14.025854357118352
+                ],
+                "source": 9
+              },
+              {
+                "selected": true,
+                "point": [
+                  7.020083536908852,
+                  1.0,
+                  18.631159327132867
+                ],
+                "source": 10
+              },
+              {
+                "selected": true,
+                "point": [
+                  -3.5991814289608195,
+                  1.0,
+                  -11.621629165577243
+                ],
+                "source": 11
+              },
+              {
+                "selected": true,
+                "point": [
+                  -0.8732530328005585,
+                  1.0,
+                  -5.174202207556922
+                ],
+                "source": 12
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.2950019941252675,
+                  1.0,
+                  -2.411019225548213
+                ],
+                "source": 13
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.0738386787424847,
+                  1.0,
+                  -0.5688972375424074
+                ],
+                "source": 14
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.0473845345140065,
+                  1.0,
+                  1.7337552474648499
+                ],
+                "source": 15
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.0209303902855282,
+                  1.0,
+                  4.036407732472107
+                ],
+                "source": 16
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.994476246057049,
+                  1.0,
+                  6.339060217479364
+                ],
+                "source": 17
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.968022101828572,
+                  1.0,
+                  8.64171270248662
+                ],
+                "source": 18
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.746858786445789,
+                  1.0,
+                  10.483834690492426
+                ],
+                "source": 19
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.915113813371614,
+                  1.0,
+                  13.247017672501133
+                ],
+                "source": 20
+              },
+              {
+                "selected": true,
+                "point": [
+                  8.862205524914657,
+                  1.0,
+                  17.85232264251565
+                ],
+                "source": 21
+              },
+              {
+                "selected": true,
+                "point": [
+                  -1.7570594409550138,
+                  1.0,
+                  -12.40046585019446
+                ],
+                "source": 22
+              },
+              {
+                "selected": true,
+                "point": [
+                  0.9688689552052472,
+                  1.0,
+                  -5.953038892174138
+                ],
+                "source": 23
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.1371239821310732,
+                  1.0,
+                  -3.1898559101654302
+                ],
+                "source": 24
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.9159606667482905,
+                  1.0,
+                  -1.3477339221596247
+                ],
+                "source": 25
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.889506522519812,
+                  1.0,
+                  0.9549185628476324
+                ],
+                "source": 26
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.863052378291334,
+                  1.0,
+                  3.25757104785489
+                ],
+                "source": 27
+              },
+              {
+                "selected": true,
+                "point": [
+                  5.836598234062855,
+                  1.0,
+                  5.560223532862146
+                ],
+                "source": 28
+              },
+              {
+                "selected": true,
+                "point": [
+                  6.8101440898343775,
+                  1.0,
+                  7.862876017869404
+                ],
+                "source": 29
+              },
+              {
+                "selected": true,
+                "point": [
+                  7.588980774451596,
+                  1.0,
+                  9.70499800587521
+                ],
+                "source": 30
+              },
+              {
+                "selected": true,
+                "point": [
+                  8.75723580137742,
+                  1.0,
+                  12.468180987883917
+                ],
+                "source": 31
+              },
+              {
+                "selected": true,
+                "point": [
+                  10.704327512920464,
+                  1.0,
+                  17.07348595789843
+                ],
+                "source": 32
+              },
+              {
+                "selected": true,
+                "point": [
+                  1.0738386787424847,
+                  0.0,
+                  -0.5688972375424074
+                ],
+                "source": 33
+              },
+              {
+                "selected": true,
+                "point": [
+                  2.0473845345140065,
+                  0.0,
+                  1.7337552474648499
+                ],
+                "source": 34
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.0209303902855282,
+                  0.0,
+                  4.036407732472107
+                ],
+                "source": 35
+              },
+              {
+                "selected": true,
+                "point": [
+                  3.994476246057049,
+                  0.0,
+                  6.339060217479364
+                ],
+                "source": 36
+              },
+              {
+                "selected": true,
+                "point": [
+                  4.968022101828572,
+                  0.0,
+                  8.64171270248662
+                ],
+                "source": 37
+              }
+            ],
+            "selected": [],
+            "name": "Bend"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Enter"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "undo": [
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -12.0
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -5.0
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              -2.0
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              2.5
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              5.0
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              7.5
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              10.0
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              12.0
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              15.0
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              0.0,
+              1.0,
+              20.0
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -12.0
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -5.0
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              15.0
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              20.0
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -12.0
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -5.0
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              -2.0
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              0.0
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              2.5
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              5.0
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              7.5
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              10.0
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              12.0
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              15.0
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              4.0,
+              1.0,
+              20.0
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              2.5
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              5.0
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              7.5
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0,
+              0.0,
+              10.0
+            ],
+            "source": 37
+          }
+        ],
+        "after": [
+          {
+            "selected": true,
+            "point": [
+              -5.441303416966625,
+              1.0,
+              -10.842792480960025
+            ],
+            "source": 0
+          },
+          {
+            "selected": true,
+            "point": [
+              -2.7153750208063645,
+              1.0,
+              -4.395365522939704
+            ],
+            "source": 1
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.5471199938805382,
+              1.0,
+              -1.6321825409309958
+            ],
+            "source": 2
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.768283309263321,
+              1.0,
+              0.20993944707480994
+            ],
+            "source": 3
+          },
+          {
+            "selected": true,
+            "point": [
+              0.20526254650820064,
+              1.0,
+              2.512591932082067
+            ],
+            "source": 4
+          },
+          {
+            "selected": true,
+            "point": [
+              1.1788084022797223,
+              1.0,
+              4.815244417089325
+            ],
+            "source": 5
+          },
+          {
+            "selected": true,
+            "point": [
+              2.152354258051244,
+              1.0,
+              7.1178969020965805
+            ],
+            "source": 6
+          },
+          {
+            "selected": true,
+            "point": [
+              3.1259001138227656,
+              1.0,
+              9.420549387103838
+            ],
+            "source": 7
+          },
+          {
+            "selected": true,
+            "point": [
+              3.9047367984399832,
+              1.0,
+              11.262671375109644
+            ],
+            "source": 8
+          },
+          {
+            "selected": true,
+            "point": [
+              5.072991825365809,
+              1.0,
+              14.025854357118352
+            ],
+            "source": 9
+          },
+          {
+            "selected": true,
+            "point": [
+              7.020083536908852,
+              1.0,
+              18.631159327132867
+            ],
+            "source": 10
+          },
+          {
+            "selected": true,
+            "point": [
+              -3.5991814289608195,
+              1.0,
+              -11.621629165577243
+            ],
+            "source": 11
+          },
+          {
+            "selected": true,
+            "point": [
+              -0.8732530328005585,
+              1.0,
+              -5.174202207556922
+            ],
+            "source": 12
+          },
+          {
+            "selected": true,
+            "point": [
+              0.2950019941252675,
+              1.0,
+              -2.411019225548213
+            ],
+            "source": 13
+          },
+          {
+            "selected": true,
+            "point": [
+              1.0738386787424847,
+              1.0,
+              -0.5688972375424074
+            ],
+            "source": 14
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0473845345140065,
+              1.0,
+              1.7337552474648499
+            ],
+            "source": 15
+          },
+          {
+            "selected": true,
+            "point": [
+              3.0209303902855282,
+              1.0,
+              4.036407732472107
+            ],
+            "source": 16
+          },
+          {
+            "selected": true,
+            "point": [
+              3.994476246057049,
+              1.0,
+              6.339060217479364
+            ],
+            "source": 17
+          },
+          {
+            "selected": true,
+            "point": [
+              4.968022101828572,
+              1.0,
+              8.64171270248662
+            ],
+            "source": 18
+          },
+          {
+            "selected": true,
+            "point": [
+              5.746858786445789,
+              1.0,
+              10.483834690492426
+            ],
+            "source": 19
+          },
+          {
+            "selected": true,
+            "point": [
+              6.915113813371614,
+              1.0,
+              13.247017672501133
+            ],
+            "source": 20
+          },
+          {
+            "selected": true,
+            "point": [
+              8.862205524914657,
+              1.0,
+              17.85232264251565
+            ],
+            "source": 21
+          },
+          {
+            "selected": true,
+            "point": [
+              -1.7570594409550138,
+              1.0,
+              -12.40046585019446
+            ],
+            "source": 22
+          },
+          {
+            "selected": true,
+            "point": [
+              0.9688689552052472,
+              1.0,
+              -5.953038892174138
+            ],
+            "source": 23
+          },
+          {
+            "selected": true,
+            "point": [
+              2.1371239821310732,
+              1.0,
+              -3.1898559101654302
+            ],
+            "source": 24
+          },
+          {
+            "selected": true,
+            "point": [
+              2.9159606667482905,
+              1.0,
+              -1.3477339221596247
+            ],
+            "source": 25
+          },
+          {
+            "selected": true,
+            "point": [
+              3.889506522519812,
+              1.0,
+              0.9549185628476324
+            ],
+            "source": 26
+          },
+          {
+            "selected": true,
+            "point": [
+              4.863052378291334,
+              1.0,
+              3.25757104785489
+            ],
+            "source": 27
+          },
+          {
+            "selected": true,
+            "point": [
+              5.836598234062855,
+              1.0,
+              5.560223532862146
+            ],
+            "source": 28
+          },
+          {
+            "selected": true,
+            "point": [
+              6.8101440898343775,
+              1.0,
+              7.862876017869404
+            ],
+            "source": 29
+          },
+          {
+            "selected": true,
+            "point": [
+              7.588980774451596,
+              1.0,
+              9.70499800587521
+            ],
+            "source": 30
+          },
+          {
+            "selected": true,
+            "point": [
+              8.75723580137742,
+              1.0,
+              12.468180987883917
+            ],
+            "source": 31
+          },
+          {
+            "selected": true,
+            "point": [
+              10.704327512920464,
+              1.0,
+              17.07348595789843
+            ],
+            "source": 32
+          },
+          {
+            "selected": true,
+            "point": [
+              1.0738386787424847,
+              0.0,
+              -0.5688972375424074
+            ],
+            "source": 33
+          },
+          {
+            "selected": true,
+            "point": [
+              2.0473845345140065,
+              0.0,
+              1.7337552474648499
+            ],
+            "source": 34
+          },
+          {
+            "selected": true,
+            "point": [
+              3.0209303902855282,
+              0.0,
+              4.036407732472107
+            ],
+            "source": 35
+          },
+          {
+            "selected": true,
+            "point": [
+              3.994476246057049,
+              0.0,
+              6.339060217479364
+            ],
+            "source": 36
+          },
+          {
+            "selected": true,
+            "point": [
+              4.968022101828572,
+              0.0,
+              8.64171270248662
+            ],
+            "source": 37
+          }
+        ]
+      },
+      "id": "bend-rigid-3",
+      "elapsed_ns": 0
+    }
+  ],
+  "protocol_version": 1,
+  "engine": "rhino",
+  "iterations": 1,
+  "engine_version": "8.32.26160.13001"
+}

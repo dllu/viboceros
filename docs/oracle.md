@@ -2,6 +2,11 @@
 
 [Project overview](../README.md)
 
+The [Bend geometry oracle](bend-geometry.md) retains 76 public SDK point maps
+and 48 actual command recipes from private Xvfb sessions. SDK maps replay through
+the Rust/Python protocol; 36 successful command placements constrain the separate
+LimitToSpine and rigid policies. Application command replay and previews are pending.
+
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.
 Its [private-Xvfb Rhino 8.32 observation](../tools/rhino_oracle/observations/construction_plane_all.json)

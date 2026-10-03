@@ -43,7 +43,9 @@ use viboceros_io::{
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
+mod bend_points;
 mod blend_curve;
+pub use bend_points::BendPointFixture;
 mod centroid_command;
 mod connect_command;
 mod construction_plane;
@@ -628,6 +630,11 @@ pub enum Operation {
         angle: f64,
         infinite: bool,
         points: Vec<[f64; 3]>,
+    },
+    BendPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: BendPointFixture,
     },
     SurfaceJets {
         id: String,
@@ -2129,6 +2136,7 @@ impl Operation {
             | Self::Sweep1 { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::TwistPoints { id, .. }
+            | Self::BendPoints { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
             | Self::BrepMeshBoundaries { id, .. }
@@ -2703,6 +2711,7 @@ fn execute(
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
         }
+        Operation::BendPoints { fixture, .. } => bend_points::run(fixture, iterations, tolerance)?,
         Operation::TwistPoints {
             axis_start,
             axis_end,

@@ -225,6 +225,16 @@ class OracleClient:
                     raise OracleProtocolError("Twist commands require one iteration")
                 for op in cases:
                     (twist_probe if family=="twist_points" else twist_command_probe).validate(op)
+        if any(op.get('op') in ('bend_points', 'bend_command_points') for op in request.get('operations', [])):
+            from .bend_probe import validate
+            for op in request['operations']:
+                if op.get('op') in ('bend_points', 'bend_command_points'):
+                    validate(op)
+                if op.get('op') == 'bend_command_points':
+                    if self.settings_scheme is None:
+                        raise OracleProtocolError('Bend commands require a private Rhino settings scheme')
+                    if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                        raise OracleProtocolError('Bend commands require one iteration')
         if any(op.get('op') == 'twist_options_command' for op in request.get('operations', [])):
             from .twist_options_probe import validate
             if self.settings_scheme is None:
@@ -525,6 +535,9 @@ class OracleClient:
                 helper=Path(__file__).with_name('twist_options_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'twist_points' for op in request.get('operations',[])):
                 helper=Path(__file__).with_name('twist_probe.py');shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') in ('bend_points', 'bend_command_points') for op in request.get('operations', [])):
+                for name in ('bend_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'twist_preview' for op in request.get('operations',[])):
                 for name in ('twist_preview_probe.py','twist_command_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)

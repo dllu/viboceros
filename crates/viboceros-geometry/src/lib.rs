@@ -52,6 +52,8 @@ mod loft;
 mod mesh;
 mod twist;
 pub use twist::TwistPointMorph;
+mod bend;
+pub use bend::BendPointMorph;
 mod morph;
 mod nurbs;
 mod nurbs2;

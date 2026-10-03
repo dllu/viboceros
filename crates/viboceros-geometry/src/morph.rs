@@ -1,8 +1,10 @@
 mod curve_fit;
 mod denominator;
 mod preview;
+mod rigid;
 use crate::spline_collocation as interpolation;
 pub use preview::{CurvePreviewCage, SurfacePreviewCage};
+pub(crate) use rigid::forward_transform as rigid_transform;
 mod surface_fit;
 
 use crate::{

@@ -1,0 +1,79 @@
+{
+  "cases": {
+    "bend_angle_command": 10,
+    "bend_angle_points": 8,
+    "bend_boundary_points": 7,
+    "bend_command_followup": 26,
+    "bend_command_points": 8,
+    "bend_edge_points": 6,
+    "bend_points": 24,
+    "bend_rigid_command": 4,
+    "bend_short_arc_points": 14,
+    "bend_small_angle_points": 12,
+    "bend_validity_points": 5
+  },
+  "command_recipes": 48,
+  "comparison": {
+    "large_radius_small_angle_points": 1e-10,
+    "notes": [
+      "SDK validity and unchanged samples for invalid morphs are compared exactly.",
+      "Large radii amplify native circle-center subtraction rounding.",
+      "Ten original Angle=value macro failures are retained unchanged; corrected captures use Angle value. Two corrected negative-angle attempts are rejected.",
+      "Command source/after/Undo/Redo snapshots are native evidence. Kernel regressions compare successful placement coordinates; application command replay is pending.",
+      "Curve/surface/B-rep fitting, option memory, selection lifecycle and viewport previews are not yet measured for Bend.",
+      "The helper hash identifies the current corrected helper; the ten earlier Angle=value failures precede that syntax correction."
+    ],
+    "ordinary_points": 1e-11,
+    "rigid_groups": 1e-07
+  },
+  "engine_version": "8.32.26160.13001",
+  "point_comparison": {
+    "absolute_epsilon": 1e-10,
+    "max_absolute_error": 2.60682586628036e-11,
+    "passed": true,
+    "relative_epsilon": 1e-12
+  },
+  "private_display": true,
+  "scope": "Independent public BendSpaceMorph maps and owned actual Bend command point captures. No proprietary source inspected.",
+  "sdk_cases": 76,
+  "sha256": {
+    "docs/bend-point-comparison.json": "dc47ba3271b6e488ee7a4a3b738b0031f12fb405fb13ac2983b2a2f4076f10b6",
+    "tools/rhino_oracle/bend_probe.py": "3ae865d4667015866f14177debef2ec869c402a586e6b68271f4053597913753",
+    "tools/rhino_oracle/fixtures/bend_angle_command.json": "39c683acc56aec67dd474c58f37aa6ae1990362bef7894f6fc666e84f4d39f83",
+    "tools/rhino_oracle/fixtures/bend_angle_points.json": "35122edfb10c1914059349d675d8dffafc036ab58bcbc3abbd903af49b543d6d",
+    "tools/rhino_oracle/fixtures/bend_boundary_points.json": "580b168c9ed9862c69b37c1d891086e952fe51d822137ae9d31f79ad5a9bae82",
+    "tools/rhino_oracle/fixtures/bend_command_followup.json": "cc8482c53f7b345528c379c8781a8d6843af99dc38fb70d059b3bf78fec03c8c",
+    "tools/rhino_oracle/fixtures/bend_command_points.json": "612bca021717094f2e029c30a2165c0e18a752e8347a818a634ebc17bfa31799",
+    "tools/rhino_oracle/fixtures/bend_edge_points.json": "6e5184a70f85f8d7e4449352cd97afb70e25986e56ecd153fe649b964c9e75ea",
+    "tools/rhino_oracle/fixtures/bend_points.json": "02a7071984098cf8d9cf2c96f7fee0bad10a743ecc25e3df50b85b45fd99019e",
+    "tools/rhino_oracle/fixtures/bend_rigid_command.json": "1aae3a7e9c1708ddd4b93e59f144f34c8d726fa41abc2e8be85879b385784336",
+    "tools/rhino_oracle/fixtures/bend_short_arc_points.json": "2d31f8772d5a047b5df5eec6978c3da22cf024d854ebd8fb4e5575a8147d7c3d",
+    "tools/rhino_oracle/fixtures/bend_small_angle_points.json": "d998b4dfb08dd7b849d1dc226249cdd41bb1d79930fdc4af5a9fe8faec4b3a54",
+    "tools/rhino_oracle/fixtures/bend_validity_points.json": "b63c66825ffdded2aea882022c09e64e4d868b3090fc9eed50a1e3b08ab64b6f",
+    "tools/rhino_oracle/observations/bend_angle_command.json": "7d5e60d9c0e9f1cac02818b319f039dc8ef097fce1f7aa79dedc6afe8c8f7451",
+    "tools/rhino_oracle/observations/bend_angle_points.json": "fcaeda925b780643ef9220a4ea9900f943f00a1eb5796f49d9a219831573796e",
+    "tools/rhino_oracle/observations/bend_boundary_points.json": "a68a5e567dbe5e27f8adc78608bda087e810adc61b5fe0bd55454068d4fefdcf",
+    "tools/rhino_oracle/observations/bend_command_followup.json": "894fdfb96a97ab86f4a8aeee1048e59b4067cc72f205428e8dc6883ffe2bc90b",
+    "tools/rhino_oracle/observations/bend_command_points.json": "2a7f67df7a1977e3007ae37c3b9489d3c1eddb4529ad12c87749b278442890be",
+    "tools/rhino_oracle/observations/bend_edge_points.json": "6a2ee6ca414c66cf8ece4ebebdd337cf3655b5a2fa9066943e1157bc164fb75d",
+    "tools/rhino_oracle/observations/bend_points.json": "a91182826fe1ad38c47c6ede34030ed0cd61b52925de45dad0287964d5a1d1a0",
+    "tools/rhino_oracle/observations/bend_points_rust_performance.json": "86501fc8dc90c1d76c7f4f382adc241ae72801f580ec87e07fe3b7e831133185",
+    "tools/rhino_oracle/observations/bend_rigid_command.json": "928f4201172b5c9de7583d517ef125e5e132af7ee3d74edc6d444862ce5afffd",
+    "tools/rhino_oracle/observations/bend_short_arc_points.json": "34ea5759fdc366bbda9cf5522341a2ba5b7edc3f9b7b44ea23f73759059de000",
+    "tools/rhino_oracle/observations/bend_small_angle_points.json": "8532d29fb0f463964422c15db6dce13c609f6d24c0fbb9724d22330f96e434a4",
+    "tools/rhino_oracle/observations/bend_validity_points.json": "7b72eec25d53d5e861d160cd0e7c051cf8e1146124336620136bc32db8156841"
+  },
+  "successful_command_placements": 36,
+  "timing": {
+    "iterations": 1000,
+    "notes": [
+      "Native release Rust point batches include result collection.",
+      "Native captures use public Python calls through Wine/FEX and cannot establish a native Rhino kernel speed comparison."
+    ],
+    "rust_ns_per_point": [
+      38.626973684210526,
+      59.13647368421053
+    ],
+    "valid_batches": 45
+  }
+}
