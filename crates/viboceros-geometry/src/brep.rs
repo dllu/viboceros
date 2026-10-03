@@ -18,6 +18,8 @@ mod cap;
 mod combine;
 mod components;
 mod curved_boundaries;
+mod wire_cage;
+pub use wire_cage::BrepWireCage;
 mod edge_split;
 mod face_split;
 mod incidence;

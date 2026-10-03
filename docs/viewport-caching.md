@@ -57,6 +57,21 @@ coefficients; ordinary per-corner evaluation uses bounded floating-point product
 Near-null directions use an exact fallback. Collapsed normals omit their faces.
 Cached smoothing groups remain those of the source tessellation during deformation.
 
+[Twist](commands/twist.md#live-preview) retains a separate prepared control cage
+in its input session. Standalone curves are elevated once. Low-degree polynomial
+surfaces and B-rep edges prepare Greville samples and collocation axes; preserved
+surfaces map their original controls. B-rep trim intervals are cached in lossless
+local UV frames. Mouse motion maps controls or samples and extracts wires,
+without assembling a model B-rep or adaptively fitting final geometry.
+Mesh previews map cached edge endpoints; rigid previews share the source display
+and use one affine placement per object or selected top group. Snapshot identity,
+wire density, top-group membership and model tolerance invalidate preparation.
+Color and selection changes update styling without rebuilding cages.
+Unchanged angles share the same display handles across views and preserve scene
+and GPU-buffer reuse. Twist's temporary wires and points draw in an overlay pass,
+with depth writes disabled and world clipping retained. Original shaded faces
+keep their colors and mesh vertex colors, including while selected.
+
 This is not an asynchronous mesher or a camera-uniform-only renderer:
 current large-coordinate precision guarantees require view-dependent f64
 rebasing and depth encoding before f32 GPU submission.
@@ -129,3 +144,10 @@ covering Mirror and translation in three display modes and both linear and sRGB
 targets. Formatting and application all-target Clippy passed with existing
 warnings. Cache sharing, unchanged-frame GPU reuse, normals, clipping restoration,
 and pending model state are covered; no new performance comparison is claimed.
+
+Twist-preview follow-up: 861 ordinary application tests and 616 Python tests
+passed, along with 47 morph regressions, the rational trim/large-UV cage check,
+and the saved Twist command regressions. The new overlay GPU check and all three
+affine-instance preview GPU checks passed in linear and sRGB formats on the same
+GB10/Vulkan adapter. The 32 native preview captures and one supplemental edge
+capture ran entirely in private Xvfb. See [Twist measurements and limits](commands/twist.md).

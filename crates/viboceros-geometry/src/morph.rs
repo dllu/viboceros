@@ -1,6 +1,8 @@
 mod curve_fit;
 mod denominator;
+mod preview;
 use crate::spline_collocation as interpolation;
+pub use preview::{CurvePreviewCage, SurfacePreviewCage};
 mod surface_fit;
 
 use crate::{
@@ -71,6 +73,21 @@ pub trait PointMorph {
         fit_curve(self, curve, tolerance)
     }
 
+    /// Moves Euclidean controls without fitting, retaining degree, full knots,
+    /// weights and parameter domain. This is a control cage approximation,
+    /// rather than a tolerance-certified pointwise image.
+    fn morph_nurbs_curve_controls(&self, curve: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
+        NurbsCurve::try_new_rational(
+            curve.degree(),
+            curve
+                .control_points()
+                .iter()
+                .map(|c| WeightedPoint3::try_new(self.morph_point(c.point())?, c.weight()))
+                .collect::<Result<Vec<_>, _>>()?,
+            curve.knots().to_vec(),
+        )
+    }
+
     /// Checks mapped-control and bounded rational-composition candidates,
     /// then adaptively fits a bicubic image
     /// in the native U/V domains with independent source knot-side limits.
@@ -82,6 +99,26 @@ pub trait PointMorph {
         tolerance: Tolerance,
     ) -> Result<NurbsSurface, GeometryError> {
         fit_surface(self, surface, tolerance)
+    }
+
+    /// Surface counterpart of [`Self::morph_nurbs_curve_controls`].
+    fn morph_nurbs_surface_controls(
+        &self,
+        surface: &NurbsSurface,
+    ) -> Result<NurbsSurface, GeometryError> {
+        NurbsSurface::try_new_rational(
+            surface.degree_u(),
+            surface.degree_v(),
+            surface.control_point_count_u(),
+            surface.control_point_count_v(),
+            surface
+                .control_points()
+                .iter()
+                .map(|c| WeightedPoint3::try_new(self.morph_point(c.point())?, c.weight()))
+                .collect::<Result<Vec<_>, _>>()?,
+            surface.knots_u().to_vec(),
+            surface.knots_v().to_vec(),
+        )
     }
 
     /// Fits shared edges and underlying surfaces, preserving UV trims and

@@ -1,6 +1,8 @@
 //! Per-frame GPU scene staging, object display dispatch, and depth encoding.
 
 use super::display_cache::DisplayGeometry;
+use super::object_preview::ObjectPreview;
+#[cfg(test)]
 use super::object_preview::TransformedObjects;
 use super::*;
 use std::collections::{HashMap, HashSet};
@@ -107,6 +109,7 @@ struct DisplayObject {
     point_radius: f32,
     transform: Option<AffineTransform3>,
     reversing: bool,
+    overlay: bool,
 }
 
 impl PartialEq for DisplayObject {
@@ -122,6 +125,7 @@ impl PartialEq for DisplayObject {
             && self.point_radius == other.point_radius
             && self.transform == other.transform
             && self.reversing == other.reversing
+            && self.overlay == other.overlay
     }
 }
 
@@ -161,6 +165,8 @@ pub(super) struct GpuSceneBuilder {
     pub(super) triangles: Vec<DepthTriangle>,
     pub(super) lines: Vec<DepthPrimitive<GpuLineInstance, 2>>,
     pub(super) points: Vec<DepthPrimitive<GpuPointInstance, 1>>,
+    overlay_lines: Vec<DepthPrimitive<GpuLineInstance, 2>>,
+    overlay_points: Vec<DepthPrimitive<GpuPointInstance, 1>>,
     pub(super) min_depth: Real,
     max_depth: Real,
 }
@@ -171,6 +177,8 @@ impl GpuSceneBuilder {
             triangles: Vec::new(),
             lines: Vec::new(),
             points: Vec::new(),
+            overlay_lines: Vec::new(),
+            overlay_points: Vec::new(),
             min_depth: Real::INFINITY,
             max_depth: Real::NEG_INFINITY,
         }
@@ -200,8 +208,14 @@ impl GpuSceneBuilder {
             self.triangles
                 .sort_by(|left, right| right.depth.total_cmp(&left.depth));
         }
+        let overlay_line_start = self.lines.len();
+        let overlay_point_start = self.points.len();
+        self.lines.append(&mut self.overlay_lines);
+        self.points.append(&mut self.overlay_points);
         GpuViewportScene {
             uniform,
+            overlay_line_start,
+            overlay_point_start,
             triangles: self
                 .triangles
                 .into_iter()
@@ -256,13 +270,13 @@ impl Viewport {
         viewport_index: usize,
         preview: Option<ObjectSelectionFilter>,
         preview_ids: &[ObjectId],
-        transform: Option<TransformedObjects<'_>>,
+        transform: Option<ObjectPreview<'_>>,
     ) {
         crate::viewport_gpu::paint(
             painter,
             rect,
             viewport_index,
-            self.object_scene_with_transform(rect, document, preview, preview_ids, transform),
+            self.object_scene_with_object_preview(rect, document, preview, preview_ids, transform),
         );
     }
 
@@ -282,6 +296,7 @@ impl Viewport {
         self.object_scene_with_transform(rect, document, preview, preview_ids, None)
     }
 
+    #[cfg(test)]
     fn object_scene_with_transform(
         &self,
         rect: Rect,
@@ -290,6 +305,28 @@ impl Viewport {
         preview_ids: &[ObjectId],
         transform: Option<TransformedObjects<'_>>,
     ) -> Arc<GpuViewportScene> {
+        self.object_scene_with_object_preview(
+            rect,
+            document,
+            preview,
+            preview_ids,
+            transform.map(ObjectPreview::Affine),
+        )
+    }
+
+    pub(super) fn object_scene_with_object_preview(
+        &self,
+        rect: Rect,
+        document: &Document,
+        preview: Option<ObjectSelectionFilter>,
+        preview_ids: &[ObjectId],
+        preview_transform: Option<ObjectPreview<'_>>,
+    ) -> Arc<GpuViewportScene> {
+        let (transform, deformed) = match preview_transform {
+            Some(ObjectPreview::Affine(map)) => (Some(map), None),
+            Some(ObjectPreview::Deformed(objects)) => (None, Some(objects)),
+            None => (None, None),
+        };
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
@@ -317,9 +354,11 @@ impl Viewport {
             } else {
                 resolved_display_color(attributes, layer.color())
             };
+            let base_color = color;
             if self.display_mode == DisplayMode::Ghosted {
                 color = color_with_alpha(color, 110);
             }
+            let deformed = deformed.and_then(|objects| objects.get(&object.id()));
             let highlighted = preview_ids.contains(&object.id());
             let transformed = sources
                 .as_ref()
@@ -343,17 +382,22 @@ impl Viewport {
             let mut display = DisplayObject {
                 geometry: cache.get(object, document.tolerance()),
                 color,
-                face_color: color,
+                face_color: if self.display_mode == DisplayMode::Ghosted {
+                    color_with_alpha(base_color, 110)
+                } else {
+                    base_color
+                },
                 draw_faces: true,
                 highlighted,
                 member_colors_enabled: !selected
                     && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
-                face_member_colors_enabled: !selected
-                    && (preview.is_some() || (!attributes.is_locked() && !layer.is_locked())),
+                face_member_colors_enabled: preview.is_some()
+                    || (!attributes.is_locked() && !layer.is_locked()),
                 width,
                 point_radius: if selected { 3.5 } else { 2.5 },
                 transform: None,
                 reversing: false,
+                overlay: false,
             };
             if transformed {
                 let transform = transform.unwrap();
@@ -369,6 +413,7 @@ impl Viewport {
                     point_radius: 3.5,
                     transform: Some(transform.transform),
                     reversing: transform.reversing,
+                    overlay: false,
                 });
                 display.draw_faces = transform.draw_source_faces;
                 if transform.reference_sources {
@@ -376,6 +421,29 @@ impl Viewport {
                     display.member_colors_enabled = false;
                 }
                 objects.push(display);
+            } else if let Some(deformed) = deformed {
+                // Native Twist keeps the selected originals, including their
+                // faces, while the temporary deformation is drawn as colored wires.
+                display.face_member_colors_enabled = !attributes.is_locked() && !layer.is_locked();
+                objects.push(display);
+                objects.push(DisplayObject {
+                    geometry: Rc::clone(&deformed.geometry),
+                    color: base_color,
+                    face_color: base_color,
+                    draw_faces: false,
+                    highlighted: true,
+                    member_colors_enabled: true,
+                    face_member_colors_enabled: true,
+                    width: match self.display_mode {
+                        DisplayMode::Wireframe => 1.5,
+                        DisplayMode::Shaded => 2.25,
+                        DisplayMode::Ghosted => 1.25,
+                    },
+                    point_radius: 2.5,
+                    transform: deformed.transform,
+                    reversing: false,
+                    overlay: true,
+                });
             } else {
                 objects.push(display);
             }
@@ -396,14 +464,18 @@ impl Viewport {
             return Arc::clone(&previous.scene);
         }
         let mut scene = GpuSceneBuilder::new();
-        let normal_transform =
-            transform.map(|preview| AffineNormalTransform3::new(preview.transform));
         for object in &key.objects {
+            let normal_transform = object.transform.map(AffineNormalTransform3::new);
             let display = &object.geometry;
             match &*display.geometry {
                 Geometry::Point(point) => {
                     if let Some(point) = object.display_point(*point) {
+                        let count = scene.points.len();
                         self.add_gpu_point(&mut scene, rect, point, 4.5, object.color);
+                        if object.overlay && scene.points.len() > count {
+                            let point = scene.points.pop().unwrap();
+                            scene.overlay_points.push(point);
+                        }
                     }
                 }
                 Geometry::PointCloud(cloud) => {
@@ -430,7 +502,12 @@ impl Viewport {
                             object.color
                         };
                         if let Some(point) = object.display_point(*point) {
+                            let count = scene.points.len();
                             self.add_gpu_point(&mut scene, rect, point, object.point_radius, color);
+                            if object.overlay && scene.points.len() > count {
+                                let point = scene.points.pop().unwrap();
+                                scene.overlay_points.push(point);
+                            }
                         }
                     }
                 }
@@ -459,7 +536,12 @@ impl Viewport {
                         if let (Some(a), Some(b)) =
                             (object.display_point(a), object.display_point(b))
                         {
+                            let count = scene.lines.len();
                             self.add_gpu_line(&mut scene, rect, a, b, object.width, object.color);
+                            if object.overlay && scene.lines.len() > count {
+                                let line = scene.lines.pop().unwrap();
+                                scene.overlay_lines.push(line);
+                            }
                         }
                     }
                 }
@@ -944,11 +1026,15 @@ mod tests {
             .select_objects_direct([id], SelectionMode::Replace)
             .unwrap();
         let selected = view.object_scene(rect, &document);
+        // Rhino highlights selected wires while retaining mesh vertex colors on faces.
+        for (actual, expected) in selected.triangles.iter().zip(&scene.triangles) {
+            assert_eq!(actual.color, expected.color);
+        }
         assert!(
             selected
-                .triangles
+                .lines
                 .iter()
-                .all(|vertex| vertex.color == color_to_gpu(SELECTED_COLOR))
+                .all(|line| line.color == color_to_gpu(SELECTED_COLOR))
         );
     }
 }

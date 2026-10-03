@@ -46,6 +46,8 @@ pub(crate) struct ViewportScene {
     pub triangles: Vec<TriangleVertex>,
     pub lines: Vec<LineInstance>,
     pub points: Vec<PointInstance>,
+    pub overlay_line_start: usize,
+    pub overlay_point_start: usize,
     pub transparent: bool,
 }
 
@@ -111,6 +113,8 @@ struct ViewportRenderer {
     transparent_pipeline: wgpu::RenderPipeline,
     line_pipeline: wgpu::RenderPipeline,
     point_pipeline: wgpu::RenderPipeline,
+    overlay_line_pipeline: wgpu::RenderPipeline,
+    overlay_point_pipeline: wgpu::RenderPipeline,
     viewports: [PreparedViewport; VIEWPORT_COUNT],
 }
 
@@ -169,7 +173,7 @@ impl ViewportRenderer {
                 "fs_triangle_gamma"
             },
             &triangle_buffers,
-            true,
+            PipelineDepth::Write,
             wgpu::DepthBiasState::default(),
         );
         let transparent_pipeline = create_pipeline(
@@ -185,7 +189,7 @@ impl ViewportRenderer {
                 "fs_triangle_gamma"
             },
             &triangle_buffers,
-            false,
+            PipelineDepth::Read,
             wgpu::DepthBiasState::default(),
         );
         let line_attributes = wgpu::vertex_attr_array![
@@ -216,7 +220,7 @@ impl ViewportRenderer {
                 "fs_line_gamma"
             },
             &line_buffers,
-            false,
+            PipelineDepth::Read,
             overlay_bias,
         );
         let point_attributes = wgpu::vertex_attr_array![
@@ -241,8 +245,41 @@ impl ViewportRenderer {
                 "fs_point_gamma"
             },
             &point_buffers,
-            false,
+            PipelineDepth::Read,
             overlay_bias,
+        );
+
+        let overlay_line_pipeline = create_pipeline(
+            device,
+            &pipeline_layout,
+            &shader,
+            target_format,
+            "viboceros deformation overlay line pipeline",
+            "vs_line",
+            if fragment_suffix == "linear" {
+                "fs_line_linear"
+            } else {
+                "fs_line_gamma"
+            },
+            &line_buffers,
+            PipelineDepth::Overlay,
+            wgpu::DepthBiasState::default(),
+        );
+        let overlay_point_pipeline = create_pipeline(
+            device,
+            &pipeline_layout,
+            &shader,
+            target_format,
+            "viboceros deformation overlay point pipeline",
+            "vs_point",
+            if fragment_suffix == "linear" {
+                "fs_point_linear"
+            } else {
+                "fs_point_gamma"
+            },
+            &point_buffers,
+            PipelineDepth::Overlay,
+            wgpu::DepthBiasState::default(),
         );
 
         Self {
@@ -250,6 +287,8 @@ impl ViewportRenderer {
             transparent_pipeline,
             line_pipeline,
             point_pipeline,
+            overlay_line_pipeline,
+            overlay_point_pipeline,
             viewports: std::array::from_fn(|_| PreparedViewport::new(device, &uniform_layout)),
         }
     }
@@ -307,6 +346,12 @@ impl ViewportRenderer {
         viewport.triangle_count = u32::try_from(scene.triangles.len()).unwrap_or(u32::MAX);
         viewport.line_count = u32::try_from(scene.lines.len()).unwrap_or(u32::MAX);
         viewport.point_count = u32::try_from(scene.points.len()).unwrap_or(u32::MAX);
+        viewport.overlay_line_start = u32::try_from(scene.overlay_line_start)
+            .unwrap_or(u32::MAX)
+            .min(viewport.line_count);
+        viewport.overlay_point_start = u32::try_from(scene.overlay_point_start)
+            .unwrap_or(u32::MAX)
+            .min(viewport.point_count);
         viewport.transparent = scene.transparent;
     }
 
@@ -324,15 +369,25 @@ impl ViewportRenderer {
             render_pass.set_vertex_buffer(0, viewport.triangle_buffer.buffer.slice(..));
             render_pass.draw(0..viewport.triangle_count, 0..1);
         }
-        if viewport.line_count > 0 {
+        if viewport.overlay_line_start > 0 {
             render_pass.set_pipeline(&self.line_pipeline);
             render_pass.set_vertex_buffer(0, viewport.line_buffer.buffer.slice(..));
-            render_pass.draw(0..6, 0..viewport.line_count);
+            render_pass.draw(0..6, 0..viewport.overlay_line_start);
         }
-        if viewport.point_count > 0 {
+        if viewport.overlay_point_start > 0 {
             render_pass.set_pipeline(&self.point_pipeline);
             render_pass.set_vertex_buffer(0, viewport.point_buffer.buffer.slice(..));
-            render_pass.draw(0..6, 0..viewport.point_count);
+            render_pass.draw(0..6, 0..viewport.overlay_point_start);
+        }
+        if viewport.overlay_line_start < viewport.line_count {
+            render_pass.set_pipeline(&self.overlay_line_pipeline);
+            render_pass.set_vertex_buffer(0, viewport.line_buffer.buffer.slice(..));
+            render_pass.draw(0..6, viewport.overlay_line_start..viewport.line_count);
+        }
+        if viewport.overlay_point_start < viewport.point_count {
+            render_pass.set_pipeline(&self.overlay_point_pipeline);
+            render_pass.set_vertex_buffer(0, viewport.point_buffer.buffer.slice(..));
+            render_pass.draw(0..6, viewport.overlay_point_start..viewport.point_count);
         }
     }
 }
@@ -349,6 +404,8 @@ struct PreparedViewport {
     triangle_count: u32,
     line_count: u32,
     point_count: u32,
+    overlay_line_start: u32,
+    overlay_point_start: u32,
     transparent: bool,
 }
 
@@ -380,6 +437,8 @@ impl PreparedViewport {
             triangle_count: 0,
             line_count: 0,
             point_count: 0,
+            overlay_line_start: 0,
+            overlay_point_start: 0,
             transparent: false,
         }
     }
@@ -426,6 +485,12 @@ fn create_vertex_buffer(
     })
 }
 
+enum PipelineDepth {
+    Write,
+    Read,
+    Overlay,
+}
+
 #[allow(clippy::too_many_arguments)]
 fn create_pipeline(
     device: &wgpu::Device,
@@ -436,7 +501,7 @@ fn create_pipeline(
     vertex_entry: &'static str,
     fragment_entry: &'static str,
     buffers: &[Option<wgpu::VertexBufferLayout<'_>>],
-    depth_write_enabled: bool,
+    depth: PipelineDepth,
     bias: wgpu::DepthBiasState,
 ) -> wgpu::RenderPipeline {
     device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -459,8 +524,12 @@ fn create_pipeline(
         },
         depth_stencil: Some(wgpu::DepthStencilState {
             format: DEPTH_FORMAT,
-            depth_write_enabled: Some(depth_write_enabled),
-            depth_compare: Some(wgpu::CompareFunction::LessEqual),
+            depth_write_enabled: Some(matches!(depth, PipelineDepth::Write)),
+            depth_compare: Some(if matches!(depth, PipelineDepth::Overlay) {
+                wgpu::CompareFunction::Always
+            } else {
+                wgpu::CompareFunction::LessEqual
+            }),
             stencil: wgpu::StencilState::default(),
             bias,
         }),

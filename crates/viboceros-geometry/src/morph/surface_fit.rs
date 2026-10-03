@@ -4,7 +4,7 @@ use crate::ParameterSide;
 use std::collections::HashMap;
 
 use super::denominator;
-mod tensor;
+pub(super) mod tensor;
 mod validate;
 
 #[cfg(test)]

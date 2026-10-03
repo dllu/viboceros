@@ -61,14 +61,14 @@ pub(super) fn rational_candidate(
     Ok(grid.solve(Some(&weights)).ok())
 }
 
-struct Grid {
+pub(in crate::morph) struct Grid {
     u: Axis,
     v: Axis,
     targets: Vec<Point3>,
 }
 
 impl Grid {
-    fn sample(
+    pub(in crate::morph) fn sample(
         u: Axis,
         v: Axis,
         point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
@@ -83,10 +83,30 @@ impl Grid {
     }
 
     fn solve(&self, weights: Option<&[Real]>) -> Result<NurbsSurface, GeometryError> {
+        self.solve_targets(&self.targets, weights)
+    }
+
+    pub(in crate::morph) fn morphed(
+        &self,
+        morph: &(impl PointMorph + ?Sized),
+    ) -> Result<NurbsSurface, GeometryError> {
+        let targets = self
+            .targets
+            .iter()
+            .map(|p| morph.morph_point(*p))
+            .collect::<Result<Vec<_>, _>>()?;
+        self.solve_targets(&targets, None)
+    }
+
+    fn solve_targets(
+        &self,
+        targets: &[Point3],
+        weights: Option<&[Real]>,
+    ) -> Result<NurbsSurface, GeometryError> {
         let (count_u, count_v) = (self.u.stations.len(), self.v.stations.len());
         let width = if weights.is_some() { 4 } else { 3 };
-        let candidate = self.targets[0].to_array();
-        let origin = if self.targets.iter().all(|p| {
+        let candidate = targets[0].to_array();
+        let origin = if targets.iter().all(|p| {
             p.to_array()
                 .into_iter()
                 .zip(candidate)
@@ -104,7 +124,7 @@ impl Grid {
             if axis == 3 {
                 weight
             } else {
-                (self.targets[v * count_u + u].to_array()[axis] - origin[axis]) * weight
+                (targets[v * count_u + u].to_array()[axis] - origin[axis]) * weight
             }
         });
         let solved_u = self.u.solve(rhs_u)?;
@@ -125,7 +145,7 @@ impl Grid {
                     return Err(GeometryError::ZeroWeightAtParameter);
                 }
                 let point = if station_u.fixed && station_v.fixed {
-                    self.targets[v * count_u + u]
+                    targets[v * count_u + u]
                 } else {
                     Point3::try_from(std::array::from_fn(|axis| {
                         solved_v[(v, u * width + axis)] / weight + origin[axis]

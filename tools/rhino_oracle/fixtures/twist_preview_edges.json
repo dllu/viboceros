@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "twist_preview",
+      "id": "Twist_2_Box_Wireframe",
+      "command": "Twist",
+      "shape": "Box",
+      "copy": false,
+      "preserve": false,
+      "rigid": false,
+      "infinite": false,
+      "phase": "Target",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "cursor": "Valid",
+      "finish": "Click"
+    }
+  ]
+}

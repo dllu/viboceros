@@ -85,8 +85,9 @@ pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepBoundaryRestoration, BrepEdge, BrepEdgeMergeScope, BrepFace, BrepHoleRemoval,
     BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepSolidOrientation,
-    BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceIso, join_breps, join_breps_with_report,
+    BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, BrepWireCage,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, join_breps,
+    join_breps_with_report,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,
@@ -161,8 +162,8 @@ pub use mesh::{
     SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes, match_mesh_edges,
 };
 pub use morph::{
-    MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS, MAX_MORPH_SURFACE_SAMPLES,
-    PointMorph, SurfacePointMorph,
+    CurvePreviewCage, MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS,
+    MAX_MORPH_SURFACE_SAMPLES, PointMorph, SurfacePointMorph, SurfacePreviewCage,
 };
 pub use nurbs::{
     ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,

@@ -31,6 +31,28 @@ layers and group topology survive; copied objects have independent group
 records and remain unselected, while their sources retain selection. The
 shared RememberCopyOptions setting applies to Copy.
 
+## Live preview
+
+After choosing the first reference direction, mouse motion draws temporary
+object-colored wires or points over the selected sources. Shaded and ghosted
+views retain the original faces and their object or mesh colors. The temporary
+wires draw over those faces while obeying the viewport's near/far clipping.
+An axial reference pick retains the last valid preview and keeps the prompt
+active. Moving through successive turns accumulates the mouse angle; a typed
+number uses its explicit signed angle.
+
+The measured standalone curve preview elevates to at least cubic degree and
+maps controls, including when PreserveStructure is enabled. Low-degree
+polynomial surfaces and B-rep edges use a quick cubic interpolant of mapped
+Greville samples. PreserveStructure keeps the original surface controls and
+single-face B-rep edge controls. These temporary approximations skip adaptive
+fitting; accepting the command follows its final-geometry policy.
+Mesh wires map vertices directly. Rigid previews reuse source display geometry
+with an affine placement. Prepared cages and trim intervals are shared across
+the viewports; unchanged angles and stationary views reuse their cached display.
+Copy starts another angle/reference prompt after each placement, clearing the
+temporary preview; Escape keeps accepted copies.
+
 ## Geometry and measured compatibility
 
 For axis length `L` and axial coordinate `z`, finite twists rotate by
@@ -62,6 +84,17 @@ Private Xvfb captures from Rhino **8.32.26160.13001** retain:
 - [Four repeated Copy batches](../../tools/rhino_oracle/fixtures/twist_repeat_command.json),
   retaining source selection, independent groups, zero-angle suppression,
   Undo and Redo.
+- [32 interactive previews](../../tools/rhino_oracle/fixtures/twist_preview.json),
+  with raw PNGs, pending model snapshots, completed geometry and public SDK
+  control cages. These cover the three display modes, PreserveStructure, rigid
+  groups, repeated Copy, initial reference prompts, invalid axial picks,
+  a perspective view, Infinite, and a 450° mouse path. Rust compares curve and
+  surface controls and box wires to the public SDK previews at `1e-11` and rigid
+  placements at `1e-7`. Pixel witnesses check Line, Surface and Box paths and source face styling;
+  they do not establish pixel identity or arbitrary-shape preview parity.
+- [One supplementary B-rep capture](../../tools/rhino_oracle/fixtures/twist_preview_edges.json)
+  retains all 12 quick-preview edge definitions, compared at `1e-11` with
+  independent edge order and direction.
 
 Raw observations are beside the fixtures under `observations/`, including
 terminal command events and snapshots. These witnesses establish the measured
@@ -77,14 +110,21 @@ samples. Shared B-rep edges and fitted surfaces must validate together at the
 document tolerance. This is sampled validation, not a continuous error proof.
 Tight tolerances, cardinal cleanup transitions, singular rational geometry,
 collapsed mesh facets or exhausted fitting budgets can return an error.
-Preserved trimmed faces must still pass assembly validation. Live deformation
-preview and remembered non-Copy options remain unimplemented.
+Preserved trimmed faces must still pass assembly validation. Remembered non-Copy
+options remain unimplemented. Preview cages approximate the deformation and
+can differ from fitted or preserved accepted geometry. Failed cage preparation
+retains the previous display. Rational and higher-degree patches use mapped
+controls as a display approximation; their native preview policy and arbitrary
+singular or complex trimmed previews are not covered by these captures.
 
 ```sh
 cargo test -p viboceros-command twist --lib
 cargo test -p viboceros-geometry twist --lib
 cargo test -p viboceros --bin viboceros app::tests::twist
 python3 -m unittest tools.rhino_oracle.test_twist
+python3 -m unittest tools.rhino_oracle.test_twist_preview
+cargo test -p viboceros --bin viboceros viewport::twist_preview
+cargo test -p viboceros --bin viboceros twist_gpu_overlay -- --ignored --nocapture
 python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/twist_points.json \
   --observations tools/rhino_oracle/observations/twist_points.json \
   --absolute-epsilon 1e-11 --relative-epsilon 1e-12
@@ -102,6 +142,14 @@ request = load_request('tools/rhino_oracle/fixtures/twist_command.json')
 result = OracleClient(settings_scheme='VibocerosOracleTwist').run_rhino(request, 300)
 Path('/tmp/twist-command.json').write_text(json.dumps(result))
 PY
+```
+
+Capture the pending previews in a separate Xvfb:
+
+```sh
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.twist_preview_input \
+  tools/rhino_oracle/fixtures/twist_preview.json \
+  --output /tmp/twist-preview.json --scheme VibocerosOracleTwistPreview --timeout 420
 ```
 
 The point timing capture measures batches of public SDK calls through Python

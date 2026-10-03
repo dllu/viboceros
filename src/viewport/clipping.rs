@@ -384,12 +384,30 @@ impl Viewport {
         self.refresh_clipping_with_transform(document, rect, None)
     }
 
+    #[cfg(test)]
     pub(super) fn refresh_clipping_with_transform(
         &mut self,
         document: &Document,
         rect: Rect,
         transform: Option<super::object_preview::TransformedObjects<'_>>,
     ) -> Result<bool, &'static str> {
+        self.refresh_clipping_with_preview(
+            document,
+            rect,
+            transform.map(super::object_preview::ObjectPreview::Affine),
+        )
+    }
+
+    pub(super) fn refresh_clipping_with_preview(
+        &mut self,
+        document: &Document,
+        rect: Rect,
+        preview: Option<super::object_preview::ObjectPreview<'_>>,
+    ) -> Result<bool, &'static str> {
+        let transform = match preview {
+            Some(super::object_preview::ObjectPreview::Affine(map)) => Some(map),
+            _ => None,
+        };
         let mut bounds = self.visible_document_bounds(document);
         if let Some(transform) = transform {
             let mut cache = self.display_cache.borrow_mut();
@@ -425,6 +443,47 @@ impl Viewport {
                     && self.gpu_position(transformed.max()).is_some()
                 {
                     bounds = Some(bounds.map_or(transformed, |b| b.union(transformed).unwrap()));
+                }
+            }
+        }
+        if let Some(super::object_preview::ObjectPreview::Deformed(objects)) = preview {
+            for (id, display) in objects {
+                if !document.object(*id).is_some_and(|o| {
+                    o.attributes().is_visible()
+                        && document
+                            .layer(o.attributes().layer_id())
+                            .is_some_and(|l| l.is_visible())
+                }) {
+                    continue;
+                }
+                let mut posed = display.geometry.bounds();
+                if let Some(map) = display.transform {
+                    let lo = posed.min().to_array();
+                    let hi = posed.max().to_array();
+                    let corners = (0..8)
+                        .map(|mask| {
+                            Point3::try_from(std::array::from_fn(|axis| {
+                                if mask & (1 << axis) == 0 {
+                                    lo[axis]
+                                } else {
+                                    hi[axis]
+                                }
+                            }))
+                            .and_then(|p| map.transform_point(p))
+                        })
+                        .collect::<Result<Vec<_>, _>>();
+                    let Ok(corners) = corners else {
+                        continue;
+                    };
+                    let Ok(mapped) = BoundingBox3::from_points(corners) else {
+                        continue;
+                    };
+                    posed = mapped;
+                }
+                if self.gpu_position(posed.min()).is_some()
+                    && self.gpu_position(posed.max()).is_some()
+                {
+                    bounds = Some(bounds.map_or(posed, |b| b.union(posed).unwrap()));
                 }
             }
         }

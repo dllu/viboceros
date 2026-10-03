@@ -1,6 +1,21 @@
 //! Affine display instances share original geometry, samples, and tessellation.
+use super::display_cache::DisplayGeometry;
 use super::*;
+use std::collections::BTreeMap;
+use std::rc::Rc;
 use viboceros_geometry::AffineTransform3;
+
+pub(super) struct PreviewObject {
+    pub geometry: Rc<DisplayGeometry>,
+    pub transform: Option<AffineTransform3>,
+}
+
+/// Deformation previews retain selected sources and add object-colored wires.
+#[derive(Clone, Copy)]
+pub(super) enum ObjectPreview<'a> {
+    Affine(TransformedObjects<'a>),
+    Deformed(&'a BTreeMap<ObjectId, PreviewObject>),
+}
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct TransformedObjects<'a> {

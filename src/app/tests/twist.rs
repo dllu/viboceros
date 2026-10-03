@@ -70,3 +70,70 @@ fn tilted_twist_reference_plane_cancel_and_invalid_angle_retain_prompt_state() {
     assert!(app.twist_session.is_none());
     assert_eq!(app.document.selected_object_count(), 1);
 }
+
+#[test]
+fn twist_mouse_turns_numeric_override_and_copy_cancel_use_one_history_entry() {
+    let mut app = test_app();
+    app.execute_command("Point 2,1,5");
+    app.execute_command("SelAll");
+    let id = app.document.objects().next().unwrap().id();
+    assert!(app.try_start_interactive_command("Twist"));
+    for p in [[0., 0., 0.], [0., 0., 10.], [5., 0., 0.]] {
+        assert!(app.accept_drafting_point(Point3::try_from(p).unwrap()));
+    }
+    let original = app.document.object(id).unwrap().geometry().clone();
+    assert_eq!(app.twist_preview().unwrap().last_angle, Some(0.));
+    for angle in [90., 180., 270., 360., 450.] {
+        assert!(app.update_twist_preview(Some(angle)));
+    }
+    assert!(!app.accept_drafting_point(Point3::try_new(0., 0., 2.).unwrap()));
+    assert_eq!(app.twist_preview().unwrap().last_angle, Some(450.));
+    assert_eq!(app.document.object(id).unwrap().geometry(), &original);
+    assert!(app.try_continue_twist("Copy=Yes"));
+    assert!(app.accept_drafting_point(Point3::try_new(0., 5., 0.).unwrap()));
+    let first = app
+        .document
+        .objects()
+        .find(|o| o.id() != id)
+        .unwrap()
+        .geometry()
+        .clone();
+    let Geometry::Point(first) = first else {
+        panic!()
+    };
+    assert!(
+        first
+            .distance_to(Point3::try_new(-2_f64.sqrt() / 2., -3. * 2_f64.sqrt() / 2., 5.).unwrap())
+            .unwrap()
+            < 1e-12
+    );
+    assert!(app.twist_preview().is_none());
+    assert!(app.accept_drafting_point(Point3::try_new(5., 0., 0.).unwrap()));
+    assert!(app.update_twist_preview(Some(810.)));
+    // A scalar remains explicit even after accepting the first reference direction.
+    assert!(app.try_continue_twist("90"));
+    let second = app
+        .document
+        .objects()
+        .filter(|o| o.id() != id)
+        .find(|o| o.geometry() != &Geometry::Point(first))
+        .unwrap()
+        .geometry();
+    let Geometry::Point(second) = second else {
+        panic!()
+    };
+    assert!(
+        second
+            .distance_to(Point3::try_new(2_f64.sqrt() / 2., 3. * 2_f64.sqrt() / 2., 5.).unwrap())
+            .unwrap()
+            < 1e-12
+    );
+    assert!(app.try_continue_twist("Cancel"));
+    assert!(app.twist_preview().is_none());
+    assert_eq!(app.document.objects().count(), 3);
+    app.execute_command("Undo");
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.document.object(id).unwrap().geometry(), &original);
+    app.execute_command("Redo");
+    assert_eq!(app.document.objects().count(), 3);
+}

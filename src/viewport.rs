@@ -38,7 +38,9 @@ mod mirror_preview;
 pub(crate) use mirror_preview::MirrorPreview;
 pub(crate) mod affine_preview;
 mod object_preview;
+pub(crate) mod twist_preview;
 pub(crate) use affine_preview::AffinePreview;
+pub(crate) use twist_preview::{TwistPreview, TwistPreviewCache};
 pub(crate) mod translation_preview;
 pub(crate) use translation_preview::TranslationPreview;
 mod extents;
@@ -314,6 +316,7 @@ pub struct ViewportInput<'a> {
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
+    pub twist_preview: Option<TwistPreview<'a>>,
     pub angle_plane: Option<Frame3>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
@@ -371,6 +374,7 @@ impl Default for ViewportInput<'_> {
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
+            twist_preview: None,
             angle_plane: None,
             face_pick: None,
             edge_pick: false,
@@ -408,6 +412,7 @@ pub struct ViewportOutput {
     pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub translation_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub affine_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
+    pub twist_preview: Option<Option<Real>>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
@@ -1082,7 +1087,17 @@ impl Viewport {
                         .0
                 })
             });
-        let _ = self.refresh_clipping_with_transform(document, rect, previous_preview);
+        let previous_twist = input
+            .twist_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_preview = previous_preview
+            .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                previous_twist
+                    .as_ref()
+                    .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
+            });
+        let _ = self.refresh_clipping_with_preview(document, rect, previous_preview);
         let redraw_camera = self.camera_snapshot();
 
         let modifiers = ui.input(|input| input.modifiers);
@@ -1426,7 +1441,7 @@ impl Viewport {
         });
 
         if self.camera_snapshot() != redraw_camera {
-            let _ = self.refresh_clipping_with_transform(document, rect, previous_preview);
+            let _ = self.refresh_clipping_with_preview(document, rect, previous_preview);
         }
         let mut drafting_cursor = if drafting.active
             && !component_input
@@ -1508,12 +1523,35 @@ impl Viewport {
                     document,
                 )
             });
-        let object_preview = mirror_preview.or(translation_preview).or(affine_preview);
+        let (twist_preview, twist_preview_update) =
+            input.twist_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
+        let object_preview = mirror_preview
+            .or(translation_preview)
+            .or(affine_preview)
+            .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                twist_preview
+                    .as_ref()
+                    .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
+            });
         if mirror_preview_update.is_some()
             || translation_preview_update.is_some()
             || affine_preview_update.is_some()
+            || twist_preview_update.is_some()
         {
-            let _ = self.refresh_clipping_with_transform(document, rect, object_preview);
+            let _ = self.refresh_clipping_with_preview(document, rect, object_preview);
         }
         let object_prompt_selecting = matches!(
             input.face_pick,
@@ -1830,6 +1868,7 @@ impl Viewport {
             mirror_preview: mirror_preview_update,
             translation_preview: translation_preview_update,
             affine_preview: affine_preview_update,
+            twist_preview: twist_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
                     .interact_pointer_pos()

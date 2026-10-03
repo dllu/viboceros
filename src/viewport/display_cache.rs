@@ -62,6 +62,21 @@ struct GeneratedDisplayMesh {
 }
 
 impl DisplayGeometry {
+    pub(super) fn with_wires(
+        geometry: GeometrySnapshot,
+        wire_density: i32,
+        tolerance: Tolerance,
+        wires: Vec<[Point3; 2]>,
+    ) -> Self {
+        let result = Self::new(geometry, wire_density, tolerance);
+        if let Ok(bounds) =
+            viboceros_geometry::BoundingBox3::from_points(wires.iter().flatten().copied())
+        {
+            let _ = result.bounds.set(bounds);
+        }
+        let _ = result.wires.set(wires);
+        result
+    }
     pub(super) fn new(geometry: GeometrySnapshot, wire_density: i32, tolerance: Tolerance) -> Self {
         Self {
             geometry,

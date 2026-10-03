@@ -6,6 +6,14 @@ use viboceros_geometry::{MeshFace, WeightedPoint3};
 fn p(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[Real; 3]>(v.clone()).unwrap()).unwrap()
 }
+fn mesh_colors(v: &Value) -> Vec<[u8; 4]> {
+    let mut colors: Vec<[u8; 4]> = serde_json::from_value(v.clone()).unwrap();
+    // RhinoCommon reports opacity; OpenNURBS/kernel colors store transparency.
+    for c in &mut colors {
+        c[3] = 255 - c[3];
+    }
+    colors
+}
 fn controls(v: &Value) -> Vec<WeightedPoint3> {
     v.as_array()
         .unwrap()
@@ -133,7 +141,7 @@ fn setup(op: &Value, before: &Value) -> (Document, Vec<ObjectId>) {
                     tolerance,
                 )
                 .unwrap()
-                .try_with_vertex_colors(Some(serde_json::from_value(g["colors"].clone()).unwrap()))
+                .try_with_vertex_colors(Some(mesh_colors(&g["colors"])))
                 .unwrap(),
             ),
             _ => unreachable!(),
@@ -181,7 +189,7 @@ fn compare_geometry(
             }
             assert_eq!(
                 mesh.vertex_colors().unwrap(),
-                serde_json::from_value::<Vec<[u8; 4]>>(expected["colors"].clone()).unwrap()
+                mesh_colors(&expected["colors"])
             );
             assert_eq!(mesh.faces(), [MeshFace::Quad([0, 1, 2, 3])]);
         }

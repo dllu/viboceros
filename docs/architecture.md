@@ -88,6 +88,8 @@ and [affine previews](commands/affine-previews.md).
 The [Twist command](commands/twist.md) shares the general point-morph fitters
 with preserved-control overrides and measured rigid placements. Its prompt
 adapter retains source IDs and groups repeated copies into one history entry.
+Its viewport adapter uses prepared control cages, quick interpolation grids and
+cached trim intervals for wire previews. Rigid instances share source display geometry.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

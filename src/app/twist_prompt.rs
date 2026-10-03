@@ -7,8 +7,47 @@ pub(super) struct TwistSession {
     option: Option<&'static str>,
     group: viboceros_document::HistoryGroup,
     placed: bool,
+    preview_angle: Option<f64>,
+    preview_cache: std::cell::RefCell<crate::viewport::TwistPreviewCache>,
+}
+impl TwistSession {
+    pub(super) fn preview(
+        &self,
+        command: Option<InteractiveCommand>,
+    ) -> Option<crate::viewport::TwistPreview<'_>> {
+        let InteractiveCommand::Twist {
+            points: [Some(start), Some(end), Some(reference)],
+            options,
+        } = command?
+        else {
+            return None;
+        };
+        Some(crate::viewport::TwistPreview {
+            sources: &self.sources,
+            start,
+            end,
+            reference,
+            options,
+            last_angle: self.preview_angle,
+            cache: &self.preview_cache,
+        })
+    }
 }
 impl VibocerosApp {
+    pub(super) fn twist_preview(&self) -> Option<crate::viewport::TwistPreview<'_>> {
+        self.twist_session.as_ref()?.preview(self.active_command)
+    }
+    pub(super) fn update_twist_preview(&mut self, angle: Option<f64>) -> bool {
+        if self.twist_preview().is_none() {
+            return false;
+        }
+        let session = self.twist_session.as_mut().unwrap();
+        if session.preview_angle == angle {
+            return false;
+        }
+        session.preview_angle = angle;
+        true
+    }
     pub(super) fn start_twist_session(&mut self, picked: Option<Vec<ObjectId>>) -> bool {
         let group = match self.document.begin_history_group("Twist") {
             Ok(group) => group,
@@ -31,6 +70,8 @@ impl VibocerosApp {
             option: None,
             group,
             placed: false,
+            preview_angle: None,
+            preview_cache: Default::default(),
         });
         true
     }
@@ -89,7 +130,7 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if let [Some(start), Some(end), None] = points {
+        if let [Some(start), Some(end), _] = points {
             let degrees = if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
                 self.commands.transform_scalar_default("Twist")
             } else {
@@ -139,6 +180,11 @@ impl VibocerosApp {
         }
         if count < 3 {
             points[count] = Some(point);
+            if count == 2
+                && let Some(session) = self.twist_session.as_mut()
+            {
+                session.preview_angle = Some(0.);
+            }
             if count == 1 {
                 self.drafting_plane = points[0].and_then(|start| {
                     start.vector_to(point).ok().and_then(|normal| {
@@ -159,6 +205,13 @@ impl VibocerosApp {
                 self.document.tolerance(),
             ) {
                 Ok(degrees) => {
+                    let previous = self
+                        .twist_session
+                        .as_ref()
+                        .and_then(|s| s.preview_angle)
+                        .unwrap_or(degrees);
+                    let degrees =
+                        crate::viewport::twist_preview::continuous_angle(degrees, previous);
                     self.finish_twist(points[0].unwrap(), points[1].unwrap(), degrees, options)
                 }
                 Err(e) => {
@@ -207,6 +260,7 @@ impl VibocerosApp {
                 session.placed = true;
                 self.push_log(message);
                 if options.copy {
+                    self.twist_session.as_mut().unwrap().preview_angle = None;
                     let next = InteractiveCommand::Twist {
                         points: [Some(start), Some(end), None],
                         options,
