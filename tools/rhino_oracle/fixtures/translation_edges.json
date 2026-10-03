@@ -1,0 +1,1510 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-UseLastDistance-zero-first",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w1,2,3",
+        "UseLastDistance=Yes",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-UseLastDistance-zero-next",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDistance=Yes",
+        "w1,2,3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-UseLastDirection-zero-first",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w1,2,3",
+        "UseLastDirection=Yes",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-UseLastDirection-zero-next",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "w1,2,3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-direction-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-direction--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-direction-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-both-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-both--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-both-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-from-last-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-from-last--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-scalar-from-last-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-vertical-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "w6,-2,8",
+        "w9,7,-1"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-vertical-free-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=No",
+        "w9,7,-1"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-vertical-scalar-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "-3.5",
+        "2"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-pre-vertical-no",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical=Yes",
+        "Vertical=No",
+        "w1,2,3",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-pre-empty-target",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-UseLastDistance-zero-first",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w1,2,3",
+        "UseLastDistance=Yes",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-UseLastDistance-zero-next",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDistance=Yes",
+        "w1,2,3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-UseLastDirection-zero-first",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w1,2,3",
+        "UseLastDirection=Yes",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-UseLastDirection-zero-next",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "w1,2,3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-direction-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-direction--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-direction-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-both-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-both--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-both-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=Yes",
+        "UseLastDistance=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-from-last-3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-from-last--3",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "-3"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-scalar-from-last-0",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "w6,-2,8",
+        "FromLastPoint=Yes",
+        "UseLastDirection=Yes",
+        "0"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-vertical-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "w6,-2,8",
+        "w9,7,-1"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-vertical-free-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "w6,-2,8",
+        "UseLastDirection=No",
+        "w9,7,-1"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-vertical-scalar-repeat",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "-3.5",
+        "2"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-post-vertical-no",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Vertical=Yes",
+        "Vertical=No",
+        "w1,2,3",
+        "w6,-2,8"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-post-empty-target",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "w1,2,3",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    }
+  ]
+}

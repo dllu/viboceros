@@ -119,6 +119,75 @@ fn repeated_transform_input_geometry_selection_groups_and_history_match_native()
 }
 
 #[test]
+fn move_copy_placement_selection_order_options_and_history_match_native() {
+    for invocation in [Invocation::Prompt, Invocation::TranslationRegistry] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/translation.json"),
+            include_str!("../../../tools/rhino_oracle/observations/translation.json"),
+            110,
+            invocation,
+        );
+    }
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/translation_edges.json"),
+        include_str!("../../../tools/rhino_oracle/observations/translation_edges.json"),
+        36,
+        Invocation::Prompt,
+    );
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/translation_mouse.json"),
+        include_str!("../../../tools/rhino_oracle/observations/translation_mouse.json"),
+        18,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn move_copy_rejected_geometry_preserves_accepted_copies_and_prompt_phase() {
+    let mut app = test_app();
+    enter(&mut app, "Point 1e308,0,0");
+    enter(&mut app, "SelAll");
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Copy");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,0");
+    let accepted = app.document.objects().cloned().collect::<Vec<_>>();
+    let placement = app.translation_session.as_ref().unwrap().placement.unwrap();
+    enter(&mut app, "w1e308,0,0"); // Source + offset overflows.
+    enter(&mut app, "UseLastDirection=Maybe");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        accepted
+    );
+    assert_eq!(
+        app.translation_session.as_ref().unwrap().placement,
+        Some(placement)
+    );
+    assert!(app.active_command.is_some());
+    app.cancel_current_prompt_or_selection();
+    assert!(app.translation_session.is_none());
+    assert_eq!(app.document.objects().len(), 2);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    assert_eq!(app.document.selected_object_count(), 0);
+
+    enter(&mut app, "SelAll");
+    enter(&mut app, "Move");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "");
+    assert_eq!(
+        app.active_command,
+        Some(InteractiveCommand::Move {
+            start: Some(point(0., 0., 0.))
+        })
+    );
+    assert!(!app.document.can_undo());
+    app.cancel_current_prompt_or_selection();
+    assert!(app.translation_session.is_none());
+}
+
+#[test]
 fn command_first_transform_selection_order_cancellation_and_history_match_native() {
     replay_native(
         include_str!("../../../tools/rhino_oracle/fixtures/transform_sources.json"),
@@ -510,6 +579,7 @@ enum Invocation {
     RegistrySeeds,
     InlineMirrorOptions,
     MirrorObjectRegistry,
+    TranslationRegistry,
 }
 
 fn mirror_target_geometry(target: &Value, tolerance: viboceros_geometry::Tolerance) -> Geometry {
@@ -689,6 +759,19 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
         compare(snapshot(&app, &sources), "before", &mut failures);
         let use_registry = match invocation {
             Invocation::Prompt => false,
+            Invocation::TranslationRegistry => {
+                operation.get("source_selection").is_none()
+                    && operation["finish"] != "Cancel"
+                    && !operation["id"]
+                        .as_str()
+                        .unwrap()
+                        .contains("early-options-rejected")
+                    && !operation["inputs"].as_array().unwrap().iter().any(|input| {
+                        input == "Enter"
+                            || input == "Undo"
+                            || input.as_str().unwrap().parse::<f64>().is_ok()
+                    })
+            }
             Invocation::InlineMirrorOptions => false,
             Invocation::MirrorObjectRegistry => {
                 operation["inputs"].as_array().unwrap().len() == 3
@@ -752,7 +835,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                         }
                     } else {
                         assert!(
-                            app.transform_session.is_some(),
+                            app.transform_session.is_some() || app.translation_session.is_some(),
                             "{label}: {:?}",
                             app.command_log
                         );
@@ -760,7 +843,32 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     0
                 };
                 for input in inputs.iter().skip(consumed) {
-                    if input == "Target" {
+                    if input == "Mouse" {
+                        // Public native viewing-line calibration is input,
+                        // never a measured destination or command result.
+                        let ray = &expected["frame"]["ray"];
+                        let p = |value: &Value| {
+                            point(
+                                value[0].as_f64().unwrap(),
+                                value[1].as_f64().unwrap(),
+                                value[2].as_f64().unwrap(),
+                            )
+                        };
+                        let a = p(&ray[0]);
+                        let b = p(&ray[1]);
+                        let constraint = app.translation_constraint().unwrap();
+                        let candidate = constraint
+                            .project_view_line(
+                                constraint.anchor.vector_to(a).unwrap(),
+                                a.vector_to(b).unwrap(),
+                            )
+                            .unwrap();
+                        assert!(
+                            app.accept_drafting_point(candidate),
+                            "{label}: {:?}",
+                            app.command_log
+                        );
+                    } else if input == "Target" {
                         let target = target.unwrap();
                         let recipe = &operation["mirror_target"];
                         if recipe["pick"] != "id" {

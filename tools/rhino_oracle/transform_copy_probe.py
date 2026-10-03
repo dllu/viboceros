@@ -2,8 +2,11 @@
 import math
 import re
 
-COMMANDS = ('Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Mirror', 'Shear')
+COMMANDS = ('Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Mirror', 'Shear', 'Move', 'Copy')
 MIRROR_OPTIONS = ('3Point', 'XAxis', 'YAxis', 'ZAxis', 'Object')
+TRANSLATION_OPTIONS = ('Vertical', 'Vertical=Yes', 'Vertical=No', 'InPlace', 'FromLastPoint=Yes', 'FromLastPoint=No',
+                       'UseLastDistance=Yes', 'UseLastDistance=No',
+                       'UseLastDirection=Yes', 'UseLastDirection=No')
 
 
 def finite(value):
@@ -16,7 +19,7 @@ def finite(value):
 def validate(operation):
     if (not isinstance(operation, dict)
             or not {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'} <= set(operation)
-            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target', 'source_selection'}
+            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target', 'source_selection', 'mouse_target'}
             or operation['op'] != 'transform_copy_command'
             or not isinstance(operation['id'], str) or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z', operation['id']) is None
             or operation['command'] not in COMMANDS
@@ -48,6 +51,14 @@ def validate(operation):
         validate_target(operation['mirror_target'])
         if operation['inputs'].count('Target') > 1:
             raise ValueError('Mirror target capture delivers one prescribed pick')
+    if 'mouse_target' in operation:
+        if __package__:
+            from .translation_input import validate as validate_mouse
+        else:
+            from translation_input import validate as validate_mouse
+        if operation['command'] not in ('Move', 'Copy') or operation['inputs'].count('Mouse') != 1:
+            raise ValueError('translation capture requires one destination click')
+        validate_mouse(operation['mouse_target'])
     for source in operation['sources']:
         if (not isinstance(source, list) or len(source) != 3
                 or any(not finite(value) for value in source)):
@@ -70,6 +81,12 @@ def validate(operation):
         if token in ('Copy=Yes', 'Copy=No', 'Undo', 'Enter'):
             continue
         if operation['command'] == 'Mirror' and token in MIRROR_OPTIONS:
+            continue
+        if operation['command'] in ('Move', 'Copy') and token in TRANSLATION_OPTIONS:
+            if operation['command'] == 'Move' and token != 'Vertical':
+                raise ValueError('Move accepts only the Vertical translation option')
+            continue
+        if token == 'Mouse' and 'mouse_target' in operation:
             continue
         if token == 'Target' and 'mirror_target' in operation:
             continue
@@ -160,17 +177,23 @@ def run_owned(operation, host, target=None):
             else:
                 tokens.append('_'+step.replace('=Yes', '=_Yes').replace('=No', '=_No'))
         for token in operation['inputs']:
-            if token == 'Target':
+            if token == 'Mouse':
+                tokens.append('_Pause')
+            elif token == 'Target':
                 tokens.append('_SelID '+str(target['id']) if target['pick'] == 'id' else '_Pause')
             else:
-                tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS else token)
+                tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS or token in TRANSLATION_OPTIONS else token)
         macro = '_'+operation['command']+' '+' '.join(tokens)
         if operation['finish'] != 'Automatic':
             macro += ' _'+operation['finish']
         marker = 'Viboceros transform '+str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
         host['_record_progress']('transform '+operation['id']+' '+macro)
+        frames = []
         action = lambda: Rhino.RhinoApp.RunScript(macro, True)
+        if 'mouse_target' in operation:
+            from translation_input import drive
+            action = lambda: drive(operation, host, macro, frames)
         if target is not None and target['pick'] in ('mouse', 'mouse-sub') and 'Target' in operation['inputs']:
             from mirror_object_probe import click_target
             action = lambda: click_target(operation, target, host, macro)
@@ -189,9 +212,11 @@ def run_owned(operation, host, target=None):
             undo = snapshot()
             Rhino.RhinoApp.RunScript('_Redo', True)
             redo = snapshot()
-        return dict(before=before, after=after, last=last, undo=undo, redo=redo,
+        value = dict(before=before, after=after, last=last, undo=undo, redo=redo,
             succeeded=succeeded, history=history, events=events,
-            group_names=[doc.Groups[index].Name for index in groups()]), 0
+            group_names=[doc.Groups[index].Name for index in groups()])
+        if frames: value['frame'] = frames[0]
+        return value, 0
     finally:
         errors = []
         for obj in objects():

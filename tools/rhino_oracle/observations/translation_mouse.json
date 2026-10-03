@@ -1,0 +1,5480 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "id": "move-mouse-front-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to: _Pause\nPoint to move vertical to",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    8.624040920716112
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.388746803069056,
+              3.5,
+              7.624040920716113
+            ],
+            [
+              4.388746803069056,
+              2.499992399507981,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            432,
+            60
+          ],
+          "aim_client": [
+            425.09090909090907,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.77272727272727,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.9999923995657481,
+              0.0,
+              -2.4999733984801207
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "move-mouse-front-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to <4.624>: _Pause\nPoint to move vertical to <4.624>",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    5.578067494229931,
+                    -1.7707566589732426,
+                    8.472584367787414
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.388746803069055,
+              3.5,
+              7.624040920716113
+            ],
+            [
+              4.388746803069055,
+              -2.2708005195631777,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            432,
+            60
+          ],
+          "aim_client": [
+            425.0909090909091,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.772727272727273,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.1732861838855756,
+              0.0,
+              0.39349835640048525
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "move-mouse-right-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to <7.454>: _Pause\nPoint to move vertical to <7.454>",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    8.624040920716112
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.4999999999999991,
+              5.345268542199488,
+              7.624040920716113
+            ],
+            [
+              2.5000076004920198,
+              5.345268542199488,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            449,
+            60
+          ],
+          "aim_client": [
+            442.8636363636364,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.772727272727277,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.9999923995657464,
+              0.0,
+              0.0,
+              2.499988599348617
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "move-mouse-right-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.3950848349825344,
+                2.473220220023287,
+                4.493856043728169
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to <4.624>: _Pause\nPoint to move vertical to <4.624>",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.3950848349825344,
+                2.473220220023287,
+                4.493856043728169
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.3950848349825344,
+                2.473220220023287,
+                4.493856043728169
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.3950848349825344,
+                    2.473220220023287,
+                    4.493856043728169
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.5,
+              5.345268542199486,
+              7.624040920716113
+            ],
+            [
+              2.895095438313689,
+              5.345268542199486,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            449,
+            60
+          ],
+          "aim_client": [
+            442.86363636363643,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.772727272727284,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.7167968387945863,
+              0.0,
+              0.0,
+              2.0751952581918793
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "move-mouse-perspective-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078727
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to <0.823>: _Pause\nPoint to move vertical to <0.823>",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078727
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078727
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    9.945785751078727
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              3.5921286949951288,
+              7.217631617764263,
+              7.329846702973102
+            ],
+            [
+              5.361887360786549,
+              3.402033399166689,
+              9.19574429171625
+            ]
+          ],
+          "click_client": [
+            421,
+            110
+          ],
+          "aim_client": [
+            414.7109074379181,
+            121.93110260482163
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.292642585865856,
+            -61.12865009208872,
+            40.75243339472581
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.163363696229,
+              672.791666666667,
+              -176.99999999999994,
+              28852.722843465875
+            ],
+            [
+              118.99185011340455,
+              -206.09993008303712,
+              -803.1998601660742,
+              15934.201457337793
+            ],
+            [
+              -7.756269505322237,
+              13.434252860415238,
+              -8.956168573610158,
+              78.2431025398821
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.50486678945163
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "move-mouse-perspective-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                13.917316854772029,
+                -12.88975580636271,
+                18.89664606846504
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Move\nPoint to move from. Press Enter to use bounding box center ( Normal  Vertical ): _Vertical\nPoint to move vertical from: w1,2,3\nPoint to move vertical to <5.946>: _Pause\nPoint to move vertical to <5.946>",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                13.917316854772029,
+                -12.88975580636271,
+                18.89664606846504
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                13.917316854772029,
+                -12.88975580636271,
+                18.89664606846504
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Move",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    13.917316854772029,
+                    -12.88975580636271,
+                    18.89664606846504
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              3.5921286949951288,
+              7.217631617764263,
+              7.3298467029730965
+            ],
+            [
+              13.641394490297898,
+              -14.448577119020584,
+              17.925020597888988
+            ]
+          ],
+          "click_client": [
+            421,
+            110
+          ],
+          "aim_client": [
+            414.7109074379181,
+            121.9311026048216
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.292642585865856,
+            -61.12865009208872,
+            40.75243339472581
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.163363696229,
+              672.791666666667,
+              -176.99999999999994,
+              28852.722843465875
+            ],
+            [
+              118.99185011340464,
+              -206.0999300830373,
+              -803.1998601660746,
+              15934.201457337793
+            ],
+            [
+              -1.3659430898597502,
+              2.3658828318847083,
+              -1.577255221256472,
+              81.08934142027653
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.50486678945163
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-front-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    8.624040920716112
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.388746803069052,
+              3.5,
+              7.624040920716113
+            ],
+            [
+              4.388746803069052,
+              2.499992399507981,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            432,
+            60
+          ],
+          "aim_client": [
+            425.0909090909091,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.772727272727284,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.9999923995657481,
+              0.0,
+              -2.4999733984801207
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-front-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.578067494229931,
+                -1.7707566589732426,
+                8.472584367787414
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.578067494229931,
+                    -1.7707566589732426,
+                    8.472584367787414
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.388746803069055,
+              3.5,
+              7.624040920716113
+            ],
+            [
+              4.388746803069055,
+              -2.2708005195631777,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            432,
+            60
+          ],
+          "aim_client": [
+            425.0909090909091,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.772727272727273,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.1732861838855756,
+              0.0,
+              0.39349835640048525
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-right-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                8.624040920716112
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    8.624040920716112
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.4999999999999991,
+              5.345268542199491,
+              7.624040920716113
+            ],
+            [
+              2.5000076004920198,
+              5.345268542199491,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            449,
+            60
+          ],
+          "aim_client": [
+            442.8636363636363,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.772727272727266,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.9999923995657464,
+              0.0,
+              0.0,
+              2.499988599348617
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-right-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.395084834982531,
+                2.4732202200232924,
+                4.493856043728163
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.395084834982531,
+                2.4732202200232924,
+                4.493856043728163
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.395084834982531,
+                2.4732202200232924,
+                4.493856043728163
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.395084834982531,
+                    2.4732202200232924,
+                    4.493856043728163
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.5,
+              5.345268542199495,
+              7.624040920716113
+            ],
+            [
+              2.8950954383136853,
+              5.345268542199495,
+              7.624040920716113
+            ]
+          ],
+          "click_client": [
+            449,
+            60
+          ],
+          "aim_client": [
+            442.86363636363626,
+            71.0909090909091
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.772727272727252,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.7167968387945881,
+              0.0,
+              0.0,
+              2.075195258191881
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-perspective-world",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078716
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078716
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                9.945785751078716
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    9.945785751078716
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              3.592128694995138,
+              7.217631617764248,
+              7.329846702973098
+            ],
+            [
+              5.361887360786558,
+              3.402033399166677,
+              9.195744291716249
+            ]
+          ],
+          "click_client": [
+            421,
+            110
+          ],
+          "aim_client": [
+            414.71090743791814,
+            121.9311026048216
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.292642585865934,
+            -61.12865009208886,
+            40.752433394725905
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.1633636962301,
+              672.7916666666677,
+              -176.99999999999994,
+              28852.722843465945
+            ],
+            [
+              118.99185011340518,
+              -206.09993008303815,
+              -803.1998601660763,
+              15934.20145733783
+            ],
+            [
+              -7.756269505322257,
+              13.434252860415272,
+              -8.956168573610181,
+              78.24310253988264
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.50486678945181
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-perspective-tilted",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                13.917316854772025,
+                -12.889755806362704,
+                18.896646068465035
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): _Vertical\nPoint to copy from. Press Enter to use bounding box center ( Vertical=Yes  InPlace ): w1,2,3\nPoint to copy to: _Pause\nPoint to copy to\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                13.917316854772025,
+                -12.889755806362704,
+                18.896646068465035
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                13.917316854772025,
+                -12.889755806362704,
+                18.896646068465035
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    13.917316854772025,
+                    -12.889755806362704,
+                    18.896646068465035
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              3.592128694995124,
+              7.217631617764267,
+              7.329846702973085
+            ],
+            [
+              13.641394490297857,
+              -14.448577119020497,
+              17.925020597888942
+            ]
+          ],
+          "click_client": [
+            421,
+            110
+          ],
+          "aim_client": [
+            414.71090743791814,
+            121.93110260482156
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.292642585865934,
+            -61.12865009208886,
+            40.752433394725905
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.1633636962304,
+              672.7916666666679,
+              -176.99999999999994,
+              28852.722843465945
+            ],
+            [
+              118.99185011340526,
+              -206.09993008303832,
+              -803.1998601660766,
+              15934.20145733783
+            ],
+            [
+              -1.3659430898597584,
+              2.3658828318847225,
+              -1.5772552212564817,
+              81.08934142027667
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.50486678945181
+            ]
+          ],
+          "aim": [
+            4.0,
+            5.0,
+            7.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-front-base",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659847,
+                -3.8047740835464614,
+                9.103580562659847
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659847,
+                -3.8047740835464614,
+                9.103580562659847
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659847,
+                -3.8047740835464614,
+                9.103580562659847
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    7.103580562659847,
+                    -3.8047740835464614,
+                    9.103580562659847
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              5.682864450127876,
+              3.499999999999999,
+              8.524296675191817
+            ],
+            [
+              5.682864450127876,
+              -4.304833403669604,
+              8.524296675191817
+            ]
+          ],
+          "click_client": [
+            455,
+            44
+          ],
+          "aim_client": [
+            442.8636363636364,
+            53.31818181818181
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.772727272727277,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.12812573289903015,
+              0.0,
+              0.5515599348533944
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-front-last",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659845,
+                -3.804774083546457,
+                9.103580562659845
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _FromLastPoint=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659845,
+                -3.804774083546457,
+                9.103580562659845
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                7.103580562659845,
+                -3.804774083546457,
+                9.103580562659845
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    7.103580562659845,
+                    -3.804774083546457,
+                    9.103580562659845
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              5.682864450127873,
+              3.499999999999999,
+              8.524296675191817
+            ],
+            [
+              5.682864450127873,
+              -4.304833403669597,
+              8.524296675191817
+            ]
+          ],
+          "click_client": [
+            455,
+            44
+          ],
+          "aim_client": [
+            442.86363636363643,
+            53.31818181818181
+          ],
+          "perspective": false,
+          "camera_location": [
+            0.0,
+            -13.90625,
+            0.0
+          ],
+          "camera_direction": [
+            -0.0,
+            1.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              17.772727272727284,
+              0.0,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              0.0,
+              0.1281257328990303,
+              0.0,
+              0.5515599348533944
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-right-base",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.6801023017902827,
+                2.0931969309462897,
+                4.680102301790283
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.6801023017902827,
+                2.0931969309462897,
+                4.680102301790283
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.6801023017902827,
+                2.0931969309462897,
+                4.680102301790283
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.6801023017902827,
+                    2.0931969309462897,
+                    4.680102301790283
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.5,
+              4.72634271099744,
+              8.524296675191817
+            ],
+            [
+              5.500030401968079,
+              4.72634271099744,
+              8.524296675191817
+            ]
+          ],
+          "click_client": [
+            438,
+            44
+          ],
+          "aim_client": [
+            425.0909090909091,
+            53.31818181818181
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.772727272727284,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.24999809989143681,
+              0.0,
+              0.0,
+              1.3749971498371552
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-right-last",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.680102301790284,
+                2.0931969309462852,
+                4.680102301790284
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _FromLastPoint=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.680102301790284,
+                2.0931969309462852,
+                4.680102301790284
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                2.680102301790284,
+                2.0931969309462852,
+                4.680102301790284
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    2.680102301790284,
+                    2.0931969309462852,
+                    4.680102301790284
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              1.5,
+              4.7263427109974385,
+              8.524296675191817
+            ],
+            [
+              5.500030401968079,
+              4.7263427109974385,
+              8.524296675191817
+            ]
+          ],
+          "click_client": [
+            438,
+            44
+          ],
+          "aim_client": [
+            425.0909090909092,
+            53.31818181818181
+          ],
+          "perspective": false,
+          "camera_location": [
+            13.90625,
+            0.0,
+            0.0
+          ],
+          "camera_direction": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "world_to_screen": [
+            [
+              0.0,
+              17.77272727272729,
+              0.0,
+              354.0
+            ],
+            [
+              0.0,
+              0.0,
+              -17.772727272727273,
+              195.5
+            ],
+            [
+              -0.24999809989143681,
+              0.0,
+              0.0,
+              1.3749971498371552
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-perspective-base",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.023537869325196,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.023537869325196,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.023537869325196,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    19.267653401993897,
+                    -20.023537869325196,
+                    21.267653401993897
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.522482828642683,
+              7.812676530643636,
+              7.416703758037537
+            ],
+            [
+              17.577697020430982,
+              -21.437863369934075,
+              21.560442174746534
+            ]
+          ],
+          "click_client": [
+            432,
+            109
+          ],
+          "aim_client": [
+            419.8211503170074,
+            118.44760540283545
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.29264258586598,
+            -61.128650092088925,
+            40.75243339472595
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.1633636962322,
+              672.7916666666688,
+              -176.99999999999994,
+              28852.72284346597
+            ],
+            [
+              118.99185011340535,
+              -206.09993008303843,
+              -803.1998601660769,
+              15934.201457337846
+            ],
+            [
+              -1.0205784308396242,
+              1.7676936953231486,
+              -1.1784624635487657,
+              81.24316616356984
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.5048667894519
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "copy-mouse-direction-perspective-last",
+      "value": {
+        "succeeded": true,
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.02353786932518,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "group_names": [],
+        "history": "Command: _Copy\nPoint to copy from. Press Enter to use bounding box center ( Vertical=No  InPlace ): w1,2,3\nPoint to copy to: w4,-2,6\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=No ): _UseLastDirection=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=No  UseLastDistance=No  UseLastDirection=Yes ): _FromLastPoint=_Yes\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Pause\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes ): _Enter\nPoint to copy to. Press Enter when done ( FromLastPoint=Yes  UseLastDistance=No  UseLastDirection=Yes )",
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.02353786932518,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "last": {
+          "groups": [],
+          "objects": [
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": false,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": 0,
+              "groups": [],
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                5.0,
+                -1.0,
+                7.0
+              ]
+            },
+            {
+              "current_layer": true,
+              "color_source": "ColorFromObject",
+              "selected": true,
+              "color": [
+                10,
+                30,
+                50
+              ],
+              "name": "source-0",
+              "source": null,
+              "groups": [],
+              "point": [
+                19.267653401993897,
+                -20.02353786932518,
+                21.267653401993897
+              ]
+            }
+          ]
+        },
+        "events": [
+          {
+            "name": "SetView",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Copy",
+            "result": "Success",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": true,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": 0,
+                  "groups": [],
+                  "point": [
+                    2.0,
+                    3.0,
+                    4.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    5.0,
+                    -1.0,
+                    7.0
+                  ]
+                },
+                {
+                  "current_layer": true,
+                  "color_source": "ColorFromObject",
+                  "selected": false,
+                  "color": [
+                    10,
+                    30,
+                    50
+                  ],
+                  "name": "source-0",
+                  "source": null,
+                  "groups": [],
+                  "point": [
+                    19.267653401993897,
+                    -20.02353786932518,
+                    21.267653401993897
+                  ]
+                }
+              ]
+            },
+            "selected": []
+          }
+        ],
+        "frame": {
+          "size": [
+            708,
+            391
+          ],
+          "ray": [
+            [
+              4.522482828642669,
+              7.812676530643656,
+              7.416703758037527
+            ],
+            [
+              17.577697020430954,
+              -21.437863369934025,
+              21.56044217474651
+            ]
+          ],
+          "click_client": [
+            432,
+            109
+          ],
+          "aim_client": [
+            419.8211503170074,
+            118.44760540283542
+          ],
+          "perspective": true,
+          "camera_location": [
+            35.29264258586597,
+            -61.12865009208891,
+            40.75243339472594
+          ],
+          "camera_direction": [
+            -0.4330127018922193,
+            0.75,
+            -0.5
+          ],
+          "world_to_screen": [
+            [
+              552.1633636962322,
+              672.7916666666688,
+              -176.99999999999994,
+              28852.722843465966
+            ],
+            [
+              118.99185011340535,
+              -206.09993008303843,
+              -803.1998601660769,
+              15934.201457337842
+            ],
+            [
+              -1.0205784308396253,
+              1.7676936953231508,
+              -1.178462463548767,
+              81.24316616356978
+            ],
+            [
+              -0.4330127018922193,
+              0.75,
+              -0.5,
+              81.50486678945188
+            ]
+          ],
+          "aim": [
+            5.0,
+            4.0,
+            8.0
+          ]
+        }
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "engine": "rhino",
+  "iterations": 1,
+  "protocol_version": 1
+}

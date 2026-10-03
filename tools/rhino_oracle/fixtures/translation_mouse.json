@@ -1,0 +1,927 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-front-world",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-front-tilted",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-right-world",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-right-tilted",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-perspective-world",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-mouse-perspective-tilted",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-front-world",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-front-tilted",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-right-world",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-right-tilted",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-perspective-world",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-perspective-tilted",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "Vertical",
+        "w1,2,3",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          4,
+          5,
+          7
+        ],
+        "offset": [
+          7,
+          -11
+        ]
+      },
+      "cplane": {
+        "origin": [
+          5,
+          -6,
+          2
+        ],
+        "x_axis": [
+          0.8,
+          0.6,
+          0
+        ],
+        "y_axis": [
+          -0.36,
+          0.48,
+          0.8
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-front-base",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-front-last",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "FromLastPoint=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Front",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-right-base",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-right-last",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "FromLastPoint=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Right",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-perspective-base",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "copy-mouse-direction-perspective-last",
+      "command": "Copy",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "grouped": false,
+      "inputs": [
+        "w1,2,3",
+        "w4,-2,6",
+        "UseLastDirection=Yes",
+        "FromLastPoint=Yes",
+        "Mouse"
+      ],
+      "finish": "Enter",
+      "undo_redo": true,
+      "sel_last": true,
+      "mouse_target": {
+        "view": "Perspective",
+        "bounds": [
+          [
+            -10,
+            -10,
+            -10
+          ],
+          [
+            10,
+            10,
+            10
+          ]
+        ],
+        "aim": [
+          5,
+          4,
+          8
+        ],
+        "offset": [
+          13,
+          -9
+        ]
+      }
+    }
+  ]
+}

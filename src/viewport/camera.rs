@@ -462,12 +462,29 @@ impl Viewport {
             NaVector3::from(anchor.unwrap_or(plane.origin()).to_array()) - self.target;
         let plane = plane
             .with_origin(Point3::try_from([local_origin.x, local_origin.y, local_origin.z]).ok()?);
-        let (origin, direction, forward_only) = if self.kind == ViewKind::Perspective {
+        let (origin, direction) = self.drafting_local_view_line(pointer, rect)?;
+        let local = viboceros_drafting::plane::intersect_view_line(
+            origin,
+            direction,
+            plane,
+            self.kind == ViewKind::Perspective,
+        )
+        .ok()
+        .flatten()?;
+        Point3::try_new(
+            local.x() + self.target.x,
+            local.y() + self.target.y,
+            local.z() + self.target.z,
+        )
+        .ok()
+    }
+
+    fn drafting_local_view_line(&self, pointer: Pos2, rect: Rect) -> Option<(Point3, Vector3)> {
+        let (origin, direction) = if self.kind == ViewKind::Perspective {
             let (camera, ray) = self.perspective_local_ray(pointer, rect);
             (
                 Point3::try_new(camera.x, camera.y, camera.z).ok()?,
                 Vector3::try_new(ray.x, ray.y, ray.z).ok()?,
-                true,
             )
         } else {
             let screen_origin = self.world_origin(rect);
@@ -490,19 +507,22 @@ impl Viewport {
             (
                 Point3::try_from(origin).ok()?,
                 self.apparent_intersection_normal(),
-                false,
             )
         };
-        let local =
-            viboceros_drafting::plane::intersect_view_line(origin, direction, plane, forward_only)
-                .ok()
-                .flatten()?;
-        Point3::try_new(
-            local.x() + self.target.x,
-            local.y() + self.target.y,
-            local.z() + self.target.z,
-        )
-        .ok()
+        Some((origin, direction))
+    }
+
+    pub(super) fn drafting_view_line_relative_to(
+        &self,
+        anchor: Point3,
+        pointer: Pos2,
+        rect: Rect,
+    ) -> Option<(Vector3, Vector3)> {
+        let (origin, direction) = self.drafting_local_view_line(pointer, rect)?;
+        let anchor = anchor.to_array();
+        let local = origin.to_array();
+        let delta = std::array::from_fn(|i| local[i] + (self.target[i] - anchor[i]));
+        Some((Vector3::try_from(delta).ok()?, direction))
     }
 
     /// Camera origin and ray direction in the target-relative model frame.

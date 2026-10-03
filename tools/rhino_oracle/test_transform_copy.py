@@ -10,6 +10,7 @@ from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
 from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request, mirror_object_request, sources_request, sources_identity_request
 from .transform_copy_probe import validate
+from .translation_cases import request as translation_request, edges_request as translation_edges_request, mouse_request as translation_mouse_request
 
 
 class TransformCopyTests(unittest.TestCase):
@@ -22,7 +23,10 @@ class TransformCopyTests(unittest.TestCase):
                                      ('mirror_enter', mirror_enter_request, 5),
                                      ('mirror_object', mirror_object_request, 70),
                                      ('transform_sources', sources_request, 61),
-                                     ('transform_sources_identity', sources_identity_request, 12)]:
+                                     ('transform_sources_identity', sources_identity_request, 12),
+                                     ('translation', translation_request, 110),
+                                     ('translation_edges', translation_edges_request, 36),
+                                     ('translation_mouse', translation_mouse_request, 18)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)
@@ -30,6 +34,25 @@ class TransformCopyTests(unittest.TestCase):
             observed = json.loads(Path(__file__).with_name('observations').joinpath(name+'.json').read_text())
             client = Mock(settings_scheme='VibocerosOracleTest', run_rhino=Mock(return_value=observed))
             self.assertEqual(capture(saved, client), observed)
+
+    def test_translation_clicks_and_calibration_are_bounded(self):
+        for key, values in [('view',['Top','Delete']),('aim',[[0,0,float('nan')]]),('bounds',[[[0,0,0],[0,0,0]]]),('offset',[[True,0],[0,33]]),('extra',[True])]:
+            for value in values:
+                invalid = translation_mouse_request()
+                invalid['operations'][0]['mouse_target'][key] = value
+                client = Mock(settings_scheme='VibocerosOracleTest')
+                with self.subTest(key=key,value=value), self.assertRaises(ValueError): capture(invalid, client)
+                client.run_rhino.assert_not_called()
+        request = translation_mouse_request()
+        observed = json.loads(Path(__file__).with_name('observations').joinpath('translation_mouse.json').read_text())
+        for mutation in ('missing','zero-ray','nonfinite','outside'):
+            invalid = copy.deepcopy(observed); frame = invalid['results'][0]['value']['frame']
+            if mutation == 'missing': del frame['ray']
+            elif mutation == 'zero-ray': frame['ray'][1] = frame['ray'][0]
+            elif mutation == 'nonfinite': frame['world_to_screen'][0][0] = float('nan')
+            else: frame['click_client'] = frame['size']
+            client = Mock(settings_scheme='VibocerosOracleTest',run_rhino=Mock(return_value=invalid))
+            with self.subTest(mutation=mutation), self.assertRaises(OracleProtocolError if mutation == 'nonfinite' else ValueError): capture(request,client)
 
     def test_source_selection_is_bounded_to_owned_ids_and_named_inputs(self):
         for steps in [[], [True], [-1], [4], ['Delete'], ['0 _Delete'], [None], [0]*33, 'SelAll']:
@@ -43,6 +66,17 @@ class TransformCopyTests(unittest.TestCase):
         invalid['operations'][0]['selected'] = [0]
         with self.assertRaises(ValueError):
             validate_request(invalid)
+
+    def test_translation_tokens_are_command_specific_and_bounded(self):
+        for command, tokens in [('Move', ['InPlace', 'UseLastDistance=Yes', 'Vertical=Yes']),
+                                ('Scale', ['Vertical', 'InPlace', 'FromLastPoint=No']),
+                                ('Copy', ['FromLastPoint=Maybe', 'UseLastDistance=Yes _Delete', 'Normal _Pause'])]:
+            for token in tokens:
+                invalid = translation_request()['operations'][0]
+                invalid['command'] = command
+                invalid['inputs'] = [token]
+                with self.subTest(command=command, token=token), self.assertRaises(ValueError):
+                    validate(invalid)
 
     def test_mirror_options_are_bounded_and_witnesses_are_affinely_independent(self):
         operation = mirror_request()['operations'][0]

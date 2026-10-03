@@ -2,14 +2,15 @@
 
 [Transforms](transforms.md) · [Copy and history](transform-copy.md)
 
-Enter `Scale`, `Scale1D`, `Scale2D`, `Rotate`, `Rotate3D`, `Mirror`, or
-`Shear` with no objects selected. Pick the source objects, then press Enter
+Enter `Move`, `Copy`, `Scale`, `Scale1D`, `Scale2D`, `Rotate`, `Rotate3D`,
+`Mirror`, or `Shear` with no objects selected. Pick the source objects, then press Enter
 to continue to the command's point prompts. Clicks and selection windows use
 the normal group picking policy; `SelID object-id` selects one object directly.
 `SelAll` and `SelNone` can adjust selection during this phase.
 
 Copy choices and Mirror plane options become available after accepting the
-sources. They do not take effect at the source selection prompt. Enter with
+sources. Move/Copy placement options also begin after source acceptance.
+These options do not take effect at the source selection prompt. Enter with
 no source ends the command. Escape while selecting clears the pending picks;
 Escape after accepting sources retains them and makes no pending geometry edit.
 
@@ -26,7 +27,8 @@ in-place transform retains the picks and makes no history entry. Mirror's Object
 plane choice has its own [source selection cleanup](mirror.md).
 
 Undo removes command-first source selection, including when the originals were
-unchanged by copying. Copied group definitions remain empty after Undo. Redo
+unchanged by copying. The [Copy command](move-copy.md) also releases preselected
+sources on Undo. Copied group definitions remain empty after Undo. Redo
 preserves the existing transform replay policy, including output selection
 captured by SelLast before Undo. Rejected geometry leaves the picked sources,
 previous accepted copies, and history intact.
@@ -47,7 +49,8 @@ coordinate tolerance. Existing preselection fixtures run alongside these cases.
 App tests also exercise mouse group picks, selection removal, real Escape,
 restricted group peers, and atomic rollback when transformed coordinates overflow.
 Native mouse/window ordering and command-first subobject transforms have not been
-exhaustively measured. Move and Copy retain their separate selection workflows.
+exhaustively measured. Additional [Move/Copy placement captures](move-copy.md)
+cover their shared source selection and separate point workflows.
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.transform_copy_capture tools/rhino_oracle/fixtures/transform_sources.json --scheme VibocerosOracleMirrorPreview --timeout 300

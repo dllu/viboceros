@@ -5,6 +5,9 @@ use super::*;
 use viboceros_drafting::ObjectSnapModes;
 use viboceros_drafting::{ObjectSnap, OrthogonalTrack, TrackAxis};
 
+#[cfg(test)]
+mod translation_tests;
+
 #[derive(Clone, Copy, Debug)]
 pub(super) struct DraftingCursor {
     pub(super) pointer: Pos2,
@@ -18,6 +21,65 @@ pub(super) struct DraftingCursor {
 }
 
 impl Viewport {
+    /// Translation line picks remain usable when the CPlane is edge-on. A
+    /// free mouse pick follows the closest point to the viewing line; object snaps
+    /// and point filters continue to provide explicit 3D source coordinates.
+    pub(super) fn translation_drafting_cursor(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        input: DraftingInput,
+        filter: Option<viboceros_drafting::PointFilterSession>,
+        point_constraint: Option<viboceros_drafting::PointConstraintState>,
+        translation: Option<viboceros_command::translation::DestinationConstraint>,
+    ) -> Option<DraftingCursor> {
+        let translation = translation.filter(|_| {
+            !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+        });
+        let input = if translation.is_some_and(|constraint| constraint.direction.is_some()) {
+            DraftingInput {
+                ortho: false,
+                shift_inverts_ortho: false,
+                smart_track: false,
+                ..input
+            }
+        } else {
+            input
+        };
+        let cursor =
+            self.filtered_drafting_cursor(pointer, rect, document, input, filter, point_constraint);
+        let Some(translation) = translation else {
+            return cursor;
+        };
+        let projected = if filter.is_none()
+            && !cursor.is_some_and(|cursor| cursor.object_snap.is_some())
+        {
+            self.drafting_view_line_relative_to(translation.anchor, pointer, rect)
+                .and_then(|(origin, direction)| translation.project_view_line(origin, direction))
+        } else {
+            None
+        };
+        let mut cursor = if let Some(point) = projected {
+            DraftingCursor {
+                pointer,
+                source_point: point,
+                point: point_constraint
+                    .map_or(Ok(point), |state| state.apply_cursor(point))
+                    .ok()?,
+                object_snap: None,
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            }
+        } else {
+            cursor?
+        };
+        cursor.point = translation.resolve(cursor.point).ok()?;
+        Some(cursor)
+    }
+
     pub(super) fn filtered_drafting_cursor(
         &self,
         pointer: Pos2,

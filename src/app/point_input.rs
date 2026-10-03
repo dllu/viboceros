@@ -146,9 +146,32 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_drafting_point(&mut self, point: Point3) -> bool {
+        self.accept_drafting_point_with_translation(point, true)
+    }
+
+    pub(super) fn accept_resolved_translation_point(&mut self, point: Point3) -> bool {
+        self.accept_drafting_point_with_translation(point, false)
+    }
+
+    fn accept_drafting_point_with_translation(
+        &mut self,
+        point: Point3,
+        resolve_translation: bool,
+    ) -> bool {
         if self.set_view_prompt.is_some() {
             return false;
         }
+        let point = match resolve_translation
+            .then(|| self.translation_constraint())
+            .flatten()
+            .map_or(Ok(point), |constraint| constraint.resolve(point))
+        {
+            Ok(point) => point,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+        };
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point(point) {
             self.snaps.model_override = None;

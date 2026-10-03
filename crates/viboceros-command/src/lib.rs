@@ -7,8 +7,10 @@ mod border;
 use border::{DuplicateBorderCommand, DuplicateBorderOutputLayer, DuplicateFaceBorderCommand};
 mod arrays;
 mod history_policy;
+pub mod translation;
 pub use history_policy::CommandHistoryPolicy;
 use history_policy::{apply_transform_with_renewal, transform_arguments};
+use translation::{CopyCommand, MoveCommand};
 mod rotation_policy;
 use rotation_policy::command_rotation;
 mod layout_units;
@@ -15266,59 +15268,6 @@ fn replace_selection(
     Ok(())
 }
 
-struct MoveCommand;
-
-impl Command for MoveCommand {
-    fn name(&self) -> &'static str {
-        "Move"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["M"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let offset = parse_translation(arguments, "Move from to")?;
-        let count =
-            document.transform_objects(selected, AffineTransform3::from_translation(offset))?;
-        Ok(format!(
-            "Moved {count} object(s) by {}",
-            format_vector(offset)
-        ))
-    }
-}
-
-struct CopyCommand;
-
-impl Command for CopyCommand {
-    fn name(&self) -> &'static str {
-        "Copy"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let offset = parse_translation(arguments, "Copy from to")?;
-        let policy = if selected.len() == 1 {
-            viboceros_document::CopyGroupPolicy::DefinitionsOnly
-        } else {
-            viboceros_document::CopyGroupPolicy::Preserve
-        };
-        let copies = document.copy_objects_with_transforms_and_groups(
-            selected.iter().copied(),
-            &[AffineTransform3::from_translation(offset)],
-            policy,
-        )?;
-        // Rhino's completed Copy leaves the source preselection unchanged.
-        document.select_objects_direct(selected, SelectionMode::Replace)?;
-        Ok(format!(
-            "Copied {} object(s) by {}",
-            copies.len(),
-            format_vector(offset)
-        ))
-    }
-}
-
 const ORIENT_USAGE: &str = "Orient reference-start reference-end target-start target-end \
     [Scale=No|1D|3D] [Copy=Yes|No]";
 const ORIENT_THREE_POINT_USAGE: &str = "Orient3Pt reference-1 reference-2 reference-3 \
@@ -17320,16 +17269,6 @@ fn parse_color(value: &str) -> Result<ColorRgb, CommandError> {
             .map_err(|_| CommandError::InvalidColor(value.to_owned()))?;
     }
     Ok(ColorRgb::new(parsed[0], parsed[1], parsed[2]))
-}
-
-fn parse_translation(
-    arguments: &[&str],
-    usage: &'static str,
-) -> Result<viboceros_geometry::Vector3, CommandError> {
-    let (from, consumed) = parse_point(arguments)?;
-    let (to, to_consumed) = parse_point(&arguments[consumed..])?;
-    require_consumed(arguments, consumed + to_consumed, usage)?;
-    Ok(from.vector_to(to)?)
 }
 
 fn format_vector(vector: viboceros_geometry::Vector3) -> String {

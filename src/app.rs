@@ -167,6 +167,7 @@ mod snapping;
 mod toolbar;
 mod transform_prompt;
 mod transform_sources;
+mod translation_prompt;
 mod unjoin_edge;
 mod untrim_holes;
 mod viewport_layout;
@@ -1279,7 +1280,7 @@ impl InteractiveCommand {
                 "Trim: pick the interval to remove from one selected curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
             Self::Move { start: None } => {
-                "Move: pick the base point in the viewport (Esc to cancel)"
+                "Move: pick the base point; Enter uses bounding-box center; Vertical constrains direction; Esc cancels"
             }
             Self::Move { start: Some(_) } => {
                 "Move: pick the destination point in the viewport (Esc to cancel)"
@@ -1288,10 +1289,10 @@ impl InteractiveCommand {
                 "SetPt: pick a target point; XSet/YSet/ZSet=Yes|No, Alignment=World|CPlane, Copy=Yes|No (Enter finishes copies; Esc cancels)"
             }
             Self::Copy { start: None } => {
-                "Copy: pick the base point in the viewport (Esc to cancel)"
+                "Copy: pick the base point; Enter uses bounding-box center; Vertical or InPlace; Esc cancels"
             }
             Self::Copy { start: Some(_) } => {
-                "Copy: pick the destination point in the viewport (Esc to cancel)"
+                "Copy: pick the destination point; Enter or Esc finishes"
             }
             Self::ArrayLinear { start: None, .. } => {
                 "ArrayLinear: pick the first reference point in the viewport (Esc to cancel)"
@@ -1825,6 +1826,7 @@ pub struct VibocerosApp {
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     transform_session: Option<transform_prompt::TransformSession>,
+    translation_session: Option<translation_prompt::TranslationSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
@@ -1915,6 +1917,7 @@ impl VibocerosApp {
             curve_points: Vec::new(),
             points_session: None,
             transform_session: None,
+            translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -2068,7 +2071,8 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.try_continue_transform(&input)
+        if self.try_continue_translation(&input)
+            || self.try_continue_transform(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -2504,7 +2508,8 @@ impl VibocerosApp {
         {
             return true;
         }
-        if self.try_continue_transform(input)
+        if self.try_continue_translation(input)
+            || self.try_continue_transform(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
@@ -2597,6 +2602,7 @@ impl VibocerosApp {
         let arguments = tokens.collect::<Vec<_>>();
         let has_start_arguments = !arguments.is_empty();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        let translation_options = translation_prompt::start_options(&normalized, &arguments);
         let mirror_mode = if normalized == "mirror" {
             viboceros_command::mirror::start_options(&arguments, false)
                 .ok()
@@ -4461,6 +4467,7 @@ impl VibocerosApp {
                     || normalized == "rotate3d"
                     || transform_prompt::start_copy_option(&normalized, &arguments, false)
                         .is_none())
+                && translation_options.is_none()
             {
                 return false;
             }
@@ -4535,7 +4542,9 @@ impl VibocerosApp {
         if picked_sources.is_none() {
             self.commands.begin_copy_options(command.name());
         }
-        if transform_prompt::supports(command) && self.document.selected_object_count() == 0 {
+        if (transform_prompt::supports(command) || translation_prompt::supports(command))
+            && self.document.selected_object_count() == 0
+        {
             self.start_transform_source_prompt(command.name());
             if has_start_arguments {
                 self.push_log("Select objects first; Enter continues to transform options".into());
@@ -4604,14 +4613,22 @@ impl VibocerosApp {
                 return true;
             }
         }
-        if transform_prompt::supports(command)
-            && !self.start_transform_session(
+        if transform_prompt::supports(command) {
+            if !self.start_transform_session(
                 command,
                 transform_copy.flatten().unwrap(),
                 picked_sources,
-            )
-        {
-            return true;
+            ) {
+                return true;
+            }
+        } else if translation_prompt::supports(command) {
+            if !self.start_translation_session(
+                command,
+                picked_sources,
+                translation_options.unwrap().0,
+            ) {
+                return true;
+            }
         }
         if let InteractiveCommand::EvaluateUv { options } = command {
             self.push_log(options.command_line());
@@ -4623,6 +4640,9 @@ impl VibocerosApp {
         self.point_filter = None;
         self.point_constraint = None;
         self.active_command = Some(command);
+        if translation_options.is_some_and(|(_, in_place)| in_place) {
+            self.try_continue_translation("InPlace");
+        }
         if let Some(token) =
             mirror_mode.and_then(viboceros_command::mirror::MirrorPlaneOption::token)
         {
@@ -4632,7 +4652,11 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
-        let transform_applied = self.finish_transform_session();
+        let transform_applied = self.finish_transform_session()
+            | self
+                .translation_session
+                .take()
+                .is_some_and(|session| session.applied);
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
         }
@@ -6746,6 +6770,7 @@ impl VibocerosApp {
                 ));
             }
             InteractiveCommand::Move { start: None } => {
+                self.translation_session.as_mut().unwrap().set_base(point);
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
                 self.push_log(format!("Base: {}", format_model_point(point)));
                 self.push_log(
@@ -6755,6 +6780,7 @@ impl VibocerosApp {
                 );
             }
             InteractiveCommand::Copy { start: None } => {
+                self.translation_session.as_mut().unwrap().set_base(point);
                 self.active_command = Some(InteractiveCommand::Copy { start: Some(point) });
                 self.push_log(format!("Base: {}", format_model_point(point)));
                 self.push_log(
@@ -6763,13 +6789,8 @@ impl VibocerosApp {
                         .to_owned(),
                 );
             }
-            InteractiveCommand::Move { start: Some(start) } => {
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Move {} {}",
-                    format_model_point(start),
-                    format_model_point(point)
-                ));
+            InteractiveCommand::Move { start: Some(_) } => {
+                return self.apply_translation_step(point);
             }
             InteractiveCommand::SetPoint { options } => {
                 let succeeded = self.try_execute_command(&format!(
@@ -6787,13 +6808,8 @@ impl VibocerosApp {
                     self.push_log(command.prompt().to_owned());
                 }
             }
-            InteractiveCommand::Copy { start: Some(start) } => {
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Copy {} {}",
-                    format_model_point(start),
-                    format_model_point(point)
-                ));
+            InteractiveCommand::Copy { start: Some(_) } => {
+                return self.apply_translation_step(point);
             }
             InteractiveCommand::Array {
                 counts,
@@ -8391,6 +8407,9 @@ impl eframe::App for VibocerosApp {
                 .then_some(analysis.marker_color)
         });
         let document = &self.document;
+        let translation_constraint = model_input_active
+            .then(|| self.translation_constraint())
+            .flatten();
         let curve_points = self
             .plane_prompt
             .as_ref()
@@ -8436,6 +8455,7 @@ impl eframe::App for VibocerosApp {
                             drafting,
                             point_filter,
                             point_constraint,
+                            translation_constraint,
                             zoom_window: zoom_window_pending,
                             rect_selection_mode: selection_window_override,
                             circular_selection: match circular_selection {
@@ -8772,6 +8792,7 @@ mod tests {
             component_selection: Default::default(),
             points_session: None,
             transform_session: None,
+            translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -11886,17 +11907,19 @@ mod tests {
             app.document.object(copy).unwrap().geometry(),
             Geometry::Point(position) if *position == point(6.0, 4.0, 0.0)
         ));
+        assert!(app.active_command.is_some());
+        app.cancel_interactive_command(false);
         app.document.undo().unwrap();
         assert_eq!(app.document.objects().len(), 1);
         assert_eq!(
             app.document.selected_object_ids().collect::<Vec<_>>(),
-            vec![original]
+            Vec::<ObjectId>::new()
         );
         app.document.redo().unwrap();
         assert!(app.document.object(copy).is_some());
         assert_eq!(
             app.document.selected_object_ids().collect::<Vec<_>>(),
-            vec![original]
+            Vec::<ObjectId>::new()
         );
     }
 
@@ -12092,7 +12115,9 @@ mod tests {
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
-            if transform_prompt::supports_name(&command.to_ascii_lowercase()) {
+            if transform_prompt::supports_name(&command.to_ascii_lowercase())
+                || translation_prompt::supports_name(&command.to_ascii_lowercase())
+            {
                 assert!(app.object_prompt.is_some());
                 assert!(app.transform_session.is_none());
                 app.cancel_interactive_command(false);

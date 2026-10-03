@@ -11,6 +11,14 @@ use viboceros_geometry::AffineTransform3;
 pub(super) struct TransformSources {
     ids: Vec<ObjectId>,
     postselected: bool,
+    release_on_replay: bool,
+}
+
+impl TransformSources {
+    /// Copy releases even preselected sources when its history is replayed.
+    pub(super) fn release_selection_on_replay(&mut self) {
+        self.release_on_replay = true;
+    }
 }
 
 pub(super) fn transform_arguments<'a>(
@@ -47,15 +55,17 @@ pub(super) fn transform_arguments<'a>(
             }
             // A picked group's restricted peers are editable while selected,
             // under the same document policy as ordinary preselection.
-            if postselected {
-                for id in document.selected_object_ids() {
-                    remaining.remove(&id);
-                }
+            for id in document.selected_object_ids() {
+                remaining.remove(&id);
             }
             if !remaining.is_empty() {
                 return Err(CommandError::Usage(usage));
             }
-            sources = Some(TransformSources { ids, postselected });
+            sources = Some(TransformSources {
+                ids,
+                postselected,
+                release_on_replay: postselected,
+            });
         } else {
             positional.push(*argument);
         }
@@ -65,6 +75,7 @@ pub(super) fn transform_arguments<'a>(
         None => TransformSources {
             ids: transform_source_ids(document)?,
             postselected: false,
+            release_on_replay: false,
         },
     };
     Ok((positional, sources))
@@ -98,7 +109,7 @@ pub(super) fn apply_transform_with_renewal(
     if !copy && transform == AffineTransform3::identity() {
         return Ok((selected.len(), 0));
     }
-    if sources.postselected {
+    if sources.release_on_replay {
         document.release_command_selection_on_history_replay(selected.iter().copied())?;
     }
     if copy {

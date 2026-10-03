@@ -29,11 +29,14 @@ def capture(request, client, timeout=300):
     for operation, row in zip(request['operations'], observed['results']):
         value = row['value']
         if (not isinstance(value, dict)
-                or set(value) != ({'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'} | ({'target'} if 'mirror_target' in operation else set()))
+                or set(value) != ({'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'} | ({'target'} if 'mirror_target' in operation else set()) | ({'frame'} if 'mouse_target' in operation else set()))
                 or type(value['succeeded']) is not bool or not isinstance(value['history'], str)
                 or not isinstance(value['events'], list) or not isinstance(value['group_names'], list)
                 or any(not isinstance(name, str) for name in value['group_names'])):
             raise ValueError('invalid transform Copy observation')
+        if 'mouse_target' in operation:
+            from .translation_input import validate_frame
+            validate_frame(value['frame'])
         if 'mirror_target' in operation:
             target = value['target']
             fields = {'type', 'selected', 'bounds', 'name', 'groups', 'layer', 'color_source', 'color'}

@@ -7,7 +7,7 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 
 ## Interactive transforms
 
-Scale, Scale1D, Scale2D, Rotate, Rotate3D, Mirror, and Shear can also start with
+Move, Copy, Scale, Scale1D, Scale2D, Rotate, Rotate3D, Mirror, and Shear can start with
 no objects selected: [pick sources first, then Enter](transform-sources.md).
 
 With objects selected, enter `Move` or `Copy`
@@ -25,8 +25,9 @@ Scale, Scale1D, Scale2D, Rotate, Rotate3D, and Shear support
 keep entering targets, and finish with Enter or Escape. Accepted edits share
 one Undo entry. Mirror supports Copy editing and finishes after one result.
 
-A completed `Copy` leaves its original preselection unchanged; new copies are
-unselected. With multiple sources, copied [group memberships](../groups.md)
+`Move` and `Copy` support [automatic bases, Vertical, and repeated Copy
+placements](move-copy.md). Copy retains its sources as selection and leaves new
+copies unselected; Undo clears its source selection. With multiple sources, copied [group memberships](../groups.md)
 retain their per-object order in fresh, automatically named groups. A single
 source produces an ungrouped copy and corresponding empty group definitions.
 
