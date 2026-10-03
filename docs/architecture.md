@@ -85,6 +85,9 @@ map supplies normals under nonuniform scaling, shear, and reflection. Previews
 never install geometry snapshots or history entries; see
 [display caching](viewport-caching.md), [Move/Copy previews](commands/move-copy.md#live-previews),
 and [affine previews](commands/affine-previews.md).
+The [Twist command](commands/twist.md) shares the general point-morph fitters
+with preserved-control overrides and measured rigid placements. Its prompt
+adapter retains source IDs and groups repeated copies into one history entry.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

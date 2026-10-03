@@ -68,7 +68,7 @@ pub trait PointMorph {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve, GeometryError> {
-        curve_fit::fit(self, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
+        fit_curve(self, curve, tolerance)
     }
 
     /// Checks mapped-control and bounded rational-composition candidates,
@@ -81,13 +81,7 @@ pub trait PointMorph {
         surface: &NurbsSurface,
         tolerance: Tolerance,
     ) -> Result<NurbsSurface, GeometryError> {
-        surface_fit::fit(
-            self,
-            surface,
-            tolerance,
-            MAX_MORPH_SURFACE_AXIS_CONTROLS,
-            MAX_MORPH_SURFACE_SAMPLES,
-        )
+        fit_surface(self, surface, tolerance)
     }
 
     /// Fits shared edges and underlying surfaces, preserving UV trims and
@@ -101,15 +95,36 @@ pub trait PointMorph {
         mesh: &TriangleMesh,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        TriangleMesh::try_new_faces(
+        mesh.try_with_mapped_vertices(
             mesh.vertices()
                 .iter()
                 .map(|point| self.morph_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
-            mesh.faces().to_vec(),
             tolerance,
         )
     }
+}
+
+pub(crate) fn fit_curve(
+    morph: &(impl PointMorph + ?Sized),
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    curve_fit::fit(morph, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
+}
+
+pub(crate) fn fit_surface(
+    morph: &(impl PointMorph + ?Sized),
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, GeometryError> {
+    surface_fit::fit(
+        morph,
+        surface,
+        tolerance,
+        MAX_MORPH_SURFACE_AXIS_CONTROLS,
+        MAX_MORPH_SURFACE_SAMPLES,
+    )
 }
 
 /// Rhino-compatible plane-to-surface ("splop") point morph.

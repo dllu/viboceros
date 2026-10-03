@@ -215,6 +215,16 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        for family in ("twist_points", "twist_command"):
+            cases=[op for op in request.get("operations",[]) if op.get("op")==family]
+            if cases:
+                from . import twist_probe, twist_command_probe
+                if family=="twist_command" and self.settings_scheme is None:
+                    raise OracleProtocolError("Twist commands require a private Rhino settings scheme")
+                if family=="twist_command" and (type(request.get("iterations",1)) is not int or request.get("iterations",1)!=1):
+                    raise OracleProtocolError("Twist commands require one iteration")
+                for op in cases:
+                    (twist_probe if family=="twist_points" else twist_command_probe).validate(op)
         interaction = None
         if any(op.get('op') == 'mirror_preview' for op in request.get('operations', [])):
             from .mirror_preview_input import MirrorPreviewPicker
@@ -494,6 +504,11 @@ class OracleClient:
             if any(op.get('op') == 'translation_preview' for op in request.get('operations',[])):
                 for name in ('translation_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'twist_command' for op in request.get('operations',[])):
+                for name in ('twist_command_probe.py','join_probe.py','merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') == 'twist_points' for op in request.get('operations',[])):
+                helper=Path(__file__).with_name('twist_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'affine_preview' for op in request.get('operations',[])):
                 for name in ('affine_preview_probe.py','viewport_capture.py','named_view_policy_probe.py','view_camera_probe.py','shrink_face_input.py','snap_environment.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)

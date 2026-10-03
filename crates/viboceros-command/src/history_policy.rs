@@ -9,9 +9,9 @@ use viboceros_geometry::AffineTransform3;
 /// object table for preselection. Explicit sources also survive Mirror Object
 /// clearing the live selection while its plane target is being picked.
 pub(super) struct TransformSources {
-    ids: Vec<ObjectId>,
-    postselected: bool,
-    release_on_replay: bool,
+    pub(super) ids: Vec<ObjectId>,
+    pub(super) postselected: bool,
+    pub(super) release_on_replay: bool,
 }
 
 impl TransformSources {

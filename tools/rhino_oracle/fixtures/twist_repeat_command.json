@@ -1,0 +1,63 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "angles": [
+        180.0
+      ],
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "repeat-0",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": false,
+      "shape": "Points"
+    },
+    {
+      "angles": [
+        90.0
+      ],
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "repeat-1",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": false,
+      "shape": "Points"
+    },
+    {
+      "angles": [
+        -90.0
+      ],
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "repeat-2",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": false,
+      "shape": "Points"
+    },
+    {
+      "angles": [
+        0.0,
+        180.0
+      ],
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "repeat-3",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": false,
+      "shape": "Points"
+    }
+  ],
+  "protocol_version": 1
+}

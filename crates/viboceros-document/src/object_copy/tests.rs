@@ -152,3 +152,38 @@ fn piece_copy_validates_all_sources_before_mutation_and_preserves_empty_noops() 
         }
     }
 }
+
+#[test]
+fn replacement_copy_sets_keep_order_groups_and_reject_duplicates_atomically() {
+    let mut doc = Document::default();
+    let ids = [0., 1.].map(|x| doc.add_geometry(point(x)).unwrap());
+    doc.add_group(None, ids).unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.objects.clone();
+    let groups = doc.groups.clone();
+    assert!(
+        matches!(doc.copy_object_geometries_with_groups([(ids[0],point(2.)),(ids[0],point(3.))],CopyGroupPolicy::Preserve),Err(DocumentError::DuplicateCopySource(id)) if id==ids[0])
+    );
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, groups);
+    assert!(!doc.can_undo());
+    let copies = doc
+        .copy_object_geometries_with_groups(
+            [(ids[1], point(3.)), (ids[0], point(2.))],
+            CopyGroupPolicy::Preserve,
+        )
+        .unwrap();
+    assert_eq!(doc.object(copies[0]).unwrap().geometry(), &point(3.));
+    assert_eq!(doc.object(copies[1]).unwrap().geometry(), &point(2.));
+    assert_eq!(
+        doc.object(copies[0]).unwrap().group_ids(),
+        doc.object(copies[1]).unwrap().group_ids()
+    );
+    assert_ne!(
+        doc.object(copies[0]).unwrap().group_ids(),
+        doc.object(ids[0]).unwrap().group_ids()
+    );
+    doc.undo().unwrap();
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, groups);
+}

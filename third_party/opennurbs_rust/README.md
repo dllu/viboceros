@@ -36,5 +36,6 @@ flags, and validates retained topology. No proprietary Rhino source was used.
 `opennurbs_xform.cpp` at the same pinned revision under the [MIT license](LICENSE),
 retaining the source copyright and disclaimer. It receives Rust sine/cosine
 outputs, omits the native normalization of supplied components, and returns
-only snapped components. Rotate and Rotate3D use it at the command layer;
-the general geometry kernel preserves small rotations without this cutoff.
+only snapped components. Rotate, Rotate3D and the Twist point map use the
+kernel’s explicit `try_rotation_with_cardinal_cleanup` entry point. The general
+`try_rotation` entry point preserves small rotations without this cutoff.

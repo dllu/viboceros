@@ -621,6 +621,14 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveMorphFixture,
     },
+    TwistPoints {
+        id: String,
+        axis_start: [f64; 3],
+        axis_end: [f64; 3],
+        angle: f64,
+        infinite: bool,
+        points: Vec<[f64; 3]>,
+    },
     SurfaceJets {
         id: String,
         #[serde(flatten)]
@@ -2120,6 +2128,7 @@ impl Operation {
             | Self::CurveFrames { id, .. }
             | Self::Sweep1 { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
+            | Self::TwistPoints { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
             | Self::BrepMeshBoundaries { id, .. }
@@ -2693,6 +2702,40 @@ fn execute(
         Operation::SurfaceGrid { fixture, .. } => point_grid::run(fixture, iterations, tolerance)?,
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
+        }
+        Operation::TwistPoints {
+            axis_start,
+            axis_end,
+            angle,
+            infinite,
+            points,
+            ..
+        } => {
+            if points.is_empty() || points.len() > 256 {
+                return Err(GeometryError::Degenerate {
+                    context: "twist point sample count",
+                }
+                .into());
+            }
+            let morph = viboceros_geometry::TwistPointMorph::try_new(
+                Point3::try_from(*axis_start)?,
+                Point3::try_from(*axis_end)?,
+                *angle,
+                *infinite,
+                tolerance,
+            )?;
+            let points = points
+                .iter()
+                .copied()
+                .map(Point3::try_from)
+                .collect::<Result<Vec<_>, _>>()?;
+            let (mapped, elapsed) = measure(iterations, || {
+                points
+                    .iter()
+                    .map(|p| morph.morph_point(*p).map(Point3::to_array))
+                    .collect::<Result<Vec<_>, _>>()
+            })?;
+            (json!({"points":mapped}), elapsed)
         }
         Operation::SurfaceJets { fixture, .. } => surface_jets::run(fixture, iterations)?,
         Operation::CurveFrames { fixture, .. } => {

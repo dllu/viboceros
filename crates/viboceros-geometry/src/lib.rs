@@ -50,6 +50,8 @@ mod intersection;
 mod line;
 mod loft;
 mod mesh;
+mod twist;
+pub use twist::TwistPointMorph;
 mod morph;
 mod nurbs;
 mod nurbs2;

@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "twist_command": 36,
+    "twist_points": 14,
+    "twist_repeat_command": 4,
+    "twist_rigid_command": 12
+  },
+  "command_comparison": {
+    "notes": [
+      "The fitting cases use document tolerance 1e-5 for each independent fitted result.",
+      "Preserved curves and surfaces retain the Rust source degrees and full knots exactly. Native control positions and knot values use 1e-11; independent line-length domains can differ by approximately 2e-15.",
+      "Complete preserved NURBS structure, sampled curves and faces, solid box incidence, mesh colors, names, groups, selection, Undo and Redo are checked.",
+      "Native groups are normalized to retained object-table indices for comparing membership; UUID ordering is not compared.",
+      "Repeated Copy batches create geometry from original sources and share one Undo entry; zero angles create no objects.",
+      "The cases do not establish arbitrary trimmed-surface, continuous fitting error, viewport preview or full Rhino compatibility."
+    ],
+    "positions": {
+      "fitted_curve_surface": 2e-05,
+      "float_mesh": 1e-06,
+      "point": 1e-11,
+      "preserved_structure": 1e-11,
+      "rigid": 1e-07
+    },
+    "runner": "cargo test -p viboceros-command --lib twist"
+  },
+  "engine_version": "8.32.26160.13001",
+  "point_comparison": {
+    "absolute_epsilon": 1e-11,
+    "max_absolute_error": 5.329070518200751e-15,
+    "passed": true,
+    "relative_epsilon": 1e-12
+  },
+  "retained_file_sha256": {
+    "docs/twist-point-comparison.json": "140d5e15207aa52270556fddc7eb9b695eefe732ef9f0566d0c6c72bbbc18a59",
+    "tools/rhino_oracle/fixtures/twist_command.json": "da9f9cb4dcb5bd894d81d1c266d373063470b04e3b82cb03f68f03232bc30b51",
+    "tools/rhino_oracle/fixtures/twist_points.json": "d370773e3a0d9808564aad75b46b78d678f229fcfbdcaa1a74cac3526b8de1ed",
+    "tools/rhino_oracle/fixtures/twist_repeat_command.json": "637f5bf4338ed9574d30bb2e2624faff77591d58a46c1637ef2edb4e225487a4",
+    "tools/rhino_oracle/fixtures/twist_rigid_command.json": "9cc170be38de802aeb16d75c59d5b09462b2864dfd25a082d35d2c97bcea9047",
+    "tools/rhino_oracle/observations/twist_command.json": "63550214a885a70872dbc94aa8940e63bc606b9851213874012c7da322653395",
+    "tools/rhino_oracle/observations/twist_points.json": "bbf86b3d06427b4b6c7681a1c51aa6212eb6c8d30831dfe5a0cec866ac0cda44",
+    "tools/rhino_oracle/observations/twist_points_performance.json": "021e3ac1fb57db354bb22e3f22f522c633fc2ccbc39b6a387589e319fd218268",
+    "tools/rhino_oracle/observations/twist_points_rust_performance.json": "f91053d3d0da4a25e0561aa2f272856fb7b3f5ebbf9e8a67f689015ae54792e2",
+    "tools/rhino_oracle/observations/twist_repeat_command.json": "c499f7dd22b9998b9851f1bead46b11b4bf8ea26cd931011048a854e826cb11f",
+    "tools/rhino_oracle/observations/twist_rigid_command.json": "4e3662c20e08297903a63ca2c7fc0895d93a54b9121e7a2a55b2dcab36e01c50"
+  },
+  "scope": "Independent public TwistSpaceMorph point maps and actual Twist command captures in an owned private Xvfb Rhino session. No proprietary source was inspected.",
+  "timing": {
+    "iterations": 1000,
+    "notes": [
+      "The Rust probe is a native release build; both helpers preconstruct source points and warm up before timing batches.",
+      "Rhino performs public MorphPoint calls and coordinate extraction through Python/RhinoCommon on FEX/Wine. Its source morph construction, startup and JSON transport are outside the timing loop.",
+      "Rust times point mapping and collection into an owned coordinate vector. This differs from the Rhino Python/CLR route.",
+      "The exported ratios compare harness elapsed time and cannot establish a native Rhino kernel speedup."
+    ]
+  }
+}

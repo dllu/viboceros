@@ -1,0 +1,148 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "axis": "Z",
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-Z",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "axis": "LongZ",
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-LongZ",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "axis": "Reverse",
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-Reverse",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "axis": "Spatial",
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-Spatial",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-offset--4",
+      "infinite": false,
+      "offset_z": -4.0,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-offset--2",
+      "infinite": false,
+      "offset_z": -2.0,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-offset-2",
+      "infinite": false,
+      "offset_z": 2.0,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-offset-4",
+      "infinite": false,
+      "offset_z": 4.0,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve"
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-tol-8",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve",
+      "tolerance": 1e-07
+    },
+    {
+      "copy": true,
+      "degrees": 90.0,
+      "grouped": true,
+      "id": "rigid-tol-9",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Curve",
+      "tolerance": 0.01
+    },
+    {
+      "copy": false,
+      "degrees": 90.0,
+      "grouped": false,
+      "id": "rigid-ungrouped",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": true,
+      "shape": "Points"
+    },
+    {
+      "copy": true,
+      "degrees": 0.0,
+      "grouped": true,
+      "id": "zero-copy",
+      "infinite": false,
+      "op": "twist_command",
+      "preserve": false,
+      "rigid": false,
+      "shape": "Points"
+    }
+  ],
+  "protocol_version": 1
+}

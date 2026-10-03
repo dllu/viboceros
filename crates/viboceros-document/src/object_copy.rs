@@ -115,6 +115,34 @@ impl Document {
         self.copy_staged_object_sets(&sources, 1, staged, CopyGroupPolicy::Preserve)
     }
 
+    /// Atomically copies one replacement per source, preserving attributes and
+    /// allocating independent groups under the caller's membership policy.
+    /// Inputs retain caller order; duplicate source IDs are rejected.
+    pub fn copy_object_geometries_with_groups(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+        group_policy: CopyGroupPolicy,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let copies = copies.into_iter().collect::<Vec<_>>();
+        let by_id = self
+            .resolve_object_indices(copies.iter().map(|(id, _)| *id))?
+            .into_iter()
+            .map(|index| (self.objects[index].id, index))
+            .collect::<BTreeMap<_, _>>();
+        let mut seen = BTreeSet::new();
+        let mut staged = Vec::with_capacity(copies.len());
+        for (id, geometry) in copies {
+            if !seen.insert(id) {
+                return Err(DocumentError::DuplicateCopySource(id));
+            }
+            let index = by_id[&id];
+            self.ensure_object_editable(&self.objects[index])?;
+            staged.push((index, object_admission::normalize_geometry(geometry)?));
+        }
+        let sources = staged.iter().map(|(index, _)| *index).collect::<Vec<_>>();
+        self.copy_staged_object_sets(&sources, 1, staged, group_policy)
+    }
+
     /// Atomically copies replacement geometry while preserving source
     /// attributes and appending each copy to every group containing its source.
     /// Source selection is retained and the new objects remain unselected.

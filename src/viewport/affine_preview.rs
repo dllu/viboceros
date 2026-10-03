@@ -127,7 +127,9 @@ impl Viewport {
             constraint,
             input.translation_constraint.or(line),
         );
-        let Some((anchor, normal)) = definition.and_then(|p| p.mouse_plane(document.tolerance()))
+        let Some((anchor, normal)) = definition
+            .and_then(|p| p.mouse_plane(document.tolerance()))
+            .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
         else {
             return cursor;
         };
@@ -165,3 +167,39 @@ impl Viewport {
 
 #[cfg(test)]
 pub(crate) mod tests;
+
+#[cfg(test)]
+mod angle_plane_tests {
+    use super::*;
+    #[test]
+    fn explicit_twist_angle_plane_resolves_free_mouse_picks_without_changing_cplane() {
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let doc = Document::default();
+        let before = viewport.construction_plane();
+        let plane = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(1., 0., 0.).unwrap(),
+            doc.tolerance(),
+        )
+        .unwrap();
+        let rect = Rect::from_min_size(Pos2::ZERO, egui::vec2(640., 480.));
+        let pointer = Pos2::new(365., 260.);
+        let cursor = viewport
+            .affine_drafting_cursor(
+                pointer,
+                rect,
+                &doc,
+                DraftingInput {
+                    active: true,
+                    ..Default::default()
+                },
+                &ViewportInput {
+                    angle_plane: Some(plane),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert!(cursor.point.x().abs() < 1e-11);
+        assert_eq!(viewport.construction_plane(), before);
+    }
+}

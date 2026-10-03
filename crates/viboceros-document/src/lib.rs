@@ -1787,6 +1787,9 @@ pub enum DocumentError {
     #[error("object {0} is locked and cannot be edited")]
     ObjectLocked(ObjectId),
 
+    #[error("copy source {0} occurs more than once")]
+    DuplicateCopySource(ObjectId),
+
     #[error("the requested object copies exceed addressable memory")]
     TooManyObjectCopies,
 

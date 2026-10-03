@@ -4147,6 +4147,21 @@ impl TriangleMesh {
             .iter()
             .map(|point| transform.transform_point(*point))
             .collect::<Result<_, _>>()?;
+        self.try_with_mapped_vertices(vertices, tolerance)
+    }
+
+    /// Rebuilds geometric caches for a one-to-one vertex map, retaining faces,
+    /// vertex colors and ngon membership. Collapsed faces return an error.
+    pub fn try_with_mapped_vertices(
+        &self,
+        vertices: Vec<Point3>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if vertices.len() != self.vertices.len() {
+            return Err(GeometryError::Degenerate {
+                context: "mesh vertex map size",
+            });
+        }
         let mut transformed = Self::try_new_faces(vertices, self.faces.clone(), tolerance)?;
         transformed.vertex_colors = self.vertex_colors.clone();
         transformed.ngons = self.ngons.clone();

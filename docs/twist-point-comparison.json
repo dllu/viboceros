@@ -1,0 +1,136 @@
+{
+  "absolute_epsilon": 1e-11,
+  "max_absolute_error": 5.329070518200751e-15,
+  "operations": [
+    {
+      "differences": [],
+      "id": "twist-z-finite-0_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 152603.149,
+      "rhino_to_viboceros_ratio": 148.87966849103913,
+      "viboceros_ns_per_iteration": 1025.01
+    },
+    {
+      "differences": [],
+      "id": "twist-z-finite-90_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 170822.144,
+      "rhino_to_viboceros_ratio": 85.74358562505397,
+      "viboceros_ns_per_iteration": 1992.244
+    },
+    {
+      "differences": [],
+      "id": "twist-z-finite-minus90_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 121482.849,
+      "rhino_to_viboceros_ratio": 61.436796885549086,
+      "viboceros_ns_per_iteration": 1977.363
+    },
+    {
+      "differences": [],
+      "id": "twist-z-finite-720_0",
+      "max_absolute_error": 4.440892098500626e-16,
+      "passed": true,
+      "rhino_ns_per_iteration": 113822.937,
+      "rhino_to_viboceros_ratio": 65.59269440021576,
+      "viboceros_ns_per_iteration": 1735.299
+    },
+    {
+      "differences": [],
+      "id": "twist-z-finite-1eminus08",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 127937.317,
+      "rhino_to_viboceros_ratio": 95.92437830417077,
+      "viboceros_ns_per_iteration": 1333.731
+    },
+    {
+      "differences": [],
+      "id": "twist-reverse-finite",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 70930.481,
+      "rhino_to_viboceros_ratio": 64.44464321732225,
+      "viboceros_ns_per_iteration": 1100.642
+    },
+    {
+      "differences": [],
+      "id": "twist-spatial-finite",
+      "max_absolute_error": 1.7763568394002505e-15,
+      "passed": true,
+      "rhino_ns_per_iteration": 67878.723,
+      "rhino_to_viboceros_ratio": 60.3095167862277,
+      "viboceros_ns_per_iteration": 1125.506
+    },
+    {
+      "differences": [],
+      "id": "twist-z-infinite-0_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 116752.625,
+      "rhino_to_viboceros_ratio": 115.54529224136994,
+      "viboceros_ns_per_iteration": 1010.449
+    },
+    {
+      "differences": [],
+      "id": "twist-z-infinite-90_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 124954.224,
+      "rhino_to_viboceros_ratio": 55.90722979756854,
+      "viboceros_ns_per_iteration": 2235.028
+    },
+    {
+      "differences": [],
+      "id": "twist-z-infinite-minus90_0",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 121162.415,
+      "rhino_to_viboceros_ratio": 54.44963419347301,
+      "viboceros_ns_per_iteration": 2225.22
+    },
+    {
+      "differences": [],
+      "id": "twist-z-infinite-720_0",
+      "max_absolute_error": 1.7763568394002505e-15,
+      "passed": true,
+      "rhino_ns_per_iteration": 121475.22,
+      "rhino_to_viboceros_ratio": 62.65989010875643,
+      "viboceros_ns_per_iteration": 1938.644
+    },
+    {
+      "differences": [],
+      "id": "twist-z-infinite-1eminus08",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 124969.482,
+      "rhino_to_viboceros_ratio": 90.77426988768845,
+      "viboceros_ns_per_iteration": 1376.706
+    },
+    {
+      "differences": [],
+      "id": "twist-reverse-infinite",
+      "max_absolute_error": 0.0,
+      "passed": true,
+      "rhino_ns_per_iteration": 70983.887,
+      "rhino_to_viboceros_ratio": 55.61597073465788,
+      "viboceros_ns_per_iteration": 1276.322
+    },
+    {
+      "differences": [],
+      "id": "twist-spatial-infinite",
+      "max_absolute_error": 5.329070518200751e-15,
+      "passed": true,
+      "rhino_ns_per_iteration": 67504.883,
+      "rhino_to_viboceros_ratio": 49.058674290681054,
+      "viboceros_ns_per_iteration": 1376.003
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

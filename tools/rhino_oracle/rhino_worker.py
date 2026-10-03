@@ -6753,6 +6753,12 @@ def _execute(operation, iterations, tolerance):
     if kind == 'translation_preview':
         from translation_preview_probe import run
         return run(operation,globals())
+    if kind == 'twist_command':
+        from twist_command_probe import run
+        return run(operation,globals())
+    if kind == 'twist_points':
+        from twist_probe import run
+        return run(operation,globals(),iterations)
     if kind == 'affine_preview':
         from affine_preview_probe import run
         return run(operation,globals())
@@ -16519,7 +16525,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") == "transform_copy_command" for op in request.get("operations", [])):
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command") for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

@@ -169,6 +169,7 @@ mod toolbar;
 mod transform_prompt;
 mod transform_sources;
 mod translation_prompt;
+mod twist_prompt;
 mod unjoin_edge;
 mod untrim_holes;
 mod viewport_layout;
@@ -620,6 +621,10 @@ enum InteractiveCommand {
     Rotate3D {
         points: [Option<Point3>; 3],
     },
+    Twist {
+        points: [Option<Point3>; 3],
+        options: viboceros_command::twist::TwistOptions,
+    },
     Mirror {
         start: Option<Point3>,
     },
@@ -742,6 +747,7 @@ impl InteractiveCommand {
             Self::Scale { kind, .. } => kind.name(),
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
+            Self::Twist { .. } => "Twist",
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
@@ -1386,6 +1392,16 @@ impl InteractiveCommand {
                     "Rotate3D: pick the target point in the viewport (Esc to cancel)"
                 }
             },
+            Self::Twist { points, .. } => match points {
+                [None, _, _] => "Twist: pick the axis start (Esc to cancel)",
+                [Some(_), None, _] => "Twist: pick the axis end (Esc to cancel)",
+                [Some(_), Some(_), None] => {
+                    "Twist: enter an angle or pick a reference point; Copy, Rigid, Infinite, PreserveStructure"
+                }
+                [Some(_), Some(_), Some(_)] => {
+                    "Twist: pick the target reference point (Esc to cancel)"
+                }
+            },
             Self::Mirror { start: None } => {
                 "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis, Object (Esc to cancel)"
             }
@@ -1530,6 +1546,10 @@ impl InteractiveCommand {
             | Self::Rotate { center: None, .. }
             | Self::Rotate3D {
                 points: [None, _, _],
+            }
+            | Self::Twist {
+                points: [None, _, _],
+                ..
             }
             | Self::Mirror { start: None }
             | Self::MirrorThreePoint { points: [None, _] }
@@ -1694,6 +1714,10 @@ impl InteractiveCommand {
             } => Some(center),
             Self::Rotate3D {
                 points: [Some(start), _, _],
+            }
+            | Self::Twist {
+                points: [Some(start), _, _],
+                ..
             } => Some(start),
         }
     }
@@ -1705,6 +1729,10 @@ impl InteractiveCommand {
             | Self::Shear { reference, .. } => reference,
             Self::Rotate3D {
                 points: [_, _, reference],
+            }
+            | Self::Twist {
+                points: [_, _, reference],
+                ..
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
             Self::Ellipsoid { points } => match points {
@@ -1827,6 +1855,7 @@ pub struct VibocerosApp {
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
     transform_session: Option<transform_prompt::TransformSession>,
+    twist_session: Option<twist_prompt::TwistSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -1918,6 +1947,7 @@ impl VibocerosApp {
             curve_points: Vec::new(),
             points_session: None,
             transform_session: None,
+            twist_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -2074,6 +2104,7 @@ impl VibocerosApp {
         }
         if self.try_continue_translation(&input)
             || self.try_continue_transform(&input)
+            || self.try_continue_twist(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -2511,6 +2542,7 @@ impl VibocerosApp {
         }
         if self.try_continue_translation(input)
             || self.try_continue_transform(input)
+            || self.try_continue_twist(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
@@ -2656,7 +2688,24 @@ impl VibocerosApp {
                 return false;
             }
         }
-        let command = if normalized == "align" {
+        let command = if normalized == "twist" {
+            let default = viboceros_command::twist::TwistOptions {
+                copy: self.commands.copy_default("Twist").unwrap_or(false),
+                ..Default::default()
+            };
+            let Ok((positional, options)) =
+                viboceros_command::twist::TwistOptions::from_arguments(&arguments, default)
+            else {
+                return false;
+            };
+            if !positional.is_empty() {
+                return false;
+            }
+            InteractiveCommand::Twist {
+                points: [None; 3],
+                options,
+            }
+        } else if normalized == "align" {
             let Some(command) = self.start_align(input) else {
                 return false;
             };
@@ -4549,7 +4598,9 @@ impl VibocerosApp {
         if picked_sources.is_none() {
             self.commands.begin_copy_options(command.name());
         }
-        if (transform_prompt::supports(command) || translation_prompt::supports(command))
+        if (transform_prompt::supports(command)
+            || translation_prompt::supports(command)
+            || matches!(command, InteractiveCommand::Twist { .. }))
             && self.document.selected_object_count() == 0
         {
             self.start_transform_source_prompt(command.name());
@@ -4570,6 +4621,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
+                | InteractiveCommand::Twist { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::MirrorThreePoint { .. }
                 | InteractiveCommand::MirrorObject
@@ -4628,6 +4680,10 @@ impl VibocerosApp {
             ) {
                 return true;
             }
+        } else if matches!(command, InteractiveCommand::Twist { .. }) {
+            if !self.start_twist_session(picked_sources) {
+                return true;
+            }
         } else if translation_prompt::supports(command) {
             if !self.start_translation_session(
                 command,
@@ -4670,6 +4726,7 @@ impl VibocerosApp {
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
         }
+        self.twist_session = None;
         self.set_view_prompt = None;
         if std::mem::take(&mut self.remember_copy_prompt) && announce {
             self.push_log("Cancelled RememberCopyOptions".into());
@@ -7045,6 +7102,7 @@ impl VibocerosApp {
                     command,
                 );
             }
+            InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
                 if point_count == 1
@@ -8471,6 +8529,15 @@ impl eframe::App for VibocerosApp {
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
         let document = &self.document;
+        let angle_plane = matches!(
+            self.active_command,
+            Some(InteractiveCommand::Twist {
+                points: [Some(_), Some(_), _],
+                ..
+            })
+        )
+        .then_some(self.drafting_plane)
+        .flatten();
         let translation_constraint = model_input_active
             .then(|| self.translation_constraint())
             .flatten();
@@ -8517,6 +8584,7 @@ impl eframe::App for VibocerosApp {
                         document,
                         ViewportInput {
                             drafting,
+                            angle_plane,
                             point_filter,
                             point_constraint,
                             translation_constraint,
@@ -8801,6 +8869,7 @@ mod tests {
     mod split_edge;
     mod transform_copy;
     mod translation_preview;
+    mod twist;
     mod unjoin_edge;
     mod untrim_edge;
     mod untrim_holes;
@@ -8873,6 +8942,7 @@ mod tests {
             component_selection: Default::default(),
             points_session: None,
             transform_session: None,
+            twist_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

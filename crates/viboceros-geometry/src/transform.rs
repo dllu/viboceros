@@ -1,6 +1,7 @@
 use nalgebra::Matrix3;
 mod normal;
 mod orientation;
+mod rotation_cleanup;
 pub use normal::AffineNormalTransform3;
 
 use crate::{Frame3, GeometryError, Plane, Point3, Real, UnitVector3, Vector3, require_finite};
@@ -385,7 +386,7 @@ impl AffineTransform3 {
         Self::try_mapping_origins(linear_rows, fixed_point, fixed_point)
     }
 
-    fn try_mapping_origins(
+    pub(crate) fn try_mapping_origins(
         linear_rows: [[Real; 3]; 3],
         source_origin: Point3,
         target_origin: Point3,
