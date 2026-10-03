@@ -1,0 +1,46 @@
+{
+  "comparison": {
+    "large_ratio_relative_epsilon": 1e-12,
+    "ordinary_component_epsilon": 1e-11,
+    "rigid_component_epsilon": 1e-07
+  },
+  "diagnostic_command_cases": 6,
+  "engine_version": "8.32.26160.13001",
+  "notes": [
+    "SDK primary scheme: VibocerosOracleTaperPoints_20261003; boundary scheme: VibocerosOracleTaperBoundary_20261003; corrected command scheme: VibocerosOracleTaperCommandsIdle_20261003.",
+    "The initial command capture uses the primary scheme and runs nested in RunPythonScript. Terminal geometry matches the corrected capture, but Undo does not restore source models. It is diagnostic, not a verified history witness.",
+    "Two initial helper compatibility failures (re.fullmatch and math.isfinite in the older Rhino Python runtime) produced no successful responses.",
+    "The current helper retains the same SDK path as the completed SDK captures. Corrected commands execute at idle and finish with Enter only for Copy.",
+    "Point witnesses are bounded, not exhaustive. Command integration, preferences, interactive flat orientation and native final fitting remain pending."
+  ],
+  "private_display": true,
+  "scope": "Independent public TaperSpaceMorph maps and owned actual point commands; no proprietary source inspected.",
+  "sha256": {
+    "tools/rhino_oracle/fixtures/taper_boundary_points.json": "85f18d280d4c891e4f7456abf689649f73669b20d7f3f4bf8ea4c582407b7115",
+    "tools/rhino_oracle/fixtures/taper_command_points.json": "e5b1ed246a1e77f6b3d817d0e0cfca4f9d542dc2406c3c4914cb2452b9f9446d",
+    "tools/rhino_oracle/fixtures/taper_points.json": "bcff397f2630bda959280175b600249850bf8e2c6699e41a5ae24f11f4626c13",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/observations/taper_boundary_points.json": "9a00d2d2b464da9b701ed2efe2d3371d6b2963677ae6376884541859a3abd231",
+    "tools/rhino_oracle/observations/taper_command_points.json": "9b310688554429a57126499c88b6b4512690a37889bd09f66001da820d1861c3",
+    "tools/rhino_oracle/observations/taper_command_points_initial.json": "cbc2b90b4fcd9cd50167818a8fc1c24d8554bb12523602bba2ce02c5ef516565",
+    "tools/rhino_oracle/observations/taper_points.json": "c1f0dfa2dc3d5ee77662edde717dc6306c29c56f2c94809973ce5fbb509defa1",
+    "tools/rhino_oracle/observations/taper_points_rust_performance.json": "7f1d7df52522eb8ddd73e78effaf520df4354403b0f15644f06f8e5fa364cee0",
+    "tools/rhino_oracle/taper_probe.py": "18daed8f133ddda8c5b0c73e4de7029ec78733c6aafbc9f686dd23970970cb36"
+  },
+  "timing": {
+    "iterations": 1000,
+    "notes": [
+      "Release Rust batches include result collection; construction, serialization, geometry fitting and UI work are excluded.",
+      "No native Rhino kernel timing comparison is claimed."
+    ],
+    "rust_ns_per_point": {
+      "maximum": 319.8813269230769,
+      "median": 36.163278846153844,
+      "minimum": 4.345557692307692
+    },
+    "valid_primary_batches": 20
+  },
+  "verified_command_cases": 6,
+  "verified_sdk_cases": 51
+}

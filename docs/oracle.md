@@ -10,6 +10,11 @@ and 41 option/history steps. The [command guide](commands/bend.md) documents
 numeric angle memory and fitting bounds. Another 35 [cursor captures](bend-preview.md)
 constrain live previews, display modes and the spine-start mouse plane.
 
+The [Taper foundation](taper-geometry.md) retains 51 SDK point maps and six owned
+native point commands on private Xvfb. The Python/Rust `taper_points` protocol
+replays validity and coordinates; command snapshots constrain Copy, grouped
+Rigid and Undo/Redo. The Taper document command is still pending.
+
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.
 Its [private-Xvfb Rhino 8.32 observation](../tools/rhino_oracle/observations/construction_plane_all.json)

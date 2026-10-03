@@ -6771,6 +6771,9 @@ def _execute(operation, iterations, tolerance):
     if kind in ('bend_points', 'bend_command_points'):
         from bend_probe import run
         return run(operation,globals(),iterations)
+    if kind in ('taper_points', 'taper_command_points'):
+        from taper_probe import run
+        return run(operation, globals(), iterations)
     if kind == 'twist_preview':
         from twist_preview_probe import run
         return run(operation,globals())
@@ -16543,7 +16546,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command") for op in request.get("operations", [])):
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points") for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

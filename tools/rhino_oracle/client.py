@@ -215,6 +215,16 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') in ('taper_points', 'taper_command_points') for op in request.get('operations', [])):
+            from .taper_probe import validate
+            for op in request['operations']:
+                if op.get('op') in ('taper_points', 'taper_command_points'):
+                    validate(op)
+                if op.get('op') == 'taper_command_points':
+                    if self.settings_scheme is None:
+                        raise OracleProtocolError('Taper commands require a private Rhino settings scheme')
+                    if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                        raise OracleProtocolError('Taper commands require one iteration')
         for family in ("twist_points", "twist_command"):
             cases=[op for op in request.get("operations",[]) if op.get("op")==family]
             if cases:
@@ -560,6 +570,9 @@ class OracleClient:
                 helper=Path(__file__).with_name('twist_probe.py');shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') in ('bend_points', 'bend_command_points') for op in request.get('operations', [])):
                 for name in ('bend_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
+            if any(op.get('op') in ('taper_points', 'taper_command_points') for op in request.get('operations', [])):
+                for name in ('taper_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     helper=Path(__file__).with_name(name);shutil.copyfile(helper,job_path/helper.name)
             if any(op.get('op') == 'bend_geometry_command' for op in request.get('operations', [])):
                 for name in ('bend_command_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):

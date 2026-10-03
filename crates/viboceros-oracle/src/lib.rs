@@ -45,7 +45,9 @@ use viboceros_io::{
 
 mod bend_points;
 mod blend_curve;
+mod taper_points;
 pub use bend_points::BendPointFixture;
+pub use taper_points::TaperPointFixture;
 mod centroid_command;
 mod connect_command;
 mod construction_plane;
@@ -635,6 +637,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: BendPointFixture,
+    },
+    TaperPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: TaperPointFixture,
     },
     SurfaceJets {
         id: String,
@@ -2137,6 +2144,7 @@ impl Operation {
             | Self::CurveSurfaceMorph { id, .. }
             | Self::TwistPoints { id, .. }
             | Self::BendPoints { id, .. }
+            | Self::TaperPoints { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
             | Self::BrepMeshBoundaries { id, .. }
@@ -2712,6 +2720,9 @@ fn execute(
             curve_morph::run(fixture, iterations, tolerance)?
         }
         Operation::BendPoints { fixture, .. } => bend_points::run(fixture, iterations, tolerance)?,
+        Operation::TaperPoints { fixture, .. } => {
+            taper_points::run(fixture, iterations, tolerance)?
+        }
         Operation::TwistPoints {
             axis_start,
             axis_end,

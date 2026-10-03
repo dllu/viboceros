@@ -103,6 +103,9 @@ finalization policy retains preselection for canceled copies through Undo/Redo.
 The [geometry oracle](bend-geometry.md) retains point and command witnesses;
 [live previews](bend-preview.md) share prepared display cages with Twist,
 including cached boundary variants for Shaded and Ghosted views.
+The [Taper kernel](taper-geometry.md) adds radial and flat point maps with cubic
+finite-axis blending, linear extrapolation, extreme-range fallbacks and measured
+rigid poses. The Taper document command and interactive workflow remain pending.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).
