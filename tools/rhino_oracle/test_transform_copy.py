@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 from .client import OracleClient, OracleProtocolError
 from .transform_copy_capture import capture, validate_request
-from .transform_copy_cases import request, script_request, center_request, identity_request, default_request
+from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request
 from .transform_copy_probe import validate
 
 
@@ -17,7 +17,9 @@ class TransformCopyTests(unittest.TestCase):
         for name, factory, count in [('transform_copy_script', script_request, 56),
                                      ('transform_copy_center', center_request, 18),
                                      ('transform_copy_identity', identity_request, 64),
-                                     ('transform_copy_default', default_request, 80)]:
+                                     ('transform_copy_default', default_request, 80),
+                                     ('mirror_planes', mirror_request, 64),
+                                     ('mirror_enter', mirror_enter_request, 5)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)
@@ -25,6 +27,23 @@ class TransformCopyTests(unittest.TestCase):
             observed = json.loads(Path(__file__).with_name('observations').joinpath(name+'.json').read_text())
             client = Mock(settings_scheme='VibocerosOracleTest', run_rhino=Mock(return_value=observed))
             self.assertEqual(capture(saved, client), observed)
+
+    def test_mirror_options_are_bounded_and_witnesses_are_affinely_independent(self):
+        operation = mirror_request()['operations'][0]
+        a, b, c, d = operation['sources'][:4]
+        b, c, d = [[v-u for u, v in zip(a, point)] for point in [b, c, d]]
+        determinant = sum(b[i] * (c[(i+1)%3]*d[(i+2)%3] - c[(i+2)%3]*d[(i+1)%3]) for i in range(3))
+        self.assertNotEqual(determinant, 0.)
+        for token in ['3Point', 'XAxis', 'YAxis', 'ZAxis']:
+            invalid = copy.deepcopy(operation)
+            invalid['command'] = 'Scale'
+            invalid['inputs'] = [token]
+            with self.subTest(token=token), self.assertRaises(ValueError):
+                validate(invalid)
+        invalid = copy.deepcopy(operation)
+        invalid['inputs'] = ['Object']
+        with self.assertRaises(ValueError):
+            validate(invalid)
 
     def test_preselection_and_plane_fields_are_bounded_before_launch(self):
         for key, values in [('selected', [[], [True], [-1], [3], [0, 0], '0']),

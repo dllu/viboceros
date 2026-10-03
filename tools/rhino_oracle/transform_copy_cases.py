@@ -160,5 +160,56 @@ def default_request():
     return dict(protocol_version=1, iterations=1, operations=operations)
 
 
+def mirror_request():
+    """Four selected affine witnesses distinguish arbitrary reflection planes."""
+    operations = []
+    planes = [('world', None),
+              ('tilted', dict(origin=[10., -7., 4.], x_axis=[.6, .8, 0.], y_axis=[-.64, .48, .6])),
+              ('right', dict(origin=[2., -3., 5.], x_axis=[0., 1., 0.], y_axis=[0., 0., 1.]))]
+    references = ['w1,2,3', 'w3,4,5', 'w4,0,7']
+    def add(label, inputs, copy=False, grouped=False, plane=None, selected=None, finish='Automatic'):
+        operation = dict(op='transform_copy_command', id='mirror-'+label, command='Mirror',
+            inputs=['Copy=Yes' if copy else 'Copy=No']+inputs, selected=selected or [0, 1, 2, 3],
+            grouped=grouped, sources=[[2., 3., 4.], [5., -1., 2.], [8., 7., -3.], [-1., 2., 7.], [13., -4., 8.]],
+            finish=finish, undo_redo=True, sel_last=True)
+        if plane is not None:
+            operation['cplane'] = plane
+        operations.append(operation)
+    for label, plane in planes:
+        for mode in ['XAxis', 'YAxis', 'ZAxis', '3Point']:
+            inputs = [mode]+(references if mode == '3Point' else [])
+            for copy in [False, True]:
+                for grouped in [False, True]:
+                    add(label+'-'+mode.lower()+'-copy-'+str(copy).lower()+'-grouped-'+str(grouped).lower(),
+                        inputs, copy, grouped, plane)
+    for mode in ['XAxis', 'YAxis', 'ZAxis', '3Point']:
+        add('single-group-member-'+mode.lower(), [mode]+(references if mode == '3Point' else []),
+            copy=True, grouped=True, plane=planes[1][1], selected=[0])
+    for label, points in [('cancel-before-origin', []), ('cancel-after-origin', ['w0,0,0']),
+                          ('cancel-after-direction', ['w0,0,0', 'w1,0,0']),
+                          ('duplicate-second', ['w0,0,0', 'w0,0,0']),
+                          ('duplicate-third', ['w0,0,0', 'w1,0,0', 'w1,0,0']),
+                          ('collinear-third', ['w0,0,0', 'w1,0,0', 'w2,0,0'])]:
+        add(label, ['3Point']+points, copy=True, grouped=True, finish='Cancel')
+    for mode in ['XAxis', 'YAxis', 'ZAxis', '3Point']:
+        add('late-'+mode.lower(), ['w1,2,3', mode, 'w4,2,3', 'w1,5,7'], finish='Cancel')
+    add('copy-after-origin', ['3Point', references[0], 'Copy=Yes']+references[1:], grouped=True)
+    add('copy-before-third', ['3Point']+references[:2]+['Copy=No', references[2]], copy=True, grouped=True)
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
+def mirror_enter_request():
+    operations = []
+    for label, inputs in [('two-point-start', []), ('two-point-end', ['w0,0,0']),
+                          ('three-point-origin', ['3Point']),
+                          ('three-point-second', ['3Point', 'w0,0,0']),
+                          ('three-point-third', ['3Point', 'w0,0,0', 'w1,0,0'])]:
+        operations.append(dict(op='transform_copy_command', id='mirror-enter-'+label, command='Mirror',
+            inputs=['Copy=Yes']+inputs+['Enter'], selected=[0, 1, 2, 3], grouped=True,
+            sources=[[2., 3., 4.], [5., -1., 2.], [8., 7., -3.], [-1., 2., 7.], [13., -4., 8.]],
+            finish='Automatic', undo_redo=True, sel_last=True))
+    return dict(protocol_version=1, iterations=1, operations=operations)
+
+
 if __name__ == '__main__':
     print(json.dumps(request(), indent=2))

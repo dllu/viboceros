@@ -18,7 +18,7 @@ The numeric angle or scale-factor forms remain available as one-line commands.
 | Command | Construction and reference policy |
 | --- | --- |
 | Rotate | Axis through the supplied center, along the plane normal. Picked angles use projected reference directions. |
-| Mirror | Mirror plane through the first axis point, perpendicular to the construction plane. The second point's normal displacement is ignored. |
+| Mirror | Two-point plane through the first point, perpendicular to the CPlane; ignore the second point's normal displacement. [3Point and axis shortcuts](commands/mirror.md) define spatial or CPlane-origin planes. |
 | Scale2D | Scale along plane X/Y about the supplied center; retain normal displacement. Picked factors use the ratio of full **3D** distances, including normal-only references. |
 | Shear | Shear tangentially to the plane; retain normal displacement. The picked angle is spatial, signed by the plane normal. A tilted reference contributes an additional obliquity factor. |
 | ProjectToCPlane | Project onto the actual plane, including its translated origin. |
@@ -74,7 +74,8 @@ agree at the ordinary comparison epsilon.
 
 [Custom viewport planes](cplane.md) are editable. Repeated interactive copies and
 [scalar defaults](commands/transform-defaults.md) have separate native session
-coverage. Mirror's axis/three-point options, rigid Shear, and singular
+coverage. Mirror's [axis and three-point planes](commands/mirror.md) also have
+native affine-map and document-history coverage. Rigid Shear and singular
 projections that collapse validated geometry remain incomplete. Other transforms
 retain their individually documented coordinate policies; rectangular and polar
 arrays now have a separate [construction-plane policy](plane-arrays.md).

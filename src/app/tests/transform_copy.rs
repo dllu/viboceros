@@ -166,11 +166,40 @@ fn transform_scalar_defaults_and_cancellation_match_self_seeded_native_sessions(
     }
 }
 
+#[test]
+fn mirror_plane_options_geometry_groups_and_history_match_native() {
+    for invocation in [
+        Invocation::Prompt,
+        Invocation::RegistrySeeds,
+        Invocation::InlineMirrorOptions,
+    ] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/mirror_planes.json"),
+            include_str!("../../../tools/rhino_oracle/observations/mirror_planes.json"),
+            64,
+            invocation,
+        );
+    }
+}
+
+#[test]
+fn mirror_enter_ends_every_unfinished_point_prompt_without_an_edit() {
+    for invocation in [Invocation::Prompt, Invocation::InlineMirrorOptions] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/mirror_enter.json"),
+            include_str!("../../../tools/rhino_oracle/observations/mirror_enter.json"),
+            5,
+            invocation,
+        );
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Invocation {
     Prompt,
     Registry,
     RegistrySeeds,
+    InlineMirrorOptions,
 }
 
 fn replay_native(request: &str, observed: &str, count: usize, invocation: Invocation) {
@@ -276,6 +305,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
         compare(snapshot(&app, &sources), "before", &mut failures);
         let use_registry = match invocation {
             Invocation::Prompt => false,
+            Invocation::InlineMirrorOptions => false,
             Invocation::Registry => true,
             Invocation::RegistrySeeds => {
                 operation["finish"] == "Automatic"
@@ -284,17 +314,43 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                         .unwrap()
                         .iter()
                         .any(|input| input == "Enter")
+                    && operation["inputs"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .filter(|input| input.as_str().unwrap().starts_with("Copy="))
+                        .count()
+                        <= 1
             }
         };
         match use_registry {
             false => {
-                enter(&mut app, operation["command"].as_str().unwrap());
-                assert!(
-                    app.transform_session.is_some(),
-                    "{label}: {:?}",
-                    app.command_log
-                );
-                for input in operation["inputs"].as_array().unwrap() {
+                let inputs = operation["inputs"].as_array().unwrap();
+                let consumed = if matches!(invocation, Invocation::InlineMirrorOptions) {
+                    let mut prefix = vec![
+                        "_-mIrRoR".to_owned(),
+                        inputs[0].as_str().unwrap().replace("Copy=", "_Copy=_"),
+                    ];
+                    if viboceros_command::mirror::MirrorPlaneOption::from_token(
+                        inputs[1].as_str().unwrap(),
+                    )
+                    .is_some()
+                    {
+                        prefix.push(format!("_{}", inputs[1].as_str().unwrap()));
+                    }
+                    let consumed = prefix.len() - 1;
+                    enter(&mut app, &prefix.join(" "));
+                    consumed
+                } else {
+                    enter(&mut app, operation["command"].as_str().unwrap());
+                    assert!(
+                        app.transform_session.is_some(),
+                        "{label}: {:?}",
+                        app.command_log
+                    );
+                    0
+                };
+                for input in inputs.iter().skip(consumed) {
                     enter(&mut app, input.as_str().unwrap());
                 }
                 if operation["finish"] != "Automatic" {

@@ -152,6 +152,7 @@ mod interface;
 mod intersect_two_sets;
 mod length;
 mod mesh_face_prompt;
+mod mirror;
 mod named_view;
 mod object_selection;
 mod plane_primitives;
@@ -619,6 +620,9 @@ enum InteractiveCommand {
     Mirror {
         start: Option<Point3>,
     },
+    MirrorThreePoint {
+        points: [Option<Point3>; 2],
+    },
     Shear {
         origin: Option<Point3>,
         reference: Option<Point3>,
@@ -734,7 +738,7 @@ impl InteractiveCommand {
             Self::Scale { kind, .. } => kind.name(),
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
-            Self::Mirror { .. } => "Mirror",
+            Self::Mirror { .. } | Self::MirrorThreePoint { .. } => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
@@ -1379,11 +1383,16 @@ impl InteractiveCommand {
                 }
             },
             Self::Mirror { start: None } => {
-                "Mirror: pick the first axis point in the viewport (Esc to cancel)"
+                "Mirror: pick the start, or choose 3Point, XAxis, YAxis, ZAxis (Esc to cancel)"
             }
             Self::Mirror { start: Some(_) } => {
                 "Mirror: pick the second axis point in the viewport (Esc to cancel)"
             }
+            Self::MirrorThreePoint { points } => match points {
+                [None, _] => "Mirror 3Point: pick the plane origin (Esc to cancel)",
+                [Some(_), None] => "Mirror 3Point: pick the second plane point (Esc to cancel)",
+                [Some(_), Some(_)] => "Mirror 3Point: pick the third plane point (Esc to cancel)",
+            },
             Self::Shear { origin: None, .. } => {
                 "Shear: pick the fixed origin in the viewport (Esc to cancel)"
             }
@@ -1518,6 +1527,7 @@ impl InteractiveCommand {
                 points: [None, _, _],
             }
             | Self::Mirror { start: None }
+            | Self::MirrorThreePoint { points: [None, _] }
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveToPoint { .. }
@@ -1552,6 +1562,10 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::MirrorThreePoint { points } => match points[1] {
+                Some(point) => Some(point),
+                None => points[0],
+            },
             Self::CircleSize { center, .. } => Some(center),
             Self::CircleVertical {
                 center: Some(center),
@@ -2570,8 +2584,16 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        let mirror_mode = if normalized == "mirror" {
+            viboceros_command::mirror::start_options(&arguments, false)
+                .ok()
+                .map(|(option, _)| option)
+        } else {
+            None
+        };
         let transform_copy = transform_prompt::supports_name(&normalized).then(|| {
-            transform_prompt::copy_option(
+            transform_prompt::start_copy_option(
+                &normalized,
                 &arguments,
                 self.commands.copy_default(&normalized).unwrap(),
             )
@@ -4424,7 +4446,8 @@ impl VibocerosApp {
             if !arguments.is_empty()
                 && (!transform_prompt::supports_name(&normalized)
                     || normalized == "rotate3d"
-                    || transform_prompt::copy_option(&arguments, false).is_none())
+                    || transform_prompt::start_copy_option(&normalized, &arguments, false)
+                        .is_none())
             {
                 return false;
             }
@@ -4510,6 +4533,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Mirror { .. }
+                | InteractiveCommand::MirrorThreePoint { .. }
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
@@ -4572,6 +4596,11 @@ impl VibocerosApp {
         self.point_filter = None;
         self.point_constraint = None;
         self.active_command = Some(command);
+        if let Some(token) =
+            mirror_mode.and_then(viboceros_command::mirror::MirrorPlaneOption::token)
+        {
+            self.try_continue_mirror_option(token);
+        }
         true
     }
 
@@ -7021,6 +7050,9 @@ impl VibocerosApp {
                     ),
                     command,
                 );
+            }
+            InteractiveCommand::MirrorThreePoint { points } => {
+                return self.accept_mirror_three_point(points, point);
             }
             InteractiveCommand::Shear { origin: None, .. } => {
                 let command = InteractiveCommand::Shear {

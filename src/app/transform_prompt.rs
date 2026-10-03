@@ -16,6 +16,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
             | InteractiveCommand::Rotate { .. }
             | InteractiveCommand::Rotate3D { .. }
             | InteractiveCommand::Mirror { .. }
+            | InteractiveCommand::MirrorThreePoint { .. }
             | InteractiveCommand::Shear { .. }
     )
 }
@@ -44,6 +45,16 @@ pub(super) fn copy_option(arguments: &[&str], default: bool) -> Option<bool> {
         "yes" => Some(true),
         "no" => Some(false),
         _ => None,
+    }
+}
+
+pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -> Option<bool> {
+    if name == "mirror" {
+        viboceros_command::mirror::start_options(arguments, default)
+            .ok()
+            .map(|(_, copy)| copy)
+    } else {
+        copy_option(arguments, default)
     }
 }
 
@@ -97,7 +108,11 @@ impl VibocerosApp {
                 self.push_log(format!("> {input}"));
                 self.push_log(message);
                 if self.transform_session.as_ref().unwrap().copy
-                    && !matches!(continuation, InteractiveCommand::Mirror { .. })
+                    && !matches!(
+                        continuation,
+                        InteractiveCommand::Mirror { .. }
+                            | InteractiveCommand::MirrorThreePoint { .. }
+                    )
                 {
                     self.active_command = Some(continuation);
                     let action = match continuation {
@@ -162,6 +177,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_transform(&mut self, input: &str) -> bool {
+        if self.try_continue_mirror_option(input) {
+            return true;
+        }
         let (Some(command), Some(session)) = (self.active_command, self.transform_session.as_ref())
         else {
             return false;
@@ -189,7 +207,13 @@ impl VibocerosApp {
             return true;
         }
         if word.eq_ignore_ascii_case("Cancel")
-            || ((input.is_empty() || word.eq_ignore_ascii_case("Enter")) && session.applied)
+            || ((input.is_empty() || word.eq_ignore_ascii_case("Enter"))
+                && (session.applied
+                    || matches!(
+                        command,
+                        InteractiveCommand::Mirror { .. }
+                            | InteractiveCommand::MirrorThreePoint { .. }
+                    )))
         {
             self.cancel_interactive_command(true);
             self.command_input.clear();

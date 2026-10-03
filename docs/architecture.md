@@ -69,8 +69,10 @@ uses numerical validation, independently of surface tessellation tolerance.
 history. The [plane-primitives module](construction-planes.md) handles orientation,
 projection, and native parameter policy for six primitive commands.
 The separate [plane-transforms module](plane-transforms.md) handles reference
-interpretation and affine maps for five transforms, sharing document mutation
-and copy/group transactions with the other transform commands.
+interpretation and affine maps for four transforms. The
+[Mirror module](commands/mirror.md) owns two-point, three-point, and CPlane-axis
+plane interpretation; its app adapter owns option editing and point phases.
+Both share document mutation and copy/group transactions with other affine commands.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

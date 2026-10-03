@@ -165,13 +165,14 @@ use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
 mod context;
 mod curve_cut;
 pub mod interface;
+pub mod mirror;
 mod plane_primitives;
 mod plane_transforms;
+use mirror::MirrorCommand;
 pub mod set_point;
 pub mod set_view;
 use plane_transforms::{
-    MirrorCommand, ProjectToConstructionPlaneCommand, RotateCommand, ScaleTwoDimensionalCommand,
-    ShearCommand,
+    ProjectToConstructionPlaneCommand, RotateCommand, ScaleTwoDimensionalCommand, ShearCommand,
 };
 use set_point::SetPointCommand;
 #[cfg(test)]
@@ -16653,7 +16654,6 @@ impl Command for ScaleNonUniformCommand {
 const ROTATE_USAGE: &str = "Rotate center degrees | center reference target [Copy=Yes|No]";
 const ROTATE_3D_USAGE: &str =
     "Rotate3D axis-start axis-end degrees | axis-start axis-end reference target [Copy=Yes|No]";
-const MIRROR_USAGE: &str = "Mirror axis-start axis-end [Copy=Yes|No]";
 const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference target [Copy=Yes|No]";
 
 #[derive(Default)]

@@ -29,6 +29,8 @@ source produces an ungrouped copy and corresponding empty group definitions.
 
 `Rotate3D` picks an axis start/end followed by angle reference/target points;
 `Rotate`, `Rotate3D`, and `Mirror` also accept `Copy=Yes`.
+Mirror's [3Point and CPlane axis options](mirror.md) define spatial planes or
+execute across the active CPlane's XZ, YZ, or XY planes.
 
 `Shear` picks a fixed origin, reference direction, and target angle;
 its third argument can instead be a numeric angle, and it accepts

@@ -1,0 +1,243 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-enter-two-point-start",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "Enter"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-enter-two-point-end",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "w0,0,0",
+        "Enter"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-enter-three-point-origin",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "Enter"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-enter-three-point-second",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "Enter"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-enter-three-point-third",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "w1,0,0",
+        "Enter"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    }
+  ]
+}

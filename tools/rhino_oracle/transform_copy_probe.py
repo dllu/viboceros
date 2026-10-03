@@ -3,6 +3,7 @@ import math
 import re
 
 COMMANDS = ('Scale', 'Scale1D', 'Scale2D', 'Rotate', 'Rotate3D', 'Mirror', 'Shear')
+MIRROR_OPTIONS = ('3Point', 'XAxis', 'YAxis', 'ZAxis')
 
 
 def finite(value):
@@ -44,6 +45,8 @@ def validate(operation):
         if not isinstance(token, str) or not 1 <= len(token) <= 100:
             raise ValueError('invalid transform input')
         if token in ('Copy=Yes', 'Copy=No', 'Undo', 'Enter'):
+            continue
+        if operation['command'] == 'Mirror' and token in MIRROR_OPTIONS:
             continue
         coordinates = token[1:] if token.startswith('w') else token
         if re.match(r'^[-+0-9.eE]+(?:,[-+0-9.eE]+){0,2}\Z', coordinates) is None:
@@ -120,7 +123,7 @@ def run(operation, host):
         before = snapshot()
         tokens = []
         for token in operation['inputs']:
-            tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') else token)
+            tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS else token)
         macro = '_'+operation['command']+' '+' '.join(tokens)
         if operation['finish'] != 'Automatic':
             macro += ' _'+operation['finish']

@@ -128,55 +128,6 @@ impl Command for RotateCommand {
     }
 }
 
-pub(super) struct MirrorCommand;
-
-impl Command for MirrorCommand {
-    fn history_policy(&self) -> CommandHistoryPolicy {
-        CommandHistoryPolicy::TransformedObjects
-    }
-
-    fn copy_option_default(&self) -> Option<bool> {
-        Some(true)
-    }
-
-    fn name(&self) -> &'static str {
-        "Mirror"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        self.run_in_context(document, arguments, CommandContext::default())
-    }
-
-    fn run_in_context(
-        &self,
-        document: &mut Document,
-        arguments: &[&str],
-        context: CommandContext,
-    ) -> Result<String, CommandError> {
-        let selected = transform_source_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, MIRROR_USAGE)?;
-        let (axis_start, consumed) = parse_point(&positional)?;
-        let (axis_end, end_consumed) = parse_point(&positional[consumed..])?;
-        require_consumed(&positional, consumed + end_consumed, MIRROR_USAGE)?;
-        let normal = context
-            .construction_plane
-            .z_axis()
-            .as_vector()
-            .cross(plane_vector(
-                context.construction_plane,
-                axis_start,
-                axis_end,
-            )?)?
-            .normalized(document.tolerance())?;
-        let transform = AffineTransform3::try_reflection(axis_start, normal)?;
-        let (transformed, copied) =
-            apply_transform_with_renewal(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Mirrored {transformed} object(s), creating {copied} copy object(s)"
-        ))
-    }
-}
-
 pub(super) struct ShearCommand;
 
 impl Command for ShearCommand {
@@ -302,7 +253,11 @@ impl Command for ProjectToConstructionPlaneCommand {
     }
 }
 
-fn plane_vector(plane: Frame3, origin: Point3, target: Point3) -> Result<Vector3, GeometryError> {
+pub(super) fn plane_vector(
+    plane: Frame3,
+    origin: Point3,
+    target: Point3,
+) -> Result<Vector3, GeometryError> {
     let [x, y, _] = plane.with_origin(origin).coordinates_of(target)?;
     let zero = Point3::try_new(0.0, 0.0, 0.0)?;
     zero.vector_to(plane.with_origin(zero).point_at([x, y, 0.0])?)

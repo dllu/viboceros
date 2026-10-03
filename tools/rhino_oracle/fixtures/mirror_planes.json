@@ -1,0 +1,3620 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-xaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-xaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-xaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-xaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-yaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-yaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-yaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-yaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-zaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-zaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-zaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-zaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-3point-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-3point-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-3point-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-world-3point-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-xaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-xaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-xaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-xaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-yaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-yaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-yaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-yaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-zaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-zaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-zaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-zaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-3point-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-3point-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-3point-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-tilted-3point-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-xaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-xaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-xaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-xaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-yaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-yaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-yaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-yaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-zaxis-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-zaxis-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-zaxis-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-zaxis-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-3point-copy-false-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-3point-copy-false-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-3point-copy-true-grouped-false",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-right-3point-copy-true-grouped-true",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          2.0,
+          -3.0,
+          5.0
+        ],
+        "x_axis": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "y_axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-single-group-member-xaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "XAxis"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-single-group-member-yaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "YAxis"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-single-group-member-zaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "ZAxis"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-single-group-member-3point",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true,
+      "cplane": {
+        "origin": [
+          10.0,
+          -7.0,
+          4.0
+        ],
+        "x_axis": [
+          0.6,
+          0.8,
+          0.0
+        ],
+        "y_axis": [
+          -0.64,
+          0.48,
+          0.6
+        ]
+      }
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-cancel-before-origin",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-cancel-after-origin",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-cancel-after-direction",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-duplicate-second",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "w0,0,0"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-duplicate-third",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "w1,0,0",
+        "w1,0,0"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-collinear-third",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w0,0,0",
+        "w1,0,0",
+        "w2,0,0"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-late-xaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "w1,2,3",
+        "XAxis",
+        "w4,2,3",
+        "w1,5,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-late-yaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "w1,2,3",
+        "YAxis",
+        "w4,2,3",
+        "w1,5,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-late-zaxis",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "w1,2,3",
+        "ZAxis",
+        "w4,2,3",
+        "w1,5,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-late-3point",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "w1,2,3",
+        "3Point",
+        "w4,2,3",
+        "w1,5,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": false,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-copy-after-origin",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=No",
+        "3Point",
+        "w1,2,3",
+        "Copy=Yes",
+        "w3,4,5",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "mirror-copy-before-third",
+      "command": "Mirror",
+      "inputs": [
+        "Copy=Yes",
+        "3Point",
+        "w1,2,3",
+        "w3,4,5",
+        "Copy=No",
+        "w4,0,7"
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "grouped": true,
+      "sources": [
+        [
+          2.0,
+          3.0,
+          4.0
+        ],
+        [
+          5.0,
+          -1.0,
+          2.0
+        ],
+        [
+          8.0,
+          7.0,
+          -3.0
+        ],
+        [
+          -1.0,
+          2.0,
+          7.0
+        ],
+        [
+          13.0,
+          -4.0,
+          8.0
+        ]
+      ],
+      "finish": "Automatic",
+      "undo_redo": true,
+      "sel_last": true
+    }
+  ]
+}
