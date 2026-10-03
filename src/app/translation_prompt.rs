@@ -8,7 +8,8 @@ pub(super) struct TranslationSession {
     sources: Vec<ObjectId>,
     postselected: bool,
     copy: bool,
-    vertical: bool,
+    pub(super) vertical: bool,
+    pub(super) normal: Option<move_normal::MoveNormal>,
     pub(super) placement: Option<CopyPlacement>,
     pub(super) applied: bool,
 }
@@ -18,10 +19,16 @@ impl TranslationSession {
         self.placement = Some(CopyPlacement::new(base));
     }
     pub(super) fn constraint(&self, plane: Frame3) -> Option<DestinationConstraint> {
-        Some(
-            self.placement?
-                .constraint(self.vertical.then_some(plane.z_axis())),
-        )
+        let mut constraint = self.placement?.constraint(
+            self.normal
+                .as_ref()
+                .and_then(|normal| normal.direction)
+                .or_else(|| self.vertical.then_some(plane.z_axis())),
+        );
+        if let Some(normal) = &self.normal {
+            constraint.distance = normal.distance;
+        }
+        Some(constraint)
     }
     fn source_argument(&self) -> String {
         format!(
@@ -73,6 +80,8 @@ pub(super) fn start_options(name: &str, arguments: &[&str]) -> Option<(bool, boo
                 "no" => false,
                 _ => return None,
             };
+        } else if word.eq_ignore_ascii_case("Normal") && name != "copy" {
+            // Normal's separate reference prompt starts after the session.
         } else {
             return None;
         }
@@ -111,6 +120,7 @@ impl VibocerosApp {
             postselected,
             copy: matches!(command, InteractiveCommand::Copy { .. }),
             vertical,
+            normal: None,
             placement: None,
             applied: false,
         });
@@ -215,7 +225,9 @@ impl VibocerosApp {
             return true;
         }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
-            if session.placement.is_none() && !(session.vertical && !session.copy) {
+            if session.normal.is_some() && session.placement.is_none() {
+                self.cancel_interactive_command(true);
+            } else if session.placement.is_none() && !(session.vertical && !session.copy) {
                 match viboceros_command::selected_bounding_box_center(
                     &self.document,
                     viboceros_command::CommandContext::default().construction_plane,
@@ -226,6 +238,19 @@ impl VibocerosApp {
                     Err(error) => self.push_log(format!("Error: {error}")),
                 }
             } else if !session.copy && session.placement.is_some() {
+                if session.normal.is_some() {
+                    let distance = self
+                        .commands
+                        .transform_scalar_default("Move")
+                        .filter(|distance| *distance > 0.0);
+                    self.translation_session
+                        .as_mut()
+                        .unwrap()
+                        .normal
+                        .as_mut()
+                        .unwrap()
+                        .distance = distance;
+                }
                 self.push_log("Pick the destination; Esc cancels Move".into());
             } else {
                 self.cancel_interactive_command(true);
@@ -235,6 +260,19 @@ impl VibocerosApp {
         }
         if word.eq_ignore_ascii_case("Undo") {
             self.push_log("Finish the command before using Undo".into());
+            self.command_input.clear();
+            return true;
+        }
+        if self.try_continue_move_normal(input) {
+            return true;
+        }
+        let session = self.translation_session.as_ref().unwrap();
+        if word.eq_ignore_ascii_case("Normal") && !session.copy {
+            if session.placement.is_none() {
+                self.start_move_normal();
+            } else {
+                self.push_log("Normal is available at the base-point prompt".into());
+            }
             self.command_input.clear();
             return true;
         }
@@ -249,7 +287,7 @@ impl VibocerosApp {
         }
         let name = word.split('=').next().unwrap_or("");
         if name.eq_ignore_ascii_case("Vertical") {
-            if session.placement.is_some() {
+            if session.placement.is_some() || session.normal.is_some() {
                 self.push_log("Vertical is available at the base-point prompt".into());
             } else if let Some((vertical, _)) =
                 start_options(if session.copy { "copy" } else { "move" }, &[word])

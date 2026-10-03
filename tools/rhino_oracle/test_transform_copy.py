@@ -11,6 +11,7 @@ from .transform_copy_capture import capture, validate_request
 from .transform_copy_cases import request, script_request, center_request, identity_request, default_request, mirror_request, mirror_enter_request, mirror_object_request, sources_request, sources_identity_request
 from .transform_copy_probe import validate
 from .translation_cases import request as translation_request, edges_request as translation_edges_request, mouse_request as translation_mouse_request
+from .move_normal_cases import request as normal_request, edges_request as normal_edges_request, trims_request as normal_trims_request, defaults_request as normal_defaults_request
 
 
 class TransformCopyTests(unittest.TestCase):
@@ -26,7 +27,11 @@ class TransformCopyTests(unittest.TestCase):
                                      ('transform_sources_identity', sources_identity_request, 12),
                                      ('translation', translation_request, 110),
                                      ('translation_edges', translation_edges_request, 36),
-                                     ('translation_mouse', translation_mouse_request, 18)]:
+                                     ('translation_mouse', translation_mouse_request, 18),
+                                     ('move_normal', normal_request, 102),
+                                     ('move_normal_edges', normal_edges_request, 20),
+                                     ('move_normal_trims', normal_trims_request, 8),
+                                     ('move_normal_defaults', normal_defaults_request, 8)]:
             saved = json.loads(Path(__file__).with_name('fixtures').joinpath(name+'.json').read_text())
             self.assertEqual(saved, factory())
             self.assertEqual(len(saved['operations']), count)
@@ -34,6 +39,42 @@ class TransformCopyTests(unittest.TestCase):
             observed = json.loads(Path(__file__).with_name('observations').joinpath(name+'.json').read_text())
             client = Mock(settings_scheme='VibocerosOracleTest', run_rhino=Mock(return_value=observed))
             self.assertEqual(capture(saved, client), observed)
+
+    def test_normal_references_and_macro_tokens_are_bounded_before_launch(self):
+        for key, values in [('kind',['mesh','Delete']),('points',[[[0,0,0]]]),('aim',[[0,0,float('nan')]]),('flip',[1]),('view',['Delete']),('extra',[True])]:
+            for value in values:
+                invalid=normal_request(); invalid['operations'][0]['normal_target'][key]=value
+                client=Mock(settings_scheme='VibocerosOracleTest')
+                with self.subTest(key=key,value=value), self.assertRaises(ValueError): capture(invalid,client)
+                client.run_rhino.assert_not_called()
+        for inputs in [['Normal','NormalTarget','NormalTarget'],['Normal','NormalTarget','NormalBase','NormalBase'],['Normal','IgnoreTrims=Maybe','NormalTarget'],['Normal _Delete','NormalTarget']]:
+            invalid=normal_request(); invalid['operations'][0]['inputs']=inputs
+            with self.subTest(inputs=inputs), self.assertRaises(ValueError): validate_request(invalid)
+
+    def test_normal_reference_and_calibration_changes_are_rejected(self):
+        request=normal_request()
+        observed=json.loads(Path(__file__).with_name('observations').joinpath('move_normal.json').read_text())
+        for mutation in ('selected','bounds','definition','ray'):
+            invalid=copy.deepcopy(observed); value=invalid['results'][0]['value']; target=value['target']['after']
+            if mutation=='selected': target['selected']=True
+            elif mutation=='bounds': target['bounds'][0][0]+=1e-7
+            elif mutation=='definition': target['definition'].clear()
+            else: value['frame']['ray'][1]=value['frame']['ray'][0]
+            client=Mock(settings_scheme='VibocerosOracleTest',run_rhino=Mock(return_value=invalid))
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError): capture(request,client)
+
+    def test_normal_base_camera_requires_consistent_finite_projection_axes(self):
+        request=normal_edges_request()
+        observed=json.loads(Path(__file__).with_name('observations').joinpath('move_normal_edges.json').read_text())
+        for mutation in ('missing','size','camera','frustum','axes'):
+            invalid=copy.deepcopy(observed);camera=invalid['results'][0]['value']['base_frame']['camera']
+            if mutation=='missing': del camera['camera_up']
+            elif mutation=='size': camera['viewport_size'][0]+=1
+            elif mutation=='camera': camera['camera_location'][0]+=1
+            elif mutation=='frustum': camera['frustum'][1]=camera['frustum'][0]
+            else: camera['cplane_y']=camera['cplane_x']
+            client=Mock(settings_scheme='VibocerosOracleTest',run_rhino=Mock(return_value=invalid))
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError): capture(request,client)
 
     def test_translation_clicks_and_calibration_are_bounded(self):
         for key, values in [('view',['Top','Delete']),('aim',[[0,0,float('nan')]]),('bounds',[[[0,0,0],[0,0,0]]]),('offset',[[True,0],[0,33]]),('extra',[True])]:

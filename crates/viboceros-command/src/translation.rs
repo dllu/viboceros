@@ -1,6 +1,8 @@
 //! Move/Copy placement and replay policy, independent of point-prompt lifetime.
 use super::*;
 use viboceros_geometry::{UnitVector3, Vector3};
+mod normal;
+pub use normal::{MOVE_NORMAL_USAGE, NormalLocation, normal_curve_location, normal_location};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct CopyOptions {
@@ -154,8 +156,51 @@ impl CopyPlacement {
 pub const MOVE_USAGE: &str = "Move from to [Vertical]";
 pub const COPY_USAGE: &str = "Copy from target [target ...] [Vertical] | Copy InPlace";
 
-pub(super) struct MoveCommand;
+#[derive(Default)]
+pub(super) struct MoveCommand {
+    distance: remembered::Remembered<Option<Real>>,
+    ignore_trims: remembered::Remembered<bool>,
+}
 impl Command for MoveCommand {
+    fn scalar_default(&self) -> Option<Real> {
+        self.distance.get()
+    }
+
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if arguments
+            .first()
+            .is_none_or(|word| !option_name_eq(word, "Normal"))
+        {
+            return Ok(None);
+        }
+        let mut prompt = ObjectSelectionPrompt {
+            command: "Move",
+            filter: ObjectSelectionFilter::Parametric,
+            options: vec![BooleanSelectionOption {
+                name: "IgnoreTrims",
+                value: self.ignore_trims.get(),
+                aliases: &[],
+            }],
+            menus: vec![],
+            choices: vec![],
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+        };
+        if arguments.len() > 1 {
+            prompt.update_options(&arguments[1..].join(" "))?;
+        }
+        Ok(Some(prompt))
+    }
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        let input = std::iter::once("Normal")
+            .chain(arguments.iter().copied())
+            .collect::<Vec<_>>();
+        let prompt = self.object_selection_prompt(&input)?.unwrap();
+        self.ignore_trims.set(prompt.options[0].value);
+        Ok(())
+    }
     fn name(&self) -> &'static str {
         "Move"
     }
@@ -175,27 +220,44 @@ impl Command for MoveCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let (mut arguments, sources) = transform_arguments(document, arguments, MOVE_USAGE)?;
+        let normal = normal::take_normal_arguments(&mut arguments, self.ignore_trims.get())?;
+        let ignore_trims = normal.map(|(_, _, ignore)| ignore);
         let vertical = strip_vertical(&mut arguments, MOVE_USAGE)?;
-        let (base, consumed) = parse_point(&arguments)?;
-        let (target, count) =
-            if vertical && arguments.len() == consumed + 1 && !arguments[consumed].contains(',') {
-                (
-                    base.translated(
-                        context
-                            .construction_plane
-                            .z_axis()
-                            .as_vector()
-                            .scaled(parse_finite_real(arguments[consumed])?)?,
-                    )?,
-                    1,
-                )
-            } else {
-                parse_point(&arguments[consumed..])?
-            };
+        if normal.is_some() && vertical {
+            return Err(CommandError::Usage(MOVE_NORMAL_USAGE));
+        }
+        let (pick, consumed) = parse_point(&arguments)?;
+        let normal = normal
+            .map(|(id, face, ignore)| {
+                let object = document
+                    .object(id)
+                    .ok_or(CommandError::Usage(MOVE_NORMAL_USAGE))?;
+                normal_location(object.geometry(), face, pick, ignore, document.tolerance())
+            })
+            .transpose()?;
+        let base = normal.map_or(pick, |normal| normal.point);
+        let direction = normal
+            .map(|normal| normal.direction)
+            .or_else(|| vertical.then_some(context.construction_plane.z_axis()));
+        let (target, count) = if let Some(direction) = direction
+            && arguments.len() == consumed + 1
+            && !arguments[consumed].contains(',')
+        {
+            (
+                base.translated(
+                    direction
+                        .as_vector()
+                        .scaled(parse_finite_real(arguments[consumed])?)?,
+                )?,
+                1,
+            )
+        } else {
+            parse_point(&arguments[consumed..])?
+        };
         require_consumed(&arguments, consumed + count, MOVE_USAGE)?;
         let target = DestinationConstraint {
             anchor: base,
-            direction: vertical.then_some(context.construction_plane.z_axis()),
+            direction,
             distance: None,
         }
         .resolve(target)?;
@@ -206,6 +268,10 @@ impl Command for MoveCommand {
             AffineTransform3::from_translation(offset),
             false,
         )?;
+        self.distance.set(offset.length().ok());
+        if let Some(ignore) = ignore_trims {
+            self.ignore_trims.set(ignore);
+        }
         Ok(format!(
             "Moved {count} object(s) by {}",
             format_vector(offset)

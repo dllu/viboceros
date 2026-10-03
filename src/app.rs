@@ -153,6 +153,7 @@ mod intersect_two_sets;
 mod length;
 mod mesh_face_prompt;
 mod mirror;
+mod move_normal;
 mod named_view;
 mod object_selection;
 mod plane_primitives;
@@ -2603,6 +2604,12 @@ impl VibocerosApp {
         let has_start_arguments = !arguments.is_empty();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
         let translation_options = translation_prompt::start_options(&normalized, &arguments);
+        let translation_normal = translation_options.is_some()
+            && arguments.iter().any(|argument| {
+                argument
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("Normal")
+            });
         let mirror_mode = if normalized == "mirror" {
             viboceros_command::mirror::start_options(&arguments, false)
                 .ok()
@@ -4640,6 +4647,9 @@ impl VibocerosApp {
         self.point_filter = None;
         self.point_constraint = None;
         self.active_command = Some(command);
+        if translation_normal {
+            self.start_move_normal();
+        }
         if translation_options.is_some_and(|(_, in_place)| in_place) {
             self.try_continue_translation("InPlace");
         }
@@ -6770,6 +6780,14 @@ impl VibocerosApp {
                 ));
             }
             InteractiveCommand::Move { start: None } => {
+                if self.translation_session.as_ref().is_some_and(|session| {
+                    session
+                        .normal
+                        .as_ref()
+                        .is_some_and(|normal| normal.target.is_some())
+                }) {
+                    return self.accept_move_normal_base(point);
+                }
                 self.translation_session.as_mut().unwrap().set_base(point);
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
                 self.push_log(format!("Base: {}", format_model_point(point)));
@@ -7293,6 +7311,12 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.selecting_move_normal_reference() {
+            if let Some(id) = click.object_id {
+                self.accept_move_normal_reference(id, None);
+            }
+            return;
+        }
         if self.picking_mirror_object() {
             if let Some(id) = click.object_id {
                 self.accept_mirror_object(id, None);
@@ -7871,7 +7895,11 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            self.accept_split_parameter(parameter);
+            if self.move_normal_curve().is_some() {
+                self.accept_move_normal_curve_parameter(parameter);
+            } else {
+                self.accept_split_parameter(parameter);
+            }
         } else if let Some((object, face)) = output.face_click {
             self.accept_component_face_hit(object, face, output.face_hit_point);
         } else if let Some(point) = output.picked_point {
@@ -8112,6 +8140,7 @@ impl eframe::App for VibocerosApp {
         let drafting = DraftingInput {
             active: !end_analysis_picking
                 && !self.picking_extract_faces()
+                && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
                 && self.plane_prompt.as_ref().map_or_else(
                     || {
@@ -8241,7 +8270,9 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
-        let face_pick = if self.picking_mirror_object() {
+        let face_pick = if self.selecting_move_normal_reference() {
+            Some(FacePickMode::SurfaceAndBrepAny)
+        } else if self.picking_mirror_object() {
             Some(FacePickMode::SurfaceAndBrepAny)
         } else if plane_object_pick && !plane_curve_pick {
             Some(if plane_surface_pick {
@@ -8306,7 +8337,19 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(edge_commands::EdgePrompt::split_selection)
             .filter(|_| model_input_active && self.plane_prompt.is_none() && !end_analysis_picking);
-        let edge_curve = split_selection.map(viboceros_command::SplitEdgeSelection::curve);
+        let normal_curve = self
+            .translation_session
+            .as_ref()
+            .and_then(|session| session.normal.as_ref())
+            .filter(|normal| {
+                normal.direction.is_none()
+                    && self.point_filter.is_none()
+                    && self.point_constraint.is_none()
+            })
+            .and_then(|normal| normal.curve.as_ref());
+        let edge_curve = split_selection
+            .map(viboceros_command::SplitEdgeSelection::curve)
+            .or(normal_curve);
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
         let edge_distance_parameters =
@@ -8406,6 +8449,10 @@ impl eframe::App for VibocerosApp {
                 .use_single_marker_color
                 .then_some(analysis.marker_color)
         });
+        let normal_surface = model_input_active
+            .then(|| self.move_normal_surface())
+            .flatten();
+        let selecting_normal = model_input_active && self.selecting_move_normal_reference();
         let document = &self.document;
         let translation_constraint = model_input_active
             .then(|| self.translation_constraint())
@@ -8456,6 +8503,7 @@ impl eframe::App for VibocerosApp {
                             point_filter,
                             point_constraint,
                             translation_constraint,
+                            normal_surface,
                             zoom_window: zoom_window_pending,
                             rect_selection_mode: selection_window_override,
                             circular_selection: match circular_selection {
@@ -8512,7 +8560,9 @@ impl eframe::App for VibocerosApp {
                                 }
                                 None => None,
                             },
-                            object_filter: if plane_object_pick {
+                            object_filter: if selecting_normal {
+                                Some(viboceros_command::ObjectSelectionFilter::Parametric)
+                            } else if plane_object_pick {
                                 Some(viboceros_command::ObjectSelectionFilter::Any)
                             } else if end_analysis_picking || curve_region_pick {
                                 Some(viboceros_command::ObjectSelectionFilter::Curves)

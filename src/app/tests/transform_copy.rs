@@ -2,7 +2,9 @@
 use super::*;
 use serde_json::{Value, json};
 use viboceros_document::ObjectColorSource;
-use viboceros_geometry::{Brep, NurbsSurface, Polyline3, Vector3};
+use viboceros_geometry::{
+    Brep, Circle3, CircularArc3, LineSegment, NurbsSurface, Polyline3, Vector3,
+};
 
 #[path = "../../../crates/viboceros-oracle/src/test_json.rs"]
 mod test_json;
@@ -140,6 +142,82 @@ fn move_copy_placement_selection_order_options_and_history_match_native() {
         18,
         Invocation::Prompt,
     );
+}
+
+#[test]
+fn move_normal_references_signed_distances_selection_and_history_match_native() {
+    for invocation in [Invocation::Prompt, Invocation::NormalRegistry] {
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/move_normal.json"),
+            include_str!("../../../tools/rhino_oracle/observations/move_normal.json"),
+            102,
+            invocation,
+        );
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/move_normal_edges.json"),
+            include_str!("../../../tools/rhino_oracle/observations/move_normal_edges.json"),
+            20,
+            invocation,
+        );
+        replay_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/move_normal_trims.json"),
+            include_str!("../../../tools/rhino_oracle/observations/move_normal_trims.json"),
+            8,
+            invocation,
+        );
+    }
+    replay_native(
+        include_str!("../../../tools/rhino_oracle/fixtures/move_normal_defaults.json"),
+        include_str!("../../../tools/rhino_oracle/observations/move_normal_defaults.json"),
+        8,
+        Invocation::Prompt,
+    );
+}
+
+#[test]
+fn normal_reference_options_survive_escape_and_undefined_direction_keeps_sources() {
+    let mut app = test_app();
+    enter(&mut app, "Point 2,3,4");
+    let source = app.document.objects().next().unwrap().id();
+    let reference = app
+        .document
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(
+                point(0., 0., 0.),
+                point(6., 2., 0.),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Move Normal");
+    assert!(app.selecting_move_normal_reference());
+    assert!(!app.accept_move_normal_reference(source, None)); // Point is not a normal reference.
+    enter(&mut app, "IgnoreTrims=Yes");
+    app.cancel_current_prompt_or_selection();
+    enter(&mut app, "Move Normal");
+    assert!(
+        app.translation_session
+            .as_ref()
+            .unwrap()
+            .normal
+            .as_ref()
+            .unwrap()
+            .ignore_trims
+    );
+    assert!(app.accept_move_normal_reference(reference, None));
+    assert!(!app.document.is_selected(reference));
+    enter(&mut app, "w3,1,0");
+    assert!(app.translation_session.is_none());
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(app.document.is_selected(source));
+    assert!(!app.document.can_undo());
 }
 
 #[test]
@@ -580,6 +658,75 @@ enum Invocation {
     InlineMirrorOptions,
     MirrorObjectRegistry,
     TranslationRegistry,
+    NormalRegistry,
+}
+
+fn normal_target_geometry(target: &Value, tolerance: viboceros_geometry::Tolerance) -> Geometry {
+    let points = target["points"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|p| {
+            point(
+                p[0].as_f64().unwrap(),
+                p[1].as_f64().unwrap(),
+                p[2].as_f64().unwrap(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let flip = target["flip"].as_bool().unwrap();
+    match target["kind"].as_str().unwrap() {
+        "line" => {
+            let line = LineSegment::try_new(points[0], points[1], tolerance).unwrap();
+            Geometry::Line(if flip { line.reversed() } else { line })
+        }
+        "circle" => {
+            let circle = Circle3::try_new(
+                points[0],
+                3.,
+                viboceros_command::CommandContext::default()
+                    .construction_plane
+                    .z_axis(),
+                tolerance,
+            )
+            .unwrap();
+            Geometry::Circle(if flip { circle.reversed() } else { circle })
+        }
+        "arc" => {
+            let arc =
+                CircularArc3::try_from_three_points(points[0], points[1], points[2], tolerance)
+                    .unwrap();
+            Geometry::Arc(if flip {
+                arc.reversed(tolerance).unwrap()
+            } else {
+                arc
+            })
+        }
+        "polyline" => {
+            let curve = Polyline3::try_new(points, tolerance).unwrap();
+            Geometry::Polyline(if flip { curve.reversed() } else { curve })
+        }
+        kind @ ("surface" | "brep" | "trimmed") => {
+            let surface = NurbsSurface::try_bilinear(points.try_into().unwrap()).unwrap();
+            if kind == "surface" {
+                Geometry::NurbsSurface(if flip {
+                    surface.try_reversed_u().unwrap()
+                } else {
+                    surface
+                })
+            } else {
+                let brep = Brep::try_rectangular_surface_face(
+                    surface,
+                    0.0..=if kind == "trimmed" { 0.5 } else { 1.0 },
+                    0.0..=1.0,
+                    tolerance,
+                )
+                .unwrap();
+                Geometry::Brep(if flip { brep.reversed() } else { brep })
+            }
+        }
+        _ => panic!("unknown normal reference"),
+    }
 }
 
 fn mirror_target_geometry(target: &Value, tolerance: viboceros_geometry::Tolerance) -> Geometry {
@@ -665,11 +812,18 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             // with the same registry; no measured defaults seed this state.
             app.commands = registry;
         }
-        let target = operation.get("mirror_target").map(|target| {
-            app.document
-                .add_geometry(mirror_target_geometry(target, app.document.tolerance()))
-                .unwrap()
-        });
+        let target = operation
+            .get("mirror_target")
+            .or(operation.get("normal_target"))
+            .map(|target| {
+                app.document
+                    .add_geometry(if operation.get("normal_target").is_some() {
+                        normal_target_geometry(target, app.document.tolerance())
+                    } else {
+                        mirror_target_geometry(target, app.document.tolerance())
+                    })
+                    .unwrap()
+            });
         let target_before = target.map(|id| app.document.object(id).unwrap().clone());
         // Match the native SDK source construction record. Keeping this
         // baseline also exercises SelLast when the tested transform is a no-op.
@@ -748,8 +902,25 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
         app.document.commit_transaction().unwrap();
         let compare = |actual: Value, phase: &str, failures: &mut Vec<String>| {
             let path = format!("{label}/{phase}");
+            // Curve mouse locations are bounded screen-space minimizations.
+            // Native circle picks themselves differ from the analytic camera
+            // ray reference by >1e-9; retain the raw outputs with a 2e-8 budget.
+            // Typed inputs and surface mouse picks retain the tighter budget.
+            let epsilon = if operation["inputs"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|input| input == "NormalBase")
+                && matches!(
+                    operation["normal_target"]["kind"].as_str(),
+                    Some("circle" | "arc")
+                ) {
+                2e-8
+            } else {
+                1e-9
+            };
             if std::panic::catch_unwind(|| {
-                test_json::close(&actual, &expected[phase], &path, 1e-9, 0.)
+                test_json::close(&actual, &expected[phase], &path, epsilon, 0.)
             })
             .is_err()
             {
@@ -759,6 +930,19 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
         compare(snapshot(&app, &sources), "before", &mut failures);
         let use_registry = match invocation {
             Invocation::Prompt => false,
+            Invocation::NormalRegistry => {
+                operation.get("source_selection").is_none()
+                    && matches!(operation["inputs"].as_array().unwrap().len(), 4 | 5)
+                    && !operation["inputs"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|input| input == "Enter" || input == "NormalBase")
+                    && !matches!(
+                        operation["normal_target"]["kind"].as_str(),
+                        Some("line" | "polyline")
+                    )
+            }
             Invocation::TranslationRegistry => {
                 operation.get("source_selection").is_none()
                     && operation["finish"] != "Cancel"
@@ -868,6 +1052,50 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                             "{label}: {:?}",
                             app.command_log
                         );
+                    } else if input == "NormalTarget" {
+                        assert!(
+                            app.accept_move_normal_reference(target.unwrap(), None),
+                            "{label}: {:?}",
+                            app.command_log
+                        );
+                    } else if input == "NormalBase" {
+                        let camera = &expected["base_frame"]["camera"];
+                        let view = crate::viewport::clip_tests::captured_view(camera);
+                        let size: [i32; 2] =
+                            serde_json::from_value(camera["viewport_size"].clone()).unwrap();
+                        let rect = egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(size[0] as f32, size[1] as f32),
+                        );
+                        let xy: [i32; 2] = serde_json::from_value(
+                            expected["base_frame"]["frame"]["click_client"].clone(),
+                        )
+                        .unwrap();
+                        let pointer = egui::pos2(xy[0] as f32, xy[1] as f32);
+                        if let Some(curve) = app.move_normal_curve() {
+                            let parameter = view
+                                .pick_edge_parameter(curve, pointer, rect, false)
+                                .unwrap();
+                            assert!(
+                                app.accept_move_normal_curve_parameter(parameter),
+                                "{label}: {:?}",
+                                app.command_log
+                            );
+                        } else {
+                            let location = view
+                                .normal_surface_point(
+                                    pointer,
+                                    rect,
+                                    &app.document,
+                                    app.move_normal_surface().unwrap(),
+                                )
+                                .unwrap();
+                            assert!(
+                                app.accept_drafting_point(location),
+                                "{label}: {:?}",
+                                app.command_log
+                            );
+                        }
                     } else if input == "Target" {
                         let target = target.unwrap();
                         let recipe = &operation["mirror_target"];
@@ -889,23 +1117,48 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                 }
             }
             true => {
-                let input = std::iter::once(operation["command"].as_str().unwrap().to_owned())
-                    .chain(operation["inputs"].as_array().unwrap().iter().map(|value| {
-                        let value = value.as_str().unwrap();
-                        if value == "Target" {
-                            let id = target.unwrap();
-                            let recipe = &operation["mirror_target"];
-                            if recipe["pick"] != "id" {
-                                format!("{id} Face={}", recipe["face"])
+                let input = if matches!(invocation, Invocation::NormalRegistry) {
+                    let inputs = operation["inputs"].as_array().unwrap();
+                    let base = inputs
+                        .iter()
+                        .position(|input| input == "NormalTarget")
+                        .unwrap()
+                        + 1;
+                    let options = inputs
+                        .iter()
+                        .filter_map(|input| {
+                            input
+                                .as_str()
+                                .filter(|input| input.starts_with("IgnoreTrims="))
+                        })
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    format!(
+                        "Move Normal={} {} {} {}",
+                        target.unwrap(),
+                        inputs[base].as_str().unwrap().trim_start_matches('w'),
+                        inputs[base + 1].as_str().unwrap().trim_start_matches('w'),
+                        options
+                    )
+                } else {
+                    std::iter::once(operation["command"].as_str().unwrap().to_owned())
+                        .chain(operation["inputs"].as_array().unwrap().iter().map(|value| {
+                            let value = value.as_str().unwrap();
+                            if value == "Target" {
+                                let id = target.unwrap();
+                                let recipe = &operation["mirror_target"];
+                                if recipe["pick"] != "id" {
+                                    format!("{id} Face={}", recipe["face"])
+                                } else {
+                                    id.to_string()
+                                }
                             } else {
-                                id.to_string()
+                                value.trim_start_matches('w').to_owned()
                             }
-                        } else {
-                            value.trim_start_matches('w').to_owned()
-                        }
-                    }))
-                    .collect::<Vec<_>>()
-                    .join(" ");
+                        }))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                };
                 let context = viboceros_command::CommandContext {
                     construction_plane: app.viewports[app.active_viewport].construction_plane(),
                 };

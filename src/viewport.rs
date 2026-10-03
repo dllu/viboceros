@@ -28,6 +28,7 @@ mod camera;
 mod clipping;
 mod drafting;
 mod named_view;
+mod normal_point;
 #[cfg(test)]
 use drafting::clip_drafting_line;
 #[cfg(test)]
@@ -48,7 +49,7 @@ mod selection;
 mod selection_clipping;
 use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
 #[cfg(test)]
-mod clip_tests;
+pub(crate) mod clip_tests;
 #[cfg(test)]
 mod imported_shading_tests;
 #[cfg(test)]
@@ -292,6 +293,7 @@ pub struct ViewportInput<'a> {
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
+    pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
     pub zoom_window: bool,
     pub rect_selection_mode: Option<RectSelectionMode>,
     pub circular_selection: Option<CircularSelectionInput>,
@@ -345,6 +347,7 @@ impl Default for ViewportInput<'_> {
             point_filter: None,
             point_constraint: None,
             translation_constraint: None,
+            normal_surface: None,
             zoom_window: false,
             rect_selection_mode: None,
             circular_selection: None,
@@ -1398,7 +1401,7 @@ impl Viewport {
         if self.camera_snapshot() != redraw_camera {
             let _ = self.refresh_clipping_with_reflection(document, rect, previous_reflection);
         }
-        let drafting_cursor = if drafting.active
+        let mut drafting_cursor = if drafting.active
             && !component_input
             && !input.zoom_window
             && input.zoom_target.is_none()
@@ -1417,6 +1420,29 @@ impl Viewport {
         } else {
             None
         };
+        if let Some(target) = input.normal_surface
+            && !input
+                .point_filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+        {
+            if let Some(pointer) = response.hover_pos() {
+                let explicit = drafting_cursor
+                    .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
+                let point = explicit
+                    .map(|cursor| cursor.point)
+                    .or_else(|| self.normal_surface_point(pointer, rect, document, target));
+                drafting_cursor = point.map(|point| drafting::DraftingCursor {
+                    pointer,
+                    source_point: point,
+                    point,
+                    object_snap: explicit.and_then(|cursor| cursor.object_snap),
+                    track: None,
+                    ortho: false,
+                    ortho_z: false,
+                    grid_snapped: false,
+                });
+            }
+        }
         if (drafting.active
             || input.zoom_window
             || input.zoom_target.is_some()

@@ -343,7 +343,7 @@ impl Viewport {
             .map(|(hit, face, _)| (hit, face))
     }
 
-    fn mesh_face_pick_with_point(
+    pub(super) fn mesh_face_pick_with_point(
         &self,
         pointer: Pos2,
         rect: Rect,

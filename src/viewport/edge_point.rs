@@ -148,7 +148,7 @@ impl Viewport {
             .map(|(_, t)| t)
     }
 
-    pub(super) fn pick_edge_parameter(
+    pub(crate) fn pick_edge_parameter(
         &self,
         curve: &NurbsCurve,
         pointer: Pos2,

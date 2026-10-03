@@ -9,6 +9,12 @@ from .hole_picking import HolePicker
 
 class ComponentPicker(HolePicker):
     def send_input(self, name, x, y, window):
+        if name.startswith('@move-normal:'):
+            result = super().send_input(name,x,y,window)
+            # A base click at the same pixel must be a distinct click, after
+            # native reference selection has completed its mouse dispatch.
+            time.sleep(0.75)
+            return result
         if name.startswith('@component-menu:'):
             if re.fullmatch(r'@component-menu:[A-Za-z0-9_.-]{1,100}:First', name) is None:
                 raise ValueError('invalid owned selection menu choice')

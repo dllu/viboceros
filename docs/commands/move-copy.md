@@ -41,6 +41,32 @@ Free mouse line picks use the closest point to the 3D viewing line, so they work
 with an edge-on CPlane and perspective views. Typed points and object snaps
 supply explicit 3D coordinates.
 
+## Move Normal
+
+At Move's base prompt, enter `Normal`, select a curve, surface, or polysurface,
+then pick a base location on that reference. The reference pick leaves source
+selection unchanged. Enter a signed distance or pick a destination projected
+onto the normal line. Enter at the base cancels; Enter at the destination locks
+the remembered positive distance and waits for a point to choose the direction.
+A remembered zero leaves that lock inactive. Move displays the magnitude of the
+last successful move.
+
+Curve normals follow principal curvature, pointing inward on circles and arcs.
+Reversing a curve preserves that direction. Straight lines and straight polyline
+segments have undefined normals and end the command without changing geometry.
+Surface normals follow the underlying surface orientation; reversing a surface
+reverses the direction, while reversing a B-rep face does not.
+
+`IgnoreTrims=Yes|No` is available while selecting the reference and is remembered
+even when the prompt is canceled. Typed locations resolve to the closest reference
+point; mouse surface locations resolve against the original surface rather than
+accepting tessellation coordinates. Full invocations use:
+
+```text
+Move Normal=reference-id 3,0,0 -2
+Move Normal=reference-id Face=0 IgnoreTrims=Yes 3,3,2 8,-3,9
+```
+
 ## Selection and history
 
 Preselected sources follow document order; command-first sources follow pick
@@ -75,11 +101,18 @@ SelLast, Undo, Redo, and command events.
 | [110 placement cases](../../tools/rhino_oracle/fixtures/translation.json) | [Results](../../tools/rhino_oracle/observations/translation.json) | Source selection, grouped sources, repeated copies, automatic bases, Vertical, repetition options, cancellation. |
 | [18 mouse cases](../../tools/rhino_oracle/fixtures/translation_mouse.json) | [Results](../../tools/rhino_oracle/observations/translation_mouse.json) | Real destination clicks in Front, Right, and Perspective; World/tilted CPlanes; direction locks and FromLastPoint. |
 | [36 edge cases](../../tools/rhino_oracle/fixtures/translation_edges.json) | [Results](../../tools/rhino_oracle/observations/translation_edges.json) | Zero steps, negative/zero distances, direction orientation, destination Enter. |
+| [102 Normal cases](../../tools/rhino_oracle/fixtures/move_normal.json) | [Results](../../tools/rhino_oracle/observations/move_normal.json) | Curve/surface orientation, signed distances, projected targets, off-reference bases, cancellation, selection and history. |
+| [20 Normal input cases](../../tools/rhino_oracle/fixtures/move_normal_edges.json) | [Results](../../tools/rhino_oracle/observations/move_normal_edges.json) | Actual reference and base clicks in Top/Perspective, surface orientation, IgnoreTrims options. |
+| [8 Normal trim cases](../../tools/rhino_oracle/fixtures/move_normal_trims.json) | [Results](../../tools/rhino_oracle/observations/move_normal_trims.json) | IgnoreTrims on a trimmed curved surface; typed points outside the retained face; selection and history. |
+| [8 Normal default cases](../../tools/rhino_oracle/fixtures/move_normal_defaults.json) | [Results](../../tools/rhino_oracle/observations/move_normal_defaults.json) | Enter locks distance while the next point chooses direction; negative moves and zero defaults. |
 
-App comparisons use 1e-9 absolute coordinate tolerance. The command registry also
+App comparisons use 1e-9 absolute coordinate tolerance, with 2e-8 for free curve
+mouse picks. Those locations are bounded screen-space minimizations; Rhino's
+circle pick also differs from the analytic ray reference by more than 1e-9.
+Raw observations are retained. The command registry also
 replays applicable full invocations independently of the point prompt.
 
-Move Normal, SubCrv/subobject transforms, direct dragging/nudging, and live source
+SubD normal references, SubCrv/subobject transforms, direct dragging/nudging, and live source
 geometry previews remain unimplemented. Native mouse/window source ordering has
 not been exhaustively measured.
 

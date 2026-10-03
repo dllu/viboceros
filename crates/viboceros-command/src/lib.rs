@@ -1194,7 +1194,7 @@ impl CommandRegistry {
             .register(ExplodeCommand)
             .expect("unique built-in command");
         registry
-            .register(MoveCommand)
+            .register(MoveCommand::default())
             .expect("unique built-in command");
         registry
             .register(CopyCommand)

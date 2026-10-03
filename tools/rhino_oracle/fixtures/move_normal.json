@@ -1,0 +1,6891 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-reversed-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-line-spatial-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,1,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "line",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            2,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          1,
+          2
+        ],
+        "flip": false,
+        "view": "Perspective"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-reversed-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-arc-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w0,3,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          0,
+          3,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-polyline-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "polyline",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            2
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-flip-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-pre-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-pre-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-post-positive",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-post-negative",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,1",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-pre-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-post-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-pre-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-post-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-pre-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-cancel-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-enter-base",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-cancel-destination",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-brep-flip-post-zero",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "0"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "brep",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": true,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-default-seed",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "-2"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-default-circle",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,0,0",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-default-surface",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w3,3,2",
+        "Enter"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-circle-off-reference",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w8,-1,7",
+        "2.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "circle",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          0,
+          0
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-surface-off-reference",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w8,-1,7",
+        "2.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            4
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          2
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-warped-off-reference",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "NormalTarget",
+        "w8,-1,7",
+        "2.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "surface",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          3,
+          3,
+          1
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    }
+  ]
+}

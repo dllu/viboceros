@@ -9,7 +9,7 @@ pub(super) fn captures() -> serde_json::Value {
     .unwrap()
 }
 
-pub(super) fn captured_view(camera: &serde_json::Value) -> Viewport {
+pub(crate) fn captured_view(camera: &serde_json::Value) -> Viewport {
     let array = |key: &str| serde_json::from_value::<[f64; 3]>(camera[key].clone()).unwrap();
     let [width, height]: [i32; 2] =
         serde_json::from_value(camera["viewport_size"].clone()).unwrap();

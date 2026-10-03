@@ -29,25 +29,38 @@ def capture(request, client, timeout=300):
     for operation, row in zip(request['operations'], observed['results']):
         value = row['value']
         if (not isinstance(value, dict)
-                or set(value) != ({'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'} | ({'target'} if 'mirror_target' in operation else set()) | ({'frame'} if 'mouse_target' in operation else set()))
+                or set(value) != ({'before', 'after', 'last', 'undo', 'redo', 'succeeded', 'history', 'events', 'group_names'} | ({'target'} if 'mirror_target' in operation or 'normal_target' in operation else set()) | ({'frame'} if 'mouse_target' in operation or 'normal_target' in operation else set()) | ({'base_frame'} if 'NormalBase' in operation['inputs'] else set()))
                 or type(value['succeeded']) is not bool or not isinstance(value['history'], str)
                 or not isinstance(value['events'], list) or not isinstance(value['group_names'], list)
                 or any(not isinstance(name, str) for name in value['group_names'])):
             raise ValueError('invalid transform Copy observation')
-        if 'mouse_target' in operation:
+        if 'mouse_target' in operation or 'normal_target' in operation:
             from .translation_input import validate_frame
             validate_frame(value['frame'])
-        if 'mirror_target' in operation:
+        if 'NormalBase' in operation['inputs']:
+            base = value['base_frame']
+            if not isinstance(base,dict) or set(base) != {'frame','camera'} or not isinstance(base['camera'],dict):
+                raise ValueError('invalid Move Normal base calibration')
+            validate_frame(base['frame'])
+            from .move_normal_probe import validate_camera
+            validate_camera(base['camera'],base['frame'])
+        if 'mirror_target' in operation or 'normal_target' in operation:
             target = value['target']
             fields = {'type', 'selected', 'bounds', 'name', 'groups', 'layer', 'color_source', 'color'}
-            fields |= {'vertices', 'faces'} if operation['mirror_target']['kind'] == 'mesh' else {'definition'}
+            fields |= {'vertices', 'faces'} if operation.get('mirror_target',{}).get('kind') == 'mesh' else {'definition'}
             if (not isinstance(target, dict) or set(target) != {'before', 'after'}
                     or not isinstance(target['before'], dict) or not isinstance(target['after'], dict)
                     or set(target['before']) != fields or set(target['after']) != fields
                     or {k:v for k,v in target['after'].items() if k != 'bounds'} != {k:v for k,v in target['before'].items() if k != 'bounds'}
                     or target['before'].get('selected') is not False
                     or ('definition' in fields and (not isinstance(target['before']['definition'],dict) or not target['before']['definition']))):
-                raise ValueError('invalid Mirror target observation')
+                raise ValueError('invalid transform reference observation')
+            if 'normal_target' in operation:
+                from .transform_copy_probe import finite
+                bounds = [target[phase]['bounds'] for phase in ('before','after')]
+                if (any(not isinstance(box,list) or len(box) != 2 or any(not isinstance(p,list) or len(p) != 3 or not all(finite(v) for v in p) for p in box) for box in bounds)
+                        or any(abs(a-b)>1e-9 for pa,pb in zip(*bounds) for a,b in zip(pa,pb))):
+                    raise ValueError('Move Normal edited its reference bounds')
         for key in ('before', 'after'):
             validate_snapshot(value[key], len(operation['sources']))
         if len(value['before']['objects']) != len(operation['sources']):

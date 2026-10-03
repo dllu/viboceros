@@ -19,7 +19,7 @@ def finite(value):
 def validate(operation):
     if (not isinstance(operation, dict)
             or not {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last'} <= set(operation)
-            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target', 'source_selection', 'mouse_target'}
+            or not set(operation) <= {'op', 'id', 'command', 'sources', 'grouped', 'inputs', 'finish', 'undo_redo', 'sel_last', 'selected', 'cplane', 'mirror_target', 'source_selection', 'mouse_target', 'normal_target'}
             or operation['op'] != 'transform_copy_command'
             or not isinstance(operation['id'], str) or re.match(r'^[A-Za-z0-9_.-]{1,100}\Z', operation['id']) is None
             or operation['command'] not in COMMANDS
@@ -51,6 +51,16 @@ def validate(operation):
         validate_target(operation['mirror_target'])
         if operation['inputs'].count('Target') > 1:
             raise ValueError('Mirror target capture delivers one prescribed pick')
+    if 'normal_target' in operation:
+        if __package__:
+            from .move_normal_probe import validate_target as validate_normal
+        else:
+            from move_normal_probe import validate_target as validate_normal
+        if operation['command'] != 'Move' or operation['inputs'].count('NormalTarget') != 1:
+            raise ValueError('Move Normal requires one owned reference click')
+        if operation['inputs'].count('NormalBase') > 1 or ('normal_target' in operation and 'mouse_target' in operation):
+            raise ValueError('Move Normal accepts at most one owned base click')
+        validate_normal(operation['normal_target'])
     if 'mouse_target' in operation:
         if __package__:
             from .translation_input import validate as validate_mouse
@@ -86,6 +96,8 @@ def validate(operation):
             if operation['command'] == 'Move' and token != 'Vertical':
                 raise ValueError('Move accepts only the Vertical translation option')
             continue
+        if token in ('Normal','NormalTarget','NormalBase','IgnoreTrims=Yes','IgnoreTrims=No') and 'normal_target' in operation:
+            continue
         if token == 'Mouse' and 'mouse_target' in operation:
             continue
         if token == 'Target' and 'mirror_target' in operation:
@@ -104,6 +116,9 @@ def validate(operation):
 
 
 def run(operation, host):
+    if 'normal_target' in operation:
+        from move_normal_probe import run as run_normal
+        return run_normal(operation,host,run_owned)
     if 'mirror_target' in operation:
         from mirror_object_probe import run_with_target
         return run_with_target(operation, host, run_owned)
@@ -177,12 +192,16 @@ def run_owned(operation, host, target=None):
             else:
                 tokens.append('_'+step.replace('=Yes', '=_Yes').replace('=No', '=_No'))
         for token in operation['inputs']:
-            if token == 'Mouse':
+            if token in ('NormalTarget','NormalBase'):
+                tokens.append('_Pause')
+            elif token == 'Normal':
+                tokens.append('_Normal')
+            elif token == 'Mouse':
                 tokens.append('_Pause')
             elif token == 'Target':
                 tokens.append('_SelID '+str(target['id']) if target['pick'] == 'id' else '_Pause')
             else:
-                tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith('Copy=') or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS or token in TRANSLATION_OPTIONS else token)
+                tokens.append('_'+token.replace('=Yes', '=_Yes').replace('=No', '=_No') if token.startswith(('Copy=','IgnoreTrims=')) or token in ('Undo', 'Enter') or token in MIRROR_OPTIONS or token in TRANSLATION_OPTIONS else token)
         macro = '_'+operation['command']+' '+' '.join(tokens)
         if operation['finish'] != 'Automatic':
             macro += ' _'+operation['finish']
@@ -191,10 +210,13 @@ def run_owned(operation, host, target=None):
         host['_record_progress']('transform '+operation['id']+' '+macro)
         frames = []
         action = lambda: Rhino.RhinoApp.RunScript(macro, True)
+        if 'normal_target' in operation:
+            from move_normal_probe import click_reference
+            action = lambda: click_reference(operation,host,macro,frames)
         if 'mouse_target' in operation:
             from translation_input import drive
             action = lambda: drive(operation, host, macro, frames)
-        if target is not None and target['pick'] in ('mouse', 'mouse-sub') and 'Target' in operation['inputs']:
+        if 'mirror_target' in operation and target is not None and target['pick'] in ('mouse', 'mouse-sub') and 'Target' in operation['inputs']:
             from mirror_object_probe import click_target
             action = lambda: click_target(operation, target, host, macro)
         succeeded, after, events = observe_command(Rhino.Commands.Command, operation['command'],
@@ -216,6 +238,7 @@ def run_owned(operation, host, target=None):
             succeeded=succeeded, history=history, events=events,
             group_names=[doc.Groups[index].Name for index in groups()])
         if frames: value['frame'] = frames[0]
+        if len(frames) == 2: value['base_frame'] = frames[1]
         return value, 0
     finally:
         errors = []

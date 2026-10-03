@@ -1,0 +1,602 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-No-pre-distance",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=No",
+        "NormalTarget",
+        "w5,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-No-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=No",
+        "NormalTarget",
+        "w5,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-No-post-distance",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=No",
+        "NormalTarget",
+        "w5,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-No-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=No",
+        "NormalTarget",
+        "w5,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-Yes-pre-distance",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=Yes",
+        "NormalTarget",
+        "w5,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-Yes-pre-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=Yes",
+        "NormalTarget",
+        "w5,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "selected": [
+        2,
+        0
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-Yes-post-distance",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=Yes",
+        "NormalTarget",
+        "w5,3,2",
+        "3.5"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    },
+    {
+      "op": "transform_copy_command",
+      "id": "move-normal-trim-Yes-post-coordinate",
+      "command": "Move",
+      "sources": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          2,
+          3
+        ],
+        [
+          5,
+          -2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "grouped": true,
+      "inputs": [
+        "Normal",
+        "IgnoreTrims=Yes",
+        "NormalTarget",
+        "w5,3,2",
+        "w8,-3,9"
+      ],
+      "finish": "Cancel",
+      "undo_redo": true,
+      "sel_last": true,
+      "normal_target": {
+        "kind": "trimmed",
+        "points": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            6,
+            4
+          ],
+          [
+            0,
+            6,
+            0
+          ]
+        ],
+        "aim": [
+          1.5,
+          3,
+          0.5
+        ],
+        "flip": false,
+        "view": "Top"
+      },
+      "source_selection": [
+        2,
+        0,
+        "Enter"
+      ]
+    }
+  ]
+}

@@ -187,6 +187,27 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_start_object_prompt(&mut self, input: &str) -> bool {
+        // Move's Normal descriptor describes its later read-only reference
+        // prompt. Source selection must still use the transform workflow.
+        let words = input.split_whitespace().collect::<Vec<_>>();
+        if words.first().is_some_and(|name| {
+            matches!(
+                name.trim_start_matches(['_', '-'])
+                    .to_ascii_lowercase()
+                    .as_str(),
+                "move" | "m"
+            )
+        }) && words.iter().skip(1).any(|word| {
+            word.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Normal")
+        }) {
+            if self.document.selected_object_count() != 0 {
+                return false;
+            }
+            // Native command-first inline base options are consumed during
+            // source selection; the user chooses Normal again after Enter.
+            return self.try_start_object_prompt("Move");
+        }
         let description = match self.commands.object_selection_prompt(input) {
             Ok(Some(prompt)) => prompt,
             Ok(None) => return false,
