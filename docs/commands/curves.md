@@ -78,7 +78,10 @@ specified.
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a
-diameter. The active CPlane fixes its orientation and positive-X seam; a
+diameter. Its normal follows the active CPlane as closely as possible, with
+deterministic plane axes for its seam; rotating CPlane X/Y does not rotate that
+seam. Three additional [rotated-plane captures](../maelstrom-circle-input.md)
+verify this rule, including a spatial diameter. A
 diameter normal to the CPlane is invalid. Enter `Circle 2Point` to pick both
 ends, or choose `2Point` at Circle's first prompt. Six
 [live Rhino command records](../circle-two-point-rhino-reference.json) match

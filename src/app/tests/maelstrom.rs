@@ -601,3 +601,157 @@ fn typed_coordinates_keep_native_mouse_turns_and_scalar_angles_override_them() {
         assert_preference_snapshot(&app, &filtered(&v["before"]), op["id"].as_str().unwrap());
     }
 }
+
+#[test]
+fn first_circle_modes_size_memory_and_second_diameter_match_native() {
+    for (fixture, observed) in [
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle.json"),
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle_memory.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle_memory.json"),
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle_point.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle_point.json"),
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle_angle.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle_angle.json"),
+        ),
+    ] {
+        let fixture: Value = serde_json::from_str(fixture).unwrap();
+        let observed: Value = serde_json::from_str(observed).unwrap();
+        let mut app = test_app();
+        for (op, row) in fixture["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(observed["results"].as_array().unwrap())
+        {
+            let v = &row["value"];
+            let label = op["id"].as_str().unwrap();
+            app.document = Document::default();
+            let p = |value: &Value| {
+                Point3::try_from(serde_json::from_value::<[f64; 3]>(value.clone()).unwrap())
+                    .unwrap()
+            };
+            let plane = Frame3::try_from_normal(
+                p(&op["origin"]),
+                viboceros_geometry::Vector3::try_from(p(&op["normal"]).to_array()).unwrap(),
+                Tolerance::NUMERICAL_VALIDATION,
+            )
+            .unwrap();
+            app.viewports[app.active_viewport].set_construction_plane(plane);
+            app.document
+                .begin_transaction("Maelstrom Circle sources")
+                .unwrap();
+            let ids = v["before"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|value| {
+                    app.document
+                        .add_geometry(Geometry::Point(p(&value["point"])))
+                        .unwrap()
+                })
+                .collect::<Vec<_>>();
+            app.document
+                .select_objects_direct(ids, SelectionMode::Replace)
+                .unwrap();
+            app.document.commit_transaction().unwrap();
+            assert!(app.try_start_interactive_command("Maelstrom"));
+            let inputs = v["resolved_inputs"].as_array().unwrap();
+            for (i, value) in inputs.iter().enumerate() {
+                if value
+                    .as_str()
+                    .is_some_and(|name| name.starts_with("ProjectOsnap="))
+                {
+                    continue;
+                }
+                if let Some(name) = value.as_str() {
+                    assert!(app.try_continue_maelstrom(name), "{label}: {name}");
+                } else {
+                    type_value(&mut app, value);
+                }
+                if app.active_command.is_none() {
+                    break;
+                }
+                if v["circle"].is_null() || i + 1 < inputs.len().saturating_sub(4) {
+                    assert_eq!(
+                        app.document.undo_label(),
+                        Some("Maelstrom Circle sources"),
+                        "{label}: circle getter created history"
+                    );
+                    assert_eq!(app.document.objects().count(), 8);
+                }
+            }
+            if !v["circle"].is_null() {
+                assert!(
+                    (app.commands.maelstrom_radius_default()
+                        - v["circle"]["radius"].as_f64().unwrap())
+                    .abs()
+                        < 1e-11,
+                    "{label}"
+                );
+            }
+            assert_eq!(
+                app.commands.maelstrom_uses_diameter(),
+                v["diameter"].as_bool().unwrap(),
+                "{label}"
+            );
+            if app.active_command.is_some() {
+                app.cancel_interactive_command(true);
+            }
+            assert_points(&app, &v["after"], true, label);
+            // The owned probe's terminal Cancel runs after successful Maelstrom.
+            if v["events"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .skip_while(|event| event["name"] != "Maelstrom")
+                .skip(1)
+                .any(|event| event["name"] == "Cancel")
+            {
+                app.document.clear_selection();
+            }
+            app.execute_command("Undo");
+            assert_points(&app, &v["undo"], true, label);
+            app.execute_command("Redo");
+            assert_points(&app, &v["redo"], true, label);
+        }
+    }
+}
+
+#[test]
+fn point_getter_scalars_use_drafting_constraints_while_circle_sizes_use_numbers() {
+    let mut app = test_app();
+    app.execute_command("Point 2,1,0");
+    app.execute_command("SelAll");
+    app.document.clear_history().unwrap();
+    assert!(app.try_start_interactive_command("Maelstrom"));
+    assert!(app.try_continue_maelstrom("2Point"));
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    app.command_input = "4".into();
+    app.run_command();
+    assert!(app.point_constraint.is_some());
+    assert!(app.maelstrom_preview().unwrap().circle_getter.is_some());
+    assert!(!app.document.can_undo());
+    // A viewport pick follows the locked diameter distance.
+    assert!(app.accept_filtered_drafting_point(point(0., 6., 0.), false));
+    assert!((app.commands.maelstrom_radius_default() - 2.).abs() < 1e-11);
+    assert!(app.point_constraint.is_none());
+    assert!(!app.document.can_undo());
+    app.cancel_interactive_command(true);
+
+    assert!(app.try_start_interactive_command("Maelstrom"));
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert!(app.try_continue_maelstrom("_Diameter=8"));
+    assert!(app.commands.maelstrom_uses_diameter());
+    assert_eq!(app.commands.maelstrom_radius_default(), 4.);
+    assert!(app.point_constraint.is_none());
+    assert!(!app.document.can_undo());
+    app.cancel_interactive_command(true);
+}

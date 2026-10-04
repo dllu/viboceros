@@ -1,0 +1,1917 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-0",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-1",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        4.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        4.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-2",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.566370614359172,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.566370614359172
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-3",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        12.566370614359172,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        12.566370614359172
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-4",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        [
+          0.0,
+          2.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        [
+          0.0,
+          2.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-5",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          0.0,
+          2.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          0.0,
+          2.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-6",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          0.0,
+          2.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          0.0,
+          2.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-7",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        "Radius",
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        "Radius",
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-8",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-9",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-10",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          3.0,
+          4.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          3.0,
+          4.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-11",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        4.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        4.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-12",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.566370614359172,
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.566370614359172,
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-13",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        12.566370614359172,
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        12.566370614359172,
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-14",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Radius",
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Radius",
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-15",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Diameter",
+        4.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Diameter",
+        4.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-16",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Circumference",
+        12.566370614359172,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Circumference",
+        12.566370614359172
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-17",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Area",
+        12.566370614359172,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Area",
+        12.566370614359172
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-18",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          0.0,
+          0.0,
+          5.0
+        ],
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          0.0,
+          0.0,
+          5.0
+        ],
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-19",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-20",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "2Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "2Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-21",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "2Point",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          3.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "2Point",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          3.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-22",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "2Point",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          8.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "2Point",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          8.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-23",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-24",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-25",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-26",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        3.0,
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        3.0,
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-27",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        [
+          0.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        [
+          0.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-28",
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          1.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          1.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-29",
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-30",
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "2Point",
+        [
+          -2.0,
+          1.0,
+          3.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "2Point",
+        [
+          -2.0,
+          1.0,
+          3.0
+        ],
+        [
+          2.0,
+          3.0,
+          5.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-31",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        [
+          3.0,
+          5.0,
+          7.0
+        ]
+      ],
+      "circle_inputs": [
+        "3Point",
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": [
+        3.0,
+        5.0,
+        7.0
+      ]
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-32",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        [
+          3.0,
+          5.0,
+          7.0
+        ]
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        2.0,
+        [
+          3.0,
+          4.0,
+          0.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": [
+        3.0,
+        5.0,
+        7.0
+      ]
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-33",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        2.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        [
+          3.0,
+          5.0,
+          7.0
+        ]
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        2.0
+      ],
+      "target": 5.0,
+      "degrees": [
+        3.0,
+        5.0,
+        7.0
+      ]
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-34",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ProjectOsnap=No",
+        [
+          0.0,
+          2.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ProjectOsnap=No",
+        [
+          0.0,
+          2.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-35",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ProjectOsnap=Yes",
+        [
+          0.0,
+          2.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ProjectOsnap=Yes",
+        [
+          0.0,
+          2.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-36",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        8.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-37",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-38",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-39",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-40",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        16.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-41",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    }
+  ]
+}

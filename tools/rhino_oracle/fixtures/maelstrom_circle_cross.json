@@ -1,0 +1,132 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-cross-0",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        8.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        3.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-cross-1",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-cross-2",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Radius",
+        4.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        10.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-cross-3",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    }
+  ]
+}

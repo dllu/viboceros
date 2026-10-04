@@ -53,7 +53,11 @@ compare accepted geometry, cancellation, Copy resets and Undo.
 The [provenance record](maelstrom-preview-provenance.json) hashes retained
 fixtures, observations, PNGs and capture helpers.
 
-These are sampled witnesses. Other Circle construction modes, complex trims,
+The [first-circle getter](maelstrom-circle-input.md) adds construction and size
+modes with independent frame and point-map captures. Native guide pixels for
+those modes remain to verify.
+
+These are sampled witnesses. Remaining Circle construction modes, complex trims,
 additional drafting-aid combinations and original native performance comparisons
 remain to verify. Dense fitted B-reps still need performance work.
 

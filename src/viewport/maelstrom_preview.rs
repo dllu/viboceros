@@ -55,6 +55,7 @@ pub(crate) type MaelstromPreviewCache = MorphPreviewCache<Key>;
 
 #[derive(Clone, Copy)]
 pub(crate) struct MaelstromPreview<'a> {
+    pub circle_getter: Option<viboceros_command::circle_input::CircleInput>,
     pub sources: &'a [ObjectId],
     pub center: Point3,
     pub initial: Option<MaelstromRadius>,
@@ -140,6 +141,13 @@ impl MaelstromPreview<'_> {
     /// radial projection at the second. Both accepted circles stay during GetAngle.
     pub(super) fn circles(self, cursor: Option<Point3>) -> Vec<(Frame3, Real)> {
         let point = cursor.or(self.last.map(|c| c.point));
+        if let Some(getter) = self.circle_getter {
+            return point
+                .and_then(|point| getter.preview(point))
+                .map(|circle| (circle.frame, circle.radius))
+                .into_iter()
+                .collect();
+        }
         let context = viboceros_command::CommandContext {
             construction_plane: self.cplane,
         };

@@ -170,6 +170,7 @@ pub mod construction_plane;
 #[cfg(test)]
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
+pub mod circle_input;
 mod context;
 mod curve_cut;
 pub mod interface;

@@ -1439,9 +1439,11 @@ impl InteractiveCommand {
                 target,
                 ..
             } => match (center, initial, target) {
-                (None, _, _) => "Maelstrom: pick the center (Esc to cancel)",
+                (None, _, _) => {
+                    "Maelstrom: pick the center; Vertical, 2Point, 3Point (Esc to cancel)"
+                }
                 (Some(_), None, _) => {
-                    "Maelstrom: enter or pick the first radius; Enter accepts the remembered radius"
+                    "Maelstrom: enter or pick the first radius; Diameter, Orientation, Circumference, Area; Enter accepts the remembered radius"
                 }
                 (Some(_), Some(_), None) => {
                     "Maelstrom: enter or pick the second radius; Copy, Rigid"
@@ -8404,7 +8406,8 @@ impl eframe::App for VibocerosApp {
             {
                 self.curve_points.last().copied()
             } else {
-                self.active_command.and_then(InteractiveCommand::anchor)
+                self.maelstrom_circle_anchor()
+                    .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
             },
             reference: if self.plane_prompt.is_some() {
                 None
@@ -8735,7 +8738,12 @@ impl eframe::App for VibocerosApp {
             )
         )
         .then_some(self.drafting_plane)
-        .flatten();
+        .flatten()
+        .or_else(|| {
+            maelstrom_preview
+                .and_then(|p| p.circle_getter)
+                .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
+        });
         let translation_constraint = model_input_active
             .then(|| self.translation_constraint())
             .flatten();

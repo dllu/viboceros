@@ -1,0 +1,102 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "circle-diameter-rotated-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "y_axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primitive": "Circle2Point",
+      "points": [
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-diameter-rotated-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0.7071067811865476,
+        0.7071067811865476,
+        0.0
+      ],
+      "y_axis": [
+        -0.7071067811865476,
+        0.7071067811865476,
+        0.0
+      ],
+      "primitive": "Circle2Point",
+      "points": [
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          8.0
+        ]
+      ]
+    },
+    {
+      "op": "plane_primitive",
+      "id": "circle-diameter-rotated-2",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "y_axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primitive": "Circle2Point",
+      "points": [
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        [
+          4.0,
+          6.0,
+          3.0
+        ]
+      ]
+    }
+  ]
+}

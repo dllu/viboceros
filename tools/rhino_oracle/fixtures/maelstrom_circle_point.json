@@ -1,0 +1,406 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-0",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-1",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-2",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-3",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        "Vertical",
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-4",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Circumference",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-5",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Orientation",
+        [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "Area",
+        [
+          2.0,
+          1.0,
+          7.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-6",
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "origin": [
+        4.0,
+        -2.0,
+        3.0
+      ],
+      "inputs": [
+        [
+          5.0,
+          4.0,
+          1.0
+        ],
+        "Circumference",
+        17.0,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          5.0,
+          4.0,
+          1.0
+        ],
+        "Circumference",
+        17.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-point-7",
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "origin": [
+        4.0,
+        -2.0,
+        3.0
+      ],
+      "inputs": [
+        [
+          5.0,
+          4.0,
+          1.0
+        ],
+        "Orientation",
+        [
+          6.0,
+          6.0,
+          4.0
+        ],
+        "Area",
+        [
+          2.0,
+          6.0,
+          9.0
+        ],
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          5.0,
+          4.0,
+          1.0
+        ],
+        "Orientation",
+        [
+          6.0,
+          6.0,
+          4.0
+        ],
+        "Area",
+        [
+          2.0,
+          6.0,
+          9.0
+        ]
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    }
+  ]
+}

@@ -120,7 +120,10 @@ Circle radius and Copy getter edits have their own preference policy; staged
 interactive input supports source selection, radius and coil-angle getters, and
 repeated Copy placements in one Undo batch. Its [live preview](maelstrom-preview.md)
 shares prepared morph cages, retains circle guides and full mouse turns, and
-keeps pending surface isocurves in all display modes.
+keeps pending surface isocurves in all display modes. Its independent
+[first-circle getter](maelstrom-circle-input.md) resolves construction and size
+modes without model edits, carries accepted frames into drafting and morphing,
+and keeps Radius/Diameter preferences outside document history.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

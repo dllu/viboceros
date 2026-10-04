@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "command": "Maelstrom",
+  "engine_version": "8.32.26160.13001",
+  "native_circle_recipes": 42,
+  "native_memory_recipes": 6,
+  "native_cross_command_recipes": 4,
+  "native_point_conversion_recipes": 8,
+  "diagnostic_recipes": 42,
+  "private_xvfb": true,
+  "settings_schemes": [
+    "VibocerosOracleMaelstromCircleIndependent_20261004",
+    "VibocerosOracleMaelstromCircleMemory_20261004",
+    "VibocerosOracleMaelstromCirclePoints_20261004",
+    "VibocerosOracleMaelstromCircleAngles_20261004",
+    "VibocerosOracleCircleDiameterRotated_20261004"
+  ],
+  "comparison": {
+    "frame_radius_point_epsilon": 1e-11,
+    "completed_sdk_point_maps": 51,
+    "selection": "Exact command-end, Undo and Redo selection; extra post-command Cancel replayed before history."
+  },
+  "scope_notes": [
+    "Owned public command/API outputs only; no proprietary source inspected.",
+    "Circle commands and Maelstrom independently remember Radius/Diameter. Circumference/Area are temporary conversions.",
+    "Paired public Circle frames map native Maelstrom point outputs with maximum distance 2.18e-15 for the completed main recipes, zero for eight point-conversion and three remembered-radius recipes, and at most 7.70e-16 for four spatial coordinate-angle recipes.",
+    "Four cross-command recipes intentionally construct a differently sized Circle; their SDK point maps are excluded from deformation comparisons.",
+    "The six main Cancel/Enter radius steps omit paired Circle output; separate memory captures verify accepted defaults using completed deformation.",
+    "Earlier diagnostic retained separately; repeated current Radius/Diameter keywords launched transparent measurement commands. Verified outputs retain actual resolved_inputs.",
+    "Main/cross captures used the helper before adding the memory/point factories and generalizing the Circle-prefix count for Enter references. Stored requests and resolved_inputs identify their exact macro inputs.",
+    "Typed ProjectOsnap cases do not verify actual snapped picks. Advanced construction modes and their guide pixels, transparent measurement commands, extreme inputs and original native performance remain pending.",
+    "The four coordinate-angle recipes also retain the document Circle PointAtStart to check that the analytic frame preserves the curve seam. Earlier captures predate this additional response field.",
+    "Three Circle2Point public command captures on rotated CPlanes retain 17 samples each; the geometry regression also replays six earlier native Circle2Point curves."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/maelstrom_circle_probe.py": "6afecab79901389deb2009d2542143eb9dbf694973dd04142f1ca57aa2ab481c",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/maelstrom_circle.json": "ef7a95415faf19ad50f5020f13bd200983e1ae29ccb4f172ae3f41a4b74bb84d",
+    "tools/rhino_oracle/fixtures/maelstrom_circle_cross.json": "d37ebced55984416dfe8d9c69295050259e8e17d8f0d12afbb3905e3b7d0254f",
+    "tools/rhino_oracle/fixtures/maelstrom_circle_memory.json": "915772caf2616e62e241fe899da0e0a38d9f31d33be0ab0a288fc6fa26679f58",
+    "tools/rhino_oracle/fixtures/maelstrom_circle_point.json": "2b361f3096bb139d3e3e09cf02a6a372f166e57b077fb04dfdea702df68d79bf",
+    "tools/rhino_oracle/fixtures/maelstrom_circle_diagnostic.json": "639cd2b4b7579bf12ba1bd59c29583658590853562ea741d421b665ac39f0332",
+    "tools/rhino_oracle/observations/maelstrom_circle.json": "9a26ba6c7ab9638f281e6f926fd244bee9052b9dd4dd08a3b32916b5995cc000",
+    "tools/rhino_oracle/observations/maelstrom_circle_cross.json": "9e7e1ea1c6d5d8145ee36b7cbfab8e1fda858ed41b0d34af0fd223a28ec55dd7",
+    "tools/rhino_oracle/observations/maelstrom_circle_memory.json": "bf3fdea0c3f718df2b3961dfd6af872c4bda7e0f3667032a8fe094de91109f3f",
+    "tools/rhino_oracle/observations/maelstrom_circle_point.json": "43b7addd3e37b8dcc3f6ac7f9b01066352be7a613548782fd602178d8c4a59dd",
+    "tools/rhino_oracle/observations/maelstrom_circle_diagnostic.json": "ae8439ebaa04a3968f3182d8a2b5955a42837546406b6b5249ffd284cdb22da9",
+    "tools/rhino_oracle/fixtures/maelstrom_circle_angle.json": "043c3d01ff1fee1e2dea63fa8ec7ebe323b93c78af426b86c90f15bd46ad61c1",
+    "tools/rhino_oracle/observations/maelstrom_circle_angle.json": "3857bc61e1742487896c09e6dd5f17c032e7f961b4942d93441f4791872d3d71",
+    "tools/rhino_oracle/fixtures/circle_two_point_rotated.json": "16f4534f95ce8dea3062ee0c5917750724bba6e2a7d971dc716777914f27caf3",
+    "tools/rhino_oracle/observations/circle_two_point_rotated.json": "8e9c883bd5ad0611cc80f9e4e8a1b182414307b5698431707281cad83e1c754e",
+    "tools/rhino_oracle/fixtures/circle_two_point.json": "b58e1430c9f40bf24d3aa1e6c12ab3c0375c6f6c9e0b3423c4450fda2c8d661c",
+    "docs/circle-two-point-rhino-reference.json": "f646d90bd93f14f28fe354be1eba6f1219c177de19f1a1360c35943ca0250259"
+  },
+  "native_coordinate_angle_recipes": 4,
+  "native_rotated_cplane_recipes": 3
+}

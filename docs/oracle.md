@@ -21,6 +21,9 @@ Another 30 [Taper cursor captures](taper-preview.md) constrain quick previews,
 display modes and axis-normal mouse planes, with six earlier plane diagnostics
 retained separately. All were captured using private Xvfb settings schemes.
 
+The [Maelstrom Circle input captures](maelstrom-circle-input.md) compare public
+Circle definitions, command point maps, size memory, selection and history in
+private Xvfb sessions.
 The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;

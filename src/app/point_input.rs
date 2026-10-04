@@ -37,7 +37,8 @@ impl VibocerosApp {
         {
             self.curve_points.last().copied()
         } else {
-            self.active_command.and_then(InteractiveCommand::anchor)
+            self.maelstrom_circle_anchor()
+                .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
         };
         let Some(anchor) = anchor else {
             self.push_log("Error: distance and angle constraints require a previous point".into());

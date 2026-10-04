@@ -217,7 +217,8 @@ class OracleClient:
         worker_source = Path(__file__).with_name("rhino_worker.py")
         for family, module in [('maelstrom_geometry_command', 'maelstrom_command_probe'),
                                ('maelstrom_options_command', 'maelstrom_options_probe'),
-                               ('maelstrom_input_command', 'maelstrom_input_probe')]:
+                               ('maelstrom_input_command', 'maelstrom_input_probe'),
+                               ('maelstrom_circle_command', 'maelstrom_circle_probe')]:
             if any(op.get('op') == family for op in request.get('operations', [])):
                 from importlib import import_module
                 validate = import_module('.'+module, __package__).validate
@@ -623,8 +624,8 @@ class OracleClient:
             if any(op.get('op') == 'taper_options_command' for op in request.get('operations', [])):
                 for name in ('taper_options_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
-            if any(op.get('op') in ('maelstrom_geometry_command','maelstrom_options_command','maelstrom_input_command') for op in request.get('operations', [])):
-                for name in ('maelstrom_command_probe.py','maelstrom_options_probe.py','maelstrom_input_probe.py','number_token.py','twist_command_probe.py','join_probe.py','merge_edges_probe.py'):
+            if any(op.get('op') in ('maelstrom_geometry_command','maelstrom_options_command','maelstrom_input_command','maelstrom_circle_command') for op in request.get('operations', [])):
+                for name in ('maelstrom_command_probe.py','maelstrom_options_probe.py','maelstrom_input_probe.py','maelstrom_circle_probe.py','number_token.py','twist_command_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'taper_geometry_command' for op in request.get('operations', [])):
                 for name in ('taper_command_probe.py', 'number_token.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):

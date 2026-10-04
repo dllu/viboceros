@@ -1,6 +1,8 @@
 //! Maelstrom source selection, Circle radii and repeated coil-angle placements.
 use super::*;
+use viboceros_command::circle_input::{CircleDefinition, CircleInput, CircleSizeMode};
 use viboceros_command::maelstrom::{MaelstromRadius, circle_frame, coil_angle, point_morph};
+use viboceros_geometry::GeometryError;
 
 pub(super) struct MaelstromSession {
     sources: Vec<ObjectId>,
@@ -9,6 +11,7 @@ pub(super) struct MaelstromSession {
     group: viboceros_document::HistoryGroup,
     placed: bool,
     context: Option<viboceros_command::CommandContext>,
+    circle_getter: Option<CircleInput>,
     preview_cursor: Option<crate::viewport::MaelstromCursor>,
     preview_cache: std::cell::RefCell<crate::viewport::MaelstromPreviewCache>,
 }
@@ -20,7 +23,7 @@ impl MaelstromSession {
         cplane: Frame3,
     ) -> Option<crate::viewport::MaelstromPreview<'_>> {
         let InteractiveCommand::Maelstrom {
-            center: Some(center),
+            center,
             initial,
             target,
             options,
@@ -28,7 +31,9 @@ impl MaelstromSession {
         else {
             return None;
         };
+        let center = center.or_else(|| self.circle_getter.and_then(CircleInput::anchor))?;
         Some(crate::viewport::MaelstromPreview {
+            circle_getter: self.circle_getter,
             sources: &self.sources,
             center,
             initial,
@@ -62,6 +67,66 @@ impl VibocerosApp {
         session.preview_cursor = Some(cursor);
         true
     }
+    pub(super) fn maelstrom_circle_anchor(&self) -> Option<Point3> {
+        self.maelstrom_session.as_ref()?.circle_getter?.anchor()
+    }
+    fn push_maelstrom_prompt(&mut self) {
+        let command = self.active_command.unwrap();
+        let prompt = if matches!(
+            command,
+            InteractiveCommand::Maelstrom {
+                initial: Some(_),
+                target: None,
+                ..
+            }
+        ) && self.commands.maelstrom_uses_diameter()
+        {
+            "Maelstrom: enter or pick the second diameter; Copy, Rigid"
+        } else {
+            command.prompt()
+        };
+        self.push_log(prompt.into());
+    }
+    fn accept_maelstrom_circle(&mut self, circle: CircleDefinition) -> bool {
+        let Some(InteractiveCommand::Maelstrom { options, .. }) = self.active_command else {
+            return false;
+        };
+        self.commands.remember_maelstrom_radius(circle.radius);
+        self.commands.remember_maelstrom_copy_option(options.copy);
+        let session = self.maelstrom_session.as_mut().unwrap();
+        session.context = Some(viboceros_command::CommandContext {
+            construction_plane: circle.frame,
+        });
+        session.circle_getter = None;
+        session.preview_cursor = None;
+        self.drafting_plane = Some(circle.frame);
+        self.active_command = Some(InteractiveCommand::Maelstrom {
+            center: Some(circle.frame.origin()),
+            initial: Some(MaelstromRadius::Number(circle.radius)),
+            target: None,
+            options,
+        });
+        self.push_maelstrom_prompt();
+        true
+    }
+    fn continue_maelstrom_circle_result(
+        &mut self,
+        getter: CircleInput,
+        result: Result<Option<CircleDefinition>, GeometryError>,
+    ) -> bool {
+        match result {
+            Ok(Some(circle)) => self.accept_maelstrom_circle(circle),
+            Ok(None) => {
+                self.maelstrom_session.as_mut().unwrap().circle_getter = Some(getter);
+                self.push_log(getter.prompt().into());
+                true
+            }
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                false
+            }
+        }
+    }
     pub(super) fn start_maelstrom_session(&mut self, picked: Option<Vec<ObjectId>>) -> bool {
         let group = match self.document.begin_history_group("Maelstrom") {
             Ok(group) => group,
@@ -85,6 +150,10 @@ impl VibocerosApp {
             group,
             placed: false,
             context: None,
+            circle_getter: self.commands.maelstrom_uses_diameter().then(|| {
+                CircleInput::new(self.viewports[self.active_viewport].construction_plane())
+                    .with_size_mode(CircleSizeMode::Diameter)
+            }),
             preview_cursor: None,
             preview_cache: Default::default(),
         });
@@ -113,6 +182,43 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        if initial.is_none() {
+            let (option, value) = input
+                .trim()
+                .split_once('=')
+                .map_or((word, None), |(name, value)| (name, Some(value)));
+            let option = option.trim().trim_start_matches(['_', '-']);
+            let mut getter = session.circle_getter.unwrap_or_else(|| {
+                let plane = self.viewports[self.active_viewport].construction_plane();
+                center.map_or(CircleInput::new(plane), |center| {
+                    CircleInput::at_center(plane, center)
+                })
+            });
+            if getter.option(option) {
+                if option.eq_ignore_ascii_case("Diameter") {
+                    self.commands.remember_maelstrom_diameter(true);
+                }
+                if option.eq_ignore_ascii_case("Radius") && getter.has_size_mode() {
+                    self.commands.remember_maelstrom_diameter(false);
+                }
+                self.maelstrom_session.as_mut().unwrap().circle_getter = Some(getter);
+                if let Some(value) = value {
+                    match value.parse::<f64>() {
+                        Ok(value) => {
+                            let result = getter.number(value);
+                            self.continue_maelstrom_circle_result(getter, result);
+                        }
+                        Err(_) => {
+                            self.push_log("Error: circle size must be a finite number".into())
+                        }
+                    }
+                } else {
+                    self.push_log(getter.prompt().into());
+                }
+                self.command_input.clear();
+                return true;
+            }
+        }
         if let Some(name) = session.option.take() {
             match options.update(&format!("{name}={input}")) {
                 Ok(()) => self.update_maelstrom_options(center, initial, target, options),
@@ -130,7 +236,29 @@ impl VibocerosApp {
             return true;
         }
         if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
-            if center.is_some() && initial.is_none() {
+            if initial.is_none()
+                && self
+                    .maelstrom_session
+                    .as_ref()
+                    .and_then(|s| s.circle_getter)
+                    .is_some()
+            {
+                let mut getter = self
+                    .maelstrom_session
+                    .as_ref()
+                    .unwrap()
+                    .circle_getter
+                    .unwrap();
+                let radius = self.commands.maelstrom_radius_default();
+                let size = match getter.size_mode() {
+                    CircleSizeMode::Radius => radius,
+                    CircleSizeMode::Diameter => 2. * radius,
+                    CircleSizeMode::Circumference => std::f64::consts::TAU * radius,
+                    CircleSizeMode::Area => std::f64::consts::PI * radius * radius,
+                };
+                let result = getter.number(size);
+                self.continue_maelstrom_circle_result(getter, result);
+            } else if center.is_some() && initial.is_none() {
                 self.accept_maelstrom_radius(MaelstromRadius::Number(
                     self.commands.maelstrom_radius_default(),
                 ));
@@ -167,7 +295,22 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if center.is_none() {
+        if center.is_none()
+            && self
+                .maelstrom_session
+                .as_ref()
+                .and_then(|s| s.circle_getter)
+                .is_none()
+        {
+            return false;
+        }
+        if initial.is_none()
+            && self
+                .maelstrom_session
+                .as_ref()
+                .and_then(|s| s.circle_getter)
+                .is_some_and(|getter| !getter.requests_size())
+        {
             return false;
         }
         // At radius prompts a scalar is a size, before common drafting input
@@ -192,7 +335,21 @@ impl VibocerosApp {
                     self.finish_maelstrom(v);
                 }
                 Ok(v) => {
-                    self.accept_maelstrom_radius(MaelstromRadius::Number(v));
+                    if let Some(mut getter) = self
+                        .maelstrom_session
+                        .as_ref()
+                        .and_then(|s| s.circle_getter)
+                    {
+                        let result = getter.number(v);
+                        self.continue_maelstrom_circle_result(getter, result);
+                    } else {
+                        let v = if initial.is_some() && self.commands.maelstrom_uses_diameter() {
+                            v * 0.5
+                        } else {
+                            v
+                        };
+                        self.accept_maelstrom_radius(MaelstromRadius::Number(v));
+                    }
                 }
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
@@ -236,6 +393,14 @@ impl VibocerosApp {
         {
             return false;
         }
+        if let Some(mut getter) = self
+            .maelstrom_session
+            .as_ref()
+            .and_then(|s| s.circle_getter)
+        {
+            let result = getter.point(point);
+            return self.continue_maelstrom_circle_result(getter, result);
+        }
         let Some(center) = center else {
             self.active_command = Some(InteractiveCommand::Maelstrom {
                 center: Some(point),
@@ -244,7 +409,7 @@ impl VibocerosApp {
                 options,
             });
             self.push_log(format!(
-                "First radius <{}>",
+                "First radius <{}>; Diameter, Orientation, Circumference, Area",
                 self.commands.maelstrom_radius_default()
             ));
             return true;
@@ -310,7 +475,7 @@ impl VibocerosApp {
             options,
         });
         self.maelstrom_session.as_mut().unwrap().preview_cursor = None;
-        self.push_log(self.active_command.unwrap().prompt().into());
+        self.push_maelstrom_prompt();
         true
     }
 
@@ -332,11 +497,19 @@ impl VibocerosApp {
             .map(ToString::to_string)
             .collect::<Vec<_>>()
             .join(",");
+        // The command adapter uses the remembered numeric size mode. The
+        // session stores physical radii and serializes them in that mode.
+        let display_size = |r| match r {
+            MaelstromRadius::Number(v) if self.commands.maelstrom_uses_diameter() => {
+                MaelstromRadius::Number(v * 2.)
+            }
+            r => r,
+        };
         let input = format!(
             "Maelstrom {} {} {} {degrees} {} {}={sources}",
             format_model_point(center),
-            initial.command_argument(),
-            target.command_argument(),
+            display_size(initial).command_argument(),
+            display_size(target).command_argument(),
             options.command_options(),
             if session.postselected {
                 "PickedSources"

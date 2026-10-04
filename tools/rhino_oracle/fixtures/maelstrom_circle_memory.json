@@ -1,0 +1,195 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-0",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        8.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-1",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Diameter",
+        8.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-2",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-3",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Circumference",
+        12.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-4",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        16.0
+      ],
+      "circle_inputs": null,
+      "target": 5.0,
+      "degrees": 90.0
+    },
+    {
+      "op": "maelstrom_circle_command",
+      "id": "maelstrom-circle-memory-5",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        null,
+        "Copy=No",
+        "Rigid=No",
+        5.0,
+        90.0
+      ],
+      "circle_inputs": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Area",
+        16.0
+      ],
+      "target": 5.0,
+      "degrees": 90.0
+    }
+  ]
+}

@@ -13,7 +13,10 @@ Undo
 Maelstrom 0,0,0 0,2,7 -5,0,9 -90 Copy=Yes
 ```
 
-The two radii can be numbers or comma-separated world points. A numeric first
+The two sizes can be numbers or comma-separated world points. Numbers follow
+the remembered Radius/Diameter mode, which initially uses Radius. Diameter
+numbers divide by two for both sizes; coordinate picks retain their radius
+interpretation. A numeric first
 radius retains the active construction plane. A first radius point uses its full
 distance from the center and orients the circle through that point, projecting
 the preferred construction-plane normal perpendicular to its radial direction.
@@ -88,8 +91,11 @@ retain the nearest accumulated turn. Center and axial picks accept that nearest
 turn at zero degrees. Explicit numeric angles retain the supplied number.
 
 [Live previews](../maelstrom-preview.md) show both black circle guides and
-cached deformation wires. Circle's alternative construction modes remain to
-implement.
+cached deformation wires. The [first-circle getter](../maelstrom-circle-input.md)
+supports Radius/Diameter, Circumference, Area, Vertical, Orientation, 2Point,
+3Point and three-point Radius construction. Radius/Diameter is remembered and
+also controls numeric second-size input; Circumference and Area are temporary
+conversions. Pending Circle definitions create no model object.
 
 ## Retained verification
 
@@ -122,8 +128,11 @@ group membership and command selection/history are checked separately. Radius
 diagnostics append Cancel to end a potentially rejected getter; when it already
 succeeded, that extra command owns the later selection cleanup.
 
+The [Circle input record](../maelstrom-circle-input.md) adds owned native
+construction and size-memory comparisons.
+
 These are sampled witnesses, not a continuous error certificate or exhaustive
-Rhino parity. Complex trimmed shapes, other Circle construction choices,
+Rhino parity. Complex trimmed shapes, remaining Circle construction choices,
 and original native performance comparisons remain unverified.
 [Live previews](../maelstrom-preview.md) retain Circle guides, full mouse turns,
 source cages and all display modes with separate native evidence.

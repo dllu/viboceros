@@ -272,11 +272,13 @@ pub fn deformed_geometries(
 
 pub(super) struct MaelstromPreferences {
     radius: remembered::Remembered<Real>,
+    diameter: remembered::Remembered<bool>,
 }
 impl Default for MaelstromPreferences {
     fn default() -> Self {
         Self {
             radius: remembered::Remembered::new(1.),
+            diameter: remembered::Remembered::new(false),
         }
     }
 }
@@ -289,6 +291,12 @@ impl CommandRegistry {
     }
     pub fn maelstrom_radius_default(&self) -> Real {
         self.maelstrom_preferences.radius.get()
+    }
+    pub fn maelstrom_uses_diameter(&self) -> bool {
+        self.maelstrom_preferences.diameter.get()
+    }
+    pub fn remember_maelstrom_diameter(&self, diameter: bool) {
+        self.maelstrom_preferences.diameter.set(diameter);
     }
     /// The first Circle radius saves when accepted, including a later Cancel.
     pub fn remember_maelstrom_radius(&self, radius: Real) -> bool {
@@ -331,7 +339,11 @@ impl Command for MaelstromCommand {
             MaelstromOptions::from_arguments(&arguments, MaelstromOptions::default())?;
         let (center, n) = parse_point(&positional)?;
         require_consumed(&positional, n + 3, USAGE)?;
-        let initial = MaelstromRadius::parse(positional[n])?;
+        let size = |v| match v {
+            MaelstromRadius::Number(v) if self.0.diameter.get() => MaelstromRadius::Number(v * 0.5),
+            v => v,
+        };
+        let initial = size(MaelstromRadius::parse(positional[n])?);
         let frame = circle_frame(center, initial, context)?;
         let first_radius = initial.radius(frame)?;
         if first_radius <= SDK_ZERO {
@@ -344,7 +356,7 @@ impl Command for MaelstromCommand {
         // rollback. They save after the first Circle radius is accepted.
         self.0.radius.set(first_radius);
         self.1.complete("Maelstrom", options.copy);
-        let target = MaelstromRadius::parse(positional[n + 1])?;
+        let target = size(MaelstromRadius::parse(positional[n + 1])?);
         let angle = positional[n + 2];
         let degrees = if angle.contains(',') {
             let (point, consumed) = parse_point(&[angle])?;

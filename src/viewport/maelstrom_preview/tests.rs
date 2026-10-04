@@ -41,6 +41,7 @@ fn preview<'a>(
         WorldPlane::Top.frame()
     };
     MaelstromPreview {
+        circle_getter: None,
         sources: ids,
         cache,
         center: cplane.origin(),
@@ -509,4 +510,95 @@ fn maelstrom_mouse_click_plane_filter_and_radius_guides_match_native_frames() {
         }
         assert!(!doc.can_undo());
     }
+}
+
+#[test]
+fn pending_construction_circles_match_native_definitions_without_model_edits() {
+    use viboceros_command::circle_input::{CircleInput, CircleSizeMode};
+    let mut checked = 0;
+    for (fixture, observed) in [
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle.json"),
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle_point.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle_point.json"),
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/maelstrom_circle_angle.json"),
+            include_str!("../../../tools/rhino_oracle/observations/maelstrom_circle_angle.json"),
+        ),
+    ] {
+        let fixture: Value = serde_json::from_str(fixture).unwrap();
+        let observed: Value = serde_json::from_str(observed).unwrap();
+        let mut diameter = false;
+        for (op, row) in fixture["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(observed["results"].as_array().unwrap())
+        {
+            let v = &row["value"];
+            let plane = Frame3::try_from_normal(
+                p(&op["origin"]),
+                viboceros_geometry::Vector3::try_from(p(&op["normal"]).to_array()).unwrap(),
+                Tolerance::NUMERICAL_VALIDATION,
+            )
+            .unwrap();
+            let mut getter = CircleInput::new(plane).with_size_mode(if diameter {
+                CircleSizeMode::Diameter
+            } else {
+                CircleSizeMode::Radius
+            });
+            diameter = v["diameter"].as_bool().unwrap();
+            if v["circle"].is_null() {
+                continue;
+            }
+            let inputs = v["resolved_inputs"].as_array().unwrap();
+            let inputs = &inputs[..inputs.len() - 4];
+            let Some(cursor) = inputs.last().filter(|value| value.is_array()) else {
+                continue;
+            };
+            for value in &inputs[..inputs.len() - 1] {
+                if let Some(name) = value.as_str() {
+                    if !name.starts_with("ProjectOsnap=") {
+                        assert!(getter.option(name));
+                    }
+                } else if value.is_array() {
+                    assert!(getter.point(p(value)).unwrap().is_none());
+                } else {
+                    assert!(getter.number(value.as_f64().unwrap()).unwrap().is_none());
+                }
+            }
+            let cache = RefCell::new(MaelstromPreviewCache::default());
+            let preview = MaelstromPreview {
+                circle_getter: Some(getter),
+                sources: &[],
+                center: getter.anchor().unwrap(),
+                initial: None,
+                target: None,
+                options: MaelstromOptions::default(),
+                cplane: plane,
+                last: None,
+                cache: &cache,
+            };
+            let circles = preview.circles(Some(p(cursor)));
+            assert_eq!(circles.len(), 1, "{}", op["id"]);
+            let (frame, radius) = circles[0];
+            let native = &v["circle"];
+            assert!(frame.origin().distance_to(p(&native["origin"])).unwrap() < 1e-11);
+            assert!(
+                Point3::try_from(frame.x_axis().as_vector().to_array())
+                    .unwrap()
+                    .distance_to(p(&native["x"]))
+                    .unwrap()
+                    < 1e-11
+            );
+            assert!((radius - native["radius"].as_f64().unwrap()).abs() < 1e-11);
+            assert_eq!(getter, preview.circle_getter.unwrap());
+            checked += 1;
+        }
+    }
+    assert_eq!(checked, 33);
 }

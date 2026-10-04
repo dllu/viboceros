@@ -104,6 +104,7 @@ impl Circle3 {
     }
     /// Constructs a diameter circle, orienting its plane as close as possible
     /// to the supplied construction plane. The diameter cannot be normal to it.
+    /// The seam uses the deterministic axes of the resulting plane.
     pub fn try_from_diameter_on_plane(
         first: Point3,
         second: Point3,
@@ -122,25 +123,8 @@ impl Circle3 {
             (-up_projection).mul_add(diameter_axis.z(), up.z()),
         )?;
         let normal = projected_normal.normalized(tolerance)?;
-        let x = construction_plane.x_axis().as_vector();
-        let x_projection = x.dot(normal.as_vector())?;
-        let x_axis = Vector3::try_new(
-            (-x_projection).mul_add(normal.x(), x.x()),
-            (-x_projection).mul_add(normal.y(), x.y()),
-            (-x_projection).mul_add(normal.z(), x.z()),
-        )?
-        .normalized(tolerance)
-        .or_else(|_| {
-            let y = construction_plane.y_axis().as_vector();
-            let y_projection = y.dot(normal.as_vector())?;
-            Vector3::try_new(
-                (-y_projection).mul_add(normal.x(), y.x()),
-                (-y_projection).mul_add(normal.y(), y.y()),
-                (-y_projection).mul_add(normal.z(), y.z()),
-            )?
-            .normalized(tolerance)
-        })?;
-        Self::try_from_frame(center, radius, x_axis, normal, tolerance)
+        let frame = Frame3::try_from_normal(center, normal.as_vector(), tolerance)?;
+        Self::try_from_frame(center, radius, frame.x_axis(), normal, tolerance)
     }
     /// Constructs a circle in a plane perpendicular to the construction plane.
     /// The direction point sets the seam; `radius` may independently constrain
