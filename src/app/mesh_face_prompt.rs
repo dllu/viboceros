@@ -14,6 +14,10 @@ impl VibocerosApp {
             self.accept_move_normal_reference(object, Some(face));
             return;
         }
+        if self.picking_scale_by_plane_object() {
+            self.accept_scale_by_plane_object(object, Some(face));
+            return;
+        }
         if self.picking_mirror_object() {
             self.accept_mirror_object(object, Some(face));
             return;

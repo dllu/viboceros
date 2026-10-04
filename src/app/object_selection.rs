@@ -158,6 +158,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_scale_by_plane_object() {
+            return Some(ObjectSelectionFilter::Any);
+        }
         if self.picking_mirror_object() {
             return Some(ObjectSelectionFilter::SurfaceComponents);
         }

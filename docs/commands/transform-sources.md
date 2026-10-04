@@ -2,7 +2,7 @@
 
 [Transforms](transforms.md) · [Copy and history](transform-copy.md)
 
-Enter `Move`, `Copy`, `Scale`, `Scale1D`, `Scale2D`, [`ScaleNU`](scale-nu.md), `Rotate`, `Rotate3D`,
+Enter `Move`, `Copy`, `Scale`, `Scale1D`, `Scale2D`, [`ScaleNU`](scale-nu.md), [`ScaleByPlane`](scale-by-plane.md), `Rotate`, `Rotate3D`,
 `Mirror`, or `Shear` with no objects selected. Pick the source objects, then press Enter
 to continue to the command's point prompts. Clicks and selection windows use
 the normal group picking policy; `SelID object-id` selects one object directly.

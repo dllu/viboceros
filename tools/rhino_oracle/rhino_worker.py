@@ -6810,6 +6810,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'scale_positions':
         from scale_positions_probe import run
         return run(operation, globals())
+    if kind == 'scale_by_plane':
+        from scale_by_plane_probe import run
+        return run(operation, globals())
     if kind == 'point_input_precision':
         from point_input_precision_probe import run
         return run(operation, globals())
@@ -16615,7 +16618,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision") for op in request.get("operations", [])):
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane") for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

@@ -13,6 +13,10 @@ edit definition. Copy duplicates the owner with only those controls changed.
 [`ScalePositions`](scale-positions.md) instead translates whole objects by their
 individual tight centers, preserving shapes and using its own grip and group rules.
 
+[`ScaleByPlane`](scale-by-plane.md) uses two reference points to scale the X and
+Y directions of a chosen plane independently, with signed ratios, rigid
+placement, and repeated copies.
+
 [Bend](bend.md) deforms objects along a circular spine, with through-point or
 fixed-angle construction, rigid groups and repeated copies.
 [Taper](taper.md) deforms radial distances along an axis, with flat direction
@@ -20,7 +24,7 @@ picks, construction-plane orientation and repeated copies.
 [Twist](twist.md) supports axis-angle or reference-direction deformation and
 live object previews.
 
-Move, Copy, Scale, Scale1D, Scale2D, ScaleNU, ScalePositions, Rotate, Rotate3D, Mirror, and Shear can start with
+Move, Copy, Scale, Scale1D, Scale2D, ScaleByPlane, ScaleNU, ScalePositions, Rotate, Rotate3D, Mirror, and Shear can start with
 no objects selected: [pick sources first, then Enter](transform-sources.md).
 
 With objects selected, enter `Move` or `Copy`

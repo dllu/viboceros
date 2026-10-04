@@ -11,6 +11,7 @@ pub(super) fn allows_grips(command: &str) -> bool {
             | "Scale"
             | "Scale1D"
             | "Scale2D"
+            | "ScaleByPlane"
             | "ScaleNU"
             | "Rotate"
             | "Rotate3D"

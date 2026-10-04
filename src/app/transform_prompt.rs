@@ -44,6 +44,11 @@ impl TransformSession {
                 center,
                 factor: self.factor?,
             },
+            InteractiveCommand::ScaleByPlane(prompt) => PointTransform::ScaleByPlane {
+                origin: prompt.origin?,
+                reference: prompt.reference?,
+                plane: prompt.plane?,
+            },
             InteractiveCommand::ScaleNu(prompt) => PointTransform::ScaleNU {
                 origin: prompt.origin?,
                 reference: prompt.reference,
@@ -104,7 +109,11 @@ impl TransformSession {
             sources: &self.sources,
             grips: &self.grips,
             definition,
-            frame: (!matches!(definition, PointTransform::Scale2D { .. })).then_some(plane),
+            frame: match definition {
+                PointTransform::ScaleByPlane { plane, .. } => Some(plane),
+                PointTransform::Scale2D { .. } => None,
+                _ => Some(plane),
+            },
             copy: self.copy,
             last_transform,
             rigid_layout: self.rigid_layout.as_ref(),
@@ -138,6 +147,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
     matches!(
         command,
         InteractiveCommand::Scale { .. }
+            | InteractiveCommand::ScaleByPlane(_)
             | InteractiveCommand::ScaleNu(_)
             | InteractiveCommand::ScalePositions(_)
             | InteractiveCommand::Rotate { .. }
@@ -155,6 +165,7 @@ pub(super) fn supports_name(name: &str) -> bool {
         "scale"
             | "scale1d"
             | "scale2d"
+            | "scalebyplane"
             | "scalenu"
             | "scalepositions"
             | "rotate"
@@ -189,6 +200,16 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
         viboceros_command::mirror::start_options(arguments, default)
             .ok()
             .map(|(_, copy)| copy)
+    } else if name == "scalebyplane" {
+        viboceros_command::scale_by_plane::start_options(
+            arguments,
+            viboceros_command::scale_by_plane::Options {
+                copy: default,
+                ..Default::default()
+            },
+        )
+        .ok()
+        .map(|options| options.copy)
     } else if name == "scalenu" {
         viboceros_command::nonuniform_scale::start_options(
             arguments,
@@ -316,6 +337,14 @@ impl VibocerosApp {
                         return false;
                     }
                 }
+                if let InteractiveCommand::ScaleByPlane(prompt) = command {
+                    self.commands
+                        .remember_rigid_option("ScaleByPlane", prompt.options.rigid);
+                    if prompt.options.rigid && !self.update_scale_nu_rigid_layout(true) {
+                        self.transform_session = None;
+                        return false;
+                    }
+                }
                 if let InteractiveCommand::ScalePositions(_) = command {
                     let session = self.transform_session.as_mut().unwrap();
                     match viboceros_command::rigid_transform::RigidLayout::try_individual(
@@ -379,7 +408,9 @@ impl VibocerosApp {
             super::transform_sources::grip_argument(&session.grips, session.postselected)
         );
         let context = viboceros_command::CommandContext {
-            construction_plane: if matches!(
+            construction_plane: if let InteractiveCommand::ScaleByPlane(prompt) = continuation {
+                prompt.plane.expect("accepted ScaleByPlane frame")
+            } else if matches!(
                 continuation,
                 InteractiveCommand::Rotate { .. }
                     | InteractiveCommand::Shear { .. }
@@ -412,6 +443,7 @@ impl VibocerosApp {
                 {
                     self.active_command = Some(continuation);
                     let action = match continuation {
+                        InteractiveCommand::ScaleByPlane(_) => "Pick another target",
                         InteractiveCommand::ScaleNu(_) => "Type an X factor or pick a reference",
                         InteractiveCommand::ScalePositions(prompt) => {
                             if prompt.factor.is_some() {
@@ -567,6 +599,9 @@ impl VibocerosApp {
                 self.push_log("Enter Copy=Yes or Copy=No".into());
             }
             self.command_input.clear();
+            return true;
+        }
+        if self.try_continue_scale_by_plane(input) {
             return true;
         }
         if self.try_continue_scale_nu(input) {

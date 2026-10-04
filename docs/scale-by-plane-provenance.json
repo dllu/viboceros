@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOracleScaleByPlaneRecorded_20261004",
+    "VibocerosOracleScaleByPlaneExact_20261004"
+  ],
+  "native_recipes": 106,
+  "application_replays": 212,
+  "comparison_absolute_epsilon": 1e-09,
+  "known_display_exclusions": [
+    "scale-by-plane-52",
+    "scale-by-plane-53",
+    "scale-by-plane-54"
+  ],
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK outputs were inspected in empty owned documents on private Xvfb, at idle outside RunPythonScript Undo.",
+    "58 geometry/plane/selection recipes and 48 component-cutoff/FromView recipes retain EndCommand, post-macro, external Undo and Redo output and full command histories.",
+    "FromView input requires native motion acknowledgement and a click in the same owned viewport. World/tilted CPlanes in Top, Front and Perspective distinguish effective CPlane axes from SDK camera axes.",
+    "Exact 1e-6 component input and adjacent doubles at an origin of zero witness an inclusive cutoff for each reference/target component. Normal components are ignored; signed ratios reflect axes.",
+    "212 complete/incremental application replays compare all 106 recipes at absolute epsilon 1e-9. Three Rigid parent/grip recipes exclude cursor-dependent temporary display coordinates while comparing unchanged geometry, grip selection and external history.",
+    "Prescribed mouse reference workflows, native preview appearance, SubCrv input, arbitrary Object curve/trimmed-face frames, unusual groups, extreme inputs, performance and full parity remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_by_plane_probe.py": "8db87e4f4e7ba3a289479a1615643375a70acad0c042bd8b7834a1e06ddcb358",
+    "tools/rhino_oracle/scale_by_plane_input.py": "c6e241d4cd11b401ecba2103451dd70a6a97767cdc83d07e6ba0823811b9f84a",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/shrink_face_input.py": "bb3842f6ba6929f43d770c00e40ad5184e0bb2f88e8c5d9e8f94eb0c33ffa51f",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/scale_by_plane.json": "a5d0b5ede457a496bb0d9cf80bb56c55f235caa56e51ca11135b748a98da0768",
+    "tools/rhino_oracle/fixtures/scale_by_plane_boundary.json": "abf97508273f0f347b484efeab79f0389c4d6c58b615fc63a60432d184a32dc0",
+    "tools/rhino_oracle/observations/scale_by_plane.json": "caf0fe79c6f04409da430e915901719e0ad09cfb56e3c3332cffa40dce44872d",
+    "tools/rhino_oracle/observations/scale_by_plane_boundary.json": "729341651bfa63dbd6839db80b5c839a7661137cbd5a9e43d009121e3a7cffd4"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "717751eb54631d5e154e64ad2a55ab812f6fc5f42f38c6ec8db1e48ad094a901",
+    "tools/rhino_oracle/rhino_worker.py": "a072f257e5c46f8ad0c47f8f025e96f200365a2dc4f4f3780fd79c5fed8ef2b9"
+  }
+}

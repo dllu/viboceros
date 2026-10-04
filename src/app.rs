@@ -164,6 +164,7 @@ mod point_input;
 mod points;
 mod preferences;
 mod radius;
+mod scale_by_plane;
 mod scale_nu;
 mod scale_positions;
 mod set_point;
@@ -614,6 +615,7 @@ enum InteractiveCommand {
         rotate: bool,
         z_offset: f64,
     },
+    ScaleByPlane(viboceros_command::scale_by_plane::Prompt),
     ScaleNu(viboceros_command::nonuniform_scale::ScaleNuPrompt),
     ScalePositions(viboceros_command::scale_positions::ScalePositionsPrompt),
     Scale {
@@ -767,6 +769,7 @@ impl InteractiveCommand {
             Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
+            Self::ScaleByPlane(_) => "ScaleByPlane",
             Self::ScaleNu(_) => "ScaleNU",
             Self::ScalePositions(_) => "ScalePositions",
             Self::Rotate { .. } => "Rotate",
@@ -785,6 +788,7 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::ScaleByPlane(prompt) => prompt.prompt(),
             Self::ScaleNu(prompt) => prompt.prompt(),
             Self::ScalePositions(prompt) => prompt.prompt(),
             Self::Angle {
@@ -1515,6 +1519,10 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::ScaleByPlane(prompt) => match (prompt.origin, prompt.plane_points) {
+                (Some(p), _) | (_, [_, Some(p)]) | (_, [Some(p), _]) => Some(p),
+                _ => None,
+            },
             Self::ScaleNu(prompt) => prompt.origin,
             Self::ScalePositions(prompt) => prompt.origin,
             Self::Angle {
@@ -1822,6 +1830,7 @@ impl InteractiveCommand {
 
     const fn reference(self) -> Option<Point3> {
         match self {
+            Self::ScaleByPlane(prompt) => prompt.reference,
             Self::ScaleNu(prompt) => prompt.reference,
             Self::ScalePositions(prompt) => prompt.reference,
             Self::Scale { reference, .. }
@@ -4735,6 +4744,21 @@ impl VibocerosApp {
                     center: None,
                     reference: None,
                 },
+                "scalebyplane" => {
+                    use viboceros_command::scale_by_plane::{Options, Prompt, start_options};
+                    let options = start_options(
+                        &arguments,
+                        Options {
+                            rigid: self.commands.rigid_option_default("ScaleByPlane").unwrap(),
+                            ..Default::default()
+                        },
+                    )
+                    .unwrap();
+                    InteractiveCommand::ScaleByPlane(Prompt::new(
+                        options,
+                        self.viewports[self.active_viewport].construction_plane(),
+                    ))
+                }
                 "scalenu" => {
                     use viboceros_command::nonuniform_scale::{
                         ScaleNuOptions, ScaleNuPrompt, start_options,
@@ -4820,6 +4844,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Distribute { .. }
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
+                | InteractiveCommand::ScaleByPlane(_)
                 | InteractiveCommand::ScaleNu(_)
                 | InteractiveCommand::ScalePositions(_)
                 | InteractiveCommand::Rotate { .. }
@@ -5005,6 +5030,9 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::ScaleByPlane(prompt) => {
+                return self.accept_scale_by_plane_point(prompt, point);
+            }
             InteractiveCommand::ScaleNu(prompt) => {
                 return self.accept_scale_nu_point(prompt, point);
             }
@@ -7609,6 +7637,12 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.picking_scale_by_plane_object() {
+            if let Some(id) = click.object_id {
+                self.accept_scale_by_plane_object(id, None);
+            }
+            return;
+        }
         if self.picking_mirror_object() {
             if let Some(id) = click.object_id {
                 self.accept_mirror_object(id, None);
@@ -8096,7 +8130,10 @@ impl VibocerosApp {
             return;
         }
         self.selection_window_override = None;
-        if self.picking_alignment_curve() {
+        if self.picking_alignment_curve()
+            || self.picking_scale_by_plane_object()
+            || self.picking_scale_by_plane_view()
+        {
             // This phase needs one target; a window must not change the sources.
             return;
         }
@@ -8134,6 +8171,12 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self.picking_scale_by_plane_view() {
+            if output.source_viewport_click {
+                self.accept_scale_by_plane_view(self.active_viewport);
+            }
+            return true;
+        }
         if let Some(selection) = output.control_point_selection.take() {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
                 prompt.description.command == "Circle FitPoints"
@@ -8501,6 +8544,8 @@ impl eframe::App for VibocerosApp {
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
+                && !self.picking_scale_by_plane_object()
+                && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
@@ -8653,7 +8698,7 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.selecting_move_normal_reference() {
             Some(FacePickMode::SurfaceAndBrepAny)
-        } else if self.picking_mirror_object() {
+        } else if self.picking_mirror_object() || self.picking_scale_by_plane_object() {
             Some(FacePickMode::SurfaceAndBrepAny)
         } else if plane_object_pick && !plane_curve_pick {
             Some(if plane_surface_pick {
@@ -8872,6 +8917,16 @@ impl eframe::App for VibocerosApp {
         )
         .then_some(self.drafting_plane)
         .flatten()
+        .or_else(|| {
+            if let Some(InteractiveCommand::ScaleByPlane(prompt)) = self.active_command {
+                prompt
+                    .plane
+                    .zip(prompt.origin)
+                    .map(|(plane, origin)| plane.with_origin(origin))
+            } else {
+                None
+            }
+        })
         .or_else(|| {
             maelstrom_preview
                 .and_then(|p| p.circle_getter)
@@ -9231,6 +9286,7 @@ mod tests {
     mod points;
     mod radius;
     mod rhino_curve_prompt;
+    mod scale_by_plane;
     mod scale_nu;
     mod scale_positions;
     mod set_point;

@@ -363,6 +363,13 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'scale_by_plane' for op in request.get('operations', [])):
+            from .scale_by_plane_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('ScaleByPlane requires a private settings scheme')
+            validate_request(request)
+            from .scale_by_plane_input import ScaleByPlaneViewPicker
+            interaction = ScaleByPlaneViewPicker(request)
         if any(op.get('op') == 'point_input_precision' for op in request.get('operations', [])):
             from .point_input_precision_probe import validate_request
             if self.settings_scheme is None:
@@ -650,6 +657,9 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'scale_by_plane' for op in request.get('operations', [])):
+                for name in ('scale_by_plane_probe.py','grip_transform_probe.py','join_probe.py','merge_edges_probe.py','number_token.py','shrink_face_input.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'scale_positions' for op in request.get('operations', [])):
                 for name in ('scale_positions_probe.py','grip_transform_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
@@ -952,6 +962,8 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
+        if any(op.get("op") == "scale_by_plane" for op in request.get("operations", [])):
+            interaction.record_diagnostics(response)
         if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview','maelstrom_preview','scale_nu_reference') for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):

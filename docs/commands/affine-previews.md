@@ -23,6 +23,11 @@ would overflow, the whole source batch retains its previous preview.
 
 [ScaleNU](scale-nu.md) previews staged axis factors and its current reference distance.
 Its native mouse-preview fidelity is unproven.
+
+[ScaleByPlane](scale-by-plane.md) previews independent reference ratios in its
+chosen plane, retaining the same map for execution and repeated Copy targets.
+Its native preview appearance remains unverified.
+
 [ScalePositions](scale-positions.md) shares the rigid display instances but caches
 individual object centers regardless of grouping. Its previews preserve shape
 and include translated bounds; native preview appearance remains unverified.

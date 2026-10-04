@@ -24,6 +24,11 @@ pub enum PointTransform {
         axis: usize,
         plane: Frame3,
     },
+    ScaleByPlane {
+        origin: Point3,
+        reference: Point3,
+        plane: Frame3,
+    },
     ScalePositions {
         origin: Point3,
         reference: Option<Point3>,
@@ -59,6 +64,13 @@ impl PointTransform {
         tolerance: Tolerance,
     ) -> Result<AffineTransform3, CommandError> {
         match self {
+            Self::ScaleByPlane {
+                origin,
+                reference,
+                plane,
+            } => Ok(crate::scale_by_plane::scale_map(
+                plane, origin, reference, target,
+            )?),
             Self::ScalePositions {
                 origin,
                 reference,
@@ -205,7 +217,9 @@ impl PointTransform {
     /// Rotate3D free mouse angles come from the viewing line's intersection
     /// with the plane perpendicular to the chosen axis through its start.
     pub fn mouse_plane(self, tolerance: Tolerance) -> Option<(Point3, UnitVector3)> {
-        if let Self::Rotate3D { start, end, .. } = self {
+        if let Self::ScaleByPlane { origin, plane, .. } = self {
+            Some((origin, plane.z_axis()))
+        } else if let Self::Rotate3D { start, end, .. } = self {
             Some((
                 start,
                 start.vector_to(end).ok()?.normalized(tolerance).ok()?,

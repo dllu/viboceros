@@ -39,6 +39,7 @@ Rhino's complete command set is still a work in progress.
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [Transforms and arrays](transforms.md)
+- [Independent reference scaling by plane](scale-by-plane.md)
 - [Scale individual object positions](scale-positions.md)
 - [Axis Twist deformation and rigid placement](twist.md)
 - [Circular spine Bend deformation and rigid placement](bend.md)
