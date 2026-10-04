@@ -1,0 +1,45 @@
+{
+  "comparison": {
+    "fitted_line_sample_error": 2e-05,
+    "native_points_absolute": 1e-11,
+    "release_replay_maximum_observed_coordinate_error": 5.329070518200751e-15,
+    "rigid_coordinates_absolute": 1e-07,
+    "sdk_coordinates_absolute": 1e-11,
+    "sdk_coordinates_relative": 1e-12
+  },
+  "engine_version": "8.32.26160.13001",
+  "native_point_commands": 8,
+  "notes": [
+    "Private settings schemes: VibocerosOracleMaelstromFoundation_20261003, VibocerosOracleMaelstromFollowup_20261003, VibocerosOracleMaelstromProfile_20261003, VibocerosOracleMaelstromThreshold_20261003.",
+    "Radii must exceed 2^-32. The exact boundary and adjacent binary64 values were passed directly to the public SDK.",
+    "Near-equal means abs(radius1-radius0) <= 2^-26 * radius0, distinguished from alternate relative and symmetric hypotheses by 48 threshold cases.",
+    "Near-equal radii use unbounded angle * radius / radius0. Unequal radii use a clamped cubic smoothstep from the fixed radius to the rotated radius, including reversed radius order.",
+    "Native point commands retain complete source, Copy, grouped Rigid, selection, Undo/Redo, command event and history witnesses. The zero-angle case remains geometrically unchanged.",
+    "Tiny and cardinal-angle sine/cosine components are retained by the SDK; the map does not use affine command cardinal cleanup.",
+    "SDK invalid definitions return original points. Rust public constructors return errors; the oracle adapter reproduces the SDK point no-op.",
+    "No proprietary source inspected. Preserved controls and fitted line contracts have independent Rust tests; native full-geometry and interactive behavior are pending.",
+    "The release-mode Python/Rust API replay matches all 108 SDK cases with no native errors; harness timings are not an original native Rhino kernel speed benchmark."
+  ],
+  "private_display": true,
+  "scope": "Public MaelstromSpaceMorph point maps and owned Maelstrom point commands. Foundation evidence; command registration, full geometry workflows and UI remain to implement.",
+  "sdk_cases": 108,
+  "sha256": {
+    "tools/rhino_oracle/fixtures/maelstrom_followup.json": "1e951bdc4cf4378b7d94bf9d1b6831bd4c72f8d94fa37906205dd5403e915957",
+    "tools/rhino_oracle/fixtures/maelstrom_points.json": "c84e5a9024317dcb8dd8fbbe4c72af0d525182ac76fc76c94aef3e6881e02d2a",
+    "tools/rhino_oracle/fixtures/maelstrom_profile_points.json": "80e3456e9b3b8fb9961ef23db2f6a1b2f0b8217504ad60a38a2a082b7c663de5",
+    "tools/rhino_oracle/fixtures/maelstrom_threshold_points.json": "ff3548de8885fc51ad076f8b7d8bbcdb6bbe51b913c05c8c8e331af7ee6d354c",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/maelstrom_probe.py": "ba32d35c3ad4844520c0191496fd826483a724dba483145b5216903d50476671",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/observations/maelstrom_followup.json": "14f85f4951683f4a60ae363365d3bf1c99594734d5e5d2aba87d37b5370c2399",
+    "tools/rhino_oracle/observations/maelstrom_points.json": "88dfaf2ed4ff55d1d2ab4eb8e5865cc01d9593c0a2e61dbf7090638b7ed0ba6b",
+    "tools/rhino_oracle/observations/maelstrom_profile_points.json": "571372ea1c327595c58b319e6f363f9ffbb62d8e9885fe75db4e7df2ffd4aca5",
+    "tools/rhino_oracle/observations/maelstrom_threshold_points.json": "19043bd78f2c41a0bcbe46b428a4847995c839b807a4dae5f88068c704808ba9"
+  },
+  "sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/maelstrom.htm",
+    "https://developer.rhino3d.com/api/cpp/class_c_rhino_maelstrom_space_morph.html",
+    "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_Morphs_MaelstromSpaceMorph.htm"
+  ]
+}

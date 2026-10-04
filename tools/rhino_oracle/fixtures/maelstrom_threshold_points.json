@@ -1,0 +1,1158 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-0",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0009999999852478504,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-1",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0009999999850988388,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-2",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0009999999849498273,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-3",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0009999999703466892,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-4",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0009999999701976777,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-5",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.000999999970048666,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-6",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0010000000147521496,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-7",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0010000000149011613,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-8",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.001000000015050173,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-9",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0010000000296533106,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-10",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0010000000298023223,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-11",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 0.001,
+      "radius1": 0.0010000000299513342,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          0.0015,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-12",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.9999999852478504,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-13",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.9999999850988388,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-14",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.9999999849498272,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-15",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.9999999703466892,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-16",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.9999999701976776,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-17",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 0.999999970048666,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-18",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.0000000147521495,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-19",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.0000000149011612,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-20",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.0000000150501729,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-21",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.0000000296533107,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-22",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.0000000298023224,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-23",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1.0,
+      "radius1": 1.000000029951334,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1.5,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-24",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.9999999704957008,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-25",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.9999999701976776,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-26",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.9999999698996545,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-27",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.9999999406933784,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-28",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.9999999403953552,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-29",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 1.999999940097332,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-30",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.000000029504299,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-31",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.0000000298023224,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-32",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.0000000301003458,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-33",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.0000000593066214,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-34",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.0000000596046448,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-35",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 2.000000059902668,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          3.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-36",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.9999852478504,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-37",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.9999850988388,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-38",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.9999849498272,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-39",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.9999703466892,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-40",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.9999701976776,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-41",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 999.999970048666,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-42",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000147521495,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-43",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000149011612,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-44",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000150501729,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-45",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000296533107,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-46",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000298023224,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "op": "maelstrom_points",
+      "id": "maelstrom-threshold-47",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 1000.0,
+      "radius1": 1000.0000299513341,
+      "angle_radians": 1.5707963267948966,
+      "points": [
+        [
+          1500.0,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ]
+}

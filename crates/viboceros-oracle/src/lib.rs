@@ -48,6 +48,8 @@ mod blend_curve;
 mod taper_points;
 pub use bend_points::BendPointFixture;
 pub use taper_points::TaperPointFixture;
+mod maelstrom_points;
+pub use maelstrom_points::MaelstromPointFixture;
 mod centroid_command;
 mod connect_command;
 mod construction_plane;
@@ -642,6 +644,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: TaperPointFixture,
+    },
+    MaelstromPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: MaelstromPointFixture,
     },
     SurfaceJets {
         id: String,
@@ -2145,6 +2152,7 @@ impl Operation {
             | Self::TwistPoints { id, .. }
             | Self::BendPoints { id, .. }
             | Self::TaperPoints { id, .. }
+            | Self::MaelstromPoints { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
             | Self::BrepMeshBoundaries { id, .. }
@@ -2722,6 +2730,9 @@ fn execute(
         Operation::BendPoints { fixture, .. } => bend_points::run(fixture, iterations, tolerance)?,
         Operation::TaperPoints { fixture, .. } => {
             taper_points::run(fixture, iterations, tolerance)?
+        }
+        Operation::MaelstromPoints { fixture, .. } => {
+            maelstrom_points::run(fixture, iterations, tolerance)?
         }
         Operation::TwistPoints {
             axis_start,

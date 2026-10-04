@@ -111,6 +111,10 @@ and retains sources for repeated copies. All flags save on successful outer
 completion, outside document history. Its [live preview](taper-preview.md) shares
 prepared morph cages, preserves pending isocurves in all display modes and uses
 an axis-normal radius mouse plane with an edge-on construction-plane fallback.
+The [Maelstrom foundation](maelstrom-geometry.md) adds cylindrical spiral maps,
+including the measured relative-radius threshold and raw tiny-angle rotations.
+It shares fitting and rigid placement with the other morph kernels; its command
+and interactive adapters remain to implement.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

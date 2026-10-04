@@ -56,6 +56,8 @@ mod bend;
 pub use bend::BendPointMorph;
 mod taper;
 pub use taper::TaperPointMorph;
+mod maelstrom;
+pub use maelstrom::MaelstromPointMorph;
 mod morph;
 mod nurbs;
 mod nurbs2;

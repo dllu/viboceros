@@ -21,6 +21,13 @@ Another 30 [Taper cursor captures](taper-preview.md) constrain quick previews,
 display modes and axis-normal mouse planes, with six earlier plane diagnostics
 retained separately. All were captured using private Xvfb settings schemes.
 
+The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
+maps and eight native point commands from private Xvfb. The Python/Rust
+`maelstrom_points` protocol replays validity, radial profiles and coordinates;
+actual commands constrain Copy, grouped Rigid, selection and Undo/Redo. This is
+geometry evidence; Maelstrom command registration and interactive input remain
+to implement.
+
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.
 Its [private-Xvfb Rhino 8.32 observation](../tools/rhino_oracle/observations/construction_plane_all.json)
