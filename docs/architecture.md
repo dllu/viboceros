@@ -117,7 +117,8 @@ It shares fitting and rigid placement with the other morph kernels. Its
 [command adapter](commands/maelstrom.md) stages selected geometry, resolves
 Circle plane/radius picks and projected second radii, supports Copy/Rigid and records unchanged replacements.
 Circle radius and Copy getter edits have their own preference policy; staged
-interactive input and previews remain to implement.
+interactive input supports source selection, radius and coil-angle getters, and
+repeated Copy placements in one Undo batch. Live deformed previews remain pending.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

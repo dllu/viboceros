@@ -1,0 +1,1392 @@
+{
+  "protocol_version": 1,
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "maelstrom-small-angle-0",
+      "value": {
+        "undo": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "before": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "redo": [
+          {
+            "source": 0,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": false,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              12.0
+            ]
+          }
+        ],
+        "success": true,
+        "history": "Command: _Maelstrom\nCenter of maelstrom ( Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): w0,0,0\nRadius <1.000> ( Diameter  Orientation  Circumference  Area  ProjectOsnap=Yes ): 20000000000000000e-16\nSecond radius ( Copy=No  Rigid=No ): _Copy=_No\nSecond radius ( Copy=No  Rigid=No ): _Rigid=_No\nSecond radius ( Copy=No  Rigid=No ): 50000000000000000e-16\nCoil angle ( Copy=No  Rigid=No ): w0,99999999999999998e-29,0\nMorphed 7 objects.\nCommand: _Cancel",
+        "after": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              1.9715907011415297,
+              1.0549076296871929,
+              12.0
+            ]
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "source": 0,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  -2.0
+                ]
+              },
+              {
+                "source": 1,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  0.0
+                ]
+              },
+              {
+                "source": 2,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  2.5
+                ]
+              },
+              {
+                "source": 3,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  5.0
+                ]
+              },
+              {
+                "source": 4,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  7.5
+                ]
+              },
+              {
+                "source": 5,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  10.0
+                ]
+              },
+              {
+                "source": 6,
+                "selected": true,
+                "point": [
+                  1.9715907011415297,
+                  1.0549076296871929,
+                  12.0
+                ]
+              }
+            ],
+            "name": "Maelstrom"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "script_macro": "_Maelstrom w0,0,0 20000000000000000e-16 _Copy=_No _Rigid=_No 50000000000000000e-16 w0,99999999999999998e-29,0 _Cancel"
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "maelstrom-small-angle-1",
+      "value": {
+        "undo": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "before": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "redo": [
+          {
+            "source": 0,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": false,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "success": true,
+        "history": "Command: _Maelstrom\nCenter of maelstrom ( Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): w0,0,0\nRadius <2.000> ( Diameter  Orientation  Circumference  Area  ProjectOsnap=Yes ): 20000000000000000e-16\nSecond radius ( Copy=No  Rigid=No ): _Copy=_No\nSecond radius ( Copy=No  Rigid=No ): _Rigid=_No\nSecond radius ( Copy=No  Rigid=No ): 50000000000000000e-16\nCoil angle ( Copy=No  Rigid=No ): w0,0,99999999999999998e-29\nMorphed 7 objects.\nCommand: _Cancel",
+        "after": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "source": 0,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  -2.0
+                ]
+              },
+              {
+                "source": 1,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              {
+                "source": 2,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  2.5
+                ]
+              },
+              {
+                "source": 3,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  5.0
+                ]
+              },
+              {
+                "source": 4,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  7.5
+                ]
+              },
+              {
+                "source": 5,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  10.0
+                ]
+              },
+              {
+                "source": 6,
+                "selected": true,
+                "point": [
+                  2.0,
+                  1.0,
+                  12.0
+                ]
+              }
+            ],
+            "name": "Maelstrom"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "script_macro": "_Maelstrom w0,0,0 20000000000000000e-16 _Copy=_No _Rigid=_No 50000000000000000e-16 w0,0,99999999999999998e-29 _Cancel"
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "maelstrom-small-angle-2",
+      "value": {
+        "undo": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "before": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "redo": [
+          {
+            "source": 0,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              12.0
+            ]
+          }
+        ],
+        "success": true,
+        "history": "Command: _Maelstrom\nCenter of maelstrom ( Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): w0,0,0\nRadius <2.000> ( Diameter  Orientation  Circumference  Area  ProjectOsnap=Yes ): 20000000000000000e-16\nSecond radius ( Copy=No  Rigid=No ): _Copy=_No\nSecond radius ( Copy=No  Rigid=No ): _Rigid=_No\nSecond radius ( Copy=No  Rigid=No ): 50000000000000000e-16\nCoil angle ( Copy=No  Rigid=No ): w-50000000000000000e-16,100000000000000000e-31,0\nMorphed 7 objects.\nCommand: _Cancel",
+        "after": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.887934133967695,
+              12.0
+            ]
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "source": 0,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  -2.0
+                ]
+              },
+              {
+                "source": 1,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  0.0
+                ]
+              },
+              {
+                "source": 2,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  2.5
+                ]
+              },
+              {
+                "source": 3,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  5.0
+                ]
+              },
+              {
+                "source": 4,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  7.5
+                ]
+              },
+              {
+                "source": 5,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  10.0
+                ]
+              },
+              {
+                "source": 6,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.887934133967695,
+                  12.0
+                ]
+              }
+            ],
+            "name": "Maelstrom"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "script_macro": "_Maelstrom w0,0,0 20000000000000000e-16 _Copy=_No _Rigid=_No 50000000000000000e-16 w-50000000000000000e-16,100000000000000000e-31,0 _Cancel"
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "maelstrom-small-angle-3",
+      "value": {
+        "undo": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "before": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.0,
+              1.0,
+              12.0
+            ]
+          }
+        ],
+        "redo": [
+          {
+            "source": 0,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": false,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              12.0
+            ]
+          }
+        ],
+        "success": true,
+        "history": "Command: _Maelstrom\nCenter of maelstrom ( Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): w0,0,0\nRadius <2.000> ( Diameter  Orientation  Circumference  Area  ProjectOsnap=Yes ): 20000000000000000e-16\nSecond radius ( Copy=No  Rigid=No ): _Copy=_No\nSecond radius ( Copy=No  Rigid=No ): _Rigid=_No\nSecond radius ( Copy=No  Rigid=No ): 50000000000000000e-16\nCoil angle ( Copy=No  Rigid=No ): w-50000000000000000e-16,-100000000000000000e-31,0\nMorphed 7 objects.\nCommand: _Cancel",
+        "after": [
+          {
+            "source": 0,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              -2.0
+            ]
+          },
+          {
+            "source": 1,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              0.0
+            ]
+          },
+          {
+            "source": 2,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              2.5
+            ]
+          },
+          {
+            "source": 3,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              5.0
+            ]
+          },
+          {
+            "source": 4,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              7.5
+            ]
+          },
+          {
+            "source": 5,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              10.0
+            ]
+          },
+          {
+            "source": 6,
+            "selected": true,
+            "point": [
+              2.052211727316419,
+              0.8879341339676952,
+              12.0
+            ]
+          }
+        ],
+        "events": [
+          {
+            "result": "Success",
+            "selected": [],
+            "objects": [
+              {
+                "source": 0,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  -2.0
+                ]
+              },
+              {
+                "source": 1,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  0.0
+                ]
+              },
+              {
+                "source": 2,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  2.5
+                ]
+              },
+              {
+                "source": 3,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  5.0
+                ]
+              },
+              {
+                "source": 4,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  7.5
+                ]
+              },
+              {
+                "source": 5,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  10.0
+                ]
+              },
+              {
+                "source": 6,
+                "selected": true,
+                "point": [
+                  2.052211727316419,
+                  0.8879341339676952,
+                  12.0
+                ]
+              }
+            ],
+            "name": "Maelstrom"
+          },
+          {
+            "result": "Success",
+            "selected": [],
+            "name": "Cancel"
+          }
+        ],
+        "script_macro": "_Maelstrom w0,0,0 20000000000000000e-16 _Copy=_No _Rigid=_No 50000000000000000e-16 w-50000000000000000e-16,-100000000000000000e-31,0 _Cancel"
+      },
+      "elapsed_ns": 0
+    }
+  ]
+}

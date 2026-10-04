@@ -28,7 +28,10 @@ actual commands constrain Copy, grouped Rigid, selection and Undo/Redo. This is
 geometry evidence. Its [command captures](commands/maelstrom.md) add 85 geometry
 recipes and 29 preference/history steps, including the fitting floor, unchanged
 Undo entries, first-radius memory, per-command Rigid defaults and immediate Copy
-getter persistence. Interactive input and previews remain to implement.
+getter persistence. Its [input captures](maelstrom-input-provenance.json) add
+44 commands for angle quadrants, tiny radial picks, empty getters and Copy
+batches; application tests replay these and the 29 preference/history steps.
+Live deformed previews remain pending.
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.

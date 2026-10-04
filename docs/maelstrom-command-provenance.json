@@ -49,7 +49,7 @@
     "Repeated Copy uses originals and one history group. Undo retains empty cloned group definitions.",
     "Radius diagnostics append Cancel. If Maelstrom already succeeded, that later command owns selection cleanup on Redo.",
     "Native preference queries reaccept the exact integer radius they observed. Recipes intentionally restrict preference radii to integers so rounded prompt text cannot alter their value.",
-    "Interactive source selection, Circle alternative modes, picked coil angles, repeated input and previews remain pending.",
+    "At this capture milestone, interactive workflows remained pending. Later input coverage is recorded in docs/maelstrom-input-provenance.json; Circle alternative modes and deformed previews remain pending.",
     "Original native kernel performance comparison remains unverified.",
     "Native box fitting changes UV correspondence tangentially. A public SDK/ClosestPoint diagnostic distinguishes parameter errors from physical geometric distances without enlarging epsilon.",
     "A first radius point uses full distance and changes the Circle plane through the preferred-normal/parallel-Y fallback rule. A second radius point projects to that plane and rejects zero radial distance. Numeric second radii accept zero/tiny values as unchanged maps."

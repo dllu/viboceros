@@ -1,0 +1,472 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-0",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 4.0,
+      "radius1": 5.0,
+      "angles": [
+        90.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-1",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": null,
+      "radius1": 5.0,
+      "angles": [
+        90.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-2",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": null,
+      "angles": [
+        90.0
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-3",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        null
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-4",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          5.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-5",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-6",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          -5.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-7",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          -5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-8",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          3.0,
+          3.0,
+          7.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-9",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-10",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          0.0,
+          5.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-11",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          -5.0,
+          0.0
+        ],
+        [
+          0.0,
+          5.0,
+          0.0
+        ],
+        null
+      ],
+      "copy": true,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-12",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": true
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-13",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": true,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-14",
+      "center": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          4.0,
+          5.0,
+          7.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-15",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-16",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        1.0,
+        1.7320508075688772
+      ],
+      "radius1": 5.0,
+      "angles": [
+        [
+          3.0,
+          3.0,
+          7.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-input-17",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "angles": [
+        [
+          0.0,
+          5.0,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    }
+  ]
+}

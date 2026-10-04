@@ -167,6 +167,22 @@ pub fn point_morph(
     }
 }
 
+/// GetAngle measures one picked point against the resolved Circle X direction.
+/// Native point inputs use atan(y/x) - pi for negative X, including quadrant II.
+/// Center/axial picks accept zero; tiny nonzero radial picks retain their angle.
+pub fn coil_angle(frame: Frame3, point: Point3) -> Result<Real, GeometryError> {
+    let [x, y] = frame.projected_coordinates_of(point)?;
+    if x == 0. && y == 0. {
+        return Ok(0.);
+    }
+    let angle = if x < 0. {
+        (y / x).atan() - std::f64::consts::PI
+    } else {
+        y.atan2(x)
+    };
+    Ok(angle.to_degrees())
+}
+
 /// Stage all sources before changing geometry, selection, attributes or groups.
 #[allow(clippy::too_many_arguments)]
 pub fn deformed_geometries(
@@ -329,7 +345,14 @@ impl Command for MaelstromCommand {
         self.0.radius.set(first_radius);
         self.1.complete("Maelstrom", options.copy);
         let target = MaelstromRadius::parse(positional[n + 1])?;
-        let degrees = parse_finite_real(positional[n + 2])?;
+        let angle = positional[n + 2];
+        let degrees = if angle.contains(',') {
+            let (point, consumed) = parse_point(&[angle])?;
+            require_consumed(&[angle], consumed, USAGE)?;
+            coil_angle(frame, point)?
+        } else {
+            parse_finite_real(angle)?
+        };
         let staged = deformed_geometries(
             document,
             &sources.ids,

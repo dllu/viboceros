@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "command": "Maelstrom",
+  "engine_version": "8.32.26160.13001",
+  "native_input_recipes": 44,
+  "shared_native_preference_steps": 29,
+  "private_xvfb": true,
+  "settings_schemes": [
+    "VibocerosOracleMaelstromInputFinal_20261004",
+    "VibocerosOracleMaelstromSmallAngle_20261004",
+    "VibocerosOracleMaelstromAngleBoundary_20261004",
+    "VibocerosOracleMaelstromAngleQuadrant_20261004"
+  ],
+  "public_reference": "https://docs.mcneel.com/rhino/8/help/en-us/commands/maelstrom.htm",
+  "sha256": {
+    "tools/rhino_oracle/maelstrom_input_probe.py": "7542a2e14d1bb06e5e2217ad09e1082d0f524a739ed0259c8f669d70b21038d3",
+    "tools/rhino_oracle/maelstrom_command_probe.py": "89067e3ebb7fbc147bb0108e26da56f7672cf34a822f4910ea6a8147703ad208",
+    "tools/rhino_oracle/twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/maelstrom_input_command.json": "bf9cbd57602d843e56df9aed1bb638c9ea7afe9ac0e124bd1a98fdcb34904827",
+    "tools/rhino_oracle/fixtures/maelstrom_small_angle_command.json": "1b527e5feab50991982d8abec8d8e8d44f57a0b81e01039d3e5264bd11b88a1b",
+    "tools/rhino_oracle/fixtures/maelstrom_angle_boundary_command.json": "507cec2603c4e968413b0438bbd7c9fc1642e448fa473aab171031c85050f148",
+    "tools/rhino_oracle/fixtures/maelstrom_angle_quadrant_command.json": "63a760fe91af5f0351031369b9bca1e72d03d3e3d4ff17b0b6385eab8287ee01",
+    "tools/rhino_oracle/observations/maelstrom_input_command.json": "183afbf3871d7216c04432c786aa771c2954ae05409d78a382430df62dc33e2d",
+    "tools/rhino_oracle/observations/maelstrom_small_angle_command.json": "0e86eb5f4a1f7f2c3d0abc6fc6ff0f2977d104fecf4d0a42dae1474cca79c115",
+    "tools/rhino_oracle/observations/maelstrom_angle_boundary_command.json": "dd14ab1afd6941c9c3d02774c34dcad0ef5213692e88494578754215f580497b",
+    "tools/rhino_oracle/observations/maelstrom_angle_quadrant_command.json": "46c74dfa807e97d3e51498d08b5611d428894661a826f875b6ee30b99ddf63dd"
+  },
+  "comparison": {
+    "point_absolute_epsilon": 1e-11,
+    "preference_curve_sample_epsilon": 2e-05,
+    "selection": "Terminal command state and exact Undo/Redo selection; an extra post-command Cancel is replayed before history comparison."
+  },
+  "scope_notes": [
+    "Independent implementation from owned public command outputs; no proprietary source inspected.",
+    "First-radius Enter accepts the remembered radius. Second-radius and initial-angle Enter end without a placement or Undo record.",
+    "Point angles use resolved Circle axes; negative X takes atan(y/x)-pi, including quadrant II. Numeric zero Copy before a point pick does not change the rule. Tiny radial directions retain their angle; center and axial points accept zero.",
+    "Unchanged zero-angle placements record Undo. Native Undo after an empty exit removes probe setup instead, visibly leaving an empty document.",
+    "Repeated Copy retains originals and both radii in one Undo batch. Getter Copy saves immediately; Rigid resets and radius persists outside model history.",
+    "Application replay also uses the 29 preference/history steps hashed in docs/maelstrom-command-provenance.json.",
+    "Complete command invocations replay 33 non-Copy coordinate coil-angle cases from these captures; interactive tests cover all 44 recipes.",
+    "Alternative Circle construction modes, live deformed previews, continuous mouse-turn behavior and original native performance comparisons remain pending."
+  ],
+  "complete_coordinate_angle_recipes": 33
+}

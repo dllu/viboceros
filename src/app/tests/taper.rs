@@ -38,7 +38,7 @@ fn taper_preview_clears_between_radius_phases_and_copy_placements() {
     assert_eq!(app.document.object(source).unwrap().geometry(), &before);
 }
 
-fn preference_sources(
+pub(super) fn preference_sources(
     app: &mut VibocerosApp,
 ) -> std::collections::BTreeMap<&'static str, Vec<ObjectId>> {
     let tolerance = Tolerance::try_new(1e-5, 1e-12, 1e-9).unwrap();

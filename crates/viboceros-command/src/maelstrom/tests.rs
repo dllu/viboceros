@@ -22,6 +22,122 @@ fn context(op: &Value) -> CommandContext {
 }
 
 #[test]
+fn complete_coordinate_coil_angles_match_33_native_point_commands() {
+    let mut count = 0;
+    for (fixture, observation) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/maelstrom_input_command.json"),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/maelstrom_input_command.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/maelstrom_small_angle_command.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/maelstrom_small_angle_command.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/maelstrom_angle_boundary_command.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/maelstrom_angle_boundary_command.json"
+            ),
+        ),
+        (
+            include_str!(
+                "../../../../tools/rhino_oracle/fixtures/maelstrom_angle_quadrant_command.json"
+            ),
+            include_str!(
+                "../../../../tools/rhino_oracle/observations/maelstrom_angle_quadrant_command.json"
+            ),
+        ),
+    ] {
+        let fixture: Value = serde_json::from_str(fixture).unwrap();
+        let observation: Value = serde_json::from_str(observation).unwrap();
+        for (op, row) in fixture["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(observation["results"].as_array().unwrap())
+        {
+            if op["copy"] == true
+                || op["radius0"].is_null()
+                || op["radius1"].is_null()
+                || !op["angles"][0].is_array()
+            {
+                continue;
+            }
+            count += 1;
+            let mut doc = Document::default();
+            let ids = row["value"]["before"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|v| {
+                    let id = doc.add_geometry(Geometry::Point(p(&v["point"]))).unwrap();
+                    if v["selected"] == true {
+                        doc.select_object(id, SelectionMode::Add).unwrap();
+                    }
+                    id
+                })
+                .collect::<Vec<_>>();
+            let sources = ids
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(",");
+            let input = format!(
+                "Maelstrom {} {} {} {} Copy=No Rigid={} {}={sources}",
+                MaelstromRadius::Point(p(&op["center"])).command_argument(),
+                radius(&op["radius0"]).command_argument(),
+                radius(&op["radius1"]).command_argument(),
+                MaelstromRadius::Point(p(&op["angles"][0])).command_argument(),
+                if op["rigid"] == true { "Yes" } else { "No" },
+                if op["postselect"] == true {
+                    "PickedSources"
+                } else {
+                    "Sources"
+                }
+            );
+            let context = CommandContext {
+                construction_plane: Frame3::try_from_normal(
+                    p(&op["center"]),
+                    Vector3::try_from(
+                        serde_json::from_value::<[f64; 3]>(op["normal"].clone()).unwrap(),
+                    )
+                    .unwrap(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                )
+                .unwrap(),
+            };
+            CommandRegistry::with_builtins()
+                .execute_in_context(&mut doc, &input, context)
+                .unwrap();
+            for (object, expected) in doc.objects().zip(row["value"]["after"].as_array().unwrap()) {
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!()
+                };
+                assert!(
+                    point.distance_to(p(&expected["point"])).unwrap() <= 1e-11,
+                    "{}: {point:?} != {:?}",
+                    op["id"],
+                    expected["point"]
+                );
+                assert_eq!(
+                    doc.is_selected(object.id()),
+                    expected["selected"].as_bool().unwrap()
+                );
+            }
+        }
+    }
+    assert_eq!(count, 33);
+}
+
+#[test]
 fn actual_maelstrom_commands_match_geometry_attributes_groups_selection_and_history() {
     let mut count = 0;
     for (fixture, observation) in [

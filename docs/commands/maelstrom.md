@@ -24,6 +24,8 @@ projection onto the resolved circle plane. A point on the circle axis is
 rejected, while a numeric second radius at or below that
 cutoff leaves points unchanged, matching the command's invalid SDK morph path.
 Coil angles are degrees and can be negative, zero, or multiple turns.
+Complete invocations also accept a comma-separated world point for the coil
+angle, using the picked-angle rule described below.
 
 | Option | Behavior |
 | --- | --- |
@@ -63,10 +65,27 @@ planes. Repeated native Copy placements use the original sources and both radii,
 vary only the coil angle, and form one Undo batch; command adapters can replay
 them through `execute_in_history_group` with explicit `Sources`.
 
-The application currently supports complete typed invocations. Interactive source
-selection, staged circle/radius/angle getters, repeated Copy input, Circle's
-alternative construction modes and live previews remain to implement. The
-preference and history APIs above are foundations for those workflows.
+Starting `Maelstrom` without positional arguments enters source selection when
+nothing is selected, then accepts a center, first radius, second radius and coil
+angle. Points can be clicked or typed through the common world/CPlane, relative,
+polar, filtered and snapped input path. Radius numbers support model length
+units. Enter accepts the remembered first radius. Enter at the second radius or
+initial coil angle finishes without a model edit; there is no remembered angle.
+Copy and Rigid are available after accepting the first radius, as `Copy=Yes` or
+the two-input sequence `Copy`, then `Yes`. Invalid radii, nonfinite angles and
+invalid option answers keep their getter active. Cancel retains accepted radius
+and Copy preferences. After a Copy placement, subsequent angles use the original
+sources and both accepted radii; Enter or Cancel finishes the single Undo batch.
+
+A picked coil angle uses the first circle's X/Y directions and ignores axial
+height. Center and axial picks accept zero, while a tiny nonzero radial direction
+retains its angle. Native picks with negative Circle X coordinates use
+`atan(y/x) - pi`; for example, `[-3,5,0]` on World XY supplies about -239.036
+degrees, so a principal-angle reduction would change the partial spiral.
+Explicit numeric angles retain the supplied number.
+
+Circle's alternative construction modes and live deformed previews remain to
+implement. The current input workflow uses the standard drafting rubber band.
 
 ## Retained verification
 
@@ -78,6 +97,14 @@ construction-plane normals, signed and multi-turn angles, rejected first radii,
 zero/tiny second radii, unchanged-result history and a fitting tolerance sweep.
 The [provenance record](../maelstrom-command-provenance.json) hashes recipes,
 observations and helpers.
+
+The [interactive input record](../maelstrom-input-provenance.json) adds 44 native
+commands for point-driven coil angles, all quadrants, tiny directions, translated
+and tilted planes, command-first selection, first-radius Enter, empty exits,
+unchanged-result Undo and repeated Copy batches. Application tests replay these
+at point epsilon `1e-11`; command tests also replay 33 complete coordinate-angle
+invocations. Application tests replay all 29 preference/history steps, comparing terminal
+curve samples at `2e-5` as well as selection and history.
 
 Point comparisons use epsilon `1e-11`, rigid placements `1e-7`, mesh coordinates
 at least `1e-6` for the native single-precision vertex buffer, and fitted
@@ -93,12 +120,14 @@ succeeded, that extra command owns the later selection cleanup.
 
 These are sampled witnesses, not a continuous error certificate or exhaustive
 Rhino parity. Complex trimmed shapes, other Circle construction choices,
-interactive point-driven coil angles and original native performance comparisons
+live mouse preview turns and original native performance comparisons
 remain unverified.
 
 ```sh
 cargo test --release -p viboceros-command maelstrom::tests
+cargo test --release -p viboceros app::tests::maelstrom
 python3 -m unittest tools.rhino_oracle.test_maelstrom_command
+python3 -m unittest tools.rhino_oracle.test_maelstrom_input
 ```
 
 Public reference: [McNeel Maelstrom help](https://docs.mcneel.com/rhino/8/help/en-us/commands/maelstrom.htm).

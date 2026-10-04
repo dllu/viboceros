@@ -152,6 +152,7 @@ mod group_prompt;
 mod interface;
 mod intersect_two_sets;
 mod length;
+mod maelstrom_prompt;
 mod mesh_face_prompt;
 mod mirror;
 mod move_normal;
@@ -631,6 +632,12 @@ enum InteractiveCommand {
         points: [Option<Point3>; 2],
         options: viboceros_command::bend::BendOptions,
     },
+    Maelstrom {
+        center: Option<Point3>,
+        initial: Option<viboceros_command::maelstrom::MaelstromRadius>,
+        target: Option<viboceros_command::maelstrom::MaelstromRadius>,
+        options: viboceros_command::maelstrom::MaelstromOptions,
+    },
     Taper {
         points: [Option<Point3>; 2],
         initial: Option<viboceros_command::taper::TaperDistance>,
@@ -761,6 +768,7 @@ impl InteractiveCommand {
             Self::Twist { .. } => "Twist",
             Self::Bend { .. } => "Bend",
             Self::Taper { .. } => "Taper",
+            Self::Maelstrom { .. } => "Maelstrom",
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
@@ -1425,6 +1433,23 @@ impl InteractiveCommand {
                     "Bend: pick the through point; Copy, Rigid, LimitToSpine, Angle, Symmetric, PreserveStructure, NonAttenuated"
                 }
             },
+            Self::Maelstrom {
+                center,
+                initial,
+                target,
+                ..
+            } => match (center, initial, target) {
+                (None, _, _) => "Maelstrom: pick the center (Esc to cancel)",
+                (Some(_), None, _) => {
+                    "Maelstrom: enter or pick the first radius; Enter accepts the remembered radius"
+                }
+                (Some(_), Some(_), None) => {
+                    "Maelstrom: enter or pick the second radius; Copy, Rigid"
+                }
+                (Some(_), Some(_), Some(_)) => {
+                    "Maelstrom: enter or pick the coil angle; Copy, Rigid"
+                }
+            },
             Self::Taper {
                 points, initial, ..
             } => match (points, initial) {
@@ -1592,6 +1617,7 @@ impl InteractiveCommand {
             | Self::Taper {
                 points: [None, _], ..
             }
+            | Self::Maelstrom { center: None, .. }
             | Self::Mirror { start: None }
             | Self::MirrorThreePoint { points: [None, _] }
             | Self::MirrorObject
@@ -1760,6 +1786,10 @@ impl InteractiveCommand {
                 points: [Some(start), _, _],
                 ..
             } => Some(start),
+            Self::Maelstrom {
+                center: Some(center),
+                ..
+            } => Some(center),
             Self::Taper {
                 points: [Some(start), end],
                 initial,
@@ -1914,6 +1944,7 @@ pub struct VibocerosApp {
     twist_session: Option<twist_prompt::TwistSession>,
     bend_session: Option<bend_prompt::BendSession>,
     taper_session: Option<taper_prompt::TaperSession>,
+    maelstrom_session: Option<maelstrom_prompt::MaelstromSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -2008,6 +2039,7 @@ impl VibocerosApp {
             twist_session: None,
             bend_session: None,
             taper_session: None,
+            maelstrom_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -2167,6 +2199,7 @@ impl VibocerosApp {
             || self.try_continue_twist(&input)
             || self.try_continue_bend(&input)
             || self.try_continue_taper(&input)
+            || self.try_continue_maelstrom(&input)
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
@@ -2607,6 +2640,7 @@ impl VibocerosApp {
             || self.try_continue_twist(input)
             || self.try_continue_bend(input)
             || self.try_continue_taper(input)
+            || self.try_continue_maelstrom(input)
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
@@ -2778,6 +2812,24 @@ impl VibocerosApp {
             }
             InteractiveCommand::Bend {
                 points: [None; 2],
+                options,
+            }
+        } else if normalized == "maelstrom" {
+            let Ok((positional, options)) =
+                viboceros_command::maelstrom::MaelstromOptions::from_arguments(
+                    &arguments,
+                    self.commands.maelstrom_options_default(),
+                )
+            else {
+                return false;
+            };
+            if !positional.is_empty() {
+                return false;
+            }
+            InteractiveCommand::Maelstrom {
+                center: None,
+                initial: None,
+                target: None,
                 options,
             }
         } else if normalized == "taper" {
@@ -4695,6 +4747,7 @@ impl VibocerosApp {
                 InteractiveCommand::Twist { .. }
                     | InteractiveCommand::Bend { .. }
                     | InteractiveCommand::Taper { .. }
+                    | InteractiveCommand::Maelstrom { .. }
             ))
             && self.document.selected_object_count() == 0
         {
@@ -4719,6 +4772,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Twist { .. }
                 | InteractiveCommand::Bend { .. }
                 | InteractiveCommand::Taper { .. }
+                | InteractiveCommand::Maelstrom { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::MirrorThreePoint { .. }
                 | InteractiveCommand::MirrorObject
@@ -4785,6 +4839,10 @@ impl VibocerosApp {
             if !self.start_bend_session(picked_sources) {
                 return true;
             }
+        } else if matches!(command, InteractiveCommand::Maelstrom { .. }) {
+            if !self.start_maelstrom_session(picked_sources) {
+                return true;
+            }
         } else if matches!(command, InteractiveCommand::Taper { .. }) {
             if !self.start_taper_session(picked_sources) {
                 return true;
@@ -4823,7 +4881,8 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
-        let transform_applied = self.finish_transform_session()
+        let transform_applied = self.finish_maelstrom_session()
+            | self.finish_transform_session()
             | self
                 .translation_session
                 .take()
@@ -7212,6 +7271,7 @@ impl VibocerosApp {
             InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
             InteractiveCommand::Bend { .. } => return self.accept_bend_point(point),
             InteractiveCommand::Taper { .. } => return self.accept_taper_point(point),
+            InteractiveCommand::Maelstrom { .. } => return self.accept_maelstrom_point(point),
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
                 if point_count == 1
@@ -8656,10 +8716,15 @@ impl eframe::App for VibocerosApp {
         });
         let angle_plane = matches!(
             self.active_command,
-            Some(InteractiveCommand::Twist {
-                points: [Some(_), Some(_), _],
-                ..
-            })
+            Some(
+                InteractiveCommand::Twist {
+                    points: [Some(_), Some(_), _],
+                    ..
+                } | InteractiveCommand::Maelstrom {
+                    initial: Some(_),
+                    ..
+                }
+            )
         )
         .then_some(self.drafting_plane)
         .flatten();
@@ -8993,6 +9058,7 @@ mod tests {
     mod interface;
     mod intersect_two_sets;
     mod length;
+    mod maelstrom;
     mod merge_edge;
     mod mesh_face_prompt;
     mod mirror_preview;
@@ -9090,6 +9156,7 @@ mod tests {
             twist_session: None,
             bend_session: None,
             taper_session: None,
+            maelstrom_session: None,
             translation_session: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),

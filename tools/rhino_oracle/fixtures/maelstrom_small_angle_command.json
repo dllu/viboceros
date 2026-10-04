@@ -1,0 +1,110 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-small-angle-0",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          1e-12,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-small-angle-1",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          0.0,
+          0.0,
+          1e-12
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-small-angle-2",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          -5.0,
+          1e-14,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    },
+    {
+      "op": "maelstrom_input_command",
+      "id": "maelstrom-small-angle-3",
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "angles": [
+        [
+          -5.0,
+          -1e-14,
+          0.0
+        ]
+      ],
+      "copy": false,
+      "rigid": false,
+      "postselect": false
+    }
+  ]
+}
