@@ -1,0 +1,5278 @@
+{
+  "capture_batches": [
+    {
+      "ids": [
+        "point-input-precision-0",
+        "point-input-precision-1",
+        "point-input-precision-2",
+        "point-input-precision-3",
+        "point-input-precision-4",
+        "point-input-precision-5",
+        "point-input-precision-6",
+        "point-input-precision-7",
+        "point-input-precision-8",
+        "point-input-precision-9",
+        "point-input-precision-10",
+        "point-input-precision-11",
+        "point-input-precision-12",
+        "point-input-precision-13",
+        "point-input-precision-14",
+        "point-input-precision-15"
+      ],
+      "settings_scheme": "VibocerosOraclePointCommandPrecision_20261004_00"
+    },
+    {
+      "ids": [
+        "point-input-precision-16",
+        "point-input-precision-17",
+        "point-input-precision-18",
+        "point-input-precision-19",
+        "point-input-precision-20",
+        "point-input-precision-21",
+        "point-input-precision-22",
+        "point-input-precision-23",
+        "point-input-precision-24",
+        "point-input-precision-25",
+        "point-input-precision-26",
+        "point-input-precision-27",
+        "point-input-precision-28",
+        "point-input-precision-29",
+        "point-input-precision-30",
+        "point-input-precision-31"
+      ],
+      "settings_scheme": "VibocerosOraclePointCommandPrecision_20261004_01"
+    },
+    {
+      "ids": [
+        "point-input-precision-32",
+        "point-input-precision-33",
+        "point-input-precision-34",
+        "point-input-precision-35",
+        "point-input-precision-36",
+        "point-input-precision-37",
+        "point-input-precision-38",
+        "point-input-precision-39",
+        "point-input-precision-40",
+        "point-input-precision-41",
+        "point-input-precision-42",
+        "point-input-precision-43",
+        "point-input-precision-44",
+        "point-input-precision-45",
+        "point-input-precision-46",
+        "point-input-precision-47"
+      ],
+      "settings_scheme": "VibocerosOraclePointCommandPrecision_20261004_02"
+    },
+    {
+      "ids": [
+        "point-input-precision-48",
+        "point-input-precision-49",
+        "point-input-precision-50",
+        "point-input-precision-51",
+        "point-input-precision-52",
+        "point-input-precision-53",
+        "point-input-precision-54",
+        "point-input-precision-55",
+        "point-input-precision-56",
+        "point-input-precision-57",
+        "point-input-precision-58",
+        "point-input-precision-59",
+        "point-input-precision-60",
+        "point-input-precision-61",
+        "point-input-precision-62",
+        "point-input-precision-63"
+      ],
+      "settings_scheme": "VibocerosOraclePointCommandPrecision_20261004_03"
+    }
+  ],
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-0",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-1",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-2",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-3",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-4",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-5",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-6",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-7",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0,0 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-8",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078124e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078124e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w11920928955078124e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-9",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078124e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078124e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w11920928955078124e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-10",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078124e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078124e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w1.1920928955078124e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-11",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078124e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078124e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w1.1920928955078124e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-12",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078124,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078124,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0.00000011920928955078124,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-13",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078124,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078124,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0.00000011920928955078124,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-14",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w9007199254740991/75557863725914323419136,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w9007199254740991/75557863725914323419136,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w9007199254740991/75557863725914323419136,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-15",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e7fffffffffffff",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078124e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e7fffffffffffff",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078124e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w9007199254740991/75557863725914323419136,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e7fffffffffffff",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w9007199254740991/75557863725914323419136,0,0 _Cancel",
+          "point": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w9007199254740991/75557863725914323419136,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-16",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078125e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078125e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w11920928955078125e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-17",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078125e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078125e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w11920928955078125e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-18",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078125e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078125e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w1.1920928955078125e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-19",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078125e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078125e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w1.1920928955078125e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-20",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078125,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078125,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0.00000011920928955078125,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-21",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078125,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078125,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0.00000011920928955078125,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-22",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503599627370496/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503599627370496/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w4503599627370496/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-23",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078125e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078125e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503599627370496/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503599627370496/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w4503599627370496/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-24",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078128e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078128e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w11920928955078128e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-25",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920928955078128e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920928955078128e-23,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w11920928955078128e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-26",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078128e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078128e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w1.1920928955078128e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-27",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920928955078128e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920928955078128e-7,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w1.1920928955078128e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-28",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078128,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078128,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0.00000011920928955078128,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-29",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920928955078128,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920928955078128,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0.00000011920928955078128,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-30",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503599627370497/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503599627370497/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w4503599627370497/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-31",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503599627370497/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503599627370497/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w4503599627370497/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-32",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920940323761897e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920940323761897e-23,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w11920940323761897e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-33",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w11920940323761897e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w11920940323761897e-23,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w11920940323761897e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-34",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920940323761897e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920940323761897e-7,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w1.1920940323761897e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-35",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w1.1920940323761897e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w1.1920940323761897e-7,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w1.1920940323761897e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-36",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920940323761897,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920940323761897,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0.00000011920940323761897,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-37",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0.00000011920940323761897,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0.00000011920940323761897,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0.00000011920940323761897,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-38",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503603922337792/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503603922337792/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w4503603922337792/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-39",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "3e80000100000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              1.1920940323761897e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "3e80000100000000",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  1.1920940323761897e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w4503603922337792/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "3e80000100000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w4503603922337792/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            1.1920940323761897e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w4503603922337792/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-40",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-11920928955078128e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-11920928955078128e-23,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w-11920928955078128e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-41",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-11920928955078128e-23,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-11920928955078128e-23,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w-11920928955078128e-23,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-42",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-1.1920928955078128e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-1.1920928955078128e-7,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w-1.1920928955078128e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-43",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-1.1920928955078128e-7,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-1.1920928955078128e-7,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w-1.1920928955078128e-7,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-44",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-0.00000011920928955078128,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-0.00000011920928955078128,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w-0.00000011920928955078128,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-45",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-0.00000011920928955078128,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-0.00000011920928955078128,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w-0.00000011920928955078128,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-46",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-4503599627370497/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-4503599627370497/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w-4503599627370497/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-47",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "be80000000000001",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "point": [
+              -1.1920928955078128e-07,
+              0.0,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "be80000000000001",
+                  "0000000000000000",
+                  "0000000000000000"
+                ],
+                "point": [
+                  -1.1920928955078128e-07,
+                  0.0,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w-4503599627370497/37778931862957161709568,0,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "be80000000000001",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "macro": "_Point w-4503599627370497/37778931862957161709568,0,0 _Cancel",
+          "point": [
+            -1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w-4503599627370497/37778931862957161709568,0,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-48",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,11920928955078128e-23,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,11920928955078128e-23,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,11920928955078128e-23,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-49",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,11920928955078128e-23,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,11920928955078128e-23,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,11920928955078128e-23,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-50",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,1.1920928955078128e-7,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,1.1920928955078128e-7,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,1.1920928955078128e-7,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-51",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,1.1920928955078128e-7,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,1.1920928955078128e-7,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,1.1920928955078128e-7,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-52",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0.00000011920928955078128,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0.00000011920928955078128,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,0.00000011920928955078128,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-53",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0.00000011920928955078128,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,0.00000011920928955078128,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0.00000011920928955078128,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-54",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,4503599627370497/37778931862957161709568,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,4503599627370497/37778931862957161709568,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": null,
+          "token": "w0,4503599627370497/37778931862957161709568,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-55",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "3e80000000000001",
+              "0000000000000000"
+            ],
+            "point": [
+              0.0,
+              1.1920928955078128e-07,
+              0.0
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "3e80000000000001",
+                  "0000000000000000"
+                ],
+                "point": [
+                  0.0,
+                  1.1920928955078128e-07,
+                  0.0
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,4503599627370497/37778931862957161709568,0\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "3e80000000000001",
+            "0000000000000000"
+          ],
+          "macro": "_Point w0,4503599627370497/37778931862957161709568,0 _Cancel",
+          "point": [
+            0.0,
+            1.1920928955078128e-07,
+            0.0
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,4503599627370497/37778931862957161709568,0"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-56",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,11920928955078128e-23\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,11920928955078128e-23 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": null,
+          "token": "w0,0,11920928955078128e-23"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-57",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,11920928955078128e-23\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,11920928955078128e-23 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,11920928955078128e-23"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-58",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,1.1920928955078128e-7\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,1.1920928955078128e-7 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": null,
+          "token": "w0,0,1.1920928955078128e-7"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-59",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,1.1920928955078128e-7\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,1.1920928955078128e-7 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,1.1920928955078128e-7"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-60",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0.00000011920928955078128\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,0.00000011920928955078128 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": null,
+          "token": "w0,0,0.00000011920928955078128"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-61",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,0.00000011920928955078128\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,0.00000011920928955078128 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,0.00000011920928955078128"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-62",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,4503599627370497/37778931862957161709568\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,4503599627370497/37778931862957161709568 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": null,
+          "token": "w0,0,4503599627370497/37778931862957161709568"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "point-input-precision-63",
+      "value": {
+        "after": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "after_script": [
+          {
+            "bits": [
+              "0000000000000000",
+              "0000000000000000",
+              "3e80000000000001"
+            ],
+            "point": [
+              0.0,
+              0.0,
+              1.1920928955078128e-07
+            ],
+            "tiny": false
+          }
+        ],
+        "events": [
+          {
+            "name": "Point",
+            "objects": [
+              {
+                "bits": [
+                  "0000000000000000",
+                  "0000000000000000",
+                  "3e80000000000001"
+                ],
+                "point": [
+                  0.0,
+                  0.0,
+                  1.1920928955078128e-07
+                ],
+                "tiny": false
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _Point\nLocation of point object: w0,0,4503599627370497/37778931862957161709568\nCommand: _Cancel\n",
+        "recipe": {
+          "bits": [
+            "0000000000000000",
+            "0000000000000000",
+            "3e80000000000001"
+          ],
+          "macro": "_Point w0,0,4503599627370497/37778931862957161709568 _Cancel",
+          "point": [
+            0.0,
+            0.0,
+            1.1920928955078128e-07
+          ],
+          "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+          "token": "w0,0,4503599627370497/37778931862957161709568"
+        },
+        "success": true,
+        "tolerance": 1e-09
+      }
+    }
+  ]
+}

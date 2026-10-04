@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'point_input_precision' for op in request.get('operations', [])):
+            from .point_input_precision_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Point input precision requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'scale_positions_cursor' for op in request.get('operations', [])):
             from .scale_positions_cursor_input import ScalePositionsCursorPicker
             if self.settings_scheme is None:
@@ -640,6 +645,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'scale_nu_reference' for op in request.get('operations', [])):
                 for name in ('scale_nu_reference_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'shrink_face_input.py', 'snap_environment.py', 'viewport_capture.py', 'named_view_policy_probe.py', 'view_camera_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
+            if any(op.get('op') == 'point_input_precision' for op in request.get('operations', [])):
+                for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
             if any(op.get('op') == 'scale_positions' for op in request.get('operations', [])):

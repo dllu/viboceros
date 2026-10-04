@@ -1,0 +1,454 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-0",
+      "origin": "Zero",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-1",
+      "origin": "Zero",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-2",
+      "origin": "Zero",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-3",
+      "origin": "Zero",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-4",
+      "origin": "Zero",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-5",
+      "origin": "Zero",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-6",
+      "origin": "Zero",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-7",
+      "origin": "Zero",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-8",
+      "origin": "FloatBelow",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-9",
+      "origin": "FloatBelow",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-10",
+      "origin": "FloatBelow",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-11",
+      "origin": "FloatBelow",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-12",
+      "origin": "FloatBelow",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-13",
+      "origin": "FloatBelow",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-14",
+      "origin": "FloatBelow",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-15",
+      "origin": "FloatBelow",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-16",
+      "origin": "FloatAt",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-17",
+      "origin": "FloatAt",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-18",
+      "origin": "FloatAt",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-19",
+      "origin": "FloatAt",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-20",
+      "origin": "FloatAt",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-21",
+      "origin": "FloatAt",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-22",
+      "origin": "FloatAt",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-23",
+      "origin": "FloatAt",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-24",
+      "origin": "FloatAbove",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-25",
+      "origin": "FloatAbove",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-26",
+      "origin": "FloatAbove",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-27",
+      "origin": "FloatAbove",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-28",
+      "origin": "FloatAbove",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-29",
+      "origin": "FloatAbove",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-30",
+      "origin": "FloatAbove",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-31",
+      "origin": "FloatAbove",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-32",
+      "origin": "FloatHigh",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-33",
+      "origin": "FloatHigh",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-34",
+      "origin": "FloatHigh",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-35",
+      "origin": "FloatHigh",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-36",
+      "origin": "FloatHigh",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-37",
+      "origin": "FloatHigh",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-38",
+      "origin": "FloatHigh",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-39",
+      "origin": "FloatHigh",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-40",
+      "origin": "NegativeAbove",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-41",
+      "origin": "NegativeAbove",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-42",
+      "origin": "NegativeAbove",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-43",
+      "origin": "NegativeAbove",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-44",
+      "origin": "NegativeAbove",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-45",
+      "origin": "NegativeAbove",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-46",
+      "origin": "NegativeAbove",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-47",
+      "origin": "NegativeAbove",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-48",
+      "origin": "YAbove",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-49",
+      "origin": "YAbove",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-50",
+      "origin": "YAbove",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-51",
+      "origin": "YAbove",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-52",
+      "origin": "YAbove",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-53",
+      "origin": "YAbove",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-54",
+      "origin": "YAbove",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-55",
+      "origin": "YAbove",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-56",
+      "origin": "ZAbove",
+      "format": "RoundTrip",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-57",
+      "origin": "ZAbove",
+      "format": "RoundTrip",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-58",
+      "origin": "ZAbove",
+      "format": "Scientific",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-59",
+      "origin": "ZAbove",
+      "format": "Scientific",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-60",
+      "origin": "ZAbove",
+      "format": "Fixed",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-61",
+      "origin": "ZAbove",
+      "format": "Fixed",
+      "prime": "ScalePositions"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-62",
+      "origin": "ZAbove",
+      "format": "Fraction",
+      "prime": "None"
+    },
+    {
+      "op": "point_input_precision",
+      "id": "point-input-precision-63",
+      "origin": "ZAbove",
+      "format": "Fraction",
+      "prime": "ScalePositions"
+    }
+  ]
+}

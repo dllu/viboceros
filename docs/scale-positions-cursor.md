@@ -56,6 +56,12 @@ These two recipes are excluded from application parity counts. The application
 currently uses the inclusive component cutoff for Copy and in-place input.
 Behavior immediately outside the boundary remains unresolved.
 
+A separate [Point command precision matrix](point-input-precision.md) preserves
+the exact neighboring double in round-trip, scientific, fixed and fractional
+forms, including after a ScalePositions reference seed. Ordinary Point parsing
+therefore does not explain this discrepancy. The actual origin consumed inside
+ScalePositions has not been captured; these two exclusions remain in place.
+
 ## Comparison scope
 
 All 64 cursor recipes and 62 origin recipes replay through the command prompt

@@ -1,0 +1,28 @@
+capturing 0..0 in VibocerosOraclePointInputNegativeBase_20261004_00
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/point_input_precision_capture.py", line 79, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/point_input_precision_capture.py", line 75, in main
+    response = capture(json.loads(args.request.read_text()),args.scheme,args.timeout,args.batch_size,checkpoints)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/point_input_precision_capture.py", line 48, in capture
+    response = OracleClient(settings_scheme=owned_scheme).run_rhino(subset,timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/dllu/proj/viboceros/tools/rhino_oracle/client.py", line 937, in run_rhino
+    raise OracleError(
+tools.rhino_oracle.client.OracleError: Rhino probe did not respond within 100 seconds (owned_pids=[1522354], owned_window='0x00e00006', ui_fallback_sent=True)
+Worker progress:
+worker: started
+worker: started
+worker: request loaded
+operation point-input-precision-48: start
+PICK @point-input-precision:point-input-precision-48 1326 323
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

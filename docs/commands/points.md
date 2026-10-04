@@ -9,9 +9,19 @@ Duplicate locations are retained. Each point uses the current layer.
 
 ```text
 Point 1,2,3
+Point w4503599627370497/37778931862957161709568,0,0
+Point pow(2,3),sqrt(16),sin(0)
 Points 1,2,3 4,5,6 1,2,3
 Points 1,2,3 4,5,6 Undo 7,8,9
 ```
+
+Complete commands accept Cartesian points with an optional `w`/`W` world
+prefix and calculator components, including fractions, arithmetic and the
+functions described in [coordinate input](../point-input.md). Space-separated
+XYZ components also accept expressions without spaces inside a component.
+The complete command's point arguments use world coordinates. Relative input
+and physical length suffixes require the interactive point prompt; the common
+complete-command parser has no previous point or document unit context.
 
 In an interactive Points session, type `Undo` to remove the most recently placed
 point, without undoing earlier commands. Undo on an empty session is a no-op.

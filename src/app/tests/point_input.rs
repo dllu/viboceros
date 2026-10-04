@@ -6,6 +6,86 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn native_point_command_precision_matches_complete_and_incremental_app_input() {
+    use serde_json::Value;
+    let fixture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/point_input_precision.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/point_input_precision.json"
+    ))
+    .unwrap();
+    let operations = fixture["operations"].as_array().unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 64);
+    assert_eq!(rows.len(), 64);
+    let mut replays = 0;
+    for (op, row) in operations.iter().zip(rows) {
+        let label = op["id"].as_str().unwrap();
+        assert_eq!(row["id"], label);
+        // Recipe input is independent of the measured object coordinates.
+        // Python checks it against the bounded fixture factory and exact bits.
+        let token = row["value"]["recipe"]["token"].as_str().unwrap();
+        for incremental in [false, true] {
+            let mut app = test_app();
+            app.active_viewport = 1; // Top / WorldXY, as in the native capture.
+            if op["prime"] == "ScalePositions" {
+                enter(&mut app, "Point 1,1,1");
+                enter(&mut app, "SelAll");
+                for input in row["value"]["recipe"]["seed_macro"]
+                    .as_str()
+                    .unwrap()
+                    .split_whitespace()
+                {
+                    enter(&mut app, input);
+                }
+                enter(&mut app, "SelAll");
+                enter(&mut app, "Delete");
+                app.document.clear_history().unwrap();
+            }
+            if incremental {
+                enter(&mut app, "Point");
+                enter(&mut app, token);
+            } else {
+                enter(&mut app, &format!("Point {token}"));
+            }
+            assert!(app.active_command.is_none(), "{label}: {incremental}");
+            assert!(app.command_input.is_empty(), "{label}: {incremental}");
+            let check = |app: &VibocerosApp| {
+                assert_eq!(app.document.objects().count(), 1, "{label}: {incremental}");
+                let object = app.document.objects().next().unwrap();
+                let Geometry::Point(p) = object.geometry() else {
+                    panic!("{label}: expected Point");
+                };
+                let actual = p.to_array().map(|x| format!("{:016x}", x.to_bits()));
+                for phase in ["after", "after_script"] {
+                    let expected = &row["value"][phase][0]["bits"];
+                    for (axis, bits) in actual.iter().enumerate() {
+                        assert_eq!(
+                            bits,
+                            expected[axis].as_str().unwrap(),
+                            "{label}: {incremental}: {phase}"
+                        );
+                    }
+                }
+                assert!(!app.document.is_selected(object.id()), "{label}");
+            };
+            check(&app);
+            // These are application invariants, not native history witnesses.
+            assert_eq!(app.document.undo_label(), Some("Point"));
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().count(), 0, "{label}");
+            assert!(!app.document.can_undo(), "{label}");
+            enter(&mut app, "Redo");
+            check(&app);
+            replays += 1;
+        }
+    }
+    assert_eq!(replays, 128);
+}
+
+#[test]
 fn scalar_distance_constraints_scale_typed_points_and_clear_after_acceptance() {
     for (scalar, candidate, expected) in [
         ("5", "w6,8,0", point(3.0, 4.0, 0.0)),

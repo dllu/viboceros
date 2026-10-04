@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOraclePointCommandPrecision_20261004_00",
+    "VibocerosOraclePointCommandPrecision_20261004_01",
+    "VibocerosOraclePointCommandPrecision_20261004_02",
+    "VibocerosOraclePointCommandPrecision_20261004_03"
+  ],
+  "native_point_recipes": 64,
+  "positive_command_replays": 64,
+  "positive_application_replays": 128,
+  "coordinate_comparison": "exact_binary64_bits",
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public Rhino Point commands, point-object SDK coordinates and Vector3d.IsTiny outputs were inspected in empty owned Rhino documents on private Xvfb. The worker runs at idle outside RunPythonScript Undo.",
+    "Eight zero, axis and neighboring-double origins are entered in integer-mantissa round-trip, scientific, fixed and dyadic fractional formats, with and without an explicit ScalePositions reference seed. Four independently owned settings schemes each capture 16 recipes.",
+    "Point output is read at EndCommand and after the entire macro. Independent integer IEEE bit expectations distinguish equality at 2^-23 from the next double above it. Format and seed comparisons preserve the exact point bits.",
+    "Complete command tests replay all 64 Point recipes. Application tests replay the same prescribed world tokens through complete and incremental Point input for 128 comparisons. Application Undo/Redo checks establish application invariants; Rhino document history is unmeasured.",
+    "Completed capture batches are checkpointed atomically and can be reused only with identical request, scheme and source hashes. Failed batches are not normalized into Point results.",
+    "The retained custom GetPoint diagnostic timed out before publishing a response after acknowledged input of the negative neighboring value. Its archived probe and driver are historical sources, separate from the successful public Point command capture. It is not counted as a positive geometry comparison.",
+    "Point command precision does not establish the actual origin consumed internally by ScalePositions or resolve its two unstable immediate-above boundary recipes. Existing raw captures and parity exclusions remain unchanged.",
+    "Oblique construction planes, all expression families, extreme coordinates, SDK GetPoint behavior, unit suffixes in complete commands, full geometry parity and performance are unproven by this matrix."
+  ],
+  "unresolved_getpoint_diagnostic": {
+    "id": "point-input-precision-48",
+    "settings_scheme": "VibocerosOraclePointInputNegativeBase_20261004_00",
+    "positive_replay": false,
+    "response_published": false,
+    "timeout_seconds": 100
+  },
+  "sha256": {
+    "tools/rhino_oracle/point_input_precision_probe.py": "8b9a83c59613ca3a86651ed811d614b247b7c1e8a9798b862ca994973592edec",
+    "tools/rhino_oracle/point_input_precision_capture.py": "f86f45d02b042574571cf3311bf0a8ac0fd7b73d4dfbc726546f459fa18f4170",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/point_input_precision.json": "8858ea06324a276bfe255a61baaf66098770f8bc552866d0269790f77fd1fff3",
+    "tools/rhino_oracle/observations/point_input_precision.json": "5bfc3b916b451c46f45f466c59b4b27e44a41ac1795269ac2718efe93f1a7df5",
+    "tools/rhino_oracle/capture_sources/point_input_precision_getpoint_probe.py": "46f77f55ea397269e03d6f024d46a7c3b20f879df50c7ede95c7ba039750af55",
+    "tools/rhino_oracle/capture_sources/point_input_precision_getpoint_input.py": "59f7f79fa1fcedec7f932bf3ad1f5405653e3a38ae4fab670d63ddb1e21cdbc5",
+    "tools/rhino_oracle/capture_sources/point_input_precision_getpoint_request.json": "980d252b8c4918541f12d594ac82c6767fe4b64039e801e4ff89a3311b1ccc01",
+    "tools/rhino_oracle/observations/point_input_precision_getpoint_timeout.txt": "37ea4faf5ef513adc9d9926ea33b010c57ae774ed57548fd80ee91ff29118c20",
+    "tools/rhino_oracle/shrink_face_input.py": "bb3842f6ba6929f43d770c00e40ad5184e0bb2f88e8c5d9e8f94eb0c33ffa51f",
+    "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "b816eed007683f5aacaff915c98156c6d61b3c14fe47f3c91212781e16c01e77",
+    "tools/rhino_oracle/rhino_worker.py": "514dd725df038fa04dd12ea5716df223889fef30e734c4154bff07a150d79096"
+  }
+}

@@ -307,11 +307,19 @@ fn switching_projection_modes_and_cancelling_never_applies_staged_points() {
     app.cancel_interactive_command(true);
     assert_eq!(positions(&app), before);
     enter(&mut app, "Align ToPlane");
-    enter(&mut app, "3Point w0,0,0 w1,0,0 w0,1,0");
-    // Full option lines use registry/world point syntax, not drafting prefixes.
+    enter(&mut app, "3Point w0,0,0 w1,0,0 w0,1/0,0");
+    // Invalid calculator input preserves the entire staged projection.
     assert!(app.active_command.is_some());
-    enter(&mut app, "3Point 0,0,0 1,0,0 0,1,0");
+    assert_eq!(positions(&app), before);
+    enter(&mut app, "3Point w0,0,0 w1,0,0 w0,1,0");
     assert!(app.active_command.is_none());
+    assert_eq!(
+        positions(&app),
+        vec![
+            Geometry::Point(point(0., 0., 0.)),
+            Geometry::Point(point(4., 8., 0.))
+        ]
+    );
 }
 
 #[test]

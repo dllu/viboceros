@@ -249,7 +249,9 @@ mod curvature;
 mod curve_domain;
 mod edge_surface;
 mod loft;
+mod point_arguments;
 mod point_cloud;
+use point_arguments::parse_point;
 mod point_grid;
 mod point_matrix;
 mod points;
@@ -17539,32 +17541,6 @@ impl Command for RedoCommand {
             None => "Nothing to redo".to_owned(),
         })
     }
-}
-
-fn parse_point(arguments: &[&str]) -> Result<(Point3, usize), CommandError> {
-    let first = arguments
-        .first()
-        .ok_or(CommandError::Usage("expected a point"))?;
-    let (coordinates, consumed) = if first.contains(',') {
-        let coordinates: Vec<_> = first.split(',').collect();
-        if !(2..=3).contains(&coordinates.len()) {
-            return Err(CommandError::Usage("point syntax is x,y or x,y,z"));
-        }
-        (coordinates, 1)
-    } else {
-        if arguments.len() < 3 {
-            return Err(CommandError::Usage("point syntax is x y z or x,y,z"));
-        }
-        (arguments[..3].to_vec(), 3)
-    };
-
-    let mut parsed = [0.0; 3];
-    for (index, coordinate) in coordinates.iter().enumerate() {
-        parsed[index] = coordinate
-            .parse::<Real>()
-            .map_err(|_| CommandError::InvalidNumber((*coordinate).to_owned()))?;
-    }
-    Ok((Point3::try_from(parsed)?, consumed))
 }
 
 fn require_consumed(

@@ -2,6 +2,13 @@
 
 [Interface](interface.md) · [Command reference](commands/README.md)
 
+Complete command point arguments also accept Cartesian calculator components
+and an optional `w`/`W` prefix, for example `Point w5/16,2*(3+4),0`.
+Their coordinates are world coordinates. The prompt forms below additionally
+provide construction-plane coordinates, relative input and document unit
+conversion. See the [Point precision measurements](point-input-precision.md)
+for exact neighboring-double comparisons across numeric formats.
+
 Start a drafting command such as `Line`, then type a point at each prompt.
 Mouse picks and typed coordinates can be mixed. Enter finishes collected-point
 commands such as `Polyline`; Escape discards the unfinished geometry. Successful
