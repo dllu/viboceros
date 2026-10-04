@@ -9,9 +9,59 @@ pub(super) struct MaelstromSession {
     group: viboceros_document::HistoryGroup,
     placed: bool,
     context: Option<viboceros_command::CommandContext>,
+    preview_cursor: Option<crate::viewport::MaelstromCursor>,
+    preview_cache: std::cell::RefCell<crate::viewport::MaelstromPreviewCache>,
+}
+
+impl MaelstromSession {
+    pub(super) fn preview(
+        &self,
+        command: Option<InteractiveCommand>,
+        cplane: Frame3,
+    ) -> Option<crate::viewport::MaelstromPreview<'_>> {
+        let InteractiveCommand::Maelstrom {
+            center: Some(center),
+            initial,
+            target,
+            options,
+        } = command?
+        else {
+            return None;
+        };
+        Some(crate::viewport::MaelstromPreview {
+            sources: &self.sources,
+            center,
+            initial,
+            target,
+            options,
+            cplane: self.context.map_or(cplane, |c| c.construction_plane),
+            last: self.preview_cursor,
+            cache: &self.preview_cache,
+        })
+    }
 }
 
 impl VibocerosApp {
+    pub(super) fn maelstrom_preview(&self) -> Option<crate::viewport::MaelstromPreview<'_>> {
+        self.maelstrom_session.as_ref()?.preview(
+            self.active_command,
+            self.viewports[self.active_viewport].construction_plane(),
+        )
+    }
+    pub(super) fn update_maelstrom_preview(
+        &mut self,
+        cursor: crate::viewport::MaelstromCursor,
+    ) -> bool {
+        if self.maelstrom_preview().is_none() {
+            return false;
+        }
+        let session = self.maelstrom_session.as_mut().unwrap();
+        if session.preview_cursor == Some(cursor) {
+            return false;
+        }
+        session.preview_cursor = Some(cursor);
+        true
+    }
     pub(super) fn start_maelstrom_session(&mut self, picked: Option<Vec<ObjectId>>) -> bool {
         let group = match self.document.begin_history_group("Maelstrom") {
             Ok(group) => group,
@@ -35,6 +85,8 @@ impl VibocerosApp {
             group,
             placed: false,
             context: None,
+            preview_cursor: None,
+            preview_cache: Default::default(),
         });
         true
     }
@@ -200,6 +252,12 @@ impl VibocerosApp {
         if target.is_none() {
             return self.accept_maelstrom_radius(MaelstromRadius::Point(point));
         }
+        if self.maelstrom_preview().is_some_and(|p| p.last.is_some()) {
+            return self
+                .maelstrom_preview()
+                .and_then(|p| p.angle(point))
+                .is_some_and(|degrees| self.finish_maelstrom(degrees));
+        }
         let context = self.maelstrom_session.as_ref().unwrap().context.unwrap();
         match circle_frame(center, initial.unwrap(), context)
             .and_then(|frame| coil_angle(frame, point))
@@ -251,6 +309,7 @@ impl VibocerosApp {
             target,
             options,
         });
+        self.maelstrom_session.as_mut().unwrap().preview_cursor = None;
         self.push_log(self.active_command.unwrap().prompt().into());
         true
     }
@@ -295,6 +354,7 @@ impl VibocerosApp {
         ) {
             Ok(message) => {
                 session.placed = true;
+                session.preview_cursor = None;
                 self.push_log(message);
                 if options.copy {
                     self.push_log("Maelstrom: enter another coil angle; Enter finishes, Esc keeps accepted copies".into());

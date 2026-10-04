@@ -38,6 +38,7 @@ mod mirror_preview;
 pub(crate) use mirror_preview::MirrorPreview;
 pub(crate) mod affine_preview;
 pub(crate) mod bend_preview;
+pub(crate) mod maelstrom_preview;
 mod morph_preview;
 mod object_preview;
 #[cfg(test)]
@@ -46,6 +47,7 @@ pub(crate) mod taper_preview;
 pub(crate) mod twist_preview;
 pub(crate) use affine_preview::AffinePreview;
 pub(crate) use bend_preview::{BendPreview, BendPreviewCache};
+pub(crate) use maelstrom_preview::{MaelstromCursor, MaelstromPreview, MaelstromPreviewCache};
 pub(crate) use taper_preview::{TaperPreview, TaperPreviewCache};
 pub(crate) use twist_preview::{TwistPreview, TwistPreviewCache};
 pub(crate) mod translation_preview;
@@ -325,6 +327,7 @@ pub struct ViewportInput<'a> {
     pub affine_preview: Option<AffinePreview<'a>>,
     pub twist_preview: Option<TwistPreview<'a>>,
     pub bend_preview: Option<BendPreview<'a>>,
+    pub maelstrom_preview: Option<MaelstromPreview<'a>>,
     pub taper_preview: Option<TaperPreview<'a>>,
     pub angle_plane: Option<Frame3>,
     pub face_pick: Option<FacePickMode>,
@@ -386,6 +389,7 @@ impl Default for ViewportInput<'_> {
             twist_preview: None,
             bend_preview: None,
             taper_preview: None,
+            maelstrom_preview: None,
             angle_plane: None,
             face_pick: None,
             edge_pick: false,
@@ -426,6 +430,7 @@ pub struct ViewportOutput {
     pub twist_preview: Option<Option<Real>>,
     pub bend_preview: Option<Option<Point3>>,
     pub taper_preview: Option<Option<Point3>>,
+    pub maelstrom_preview: Option<MaelstromCursor>,
     pub selection_click: Option<SelectionClick>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
@@ -1109,6 +1114,9 @@ impl Viewport {
         let previous_taper = input
             .taper_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_maelstrom = input
+            .maelstrom_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
@@ -1123,6 +1131,11 @@ impl Viewport {
             })
             .or_else(|| {
                 previous_taper.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                previous_maelstrom.as_ref().map(|p| {
                     object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
                 })
             });
@@ -1594,6 +1607,20 @@ impl Viewport {
                     &self.display_cache,
                 )
             });
+        let (maelstrom_preview, maelstrom_preview_update) =
+            input.maelstrom_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
         let object_preview = mirror_preview
             .or(translation_preview)
             .or(affine_preview)
@@ -1612,6 +1639,11 @@ impl Viewport {
                 taper_preview.as_ref().map(|p| {
                     object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
                 })
+            })
+            .or_else(|| {
+                maelstrom_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
             });
         if mirror_preview_update.is_some()
             || translation_preview_update.is_some()
@@ -1619,6 +1651,7 @@ impl Viewport {
             || twist_preview_update.is_some()
             || bend_preview_update.is_some()
             || taper_preview_update.is_some()
+            || maelstrom_preview_update.is_some()
         {
             let _ = self.refresh_clipping_with_preview(document, rect, object_preview);
         }
@@ -1806,11 +1839,16 @@ impl Viewport {
                 rect,
                 paint_input,
                 cursor,
-                input.bend_preview.is_none() && input.taper_preview.is_none(),
+                input.bend_preview.is_none()
+                    && input.taper_preview.is_none()
+                    && input.maelstrom_preview.is_none(),
             );
         }
         if let Some(preview) = input.bend_preview {
             self.paint_bend_guide(&painter, rect, preview, bend_preview.as_deref());
+        }
+        if let Some(preview) = input.maelstrom_preview {
+            self.paint_maelstrom_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
         }
         if let Some(preview) = input.taper_preview {
             self.paint_taper_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
@@ -1962,6 +2000,7 @@ impl Viewport {
             twist_preview: twist_preview_update,
             bend_preview: bend_preview_update,
             taper_preview: taper_preview_update,
+            maelstrom_preview: maelstrom_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)
                 && response
                     .interact_pointer_pos()

@@ -1,0 +1,54 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_preview",
+      "copy": false,
+      "rigid": false,
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "plane": "XY",
+      "phase": "Wrap",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "cursor": "Valid",
+      "finish": "Coordinate",
+      "aim_angle": 450.0,
+      "id": "Maelstrom_typed_hover_0",
+      "shape": "Points"
+    },
+    {
+      "op": "maelstrom_preview",
+      "copy": false,
+      "rigid": false,
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "plane": "XY",
+      "phase": "Angle",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "cursor": "Valid",
+      "finish": "Coordinate",
+      "aim_angle": 135.0,
+      "id": "Maelstrom_typed_hover_1",
+      "shape": "Points"
+    },
+    {
+      "op": "maelstrom_preview",
+      "copy": false,
+      "rigid": false,
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "plane": "XY",
+      "phase": "Wrap",
+      "view": "Top",
+      "display_mode": "Wireframe",
+      "cursor": "Valid",
+      "finish": "Number",
+      "aim_angle": 450.0,
+      "id": "Maelstrom_typed_hover_2",
+      "shape": "Points"
+    }
+  ]
+}

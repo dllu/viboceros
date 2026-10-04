@@ -58,6 +58,11 @@ fn assert_preference_snapshot(app: &VibocerosApp, rows: &Value, label: &str) {
         let geometry = &row["geometry"];
         match object.geometry() {
             Geometry::Point(point) => near(*point, p(&geometry["points"][0]), 1e-11),
+            Geometry::Line(line) => {
+                for (i, value) in geometry["samples"].as_array().unwrap().iter().enumerate() {
+                    near(line.point_at(i as f64 / 64.).unwrap(), p(value), 1e-11);
+                }
+            }
             Geometry::NurbsCurve(curve) => {
                 let domain = curve.domain();
                 for (i, value) in geometry["samples"].as_array().unwrap().iter().enumerate() {
@@ -425,4 +430,174 @@ fn invalid_input_reprompts_units_preferences_and_context_survive_cancel() {
     assert!(app.document.can_undo());
     app.execute_command("Undo");
     assert_eq!(app.document.objects().count(), 1);
+}
+
+#[test]
+fn native_mouse_turns_copy_and_cancel_use_pending_angle_without_document_edits() {
+    let fixture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/maelstrom_preview.json"
+    ))
+    .unwrap();
+    let captures: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/maelstrom_preview.json"
+    ))
+    .unwrap();
+    let p = |v: &Value| {
+        Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
+    };
+    for index in [1, 12, 13, 14, 23, 24, 25, 26, 27, 28] {
+        let op = &fixture["operations"][index];
+        let v = &captures["results"][index]["value"];
+        let mut app = test_app();
+        let geometry = &v["before"][0]["geometry"];
+        let id = app
+            .document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    p(&geometry["samples"][0]),
+                    p(&geometry["samples"][64]),
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        app.document
+            .select_object(id, SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        let before = app.document.object(id).unwrap().clone();
+        assert!(app.try_start_interactive_command("Maelstrom"));
+        assert!(app.accept_drafting_point(point(0., 0., 0.)));
+        type_value(&mut app, &op["radius0"]);
+        assert!(app.try_continue_maelstrom(&format!(
+            "Copy={}",
+            if op["copy"] == true { "Yes" } else { "No" }
+        )));
+        type_value(&mut app, &op["radius1"]);
+        if op["phase"] == "Repeat" {
+            assert!(app.try_continue_maelstrom("45"));
+            assert!(app.maelstrom_preview().unwrap().last.is_none());
+        }
+        let angle = v["calibration"]["degrees"].as_f64().unwrap();
+        let cursor = p(&v["calibration"]["valid_point"]);
+        let preview_cursor = crate::viewport::MaelstromCursor {
+            point: cursor,
+            angle: Some(angle),
+        };
+        assert!(app.update_maelstrom_preview(preview_cursor));
+        assert_eq!(app.document.object(id).unwrap(), &before);
+        if op["phase"] != "Repeat" {
+            assert!(!app.document.can_undo());
+        }
+        if op["finish"] == "Cancel" {
+            app.cancel_interactive_command(true);
+            assert!(app.maelstrom_preview().is_none());
+            assert_eq!(app.document.object(id).unwrap(), &before);
+            assert!(!app.document.can_undo());
+            continue;
+        }
+        assert!(app.accept_filtered_drafting_point(cursor, false));
+        if op["copy"] == true {
+            assert!(app.maelstrom_preview().unwrap().last.is_none());
+            assert!(app.try_continue_maelstrom("Enter"));
+        }
+        assert_preference_snapshot(&app, &v["after"], op["id"].as_str().unwrap());
+        assert!(app.maelstrom_preview().is_none());
+        assert!(app.document.can_undo());
+        app.execute_command("Undo");
+        assert_eq!(app.document.objects().count(), 1);
+        assert_eq!(app.document.object(id).unwrap(), &before);
+    }
+}
+
+#[test]
+fn typed_coordinates_keep_native_mouse_turns_and_scalar_angles_override_them() {
+    let fixture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/maelstrom_typed_hover.json"
+    ))
+    .unwrap();
+    let captures: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/maelstrom_typed_hover.json"
+    ))
+    .unwrap();
+    let p = |v: &Value| {
+        Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
+    };
+    let axis_fixture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/maelstrom_axis_hover.json"
+    ))
+    .unwrap();
+    let axis_captures: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/maelstrom_axis_hover.json"
+    ))
+    .unwrap();
+    for (op, row) in fixture["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(captures["results"].as_array().unwrap())
+        .chain(
+            axis_fixture["operations"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(axis_captures["results"].as_array().unwrap()),
+        )
+    {
+        let v = &row["value"];
+        let mut app = test_app();
+        let ids = v["before"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|o| o["witness"] != true)
+            .map(|o| {
+                app.document
+                    .add_geometry(Geometry::Point(p(&o["geometry"]["points"][0])))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        app.document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        assert!(app.try_start_interactive_command("Maelstrom"));
+        assert!(app.accept_drafting_point(point(0., 0., 0.)));
+        type_value(&mut app, &op["radius0"]);
+        type_value(&mut app, &op["radius1"]);
+        assert!(
+            app.update_maelstrom_preview(crate::viewport::MaelstromCursor {
+                point: p(&v["calibration"]["valid_point"]),
+                angle: Some(v["calibration"]["degrees"].as_f64().unwrap())
+            })
+        );
+        assert!(!app.document.can_undo());
+        match op["finish"].as_str().unwrap() {
+            "Coordinate" => type_value(&mut app, &v["calibration"]["valid_point"]),
+            "Number" => type_value(&mut app, &Value::from(-90.)),
+            "Axis" => type_value(&mut app, &serde_json::json!([0., 0., 0.])),
+            "Click" => {
+                app.update_maelstrom_preview(crate::viewport::MaelstromCursor {
+                    point: point(0., 0., 0.),
+                    angle: Some(0.),
+                });
+                assert!(app.accept_filtered_drafting_point(point(0., 0., 0.), false));
+            }
+            _ => unreachable!(),
+        }
+        let filtered = |rows: &Value| {
+            Value::Array(
+                rows.as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|o| o["witness"] != true)
+                    .cloned()
+                    .collect(),
+            )
+        };
+        assert_preference_snapshot(&app, &filtered(&v["after"]), op["id"].as_str().unwrap());
+        assert!(app.active_command.is_none());
+        app.execute_command("Undo");
+        assert_preference_snapshot(&app, &filtered(&v["before"]), op["id"].as_str().unwrap());
+    }
 }

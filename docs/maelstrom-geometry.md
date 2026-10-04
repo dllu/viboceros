@@ -6,7 +6,8 @@
 [MaelstromSpaceMorph](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_Morphs_MaelstromSpaceMorph.htm)
 point map independently in Rust. Its [command adapter](commands/maelstrom.md)
 adds selected objects, radii, construction planes, Copy, Rigid and history.
-Interactive circle construction and live previews remain to implement.
+Interactive radius/angle getters and [cached live previews](maelstrom-preview.md)
+are implemented; additional Circle construction modes remain to implement.
 
 ## Point map
 

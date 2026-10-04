@@ -31,7 +31,9 @@ Undo entries, first-radius memory, per-command Rigid defaults and immediate Copy
 getter persistence. Its [input captures](maelstrom-input-provenance.json) add
 44 commands for angle quadrants, tiny radial picks, empty getters and Copy
 batches; application tests replay these and the 29 preference/history steps.
-Live deformed previews remain pending.
+Its [live previews](maelstrom-preview.md) add 32 pending captures, six earlier
+diagnostics, three typed-input captures and three axis-input captures, retaining
+owned framebuffer PNGs and public SDK quick-preview witnesses.
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.

@@ -7271,7 +7271,9 @@ impl VibocerosApp {
             InteractiveCommand::Twist { .. } => return self.accept_twist_point(point),
             InteractiveCommand::Bend { .. } => return self.accept_bend_point(point),
             InteractiveCommand::Taper { .. } => return self.accept_taper_point(point),
-            InteractiveCommand::Maelstrom { .. } => return self.accept_maelstrom_point(point),
+            InteractiveCommand::Maelstrom { .. } => {
+                return self.accept_maelstrom_point(point);
+            }
             InteractiveCommand::Rotate3D { mut points } => {
                 let point_count = points.iter().flatten().count();
                 if point_count == 1
@@ -8714,6 +8716,12 @@ impl eframe::App for VibocerosApp {
                 self.viewports[self.active_viewport].construction_plane(),
             )
         });
+        let maelstrom_preview = self.maelstrom_session.as_ref().and_then(|s| {
+            s.preview(
+                self.active_command,
+                self.viewports[self.active_viewport].construction_plane(),
+            )
+        });
         let angle_plane = matches!(
             self.active_command,
             Some(
@@ -8865,6 +8873,7 @@ impl eframe::App for VibocerosApp {
                             twist_preview,
                             bend_preview,
                             taper_preview,
+                            maelstrom_preview,
                             face_pick,
                             component_preselection,
                             component_pick,
@@ -8958,6 +8967,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(point) = output.taper_preview
                 && self.update_taper_preview(point)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(cursor) = output.maelstrom_preview
+                && self.update_maelstrom_preview(cursor)
             {
                 ui.ctx().request_repaint();
             }

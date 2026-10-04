@@ -77,15 +77,19 @@ invalid option answers keep their getter active. Cancel retains accepted radius
 and Copy preferences. After a Copy placement, subsequent angles use the original
 sources and both accepted radii; Enter or Cancel finishes the single Undo batch.
 
-A picked coil angle uses the first circle's X/Y directions and ignores axial
-height. Center and axial picks accept zero, while a tiny nonzero radial direction
-retains its angle. Native picks with negative Circle X coordinates use
+A coordinate coil angle uses the first circle's X/Y directions and ignores axial
+height. Before mouse motion, center and axial picks accept zero, while a tiny
+nonzero radial direction retains its angle. Typed coordinates before mouse
+motion with negative Circle X coordinates use
 `atan(y/x) - pi`; for example, `[-3,5,0]` on World XY supplies about -239.036
 degrees, so a principal-angle reduction would change the partial spiral.
-Explicit numeric angles retain the supplied number.
+Mouse motion accumulates complete turns, and subsequent typed coordinates
+retain the nearest accumulated turn. Center and axial picks accept that nearest
+turn at zero degrees. Explicit numeric angles retain the supplied number.
 
-Circle's alternative construction modes and live deformed previews remain to
-implement. The current input workflow uses the standard drafting rubber band.
+[Live previews](../maelstrom-preview.md) show both black circle guides and
+cached deformation wires. Circle's alternative construction modes remain to
+implement.
 
 ## Retained verification
 
@@ -120,8 +124,9 @@ succeeded, that extra command owns the later selection cleanup.
 
 These are sampled witnesses, not a continuous error certificate or exhaustive
 Rhino parity. Complex trimmed shapes, other Circle construction choices,
-live mouse preview turns and original native performance comparisons
-remain unverified.
+and original native performance comparisons remain unverified.
+[Live previews](../maelstrom-preview.md) retain Circle guides, full mouse turns,
+source cages and all display modes with separate native evidence.
 
 ```sh
 cargo test --release -p viboceros-command maelstrom::tests
