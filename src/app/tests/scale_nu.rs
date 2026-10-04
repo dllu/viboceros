@@ -14,6 +14,195 @@ fn coords(value: &Value) -> [f64; 3] {
 }
 
 #[test]
+fn scale_nu_options_rigid_groups_grip_exclusion_and_cancel_memory_match_native() {
+    replay_scale_nu_options(
+        include_str!("../../../tools/rhino_oracle/fixtures/scale_nu_options.json"),
+        include_str!("../../../tools/rhino_oracle/observations/scale_nu_options.json"),
+        36,
+    );
+}
+
+#[test]
+fn scale_nu_temporary_grip_positions_are_discarded_by_move_and_history_like_native() {
+    replay_scale_nu_options(
+        include_str!("../../../tools/rhino_oracle/fixtures/scale_nu_pending_grips.json"),
+        include_str!("../../../tools/rhino_oracle/observations/scale_nu_pending_grips.json"),
+        3,
+    );
+}
+
+fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
+    use serde_json::json;
+    let fixture: Value = serde_json::from_str(fixture).unwrap();
+    let observed: Value = serde_json::from_str(observed).unwrap();
+    let operations = fixture["operations"].as_array().unwrap();
+    let rows = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), count);
+    assert_eq!(rows.len(), operations.len());
+    for (op, row) in operations.iter().zip(rows) {
+        assert_eq!(op["id"], row["id"]);
+        let native = &row["value"];
+        for incremental in [false, true] {
+            let mut app = test_app();
+            app.active_viewport = 1;
+            app.viewports[1].set_construction_plane(
+                Frame3::try_from_directions(
+                    Point3::try_from(coords(&native["plane"]["origin"])).unwrap(),
+                    Vector3::try_from(coords(&native["plane"]["x_axis"])).unwrap(),
+                    Vector3::try_from(coords(&native["plane"]["y_axis"])).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            );
+            enter(&mut app, "Point 1,1,1");
+            enter(&mut app, "SelAll");
+            for script in native["seed_macros"].as_array().unwrap() {
+                for token in script.as_str().unwrap().split_whitespace() {
+                    enter(&mut app, token);
+                }
+            }
+            enter(&mut app, "Delete");
+            app.document.clear_history().unwrap();
+            app.document
+                .begin_transaction("ScaleNU option sources")
+                .unwrap();
+            let mut sources = Vec::new();
+            for (i, source) in native["before"]["objects"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .enumerate()
+            {
+                let kind = native["kinds"][i].as_str().unwrap();
+                let geom = if kind == "point" {
+                    Geometry::Point(point(8., 0., 0.))
+                } else {
+                    geometry(&json!({"source":kind}), source)
+                };
+                let id = app.document.add_geometry(geom).unwrap();
+                sources.push(id);
+                app.document
+                    .set_object_names([(id, Some(format!("options source {i}")))])
+                    .unwrap();
+            }
+            for members in native["before"]["groups"].as_array().unwrap() {
+                app.document
+                    .add_group(
+                        None,
+                        members
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|i| sources[i.as_u64().unwrap() as usize]),
+                    )
+                    .unwrap();
+            }
+            app.document.commit_transaction().unwrap();
+            if op["selection"] != "objects" {
+                app.document.enable_control_points([sources[0]]).unwrap();
+                app.document
+                    .select_control_points(
+                        [0, 2].map(|index| ControlPointId {
+                            object: sources[0],
+                            index,
+                        }),
+                        SelectionMode::Add,
+                    )
+                    .unwrap();
+                if op["selection"] == "parent" {
+                    app.document
+                        .select_objects_direct([sources[0]], SelectionMode::Add)
+                        .unwrap();
+                }
+                app.document
+                    .select_objects_direct(sources[1..].iter().copied(), SelectionMode::Add)
+                    .unwrap();
+            } else {
+                app.document
+                    .select_objects_direct(sources.iter().copied(), SelectionMode::Replace)
+                    .unwrap();
+            }
+            let state = |app: &VibocerosApp| {
+                let mut objects = snapshot(app, sources[0], None);
+                for (value, object) in objects
+                    .as_array_mut()
+                    .unwrap()
+                    .iter_mut()
+                    .zip(app.document.objects())
+                {
+                    value["role"] = json!(if sources.contains(&object.id()) {
+                        "source"
+                    } else {
+                        "output"
+                    });
+                }
+                let order = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+                let groups = app
+                    .document
+                    .groups()
+                    .map(|g| {
+                        order
+                            .iter()
+                            .enumerate()
+                            .filter_map(|(i, id)| {
+                                g.members().any(|member| member == *id).then_some(i)
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect::<Vec<_>>();
+                json!({"objects":objects,"groups":groups})
+            };
+            let label = format!(
+                "{} incremental={incremental}: {:?}",
+                op["id"], app.command_log
+            );
+            compare(&state(&app), &native["before"], &label);
+            let tokens = native["macro"]
+                .as_str()
+                .unwrap()
+                .split_whitespace()
+                .collect::<Vec<_>>();
+            if incremental
+                || op["mode"] == "rigid_repeat"
+                || op["mode"] == "remember_factors_cancel"
+            {
+                for token in tokens {
+                    enter(&mut app, token);
+                }
+            } else {
+                let args = tokens[1..]
+                    .iter()
+                    .filter(|t| **t != "_Enter")
+                    .map(|t| t.strip_prefix('w').unwrap_or(t))
+                    .collect::<Vec<_>>();
+                enter(&mut app, &format!("ScaleNU {}", args.join(" ")));
+            }
+            assert!(
+                app.active_command.is_none(),
+                "{label}: {:?}",
+                app.command_log
+            );
+            compare(&state(&app), &native["after_script"], &label);
+            if let Some(followup) = native.get("followup") {
+                assert_eq!(followup["macro"], "_Move w0,0,0 w1,2,3");
+                if incremental {
+                    for token in followup["macro"].as_str().unwrap().split_whitespace() {
+                        enter(&mut app, token);
+                    }
+                } else {
+                    enter(&mut app, "Move 0,0,0 1,2,3");
+                }
+                compare(&state(&app), &followup["after"], &format!("Move {label}"));
+            }
+            enter(&mut app, "Undo");
+            compare(&state(&app), &native["undo"], &format!("Undo {label}"));
+            enter(&mut app, "Redo");
+            compare(&state(&app), &native["redo"], &format!("Redo {label}"));
+        }
+    }
+}
+
+#[test]
 fn scale_nu_cursor_and_keyboard_reference_inputs_match_20_native_captures() {
     use crate::viewport::{DraftingInput, ViewportInput};
     use serde_json::json;
@@ -319,7 +508,7 @@ fn scale_nu_partial_input_preview_defaults_retry_and_cancel() {
     }
     assert_eq!(
         app.commands.axis_scale_defaults("ScaleNU"),
-        Some([2., 1., 1.])
+        Some([1., 1., 1.])
     );
     assert_eq!(
         app.document.object(source).unwrap().geometry(),
@@ -350,7 +539,7 @@ fn scale_nu_partial_input_preview_defaults_retry_and_cancel() {
     assert!(app.active_command.is_none());
     assert_eq!(
         app.commands.axis_scale_defaults("ScaleNU"),
-        Some([2., 1., 1.])
+        Some([1., 1., 1.])
     );
     for input in [
         "ScaleNU Copy=Yes WorldCoordinates",

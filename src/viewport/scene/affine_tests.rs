@@ -9,6 +9,87 @@ fn rect() -> Rect {
 }
 
 #[test]
+fn scale_nu_rigid_preview_preserves_shapes_and_uses_group_centers_for_clipping() {
+    use viboceros_command::nonuniform_scale::RigidLayout;
+    let mut doc = Document::default();
+    let mut ids = Vec::new();
+    for x in [2., 10., -6.] {
+        ids.push(
+            doc.add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![point(x, -1., 0.), point(x + 2., -1., 2.), point(x, 1., 0.)],
+                    vec![[0, 1, 2]],
+                    doc.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap(),
+        );
+    }
+    doc.add_group(None, [ids[0], ids[1]]).unwrap();
+    doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    let layout = RigidLayout::try_new(&doc, &ids, &[]).unwrap();
+    let map = AffineTransform3::try_nonuniform_scale(point(0., 0., 0.), [-2., 0.5, 3.]).unwrap();
+    let preview = TransformedObjects {
+        sources: layout.sources(),
+        grips: &[],
+        copy: true,
+        reference_sources: false,
+        draw_source_faces: false,
+        reversing: false,
+        reference: None,
+        transform: map,
+        rigid_layout: Some(&layout),
+    };
+    let translations = [[-21., 0., 2.], [-21., 0., 2.], [15., 0., 2.]];
+    let before = format!("{doc:?}");
+    let mut expected_doc = Document::default();
+    for (id, offset) in ids.iter().zip(translations) {
+        expected_doc
+            .add_geometry(doc.object(*id).unwrap().geometry().clone())
+            .unwrap();
+        let translated = doc
+            .object(*id)
+            .unwrap()
+            .geometry()
+            .transformed(
+                AffineTransform3::from_translation(Vector3::try_from(offset).unwrap()),
+                doc.tolerance(),
+            )
+            .unwrap();
+        expected_doc.add_geometry(translated).unwrap();
+    }
+    for (view, expected_view) in Viewport::standard_views()
+        .iter_mut()
+        .zip(Viewport::standard_views().iter_mut())
+    {
+        view.display_mode = DisplayMode::Shaded;
+        view.refresh_clipping_with_transform(&doc, rect(), Some(preview))
+            .unwrap();
+        expected_view
+            .refresh_clipping(&expected_doc, rect())
+            .unwrap();
+        assert!(view.cached_clipping.as_ref() == expected_view.cached_clipping.as_ref());
+        let scene = view.object_scene_with_transform(rect(), &doc, None, &[], Some(preview));
+        assert_eq!(scene.triangles.len(), 9);
+        let cached = view.cached_scene.borrow();
+        let objects = &cached.as_ref().unwrap().key.objects;
+        for ((source, target), offset) in objects[..3].iter().zip(&objects[3..]).zip(translations) {
+            assert!(Rc::ptr_eq(&source.geometry, &target.geometry));
+            assert_eq!(
+                target.transform,
+                Some(AffineTransform3::from_translation(
+                    Vector3::try_from(offset).unwrap()
+                ))
+            );
+            assert!(!target.reversing);
+        }
+    }
+    assert_eq!(format!("{doc:?}"), before);
+}
+
+#[test]
 fn affine_preview_reuses_display_geometry_across_deformation_and_four_views() {
     let mut document = Document::default();
     let commands = CommandRegistry::with_builtins();
@@ -44,6 +125,7 @@ fn affine_preview_reuses_display_geometry_across_deformation_and_four_views() {
         .enumerate()
         {
             let preview = Some(TransformedObjects {
+                rigid_layout: None,
                 grips: &[],
                 copy: false,
                 sources: &sources,
@@ -115,6 +197,7 @@ fn affine_preview_face_normals_match_independently_deformed_meshes() {
     ] {
         let map = AffineTransform3::try_new(rows, Vector3::try_new(0., 0., 0.).unwrap()).unwrap();
         let preview = Some(TransformedObjects {
+            rigid_layout: None,
             grips: &[],
             copy: false,
             sources: &[id],
@@ -211,6 +294,7 @@ fn gpu_affine_preview_renders_deformed_faces_points_and_source_styles() {
                     view.display_mode = mode;
                     let sources = [id, face];
                     let preview = AffinePreview {
+                        rigid_layout: None,
                         grips: &[],
                         sources: &sources,
                         definition,

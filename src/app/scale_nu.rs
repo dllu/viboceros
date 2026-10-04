@@ -19,13 +19,36 @@ impl VibocerosApp {
             return false;
         };
         let word = input.trim().trim_start_matches(['_', '-']);
-        if word.eq_ignore_ascii_case("WorldCoordinates") {
-            if prompt.origin.is_none() {
-                prompt.world = true;
-                self.active_command = Some(InteractiveCommand::ScaleNu(prompt));
-                self.push_log("ScaleNU directions: World coordinates".into());
-            } else {
+        let name = word.split_once('=').map_or(word, |(name, _)| name);
+        if name.eq_ignore_ascii_case("WorldCoordinates") || name.eq_ignore_ascii_case("Rigid") {
+            if name.eq_ignore_ascii_case("WorldCoordinates") && prompt.origin.is_some() {
                 self.push_log("Choose WorldCoordinates before the origin".into());
+            } else {
+                let mut options = viboceros_command::nonuniform_scale::ScaleNuOptions {
+                    world: prompt.world,
+                    rigid: prompt.rigid,
+                    copy: false,
+                };
+                match options.update(word) {
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                    Ok(()) => {
+                        if options.rigid != prompt.rigid
+                            && !self.update_scale_nu_rigid_layout(options.rigid)
+                        {
+                            self.command_input.clear();
+                            return true;
+                        }
+                        prompt.world = options.world;
+                        prompt.rigid = options.rigid;
+                        self.commands.remember_rigid_option("ScaleNU", prompt.rigid);
+                        self.active_command = Some(InteractiveCommand::ScaleNu(prompt));
+                        self.push_log(format!(
+                            "WorldCoordinates={} Rigid={}",
+                            if prompt.world { "Yes" } else { "No" },
+                            if prompt.rigid { "Yes" } else { "No" }
+                        ));
+                    }
+                }
             }
             self.command_input.clear();
             return true;
@@ -123,7 +146,6 @@ impl VibocerosApp {
             return false;
         }
         let axis = prompt.axis().unwrap();
-        self.commands.remember_axis_scale("ScaleNU", axis, value);
         prompt.factors[axis] = Some(value);
         prompt.reference = None;
         prompt.distance = None;
@@ -138,17 +160,15 @@ impl VibocerosApp {
         };
         let origin = prompt.origin.unwrap();
         let script = format!(
-            "ScaleNU {} {x} {y} {z}{}",
+            "ScaleNU {} {x} {y} {z} WorldCoordinates={} Rigid={}",
             format_model_point(origin),
-            if prompt.world {
-                " WorldCoordinates"
-            } else {
-                ""
-            }
+            if prompt.world { "Yes" } else { "No" },
+            if prompt.rigid { "Yes" } else { "No" }
         );
         // Copy repeats from the same sources and origin, beginning with X.
         let continuation = ScaleNuPrompt {
             origin: Some(origin),
+            rigid: prompt.rigid,
             ..ScaleNuPrompt::new(prompt.world)
         };
         self.apply_transform_step(&script, InteractiveCommand::ScaleNu(continuation))

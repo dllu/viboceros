@@ -28,9 +28,20 @@ pub(super) struct TransformedObjects<'a> {
     /// A Normal reference uses temporary selection styling without selecting it in the model.
     pub reference: Option<ObjectId>,
     pub transform: AffineTransform3,
+    pub rigid_layout: Option<&'a viboceros_command::nonuniform_scale::RigidLayout>,
 }
 
 impl<'a> TransformedObjects<'a> {
+    pub(super) fn object_transform(
+        self,
+        id: ObjectId,
+    ) -> Result<AffineTransform3, viboceros_geometry::GeometryError> {
+        if let Some(center) = self.rigid_layout.and_then(|layout| layout.center(id)) {
+            viboceros_command::nonuniform_scale::rigid_map(center, self.transform)
+        } else {
+            Ok(self.transform)
+        }
+    }
     pub(super) fn reflection(
         sources: &'a [ObjectId],
         reference_sources: bool,
@@ -45,6 +56,7 @@ impl<'a> TransformedObjects<'a> {
             reversing: true,
             reference: None,
             transform,
+            rigid_layout: None,
         }
     }
 }

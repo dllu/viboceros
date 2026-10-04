@@ -1,14 +1,22 @@
 //! Construction-plane scaling with independent signed axis factors.
 use super::*;
 
-pub const USAGE: &str =
-    "ScaleNU origin x-factor y-factor z-factor [WorldCoordinates] [Copy=Yes|No]";
+pub const USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [WorldCoordinates=Yes|No] [Rigid=Yes|No] [Copy=Yes|No]";
 
-pub(super) struct ScaleNonUniformCommand([remembered::Remembered<Real>; 3]);
+mod rigid;
+pub use rigid::{RigidLayout, rigid_map};
+
+pub(super) struct ScaleNonUniformCommand {
+    factors: [remembered::Remembered<Real>; 3],
+    rigid: remembered::Remembered<bool>,
+}
 
 impl Default for ScaleNonUniformCommand {
     fn default() -> Self {
-        Self(std::array::from_fn(|_| remembered::Remembered::new(1.)))
+        Self {
+            factors: std::array::from_fn(|_| remembered::Remembered::new(1.)),
+            rigid: remembered::Remembered::new(false),
+        }
     }
 }
 
@@ -26,16 +34,25 @@ impl Command for ScaleNonUniformCommand {
     }
 
     fn axis_scale_defaults(&self) -> Option<[Real; 3]> {
-        Some(std::array::from_fn(|axis| self.0[axis].get()))
+        Some(std::array::from_fn(|axis| self.factors[axis].get()))
     }
 
     fn remember_axis_scale(&self, axis: usize, value: Real) -> bool {
-        if let Some(preference) = self.0.get(axis) {
+        if let Some(preference) = self.factors.get(axis) {
             preference.set(value);
             true
         } else {
             false
         }
+    }
+
+    fn rigid_option_default(&self) -> Option<bool> {
+        Some(self.rigid.get())
+    }
+
+    fn remember_rigid_option(&self, value: bool) -> bool {
+        self.rigid.set(value);
+        true
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -49,9 +66,15 @@ impl Command for ScaleNonUniformCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let (arguments, sources) = affine_transform_arguments(document, arguments, USAGE)?;
-        let (positional, world, copy) = options(&arguments, false)?;
+        let (positional, options) = options(
+            &arguments,
+            ScaleNuOptions {
+                rigid: self.rigid.get(),
+                ..Default::default()
+            },
+        )?;
         let (origin, mut consumed) = parse_point(&positional)?;
-        let plane = if world {
+        let plane = if options.world {
             CommandContext::default().construction_plane
         } else {
             context.construction_plane
@@ -99,7 +122,18 @@ impl Command for ScaleNonUniformCommand {
         for (axis, value) in factors.into_iter().enumerate() {
             self.remember_axis_scale(axis, value);
         }
-        let (changed, copied) = apply_transform_with_renewal(document, &sources, transform, copy)?;
+        self.remember_rigid_option(options.rigid);
+        let (changed, copied) = if options.rigid {
+            rigid::apply(
+                document,
+                &sources,
+                transform,
+                scale_map(plane, origin, [factors[0], factors[1], 1.])?,
+                options.copy,
+            )?
+        } else {
+            apply_transform_with_renewal(document, &sources, transform, options.copy)?
+        };
         Ok(format!(
             "Scaled {changed} object(s) by {:.6},{:.6},{:.6}, creating {copied} copy object(s)",
             factors[0], factors[1], factors[2]
@@ -107,20 +141,43 @@ impl Command for ScaleNonUniformCommand {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct ScaleNuOptions {
+    pub world: bool,
+    pub rigid: bool,
+    pub copy: bool,
+}
+
+impl ScaleNuOptions {
+    /// Boolean names toggle immediately; explicit Yes/No sets the value.
+    pub fn update(&mut self, token: &str) -> Result<(), CommandError> {
+        let (name, value) = token
+            .split_once('=')
+            .map_or((token, None), |(n, v)| (n, Some(v)));
+        let option = if option_name_eq(name, "WorldCoordinates") {
+            &mut self.world
+        } else if option_name_eq(name, "Rigid") {
+            &mut self.rigid
+        } else {
+            return Err(CommandError::Usage(USAGE));
+        };
+        *option = match value {
+            Some(value) => parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
+            None => !*option,
+        };
+        Ok(())
+    }
+}
+
 fn options<'a>(
     arguments: &[&'a str],
-    default_copy: bool,
-) -> Result<(Vec<&'a str>, bool, bool), CommandError> {
-    let mut world = false;
-    let mut seen_world = false;
+    mut options: ScaleNuOptions,
+) -> Result<(Vec<&'a str>, ScaleNuOptions), CommandError> {
     let mut remaining = Vec::with_capacity(arguments.len());
     for &token in arguments {
-        if option_name_eq(token, "WorldCoordinates") {
-            if seen_world {
-                return Err(CommandError::Usage(USAGE));
-            }
-            seen_world = true;
-            world = true;
+        let name = token.split_once('=').map_or(token, |(name, _)| name);
+        if option_name_eq(name, "WorldCoordinates") || option_name_eq(name, "Rigid") {
+            options.update(token)?;
         } else {
             remaining.push(token);
         }
@@ -131,16 +188,18 @@ fn options<'a>(
             .is_some_and(|(name, _)| option_name_eq(name, "Copy"))
     });
     let (positional, copy) = parse_transform_copy_arguments(&remaining, USAGE)?;
-    Ok((
-        positional,
-        world,
-        if has_copy { copy } else { default_copy },
-    ))
+    if has_copy {
+        options.copy = copy;
+    }
+    Ok((positional, options))
 }
 
 /// Starting options contain no origin or factors. The command registry expands
 /// bare Copy name/value pairs for full invocations; prompts accept those too.
-pub fn start_options(arguments: &[&str], default_copy: bool) -> Result<(bool, bool), CommandError> {
+pub fn start_options(
+    arguments: &[&str],
+    defaults: ScaleNuOptions,
+) -> Result<ScaleNuOptions, CommandError> {
     let copy_pair;
     let arguments = if let [name, value] = arguments
         && option_name_eq(name, "Copy")
@@ -150,11 +209,11 @@ pub fn start_options(arguments: &[&str], default_copy: bool) -> Result<(bool, bo
     } else {
         arguments.to_vec()
     };
-    let (positional, world, copy) = options(&arguments, default_copy)?;
+    let (positional, options) = options(&arguments, defaults)?;
     if !positional.is_empty() {
         return Err(CommandError::Usage(USAGE));
     }
-    Ok((world, copy))
+    Ok(options)
 }
 
 pub fn scale_map(
@@ -221,6 +280,7 @@ pub struct ScaleNuPrompt {
     pub reference: Option<Point3>,
     pub distance: Option<Real>,
     pub world: bool,
+    pub rigid: bool,
 }
 
 impl ScaleNuPrompt {
@@ -231,6 +291,7 @@ impl ScaleNuPrompt {
             reference: None,
             distance: None,
             world,
+            rigid: false,
         }
     }
 
@@ -240,7 +301,7 @@ impl ScaleNuPrompt {
 
     pub const fn prompt(self) -> &'static str {
         if self.origin.is_none() {
-            return "ScaleNU: pick the origin (WorldCoordinates; Copy=Yes|No; Esc cancels)";
+            return "ScaleNU: pick the origin (WorldCoordinates=Yes|No; Rigid=Yes|No; Copy=Yes|No; Esc cancels)";
         }
         match (self.factors, self.reference) {
             ([None, _, _], None) => {

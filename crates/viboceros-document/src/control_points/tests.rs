@@ -1,6 +1,60 @@
 use super::*;
 
 #[test]
+fn temporary_grip_display_is_atomic_and_does_not_replace_geometry_or_clear_redo() {
+    let mut doc = Document::default();
+    let p = |x| Point3::try_new(x, 0., 0.).unwrap();
+    let id = doc
+        .add_geometry(Geometry::NurbsCurve(
+            NurbsCurve::try_clamped_uniform(2, vec![p(0.), p(1.), p(2.)]).unwrap(),
+        ))
+        .unwrap();
+    doc.add_geometry(Geometry::Point(p(8.))).unwrap();
+    doc.undo().unwrap();
+    doc.enable_control_points([id]).unwrap();
+    let grip = ControlPointId {
+        object: id,
+        index: 0,
+    };
+    doc.select_control_points([grip], SelectionMode::Add)
+        .unwrap();
+    let before = format!("{doc:?}");
+    let map = AffineTransform3::from_translation(
+        viboceros_geometry::Vector3::try_new(3., 0., 0.).unwrap(),
+    );
+    assert!(
+        doc.transform_control_point_display(
+            [
+                grip,
+                ControlPointId {
+                    object: id,
+                    index: 3
+                }
+            ],
+            map
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    let geometry = doc.object(id).unwrap().geometry_snapshot().clone();
+    let label = doc.undo_label().map(str::to_owned);
+    let version = doc.history.version;
+    assert_eq!(
+        doc.transform_control_point_display([grip, grip], map)
+            .unwrap(),
+        1
+    );
+    assert_eq!(doc.control_point_locations(id).unwrap()[0], p(3.));
+    assert!(geometry.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    assert_eq!(doc.undo_label(), label.as_deref());
+    assert_eq!(doc.history.version, version);
+    assert!(doc.can_redo());
+    doc.redo().unwrap();
+    assert_eq!(doc.control_point_locations(id).unwrap()[0], p(0.));
+    assert_eq!(doc.selected_control_points().count(), 1);
+}
+
+#[test]
 fn control_point_picks_validate_atomically_and_do_not_consume_redo() {
     let mut document = Document::default();
     let p = |x, y| Point3::try_new(x, y, 0.).unwrap();

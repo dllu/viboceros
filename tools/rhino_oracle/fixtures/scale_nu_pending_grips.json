@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-pending-0",
+      "source": "rational",
+      "plane": "world",
+      "mode": "rigid_followup_move",
+      "copy": false,
+      "selection": "grips",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-pending-1",
+      "source": "surface",
+      "plane": "tilted",
+      "mode": "rigid_followup_move",
+      "copy": false,
+      "selection": "parent",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-pending-2",
+      "source": "mesh",
+      "plane": "world",
+      "mode": "rigid_followup_move",
+      "copy": false,
+      "selection": "grips",
+      "groups": "none"
+    }
+  ]
+}

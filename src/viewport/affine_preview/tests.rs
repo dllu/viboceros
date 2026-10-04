@@ -42,6 +42,7 @@ fn affine_preview_resets_invalid_targets_retains_outside_and_rejects_batch_overf
     let sources = [id, large];
     let map = AffineTransform3::identity();
     let preview = AffinePreview {
+        rigid_layout: None,
         grips: &[],
         sources: &sources,
         definition: PointTransform::Scale {
@@ -64,6 +65,7 @@ fn affine_preview_resets_invalid_targets_retains_outside_and_rejects_batch_overf
         preview.definition,
     ] {
         let preview = AffinePreview {
+            rigid_layout: None,
             grips: &[],
             sources: &sources[..1],
             definition,
@@ -131,6 +133,7 @@ fn affine_preview_egui_snap_filter_and_click_use_the_same_point_and_hold_outside
     let mut view = Viewport::new(ViewKind::Top);
     let sources = [id];
     let preview = AffinePreview {
+        rigid_layout: None,
         grips: &[],
         sources: &sources,
         definition: PointTransform::Scale1D {
@@ -187,6 +190,7 @@ fn affine_preview_egui_snap_filter_and_click_use_the_same_point_and_hold_outside
         point(2., 0., 0.)
     );
     let retained = AffinePreview {
+        rigid_layout: None,
         grips: &[],
         last_transform: Some(map),
         ..preview
@@ -233,6 +237,7 @@ fn affine_preview_zero_numeric_factor_keeps_the_collapsed_directional_map() {
         .unwrap();
     let view = Viewport::new(ViewKind::Top);
     let preview = AffinePreview {
+        rigid_layout: None,
         grips: &[],
         sources: &[id],
         definition: PointTransform::Scale1DDirection {

@@ -4721,13 +4721,23 @@ impl VibocerosApp {
                     center: None,
                     reference: None,
                 },
-                "scalenu" => InteractiveCommand::ScaleNu(
-                    viboceros_command::nonuniform_scale::ScaleNuPrompt::new(
-                        viboceros_command::nonuniform_scale::start_options(&arguments, false)
-                            .unwrap()
-                            .0,
-                    ),
-                ),
+                "scalenu" => {
+                    use viboceros_command::nonuniform_scale::{
+                        ScaleNuOptions, ScaleNuPrompt, start_options,
+                    };
+                    let options = start_options(
+                        &arguments,
+                        ScaleNuOptions {
+                            rigid: self.commands.rigid_option_default("ScaleNU").unwrap(),
+                            ..Default::default()
+                        },
+                    )
+                    .unwrap();
+                    InteractiveCommand::ScaleNu(ScaleNuPrompt {
+                        rigid: options.rigid,
+                        ..ScaleNuPrompt::new(options.world)
+                    })
+                }
                 "rotate" => InteractiveCommand::Rotate {
                     center: None,
                     reference: None,

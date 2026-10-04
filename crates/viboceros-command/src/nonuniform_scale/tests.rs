@@ -77,7 +77,7 @@ fn scale_nu_references_and_invalid_inputs_preserve_geometry_and_defaults() {
         "ScaleNU 0,0,0 2 1",
         "ScaleNU 0,0,0 2,0,0 6 1 1",
         "ScaleNU 0,0,0 0,2,0 6,0,0 1 1",
-        "ScaleNU 0,0,0 2 1 1 Rigid=Yes",
+        "ScaleNU 0,0,0 2 1 1 Rigid=Maybe",
     ] {
         assert!(registry.execute(&mut document, input).is_err(), "{input}");
         assert_eq!(

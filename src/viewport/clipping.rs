@@ -451,9 +451,9 @@ impl Viewport {
                                 max[axis]
                             }
                         });
-                        transform
-                            .transform
-                            .transform_point(Point3::try_from(coordinates).unwrap())
+                        transform.object_transform(id).and_then(|map| {
+                            map.transform_point(Point3::try_from(coordinates).unwrap())
+                        })
                     })
                     .collect::<Result<Vec<_>, _>>();
                 if let Ok(corners) = corners

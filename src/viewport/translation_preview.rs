@@ -31,6 +31,7 @@ impl<'a> TranslationPreview<'a> {
         let transform = update.unwrap_or(self.last_transform);
         (
             transform.map(|transform| TransformedObjects {
+                rigid_layout: None,
                 sources: self.sources,
                 grips: self.grips,
                 copy: self.copy,

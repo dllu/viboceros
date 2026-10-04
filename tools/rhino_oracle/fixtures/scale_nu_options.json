@@ -1,0 +1,366 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-0",
+      "source": "point",
+      "plane": "rotated",
+      "mode": "world_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-1",
+      "source": "point",
+      "plane": "rotated",
+      "mode": "world_yes_no",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-2",
+      "source": "point",
+      "plane": "rotated",
+      "mode": "world_twice",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-3",
+      "source": "point",
+      "plane": "tilted",
+      "mode": "world_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-4",
+      "source": "point",
+      "plane": "tilted",
+      "mode": "world_yes_no",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-5",
+      "source": "point",
+      "plane": "tilted",
+      "mode": "world_twice",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-6",
+      "source": "point",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-7",
+      "source": "rational",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-8",
+      "source": "periodic",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-9",
+      "source": "surface",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-10",
+      "source": "mesh",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-11",
+      "source": "line",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-12",
+      "source": "arc",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-13",
+      "source": "circle",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-14",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-15",
+      "source": "rational",
+      "plane": "rotated",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-16",
+      "source": "surface",
+      "plane": "rotated",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-17",
+      "source": "mesh",
+      "plane": "rotated",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-18",
+      "source": "mixed",
+      "plane": "rotated",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-19",
+      "source": "mixed",
+      "plane": "world",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "pair"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-20",
+      "source": "mixed",
+      "plane": "world",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "objects",
+      "groups": "overlap"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-21",
+      "source": "rational",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "grips",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-22",
+      "source": "surface",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "parent",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-23",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "grips",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-24",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_y",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-25",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_yes_no",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-26",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_repeat",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-27",
+      "source": "rational",
+      "plane": "world",
+      "mode": "remember_rigid",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-28",
+      "source": "point",
+      "plane": "tilted",
+      "mode": "remember_world",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-29",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "overlap"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-30",
+      "source": "mixed",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": true,
+      "selection": "objects",
+      "groups": "pair"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-31",
+      "source": "mesh",
+      "plane": "world",
+      "mode": "rigid_zero",
+      "copy": true,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-32",
+      "source": "rational",
+      "plane": "world",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "grips",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-33",
+      "source": "surface",
+      "plane": "tilted",
+      "mode": "rigid_yes",
+      "copy": false,
+      "selection": "parent",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-34",
+      "source": "rational",
+      "plane": "world",
+      "mode": "remember_rigid_cancel",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    },
+    {
+      "op": "scale_nu_options",
+      "id": "scale-nu-options-35",
+      "source": "point",
+      "plane": "world",
+      "mode": "remember_factors_cancel",
+      "copy": false,
+      "selection": "objects",
+      "groups": "none"
+    }
+  ]
+}

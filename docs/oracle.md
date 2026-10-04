@@ -2,6 +2,12 @@
 
 [Project overview](../README.md)
 
+The [ScaleNU guide](commands/scale-nu.md) links numeric, cursor/reference and
+option captures from private Xvfb. Options add 36 recipes replayed through both
+complete and incremental application input, plus three follow-up Move cases for
+temporary grip display. Geometry, groups, preferences, selection and Undo/Redo
+are compared; scripted cursor dependencies and preview appearance remain open.
+
 The [Bend oracle](bend-geometry.md) retains 76 public SDK point maps, the original
 48 point-command recipes, 76 geometry commands, and two preference workflows
 from private Xvfb sessions. SDK maps replay through the Rust/Python protocol;

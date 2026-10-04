@@ -14,14 +14,17 @@ ScaleNU 0,0,0 0 1 1 WorldCoordinates
 ScaleNU 0,0,0 2,0,0 6 6,0,0 1 1 Copy=Yes
 ```
 
-The origin in a complete invocation is a world-space point. `WorldCoordinates`
-uses world axes for scaling. Otherwise the active CPlane supplies the directions;
-its stored origin does not replace the chosen scaling origin.
+The origin in a complete invocation is a world-space point.
+`WorldCoordinates=Yes` uses world axes for scaling; `WorldCoordinates=No` uses
+the active CPlane directions. A bare `WorldCoordinates` toggles the choice.
+It starts at No each command and can change before choosing the origin.
+The CPlane's stored origin does not replace the chosen scaling origin.
 
 Enter `ScaleNU` to select sources, then pick the origin and enter separate X, Y
 and Z factors. Each factor prompt also accepts two axis reference points. Enter
-accepts that axis's remembered factor, initially 1. Accepted factors survive
-Cancel and Undo and belong to the command registry.
+accepts that axis's remembered factor, initially 1. The defaults update together
+after a complete X/Y/Z set is accepted. Canceling after only X or Y retains the
+previous complete set. Defaults survive Undo and belong to the command registry.
 
 At a second reference prompt, a number sets the target axis distance and awaits
 a point. For example, the third invocation above establishes an X reference
@@ -37,10 +40,32 @@ their entire owner, changing only the picked controls. Original and copied grip
 picks remain displayed. Numeric factors are staged until all three are accepted.
 Reference and partial-factor previews share the command's affine map.
 
+## Rigid placement
+
+`Rigid=Yes` translates each object so its tight bounding-box center follows the
+scale map, preserving its shape. Selected members of a group share that group's
+combined tight bounds. Overlapping membership contributes to every selected
+group's bounds; each object uses its last membership for placement. Groups are
+processed in first encounter order, which also determines result order.
+
+`Rigid=No` restores ordinary scaling; a bare `Rigid` toggles the choice. Rigid
+can change at the origin or factor prompts and is remembered immediately,
+including after cancellation. It starts at No in a fresh application session.
+Previews cache centers and reuse source display geometry, applying individual
+translations to objects and their clipping bounds.
+
+Rigid excludes picked grip owners, even when their parents are also selected.
+With Copy=Yes their geometry and displayed grips remain unchanged, and ordinary
+selected peers can still be copied. In the captured Copy=No numeric workflows,
+Rhino leaves selected grips displayed under the partial X/Y map, with Z factor 1,
+while owner geometry remains unchanged. Viboceros retains these temporary display
+positions without creating a geometry Undo step. A following Move uses the
+original controls; Undo/Redo restores their display.
+
 ## Verification and limits
 
 The [Rhino command documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/scale.htm#ScaleNU)
-describes the three factor/reference phases and WorldCoordinates option.
+describes the factor/reference phases, WorldCoordinates and Rigid options.
 The retained capture has 26 public command recipes in an empty owned Rhino 8
 document on private Xvfb. Twenty workflows match complete geometry definitions,
 object order, grip display, selection, Undo and Redo within `1e-9`; application
@@ -78,7 +103,18 @@ The original six discrepancies remain recorded. Their captures did not include
 cursor coordinates, so the new evidence cannot reconstruct each original input
 context. Viboceros does not currently emulate this native scripted behavior.
 
-Rigid and SubCrv options, native preview appearance, per-axis viewport
+### Options, groups and defaults
+
+The [option capture](../scale-nu-options-provenance.json) adds 36 complete public
+command recipes and 72 application replays. It covers Boolean toggles, rotated
+and tilted CPlanes, all nine source kinds, tight versus control bounds, overlapping
+groups, Copy loops, grip exclusion and preferences after cancellation. Complete
+geometry definitions, ordering, group membership, selections, displayed grips and
+external Undo/Redo agree within `1e-9`. Three additional captured follow-up Move
+workflows replay twice each and confirm that temporary grip positions never
+become the controls used by the next edit.
+
+SubCrv options, native preview appearance, live Rigid grip picking, per-axis viewport
 changes, general calculator input, all singular analytic/B-rep shapes and
 performance parity are unproven or incomplete. Geometry that cannot preserve
 its representation under a singular map can still reject the edit atomically.
@@ -90,6 +126,9 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tool
 python3 -m unittest tools.rhino_oracle.test_scale_nu
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/scale_nu_reference.json --scheme VibocerosOracleScaleNUReference --output tools/rhino_oracle/observations/scale_nu_reference.json --timeout 300
 python3 -m unittest tools.rhino_oracle.test_scale_nu_reference
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/scale_nu_options.json --scheme VibocerosOracleScaleNUOptions --output tools/rhino_oracle/observations/scale_nu_options.json --timeout 240
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/scale_nu_pending_grips.json --scheme VibocerosOracleScaleNUOptions --output tools/rhino_oracle/observations/scale_nu_pending_grips.json --timeout 180
+python3 -m unittest tools.rhino_oracle.test_scale_nu_options
 cargo test -p viboceros scale_nu --bin viboceros
 cargo test -p viboceros-command scale_nu --lib
 ```

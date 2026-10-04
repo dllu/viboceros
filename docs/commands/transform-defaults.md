@@ -23,7 +23,9 @@ a copy. Enter after an accepted edit finishes the batch. Canceling a repeated
 session retains defaults from its accepted inputs and keeps accepted copies.
 
 [ScaleNU](scale-nu.md) remembers independent X/Y/Z factors and accepts their
-defaults separately.
+defaults separately. Its defaults update only after a complete three-axis set;
+canceling a partial set retains the previous defaults. Its Rigid option is saved
+immediately, including canceled commands, while WorldCoordinates resets to No.
 
 ## Verification and limits
 

@@ -11,6 +11,7 @@ pub(super) struct TransformSession {
     grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     preview: Option<viboceros_geometry::AffineTransform3>,
+    rigid_layout: Option<viboceros_command::nonuniform_scale::RigidLayout>,
 }
 
 impl TransformSession {
@@ -95,6 +96,7 @@ impl TransformSession {
             frame: (!matches!(definition, PointTransform::Scale2D { .. })).then_some(plane),
             copy: self.copy,
             last_transform,
+            rigid_layout: self.rigid_layout.as_ref(),
         })
     }
     pub(super) fn mirror_preview(
@@ -168,15 +170,45 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
             .ok()
             .map(|(_, copy)| copy)
     } else if name == "scalenu" {
-        viboceros_command::nonuniform_scale::start_options(arguments, default)
-            .ok()
-            .map(|(_, copy)| copy)
+        viboceros_command::nonuniform_scale::start_options(
+            arguments,
+            viboceros_command::nonuniform_scale::ScaleNuOptions {
+                copy: default,
+                ..Default::default()
+            },
+        )
+        .ok()
+        .map(|options| options.copy)
     } else {
         copy_option(arguments, default)
     }
 }
 
 impl VibocerosApp {
+    pub(super) fn update_scale_nu_rigid_layout(&mut self, enabled: bool) -> bool {
+        let Some(session) = self.transform_session.as_mut() else {
+            return false;
+        };
+        if !enabled {
+            session.rigid_layout = None;
+            return true;
+        }
+        match viboceros_command::nonuniform_scale::RigidLayout::try_new(
+            &self.document,
+            &session.sources,
+            &session.grips,
+        ) {
+            Ok(layout) => {
+                session.rigid_layout = Some(layout);
+                true
+            }
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                false
+            }
+        }
+    }
+
     pub(super) fn affine_preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
         self.transform_session.as_ref()?.affine_preview(
             self.active_command,
@@ -244,7 +276,15 @@ impl VibocerosApp {
                             .collect()
                     }),
                     preview: None,
+                    rigid_layout: None,
                 });
+                if let InteractiveCommand::ScaleNu(prompt) = command {
+                    self.commands.remember_rigid_option("ScaleNU", prompt.rigid);
+                    if prompt.rigid && !self.update_scale_nu_rigid_layout(true) {
+                        self.transform_session = None;
+                        return false;
+                    }
+                }
                 self.push_log(format!(
                     "Copy={} (edit with Copy=Yes|No)",
                     if copy { "Yes" } else { "No" }

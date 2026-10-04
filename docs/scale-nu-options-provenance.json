@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleScaleNUOptions_20261004",
+  "native_recipes": 36,
+  "application_replays": 72,
+  "followup_move_recipes": 3,
+  "followup_move_application_replays": 6,
+  "absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK geometry outputs were inspected in an empty owned Rhino document, at idle outside RunPythonScript Undo, on private Xvfb.",
+    "Thirty-six recipes cover WorldCoordinates toggles and per-command reset, rotated and tilted CPlanes, remembered Rigid including cancellation, and axis defaults retained from the last complete XYZ set rather than partial canceled factors.",
+    "Rigid translates tight bounding-box centers while preserving source geometry. Nine source kinds, asymmetric rational tight versus control bounds, group centers, overlapping top memberships, unit order, both Copy choices and repeated copies are captured.",
+    "Complete geometry definitions, weights, knots, domains, meshes, object order, group membership, selection, public displayed grip positions and external Undo/Redo are replayed through full and incremental application input, with absolute epsilon 1e-9.",
+    "Rigid Copy ignores selected grip owners even when parents are selected. Captured numeric NoCopy workflows leave public CurrentLocation positions under the partial XY map with Z factor 1, without replacing owner geometry or recording an edit. Three follow-up Move captures independently show original controls used by the next command and reset display on Undo/Redo; each replays through both input paths.",
+    "Rust previews reuse source display geometry with cached group centers and per-object translations. Four-view scene and clipping regressions are verified; no native preview image match is claimed.",
+    "SubCrv, live Rigid grip picking, all trimmed or singular representations, cross-viewport changes, general calculator expressions, scripted cursor dependencies, performance and full native parity remain unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_nu_options_probe.py": "69da6e3406ebd64ef7dc80073ac9fcad6f17a5eb274448ba96b0bf1b210ce33f",
+    "tools/rhino_oracle/fixtures/scale_nu_options.json": "de415095d6b595cf076c2fed1464ffd4e31e4e2595c01edd318f5f80d9df1673",
+    "tools/rhino_oracle/observations/scale_nu_options.json": "ca9127e53fa9c8ce809a02ff3a631a294d4de4628c4bdb7bd152fd0963aaee78",
+    "tools/rhino_oracle/fixtures/scale_nu_pending_grips.json": "7649508e113b59570aad89028937e1252ff6dd806a38f1c6bfb919e7ff37e123",
+    "tools/rhino_oracle/observations/scale_nu_pending_grips.json": "483a6332c1cf3764222bd02fb3915d3bac15eecc349b4bf97271b44c985499de",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

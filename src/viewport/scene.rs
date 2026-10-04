@@ -434,7 +434,11 @@ impl Viewport {
                     face_member_colors_enabled: display.face_member_colors_enabled,
                     width: width + 1.5,
                     point_radius: 3.5,
-                    transform: (!partial).then_some(transform.transform),
+                    transform: if partial {
+                        None
+                    } else {
+                        transform.object_transform(object.id()).ok()
+                    },
                     reversing: !partial && transform.reversing,
                     overlay: false,
                 });

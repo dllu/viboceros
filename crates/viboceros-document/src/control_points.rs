@@ -16,6 +16,7 @@ pub(super) struct ControlPoints {
     geometry: GeometrySnapshot,
     points: Arc<[Point3]>,
     selected: Arc<BTreeSet<usize>>,
+    display_override: bool,
 }
 
 impl Geometry {
@@ -55,6 +56,7 @@ impl Document {
                         geometry: object.geometry.clone(),
                         points: object.geometry.grip_locations()?.into(),
                         selected: Arc::default(),
+                        display_override: false,
                     },
                 ));
             }
@@ -94,6 +96,35 @@ impl Document {
         let object = self.object(id)?;
         (self.object_is_selectable(object) && state.geometry.shares_storage_with(&object.geometry))
             .then_some(state.points.as_ref())
+    }
+
+    /// Change displayed grip positions without replacing owner geometry or
+    /// recording history. Subsequent geometry edits use the owner's controls;
+    /// history replay restores their display. All picks and maps are staged.
+    pub fn transform_control_point_display(
+        &mut self,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        transform: AffineTransform3,
+    ) -> Result<usize, DocumentError> {
+        let mut staged = BTreeMap::new();
+        for grip in grips {
+            let points = self
+                .control_point_locations(grip.object)
+                .filter(|p| grip.index < p.len())
+                .ok_or(DocumentError::InvalidControlPointSelection {
+                    object: grip.object,
+                    index: grip.index,
+                })?;
+            self.ensure_object_editable(self.object(grip.object).unwrap())?;
+            staged.insert(grip, transform.transform_point(points[grip.index])?);
+        }
+        let count = staged.len();
+        for (grip, point) in staged {
+            let state = self.control_points.get_mut(&grip.object).unwrap();
+            Arc::make_mut(&mut state.points)[grip.index] = point;
+            state.display_override = true;
+        }
+        Ok(count)
     }
 
     /// Returns exact source identities and Euclidean locations; rational
@@ -231,9 +262,25 @@ impl Document {
                 if let Ok(points) = object.geometry.grip_locations() {
                     state.points = points.into();
                     state.geometry = object.geometry.clone();
+                    state.display_override = false;
                 }
                 state.selected = Arc::default();
             }
+        }
+    }
+
+    pub(super) fn reset_control_point_display_overrides(&mut self) {
+        for state in self
+            .control_points
+            .values_mut()
+            .filter(|state| state.display_override)
+        {
+            state.points = state
+                .geometry
+                .grip_locations()
+                .expect("enabled grip geometry is valid")
+                .into();
+            state.display_override = false;
         }
     }
 

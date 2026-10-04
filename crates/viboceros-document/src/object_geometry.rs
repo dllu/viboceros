@@ -16,6 +16,40 @@ pub enum ReplacementHistory {
 }
 
 impl Document {
+    /// Apply a separate affine map to each object, staging the entire edit
+    /// before mutation. Duplicate IDs use their last supplied map. Geometry
+    /// metadata and existing representations follow ordinary affine edits.
+    pub fn transform_objects_individually(
+        &mut self,
+        transforms: impl IntoIterator<Item = (ObjectId, AffineTransform3)>,
+        history: ReplacementHistory,
+    ) -> Result<usize, DocumentError> {
+        let transforms = transforms.into_iter().collect::<BTreeMap<_, _>>();
+        let indices = self.resolve_object_indices(transforms.keys().copied())?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        let staged = indices
+            .into_iter()
+            .map(|index| {
+                let object = &self.objects[index];
+                Ok((
+                    index,
+                    object
+                        .geometry
+                        .transformed_for_edit(transforms[&object.id], self.tolerance)?,
+                ))
+            })
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        self.commit_object_geometries(
+            staged,
+            "Transform objects",
+            "Transform object",
+            history,
+            true,
+        )
+    }
+
     pub(super) fn stage_object_geometries(
         &self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -91,6 +125,72 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn individual_transforms_stage_overflow_and_preserve_metadata_and_history() {
+        let mut doc = Document::default();
+        let a = doc
+            .add_geometry(Geometry::Point(Point3::try_new(2., 0., 0.).unwrap()))
+            .unwrap();
+        let b = doc
+            .add_geometry(Geometry::Point(Point3::try_new(1e308, 0., 0.).unwrap()))
+            .unwrap();
+        doc.set_object_geometry_user_text([a], "Code", Some("geometry"))
+            .unwrap();
+        doc.set_object_user_text([a], "Code", Some("attribute"))
+            .unwrap();
+        let translation = AffineTransform3::from_translation(
+            viboceros_geometry::Vector3::try_new(3., 0., 0.).unwrap(),
+        );
+        let overflow = AffineTransform3::try_nonuniform_scale(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            [4., 1., 1.],
+        )
+        .unwrap();
+        let before = format!("{doc:?}");
+        assert!(
+            doc.transform_objects_individually(
+                [(a, translation), (b, overflow)],
+                ReplacementHistory::EveryReplacement
+            )
+            .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        assert_eq!(
+            doc.transform_objects_individually(
+                [
+                    (a, overflow),
+                    (a, translation),
+                    (b, AffineTransform3::identity())
+                ],
+                ReplacementHistory::EveryReplacement
+            )
+            .unwrap(),
+            2
+        );
+        assert_eq!(
+            doc.object(a).unwrap().geometry(),
+            &Geometry::Point(Point3::try_new(5., 0., 0.).unwrap())
+        );
+        assert_eq!(
+            doc.object(a).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+        assert_eq!(
+            doc.object(a).unwrap().attributes().user_text()["Code"],
+            "attribute"
+        );
+        doc.undo().unwrap();
+        assert_eq!(
+            doc.object(a).unwrap().geometry(),
+            &Geometry::Point(Point3::try_new(2., 0., 0.).unwrap())
+        );
+        doc.redo().unwrap();
+        assert_eq!(
+            doc.object(a).unwrap().geometry(),
+            &Geometry::Point(Point3::try_new(5., 0., 0.).unwrap())
+        );
+    }
 
     #[test]
     fn geometry_user_text_follows_transforms_and_copies_but_explicit_replacement_clears_it() {

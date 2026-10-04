@@ -629,6 +629,7 @@ impl Document {
         self.history.version = Uuid::new_v4();
         self.prune_selection_after_history_preserving(&unchanged_selection);
         self.synchronize_control_points();
+        self.reset_control_point_display_overrides();
         Ok(Some(label))
     }
 
@@ -653,6 +654,7 @@ impl Document {
         self.push_replayed_undo(entry);
         self.prune_selection_after_history_preserving(&unchanged_selection);
         self.synchronize_control_points();
+        self.reset_control_point_display_overrides();
         Ok(Some(label))
     }
 

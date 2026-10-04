@@ -416,6 +416,13 @@ pub trait Command: Send + Sync {
         false
     }
 
+    fn rigid_option_default(&self) -> Option<bool> {
+        None
+    }
+    fn remember_rigid_option(&self, _value: bool) -> bool {
+        false
+    }
+
     /// Commands with a Rhino-style partial result can report failure after
     /// keeping valid staged edits. Other failures roll back the transaction.
     fn commits_on_error(&self, _error: &CommandError) -> bool {
@@ -1530,7 +1537,20 @@ impl CommandRegistry {
             .axis_scale_defaults()
     }
 
-    /// Accept one finite axis factor while later axis input is still pending.
+    pub fn rigid_option_default(&self, name: &str) -> Option<bool> {
+        self.commands
+            .get(*self.lookup.get(&normalize_command_name(name))?)?
+            .rigid_option_default()
+    }
+
+    pub fn remember_rigid_option(&self, name: &str, value: bool) -> bool {
+        self.lookup
+            .get(&normalize_command_name(name))
+            .is_some_and(|index| self.commands[*index].remember_rigid_option(value))
+    }
+
+    /// Set one finite axis preference. ScaleNU saves its staged factors only
+    /// after accepting a complete X/Y/Z set.
     pub fn remember_axis_scale(&self, name: &str, axis: usize, value: Real) -> bool {
         value.is_finite()
             && self

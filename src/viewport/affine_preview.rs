@@ -13,6 +13,7 @@ pub(crate) struct AffinePreview<'a> {
     pub frame: Option<Frame3>,
     pub copy: bool,
     pub last_transform: Option<AffineTransform3>,
+    pub rigid_layout: Option<&'a viboceros_command::nonuniform_scale::RigidLayout>,
 }
 
 impl<'a> AffinePreview<'a> {
@@ -43,14 +44,22 @@ impl<'a> AffinePreview<'a> {
         let transform = update.or(self.last_transform);
         (
             transform.map(|transform| TransformedObjects {
-                sources: self.sources,
-                grips: self.grips,
+                sources: self
+                    .rigid_layout
+                    .map_or(self.sources, |layout| layout.sources()),
+                grips: if self.rigid_layout.is_some() {
+                    &[]
+                } else {
+                    self.grips
+                },
                 copy: self.copy,
                 reference_sources: !self.copy,
                 draw_source_faces: false,
-                reversing: transform.orientation_reversing().unwrap_or(false),
+                reversing: self.rigid_layout.is_none()
+                    && transform.orientation_reversing().unwrap_or(false),
                 reference: None,
                 transform,
+                rigid_layout: self.rigid_layout,
             }),
             cursor.map(|_| transform),
         )
@@ -97,17 +106,19 @@ impl Viewport {
                         let hi = bounds.max().to_array();
                         (0..8).all(|bits| {
                             objects
-                                .transform
-                                .transform_point(
-                                    Point3::try_from(std::array::from_fn(|axis| {
-                                        if bits & (1 << axis) == 0 {
-                                            lo[axis]
-                                        } else {
-                                            hi[axis]
-                                        }
-                                    }))
-                                    .unwrap(),
-                                )
+                                .object_transform(object.id())
+                                .and_then(|transform| {
+                                    transform.transform_point(
+                                        Point3::try_from(std::array::from_fn(|axis| {
+                                            if bits & (1 << axis) == 0 {
+                                                lo[axis]
+                                            } else {
+                                                hi[axis]
+                                            }
+                                        }))
+                                        .unwrap(),
+                                    )
+                                })
                                 .is_ok()
                         })
                     });
