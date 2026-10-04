@@ -165,6 +165,7 @@ mod points;
 mod preferences;
 mod radius;
 mod scale_nu;
+mod scale_positions;
 mod set_point;
 mod set_view;
 mod snapping;
@@ -614,6 +615,7 @@ enum InteractiveCommand {
         z_offset: f64,
     },
     ScaleNu(viboceros_command::nonuniform_scale::ScaleNuPrompt),
+    ScalePositions(viboceros_command::scale_positions::ScalePositionsPrompt),
     Scale {
         kind: InteractiveScaleKind,
         center: Option<Point3>,
@@ -766,6 +768,7 @@ impl InteractiveCommand {
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
             Self::ScaleNu(_) => "ScaleNU",
+            Self::ScalePositions(_) => "ScalePositions",
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Twist { .. } => "Twist",
@@ -783,6 +786,7 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::ScaleNu(prompt) => prompt.prompt(),
+            Self::ScalePositions(prompt) => prompt.prompt(),
             Self::Angle {
                 points: [None, _, _],
             } => "Angle: pick the first direction's start (TwoObjects; Esc cancels)",
@@ -1512,6 +1516,7 @@ impl InteractiveCommand {
     const fn anchor(self) -> Option<Point3> {
         match self {
             Self::ScaleNu(prompt) => prompt.origin,
+            Self::ScalePositions(prompt) => prompt.origin,
             Self::Angle {
                 points: [start, None, _],
             } => start,
@@ -1818,6 +1823,7 @@ impl InteractiveCommand {
     const fn reference(self) -> Option<Point3> {
         match self {
             Self::ScaleNu(prompt) => prompt.reference,
+            Self::ScalePositions(prompt) => prompt.reference,
             Self::Scale { reference, .. }
             | Self::Rotate { reference, .. }
             | Self::Shear { reference, .. } => reference,
@@ -2225,6 +2231,14 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_set_point_option(&input) || self.try_finish_set_point(&input) {
+            return;
+        }
+        if input
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Cancel")
+        {
+            self.cancel_current_prompt_or_selection();
+            self.command_input.clear();
             return;
         }
         if input.is_empty() {
@@ -4738,6 +4752,18 @@ impl VibocerosApp {
                         ..ScaleNuPrompt::new(options.world)
                     })
                 }
+                "scalepositions" => {
+                    use viboceros_command::scale_positions::{
+                        PositionOptions, ScalePositionsPrompt, start_options,
+                    };
+                    let mode = self.commands.scale_mode_default("ScalePositions").unwrap();
+                    let options =
+                        start_options(&arguments, PositionOptions { mode, copy: false }).unwrap();
+                    InteractiveCommand::ScalePositions(ScalePositionsPrompt {
+                        mode: options.mode,
+                        ..ScalePositionsPrompt::new(mode)
+                    })
+                }
                 "rotate" => InteractiveCommand::Rotate {
                     center: None,
                     reference: None,
@@ -4795,6 +4821,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::ScaleNu(_)
+                | InteractiveCommand::ScalePositions(_)
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Twist { .. }
@@ -4980,6 +5007,9 @@ impl VibocerosApp {
         match command {
             InteractiveCommand::ScaleNu(prompt) => {
                 return self.accept_scale_nu_point(prompt, point);
+            }
+            InteractiveCommand::ScalePositions(prompt) => {
+                return self.accept_scale_positions_point(prompt, point);
             }
             InteractiveCommand::Angle { mut points } => {
                 let index = points.iter().position(Option::is_none).unwrap_or(3);
@@ -9202,6 +9232,7 @@ mod tests {
     mod radius;
     mod rhino_curve_prompt;
     mod scale_nu;
+    mod scale_positions;
     mod set_point;
     mod set_view;
     mod shrink_trimmed;

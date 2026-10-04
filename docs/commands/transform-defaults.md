@@ -27,6 +27,11 @@ defaults separately. Its defaults update only after a complete three-axis set;
 canceling a partial set retains the previous defaults. Its Rigid option is saved
 immediately, including canceled commands, while WorldCoordinates resets to No.
 
+[ScalePositions](scale-positions.md) remembers a positive factor and its 1D/2D/3D
+mode on completion. Canceling numeric direction or mode input retains the previous
+completed defaults. Numeric zero is rejected; a completed zero-length second
+reference saves the mode without replacing the factor or editing geometry.
+
 ## Verification and limits
 
 The [80 ordered recipes](../../tools/rhino_oracle/fixtures/transform_copy_default.json)

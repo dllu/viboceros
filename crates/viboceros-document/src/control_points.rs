@@ -36,6 +36,64 @@ impl Geometry {
 }
 
 impl Document {
+    pub(super) fn commit_object_geometries_with_control_selection(
+        &mut self,
+        staged: Vec<(usize, Geometry)>,
+        history: ReplacementHistory,
+    ) -> Result<usize, DocumentError> {
+        let before = staged
+            .iter()
+            .filter_map(|(index, _)| {
+                let id = self.objects[*index].id;
+                self.control_points
+                    .get(&id)
+                    .filter(|state| !state.selected.is_empty())
+                    .map(|state| (id, state.clone()))
+            })
+            .collect::<Vec<_>>();
+        let owns_transaction = !before.is_empty() && self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Transform objects")?;
+        }
+        let result = self.commit_object_geometries(
+            staged,
+            "Transform objects",
+            "Transform object",
+            history,
+            true,
+        );
+        if result.is_ok() {
+            for (id, old) in before {
+                let state = self.control_points.get_mut(&id).unwrap();
+                if state.geometry.shares_storage_with(&old.geometry) {
+                    continue;
+                }
+                state.selected = Arc::new(
+                    old.selected
+                        .iter()
+                        .copied()
+                        .filter(|&index| index < state.points.len())
+                        .collect(),
+                );
+                self.record_edit(
+                    "Transform objects",
+                    Edit::ControlPointsChanged {
+                        id,
+                        stored: Some(old),
+                    },
+                );
+            }
+        }
+        if owns_transaction {
+            if result.is_ok() {
+                self.commit_transaction()?;
+            } else {
+                self.rollback_transaction()?;
+            }
+        }
+        result
+    }
+
     /// Enables grips without changing geometry, Undo labels, or Redo. All IDs
     /// and generated locations are validated before display or selection changes.
     pub fn enable_control_points(

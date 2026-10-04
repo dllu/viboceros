@@ -41,13 +41,7 @@ impl Document {
                 ))
             })
             .collect::<Result<Vec<_>, DocumentError>>()?;
-        self.commit_object_geometries(
-            staged,
-            "Transform objects",
-            "Transform object",
-            history,
-            true,
-        )
+        self.commit_object_geometries_with_control_selection(staged, history)
     }
 
     pub(super) fn stage_object_geometries(
@@ -125,6 +119,57 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn transformed_copies_retain_source_groups_metadata_selection_and_atomic_history() {
+        let mut doc = Document::default();
+        let source = doc
+            .add_geometry(Geometry::Point(Point3::try_new(2., 0., 0.).unwrap()))
+            .unwrap();
+        let group = doc
+            .add_group(Some("source group".into()), [source])
+            .unwrap();
+        doc.set_object_user_text([source], "Code", Some("attribute"))
+            .unwrap();
+        doc.set_object_geometry_user_text([source], "Code", Some("geometry"))
+            .unwrap();
+        doc.select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        let translated = Geometry::Point(Point3::try_new(5., 0., 0.).unwrap());
+        let before = format!("{doc:?}");
+        assert!(
+            doc.copy_object_geometries_in_source_groups([
+                (source, translated.clone()),
+                (ObjectId::new(), translated.clone())
+            ])
+            .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        let copy = doc
+            .copy_object_geometries_in_source_groups([(source, translated.clone())])
+            .unwrap()[0];
+        assert!(doc.is_selected(source));
+        assert!(!doc.is_selected(copy));
+        let object = doc.object(copy).unwrap();
+        assert_eq!(object.geometry(), &translated);
+        assert_eq!(object.group_ids(), &[group]);
+        assert_eq!(object.geometry_user_text()["Code"], "geometry");
+        assert_eq!(object.attributes().user_text()["Code"], "attribute");
+        assert_eq!(
+            doc.group(group).unwrap().members().collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, copy])
+        );
+        doc.undo().unwrap();
+        assert!(doc.object(copy).is_none());
+        assert_eq!(doc.groups().count(), 1);
+        assert!(doc.is_selected(source));
+        doc.redo().unwrap();
+        assert_eq!(
+            doc.object(copy).unwrap().geometry_user_text()["Code"],
+            "geometry"
+        );
+        assert_eq!(doc.object(copy).unwrap().group_ids(), &[group]);
+    }
 
     #[test]
     fn individual_transforms_stage_overflow_and_preserve_metadata_and_history() {

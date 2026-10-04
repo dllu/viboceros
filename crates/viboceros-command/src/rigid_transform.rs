@@ -1,4 +1,4 @@
-//! Tight-bound layout units shared by execution and temporary display.
+//! Shape-preserving placement units shared by commands and temporary display.
 use super::*;
 use std::collections::{BTreeMap, BTreeSet};
 use viboceros_document::{CopyGroupPolicy, GroupId, ReplacementHistory};
@@ -15,6 +15,20 @@ impl RigidLayout {
         document: &Document,
         ids: &[ObjectId],
         grips: &[viboceros_document::ControlPointId],
+    ) -> Result<Self, CommandError> {
+        Self::build(document, ids, grips, true)
+    }
+
+    /// ScalePositions places each object independently of group membership.
+    pub fn try_individual(document: &Document, ids: &[ObjectId]) -> Result<Self, CommandError> {
+        Self::build(document, ids, &[], false)
+    }
+
+    fn build(
+        document: &Document,
+        ids: &[ObjectId],
+        grips: &[viboceros_document::ControlPointId],
+        grouped: bool,
     ) -> Result<Self, CommandError> {
         let ignored = grips.iter().map(|p| p.object).collect::<BTreeSet<_>>();
         let ids = ids
@@ -35,7 +49,11 @@ impl RigidLayout {
             let object = document
                 .object(*id)
                 .ok_or(DocumentError::ObjectNotFound(*id))?;
-            let key = object.top_group().map_or(Unit::Object(*id), Unit::Group);
+            let key = if grouped {
+                object.top_group().map_or(Unit::Object(*id), Unit::Group)
+            } else {
+                Unit::Object(*id)
+            };
             let slot = *slots.entry(key).or_insert_with(|| {
                 units.push(Vec::new());
                 units.len() - 1
@@ -45,20 +63,26 @@ impl RigidLayout {
             object_bounds.insert(*id, bounds);
             // Every selected membership contributes to that group's center,
             // even when an overlapping member has a different top group.
-            for group in object.group_ids() {
-                let union = group_bounds.get(group).map_or(Ok(bounds), |b| {
-                    viboceros_geometry::BoundingBox3::union(*b, bounds)
-                })?;
-                group_bounds.insert(*group, union);
+            if grouped {
+                for group in object.group_ids() {
+                    let union = group_bounds.get(group).map_or(Ok(bounds), |b| {
+                        viboceros_geometry::BoundingBox3::union(*b, bounds)
+                    })?;
+                    group_bounds.insert(*group, union);
+                }
             }
         }
         let centers = ids
             .iter()
             .map(|id| {
                 let object = document.object(*id).unwrap();
-                let bounds = object
-                    .top_group()
-                    .map_or(object_bounds[id], |group| group_bounds[&group]);
+                let bounds = if grouped {
+                    object
+                        .top_group()
+                        .map_or(object_bounds[id], |group| group_bounds[&group])
+                } else {
+                    object_bounds[id]
+                };
                 Ok((*id, bounds.center()?))
             })
             .collect::<Result<BTreeMap<_, _>, GeometryError>>()?;

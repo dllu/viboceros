@@ -24,6 +24,12 @@ pub enum PointTransform {
         axis: usize,
         plane: Frame3,
     },
+    ScalePositions {
+        origin: Point3,
+        reference: Option<Point3>,
+        factor: Option<Real>,
+        mode: crate::scale_positions::ScaleMode,
+    },
     Rotate {
         center: Point3,
         reference: Point3,
@@ -53,6 +59,34 @@ impl PointTransform {
         tolerance: Tolerance,
     ) -> Result<AffineTransform3, CommandError> {
         match self {
+            Self::ScalePositions {
+                origin,
+                reference,
+                factor,
+                mode,
+            } => {
+                let (factor, direction) = if let Some(factor) = factor {
+                    (factor, target)
+                } else {
+                    let reference =
+                        reference.ok_or(CommandError::Usage(crate::scale_positions::USAGE))?;
+                    (
+                        crate::scale_positions::reference_factor(
+                            mode, origin, reference, target, tolerance,
+                        )?,
+                        reference,
+                    )
+                };
+                Ok(crate::scale_positions::scale_map(
+                    mode,
+                    plane,
+                    origin,
+                    factor,
+                    Some(direction),
+                    tolerance,
+                )?
+                .unwrap_or_else(AffineTransform3::identity))
+            }
             Self::ScaleNU {
                 origin,
                 reference,

@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'scale_positions' for op in request.get('operations', [])):
+            from .scale_positions_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('ScalePositions requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'scale_nu_options' for op in request.get('operations', [])):
             from .scale_nu_options_probe import validate_request
             if self.settings_scheme is None:
@@ -632,6 +637,9 @@ class OracleClient:
                 for name in ('scale_nu_reference_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'shrink_face_input.py', 'snap_environment.py', 'viewport_capture.py', 'named_view_policy_probe.py', 'view_camera_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'scale_positions' for op in request.get('operations', [])):
+                for name in ('scale_positions_probe.py','grip_transform_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'scale_nu_options' for op in request.get('operations', [])):
                 for name in ('scale_nu_options_probe.py','grip_transform_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)

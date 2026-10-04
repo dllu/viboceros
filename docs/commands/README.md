@@ -39,6 +39,7 @@ Rhino's complete command set is still a work in progress.
 - [Polygon meshes](meshes.md)
 - [Mesh conversion to NURBS](mesh-to-nurb.md)
 - [Transforms and arrays](transforms.md)
+- [Scale individual object positions](scale-positions.md)
 - [Axis Twist deformation and rigid placement](twist.md)
 - [Circular spine Bend deformation and rigid placement](bend.md)
 - [Radial and flat Taper deformation](taper.md)
@@ -247,6 +248,7 @@ Scale 0,0 2
 Scale1D 0,0 2 1,0
 Scale2D 0,0 2
 ScaleNU 0,0,0 2 .5 1 Copy=Yes
+ScalePositions 0,0,0 2 Mode=3D Copy=Yes
 Rotate 0,0 45
 Rotate3D 0,0,0 0,0,1 90 Copy=Yes
 Mirror 0,-5 0,5

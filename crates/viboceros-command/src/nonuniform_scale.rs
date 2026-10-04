@@ -3,8 +3,8 @@ use super::*;
 
 pub const USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [WorldCoordinates=Yes|No] [Rigid=Yes|No] [Copy=Yes|No]";
 
-mod rigid;
-pub use rigid::{RigidLayout, rigid_map};
+use crate::rigid_transform as rigid;
+pub use crate::rigid_transform::{RigidLayout, rigid_map};
 
 pub(super) struct ScaleNonUniformCommand {
     factors: [remembered::Remembered<Real>; 3],

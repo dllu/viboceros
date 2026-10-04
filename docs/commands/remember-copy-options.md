@@ -31,7 +31,7 @@ The shared policy currently applies to these implemented commands:
 | Mirror, OrientOnSrf | Yes |
 | ExtractSrf, ExtractSubCrv, RemoveFromGroup | No |
 | Orient, Orient3Pt | No |
-| Scale, Scale1D, Scale2D, ScaleNU | No |
+| Scale, Scale1D, Scale2D, ScaleNU, ScalePositions | No |
 | Rotate, Rotate3D, Shear, SetPt | No |
 
 Aliases use the same saved choice. A registry retains preferences across its
@@ -41,9 +41,9 @@ Invalid options, ineligible selections, and failed geometry edits do not accept
 an edited Copy value. With remembering disabled, the command-start reset still
 applies to a failed command.
 
-The GUI's ExtractSrf, SetPt, RemoveFromGroup, Scale, Scale1D, Scale2D, Rotate,
-Rotate3D, Mirror, and Shear prompts use the shared defaults and save completed
-choices. The affine prompts support [Copy editing and repeated targets](transform-copy.md).
+The GUI's ExtractSrf, SetPt, RemoveFromGroup, Scale, Scale1D, Scale2D, ScaleNU,
+ScalePositions, Rotate, Rotate3D, Mirror, and Shear prompts use the shared defaults
+and save completed choices. The affine prompts support [Copy editing and repeated targets](transform-copy.md).
 Each accepted target saves its choice; a later transient option edit followed
 by Enter or Escape does not replace it. Other implemented transform prompts
 apply saved choices when executing their completed point input; their option
@@ -79,6 +79,8 @@ in the table. A separate [49-case interactive transform capture](transform-copy.
 verifies repetition, SelLast, and native Undo/Redo for seven commands.
 Core tests cover history independence and aliases, and application
 tests cover prompt completion and cancellation.
+The separate [ScalePositions capture](scale-positions.md#verification-and-limits)
+verifies its copies, original group memberships, defaults and Undo/Redo.
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.copy_options_capture tools/rhino_oracle/fixtures/copy_options.json --scheme VibocerosOracleCopyFresh --timeout 300

@@ -15,6 +15,10 @@ command creates a new draft. Up also works from a viewport. These shortcuts do
 not take over other text fields or active geometry/option prompts. Coordinate
 responses inside a drawing command are not saved as separate commands.
 
+`Cancel` (also `_Cancel`) ends the current prompt. At idle it clears selection,
+using the same route as Escape. A Cancel supplied after an automatically completed
+command is a separate action from that command's completion.
+
 History is saved when a command is submitted, including unsuccessful commands
 that may need correction. Consecutive duplicate entries are collapsed. The last
 1,000 entries from the journal's final 1 MiB are loaded at startup. History is

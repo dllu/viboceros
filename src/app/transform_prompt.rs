@@ -56,6 +56,17 @@ impl TransformSession {
                     plane
                 },
             },
+            InteractiveCommand::ScalePositions(prompt) => {
+                if prompt.reference.is_none() && prompt.factor.is_none() {
+                    return None;
+                }
+                PointTransform::ScalePositions {
+                    origin: prompt.origin?,
+                    reference: prompt.reference,
+                    factor: prompt.factor,
+                    mode: prompt.mode,
+                }
+            }
             InteractiveCommand::Rotate {
                 center: Some(center),
                 reference: Some(reference),
@@ -128,6 +139,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
         command,
         InteractiveCommand::Scale { .. }
             | InteractiveCommand::ScaleNu(_)
+            | InteractiveCommand::ScalePositions(_)
             | InteractiveCommand::Rotate { .. }
             | InteractiveCommand::Rotate3D { .. }
             | InteractiveCommand::Mirror { .. }
@@ -140,7 +152,15 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
 pub(super) fn supports_name(name: &str) -> bool {
     matches!(
         name,
-        "scale" | "scale1d" | "scale2d" | "scalenu" | "rotate" | "rotate3d" | "mirror" | "shear"
+        "scale"
+            | "scale1d"
+            | "scale2d"
+            | "scalenu"
+            | "scalepositions"
+            | "rotate"
+            | "rotate3d"
+            | "mirror"
+            | "shear"
     )
 }
 
@@ -179,6 +199,16 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
         )
         .ok()
         .map(|options| options.copy)
+    } else if name == "scalepositions" {
+        viboceros_command::scale_positions::start_options(
+            arguments,
+            viboceros_command::scale_positions::PositionOptions {
+                copy: default,
+                ..Default::default()
+            },
+        )
+        .ok()
+        .map(|o| o.copy)
     } else {
         copy_option(arguments, default)
     }
@@ -260,6 +290,7 @@ impl VibocerosApp {
                     grips: self
                         .document
                         .selected_control_points()
+                        .filter(|_| super::transform_sources::allows_grips(command.name()))
                         .map(|(id, _)| id)
                         .collect(),
                     applied: false,
@@ -283,6 +314,20 @@ impl VibocerosApp {
                     if prompt.rigid && !self.update_scale_nu_rigid_layout(true) {
                         self.transform_session = None;
                         return false;
+                    }
+                }
+                if let InteractiveCommand::ScalePositions(_) = command {
+                    let session = self.transform_session.as_mut().unwrap();
+                    match viboceros_command::rigid_transform::RigidLayout::try_individual(
+                        &self.document,
+                        &session.sources,
+                    ) {
+                        Ok(layout) => session.rigid_layout = Some(layout),
+                        Err(error) => {
+                            self.push_log(format!("Error: {error}"));
+                            self.transform_session = None;
+                            return false;
+                        }
                     }
                 }
                 self.push_log(format!(
@@ -339,6 +384,7 @@ impl VibocerosApp {
                 InteractiveCommand::Rotate { .. }
                     | InteractiveCommand::Shear { .. }
                     | InteractiveCommand::ScaleNu(_)
+                    | InteractiveCommand::ScalePositions(_)
             ) {
                 self.drafting_plane
                     .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane())
@@ -367,6 +413,15 @@ impl VibocerosApp {
                     self.active_command = Some(continuation);
                     let action = match continuation {
                         InteractiveCommand::ScaleNu(_) => "Type an X factor or pick a reference",
+                        InteractiveCommand::ScalePositions(prompt) => {
+                            if prompt.factor.is_some() {
+                                "Pick another direction"
+                            } else if prompt.reference.is_some() {
+                                "Pick another target"
+                            } else {
+                                "Type another factor or pick a reference"
+                            }
+                        }
                         InteractiveCommand::Scale {
                             kind: InteractiveScaleKind::OneDimensional,
                             ..
@@ -517,6 +572,9 @@ impl VibocerosApp {
         if self.try_continue_scale_nu(input) {
             return true;
         }
+        if self.try_continue_scale_positions(input) {
+            return true;
+        }
         let session = self.transform_session.as_ref().unwrap();
         let ready_for_scalar = matches!(
             command,
@@ -611,6 +669,24 @@ impl VibocerosApp {
                 return Some(format!("{} factor default: {value}", ["X", "Y", "Z"][axis]));
             }
             return None;
+        }
+        if let InteractiveCommand::ScalePositions(prompt) = command {
+            if prompt.choosing_mode {
+                return None;
+            }
+            let mode = prompt.mode.name();
+            return Some(
+                if !session.applied
+                    && prompt.origin.is_some()
+                    && prompt.factor.is_none()
+                    && prompt.reference.is_none()
+                {
+                    let value = self.commands.transform_scalar_default(command.name())?;
+                    format!("Mode={mode}; Enter accepts the default: {value}")
+                } else {
+                    format!("Mode={mode}")
+                },
+            );
         }
         if session.applied || session.factor.is_some() {
             return None;

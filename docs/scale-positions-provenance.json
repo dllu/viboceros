@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleScalePositions_20261004",
+  "native_recipes": 57,
+  "application_replays": 99,
+  "geometry_absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK outputs were inspected in an empty owned document on dedicated private Xvfb.",
+    "Bounded commands run at idle outside RunPythonScript Undo. Raw seed histories, command histories, terminal events, EndCommand, post-script, external Undo and Redo states are retained.",
+    "Mode and factor defaults are seeded by completed public reference commands on a disposable point before source construction. Cancellation and zero-reference memory are subsequently tested without injecting observed defaults.",
+    "Individual tight bounding centers determine translations independently of groups. Complete source geometry, weights, knots, domains and mesh records are compared within absolute epsilon 1e-9.",
+    "Copies retain source selection, object order, attribute and geometry UserText and original overlapping groups. Displayed grips alone are excluded; selected whole parents preserve grip picks and copied grip displays.",
+    "Native Add of a NURBS surface wraps it into a Brep and drops the input surface geometry UserText. Baseline snapshots retain the resulting empty dictionary; attribute UserText is preserved.",
+    "Numeric negative factors use their magnitude and numeric zero is rejected. Off-axis 1D references use unsigned projected ratios; 2D and 3D references use Euclidean distance ratios.",
+    "Numeric getter shape follows startup mode. Changing 3D to 1D before numeric input finishes without a direction or edit; changing 1D to 2D or 3D still requests a direction.",
+    "Zero-length second references finish successfully without an edit, save Mode and retain the previous positive factor. Trailing idle Cancel separately clears selection; EndCommand and post-script states are both retained.",
+    "Application tests make 57 incremental and 42 complete-invocation replays, including repeated copies, canceled defaults and Undo/Redo. Closed cancellation and repeated-input workflows are replayed incrementally only.",
+    "Real mouse picks, native preview appearance, reference distance locks, calculator expressions, repeated reference copies, all trimmed/subcomponent sources, cross-viewport input, command-first pick order and history, restart persistence, performance and full parity remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_positions_probe.py": "5ceed41ea848cc9a4e8d5012377df97f5738868108d85abcc0b609948068e12c",
+    "tools/rhino_oracle/fixtures/scale_positions.json": "5be488f413298a8b2e1b1968e3f6af039a7c60109fc5f88e97c46d8932532911",
+    "tools/rhino_oracle/observations/scale_positions.json": "6b62fedce21b4def4faeb800b93e4a8f54033f8496c786fffc8a8be9499962b5",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

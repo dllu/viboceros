@@ -10,6 +10,8 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 Displayed selected [control points](../grip-transforms.md) can be transformed
 alongside ordinary objects; a selected parent uses its selected grips as the
 edit definition. Copy duplicates the owner with only those controls changed.
+[`ScalePositions`](scale-positions.md) instead translates whole objects by their
+individual tight centers, preserving shapes and using its own grip and group rules.
 
 [Bend](bend.md) deforms objects along a circular spine, with through-point or
 fixed-angle construction, rigid groups and repeated copies.
@@ -18,7 +20,7 @@ picks, construction-plane orientation and repeated copies.
 [Twist](twist.md) supports axis-angle or reference-direction deformation and
 live object previews.
 
-Move, Copy, Scale, Scale1D, Scale2D, ScaleNU, Rotate, Rotate3D, Mirror, and Shear can start with
+Move, Copy, Scale, Scale1D, Scale2D, ScaleNU, ScalePositions, Rotate, Rotate3D, Mirror, and Shear can start with
 no objects selected: [pick sources first, then Enter](transform-sources.md).
 
 With objects selected, enter `Move` or `Copy`
@@ -67,7 +69,7 @@ target in a viewport; the same options can be given when starting the prompt
 or changed at the prompt. With `Copy=Yes`, keep picking targets and press Enter
 to finish.
 
-Rotate, Mirror, Scale2D, ScaleNU, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
+Rotate, Mirror, Scale2D, ScaleNU, ScalePositions in 2D, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
 Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)
 for geometry policy, viewport changes, verification, and remaining limitations.
 

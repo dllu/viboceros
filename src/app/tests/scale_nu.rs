@@ -19,6 +19,7 @@ fn scale_nu_options_rigid_groups_grip_exclusion_and_cancel_memory_match_native()
         include_str!("../../../tools/rhino_oracle/fixtures/scale_nu_options.json"),
         include_str!("../../../tools/rhino_oracle/observations/scale_nu_options.json"),
         36,
+        "ScaleNU",
     );
 }
 
@@ -28,10 +29,11 @@ fn scale_nu_temporary_grip_positions_are_discarded_by_move_and_history_like_nati
         include_str!("../../../tools/rhino_oracle/fixtures/scale_nu_pending_grips.json"),
         include_str!("../../../tools/rhino_oracle/observations/scale_nu_pending_grips.json"),
         3,
+        "ScaleNU",
     );
 }
 
-fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
+pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize, command: &str) {
     use serde_json::json;
     let fixture: Value = serde_json::from_str(fixture).unwrap();
     let observed: Value = serde_json::from_str(observed).unwrap();
@@ -39,10 +41,21 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
     let rows = observed["results"].as_array().unwrap();
     assert_eq!(operations.len(), count);
     assert_eq!(rows.len(), operations.len());
+    let mut replays = 0;
     for (op, row) in operations.iter().zip(rows) {
         assert_eq!(op["id"], row["id"]);
         let native = &row["value"];
         for incremental in [false, true] {
+            if command == "ScalePositions"
+                && !incremental
+                && (native["macro"].as_str().unwrap().contains("_Cancel")
+                    || matches!(
+                        op["input"].as_str(),
+                        Some("repeat_direction" | "repeat_factor" | "remember_scalar_cancel")
+                    ))
+            {
+                continue;
+            }
             let mut app = test_app();
             app.active_viewport = 1;
             app.viewports[1].set_construction_plane(
@@ -64,7 +77,7 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
             enter(&mut app, "Delete");
             app.document.clear_history().unwrap();
             app.document
-                .begin_transaction("ScaleNU option sources")
+                .begin_transaction(format!("{command} option sources"))
                 .unwrap();
             let mut sources = Vec::new();
             for (i, source) in native["before"]["objects"]
@@ -84,6 +97,18 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
                 app.document
                     .set_object_names([(id, Some(format!("options source {i}")))])
                     .unwrap();
+                if command == "ScalePositions" {
+                    for (key, value) in source["attribute_user_text"].as_object().unwrap() {
+                        app.document
+                            .set_object_user_text([id], key, Some(value.as_str().unwrap()))
+                            .unwrap();
+                    }
+                    for (key, value) in source["geometry_user_text"].as_object().unwrap() {
+                        app.document
+                            .set_object_geometry_user_text([id], key, Some(value.as_str().unwrap()))
+                            .unwrap();
+                    }
+                }
             }
             for members in native["before"]["groups"].as_array().unwrap() {
                 app.document
@@ -135,6 +160,10 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
                     } else {
                         "output"
                     });
+                    if command == "ScalePositions" {
+                        value["attribute_user_text"] = json!(object.attributes().user_text());
+                        value["geometry_user_text"] = json!(object.geometry_user_text());
+                    }
                 }
                 let order = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
                 let groups = app
@@ -166,7 +195,15 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
                 || op["mode"] == "rigid_repeat"
                 || op["mode"] == "remember_factors_cancel"
             {
-                for token in tokens {
+                for (i, token) in tokens.iter().enumerate() {
+                    if command == "ScalePositions"
+                        && *token == "_Cancel"
+                        && i + 1 == tokens.len()
+                        && app.active_command.is_none()
+                        && app.object_prompt.is_none()
+                    {
+                        compare(&state(&app), &native["after"], &label);
+                    }
                     enter(&mut app, token);
                 }
             } else {
@@ -175,7 +212,7 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
                     .filter(|t| **t != "_Enter")
                     .map(|t| t.strip_prefix('w').unwrap_or(t))
                     .collect::<Vec<_>>();
-                enter(&mut app, &format!("ScaleNU {}", args.join(" ")));
+                enter(&mut app, &format!("{command} {}", args.join(" ")));
             }
             assert!(
                 app.active_command.is_none(),
@@ -198,7 +235,11 @@ fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize) {
             compare(&state(&app), &native["undo"], &format!("Undo {label}"));
             enter(&mut app, "Redo");
             compare(&state(&app), &native["redo"], &format!("Redo {label}"));
+            replays += 1;
         }
+    }
+    if command == "ScalePositions" {
+        assert_eq!(replays, 99);
     }
 }
 

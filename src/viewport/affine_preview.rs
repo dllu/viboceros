@@ -33,11 +33,13 @@ impl<'a> AffinePreview<'a> {
                 .transform_at(self.frame.unwrap_or(frame), point, tolerance)
                 .ok()
                 .filter(|map| {
-                    matches!(
-                        self.definition,
-                        PointTransform::Scale1DDirection { factor: 0., .. }
-                            | PointTransform::ScaleNU { .. }
-                    ) || map.orientation_reversing().is_ok()
+                    self.rigid_layout.is_some()
+                        || matches!(
+                            self.definition,
+                            PointTransform::Scale1DDirection { factor: 0., .. }
+                                | PointTransform::ScaleNU { .. }
+                        )
+                        || map.orientation_reversing().is_ok()
                 })
                 .unwrap_or_else(AffineTransform3::identity)
         });

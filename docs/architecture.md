@@ -95,6 +95,11 @@ source reselection between Undo and Redo without changing ordinary source-pick
 cleanup or unrelated selection.
 Its viewport adapter uses prepared control cages, quick interpolation grids and
 cached trim intervals for wire previews. Rigid instances share source display geometry.
+[ScalePositions](commands/scale-positions.md) uses a shared rigid placement module
+with individual tight centers, while ScaleNU keeps its grouped layout. Atomic
+whole-object replacements retain picked grip indices; its copies preserve geometry
+metadata and join the source groups. Application replay covers modes, numeric getter
+phases, defaults, source order and history against retained public native outputs.
 The [Bend command](commands/bend.md) uses the circular spine morph and the same
 fitters, with atomic staging and grouped rigid poses. Its application adapter
 retains source IDs for repeated copies and distinguishes immediately remembered

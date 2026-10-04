@@ -151,7 +151,7 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        self.copy_object_geometries_with_order(copies, false)
+        self.copy_object_geometries_with_order(copies, false, false)
     }
 
     /// Copies in caller-specified order, retaining source attributes and group
@@ -160,7 +160,16 @@ impl Document {
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        self.copy_object_geometries_with_order(copies, true)
+        self.copy_object_geometries_with_order(copies, true, false)
+    }
+
+    /// Copy transformed source geometry into its existing groups, preserving
+    /// geometry metadata and source selection. Copies remain unselected.
+    pub fn copy_object_geometries_in_source_groups(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_object_geometries_with_order(copies, true, true)
     }
 
     /// Copies every supplied piece in input order, including repeated source
@@ -185,13 +194,14 @@ impl Document {
             .into_iter()
             .map(|(id, geometry)| Ok((by_id[&id], object_admission::normalize_geometry(geometry)?)))
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        self.commit_source_group_copies(staged.into_iter())
+        self.commit_source_group_copies(staged.into_iter(), false)
     }
 
     fn copy_object_geometries_with_order(
         &mut self,
         copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
         input_order: bool,
+        preserve_geometry_user_text: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         let mut copies = copies
             .into_iter()
@@ -221,6 +231,7 @@ impl Document {
             staged
                 .into_iter()
                 .map(|(index, _, geometry)| (index, geometry)),
+            preserve_geometry_user_text,
         )
     }
 
@@ -229,6 +240,7 @@ impl Document {
     fn commit_source_group_copies(
         &mut self,
         staged: impl ExactSizeIterator<Item = (usize, Geometry)>,
+        preserve_geometry_user_text: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         if staged.len() == 0 {
             return Ok(Vec::new());
@@ -250,7 +262,11 @@ impl Document {
             self.objects.push(Object {
                 id: copy_id,
                 geometry: geometry.into(),
-                geometry_user_text: BTreeMap::new(),
+                geometry_user_text: if preserve_geometry_user_text {
+                    source.geometry_user_text.clone()
+                } else {
+                    BTreeMap::new()
+                },
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),

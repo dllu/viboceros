@@ -995,6 +995,7 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                         <= 1
             }
         };
+        let mut compared_after = false;
         match use_registry {
             false => {
                 let inputs = operation["inputs"].as_array().unwrap();
@@ -1125,6 +1126,12 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     }
                 }
                 if operation["finish"] != "Automatic" {
+                    if app.active_command.is_none() && app.object_prompt.is_none() {
+                        // The retained "after" is an EndCommand snapshot.
+                        // A trailing idle Cancel can separately clear picks.
+                        compare(snapshot(&app, &sources), "after", &mut failures);
+                        compared_after = true;
+                    }
                     enter(&mut app, operation["finish"].as_str().unwrap());
                 }
             }
@@ -1187,7 +1194,9 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
             "{label}: {:?}",
             app.command_log
         );
-        compare(snapshot(&app, &sources), "after", &mut failures);
+        if !compared_after {
+            compare(snapshot(&app, &sources), "after", &mut failures);
+        }
         if operation["sel_last"].as_bool().unwrap() {
             enter(&mut app, "SelLast");
             compare(snapshot(&app, &sources), "last", &mut failures);
