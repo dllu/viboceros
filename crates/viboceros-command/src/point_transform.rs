@@ -65,6 +65,7 @@ impl PointTransform {
                 factor,
                 mode,
             } => {
+                let numeric = factor.is_some();
                 let (factor, direction) = if let Some(factor) = factor {
                     (factor, target)
                 } else {
@@ -77,15 +78,15 @@ impl PointTransform {
                         reference,
                     )
                 };
-                Ok(crate::scale_positions::scale_map(
-                    mode,
-                    plane,
-                    origin,
-                    factor,
-                    Some(direction),
-                    tolerance,
-                )?
-                .unwrap_or_else(AffineTransform3::identity))
+                let map_fn = if numeric {
+                    crate::scale_positions::numeric_scale_map
+                } else {
+                    crate::scale_positions::scale_map
+                };
+                Ok(
+                    map_fn(mode, plane, origin, factor, Some(direction), tolerance)?
+                        .unwrap_or_else(AffineTransform3::identity),
+                )
             }
             Self::ScaleNU {
                 origin,
@@ -177,7 +178,14 @@ impl PointTransform {
                 direction: Some(*plane.axes().get(axis)?),
                 distance,
             })
-        } else if let Self::Scale1D { center, reference } = self {
+        } else if let Self::Scale1D { center, reference }
+        | Self::ScalePositions {
+            origin: center,
+            reference: Some(reference),
+            factor: None,
+            mode: crate::scale_positions::ScaleMode::OneDimensional,
+        } = self
+        {
             Some(translation::DestinationConstraint {
                 anchor: center,
                 direction: Some(

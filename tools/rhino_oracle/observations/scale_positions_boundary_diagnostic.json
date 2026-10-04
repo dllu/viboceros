@@ -1,0 +1,2257 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-56",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_No\nOrigin point ( Copy=No  Mode=1D ): w11920928955078124e-23,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): 3.0\nScale direction ( Copy=No ): _Pause\nScale direction ( Copy=No ): w6,3,2\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=No )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=No  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": false,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_No w11920928955078124e-23,0,0 3.0 _Pause",
+          "origin": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-57",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_Yes\nOrigin point ( Copy=Yes  Mode=1D ): w11920928955078124e-23,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): 3.0\nScale direction ( Copy=Yes ): _Pause\nScale direction ( Copy=Yes ): w6,3,2\nScale direction ( Copy=Yes ): _Enter\nScale direction ( Copy=Yes )\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=Yes )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=Yes  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": true,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_Yes w11920928955078124e-23,0,0 3.0 _Pause _Enter",
+          "origin": [
+            1.1920928955078124e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-58",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_No\nOrigin point ( Copy=No  Mode=1D ): w11920928955078125e-23,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): 3.0\nScale direction ( Copy=No ): _Pause\nScale direction ( Copy=No ): w6,3,2\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=No )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=No  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": false,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_No w11920928955078125e-23,0,0 3.0 _Pause",
+          "origin": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-59",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_Yes\nOrigin point ( Copy=Yes  Mode=1D ): w11920928955078125e-23,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): 3.0\nScale direction ( Copy=Yes ): _Pause\nScale direction ( Copy=Yes ): w6,3,2\nScale direction ( Copy=Yes ): _Enter\nScale direction ( Copy=Yes )\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=Yes )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=Yes  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": true,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_Yes w11920928955078125e-23,0,0 3.0 _Pause _Enter",
+          "origin": [
+            1.1920928955078125e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-60",
+      "value": {
+        "after": [
+          {
+            "point": [
+              9.10204064900654,
+              6.551020395055705,
+              6.367346930037138
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              9.10204064900654,
+              6.551020395055705,
+              6.367346930037138
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  9.10204064900654,
+                  6.551020395055705,
+                  6.367346930037138
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_No\nOrigin point ( Copy=No  Mode=1D ): w11920928955078128e-23,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): 3.0\nScale direction ( Copy=No ): _Pause\nScale direction ( Copy=No ): w6,3,2\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=No )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): w0,0,0\nScale factor or first reference point <3> ( Copy=No  Mode=1D ): _Cancel\nScale factor or first reference point <3> ( Copy=No  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": false,
+          "factor": 3.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_No w11920928955078128e-23,0,0 3.0 _Pause",
+          "origin": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              9.10204064900654,
+              6.551020395055705,
+              6.367346930037138
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-61",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_Yes\nOrigin point ( Copy=Yes  Mode=1D ): w11920928955078128e-23,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): 3.0\nScale direction ( Copy=Yes ): _Pause\nScale direction ( Copy=Yes ): w6,3,2\nScale direction ( Copy=Yes ): _Enter\nScale direction ( Copy=Yes )\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=Yes )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=Yes  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": true,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_Yes w11920928955078128e-23,0,0 3.0 _Pause _Enter",
+          "origin": [
+            1.1920928955078128e-07,
+            0.0,
+            0.0
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-62",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_No\nOrigin point ( Copy=No  Mode=1D ): w99999999999999995e-24,99999999999999995e-24,99999999999999995e-24\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): 3.0\nScale direction ( Copy=No ): _Pause\nScale direction ( Copy=No ): w6,3,2\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=No )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=No  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=No  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": false,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_No w99999999999999995e-24,99999999999999995e-24,99999999999999995e-24 3.0 _Pause",
+          "origin": [
+            1e-07,
+            1e-07,
+            1e-07
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "scale-positions-origin-63",
+      "value": {
+        "after": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "after_script": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "before": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "bounds": {
+          "center": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "max": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "min": [
+            2.0,
+            3.0,
+            4.0
+          ]
+        },
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "ScalePositions",
+            "objects": [
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  4.0
+                ],
+                "selected": true
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "\nCommand: _ScalePositions\nOrigin point ( Copy=No  Mode=1D ): _Copy=_Yes\nOrigin point ( Copy=Yes  Mode=1D ): w99999999999999995e-24,99999999999999995e-24,99999999999999995e-24\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): 3.0\nScale direction ( Copy=Yes ): _Pause\nScale direction ( Copy=Yes ): w6,3,2\nScale direction ( Copy=Yes ): _Enter\nScale direction ( Copy=Yes )\n",
+        "pending": {
+          "camera": {
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "camera_target": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "camera_up": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "cplane_origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cplane_x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "cplane_y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "frustum": [
+              -19.918158567774938,
+              19.918158567774938,
+              -11.0,
+              11.0,
+              9.40624239950798,
+              10.40625
+            ],
+            "perspective": false,
+            "projected_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "screen": [
+                  354.0,
+                  195.5
+                ]
+              },
+              {
+                "point": [
+                  3.0,
+                  -2.0,
+                  4.0
+                ],
+                "screen": [
+                  407.3181818181818,
+                  231.04545454545456
+                ]
+              },
+              {
+                "point": [
+                  -5.0,
+                  7.0,
+                  -3.0
+                ],
+                "screen": [
+                  265.1363636363636,
+                  71.0909090909091
+                ]
+              }
+            ],
+            "two_point_perspective": false,
+            "viewport_size": [
+              708,
+              391
+            ]
+          },
+          "frame": {
+            "aim": [
+              4.0,
+              5.0,
+              0.0
+            ],
+            "aim_client": [
+              425.09090909090907,
+              106.63636363636363
+            ],
+            "camera_direction": [
+              -0.0,
+              -0.0,
+              -1.0
+            ],
+            "camera_location": [
+              0.0,
+              0.0,
+              13.90625
+            ],
+            "click_client": [
+              425,
+              106
+            ],
+            "perspective": false,
+            "ray": [
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                3.499999999999999
+              ],
+              [
+                3.9948849104859336,
+                5.035805626598465,
+                4.50000760049202
+              ]
+            ],
+            "size": [
+              708,
+              391
+            ],
+            "world_to_screen": [
+              [
+                17.77272727272727,
+                0.0,
+                0.0,
+                354.0
+              ],
+              [
+                0.0,
+                -17.772727272727273,
+                0.0,
+                195.5
+              ],
+              [
+                0.0,
+                0.0,
+                -0.9999923995657464,
+                4.49997339848011
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "objects": [
+            {
+              "point": [
+                2.0,
+                3.0,
+                4.0
+              ],
+              "selected": true
+            }
+          ],
+          "phase": "direction",
+          "prompt": "Scale direction ( Copy=Yes )"
+        },
+        "preference_history": "\nCommand: _ScalePositions\nOrigin point ( Copy=Yes  Mode=1D ): w0,0,0\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D ): _Cancel\nScale factor or first reference point <2> ( Copy=Yes  Mode=1D )\n",
+        "preference_macro": "_ScalePositions w0,0,0 _Cancel",
+        "preferences": {
+          "copy": true,
+          "factor": 2.0,
+          "mode": "1D"
+        },
+        "recipe": {
+          "aim": [
+            4.0,
+            5.0,
+            0.0
+          ],
+          "factor": 3.0,
+          "macro": "_ScalePositions _Copy=_Yes w99999999999999995e-24,99999999999999995e-24,99999999999999995e-24 3.0 _Pause _Enter",
+          "origin": [
+            1e-07,
+            1e-07,
+            1e-07
+          ],
+          "reference": null,
+          "typed_target": "w6,3,2"
+        },
+        "redo": [
+          {
+            "point": [
+              2.0,
+              3.0,
+              4.0
+            ],
+            "selected": true
+          }
+        ],
+        "seed_macro": "_ScalePositions _Copy=_No _Mode=_1D w0,0,0 w1,0,0 w2,0,0",
+        "success": true,
+        "undo": []
+      }
+    }
+  ]
+}

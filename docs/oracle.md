@@ -2,11 +2,12 @@
 
 [Project overview](../README.md)
 
-The [ScalePositions guide](commands/scale-positions.md) covers 121 bounded native
-recipes from private Xvfb and 163 application replays. Complete geometry, tight
+The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
+recipes from private Xvfb and 289 application replays. Complete geometry, tight
 center translations, overlapping groups, metadata, grip display, numeric getter
-phases, defaults and external Undo/Redo are compared at `1e-9`. Real mouse input,
-native preview appearance and performance comparisons remain unverified.
+phases, defaults and external Undo/Redo are compared at `1e-9`. Cursor captures
+cover reference axes, origin planes and the numeric 1D cutoff. Two inputs just
+above the boundary remain diagnostics; preview appearance and performance are unverified.
 
 The [ScaleNU guide](commands/scale-nu.md) links numeric, cursor/reference and
 option captures from private Xvfb. Options add 36 recipes replayed through both

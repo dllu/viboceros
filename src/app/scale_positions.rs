@@ -1,7 +1,7 @@
 //! ScalePositions point phases retain their initial numeric getter mode.
 use super::*;
 use viboceros_command::scale_positions::{
-    ScaleMode, ScalePositionsPrompt, reference_factor, scale_map,
+    ScaleMode, ScalePositionsPrompt, numeric_scale_map, reference_factor, scale_map,
 };
 
 impl VibocerosApp {
@@ -135,7 +135,12 @@ impl VibocerosApp {
         let plane = self
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
-        if let Err(error) = scale_map(
+        let map_fn = if target.is_some() {
+            scale_map
+        } else {
+            numeric_scale_map
+        };
+        if let Err(error) = map_fn(
             prompt.mode,
             plane,
             origin,

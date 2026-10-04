@@ -139,7 +139,8 @@ impl Command for ScalePositionsCommand {
         let (origin, consumed) = parse_point(&positional)?;
         let tail = &positional[consumed..];
         let first = tail.first().ok_or(CommandError::Usage(USAGE))?;
-        let (factor, direction, count) = if first.contains(',') {
+        let numeric = !first.contains(',');
+        let (factor, direction, count) = if !numeric {
             let (reference, a) = parse_point(tail)?;
             let (target, b) = parse_point(&tail[a..])?;
             (
@@ -169,7 +170,12 @@ impl Command for ScalePositionsCommand {
             }
             .into());
         }
-        let map = scale_map(
+        let map_fn = if numeric {
+            numeric_scale_map
+        } else {
+            scale_map
+        };
+        let map = map_fn(
             options.mode,
             context.construction_plane,
             origin,
@@ -244,6 +250,31 @@ pub fn scale_map(
         }
         ScaleMode::ThreeDimensional => AffineTransform3::try_uniform_scale(origin, factor)?,
     }))
+}
+
+/// Native numeric 1D input near the world origin completes without placement.
+/// Reference input at the same origin still supplies an ordinary map.
+pub fn numeric_scale_map(
+    mode: ScaleMode,
+    plane: Frame3,
+    origin: Point3,
+    factor: Real,
+    direction: Option<Point3>,
+    tolerance: Tolerance,
+) -> Result<Option<AffineTransform3>, CommandError> {
+    let map = scale_map(mode, plane, origin, factor, direction, tolerance)?;
+    // Public point-input captures bracket the inclusive component cutoff at
+    // float epsilon. A diagonal outside that radius still makes no placement.
+    if mode == ScaleMode::OneDimensional
+        && origin
+            .to_array()
+            .iter()
+            .all(|x| x.abs() <= f32::EPSILON as Real)
+    {
+        Ok(None)
+    } else {
+        Ok(map)
+    }
 }
 
 fn apply(
@@ -371,7 +402,7 @@ mod tests {
             &Geometry::Point(Point3::try_new(2., 3., 4.).unwrap())
         );
         registry
-            .execute(&mut doc, "ScalePositions 0,0,0 2 0,1,0 Mode=1D Copy=Yes")
+            .execute(&mut doc, "ScalePositions 1,0,0 2 1,1,0 Mode=1D Copy=Yes")
             .unwrap();
         let copies = doc.objects().skip(2).map(|o| o.id()).collect::<Vec<_>>();
         assert_eq!(

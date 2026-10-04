@@ -1,0 +1,110 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-56",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": false,
+      "source": "point",
+      "origin": "FloatBelow",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-57",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": true,
+      "source": "point",
+      "origin": "FloatBelow",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-58",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": false,
+      "source": "point",
+      "origin": "FloatAt",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-59",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": true,
+      "source": "point",
+      "origin": "FloatAt",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-60",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": false,
+      "source": "point",
+      "origin": "FloatAbove",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-61",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": true,
+      "source": "point",
+      "origin": "FloatAbove",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-62",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": false,
+      "source": "point",
+      "origin": "FloatCorner",
+      "factor": 3.0
+    },
+    {
+      "op": "scale_positions_cursor",
+      "id": "scale-positions-origin-63",
+      "input": "Numeric",
+      "mode": "1d",
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Typed",
+      "copy": true,
+      "source": "point",
+      "origin": "FloatCorner",
+      "factor": 3.0
+    }
+  ]
+}

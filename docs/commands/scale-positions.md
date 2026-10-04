@@ -8,7 +8,7 @@ Grouped objects use their own centers; group bounds do not affect placement.
 
 ```text
 ScalePositions 0,0,0 2 Mode=3D
-ScalePositions 0,0,0 2 1,0,0 Mode=1D
+ScalePositions 1,0,0 2 2,0,0 Mode=1D
 ScalePositions 0,0,0 1,0,0 3,0,0 Mode=2D Copy=Yes
 ```
 
@@ -45,6 +45,17 @@ entering a number finishes without requesting a direction or moving geometry.
 Changing 1D to 2D or 3D still requests the direction, although the final map uses
 the chosen mode. Viboceros reproduces this behavior. Starting in 2D or 3D accepts
 a numeric factor immediately.
+
+Numeric 1D input with every origin coordinate at or below `2^-23` in magnitude
+finishes without moving or copying anything and retains the previous factor.
+This includes Enter at the world origin. References at the same origin still
+work. Native inputs just above this cutoff remain unresolved;
+see the [cursor capture notes](../scale-positions-cursor.md).
+
+Mouse directions and 2D/3D second references use the construction plane through
+the origin. A 1D mouse reference follows the origin-to-first-reference line.
+An edge-on free-plane click leaves the prompt active; typed world points still
+work. Snapping and oblique CPlane mouse input have not yet been compared.
 
 Enter at the factor prompt accepts its remembered value, initially 1. Completed
 placements save their factor and mode, which survive Undo. An identity factor in
@@ -101,7 +112,12 @@ and origin cancellation, and option lifetimes. The input suite records public
 default queries after Undo/Redo. Point witnesses check full-precision 2D/3D
 defaults using Enter without supplying a factor.
 
-Application tests make 163 complete or incremental replays. Comparisons include
+The [cursor and origin captures](../scale-positions-cursor.md) add 128 native
+recipes and 126 application replays, including real clicks, typed world targets,
+Enter defaults and the numeric origin cutoff. Two immediate-above boundary inputs are
+retained as diagnostics and excluded from successful application counts.
+Application tests make 289 complete, incremental or cursor replays in total.
+Comparisons include
 complete geometry definitions, weights, knots, domains, mesh records, object
 order, groups, selection, metadata, displayed grips and external Undo/Redo, at
 absolute epsilon `1e-9`. Independent Python equations check translations from
@@ -109,17 +125,19 @@ each native tight center. Placement queries resolve bounds at absolute `1e-12`
 and relative `1e-15` or the document's stricter tolerance, subject to the bounds
 kernel's floating-point floor and work limit. A separate analytic rational-curve
 extremum test checks center accuracy before scaling amplifies its error.
-[Baseline provenance](../scale-positions-provenance.json) and
-[input provenance](../scale-positions-input-provenance.json) record the engine,
+[Baseline provenance](../scale-positions-provenance.json),
+[input provenance](../scale-positions-input-provenance.json), and
+[cursor provenance](../scale-positions-cursor-provenance.json) record the engine,
 private schemes, comparison scope and capture hashes.
 The zero-reference macros retain separate EndCommand and post-script snapshots:
 their trailing Cancel executes at idle and clears selection after completion.
 
-These tests do not establish full parity. Real mouse picks, native preview
-appearance, reference distance locks, calculator expressions, all trimmed or
-subcomponent sources, cross-viewport behavior, restart persistence, and native
-performance comparisons remain unverified. The raw 1D point default witnesses
-gave inconsistent results across captures; they remain diagnostics and are
+These tests do not establish full parity. Native preview appearance, snapping,
+oblique CPlane mouse input, reference distance locks, calculator expressions,
+all trimmed or subcomponent sources, cross-viewport behavior, restart persistence, and native
+performance comparisons remain unverified. Controlled cursor captures explain
+unchanged 1D Enter witnesses at the world origin. A historical scripted witness still produced an edit after a different
+preceding command context. The raw 1D witnesses remain diagnostics and are
 excluded from the precision comparison. The 1D recipe geometry, displayed
 defaults, Mode/Copy lifetimes and history are compared in the input suite.
 
@@ -137,6 +155,7 @@ cargo test -p viboceros-command scale_positions --lib
 cargo test -p viboceros --bin viboceros scale_positions
 python3 -m unittest tools.rhino_oracle.test_scale_positions
 python3 -m unittest tools.rhino_oracle.test_scale_positions_input
+python3 -m unittest tools.rhino_oracle.test_scale_positions_cursor
 ```
 
 Use a fresh private scheme beginning with `VibocerosOracle`. The bounded capture

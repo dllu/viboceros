@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOracleScalePositionsCursorFinal_20261004",
+    "VibocerosOracleScalePositionsOriginFinal_20261004",
+    "VibocerosOracleScalePositionsFloatBoundaryRoundTrip_20261004"
+  ],
+  "native_recipes": 128,
+  "repeat_boundary_recipes": 8,
+  "native_observations": 136,
+  "positive_application_replays": 126,
+  "unresolved_application_recipes": [
+    "scale-positions-origin-60",
+    "scale-positions-origin-61"
+  ],
+  "absolute_epsilon": 1e-09,
+  "rounded_prompt_factor_epsilon": 5e-06,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK outputs were inspected in empty owned Rhino documents on private Xvfb. Each probe runs at idle outside RunPythonScript Undo. Source construction has its own external Undo record.",
+    "Sixty-four cursor recipes cover numeric factors, Enter defaults and references, 1D/2D/3D, Top/Front/Perspective views, near/far/off-axis/vertical pixels, Copy, zero/offset origins and point/line/rational sources. Pending native mouse callbacks capture unchanged geometry, cameras, integer viewing rays and tight source bounds before clicking or typing a prescribed world point.",
+    "The input driver requires owned-process windows and an exact native motion acknowledgement. Numeric Front clicks rejected by the edge-on WorldXY plane have an additional native mouse-down acknowledgement before Escape. Shared-desktop launches are rejected without starting Rhino.",
+    "Sixty-four origin recipes cover axis and diagonal origins, positive/negative values, magnitudes from 1e-10 to 1e-3, neighboring doubles around candidate tolerances, factors 2/3 and default 0.5, and Copy. Macro point components use the existing integer-based round-trip number formatter to avoid legacy-host precision loss.",
+    "Application tests replay all 64 cursor recipes and 62 origin recipes through public prompt input and the real viewport cursor resolver. Full point/curve geometry and selection, pending/EndCommand/post-macro states, Undo/Redo, cached preview centers and clicked preview placements are compared at absolute 1e-9. Preview updates do not modify geometry or registry defaults. Public seed commands and Enter establish scalar memory without injecting observed defaults.",
+    "Independent Python equations intersect recorded viewing rays with the origin plane or reference axis and translate source points/control points from their native tight center. Weights, knots, degree and domain are compared unchanged. Native prompt factors are rounded and use a distinct 5e-6 comparison tolerance.",
+    "Numeric 1D input at origins within float epsilon componentwise makes no edit/copy or ScalePositions Undo entry and retains the previous factor in these controlled recipes. Reference input at zero still works. In-place input immediately above the boundary is unstable across the 64-origin matrix and a separate eight-case repeat; Copy at that same point makes no edit in both captures. Both raw outputs are retained. The two immediate-above recipes are diagnostics excluded from application parity counts; the application uses the inclusive component cutoff for both Copy and in-place input.",
+    "Historical scripted 1D default witnesses and the invariant-plane point Undo discrepancy remain separate retained diagnostics. Their preceding cursor/context states cannot be reconstructed by these new captures.",
+    "Native preview appearance, oblique CPlane mouse input, snapping, reference distance locks, cross-viewport picks, all geometry families under cursor input, changed document tolerance, restart persistence, performance and full native parity remain unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_positions_cursor_probe.py": "533898b7ae3e56fd8a691e3efd8da3830f60e1fde6859ea294a18efe374fa6a8",
+    "tools/rhino_oracle/scale_positions_cursor_input.py": "90404be62ea40ea2d38f229ebb89ebacf92c818b664f803f09263f6c6090c748",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/viewport_capture.py": "453e14cb13ce8a61ed04faeae394db8990f1eb48d490c37610bc7deb9781e6c5",
+    "tools/rhino_oracle/named_view_policy_probe.py": "88df5448ece8fa9b0aeddfda26be5229907c67e5ebf588098f2cfbcbc8e7af78",
+    "tools/rhino_oracle/view_camera_probe.py": "8e1ea7c2f82087639954fe873937844171ec4e863871ba6e885748995b96c931",
+    "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "tools/rhino_oracle/shrink_face_input.py": "bb3842f6ba6929f43d770c00e40ad5184e0bb2f88e8c5d9e8f94eb0c33ffa51f",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/scale_positions_cursor.json": "6408a2079b325b0ce7b0dfc73f57e3ffd811c629db4fad79f86b46aac6a73baa",
+    "tools/rhino_oracle/fixtures/scale_positions_origin.json": "6391f1329dbb0e9f9c3a71f606640da7d463bb06b81e2787dc1fedad0f656f12",
+    "tools/rhino_oracle/fixtures/scale_positions_boundary_diagnostic.json": "7464ee864257262b1aeb7a5167407ac1fb749ad92af32f7e4e2801d6708f1042",
+    "tools/rhino_oracle/observations/scale_positions_cursor.json": "e77eef18ffee0970463e2c33d83158dc53060bb940753a7e7abf94386edba1c1",
+    "tools/rhino_oracle/observations/scale_positions_origin.json": "ef2d083b377ea28f1723d8d5d5f0ddd4f0558e1e07e8cdf5fcd856213be5e711",
+    "tools/rhino_oracle/observations/scale_positions_boundary_diagnostic.json": "d4674496ae0637c38ffdb2aef12d0ad5f13f665042c89b1aba415eaa6eb7a4f2"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "7ab4b6556b89598b161fb20f7d563daf3ba6e1a81aa0c61ed7ea6abd02d77616",
+    "tools/rhino_oracle/rhino_worker.py": "3b7faddeb8d1c3beb6716ef1c8c87c1038e165bb476494c3fde3b9ad4ad3b4a8"
+  }
+}

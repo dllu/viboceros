@@ -9,24 +9,30 @@ pub(crate) fn captured_destination(
     pending: &serde_json::Value,
     input: ViewportInput<'_>,
 ) -> (Point3, AffineTransform3) {
+    captured_cursor(document, pending, input).unwrap()
+}
+
+pub(crate) fn captured_cursor(
+    document: &Document,
+    pending: &serde_json::Value,
+    input: ViewportInput<'_>,
+) -> Option<(Point3, AffineTransform3)> {
     let view = super::super::clip_tests::captured_view(&pending["camera"]);
     let [x, y]: [f32; 2] =
         serde_json::from_value(pending["frame"]["click_client"].clone()).unwrap();
-    let cursor = view
-        .affine_drafting_cursor(
-            Pos2::new(x, y),
-            view.last_rect.unwrap(),
-            document,
-            input.drafting,
-            &input,
-        )
-        .unwrap();
+    let cursor = view.affine_drafting_cursor(
+        Pos2::new(x, y),
+        view.last_rect.unwrap(),
+        document,
+        input.drafting,
+        &input,
+    )?;
     let transform = view
         .resolve_affine_preview(input.affine_preview.unwrap(), Some(cursor.point), document)
         .0
         .unwrap()
         .transform;
-    (cursor.source_point, transform)
+    Some((cursor.source_point, transform))
 }
 
 #[test]

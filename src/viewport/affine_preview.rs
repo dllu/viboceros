@@ -165,6 +165,17 @@ impl Viewport {
         let filter = input.point_filter;
         let constraint = input.point_constraint;
         let definition = input.affine_preview.map(|p| p.definition);
+        // ScalePositions mouse input uses the CPlane through its origin.
+        // Its 1D reference getter additionally constrains the viewing line.
+        let drafting = if let Some(PointTransform::ScalePositions { origin, .. }) = definition {
+            DraftingInput {
+                anchor: Some(origin),
+                planar: true,
+                ..drafting
+            }
+        } else {
+            drafting
+        };
         let line = definition.and_then(|p| p.mouse_line(document.tolerance()));
         let cursor = self.translation_drafting_cursor(
             pointer,
