@@ -35,6 +35,27 @@ impl TriangleMesh {
             .iter()
             .map(|components| !components.is_empty())
             .collect::<Vec<_>>();
+        // The radial rebuild assigns one replacement per face at an affected
+        // topology vertex. Multiple coincident corners of that face would
+        // need a separate corner policy; reject them before staging a partial
+        // remap instead of merging controls or leaving missing replacements.
+        for (index, face) in self.faces.iter().enumerate() {
+            for (corner, &raw) in face.indices().iter().enumerate() {
+                let vertex = data.topological_vertices[raw as usize];
+                if affected_topological_vertices[vertex]
+                    && face.indices()[..corner]
+                        .iter()
+                        .any(|&other| data.topological_vertices[other as usize] == vertex)
+                {
+                    return Err(match face {
+                        MeshFace::Triangle(_) => {
+                            GeometryError::DegenerateTriangle { triangle: index }
+                        }
+                        MeshFace::Quad(_) => GeometryError::DegenerateQuad { face: index },
+                    });
+                }
+            }
+        }
         let mut used = vec![false; self.vertices.len()];
         for face in &self.faces {
             for &vertex in face.indices() {

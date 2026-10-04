@@ -60,6 +60,8 @@ object state are also preserved, including the raw RGB display color, its
 layer/object/material/parent source, and surface wire density. Named group
 definitions and ordered membership survive round trips, including overlapping
 and empty groups.
+[Collapsed mesh records](mesh-edit-records.md) from grip edits also retain face
+indices, colors and n-gons in 3DM; STL export rejects zero-area facets atomically.
 The low-level `ThreeDmModel` reader and writer also retain named model views,
 including projection, camera, target, CPlane, and frustum. Unit-converted reads
 scale their positions and frustum distances along with model geometry. The

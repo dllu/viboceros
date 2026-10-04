@@ -82,7 +82,7 @@ class GripTransformTests(TestCase):
         mesh = r['results'][10]['value']
         self.assertEqual(mesh['before'][0]['mesh']['vertices'][0], mesh['before'][0]['mesh']['vertices'][4])
         self.assertNotEqual(mesh['after'][0]['mesh']['vertices'][0], mesh['after'][0]['mesh']['vertices'][4])
-        # Retain the incompatible native collapsed triangle, including its indices.
+        # Retain the native collapsed triangle, including its indices.
         collapsed = r['results'][13]['value']['after'][0]['mesh']
         self.assertEqual(collapsed['vertices'][2], collapsed['vertices'][4])
         self.assertEqual(collapsed['faces'][-1], [4, 2, 3])
@@ -135,7 +135,8 @@ class GripTransformTests(TestCase):
         self.assertTrue(record['private_xvfb'])
         self.assertFalse(record['full_native_parity'])
         self.assertEqual(record['native_recipes'], 32)
-        self.assertEqual(record['positive_workflows'], 31)
-        self.assertEqual(record['known_incompatible_ids'], ['grip-transform-13'])
+        self.assertEqual(record['positive_workflows'], 32)
+        self.assertEqual(record['application_replays'], 64)
+        self.assertEqual(record['known_incompatible_ids'], [])
         for path, expected in record['sha256'].items():
             self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)

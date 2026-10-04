@@ -6795,6 +6795,9 @@ def _execute(operation, iterations, tolerance):
     if kind in ('circle_fit_grips', 'circle_fit_grips_commands'):
         from circle_fit_grips_probe import run
         return run(operation, globals())
+    if kind == 'mesh_edit_records':
+        from mesh_edit_records_probe import run
+        return run(operation, globals())
     if kind == 'grip_transform':
         from grip_transform_probe import run
         return run(operation, globals())

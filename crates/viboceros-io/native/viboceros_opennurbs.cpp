@@ -776,7 +776,10 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
 }
 
 bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
-  if (!mesh.IsValid() || mesh.VertexCount() <= 0 || mesh.FaceCount() <= 0) {
+  // Grip edits can retain coincident vertices and collapsed polygon records.
+  // Validate finite coordinates and face bounds below, without discarding the
+  // object solely because its geometric validity check fails.
+  if (mesh.VertexCount() <= 0 || mesh.FaceCount() <= 0) {
     return false;
   }
   if (static_cast<uint64_t>(mesh.VertexCount()) >
@@ -1685,8 +1688,9 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
                                static_cast<int>(vertex_count), false, false);
       for (size_t index = 0; index < vertex_count; ++index) {
         const double* point = source.coordinates + index * 3;
-        if (!mesh->SetVertex(static_cast<int>(index),
-                             ON_3dPoint(point[0], point[1], point[2]))) {
+        const ON_3dPoint vertex(point[0], point[1], point[2]);
+        if (!vertex.IsValid() ||
+            !mesh->SetVertex(static_cast<int>(index), vertex)) {
           delete mesh;
           error = "triangle mesh has an invalid vertex";
           return nullptr;
@@ -1791,11 +1795,6 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
           error = "polygon mesh payload has trailing bytes";
           return nullptr;
         }
-      }
-      if (!mesh->IsValid()) {
-        delete mesh;
-        error = "triangle mesh is not valid in OpenNURBS";
-        return nullptr;
       }
       return mesh;
     }

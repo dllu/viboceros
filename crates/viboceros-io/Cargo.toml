@@ -15,3 +15,6 @@ viboceros-geometry.workspace = true
 
 [build-dependencies]
 cmake = "0.1.58"
+
+[dev-dependencies]
+serde_json.workspace = true

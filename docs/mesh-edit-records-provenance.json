@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleMeshRecords_20261004",
+  "native_recipes": 6,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public SDK grip edits and geometry queries were inspected in an empty owned Rhino document on private Xvfb.",
+    "Six recipes retain before, edited and fully restored snapshots: mixed Mirror, triangle line/point, quad edge/line/point.",
+    "Kernel replays compare ordered vertices/faces/colors, topology locations and complete edge uses, polygon normals, area and closest points at 1e-12.",
+    "Native topology omits collapsed sides and keeps duplicate remaining uses by the same face, including incidence [0,1,1].",
+    "Collinear distinct-corner faces are Mesh.IsValid in Rhino; strict generation validity is a separate kernel policy.",
+    "RhinoCommon reports Origin for zero-area mass centroid; our area property retains zero area but explicitly rejects undefined centroid.",
+    "3DM round trips, n-gon retention, extreme/subnormal closest queries, display in four views/three modes, and STL atomic rejection are independent implementation checks.",
+    "Native archive interoperability, all edits of invalid meshes, repeated raw indices, nonplanar collapses, snapping, native preview/performance equivalence and full parity are unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/mesh_edit_records_probe.py": "d9bcaf82df64af7063a45cc19996ac0152aa66634f512a63d1bbdf6ffc07c2b1",
+    "tools/rhino_oracle/fixtures/mesh_edit_records.json": "baa2b6fe301a54c0e505cd87bc08fc0e5c5d4407c6e143eb1661b2ceb876aabb",
+    "tools/rhino_oracle/observations/mesh_edit_records.json": "82f845f1a332ad17f92916f8d208c531d4f6a5c727892e4d79ef18ebeaf43cf4",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

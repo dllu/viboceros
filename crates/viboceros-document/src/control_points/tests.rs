@@ -135,7 +135,7 @@ fn control_point_display_tracks_unit_rescaling_and_history() {
 fn mixed_grip_transform_failure_preserves_geometry_picks_history_and_redo() {
     let mut doc = Document::default();
     let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
-    let point = doc.add_geometry(Geometry::Point(p(8., 0.))).unwrap();
+    let point = doc.add_geometry(Geometry::Point(p(0.25, 0.))).unwrap();
     let mesh = doc
         .add_geometry(Geometry::Mesh(
             TriangleMesh::try_new_faces(
@@ -161,18 +161,14 @@ fn mixed_grip_transform_failure_preserves_geometry_picks_history_and_redo() {
     doc.select_objects_direct([point], SelectionMode::Add)
         .unwrap();
     let before = format!("{doc:?}");
-    let reflection =
-        AffineTransform3::try_nonuniform_scale(Point3::try_new(0., 0., 0.).unwrap(), [-1., 1., 1.])
-            .unwrap();
+    let overflow = AffineTransform3::try_nonuniform_scale(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        [f64::MAX, 1., 1.],
+    )
+    .unwrap();
     assert!(
-        doc.transform_objects_and_grips(
-            [point],
-            grips,
-            reflection,
-            false,
-            CopyGroupPolicy::Preserve
-        )
-        .is_err()
+        doc.transform_objects_and_grips([point], grips, overflow, false, CopyGroupPolicy::Preserve)
+            .is_err()
     );
     assert_eq!(format!("{doc:?}"), before);
     // Invalid frozen IDs fail before the valid ordinary peer is transformed.

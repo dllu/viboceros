@@ -1321,7 +1321,7 @@ fn decode_object(
                 .collect();
             let mesh_payload = mesh_ngon::decode(geometry_data, vertices.len())?;
             ThreeDmGeometry::Mesh(
-                TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?
+                TriangleMesh::try_from_face_records(vertices, faces)?
                     .try_with_ngons(mesh_payload.ngons)?
                     .try_with_vertex_colors(mesh_payload.vertex_colors)?,
             )
@@ -2520,6 +2520,75 @@ mod tests {
         }
         decoded_object.geometry = source.geometry.clone();
         assert_eq!(decoded_object, source);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn collapsed_native_mesh_records_round_trip_with_colors_and_ngons() {
+        let path = temporary_path("collapsed-mesh-records.3dm");
+        let captured: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/mesh_edit_records.json"
+        ))
+        .unwrap();
+        let mut objects = Vec::new();
+        for row in captured["results"].as_array().unwrap() {
+            let value = &row["value"]["edited"];
+            let vertices = value["mesh"]["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|p| {
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                        .unwrap()
+                })
+                .collect();
+            let faces = value["mesh"]["faces"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|f| {
+                    let indices: Vec<u32> = serde_json::from_value(f.clone()).unwrap();
+                    match *indices.as_slice() {
+                        [a, b, c] => MeshFace::Triangle([a, b, c]),
+                        [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                        _ => panic!("unsupported native face"),
+                    }
+                })
+                .collect();
+            let mesh = TriangleMesh::try_from_face_records(vertices, faces)
+                .unwrap()
+                .try_with_vertex_colors(Some(
+                    serde_json::from_value(value["colors"].clone()).unwrap(),
+                ))
+                .unwrap();
+            let mut object = ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0);
+            object.name = Some(row["id"].as_str().unwrap().to_owned());
+            objects.push(object);
+        }
+        // N-gon membership is stored over raw face indices, even after all
+        // four corners coincide. The bridge must preserve this overlay too.
+        let mesh = TriangleMesh::try_from_face_records(
+            vec![Point3::try_new(0., 0., 0.).unwrap(); 4],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0])])
+        .unwrap();
+        objects.push(ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0));
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Collapsed records".into(),
+                color: [12, 34, 56],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            objects,
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(loaded.objects, model.objects);
         fs::remove_file(path).unwrap();
     }
 

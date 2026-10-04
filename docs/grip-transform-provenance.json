@@ -4,11 +4,9 @@
   "engine_version": "8.32.26160.13001",
   "settings_scheme": "VibocerosOracleGripTransform_20261004",
   "native_recipes": 32,
-  "positive_workflows": 31,
-  "application_replays": 62,
-  "known_incompatible_ids": [
-    "grip-transform-13"
-  ],
+  "positive_workflows": 32,
+  "application_replays": 64,
+  "known_incompatible_ids": [],
   "full_native_parity": false,
   "scope_notes": [
     "Only public command and SDK outputs were inspected in an empty owned Rhino document on private Xvfb.",
@@ -17,8 +15,8 @@
     "Selected grips take precedence over selected parents; ordinary objects and grip owners can be edited in one batch.",
     "Copy duplicates the entire owner with only selected controls changed, retains original and copied grip picks, and retains preselected ordinary object peers on history replay.",
     "Grip replacement history exchanges display and picks: PointsOff after Move restores displayed picks on Undo and an off state on Redo. Copy leaves the source off and restores its copy off.",
-    "Application tests replay 31 workflows through direct and incremental paths, comparing complete curve/surface/mesh definitions, object order, selection, display and history at absolute numeric tolerance 1e-9.",
-    "Native grip-transform-13 retains a collapsed triangle after partial Mirror. The kernel currently rejects this face; tests assert atomic rejection and retain the native witness unchanged.",
+    "Application tests replay 32 workflows through direct and incremental paths, comparing complete curve/surface/mesh definitions, object order, selection, display and history at absolute numeric tolerance 1e-9.",
+    "Native grip-transform-13 retains a collapsed triangle after partial Mirror. Application replays now retain that face and match geometry, display, picks and history; additional mesh-edit-records diagnostics cover six collapse/recovery recipes.",
     "Endpoint-closing Move and Copy remove the newly duplicated final grip and clear its vanished selection index; Undo restores the open curve and its picked endpoint.",
     "Preview caching, rendering in three display modes, mouse grip selection, automatic Scale center and repeated Copy are independent implementation regressions. Native mouse-preview fidelity, large control-net performance, grouped grip copy policy, arbitrary trimmed/composite edits, other transform commands and full parity are unproven."
   ],

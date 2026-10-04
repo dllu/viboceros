@@ -9,6 +9,8 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use viboceros_document::ColorRgb;
+#[cfg(test)]
+use viboceros_geometry::MeshFace;
 use viboceros_geometry::{AffineNormalTransform3, AffineTransform3};
 
 const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
@@ -46,7 +48,7 @@ pub(super) fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>
         .map(|index| {
             mesh.face_normal(index)
                 .map(|normal| NaVector3::new(normal.x(), normal.y(), normal.z()))
-                .unwrap_or(fallback)
+                .ok()
         })
         .collect::<Vec<_>>();
 
@@ -69,13 +71,16 @@ pub(super) fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>
         .iter()
         .enumerate()
         .map(|(face_index, triangle)| {
-            let reference = face_normals[face_index];
+            let Some(reference) = face_normals[face_index] else {
+                return [fallback; 3];
+            };
             triangle.map(|vertex_index| {
                 let point = mesh.vertices()[vertex_index as usize];
                 let mut sum = NaVector3::zeros();
                 for &incident in &incident_faces[&point_position_key(point)] {
-                    let candidate = face_normals[incident];
-                    if reference.dot(&candidate) >= SMOOTH_SHADING_COSINE {
+                    if let Some(candidate) = face_normals[incident]
+                        && reference.dot(&candidate) >= SMOOTH_SHADING_COSINE
+                    {
                         sum += candidate;
                     }
                 }
@@ -839,6 +844,36 @@ mod tests {
             assert_eq!(a.instance.end_padding, b.instance.end_padding);
             assert_eq!(a.depths, b.depths);
         }
+    }
+
+    #[test]
+    fn collapsed_faces_do_not_change_healthy_corner_normals() {
+        let source = TriangleMesh::try_new(
+            vec![point(0., 0., 0.), point(1., 0., 0.), point(0., 1., -1.)],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mixed = TriangleMesh::try_from_face_records(
+            vec![
+                point(0., 0., 0.),
+                point(1., 0., 0.),
+                point(0., 1., -1.),
+                point(0., 0., 0.),
+                point(1., 0., 0.),
+                point(0.5, 0., 0.),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([3, 4, 5])],
+        )
+        .unwrap();
+        let normals = smooth_corner_normals(&mixed);
+        assert_eq!(normals[0], smooth_corner_normals(&source)[0]);
+        assert!(
+            normals
+                .iter()
+                .flatten()
+                .all(|n| n.iter().all(|v| v.is_finite()))
+        );
     }
 
     #[test]

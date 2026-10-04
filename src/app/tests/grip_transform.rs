@@ -252,7 +252,6 @@ fn grip_transform_replays_native_geometry_selection_display_copy_and_history() {
                 &native["before"],
                 op["id"].as_str().unwrap(),
             );
-            let before = app.document.clone();
             let (name, arguments) = match op["command"].as_str().unwrap() {
                 "move" => ("Move", vec!["0,0,0", "1,2,3"]),
                 "zero" => ("Move", vec!["0,0,0", "0,0,0"]),
@@ -298,22 +297,6 @@ fn grip_transform_replays_native_geometry_selection_display_copy_and_history() {
                     ),
                 );
             }
-            // Native retains a collapsed triangle in this mesh mirror case.
-            // The current mesh kernel rejects collapsed faces; retain the
-            // incompatibility rather than deleting the face or moving peers.
-            if op["id"] == "grip-transform-13" {
-                assert_eq!(
-                    app.document.objects().cloned().collect::<Vec<_>>(),
-                    before.objects().cloned().collect::<Vec<_>>()
-                );
-                assert!(
-                    app.command_log
-                        .iter()
-                        .any(|line| line.starts_with("Error:"))
-                );
-                assert_eq!(app.document.undo_label(), Some("Grip transform sources"));
-                continue;
-            }
             compare(
                 &snapshot(&app, source, extra),
                 &native["after_script"],
@@ -339,7 +322,7 @@ fn grip_transform_replays_native_geometry_selection_display_copy_and_history() {
             verified += 1;
         }
     }
-    assert_eq!(verified, 62);
+    assert_eq!(verified, 64);
 }
 
 #[test]

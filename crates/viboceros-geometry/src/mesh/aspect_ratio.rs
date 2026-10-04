@@ -29,6 +29,9 @@ impl TriangleMesh {
 }
 
 fn triangle_aspect_ratio([a, b, c]: [Point3; 3]) -> Result<Real, GeometryError> {
+    if a == b || b == c || c == a {
+        return Ok(Real::INFINITY);
+    }
     let lengths = [a.distance_to(b)?, b.distance_to(c)?, c.distance_to(a)?];
     let longest = lengths
         .iter()

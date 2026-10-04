@@ -5,6 +5,9 @@
 The kernel distinguishes stored raw vertices from exact-location topology
 vertices. Coincident raw vertices can remain separate across unwelded seams.
 Stored faces are triangles or quads; triangulated facets are a separate view.
+[Stored mesh edits](mesh-edit-records.md) retain collapsed face records so grips
+can restore them. Topology omits a side whose endpoint positions coincide and
+retains all other incidences, including repeated uses by the same face.
 N-gons are validated overlays over connected face groups, with an oriented raw
 vertex boundary. They preserve the underlying triangles and quads for geometry
 calculations and 3DM interchange. Affine transforms, reversal, mesh

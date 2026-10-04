@@ -440,6 +440,24 @@ mod tests {
 
     use super::*;
 
+    #[test]
+    fn collapsed_records_reject_stl_before_replacing_existing_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("keep.stl");
+        let source = mesh();
+        let collapsed = source
+            .try_with_edited_vertices(vec![
+                Point3::try_new(0., 0., 0.).unwrap();
+                source.vertices().len()
+            ])
+            .unwrap();
+        for format in [StlFormat::Ascii, StlFormat::Binary] {
+            fs::write(&path, b"existing file").unwrap();
+            assert!(write_stl_file(&path, &collapsed, format).is_err());
+            assert_eq!(fs::read(&path).unwrap(), b"existing file");
+        }
+    }
+
     fn mesh() -> TriangleMesh {
         TriangleMesh::try_new(
             vec![

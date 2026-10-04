@@ -39,7 +39,11 @@ struct Node {
 
 impl<'a> MeshSolid<'a> {
     pub fn from_closed_mesh(mesh: &'a TriangleMesh) -> Option<Self> {
-        if !mesh.topology().is_solid() {
+        if !mesh.topology().is_solid()
+            || mesh
+                .validate_face_geometry(Tolerance::MESH_VALIDATION)
+                .is_err()
+        {
             return None;
         }
         let faces = mesh

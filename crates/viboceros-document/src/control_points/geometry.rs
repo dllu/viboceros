@@ -71,7 +71,7 @@ impl Geometry {
                 )?)
             }
             Self::Mesh(mesh) => {
-                Self::Mesh(mesh.try_with_mapped_vertices(map(mesh.vertices(), false)?, tolerance)?)
+                Self::Mesh(mesh.try_with_edited_vertices(map(mesh.vertices(), false)?)?)
             }
             _ => {
                 return Err(GeometryError::UnsupportedControlPointEdit {

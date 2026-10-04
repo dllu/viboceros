@@ -62,17 +62,15 @@ Move/Copy/Rotate/Scale/Mirror, parent precedence, mixed point objects, command-f
 selection, endpoint closing, zero edits and PointsOff. EndCommand and final script states are
 retained separately; completed macros have no idle cancellation tokens.
 Application replay compares complete definitions, selection, display, object
-order and Undo/Redo for 31 workflows through direct and incremental input at
+order and Undo/Redo for 32 workflows through direct and incremental input at
 absolute coordinate/weight/knot tolerance `1e-9`. Independent implementation tests
 check command-first mouse picks, automatic Scale centers, repeated copies and
 partial preview rendering in all three display modes.
 
-`grip-transform-13` remains incompatible: Mirror moves two mesh vertices onto
-coincident positions while Rhino retains triangle `[4,2,3]`. Our mesh kernel
-rejects that collapsed face and leaves the batch untouched. The native face is
-retained in the observation; tests explicitly assert the atomic rejection.
-Supporting such editable faces requires changes to mesh representation and its
-consumers. Faces are not silently removed or coincident peer vertices moved.
+`grip-transform-13` now retains the collapsed triangle `[4,2,3]` after Mirror,
+matching the native face records, grip picks and Undo/Redo. Additional bounded
+[mesh collapse/recovery diagnostics](mesh-edit-records.md) check topology,
+colors, normals, area and closest points. Coincident peers remain independent.
 
 Arbitrary nonrectangular trimmed single-face B-reps and composite PolyCurve
 grip editing are unsupported. ScaleNU, other affine commands, Delete grips,

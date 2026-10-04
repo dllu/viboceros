@@ -55,7 +55,11 @@ impl TriangleMesh {
         for (sum, values) in result.first.iter_mut().zip(first) {
             *sum += values.total() / Rational::from_integer(3.into());
         }
-        result.centroid()?;
+        // Stored faces may all collapse. The area remains defined as zero,
+        // while `centroid()` explicitly rejects that empty distribution.
+        if !result.area.is_zero() {
+            result.centroid()?;
+        }
         Ok(result)
     }
 }

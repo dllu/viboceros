@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-mixed_mirror",
+      "case": "mixed_mirror"
+    },
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-triangle_line",
+      "case": "triangle_line"
+    },
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-triangle_point",
+      "case": "triangle_point"
+    },
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-quad_edge",
+      "case": "quad_edge"
+    },
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-quad_line",
+      "case": "quad_line"
+    },
+    {
+      "op": "mesh_edit_records",
+      "id": "mesh-records-quad_point",
+      "case": "quad_point"
+    }
+  ]
+}

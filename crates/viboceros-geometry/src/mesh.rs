@@ -17,9 +17,13 @@ mod draft_angle;
 pub use connected_faces::MeshPartBoundary;
 mod containment;
 pub use containment::{MeshSolid, SolidPointLocation};
+mod closest;
 mod edge_collapse;
 mod edge_split;
 mod extrude;
+#[cfg(test)]
+mod face_record_tests;
+mod face_records;
 pub use extrude::{MeshExtrudeDirection, MeshExtrudeSelection};
 #[cfg(test)]
 mod edge_unweld_tests;
@@ -340,7 +344,7 @@ impl MeshFaceExtraction {
     }
 }
 
-/// One validated triangle or quadrilateral in a polygon mesh.
+/// One indexed triangle or quadrilateral in a polygon mesh.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum MeshFace {
     Triangle([u32; 3]),
@@ -389,8 +393,9 @@ impl MeshFace {
     }
 }
 
-/// An indexed, oriented polygon mesh with validated finite vertices and
-/// non-degenerate triangle and quadrilateral faces.
+/// An indexed, oriented polygon mesh with finite vertices and face indices
+/// in range. Stored faces may have coincident/collinear positions;
+/// generated meshes use strict geometric validation.
 ///
 /// `TriangleMesh` retains its original public name for API compatibility, but
 /// quadrilateral faces remain first-class so topology and 3DM interchange do
@@ -462,45 +467,8 @@ impl TriangleMesh {
         faces: Vec<MeshFace>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        if faces.is_empty() {
-            return Err(GeometryError::EmptyMesh);
-        }
-        if vertices
-            .len()
-            .checked_sub(1)
-            .is_some_and(|last_index| u32::try_from(last_index).is_err())
-        {
-            return Err(GeometryError::TooManyMeshVertices);
-        }
-
-        let mut triangles = Vec::new();
-        triangles
-            .try_reserve(faces.len().saturating_mul(2))
-            .map_err(|_| GeometryError::TooManyMeshFaces)?;
-        for (face_index, face) in faces.iter().copied().enumerate() {
-            match face {
-                MeshFace::Triangle(triangle) => {
-                    validate_triangle(&vertices, triangle, face_index, false, tolerance)?;
-                    triangles.push(triangle);
-                }
-                MeshFace::Quad([a, b, c, d]) => {
-                    validate_triangle(&vertices, [a, b, c], face_index, true, tolerance)?;
-                    validate_triangle(&vertices, [a, c, d], face_index, true, tolerance)?;
-                    if vertices[b as usize] == vertices[d as usize] {
-                        return Err(GeometryError::DegenerateQuad { face: face_index });
-                    }
-                    triangles.extend([[a, b, c], [a, c, d]]);
-                }
-            }
-        }
-
-        Ok(Self {
-            vertices,
-            vertex_colors: None,
-            faces,
-            triangles,
-            ngons: Vec::new(),
-        })
+        face_records::validate_geometry(&vertices, &faces, tolerance)?;
+        Self::try_from_face_records(vertices, faces)
     }
 
     /// Constructs an ordered quadrilateral grid over increasing plane intervals.
@@ -2087,7 +2055,7 @@ impl TriangleMesh {
     /// Vertices and face slots are retained verbatim, matching Rhino's
     /// `MeshTopologyEdgeList::SwapEdge` ordering. `None` indicates that the
     /// selected edge is not swappable or that the replacement would violate
-    /// this mesh type's non-degenerate-face invariant.
+    /// geometric validity of the replacement faces.
     pub fn swap_topology_edge(
         &self,
         edge_index: usize,
@@ -2550,7 +2518,7 @@ impl TriangleMesh {
                     self.vertices[c as usize],
                     self.vertices[d as usize],
                 )?;
-                if second.distance_to(target)? < first.distance_to(target)? {
+                if target.compare_distances(second, first).is_lt() {
                     Ok(second)
                 } else {
                     Ok(first)
@@ -2607,7 +2575,10 @@ impl TriangleMesh {
             boundary_edge_count,
             non_manifold_edge_count,
             orientation_conflict_edge_count,
-            closed: self.vertices.len() >= 4 && self.faces.len() >= 4 && boundary_edge_count == 0,
+            closed: self.vertices.len() >= 4
+                && self.faces.len() >= 4
+                && !edges.is_empty()
+                && boundary_edge_count == 0,
         }
     }
 
@@ -3493,7 +3464,10 @@ impl TriangleMesh {
         let mut incident_faces = vec![Vec::new(); data.topological_vertex_count];
         for (face, polygon) in self.faces.iter().enumerate() {
             for &raw in polygon.indices() {
-                incident_faces[data.topological_vertices[raw as usize]].push(face);
+                let incident = &mut incident_faces[data.topological_vertices[raw as usize]];
+                if incident.last().copied() != Some(face) {
+                    incident.push(face);
+                }
             }
         }
         let mut face_components = vec![Vec::new(); data.topological_vertex_count];
@@ -3669,7 +3643,10 @@ impl TriangleMesh {
         let mut incident_faces = vec![Vec::new(); data.topological_vertex_count];
         for (face, polygon) in self.faces.iter().enumerate() {
             for &raw in polygon.indices() {
-                incident_faces[data.topological_vertices[raw as usize]].push(face);
+                let incident = &mut incident_faces[data.topological_vertices[raw as usize]];
+                if incident.last().copied() != Some(face) {
+                    incident.push(face);
+                }
             }
         }
 
@@ -3959,7 +3936,12 @@ impl TriangleMesh {
                 let raw_to = indices[(side + 1) % indices.len()];
                 let from = topological_vertices[raw_from as usize];
                 let to = topological_vertices[raw_to as usize];
-                debug_assert_ne!(from, to, "validated mesh edge collapsed");
+                // A grip edit can collapse a side without removing its face.
+                // Other sides retain all incident uses, including repeated
+                // uses by the same face.
+                if from == to {
+                    continue;
+                }
                 let (edge, forward, raw_vertices) = if from < to {
                     ((from, to), true, [raw_from, raw_to])
                 } else {
@@ -4091,7 +4073,9 @@ impl TriangleMesh {
                 .fold(scale, |current, coordinate| current.max(coordinate.abs()));
             relative_vertices[index] = relative;
         }
-        debug_assert!(scale > 0.0, "a validated mesh has non-coincident vertices");
+        if scale == 0.0 {
+            return Ok(0.0);
+        }
         for (relative, used) in relative_vertices.iter_mut().zip(used) {
             if !used {
                 continue;
@@ -4151,7 +4135,9 @@ impl TriangleMesh {
     }
 
     /// Rebuilds geometric caches for a one-to-one vertex map, retaining faces,
-    /// vertex colors and ngon membership. Collapsed faces return an error.
+    /// vertex colors and ngon membership. A valid source may not acquire
+    /// collapsed faces through this map. Already collapsed records may be
+    /// transformed or healed; grip edits use [`Self::try_with_edited_vertices`].
     pub fn try_with_mapped_vertices(
         &self,
         vertices: Vec<Point3>,
@@ -4162,10 +4148,14 @@ impl TriangleMesh {
                 context: "mesh vertex map size",
             });
         }
-        let mut transformed = Self::try_new_faces(vertices, self.faces.clone(), tolerance)?;
-        transformed.vertex_colors = self.vertex_colors.clone();
-        transformed.ngons = self.ngons.clone();
-        Ok(transformed)
+        if let Err(error) = face_records::validate_geometry(&vertices, &self.faces, tolerance)
+            && self
+                .validate_face_geometry(Tolerance::MESH_VALIDATION)
+                .is_ok()
+        {
+            return Err(error);
+        }
+        self.try_with_edited_vertices(vertices)
     }
 }
 
@@ -4573,8 +4563,40 @@ fn closest_point_on_triangle(
     b: Point3,
     c: Point3,
 ) -> Result<Point3, GeometryError> {
-    let ab_vector = a.vector_to(b)?;
-    let ac_vector = a.vector_to(c)?;
+    let (Ok(ab), Ok(ac)) = (a.vector_to(b), a.vector_to(c)) else {
+        return closest::exact_triangle(target, a, b, c);
+    };
+    let scale = ab
+        .to_array()
+        .into_iter()
+        .chain(ac.to_array())
+        .fold(0.0_f64, |s, x| s.max(x.abs()));
+    if scale == 0.0 {
+        return closest::exact_triangle(target, a, b, c);
+    }
+    let first = ab.to_array().map(|x| x / scale);
+    let second = ac.to_array().map(|x| x / scale);
+    let cross_scale = (0..3)
+        .map(|i| {
+            let (j, k) = ((i + 1) % 3, (i + 2) % 3);
+            first[j].mul_add(second[k], -first[k] * second[j]).abs()
+        })
+        .fold(0.0_f64, Real::max);
+    if cross_scale <= 32.0 * Real::EPSILON {
+        return closest::exact_triangle(target, a, b, c);
+    }
+    closest_point_on_regular_triangle(target, a, b, c, ab, ac)
+        .or_else(|_| closest::exact_triangle(target, a, b, c))
+}
+
+fn closest_point_on_regular_triangle(
+    target: Point3,
+    a: Point3,
+    b: Point3,
+    c: Point3,
+    ab_vector: crate::Vector3,
+    ac_vector: crate::Vector3,
+) -> Result<Point3, GeometryError> {
     let ap_vector = a.vector_to(target)?;
     let bp_vector = b.vector_to(target)?;
     let cp_vector = c.vector_to(target)?;
@@ -4589,10 +4611,9 @@ fn closest_point_on_triangle(
     let product_scale = products
         .iter()
         .fold(0.0_f64, |current, value| current.max(value.abs()));
-    debug_assert!(
-        product_scale > 0.0,
-        "a validated triangle has nonzero dot products"
-    );
+    if product_scale == 0.0 {
+        return closest::exact_triangle(target, a, b, c);
+    }
     for product in &mut products {
         *product /= product_scale;
     }
@@ -4629,6 +4650,9 @@ fn closest_point_on_triangle(
         return triangle_barycentric_point(a, ab, ac, 1.0 - edge_parameter, edge_parameter);
     }
 
+    if va + vb + vc <= 0.0 {
+        return closest::exact_triangle(target, a, b, c);
+    }
     let inverse_sum = 1.0 / (va + vb + vc);
     triangle_barycentric_point(a, ab, ac, vb * inverse_sum, vc * inverse_sum)
 }
@@ -5288,11 +5312,11 @@ fn topology_face_edge_indices(mesh: &TriangleMesh, data: &MeshTopologyData) -> V
         .map(|face| {
             let raw_vertices = face.indices();
             (0..raw_vertices.len())
-                .map(|side| {
+                .filter_map(|side| {
                     let first = data.topological_vertices[raw_vertices[side] as usize];
                     let second = data.topological_vertices
                         [raw_vertices[(side + 1) % raw_vertices.len()] as usize];
-                    edge_indices[&(first.min(second), first.max(second))]
+                    (first != second).then(|| edge_indices[&(first.min(second), first.max(second))])
                 })
                 .collect()
         })
