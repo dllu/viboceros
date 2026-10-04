@@ -7,6 +7,7 @@ mod decompose;
 mod ellipticity;
 mod evaluate;
 pub(crate) mod exact;
+mod grips;
 mod integration_frame;
 mod linear_trim;
 mod parameter_frame;
@@ -1317,17 +1318,28 @@ impl NurbsCurve {
     /// curves omit an exactly duplicated final seam control, while
     /// near-coincident controls remain distinct.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
-        let mut points = self
+        Ok(self
             .control_points
             .iter()
+            .take(self.grip_count()?)
             .map(|control_point| control_point.point)
-            .collect::<Vec<_>>();
+            .collect())
+    }
+
+    /// Number of distinct editable controls, excluding repeated seam controls.
+    pub fn grip_count(&self) -> Result<usize, GeometryError> {
+        let count = self.control_points.len();
         if self.is_periodic() {
-            points.truncate(points.len() - self.degree);
-        } else if self.is_closed()? && points.len() > 1 && points.first() == points.last() {
-            points.pop();
+            Ok(count - self.degree)
+        } else if self.is_closed()?
+            && count > 1
+            && self.control_points.first().map(|p| p.point)
+                == self.control_points.last().map(|p| p.point)
+        {
+            Ok(count - 1)
+        } else {
+            Ok(count)
         }
-        Ok(points)
     }
 
     /// Fits Rhino's extracted degree-one control polygon through this curve's

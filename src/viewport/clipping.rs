@@ -411,8 +411,14 @@ impl Viewport {
         let mut bounds = self.visible_document_bounds(document);
         if let Some(transform) = transform {
             let mut cache = self.display_cache.borrow_mut();
-            for id in transform.sources {
-                let Some(object) = document.object(*id).filter(|object| {
+            for id in transform
+                .sources
+                .iter()
+                .copied()
+                .chain(transform.grips.iter().map(|id| id.object))
+                .collect::<std::collections::BTreeSet<_>>()
+            {
+                let Some(object) = document.object(id).filter(|object| {
                     object.attributes().is_visible()
                         && document
                             .layer(object.attributes().layer_id())
@@ -420,6 +426,19 @@ impl Viewport {
                 }) else {
                     continue;
                 };
+                if transform.grips.iter().any(|grip| grip.object == id) {
+                    if let Some(posed) =
+                        self.grip_preview_geometry(object, transform, document.tolerance())
+                    {
+                        let posed = posed.bounds();
+                        if self.gpu_position(posed.min()).is_some()
+                            && self.gpu_position(posed.max()).is_some()
+                        {
+                            bounds = Some(bounds.map_or(posed, |b| b.union(posed).unwrap()));
+                        }
+                    }
+                    continue;
+                }
                 let source = cache.get(object, document.tolerance()).bounds();
                 let min = source.min().to_array();
                 let max = source.max().to_array();

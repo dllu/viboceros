@@ -30,7 +30,8 @@ impl Command for ScaleTwoDimensionalCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, SCALE_2D_USAGE)?;
+        let (arguments, selected) =
+            affine_transform_arguments(document, arguments, SCALE_2D_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_2D_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -91,7 +92,7 @@ impl Command for RotateCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, ROTATE_USAGE)?;
+        let (arguments, selected) = affine_transform_arguments(document, arguments, ROTATE_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, ROTATE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -153,7 +154,7 @@ impl Command for ShearCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, SHEAR_USAGE)?;
+        let (arguments, selected) = affine_transform_arguments(document, arguments, SHEAR_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, SHEAR_USAGE)?;
         let (origin, origin_consumed) = parse_point(&positional)?;
         let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;

@@ -36,6 +36,9 @@ Sixteen [control-point workflows](control-points.md) add curve, surface and
 mesh grips, mixed point objects, display commands and history. Both input
 families retain EndCommand and final script snapshots to distinguish getter
 cleanup from Undo/Redo; completed fits receive no idle cancellation tokens.
+Thirty-two [grip-transform workflows](grip-transforms.md) record partial control
+edits, copies, seam aliases, display and history. Thirty-one workflows replay
+through application input; the retained collapsed mesh-face case is incompatible.
 The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;

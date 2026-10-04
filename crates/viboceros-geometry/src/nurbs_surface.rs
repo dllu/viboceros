@@ -6,6 +6,7 @@ mod analytic_sphere;
 mod analytic_torus;
 mod closest_point;
 mod evaluate;
+mod grips;
 mod parameter_frame;
 mod parameters;
 mod wires;
@@ -2837,6 +2838,18 @@ impl NurbsSurface {
     /// periodic controls and exact clamped closing seams are represented by a
     /// single grip in each direction.
     pub fn extract_point_locations(&self) -> Vec<Point3> {
+        let [retained_u, retained_v] = self.grip_dimensions();
+        let mut points = Vec::with_capacity(retained_u * retained_v);
+        for u in 0..retained_u {
+            for v in 0..retained_v {
+                points.push(self.control_points[self.control_index(u, v)].point());
+            }
+        }
+        points
+    }
+
+    /// Unique control-net dimensions, with periodic and closing seams omitted.
+    pub fn grip_dimensions(&self) -> [usize; 2] {
         let periodic_u = self.is_periodic_u();
         let periodic_v = self.is_periodic_v();
         let repeated_u_seam = !periodic_u
@@ -2865,13 +2878,7 @@ impl NurbsSurface {
             } else {
                 usize::from(repeated_v_seam)
             };
-        let mut points = Vec::with_capacity(retained_u * retained_v);
-        for u in 0..retained_u {
-            for v in 0..retained_v {
-                points.push(self.control_points[self.control_index(u, v)].point());
-            }
-        }
-        points
+        [retained_u, retained_v]
     }
 
     /// Builds Rhino's cleaned polygon mesh through the Euclidean control net.

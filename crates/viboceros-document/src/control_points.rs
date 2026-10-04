@@ -2,6 +2,8 @@
 use super::*;
 use std::sync::Arc;
 use viboceros_geometry::Point3;
+mod geometry;
+mod transform;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ControlPointId {

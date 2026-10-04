@@ -52,8 +52,24 @@ impl Viewport {
         painter: &egui::Painter,
         rect: Rect,
         document: &Document,
+        preview: Option<super::object_preview::TransformedObjects<'_>>,
     ) {
-        for (_, point, selected) in document.control_points() {
+        let moving_ids = preview
+            .map(|p| {
+                p.grips
+                    .iter()
+                    .copied()
+                    .collect::<std::collections::BTreeSet<_>>()
+            })
+            .unwrap_or_default();
+        for (id, point, selected) in document.control_points() {
+            let moving = preview.filter(|_| moving_ids.contains(&id));
+            let posed = moving.and_then(|preview| preview.transform.transform_point(point).ok());
+            let point = if moving.is_some_and(|p| !p.copy) {
+                posed.unwrap_or(point)
+            } else {
+                point
+            };
             if let Some(screen) = self
                 .project_selection_point(point, rect)
                 .filter(|p| rect.contains(*p))
@@ -64,6 +80,17 @@ impl Viewport {
                     Color32::from_rgb(180, 75, 210)
                 };
                 painter.rect_filled(Rect::from_center_size(screen, Vec2::splat(6.)), 0., color);
+            }
+            if moving.is_some_and(|p| p.copy)
+                && let Some(screen) = posed
+                    .and_then(|p| self.project_selection_point(p, rect))
+                    .filter(|p| rect.contains(*p))
+            {
+                painter.rect_filled(
+                    Rect::from_center_size(screen, Vec2::splat(6.)),
+                    0.,
+                    SELECTED_COLOR,
+                );
             }
         }
     }

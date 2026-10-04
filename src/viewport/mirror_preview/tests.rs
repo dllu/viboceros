@@ -42,6 +42,7 @@ fn mirror_preview_follows_the_snapped_filtered_cursor_and_retains_it_outside_vie
         PointFilterSession::new(PointFilter::parse(".wx").unwrap(), WorldPlane::Top.frame());
     filter.offer_point(point(2., 0., 0.)).unwrap();
     let preview = MirrorPreview {
+        grips: &[],
         plane: MirrorPointPlane::TwoPoint {
             start: point(0., 0., 0.),
         },
@@ -97,6 +98,7 @@ fn mirror_preview_follows_the_snapped_filtered_cursor_and_retains_it_outside_vie
         .unwrap();
     assert_eq!(transform, expected);
     let retained = MirrorPreview {
+        grips: &[],
         last_transform: Some(transform),
         ..preview
     };

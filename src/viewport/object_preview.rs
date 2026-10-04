@@ -20,6 +20,8 @@ pub(super) enum ObjectPreview<'a> {
 #[derive(Clone, Copy, Debug)]
 pub(super) struct TransformedObjects<'a> {
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
+    pub copy: bool,
     pub reference_sources: bool,
     pub draw_source_faces: bool,
     pub reversing: bool,
@@ -36,6 +38,8 @@ impl<'a> TransformedObjects<'a> {
     ) -> Self {
         Self {
             sources,
+            grips: &[],
+            copy: false,
             reference_sources,
             draw_source_faces: false,
             reversing: true,

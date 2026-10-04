@@ -130,3 +130,117 @@ fn control_point_display_tracks_unit_rescaling_and_history() {
     document.redo().unwrap();
     assert_eq!(document.control_point_locations(id).unwrap(), scaled);
 }
+
+#[test]
+fn mixed_grip_transform_failure_preserves_geometry_picks_history_and_redo() {
+    let mut doc = Document::default();
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let point = doc.add_geometry(Geometry::Point(p(8., 0.))).unwrap();
+    let mesh = doc
+        .add_geometry(Geometry::Mesh(
+            TriangleMesh::try_new_faces(
+                vec![p(2., 0.), p(0., 2.), p(-2., 0.), p(0., -2.), p(2., 0.)],
+                vec![
+                    viboceros_geometry::MeshFace::Quad([0, 1, 2, 3]),
+                    viboceros_geometry::MeshFace::Triangle([4, 2, 3]),
+                ],
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    doc.add_geometry(Geometry::Point(p(9., 0.))).unwrap();
+    doc.undo().unwrap();
+    doc.enable_control_points([mesh]).unwrap();
+    let grips = [0, 2].map(|index| ControlPointId {
+        object: mesh,
+        index,
+    });
+    doc.select_control_points(grips, SelectionMode::Add)
+        .unwrap();
+    doc.select_objects_direct([point], SelectionMode::Add)
+        .unwrap();
+    let before = format!("{doc:?}");
+    let reflection =
+        AffineTransform3::try_nonuniform_scale(Point3::try_new(0., 0., 0.).unwrap(), [-1., 1., 1.])
+            .unwrap();
+    assert!(
+        doc.transform_objects_and_grips(
+            [point],
+            grips,
+            reflection,
+            false,
+            CopyGroupPolicy::Preserve
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    // Invalid frozen IDs fail before the valid ordinary peer is transformed.
+    assert!(
+        doc.transform_objects_and_grips(
+            [point],
+            [ControlPointId {
+                object: mesh,
+                index: 5
+            }],
+            AffineTransform3::identity(),
+            false,
+            CopyGroupPolicy::Preserve
+        )
+        .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().len(), 3);
+}
+
+#[test]
+fn partial_grip_edits_rollback_and_exchange_display_state_across_history() {
+    let mut doc = Document::default();
+    let curve = NurbsCurve::try_clamped_uniform(
+        2,
+        vec![
+            Point3::try_new(2., 0., 0.).unwrap(),
+            Point3::try_new(0., 2., 0.).unwrap(),
+            Point3::try_new(-2., 0., 0.).unwrap(),
+            Point3::try_new(0., -2., 0.).unwrap(),
+        ],
+    )
+    .unwrap();
+    let id = doc.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    doc.enable_control_points([id]).unwrap();
+    let pick = ControlPointId {
+        object: id,
+        index: 0,
+    };
+    doc.select_control_points([pick], SelectionMode::Add)
+        .unwrap();
+    let map = AffineTransform3::from_translation(
+        viboceros_geometry::Vector3::try_new(1., 2., 3.).unwrap(),
+    );
+    let before = format!("{doc:?}");
+    doc.begin_transaction("Rejected grip edit").unwrap();
+    doc.transform_objects_and_grips([], [pick], map, false, CopyGroupPolicy::Preserve)
+        .unwrap();
+    doc.rollback_transaction().unwrap();
+    assert_eq!(format!("{doc:?}"), before);
+    doc.transform_objects_and_grips([], [pick], map, false, CopyGroupPolicy::Preserve)
+        .unwrap();
+    let changed = doc.object(id).unwrap().geometry().clone();
+    doc.disable_control_points();
+    doc.undo().unwrap();
+    assert_eq!(
+        doc.selected_control_points()
+            .map(|(id, _)| id)
+            .collect::<Vec<_>>(),
+        [pick]
+    );
+    doc.redo().unwrap();
+    assert_eq!(doc.object(id).unwrap().geometry(), &changed);
+    assert!(doc.control_point_locations(id).is_none());
+    // Another replay exchanges both states, including the off state on Redo.
+    doc.undo().unwrap();
+    assert_eq!(doc.selected_control_points().count(), 1);
+    doc.redo().unwrap();
+    assert!(doc.control_point_locations(id).is_none());
+}

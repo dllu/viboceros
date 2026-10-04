@@ -40,8 +40,9 @@ The captures retain both the Circle EndCommand state and the final macro state:
 postselection cleanup runs between them. Completed fits receive no trailing
 Escape tokens, which would otherwise interfere with display and selection.
 
-This adds display/picking and Circle input. Editing grips with transforms or
-Delete, native overlap menus, complete periodic/closed/composite grip behavior,
+[Affine grip transforms](grip-transforms.md) add partial edits, copies and
+display-state history with bounded closed/periodic seam support. Delete grips,
+native overlap menus, complete periodic/closed/composite grip behavior,
 idle Escape display cleanup, arbitrary source replacements, and large control-net display performance need
 further implementation or verification. Oriented Circle frames remain a
 [separate compatibility gap](circle-fit-input.md).

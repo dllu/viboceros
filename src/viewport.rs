@@ -74,6 +74,7 @@ mod raster_tests;
 use camera::zoom_pan;
 mod component_picking;
 mod control_points;
+mod grip_preview;
 pub use control_points::ControlPointSelection;
 mod curve_sampling;
 mod edge_picking;
@@ -480,6 +481,7 @@ pub struct SelectionWindow {
 
 pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
+    grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
     cached_clipping: Option<clipping::ClipRefreshKey>,
     edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
@@ -536,6 +538,7 @@ impl Viewport {
     pub fn new(kind: ViewKind) -> Self {
         Self {
             display_cache: Default::default(),
+            grip_preview_cache: Default::default(),
             cached_scene: Default::default(),
             cached_clipping: None,
             edge_snap_cache: Default::default(),
@@ -1548,10 +1551,10 @@ impl Viewport {
         }
         let (mirror_preview, mirror_preview_update) =
             input.mirror_preview.map_or((None, None), |preview| {
-                preview.resolve(
+                self.resolve_mirror_preview(
+                    preview,
                     drafting_cursor.map(|cursor| cursor.point),
-                    self.construction_plane(),
-                    document.tolerance(),
+                    document,
                 )
             });
         let (translation_preview, translation_preview_update) =
@@ -1741,7 +1744,15 @@ impl Viewport {
             object_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
-        self.paint_control_points(&painter, rect, document);
+        self.paint_control_points(
+            &painter,
+            rect,
+            document,
+            match object_preview {
+                Some(object_preview::ObjectPreview::Affine(map)) => Some(map),
+                _ => None,
+            },
+        );
         if let Some((filter, _)) = component_hover_mode
             && let Some(pointer) = response.hover_pos()
         {

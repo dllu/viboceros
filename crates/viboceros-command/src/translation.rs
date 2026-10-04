@@ -219,7 +219,7 @@ impl Command for MoveCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (mut arguments, sources) = transform_arguments(document, arguments, MOVE_USAGE)?;
+        let (mut arguments, sources) = affine_transform_arguments(document, arguments, MOVE_USAGE)?;
         let normal = normal::take_normal_arguments(&mut arguments, self.ignore_trims.get())?;
         let ignore_trims = normal.map(|(_, _, ignore)| ignore);
         let vertical = strip_vertical(&mut arguments, MOVE_USAGE)?;
@@ -296,7 +296,8 @@ impl Command for CopyCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (mut arguments, mut sources) = transform_arguments(document, arguments, COPY_USAGE)?;
+        let (mut arguments, mut sources) =
+            affine_transform_arguments(document, arguments, COPY_USAGE)?;
         sources.release_selection_on_replay();
         if arguments.len() == 1 && option_name_eq(arguments[0], "InPlace") {
             let (_, copied) = apply_transform_with_renewal(

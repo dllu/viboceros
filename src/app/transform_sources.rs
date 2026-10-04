@@ -3,6 +3,43 @@ use super::*;
 use object_selection::{ObjectPromptPhase, PendingObjectCommand};
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 
+pub(super) fn allows_grips(command: &str) -> bool {
+    matches!(
+        command,
+        "Move"
+            | "Copy"
+            | "Scale"
+            | "Scale1D"
+            | "Scale2D"
+            | "Rotate"
+            | "Rotate3D"
+            | "Mirror"
+            | "Shear"
+    )
+}
+
+pub(super) fn grip_argument(
+    grips: &[viboceros_document::ControlPointId],
+    postselected: bool,
+) -> String {
+    if grips.is_empty() {
+        return String::new();
+    }
+    format!(
+        "{}={}",
+        if postselected {
+            "PickedGripSources"
+        } else {
+            "GripSources"
+        },
+        grips
+            .iter()
+            .map(|id| format!("{}:{}", id.object, id.index))
+            .collect::<Vec<_>>()
+            .join(",")
+    )
+}
+
 impl VibocerosApp {
     pub(super) fn start_transform_source_prompt(&mut self, command: &'static str) {
         self.object_prompt = Some(PendingObjectCommand {
@@ -45,7 +82,10 @@ impl VibocerosApp {
         }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             let sources = self.document.selected_object_ids().collect::<Vec<_>>();
-            if sources.is_empty() {
+            if sources.is_empty()
+                && !(allows_grips(command)
+                    && self.document.selected_control_points().next().is_some())
+            {
                 self.cancel_object_prompt(true);
             } else {
                 // Accept GetObject picks without invoking cancellation's
@@ -53,6 +93,23 @@ impl VibocerosApp {
                 self.object_prompt = None;
                 self.try_start_interactive_command_with_sources(command, Some(sources));
             }
+            self.command_input.clear();
+            return true;
+        }
+        if allows_grips(command) && word.eq_ignore_ascii_case("SelAll") {
+            let ids = self
+                .document
+                .selectable_objects()
+                .filter(|object| self.document.control_point_locations(object.id()).is_none())
+                .map(|object| object.id())
+                .collect::<Vec<_>>();
+            self.select_prompt_objects(ids, SelectionMode::Add);
+            self.document.select_all_control_points();
+            self.command_input.clear();
+            return true;
+        }
+        if allows_grips(command) && word.eq_ignore_ascii_case("SelNone") {
+            self.document.clear_selection();
             self.command_input.clear();
             return true;
         }

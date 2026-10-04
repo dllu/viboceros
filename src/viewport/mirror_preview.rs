@@ -8,6 +8,7 @@ use viboceros_geometry::AffineTransform3;
 pub(crate) struct MirrorPreview<'a> {
     pub plane: MirrorPointPlane,
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
     pub copy: bool,
     pub last_transform: Option<AffineTransform3>,
 }
@@ -33,14 +34,54 @@ impl<'a> MirrorPreview<'a> {
         let transform = update.unwrap_or(self.last_transform);
         (
             transform.map(|transform| {
-                TransformedObjects::reflection(
+                let mut objects = TransformedObjects::reflection(
                     self.sources,
                     !self.copy || matches!(self.plane, MirrorPointPlane::ThreePoint { .. }),
                     transform,
-                )
+                );
+                objects.grips = self.grips;
+                objects.copy = self.copy;
+                objects
             }),
             update,
         )
+    }
+}
+
+impl Viewport {
+    pub(super) fn resolve_mirror_preview<'a>(
+        &self,
+        preview: MirrorPreview<'a>,
+        cursor: Option<Point3>,
+        document: &Document,
+    ) -> (
+        Option<TransformedObjects<'a>>,
+        Option<Option<AffineTransform3>>,
+    ) {
+        let resolved = preview.resolve(cursor, self.construction_plane(), document.tolerance());
+        if let Some(objects) = resolved.0
+            && resolved.1.is_some()
+        {
+            let owners = objects
+                .grips
+                .iter()
+                .map(|id| id.object)
+                .collect::<std::collections::BTreeSet<_>>();
+            if !owners.iter().all(|id| {
+                document.object(*id).is_some_and(|object| {
+                    self.grip_preview_geometry(object, objects, document.tolerance())
+                        .is_some()
+                })
+            }) {
+                return (
+                    preview
+                        .resolve(None, self.construction_plane(), document.tolerance())
+                        .0,
+                    Some(preview.last_transform),
+                );
+            }
+        }
+        resolved
     }
 }
 

@@ -70,6 +70,7 @@ fn translation_preview_uses_snaps_filters_and_retains_geometry_outside_viewports
     let context = egui::Context::default();
     let mut view = Viewport::new(ViewKind::Top);
     let preview = TranslationPreview {
+        grips: &[],
         sources: &[id],
         base: point(3., 0., 0.),
         copy: true,
@@ -122,6 +123,7 @@ fn translation_preview_uses_snaps_filters_and_retains_geometry_outside_viewports
         point(2., 5., 0.)
     );
     let retained = TranslationPreview {
+        grips: &[],
         last_transform: Some(map),
         ..preview
     };
@@ -164,6 +166,7 @@ fn translation_preview_retains_the_whole_batch_when_translation_or_geometry_over
     let view = Viewport::new(ViewKind::Top);
     let map = AffineTransform3::from_translation(Vector3::try_new(2., 3., 4.).unwrap());
     let preview = TranslationPreview {
+        grips: &[],
         sources: &[finite, large],
         base: point(0., 0., 0.),
         copy: false,
@@ -175,6 +178,7 @@ fn translation_preview_retains_the_whole_batch_when_translation_or_geometry_over
     assert_eq!(objects.unwrap().transform, map);
     assert_eq!(update, Some(Some(map)));
     let preview = TranslationPreview {
+        grips: &[],
         last_transform: None,
         ..preview
     };
@@ -183,6 +187,7 @@ fn translation_preview_retains_the_whole_batch_when_translation_or_geometry_over
     assert!(objects.is_none());
     assert_eq!(update, Some(None));
     let preview = TranslationPreview {
+        grips: &[],
         base: point(-1e308, 0., 0.),
         last_transform: Some(map),
         ..preview

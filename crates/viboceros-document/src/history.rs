@@ -54,6 +54,11 @@ impl Default for History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    /// Grip edits exchange display and picking together with geometry.
+    ControlPointsChanged {
+        id: ObjectId,
+        stored: Option<super::control_points::ControlPoints>,
+    },
     /// Command-first picks are transient even for unchanged peers.
     SelectionReleasedOnReplay {
         ids: Vec<ObjectId>,
@@ -148,6 +153,9 @@ pub(super) enum Edit {
 impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ControlPointsChanged { id, stored } => {
+                exchange_control_points(document, *id, stored)
+            }
             Self::SelectionReleasedOnReplay { ids } => {
                 for id in ids {
                     document.selection.remove(id);
@@ -262,6 +270,9 @@ impl Edit {
 
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
+            Self::ControlPointsChanged { id, stored } => {
+                exchange_control_points(document, *id, stored)
+            }
             Self::SelectionReleasedOnReplay { ids } => {
                 for id in ids {
                     document.selection.remove(id);
@@ -383,6 +394,18 @@ impl Edit {
 
 // Selection belongs to the stored object state. Exchange it on every replay:
 // users may change selection between Undo and Redo. Unrelated IDs are untouched.
+fn exchange_control_points(
+    document: &mut Document,
+    id: ObjectId,
+    stored: &mut Option<super::control_points::ControlPoints>,
+) {
+    let current = document.control_points.remove(&id);
+    if let Some(state) = stored.take() {
+        document.control_points.insert(id, state);
+    }
+    *stored = current;
+}
+
 fn exchange_selection(document: &mut Document, id: ObjectId, stored: &mut bool, exists: bool) {
     let current = document.selection.contains(&id);
     if *stored && exists {

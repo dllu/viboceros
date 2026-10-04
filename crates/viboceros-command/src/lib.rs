@@ -9,7 +9,9 @@ mod arrays;
 mod history_policy;
 pub mod translation;
 pub use history_policy::CommandHistoryPolicy;
-use history_policy::{apply_transform_with_renewal, transform_arguments};
+use history_policy::{
+    affine_transform_arguments, apply_transform_with_renewal, transform_arguments,
+};
 use translation::{CopyCommand, MoveCommand};
 pub mod bend;
 pub mod maelstrom;
@@ -16510,7 +16512,7 @@ impl Command for ScaleCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, SCALE_USAGE)?;
+        let (arguments, selected) = affine_transform_arguments(document, arguments, SCALE_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -16557,7 +16559,8 @@ impl Command for ScaleOneDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, SCALE_1D_USAGE)?;
+        let (arguments, selected) =
+            affine_transform_arguments(document, arguments, SCALE_1D_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, SCALE_1D_USAGE)?;
         let (origin, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
@@ -16662,7 +16665,8 @@ impl Command for RotateThreeDimensionalCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, ROTATE_3D_USAGE)?;
+        let (arguments, selected) =
+            affine_transform_arguments(document, arguments, ROTATE_3D_USAGE)?;
         let (positional, copy) = parse_transform_copy_arguments(&arguments, ROTATE_3D_USAGE)?;
         let (axis_start, start_consumed) = parse_point(&positional)?;
         let (axis_end, end_consumed) = parse_point(&positional[start_consumed..])?;

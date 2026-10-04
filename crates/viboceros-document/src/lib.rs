@@ -1701,6 +1701,7 @@ impl Document {
                 stored_objects.iter().map(|object| object.id).collect()
             }
             Edit::SelectionReleasedOnReplay { .. }
+            | Edit::ControlPointsChanged { .. }
             | Edit::TransformSelectionReleasedOnReplay { .. }
             | Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }

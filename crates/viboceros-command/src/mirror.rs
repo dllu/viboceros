@@ -191,7 +191,7 @@ impl Command for MirrorCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (arguments, selected) = transform_arguments(document, arguments, USAGE)?;
+        let (arguments, selected) = affine_transform_arguments(document, arguments, USAGE)?;
         let mut positional = Vec::new();
         let mut copy = None;
         for argument in &arguments {

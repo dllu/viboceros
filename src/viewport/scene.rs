@@ -330,8 +330,14 @@ impl Viewport {
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
-        let sources =
-            transform.map(|preview| preview.sources.iter().copied().collect::<HashSet<_>>());
+        let sources = transform.map(|preview| {
+            preview
+                .sources
+                .iter()
+                .copied()
+                .chain(preview.grips.iter().map(|id| id.object))
+                .collect::<HashSet<_>>()
+        });
         let mut cache = self.display_cache.borrow_mut();
         for object in document.objects() {
             let attributes = object.attributes();
@@ -401,8 +407,20 @@ impl Viewport {
             };
             if transformed {
                 let transform = transform.unwrap();
+                let partial = transform.grips.iter().any(|id| id.object == object.id());
+                let posed = if partial {
+                    let Some(geometry) =
+                        self.grip_preview_geometry(object, transform, document.tolerance())
+                    else {
+                        objects.push(display);
+                        continue;
+                    };
+                    geometry
+                } else {
+                    Rc::clone(&display.geometry)
+                };
                 objects.push(DisplayObject {
-                    geometry: Rc::clone(&display.geometry),
+                    geometry: posed,
                     color: SELECTED_COLOR,
                     face_color: display.face_color,
                     draw_faces: true,
@@ -411,8 +429,8 @@ impl Viewport {
                     face_member_colors_enabled: display.face_member_colors_enabled,
                     width: width + 1.5,
                     point_radius: 3.5,
-                    transform: Some(transform.transform),
-                    reversing: transform.reversing,
+                    transform: (!partial).then_some(transform.transform),
+                    reversing: !partial && transform.reversing,
                     overlay: false,
                 });
                 display.draw_faces = transform.draw_source_faces;
@@ -450,6 +468,9 @@ impl Viewport {
         }
         objects.sort_by_key(|object| object.highlighted);
         cache.retain_visible(&visible);
+        self.grip_preview_cache
+            .borrow_mut()
+            .retain_visible(&visible);
         drop(cache);
         let key = SceneKey {
             camera: self.camera_snapshot(),
@@ -1041,3 +1062,6 @@ mod tests {
 
 #[cfg(test)]
 mod affine_tests;
+
+#[cfg(test)]
+mod grip_tests;

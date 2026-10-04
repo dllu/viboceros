@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleGripTransform_20261004",
+  "native_recipes": 32,
+  "positive_workflows": 31,
+  "application_replays": 62,
+  "known_incompatible_ids": [
+    "grip-transform-13"
+  ],
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public command and SDK outputs were inspected in an empty owned Rhino document on private Xvfb.",
+    "Captures retain EndCommand, post-macro, optional PointsOff, Undo and Redo; completed macros have no idle cancellation tokens.",
+    "Twelve fixed source kinds cover clamped, rational, closed and periodic curves, line, polyline, circle, arc, rational and closed surfaces, and independent coincident mesh vertices.",
+    "Selected grips take precedence over selected parents; ordinary objects and grip owners can be edited in one batch.",
+    "Copy duplicates the entire owner with only selected controls changed, retains original and copied grip picks, and retains preselected ordinary object peers on history replay.",
+    "Grip replacement history exchanges display and picks: PointsOff after Move restores displayed picks on Undo and an off state on Redo. Copy leaves the source off and restores its copy off.",
+    "Application tests replay 31 workflows through direct and incremental paths, comparing complete curve/surface/mesh definitions, object order, selection, display and history at absolute numeric tolerance 1e-9.",
+    "Native grip-transform-13 retains a collapsed triangle after partial Mirror. The kernel currently rejects this face; tests assert atomic rejection and retain the native witness unchanged.",
+    "Endpoint-closing Move and Copy remove the newly duplicated final grip and clear its vanished selection index; Undo restores the open curve and its picked endpoint.",
+    "Preview caching, rendering in three display modes, mouse grip selection, automatic Scale center and repeated Copy are independent implementation regressions. Native mouse-preview fidelity, large control-net performance, grouped grip copy policy, arbitrary trimmed/composite edits, other transform commands and full parity are unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/fixtures/grip_transform.json": "a7a596d32e567184d4f9c7b4117975e785598994ff4c46f4f53b69e4346c175c",
+    "tools/rhino_oracle/observations/grip_transform.json": "97bc5ca97cb05e449f956d6dc51302b90f33d9a83fb47c14c0f490e50ab40179",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  },
+  "capture_batches": [
+    {
+      "ids": "grip-transform-0 through grip-transform-29",
+      "recipes": 30
+    },
+    {
+      "ids": "grip-transform-30 and grip-transform-31",
+      "recipes": 2
+    }
+  ]
+}

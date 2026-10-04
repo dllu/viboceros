@@ -1,0 +1,430 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-0",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-1",
+      "source": "rational",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-2",
+      "source": "closed",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-3",
+      "source": "periodic",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-4",
+      "source": "line",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-5",
+      "source": "polyline",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-6",
+      "source": "circle",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-7",
+      "source": "arc",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-8",
+      "source": "surface",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-9",
+      "source": "surface_closed",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-10",
+      "source": "mesh",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-11",
+      "source": "rational",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "rotate",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-12",
+      "source": "surface",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "scale",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-13",
+      "source": "mesh",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "mirror",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-14",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-15",
+      "source": "surface",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-16",
+      "source": "mesh",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-17",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-18",
+      "source": "surface",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-19",
+      "source": "mesh",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-20",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": true,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-21",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "zero",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-22",
+      "source": "mesh",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "zero",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-23",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": true,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-24",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "copy",
+      "off": true,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-25",
+      "source": "mesh",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": true,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-26",
+      "source": "curve",
+      "selected": [],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "all"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-27",
+      "source": "mesh",
+      "selected": [],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "all"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-28",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-29",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": true,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-30",
+      "source": "closing",
+      "selected": [
+        3
+      ],
+      "parent": false,
+      "point": false,
+      "command": "move",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "grip-transform-31",
+      "source": "closing",
+      "selected": [
+        3
+      ],
+      "parent": false,
+      "point": false,
+      "command": "copy",
+      "off": false,
+      "inputs": "auto"
+    }
+  ]
+}

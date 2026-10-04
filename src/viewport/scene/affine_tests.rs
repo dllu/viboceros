@@ -44,6 +44,8 @@ fn affine_preview_reuses_display_geometry_across_deformation_and_four_views() {
         .enumerate()
         {
             let preview = Some(TransformedObjects {
+                grips: &[],
+                copy: false,
                 sources: &sources,
                 reference_sources: false,
                 draw_source_faces: false,
@@ -113,6 +115,8 @@ fn affine_preview_face_normals_match_independently_deformed_meshes() {
     ] {
         let map = AffineTransform3::try_new(rows, Vector3::try_new(0., 0., 0.).unwrap()).unwrap();
         let preview = Some(TransformedObjects {
+            grips: &[],
+            copy: false,
             sources: &[id],
             reference_sources: true,
             draw_source_faces: false,
@@ -207,6 +211,7 @@ fn gpu_affine_preview_renders_deformed_faces_points_and_source_styles() {
                     view.display_mode = mode;
                     let sources = [id, face];
                     let preview = AffinePreview {
+                        grips: &[],
                         sources: &sources,
                         definition,
                         frame: None,

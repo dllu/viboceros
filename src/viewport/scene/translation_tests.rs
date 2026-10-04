@@ -36,6 +36,7 @@ fn translation_preview_shares_display_geometry_across_motion_and_views() {
             .enumerate()
         {
             let preview = TranslationPreview {
+                grips: &[],
                 sources: &ids,
                 base: point(0., 0., 0.),
                 copy: true,
@@ -101,6 +102,7 @@ fn translation_preview_preserves_mesh_normals_colors_and_committed_copy_faces() 
     view.display_mode = DisplayMode::Shaded;
     let sources = [id];
     let preview = TranslationPreview {
+        grips: &[],
         sources: &sources,
         base: point(0., 0., 0.),
         copy: false,
@@ -166,6 +168,7 @@ fn translation_preview_expands_clipping_and_restores_it_without_view_history() {
     let original = (view.frustum_near, view.frustum_far);
     let sources = [id];
     let preview = TranslationPreview {
+        grips: &[],
         sources: &sources,
         base: point(0., 0., 0.),
         copy: false,
@@ -204,6 +207,7 @@ fn translation_preview_highlights_normal_reference_without_selecting_or_transfor
     let view = Viewport::new(ViewKind::Top);
     let sources = [id];
     let preview = TranslationPreview {
+        grips: &[],
         sources: &sources,
         base: point(3., 0., 0.),
         copy: false,
@@ -265,6 +269,7 @@ fn gpu_translation_preview_renders_source_wires_target_points_and_material_faces
                 view.display_mode = mode;
                 let sources = [id, face];
                 let preview = TranslationPreview {
+                    grips: &[],
                     sources: &sources,
                     base: point(0., 0., 0.),
                     copy,

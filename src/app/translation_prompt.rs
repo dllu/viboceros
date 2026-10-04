@@ -6,6 +6,7 @@ use viboceros_document::HistoryGroup;
 pub(super) struct TranslationSession {
     group: HistoryGroup,
     sources: Vec<ObjectId>,
+    grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     copy: bool,
     pub(super) vertical: bool,
@@ -19,6 +20,7 @@ impl TranslationSession {
     pub(super) fn preview(&self) -> Option<crate::viewport::TranslationPreview<'_>> {
         Some(crate::viewport::TranslationPreview {
             sources: &self.sources,
+            grips: &self.grips,
             base: self.placement?.base(),
             copy: self.copy,
             reference: self
@@ -44,19 +46,25 @@ impl TranslationSession {
         Some(constraint)
     }
     fn source_argument(&self) -> String {
-        format!(
-            "{}={}",
-            if self.postselected {
-                "PickedSources"
-            } else {
-                "Sources"
-            },
-            self.sources
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join(",")
-        )
+        let objects = if self.sources.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "{}={}",
+                if self.postselected {
+                    "PickedSources"
+                } else {
+                    "Sources"
+                },
+                self.sources
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(",")
+            )
+        };
+        let grips = super::transform_sources::grip_argument(&self.grips, self.postselected);
+        format!("{objects} {grips}")
     }
 }
 
@@ -143,6 +151,11 @@ impl VibocerosApp {
         self.translation_session = Some(TranslationSession {
             group,
             sources,
+            grips: self
+                .document
+                .selected_control_points()
+                .map(|(id, _)| id)
+                .collect(),
             postselected,
             copy: matches!(command, InteractiveCommand::Copy { .. }),
             vertical,

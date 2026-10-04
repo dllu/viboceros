@@ -39,6 +39,7 @@ fn mirror_preview_reuses_samples_meshes_and_normals_across_mouse_moves_and_views
             .enumerate()
         {
             let preview = MirrorPreview {
+                grips: &[],
                 sources: &ids,
                 copy: true,
                 plane: MirrorPointPlane::TwoPoint {
@@ -235,6 +236,7 @@ fn gpu_mirror_preview_renders_selected_reflections_source_wires_and_display_mode
                         }
                     };
                     let input = MirrorPreview {
+                        grips: &[],
                         plane,
                         copy,
                         sources: &[id, face],

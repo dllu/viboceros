@@ -228,6 +228,9 @@ impl DisplayGeometry {
 impl Viewport {
     pub(crate) fn standard_views() -> [Self; 4] {
         let cache = Rc::new(RefCell::new(DisplayCache::default()));
+        let grips = Rc::new(RefCell::new(
+            super::grip_preview::GripPreviewCache::default(),
+        ));
         [
             ViewKind::Top,
             ViewKind::Perspective,
@@ -237,6 +240,7 @@ impl Viewport {
         .map(|kind| {
             let mut view = Self::new(kind);
             view.display_cache = Rc::clone(&cache);
+            view.grip_preview_cache = Rc::clone(&grips);
             view
         })
     }

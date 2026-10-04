@@ -235,7 +235,7 @@ fn circle_fit_grips_replay_sixteen_native_input_and_history_workflows() {
     }
 }
 
-fn frame(
+pub(super) fn frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,
@@ -273,7 +273,7 @@ fn frame(
         .drop_without_applying_deltas();
     (output, rect)
 }
-fn button(pos: egui::Pos2, pressed: bool, modifiers: egui::Modifiers) -> egui::Event {
+pub(super) fn button(pos: egui::Pos2, pressed: bool, modifiers: egui::Modifiers) -> egui::Event {
     egui::Event::PointerButton {
         pos,
         pressed,

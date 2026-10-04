@@ -7,6 +7,10 @@ Mirror initially defaults to Copy=Yes; use Copy=No to transform originals in pla
 
 ## Interactive transforms
 
+Displayed selected [control points](../grip-transforms.md) can be transformed
+alongside ordinary objects; a selected parent uses its selected grips as the
+edit definition. Copy duplicates the owner with only those controls changed.
+
 [Bend](bend.md) deforms objects along a circular spine, with through-point or
 fixed-angle construction, rigid groups and repeated copies.
 [Taper](taper.md) deforms radial distances along an axis, with flat direction

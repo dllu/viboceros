@@ -4752,6 +4752,8 @@ impl VibocerosApp {
                     | InteractiveCommand::Maelstrom { .. }
             ))
             && self.document.selected_object_count() == 0
+            && !(transform_sources::allows_grips(command.name())
+                && self.document.selected_control_points().next().is_some())
         {
             self.start_transform_source_prompt(command.name());
             if has_start_arguments {
@@ -4812,6 +4814,8 @@ impl VibocerosApp {
                 | InteractiveCommand::TrimCurve
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
+            && !(transform_sources::allows_grips(command.name())
+                && self.document.selected_control_points().next().is_some())
         {
             self.push_log("Error: no objects are selected".to_owned());
             return true;
@@ -8074,10 +8078,12 @@ impl VibocerosApp {
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
         if let Some(selection) = output.control_point_selection.take() {
-            let fit_prompt = self
-                .object_prompt
-                .as_ref()
-                .is_some_and(|prompt| prompt.description.command == "Circle FitPoints");
+            let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
+                prompt.description.command == "Circle FitPoints"
+                    || (prompt.description.workflow
+                        == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
+                        && transform_sources::allows_grips(prompt.description.command))
+            });
             let mode = if fit_prompt && selection.mode == SelectionMode::Replace {
                 SelectionMode::Add
             } else {
@@ -8222,7 +8228,10 @@ impl VibocerosApp {
             && self.set_view_prompt.is_none()
             && (self.component_preselection_available()
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
-                    prompt.description.command == "Circle FitPoints"
+                    (prompt.description.command == "Circle FitPoints"
+                        || (prompt.description.workflow
+                            == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
+                            && transform_sources::allows_grips(prompt.description.command)))
                         && prompt.phase == object_selection::ObjectPromptPhase::Selecting
                 }))
     }
@@ -9145,6 +9154,7 @@ mod tests {
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;
+    mod grip_transform;
     mod group_prompt;
     mod interface;
     mod intersect_two_sets;

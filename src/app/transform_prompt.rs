@@ -8,6 +8,7 @@ pub(super) struct TransformSession {
     applied: bool,
     factor: Option<f64>,
     sources: Vec<ObjectId>,
+    grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     preview: Option<viboceros_geometry::AffineTransform3>,
 }
@@ -60,6 +61,7 @@ impl TransformSession {
         };
         Some(crate::viewport::AffinePreview {
             sources: &self.sources,
+            grips: &self.grips,
             definition,
             frame: (!matches!(definition, PointTransform::Scale2D { .. })).then_some(plane),
             copy: self.copy,
@@ -83,6 +85,7 @@ impl TransformSession {
         Some(crate::viewport::MirrorPreview {
             plane,
             sources: &self.sources,
+            grips: &self.grips,
             copy: self.copy,
             last_transform: self.preview,
         })
@@ -187,6 +190,11 @@ impl VibocerosApp {
                 self.transform_session = Some(TransformSession {
                     group,
                     copy,
+                    grips: self
+                        .document
+                        .selected_control_points()
+                        .map(|(id, _)| id)
+                        .collect(),
                     applied: false,
                     factor: None,
                     postselected: picked_sources.is_some(),
@@ -224,7 +232,11 @@ impl VibocerosApp {
             return false;
         };
         let display_input = format!("{input} Copy={}", if session.copy { "Yes" } else { "No" });
-        let input = if session.postselected || continuation == InteractiveCommand::MirrorObject {
+        let input = if !session.sources.is_empty()
+            && (session.postselected
+                || continuation == InteractiveCommand::MirrorObject
+                || !session.grips.is_empty())
+        {
             format!(
                 "{display_input} {}={}",
                 if session.postselected {
@@ -242,6 +254,10 @@ impl VibocerosApp {
         } else {
             display_input.clone()
         };
+        let input = format!(
+            "{input} {}",
+            super::transform_sources::grip_argument(&session.grips, session.postselected)
+        );
         let context = viboceros_command::CommandContext {
             construction_plane: if matches!(
                 continuation,

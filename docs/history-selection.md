@@ -39,6 +39,12 @@ Internal eligibility pruning never counts as a new pick. A retained 39-step
 native workflow checks this behavior alongside command option memory and
 accepted Copy cancellation.
 
+[Grip transforms](grip-transforms.md) also exchange display and selected-index
+state for replaced owners. PointsOff after Move therefore restores displayed
+picks on Undo and an off display on Redo. Copy exchanges the copied owner state
+while preserving the original; preselected grip Copy retains ordinary selected
+peers. A zero Move adds no model history entry.
+
 The selection at the actual object edit matters:
 
 | Command | Source after Undo | Output after Redo |

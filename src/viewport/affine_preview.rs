@@ -7,6 +7,7 @@ use viboceros_geometry::AffineTransform3;
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct AffinePreview<'a> {
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
     pub definition: PointTransform,
     /// Scale2D uses the destination viewport; the other planar transforms retain their start plane.
     pub frame: Option<Frame3>,
@@ -42,6 +43,8 @@ impl<'a> AffinePreview<'a> {
         (
             transform.map(|transform| TransformedObjects {
                 sources: self.sources,
+                grips: self.grips,
+                copy: self.copy,
                 reference_sources: !self.copy,
                 draw_source_faces: false,
                 reversing: !matches!(
@@ -71,29 +74,45 @@ impl Viewport {
             && resolved.1.is_some()
         {
             let mut cache = self.display_cache.borrow_mut();
-            let valid = objects.sources.iter().all(|id| {
-                let Some(object) = document.object(*id) else {
-                    return false;
-                };
-                let bounds = cache.get(object, document.tolerance()).bounds();
-                let lo = bounds.min().to_array();
-                let hi = bounds.max().to_array();
-                (0..8).all(|bits| {
-                    objects
-                        .transform
-                        .transform_point(
-                            Point3::try_from(std::array::from_fn(|axis| {
-                                if bits & (1 << axis) == 0 {
-                                    lo[axis]
-                                } else {
-                                    hi[axis]
-                                }
-                            }))
-                            .unwrap(),
-                        )
-                        .is_ok()
+            let valid = objects
+                .grips
+                .iter()
+                .map(|id| id.object)
+                .collect::<std::collections::BTreeSet<_>>()
+                .iter()
+                .all(|id| {
+                    document.object(*id).is_some_and(|object| {
+                        self.grip_preview_geometry(object, objects, document.tolerance())
+                            .is_some()
+                    })
                 })
-            });
+                && objects
+                    .sources
+                    .iter()
+                    .filter(|id| !objects.grips.iter().any(|p| p.object == **id))
+                    .all(|id| {
+                        let Some(object) = document.object(*id) else {
+                            return false;
+                        };
+                        let bounds = cache.get(object, document.tolerance()).bounds();
+                        let lo = bounds.min().to_array();
+                        let hi = bounds.max().to_array();
+                        (0..8).all(|bits| {
+                            objects
+                                .transform
+                                .transform_point(
+                                    Point3::try_from(std::array::from_fn(|axis| {
+                                        if bits & (1 << axis) == 0 {
+                                            lo[axis]
+                                        } else {
+                                            hi[axis]
+                                        }
+                                    }))
+                                    .unwrap(),
+                                )
+                                .is_ok()
+                        })
+                    });
             if !valid {
                 return (
                     preview

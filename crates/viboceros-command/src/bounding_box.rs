@@ -11,11 +11,27 @@ pub fn selected_bounding_box_center(
     document: &Document,
     coordinates: Frame3,
 ) -> Result<Point3, CommandError> {
-    if document.selected_objects().next().is_none() {
+    let grips = document.selected_control_points().collect::<Vec<_>>();
+    let owners = grips
+        .iter()
+        .map(|(id, _)| id.object)
+        .collect::<std::collections::BTreeSet<_>>();
+    let grip_geometry = grips
+        .into_iter()
+        .map(|(_, p)| Geometry::Point(p))
+        .collect::<Vec<_>>();
+    let objects = || {
+        document
+            .selected_objects()
+            .filter(|object| !owners.contains(&object.id()))
+    };
+    if objects().next().is_none() && grip_geometry.is_empty() {
         return Err(CommandError::NoObjectsSelected);
     }
     let bounds = oriented_bounds(
-        document.selected_objects().map(|object| object.geometry()),
+        objects()
+            .map(|object| object.geometry())
+            .chain(grip_geometry.iter()),
         coordinates,
         document.tolerance(),
     )?;

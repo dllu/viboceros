@@ -6,6 +6,7 @@ use viboceros_geometry::AffineTransform3;
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct TranslationPreview<'a> {
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
     pub base: Point3,
     pub copy: bool,
     pub reference: Option<ObjectId>,
@@ -31,6 +32,8 @@ impl<'a> TranslationPreview<'a> {
         (
             transform.map(|transform| TransformedObjects {
                 sources: self.sources,
+                grips: self.grips,
+                copy: self.copy,
                 reference_sources: !self.copy,
                 draw_source_faces: false,
                 reversing: false,
@@ -57,14 +60,30 @@ impl Viewport {
             && resolved.1.is_some()
         {
             let mut cache = self.display_cache.borrow_mut();
-            let valid = objects.sources.iter().all(|id| {
-                let Some(object) = document.object(*id) else {
-                    return false;
-                };
-                let bounds = cache.get(object, document.tolerance()).bounds();
-                objects.transform.transform_point(bounds.min()).is_ok()
-                    && objects.transform.transform_point(bounds.max()).is_ok()
-            });
+            let valid = objects
+                .grips
+                .iter()
+                .map(|id| id.object)
+                .collect::<std::collections::BTreeSet<_>>()
+                .iter()
+                .all(|id| {
+                    document.object(*id).is_some_and(|object| {
+                        self.grip_preview_geometry(object, objects, document.tolerance())
+                            .is_some()
+                    })
+                })
+                && objects
+                    .sources
+                    .iter()
+                    .filter(|id| !objects.grips.iter().any(|p| p.object == **id))
+                    .all(|id| {
+                        let Some(object) = document.object(*id) else {
+                            return false;
+                        };
+                        let bounds = cache.get(object, document.tolerance()).bounds();
+                        objects.transform.transform_point(bounds.min()).is_ok()
+                            && objects.transform.transform_point(bounds.max()).is_ok()
+                    });
             if !valid {
                 return (preview.resolve(None).0, Some(preview.last_transform));
             }
