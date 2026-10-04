@@ -1,0 +1,566 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-0",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-1",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-2",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-3",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-4",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-5",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-6",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-7",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-8",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-9",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-10",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-11",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-12",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-13",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-14",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-15",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-16",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-17",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-18",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-19",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-20",
+      "source": "line",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-21",
+      "source": "line",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-22",
+      "source": "line",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-23",
+      "source": "line",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-24",
+      "source": "line",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-25",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-26",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-27",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-28",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-29",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-30",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-31",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-32",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-33",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-34",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-35",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-36",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-37",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-38",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-39",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-40",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-41",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-42",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-43",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-44",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-45",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-46",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-47",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-48",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-49",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-50",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-51",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-52",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-53",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-54",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-55",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-56",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-57",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-58",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-59",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-60",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-61",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-62",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-63",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-64",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-65",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-66",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-67",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-68",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-69",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-70",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-71",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-72",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-73",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-74",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-75",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-76",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "object_y"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-77",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "object_z"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-78",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "object"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-object-79",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "object_steps"
+    }
+  ]
+}

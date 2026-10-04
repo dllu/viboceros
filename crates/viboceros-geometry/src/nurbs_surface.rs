@@ -9,6 +9,7 @@ mod evaluate;
 mod grips;
 mod parameter_frame;
 mod parameters;
+mod smoothing;
 mod wires;
 pub use evaluate::SurfaceJet2;
 

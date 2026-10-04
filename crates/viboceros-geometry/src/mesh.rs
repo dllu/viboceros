@@ -31,6 +31,7 @@ mod edge_weld;
 mod ngon;
 mod nonplanar_quads;
 mod normals;
+mod smoothing;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod offset;
 mod planar_ngons;

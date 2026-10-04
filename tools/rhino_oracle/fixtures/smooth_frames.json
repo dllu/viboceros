@@ -1,0 +1,114 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-0",
+      "source": "curve",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-1",
+      "source": "rational",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-2",
+      "source": "periodic",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-3",
+      "source": "periodic_cubic",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-4",
+      "source": "circle",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-5",
+      "source": "arc",
+      "mode": "curve"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-6",
+      "source": "surface",
+      "mode": "surface_u"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-7",
+      "source": "surface",
+      "mode": "surface_v"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-8",
+      "source": "surface_closed",
+      "mode": "surface_u"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-9",
+      "source": "surface_closed",
+      "mode": "surface_v"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-10",
+      "source": "mesh_grid",
+      "mode": "mesh_static"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-11",
+      "source": "mesh_grid",
+      "mode": "mesh_dynamic"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-12",
+      "source": "mesh_triangles",
+      "mode": "mesh_static"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-13",
+      "source": "mesh_triangles",
+      "mode": "mesh_dynamic"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-14",
+      "source": "surface",
+      "mode": "surface_normal_u"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-15",
+      "source": "surface",
+      "mode": "surface_normal_v"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-16",
+      "source": "surface_closed",
+      "mode": "surface_normal_u"
+    },
+    {
+      "op": "smooth_frames",
+      "id": "smooth-direction-pilot-17",
+      "source": "surface_closed",
+      "mode": "surface_normal_v"
+    }
+  ]
+}

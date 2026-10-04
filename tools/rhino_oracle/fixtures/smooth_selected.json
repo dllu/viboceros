@@ -1,0 +1,230 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-0",
+      "source": "closed",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-1",
+      "source": "closed",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-2",
+      "source": "closed",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-3",
+      "source": "closed",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-4",
+      "source": "periodic",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-5",
+      "source": "periodic",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-6",
+      "source": "periodic",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-7",
+      "source": "periodic",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-8",
+      "source": "periodic_cubic",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-9",
+      "source": "periodic_cubic",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-10",
+      "source": "periodic_cubic",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-11",
+      "source": "periodic_cubic",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-12",
+      "source": "surface_closed",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-13",
+      "source": "surface_closed",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-14",
+      "source": "surface_closed",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-15",
+      "source": "surface_closed",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-16",
+      "source": "surface_periodic",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-17",
+      "source": "surface_periodic",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-18",
+      "source": "surface_periodic",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-19",
+      "source": "surface_periodic",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-20",
+      "source": "surface_closed_both",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-21",
+      "source": "surface_closed_both",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-22",
+      "source": "surface_closed_both",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-23",
+      "source": "surface_closed_both",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-24",
+      "source": "mesh_unwelded",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-25",
+      "source": "mesh_unwelded",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-26",
+      "source": "mesh_unwelded",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-27",
+      "source": "mesh_unwelded",
+      "selection": "parent",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-28",
+      "source": "mesh_grid",
+      "selection": "grips",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-29",
+      "source": "mesh_grid",
+      "selection": "grips",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-30",
+      "source": "mesh_grid",
+      "selection": "parent",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-selected-31",
+      "source": "mesh_grid",
+      "selection": "parent",
+      "mode": "steps"
+    }
+  ]
+}

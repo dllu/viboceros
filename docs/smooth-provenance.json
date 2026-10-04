@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOracleSmoothFixedFinal_20261004",
+    "VibocerosOracleSmoothSelectedFinal_20261004",
+    "VibocerosOracleSmoothObjectFinal_20261004"
+  ],
+  "sdk_settings_schemes": [
+    "VibocerosOracleSmoothDirectionsPilotF_20261004"
+  ],
+  "native_recipes": 208,
+  "fixed_coordinate_recipes": 128,
+  "object_coordinate_recipes": 80,
+  "sdk_witnesses": 18,
+  "accepted_object_x_sdk_predictions": 10,
+  "rejected_alternative_sdk_predictions": 8,
+  "kernel_replays": 128,
+  "application_replays": 0,
+  "comparison_absolute_epsilon": 2e-12,
+  "command_registered_in_viboceros": false,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Live captures used public Rhino commands and SDK calls at idle in empty owned documents on private Xvfb. No proprietary implementation was inspected.",
+    "All command options are explicitly seeded. The 96 fixed and 32 selected recipes retain command-end, post-macro, Undo, and Redo snapshots.",
+    "128 geometry-kernel replays compare complete controls, weights, knots, degrees, domains, and stored mesh faces. They do not replay document selection, metadata, history, prompts, or primitive promotion in Viboceros.",
+    "80 Object-coordinate command observations are retained for research. Object coordinates are not yet implemented in the kernel.",
+    "18 public SDK witnesses test single-pass Object X hypotheses. Ten predictions agree with the matching native Object X observations. Eight alternative surface traversal/frame or mesh normal hypotheses disagree.",
+    "Curve TangentAt supplies public endpoint-span extrapolation when UVNDirectionsAt returns false at exterior periodic Greville parameters. Native Object edits can separate periodic control aliases.",
+    "No performance comparison, native extreme-range capture, singular-direction matrix, SubD workflow, general trimmed B-rep replay, or full native parity is claimed."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/smooth_probe.py": "6596eb7c3fa6108059b1b1fc6f977f6fe63567c63444c5bf337bc1ea435d3e7d",
+    "tools/rhino_oracle/smooth_frames_probe.py": "880a20d2ab9e9820a915afeafc2d8ca47ba6ad79ec7a4c7d677410078bd1f1a6",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/smooth_fixed.json": "2111ad711f457351263a35cc554cb926ce5de6d34883fc54b4ed56e0b2919d01",
+    "tools/rhino_oracle/fixtures/smooth_selected.json": "da72f70edd22eb8ab176de546c65f72672d6dc241ca4b63e2ebc6fc6fd879f91",
+    "tools/rhino_oracle/fixtures/smooth_object.json": "2860aa22ec56042d511f1ca7dbdc2a8d57618ab3f8a8e3a922cea65b95475172",
+    "tools/rhino_oracle/fixtures/smooth_frames.json": "7acc68d0452dda1f45c6a0f71ba5bfacf5bd0a7feeac0096cc26ca16fe10e09c",
+    "tools/rhino_oracle/observations/smooth_fixed.json": "51912b9960d7a1fae311ea6ba410758fa808536b7ef5dbca0026dd96ab5ddfc8",
+    "tools/rhino_oracle/observations/smooth_selected.json": "8a630d81938efdaca76d041464366bc361a61deae4bbe0b79a05f17f4e25ceb5",
+    "tools/rhino_oracle/observations/smooth_object.json": "342cda99b74704b4c3e413f0f591a30ce4d5a2e7f8627f0fa10c5160b97fd031",
+    "tools/rhino_oracle/observations/smooth_frames.json": "1b56db290ba5f2d212c7d5375a55cf36268c72a3e79f3a5d3a1fc38c2ba622ab"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "69fc941c9b232d9c0c44a707a2df62042888c68a358b568862927cb5ecff2a70",
+    "tools/rhino_oracle/rhino_worker.py": "3dd98f578f2c49f9f470e3d8877e6e299290ab81778e114db54e8fa31008412e"
+  }
+}

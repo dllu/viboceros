@@ -561,7 +561,7 @@ impl CircularArc3 {
         self.angles[0]..=self.angles[1]
     }
 
-    /// Supporting-plane axes retain their orientation through trimming and
+    /// Supporting-plane X retains its orientation through trimming and
     /// reversal. The geometric start directions remain available as x/y_axis.
     pub const fn plane_x_axis(self) -> UnitVector3 {
         self.plane_x_axis

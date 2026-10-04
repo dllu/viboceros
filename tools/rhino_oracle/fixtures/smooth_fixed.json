@@ -1,0 +1,678 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-0",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-1",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-2",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-3",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-4",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-5",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-6",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-7",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-8",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-9",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-10",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-11",
+      "source": "closed",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-12",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-13",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-14",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-15",
+      "source": "periodic",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-16",
+      "source": "line",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-17",
+      "source": "line",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-18",
+      "source": "line",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-19",
+      "source": "line",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-20",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-21",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-22",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-23",
+      "source": "polyline",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-24",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-25",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-26",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-27",
+      "source": "circle",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-28",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-29",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-30",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-31",
+      "source": "arc",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-32",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-33",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-34",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-35",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-36",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-37",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-38",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-39",
+      "source": "surface_closed",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-40",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-41",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-42",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-43",
+      "source": "periodic_cubic",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-44",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-45",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-46",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-47",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-48",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-49",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-50",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-51",
+      "source": "mesh_triangles",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-52",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-53",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-54",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-55",
+      "source": "mesh_unwelded",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-56",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-57",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-58",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-59",
+      "source": "surface_periodic",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-60",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "defaults"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-61",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-62",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-63",
+      "source": "surface_closed_both",
+      "selection": "objects",
+      "mode": "cplane"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-64",
+      "source": "curve",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-65",
+      "source": "curve",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-66",
+      "source": "curve",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-67",
+      "source": "rational",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-68",
+      "source": "rational",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-69",
+      "source": "rational",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-70",
+      "source": "closed",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-71",
+      "source": "closed",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-72",
+      "source": "closed",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-73",
+      "source": "periodic_cubic",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-74",
+      "source": "periodic_cubic",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-75",
+      "source": "periodic_cubic",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-76",
+      "source": "surface",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-77",
+      "source": "surface",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-78",
+      "source": "surface",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-79",
+      "source": "surface_closed",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-80",
+      "source": "surface_closed",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-81",
+      "source": "surface_closed",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-82",
+      "source": "mesh_grid",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-83",
+      "source": "mesh_grid",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-84",
+      "source": "mesh_grid",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-85",
+      "source": "mesh_unwelded",
+      "selection": "grips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-86",
+      "source": "mesh_unwelded",
+      "selection": "parent",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-87",
+      "source": "mesh_unwelded",
+      "selection": "allgrips",
+      "mode": "free"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-88",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "negative"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-89",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "overshoot"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-90",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "zero"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-91",
+      "source": "curve",
+      "selection": "objects",
+      "mode": "none"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-92",
+      "source": "rational",
+      "selection": "objects",
+      "mode": "x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-93",
+      "source": "surface",
+      "selection": "objects",
+      "mode": "negative"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-94",
+      "source": "mesh_grid",
+      "selection": "objects",
+      "mode": "overshoot"
+    },
+    {
+      "op": "smooth_command",
+      "id": "smooth-fixed-95",
+      "source": "curve",
+      "selection": "command_first",
+      "mode": "defaults"
+    }
+  ]
+}

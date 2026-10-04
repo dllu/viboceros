@@ -76,6 +76,8 @@ mod point_projection;
 mod polycurve;
 mod polyline;
 mod section_basis;
+mod smoothing;
+pub use smoothing::SmoothingOptions;
 mod spiral;
 mod spline_collocation;
 mod surface_curvature;

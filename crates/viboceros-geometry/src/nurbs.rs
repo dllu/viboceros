@@ -12,6 +12,7 @@ mod integration_frame;
 mod linear_trim;
 mod parameter_frame;
 mod sampling;
+mod smoothing;
 pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};
 mod weights;
 use weights::change_bezier_end_weights;
