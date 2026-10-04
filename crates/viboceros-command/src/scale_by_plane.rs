@@ -123,37 +123,38 @@ pub fn start_options(arguments: &[&str], defaults: Options) -> Result<Options, C
     }
 }
 
-/// Planar curve axes and surface U/V axes determine the independent scales.
+/// Curve start frames and surface midpoint U/V frames determine the scales.
 /// Resolving a target does not add it to the transform sources.
 pub fn object_frame(
     document: &Document,
     id: ObjectId,
     face: Option<usize>,
+    active: Frame3,
 ) -> Result<Frame3, CommandError> {
-    let usage =
-        || CommandError::Usage("ScaleByPlane Object requires a selectable planar object or face");
+    let usage = || {
+        CommandError::Usage(
+            "ScaleByPlane Object requires a selectable curve, surface, point, or B-rep face",
+        )
+    };
     let object = document
         .object(id)
         .filter(|_| document.is_object_selectable(id))
         .ok_or_else(usage)?;
     let tolerance = document.tolerance();
     let frame = match object.geometry() {
-        Geometry::NurbsSurface(_) | Geometry::Brep(_) => {
-            // Use the public surface planarity predicate before its U/V frame.
-            crate::mirror::object_plane(document, id, face).map_err(|_| usage())?;
-            match object.geometry() {
-                Geometry::Brep(brep) => crate::construction_plane::frame_from_brep_face(
-                    brep,
-                    face.unwrap_or(0),
-                    tolerance,
-                ),
-                geometry => crate::construction_plane::frame_from_object(geometry, tolerance),
-            }
+        Geometry::Brep(brep) => {
+            let index = face
+                .or_else(|| (brep.faces().len() == 1).then_some(0))
+                .ok_or_else(usage)?;
+            crate::construction_plane::frame_from_brep_face(brep, index, tolerance)
+        }
+        geometry @ Geometry::NurbsSurface(_) if face.is_none_or(|index| index == 0) => {
+            crate::construction_plane::frame_from_object(geometry, tolerance)
+        }
+        Geometry::Point(point) if face.is_none() => {
+            return Ok(active.with_origin(*point));
         }
         geometry if face.is_none() && geometry.curve_ref().is_some() => {
-            if !geometry.curve_ref().unwrap().is_planar(tolerance)? {
-                return Err(usage());
-            }
             crate::construction_plane::frame_from_object(geometry, tolerance)
         }
         _ => return Err(usage()),
@@ -238,7 +239,9 @@ impl Prompt {
         }
         if self.plane.is_none() {
             return match self.options.plane {
-                PlaneChoice::Object => "ScaleByPlane: pick a planar object or face (Esc to cancel)",
+                PlaneChoice::Object => {
+                    "ScaleByPlane: pick a curve, surface, point, or B-rep face (Esc to cancel)"
+                }
                 PlaneChoice::FromView => {
                     "ScaleByPlane: select a viewport (Enter uses active viewport)"
                 }
@@ -324,7 +327,7 @@ impl Command for ScaleByPlaneCommand {
                 }
                 let (id, face) = object_target(&positional[..n])?;
                 consumed += n;
-                object_frame(document, id, face)?
+                object_frame(document, id, face, context.construction_plane)?
             }
             choice => choice.frame(context.construction_plane).unwrap(),
         };

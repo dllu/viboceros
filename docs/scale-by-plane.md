@@ -44,8 +44,12 @@ selection, and history, while excluding grip display coordinates from positive
 comparisons. Raw coordinates remain in the observations. Viboceros currently
 retains the original display locations for this combination.
 
+The [separate Object matrix](scale-by-plane-object.md) adds 64 native recipes
+and 120 application replays for planar/nonplanar curves and surfaces, points,
+and rejected whole-mesh ID picks.
+
 The tests do not measure native reference-picking previews or speed. They do
-not verify all planar Object frames, grouped layouts, trimmed B-reps, or SubCrv.
+not verify every Object frame, grouped layouts, trimmed B-reps, or SubCrv.
 The provenance explicitly leaves full native parity unproven.
 
 ## Reproduce

@@ -5000,7 +5000,9 @@ impl VibocerosApp {
                 postselected: true,
                 ..
             })
-        ) {
+        ) || matches!(command, Some(InteractiveCommand::ScaleByPlane(prompt))
+            if prompt.options.plane == viboceros_command::scale_by_plane::PlaneChoice::Object)
+        {
             self.document.clear_selection();
         }
         self.drafting_plane = None;

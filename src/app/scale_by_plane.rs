@@ -30,7 +30,12 @@ impl VibocerosApp {
         if !self.picking_scale_by_plane_object() {
             return false;
         }
-        match viboceros_command::scale_by_plane::object_frame(&self.document, id, face) {
+        match viboceros_command::scale_by_plane::object_frame(
+            &self.document,
+            id,
+            face,
+            self.viewports[self.active_viewport].construction_plane(),
+        ) {
             Ok(frame) => {
                 self.finish_scale_by_plane_frame(frame);
                 if let Some(InteractiveCommand::ScaleByPlane(ref mut prompt)) = self.active_command

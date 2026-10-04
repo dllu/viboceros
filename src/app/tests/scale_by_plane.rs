@@ -66,6 +66,175 @@ fn checked(
     );
 }
 
+fn object_plane_snapshot(app: &VibocerosApp, sources: &[ObjectId], target: ObjectId) -> Value {
+    serde_json::json!(
+        app.document
+            .objects()
+            .filter(|o| o.id() != target)
+            .map(|o| {
+                let Geometry::Point(point) = o.geometry() else {
+                    panic!("unexpected plane scale source")
+                };
+                serde_json::json!({"role": if sources.contains(&o.id()) {"source"} else {"output"},
+            "name": o.attributes().name(), "selected": app.document.is_selected(o.id()),
+            "point": point.to_array()})
+            })
+            .collect::<Vec<_>>()
+    )
+}
+
+#[test]
+fn scale_by_plane_replays_native_object_frames_and_rejected_targets() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/scale_by_plane_object.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/scale_by_plane_object.json"
+    ))
+    .unwrap();
+    let operations = q["operations"].as_array().unwrap();
+    let results = r["results"].as_array().unwrap();
+    assert_eq!(operations.len(), results.len());
+    for (op, row) in operations.iter().zip(results) {
+        assert_eq!(op["id"], row["id"]);
+        let label = op["id"].as_str().unwrap();
+        let native = &row["value"];
+        let kind = op["target"].as_str().unwrap();
+        let accepted = native["object_accepted"].as_bool().unwrap();
+        for incremental in [false, true]
+            .into_iter()
+            .filter(|incremental| accepted || *incremental)
+        {
+            let mut app = test_app();
+            app.active_viewport = 1;
+            app.viewports[1].set_construction_plane(frame(&native["active_plane"]));
+            app.document
+                .begin_transaction("ScaleByPlane Object sources")
+                .unwrap();
+            let sources: Vec<_> = native["before"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|source| {
+                    let id = app
+                        .document
+                        .add_geometry(Geometry::Point(p(&source["point"])))
+                        .unwrap();
+                    app.document
+                        .set_object_names([(id, Some(source["name"].as_str().unwrap().into()))])
+                        .unwrap();
+                    id
+                })
+                .collect();
+            let target_geometry = if kind == "point" {
+                Geometry::Point(p(&native["target"]["point"]))
+            } else {
+                let source = match kind {
+                    "line" | "polyline" | "mesh" => kind,
+                    "surface" | "skew_surface" | "warped_surface" => "surface",
+                    _ => "rational",
+                };
+                geometry(&serde_json::json!({"source": source}), &native["target"])
+            };
+            let target = app.document.add_geometry(target_geometry.clone()).unwrap();
+            app.document.commit_transaction().unwrap();
+            app.document
+                .select_objects_direct(sources.iter().copied(), SelectionMode::Add)
+                .unwrap();
+            compare(
+                &object_plane_snapshot(&app, &sources, target),
+                &native["before"],
+                label,
+            );
+            let picks = ["origin", "reference", "destination"]
+                .map(|key| format!("w{}", format_model_point(p(&native[key]))));
+            let copy = op["copy"].as_bool().unwrap();
+            if !accepted {
+                assert!(
+                    app.commands
+                        .execute(
+                            &mut app.document,
+                            &format!(
+                                "ScaleByPlane Plane=Object {target} {} Rigid=No Copy=No",
+                                picks.join(" ")
+                            )
+                        )
+                        .is_err(),
+                    "{label}"
+                );
+                compare(
+                    &object_plane_snapshot(&app, &sources, target),
+                    &native["before"],
+                    label,
+                );
+            }
+            if incremental || !accepted {
+                enter(&mut app, "ScaleByPlane Rigid=No");
+                enter(&mut app, if copy { "Copy=Yes" } else { "Copy=No" });
+                enter(&mut app, "Plane=Object");
+                assert_eq!(
+                    app.accept_scale_by_plane_object(target, None),
+                    accepted,
+                    "{label}"
+                );
+                if accepted {
+                    for pick in picks {
+                        enter(&mut app, &pick);
+                    }
+                    if copy {
+                        enter(&mut app, "");
+                    }
+                } else {
+                    enter(&mut app, "Cancel");
+                }
+            } else {
+                enter(
+                    &mut app,
+                    &format!(
+                        "ScaleByPlane Plane=Object {target} {} Rigid=No Copy={}",
+                        picks.join(" "),
+                        if copy { "Yes" } else { "No" }
+                    ),
+                );
+            }
+            assert!(
+                app.active_command.is_none(),
+                "{label}: {:?}",
+                app.command_log
+            );
+            compare(
+                &object_plane_snapshot(&app, &sources, target),
+                &native["after"],
+                label,
+            );
+            assert_eq!(
+                app.document.object(target).unwrap().geometry(),
+                &target_geometry,
+                "{label}"
+            );
+            enter(&mut app, "Cancel");
+            compare(
+                &object_plane_snapshot(&app, &sources, target),
+                &native["after_script"],
+                label,
+            );
+            enter(&mut app, "Undo");
+            compare(
+                &object_plane_snapshot(&app, &sources, target),
+                &native["undo"],
+                label,
+            );
+            enter(&mut app, "Redo");
+            compare(
+                &object_plane_snapshot(&app, &sources, target),
+                &native["redo"],
+                label,
+            );
+        }
+    }
+}
+
 #[test]
 fn scale_by_plane_replays_native_planes_geometry_grips_copy_and_external_history() {
     let mut count = 0;
@@ -244,6 +413,56 @@ fn scale_by_plane_replays_native_planes_geometry_grips_copy_and_external_history
 }
 
 #[test]
+fn scale_by_plane_object_copy_reuses_sources_after_selection_cleanup() {
+    let mut app = test_app();
+    app.document
+        .begin_transaction("Object copy sources")
+        .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Point(point(2., 3., 4.)))
+        .unwrap();
+    let target = app
+        .document
+        .add_geometry(Geometry::Point(point(7., 8., 9.)))
+        .unwrap();
+    app.document.commit_transaction().unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Add)
+        .unwrap();
+    enter(&mut app, "ScaleByPlane Plane=Object Copy=Yes");
+    assert!(app.accept_scale_by_plane_object(target, None));
+    for pick in ["w1,2,3", "w3,5,8", "w5,11,1", "w7,14,1", ""] {
+        enter(&mut app, pick);
+    }
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert_eq!(
+        app.document.object(source).unwrap().geometry(),
+        &Geometry::Point(point(2., 3., 4.))
+    );
+    assert_eq!(
+        app.document.object(target).unwrap().geometry(),
+        &Geometry::Point(point(7., 8., 9.))
+    );
+    assert_eq!(
+        app.document
+            .objects()
+            .skip(2)
+            .map(|o| o.geometry().clone())
+            .collect::<Vec<_>>(),
+        [
+            Geometry::Point(point(3., 5., 4.)),
+            Geometry::Point(point(4., 6., 4.))
+        ]
+    );
+    assert_eq!(app.document.selected_object_ids().count(), 0);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().count(), 2);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().count(), 4);
+}
+
+#[test]
 fn scale_by_plane_preview_copy_repeats_target_and_view_pick_keeps_sources() {
     let mut app = test_app();
     let source = app
@@ -335,7 +554,7 @@ fn scale_by_plane_invalid_frames_and_view_clicks_preserve_sources_and_option_mem
         matches!(app.active_command,Some(InteractiveCommand::ScaleByPlane(p)) if p.plane.is_some() && p.origin.is_none())
     );
     enter(&mut app, "Plane=Object");
-    assert!(!app.accept_scale_by_plane_object(peer, None));
+    assert!(!app.accept_scale_by_plane_object(peer, Some(0)));
     assert!(app.document.is_selected(source));
     assert!(!app.document.is_selected(peer));
     enter(&mut app, "Plane=FromView");

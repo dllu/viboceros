@@ -35,15 +35,17 @@ The plane starts at `ActiveCPlane` for each command.
 | `WorldFront` | World X and Z |
 | `WorldRight` | World Y and Z |
 | `3Point` | Plane origin, X direction point, orientation point |
-| `Object` | Selectable planar curve, surface, or B-rep face; complete input accepts an object ID and optional `Face=index` |
+| `Object` | Selectable curve, surface, point, or B-rep face; complete input accepts an object ID and optional `Face=index` |
 | `FromView` | Click a viewport; Enter chooses the active viewport |
 
 The chosen plane's axes are retained through reference picks and repeated
 copies. Its stored origin does not replace the scaling origin. Picking an Object
-target does not add it to the transform sources. Planar surface U/V axes supply
-its frame;
-planar curves use the existing object-frame resolver. Nonplanar targets are
-rejected without applying a transform.
+target does not add it to the transform sources. Surface U/V derivatives at
+the parameter midpoint supply its frame, including for nonplanar surfaces.
+Curves use their start frame: planar curves combine the start tangent and plane
+normal; nonplanar curves combine the start tangent and curvature. A point uses
+the active construction-plane axes. Whole meshes selected by ID are rejected
+without a transform.
 
 The [Rhino command documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/scale.htm#ScaleByPlane)
 describes `FromView` as choosing a view plane. In the captured Rhino build,
@@ -80,8 +82,11 @@ It keeps their original display locations. This is a known compatibility gap.
 
 ## Verification and limits
 
-The [capture and replay notes](../scale-by-plane.md) describe 106 actual public
-Rhino commands and 212 complete/incremental application replays. Comparisons
+The [capture and replay notes](../scale-by-plane.md) describe 106 reference
+recipes and 212 complete/incremental application replays. Additional
+[Object target checks](../scale-by-plane-object.md) retain 64 native recipes
+and 120 application replays, covering planar and nonplanar curves, surfaces,
+points, rejected whole meshes, reversed parameter directions, and Copy. Comparisons
 cover geometry definitions, object names, selected controls, object order,
 Copy, selection cleanup, and external Undo/Redo at absolute epsilon `1e-9`.
 The three Rigid grip recipes compare geometry and history while excluding the
@@ -89,7 +94,7 @@ cursor-dependent display coordinates.
 
 The application provides live affine previews using the same reference map as
 execution. Native preview appearance, prescribed mouse reference workflows,
-SubCrv input, Object frames for arbitrary curves and trimmed faces, unusual
+SubCrv input, other Object curve families and trimmed faces, unusual
 group layouts, extreme coordinates, and performance parity remain unverified.
-Mesh Object targets are not implemented.
+Mesh face picking remains unverified.
 These captures do not establish complete Rhino compatibility.

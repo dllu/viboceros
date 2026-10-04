@@ -1,0 +1,582 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-0",
+      "target": "line",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-1",
+      "target": "line",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-2",
+      "target": "line",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-3",
+      "target": "line",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-4",
+      "target": "polyline",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-5",
+      "target": "polyline",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-6",
+      "target": "polyline",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-7",
+      "target": "polyline",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-8",
+      "target": "rational",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-9",
+      "target": "rational",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-10",
+      "target": "rational",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-11",
+      "target": "rational",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-12",
+      "target": "circle",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-13",
+      "target": "circle",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-14",
+      "target": "circle",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-15",
+      "target": "circle",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-16",
+      "target": "arc",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-17",
+      "target": "arc",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-18",
+      "target": "arc",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-19",
+      "target": "arc",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-20",
+      "target": "ellipse",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-21",
+      "target": "ellipse",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-22",
+      "target": "ellipse",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-23",
+      "target": "ellipse",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-24",
+      "target": "surface",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-25",
+      "target": "surface",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-26",
+      "target": "surface",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-27",
+      "target": "surface",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-28",
+      "target": "skew_surface",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-29",
+      "target": "skew_surface",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-30",
+      "target": "skew_surface",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-31",
+      "target": "skew_surface",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-32",
+      "target": "mesh",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-33",
+      "target": "mesh",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-34",
+      "target": "mesh",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-35",
+      "target": "mesh",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-36",
+      "target": "warped_surface",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-37",
+      "target": "warped_surface",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-38",
+      "target": "warped_surface",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-39",
+      "target": "warped_surface",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-40",
+      "target": "nonplanar_curve",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-41",
+      "target": "nonplanar_curve",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-42",
+      "target": "nonplanar_curve",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-43",
+      "target": "nonplanar_curve",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-44",
+      "target": "point",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-45",
+      "target": "point",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-46",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-47",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-48",
+      "target": "polyline",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-49",
+      "target": "polyline",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-50",
+      "target": "warped_surface",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-51",
+      "target": "warped_surface",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-52",
+      "target": "nonplanar_curve",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-53",
+      "target": "nonplanar_curve",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-54",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-55",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": true,
+      "cplane": "world"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-56",
+      "target": "point",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-57",
+      "target": "point",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-58",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-59",
+      "target": "point",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-60",
+      "target": "mesh",
+      "plane": "world",
+      "reverse": false,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-61",
+      "target": "mesh",
+      "plane": "world",
+      "reverse": true,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-62",
+      "target": "mesh",
+      "plane": "tilted",
+      "reverse": false,
+      "copy": false,
+      "cplane": "tilted"
+    },
+    {
+      "op": "scale_by_plane_object",
+      "id": "plane-object-63",
+      "target": "mesh",
+      "plane": "tilted",
+      "reverse": true,
+      "copy": false,
+      "cplane": "tilted"
+    }
+  ]
+}

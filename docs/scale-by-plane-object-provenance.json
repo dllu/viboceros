@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOraclePlaneObjectComplete_20261004"
+  ],
+  "native_recipes": 64,
+  "accepted_targets": 56,
+  "rejected_targets": 8,
+  "application_replays": 120,
+  "comparison_absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK geometry/frame outputs were inspected in empty owned documents at idle on private Xvfb.",
+    "Independent public CPlane Object witnesses predict all four source point outputs. SDK TryGetPlane distinguishes nonplanar curves and warped surfaces; their actual ScaleByPlane transformations are retained.",
+    "Point targets retain active construction-plane axes, distinguished from world X/Y by four tilted-CPlane cases.",
+    "Eight whole-mesh SelID targets are rejected. A public SelID completion requests Escape in the owned window after macro Cancel returns to the origin getter; native EndCommand and driver receipt guard completeness.",
+    "56 accepted targets have complete/incremental application replays; eight rejected targets have incremental pick/cancel replays plus atomic complete-command rejection checks.",
+    "Other curve families, trimmed/multiple-face B-reps, mesh face picking, Rigid groups, previews, extreme coordinates, speed and full parity remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_by_plane_object_probe.py": "731a2b6eda76d8752fbe95867fc7e8aa22afd5ea03d424f4de9cd464086619ee",
+    "tools/rhino_oracle/scale_by_plane_object_input.py": "1bf08d04825d89aaa67f572521e84a543b765eab56c6ba15fb8f382dbcfa0498",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/scale_by_plane_object.json": "3fe7747ce4cbb7b2aa3d68cec81f404e722bca5163b310a98ed849a867ce4fc3",
+    "tools/rhino_oracle/observations/scale_by_plane_object.json": "40596ffc1991a6ca8983a49fe45023a490b3e0f847ee362378591dc438cd2c7e"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "9d7c3e1d9b19e4be5d928016cf7dd08307d44fc0c189ddd8980306bd48efc3bb",
+    "tools/rhino_oracle/rhino_worker.py": "b7ec569ed22e48d1137e450bdf86f746a28a86c74707bf02a99d71681a354f0d"
+  }
+}

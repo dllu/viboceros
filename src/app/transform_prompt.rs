@@ -384,6 +384,8 @@ impl VibocerosApp {
         let input = if !session.sources.is_empty()
             && (session.postselected
                 || continuation == InteractiveCommand::MirrorObject
+                || matches!(continuation, InteractiveCommand::ScaleByPlane(prompt)
+                    if prompt.options.plane == viboceros_command::scale_by_plane::PlaneChoice::Object)
                 || !session.grips.is_empty())
         {
             format!(
