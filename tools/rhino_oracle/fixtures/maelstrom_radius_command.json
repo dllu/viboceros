@@ -1,0 +1,214 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-0",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        1.0,
+        1.7320508075688772
+      ],
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-1",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-2",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        2.0,
+        0.0
+      ],
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-3",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": [
+        0.0,
+        0.0,
+        7.0
+      ],
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-4",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": [
+        3.0,
+        0.0,
+        4.0
+      ],
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-5",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": [
+        0.0,
+        0.0,
+        5.0
+      ],
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-6",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-radius-point-7",
+      "shape": "Points",
+      "origin": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "normal": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "radius0": [
+        1.0,
+        3.0,
+        4.732050807568877
+      ],
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Cancel"
+    }
+  ]
+}

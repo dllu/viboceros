@@ -30,7 +30,7 @@ fn curve(v: &Value) -> NurbsCurve {
     )
     .unwrap()
 }
-fn surface(v: &Value) -> NurbsSurface {
+pub(crate) fn surface(v: &Value) -> NurbsSurface {
     NurbsSurface::try_new_rational(
         v["degree"][0].as_u64().unwrap() as usize,
         v["degree"][1].as_u64().unwrap() as usize,

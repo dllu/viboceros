@@ -18,7 +18,7 @@ pub const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 512;
 /// Per-axis control limit for adaptive surface morphs.
 pub const MAX_MORPH_SURFACE_AXIS_CONTROLS: usize = 256;
 /// Bound on cached direct point-map samples during one surface fit.
-pub const MAX_MORPH_SURFACE_SAMPLES: usize = 1_000_000;
+pub const MAX_MORPH_SURFACE_SAMPLES: usize = 8_000_000;
 
 /// A deterministic non-affine mapping of finite Euclidean points.
 ///

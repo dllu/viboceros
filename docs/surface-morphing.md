@@ -35,7 +35,9 @@ World coordinates are centered before solving, with a finite fallback for
 overflowing coordinate differences. Interpolated knot-intersection point values
 are pinned exactly; constant large-coordinate targets retain their exact controls.
 
-Each nonempty knot rectangle is checked on the tensor product of uniform and
+Inaccurate candidates are first rejected on a uniform grid. Candidates passing
+that check receive the complete grid before acceptance. Each nonempty knot
+rectangle is checked on the tensor product of uniform and
 cosine-spaced stations, including all sided boundary values. Fourth differences
 of the uniform-grid residuals guide independent U/V bisection: an error in U
 multiplied by a cubic function of V does not automatically require more V
@@ -46,11 +48,17 @@ tolerance. At exhausted control or parameter resolution, a result is accepted
 only if its measured error meets the actual requested tolerance.
 
 The public limits are 256 controls per axis (`MAX_MORPH_SURFACE_AXIS_CONTROLS`)
-and one million cached point-map evaluations (`MAX_MORPH_SURFACE_SAMPLES`).
+and eight million cached point-map evaluations (`MAX_MORPH_SURFACE_SAMPLES`).
 Cache keys include both parameters and both sides. Excessive initial structure,
 exhausted sampling, and failure to converge have explicit errors; no knowingly
 out-of-tolerance fitted surface is returned. Document in-place and copy operations
 remain atomic on failure, including attributes, selection, groups, and history.
+
+The sample ceiling was raised after the native Maelstrom box regression reached
+the previous one-million limit near its curved fixed-radius transition. The
+control ceiling, fitting tolerance and complete acceptance grid are unchanged.
+Dense tensor fitting across that transition remains a performance improvement
+target; raising the finite budget does not establish native performance parity.
 
 These finite checks are not a continuous error certificate for an arbitrary
 black-box mapping. Unsampled sharp features, mapping-induced discontinuities,

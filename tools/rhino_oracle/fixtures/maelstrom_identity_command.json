@@ -1,0 +1,420 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-0",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-1",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-2",
+      "shape": "Points",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-3",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-4",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-5",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-6",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-7",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-8",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-9",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-10",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-11",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-12",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-13",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-14",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-15",
+      "shape": "Mesh",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-16",
+      "shape": "Mesh",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 0.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-identity-17",
+      "shape": "Mesh",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 0.0,
+      "copy": true,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "undo_unchanged": true
+    }
+  ]
+}

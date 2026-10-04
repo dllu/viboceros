@@ -25,8 +25,10 @@ The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;
 actual commands constrain Copy, grouped Rigid, selection and Undo/Redo. This is
-geometry evidence; Maelstrom command registration and interactive input remain
-to implement.
+geometry evidence. Its [command captures](commands/maelstrom.md) add 85 geometry
+recipes and 29 preference/history steps, including the fitting floor, unchanged
+Undo entries, first-radius memory, per-command Rigid defaults and immediate Copy
+getter persistence. Interactive input and previews remain to implement.
 
 The [CPlane All fixture](../tools/rhino_oracle/fixtures/construction_plane_all.json)
 records standard and oblique starting planes with four independent viewports.

@@ -4,9 +4,9 @@
 
 `MaelstromPointMorph` implements the public
 [MaelstromSpaceMorph](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_Morphs_MaelstromSpaceMorph.htm)
-point map independently in Rust. This is the geometry and oracle foundation;
-the application command, interactive circle construction and live previews
-remain to implement.
+point map independently in Rust. Its [command adapter](commands/maelstrom.md)
+adds selected objects, radii, construction planes, Copy, Rigid and history.
+Interactive circle construction and live previews remain to implement.
 
 ## Point map
 
@@ -71,8 +71,9 @@ point commands, and `1e-7` for grouped rigid placement. The
 Independent Rust tests check extreme-range behavior, preserved rational controls,
 identity structure, and 513 fitted-line samples within `2e-5` at a fitting
 tolerance of `1e-5`. Fitting uses sampled checks; it is not a continuous error
-certificate. Native full-geometry fitting, command preferences, circle options,
-interactive workflows and performance comparisons remain unverified.
+certificate. Separate [command captures](commands/maelstrom.md) constrain full
+geometry fitting and getter preferences. Circle options, interactive workflows
+and original native performance comparisons remain unverified.
 
 ```sh
 cargo test -p viboceros-geometry maelstrom::tests

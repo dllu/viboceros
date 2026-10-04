@@ -42,6 +42,7 @@ Rhino's complete command set is still a work in progress.
 - [Axis Twist deformation and rigid placement](twist.md)
 - [Circular spine Bend deformation and rigid placement](bend.md)
 - [Radial and flat Taper deformation](taper.md)
+- [Cylindrical spiral Maelstrom deformation](maelstrom.md)
 - [Move and repeated Copy placements](move-copy.md)
 - [Selecting transform sources after starting a command](transform-sources.md)
 - [Remember Copy options](remember-copy-options.md)

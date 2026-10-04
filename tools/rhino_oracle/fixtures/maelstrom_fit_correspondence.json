@@ -1,0 +1,29 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-box-fit-correspondence",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "diagnose_fit": true
+    }
+  ]
+}

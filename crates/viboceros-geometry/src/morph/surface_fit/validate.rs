@@ -13,6 +13,27 @@ pub(super) fn errors(
     threshold: Real,
 ) -> Result<Errors, GeometryError> {
     let fractions = error_fractions(8);
+    errors_on_grid(point_at, fitted, breaks, threshold, &fractions)
+}
+
+/// A passing coarse grid still needs full validation before acceptance.
+pub(super) fn coarse_errors(
+    point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
+    fitted: &NurbsSurface,
+    breaks: &[Vec<Break>; 2],
+    threshold: Real,
+) -> Result<Errors, GeometryError> {
+    let fractions = (0..=8).map(|i| i as Real / 8.).collect::<Vec<_>>();
+    errors_on_grid(point_at, fitted, breaks, threshold, &fractions)
+}
+
+fn errors_on_grid(
+    point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
+    fitted: &NurbsSurface,
+    breaks: &[Vec<Break>; 2],
+    threshold: Real,
+    fractions: &[Real],
+) -> Result<Errors, GeometryError> {
     let count = fractions.len();
     let uniform = (0..=8)
         .map(|i| {
@@ -31,14 +52,14 @@ pub(super) fn errors(
         for (i, span_u) in breaks[0].windows(2).enumerate() {
             residuals.clear();
             let mut deviation: Real = 0.0;
-            for &fv in &fractions {
+            for &fv in fractions {
                 let v = stable_lerp(span_v[0].parameter, span_v[1].parameter, fv)?;
                 let side_v = if v == span_v[1].parameter {
                     ParameterSide::Left
                 } else {
                     ParameterSide::Right
                 };
-                for &fu in &fractions {
+                for &fu in fractions {
                     let u = stable_lerp(span_u[0].parameter, span_u[1].parameter, fu)?;
                     let side_u = if u == span_u[1].parameter {
                         ParameterSide::Left

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "command": "Maelstrom",
+  "engine_version": "8.32.26160.13001",
+  "native_geometry_recipes": 85,
+  "native_preference_history_steps": 29,
+  "private_xvfb": true,
+  "settings_schemes": [
+    "VibocerosOracleMaelstromCommand_20261003",
+    "VibocerosOracleMaelstromIdentity_20261003",
+    "VibocerosOracleMaelstromPreferencesFinal_20261003",
+    "VibocerosOracleMaelstromCorrespondence_20261003",
+    "VibocerosOracleMaelstromRadiusFinal_20261003"
+  ],
+  "public_reference": "https://docs.mcneel.com/rhino/8/help/en-us/commands/maelstrom.htm",
+  "sha256": {
+    "tools/rhino_oracle/maelstrom_command_probe.py": "89067e3ebb7fbc147bb0108e26da56f7672cf34a822f4910ea6a8147703ad208",
+    "tools/rhino_oracle/maelstrom_options_probe.py": "19d210f6acaab503dbcc7bc89e4c4203d94991345f46f229d49f8fed9e65b2f8",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/twist_command_probe.py": "9173b38300f168c46d3cd80afccddbd60cc52fc47457465538a0719f212acfbf",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/maelstrom_geometry_command.json": "91f0d60e3c450914541729562a222a3ecdd8cf73766e1014ca256b466a4256a6",
+    "tools/rhino_oracle/fixtures/maelstrom_fitting_command.json": "80f4c22aeacca627271533cc07276999f01c64b756a8d8a2016cabdf2aa60c59",
+    "tools/rhino_oracle/fixtures/maelstrom_identity_command.json": "35b9cffcbfbbc1263e2dc69d8978cc041f337b4e5ad3d62e46d7bd6a9ed5c197",
+    "tools/rhino_oracle/fixtures/maelstrom_options_command.json": "0b3fee8605e993ce51c719194fd670c8d3062b77629e5a8e2914b289e4d4a490",
+    "tools/rhino_oracle/observations/maelstrom_geometry_command.json": "81193eb119fe3c3097a7a2cbf83a113a47495afa7320d1df36d7961a82c3dc38",
+    "tools/rhino_oracle/observations/maelstrom_fitting_command.json": "070e43c7a54546d5cc6aa543c9990ed8c33e3f27e8ec48c36fdb9a0ed808d8a7",
+    "tools/rhino_oracle/observations/maelstrom_identity_command.json": "f2f819437e9c52455996f858aa6d9c184727662398bc0a6747b286376097ed7c",
+    "tools/rhino_oracle/observations/maelstrom_options_command.json": "1b2ad32f5c4b5b9ecfe554c894257ac7a27d8b67d05e451a5f7f699818fb2152",
+    "tools/rhino_oracle/fixtures/maelstrom_fit_correspondence.json": "687e23ef7fd6c429247242c9f5684c1caf674d62767ee99a6e42b6275f3268d7",
+    "tools/rhino_oracle/observations/maelstrom_fit_correspondence.json": "051fddcb5f3a0bef1365882c71da79ba3f36c680ab708a6ea54a58135211c2e3",
+    "tools/rhino_oracle/fixtures/maelstrom_radius_command.json": "2cc84525199a94f23e0ef02cca0a61c2979c8f2056c3dcc0672c4a3e02444df2",
+    "tools/rhino_oracle/observations/maelstrom_radius_command.json": "9cfd4205557af40c4de3f3f31de90d09e029da364ba4b77761952b365903410c"
+  },
+  "comparison": {
+    "point_absolute_epsilon": 1e-11,
+    "rigid_absolute_epsilon": 1e-07,
+    "mesh_coordinate_epsilon": 1e-06,
+    "fitted_absolute_epsilon": "2 * max(document absolute tolerance, 1e-5)",
+    "brep_patches": "Bidirectional evaluated surface witnesses, constrained to matching natural boundaries; same epsilon as fitted curves/surfaces."
+  },
+  "scope_notes": [
+    "Independent implementation based on public command/SDK outputs. No proprietary source inspected.",
+    "Fitting is sampled, not a continuous error certificate.",
+    "First radius uses Circle positive size getter. Second radius uses signed magnitude; zero/tiny second radius makes an unchanged point map.",
+    "Rigid always starts No. Copy getter edits persist on cancellation. First radius remembers when accepted and survives Undo/Redo/New.",
+    "Unchanged geometry still creates an Undo entry. Line results use a degree-one NURBS representation.",
+    "Repeated Copy uses originals and one history group. Undo retains empty cloned group definitions.",
+    "Radius diagnostics append Cancel. If Maelstrom already succeeded, that later command owns selection cleanup on Redo.",
+    "Native preference queries reaccept the exact integer radius they observed. Recipes intentionally restrict preference radii to integers so rounded prompt text cannot alter their value.",
+    "Interactive source selection, Circle alternative modes, picked coil angles, repeated input and previews remain pending.",
+    "Original native kernel performance comparison remains unverified.",
+    "Native box fitting changes UV correspondence tangentially. A public SDK/ClosestPoint diagnostic distinguishes parameter errors from physical geometric distances without enlarging epsilon.",
+    "A first radius point uses full distance and changes the Circle plane through the preferred-normal/parallel-Y fallback rule. A second radius point projects to that plane and rejects zero radial distance. Numeric second radii accept zero/tiny values as unchanged maps."
+  ],
+  "fit_correspondence": {
+    "samples": 486,
+    "maximum_native_parameter_aligned_error": 8.740786877523286e-05,
+    "maximum_native_geometric_error": 1.8885052276117715e-06,
+    "point_relations": [
+      "Boundary",
+      "Interior"
+    ]
+  }
+}

@@ -104,6 +104,31 @@ fn cubic_surface_image_is_not_the_bilinear_image_of_its_controls() {
 }
 
 #[test]
+fn coarse_candidate_success_still_checks_off_grid_mapping_failures() {
+    struct Hole(std::cell::Cell<usize>);
+    impl PointMorph for Hole {
+        fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+            let station = 0.5 * (1. - (std::f64::consts::PI / 8.).cos());
+            if (point.x() - station).abs() < 1e-14 && (point.y() - station).abs() < 1e-14 {
+                self.0.set(self.0.get() + 1);
+                return Err(GeometryError::Degenerate {
+                    context: "off-grid mapping hole",
+                });
+            }
+            Ok(point)
+        }
+    }
+    let morph = Hole(std::cell::Cell::new(0));
+    assert!(matches!(
+        morph.morph_nurbs_surface(&unit_patch(), Tolerance::DEFAULT),
+        Err(GeometryError::Degenerate {
+            context: "off-grid mapping hole"
+        })
+    ));
+    assert_eq!(morph.0.get(), 1);
+}
+
+#[test]
 fn quartic_surface_image_requires_refinement_beyond_mapped_controls() {
     let source = unit_patch();
     let fitted = Quartic

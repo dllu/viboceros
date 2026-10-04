@@ -113,8 +113,11 @@ prepared morph cages, preserves pending isocurves in all display modes and uses
 an axis-normal radius mouse plane with an edge-on construction-plane fallback.
 The [Maelstrom foundation](maelstrom-geometry.md) adds cylindrical spiral maps,
 including the measured relative-radius threshold and raw tiny-angle rotations.
-It shares fitting and rigid placement with the other morph kernels; its command
-and interactive adapters remain to implement.
+It shares fitting and rigid placement with the other morph kernels. Its
+[command adapter](commands/maelstrom.md) stages selected geometry, resolves
+Circle plane/radius picks and projected second radii, supports Copy/Rigid and records unchanged replacements.
+Circle radius and Copy getter edits have their own preference policy; staged
+interactive input and previews remain to implement.
 The document's independent `groups` module owns ordered object memberships and
 their reverse member index. Lightweight membership history records preserve
 order without cloning geometry; see [group invariants](groups.md).

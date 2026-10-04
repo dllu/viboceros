@@ -1,0 +1,187 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_options_command",
+      "id": "maelstrom-preferences",
+      "steps": [
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Rigid": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Rigid": false
+          },
+          "finish": "CancelEnd"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": false
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "RememberCopyOptions",
+          "enabled": true
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Copy": true
+          },
+          "finish": "Complete"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Copy": false
+          },
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Copy": true,
+            "Rigid": false
+          },
+          "finish": "CopyThenCancel",
+          "pending_options": {
+            "Rigid": true
+          }
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {
+            "Copy": true,
+            "Rigid": false
+          },
+          "finish": "CopyThenEnter",
+          "pending_options": {
+            "Rigid": true
+          }
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart",
+          "radius0": 3.0
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelEnd",
+          "radius0": 4.0
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "Complete",
+          "radius0": 5.0
+        },
+        {
+          "kind": "Undo"
+        },
+        {
+          "kind": "Redo"
+        },
+        {
+          "kind": "New"
+        },
+        {
+          "kind": "Maelstrom",
+          "shape": "Curve",
+          "options": {},
+          "finish": "CancelStart"
+        }
+      ]
+    }
+  ]
+}

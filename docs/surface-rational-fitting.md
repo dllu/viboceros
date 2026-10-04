@@ -41,7 +41,7 @@ full-pivot solves. Each solved weight must be finite and strictly positive,
 and each dehomogenized control must be finite. Numerical construction failure
 discards the optional candidate. Source mapping failures propagate, not retry
 through an alternative point map. All paths share the original cache and its
-one-million-sample ceiling.
+current eight-million-sample ceiling.
 
 The validation grid, native domains, and absolute tolerance are unchanged.
 Rejected inaccurate candidates continue into adaptive bicubic refinement.

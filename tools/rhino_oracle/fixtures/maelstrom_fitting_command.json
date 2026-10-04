@@ -1,0 +1,282 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-0",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 0.001
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-1",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-05
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-2",
+      "shape": "Line",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-09
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-3",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 0.001
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-4",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-05
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-5",
+      "shape": "Curve",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-09
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-6",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 0.001
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-7",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-05
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-8",
+      "shape": "Surface",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-09
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-9",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 0.001
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-10",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-05
+    },
+    {
+      "op": "maelstrom_geometry_command",
+      "id": "maelstrom-fitting-11",
+      "shape": "Box",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius0": 2.0,
+      "radius1": 5.0,
+      "degrees": 90.0,
+      "copy": false,
+      "rigid": false,
+      "grouped": false,
+      "finish": "Complete",
+      "tolerance": 1e-09
+    }
+  ]
+}

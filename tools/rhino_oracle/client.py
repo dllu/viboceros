@@ -215,6 +215,16 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        for family, module in [('maelstrom_geometry_command', 'maelstrom_command_probe'),
+                               ('maelstrom_options_command', 'maelstrom_options_probe')]:
+            if any(op.get('op') == family for op in request.get('operations', [])):
+                from importlib import import_module
+                validate = import_module('.'+module, __package__).validate
+                if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
+                    raise OracleProtocolError('Maelstrom commands require a private scheme and one iteration')
+                for op in request['operations']:
+                    if op.get('op') == family:
+                        validate(op)
         if any(op.get('op') in ('maelstrom_points','maelstrom_command_points') for op in request.get('operations', [])):
             from .maelstrom_probe import validate
             for op in request['operations']:
@@ -606,6 +616,9 @@ class OracleClient:
                     shutil.copyfile(helper, job_path / helper.name)
             if any(op.get('op') == 'taper_options_command' for op in request.get('operations', [])):
                 for name in ('taper_options_probe.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
+            if any(op.get('op') in ('maelstrom_geometry_command','maelstrom_options_command') for op in request.get('operations', [])):
+                for name in ('maelstrom_command_probe.py','maelstrom_options_probe.py','number_token.py','twist_command_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'taper_geometry_command' for op in request.get('operations', [])):
                 for name in ('taper_command_probe.py', 'number_token.py', 'twist_command_probe.py', 'join_probe.py', 'merge_edges_probe.py'):

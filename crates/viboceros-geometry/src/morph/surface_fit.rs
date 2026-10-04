@@ -48,13 +48,13 @@ pub(super) fn fit(
     // mapped surface before it can be returned. A map need not be defined at
     // off-surface controls, so failure here does not preclude a valid fit.
     if let Ok(candidate) = mapped_controls(morph, source) {
-        let errors = validate::errors(&mut point_at, &candidate, &breaks, tolerance.absolute())?;
+        let errors = candidate_errors(&mut point_at, &candidate, &breaks, tolerance.absolute())?;
         if errors.deviation <= tolerance.absolute() {
             return Ok(candidate);
         }
     }
     if let Some(candidate) = tensor::rational_candidate(&mut point_at, source, maximum)? {
-        let errors = validate::errors(
+        let errors = candidate_errors(
             &mut point_at,
             &candidate,
             &breaks,
@@ -69,7 +69,7 @@ pub(super) fn fit(
             return Err(GeometryError::TooManyMorphSurfaceControlPoints { maximum });
         }
         let fitted = tensor::interpolate(&mut point_at, &breaks)?;
-        let errors = validate::errors(&mut point_at, &fitted, &breaks, tolerance.absolute() * 0.8)?;
+        let errors = candidate_errors(&mut point_at, &fitted, &breaks, tolerance.absolute() * 0.8)?;
         if errors.deviation <= tolerance.absolute() * 0.8 {
             return Ok(fitted);
         }
@@ -78,6 +78,7 @@ pub(super) fn fit(
             added += refine(axis_breaks, &errors.directions[axis], maximum)?;
         }
         if added == 0 {
+            let errors = validate::errors(&mut point_at, &fitted, &breaks, tolerance.absolute())?;
             if errors.deviation <= tolerance.absolute() {
                 return Ok(fitted);
             }
@@ -87,6 +88,20 @@ pub(super) fn fit(
                 maximum,
             });
         }
+    }
+}
+
+fn candidate_errors(
+    point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
+    fitted: &NurbsSurface,
+    breaks: &[Vec<Break>; 2],
+    threshold: Real,
+) -> Result<validate::Errors, GeometryError> {
+    let coarse = validate::coarse_errors(point_at, fitted, breaks, threshold)?;
+    if coarse.deviation > threshold {
+        Ok(coarse)
+    } else {
+        validate::errors(point_at, fitted, breaks, threshold)
     }
 }
 
