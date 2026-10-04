@@ -32,6 +32,8 @@ def main() -> int:
     parser.add_argument("--relative-epsilon", type=float, default=1.0e-10)
     parser.add_argument("--launcher", type=Path)
     parser.add_argument("--repo-root", type=Path)
+    parser.add_argument("--scheme", help="private Rhino settings scheme (VibocerosOracle...)")
+    parser.add_argument("--output", type=Path, help="write the JSON response to this file")
     arguments = parser.parse_args()
     if (arguments.mode == "replay") != (arguments.observations is not None):
         parser.error("--observations is required for replay and is not used by other modes")
@@ -45,7 +47,8 @@ def main() -> int:
 
     try:
         request = load_request(arguments.request)
-        client = OracleClient(arguments.repo_root, arguments.launcher)
+        client = OracleClient(arguments.repo_root, arguments.launcher,
+                              settings_scheme=arguments.scheme)
         if arguments.mode == "audit":
             output = client.run_viboceros_audit(request, arguments.timeout)
             passed = all(o["status"] == "success" for o in output["outcomes"])
@@ -73,7 +76,14 @@ def main() -> int:
     except (OSError, ValueError, OracleError) as error:
         parser.exit(2, f"oracle failed: {error}\n")
 
-    print(json.dumps(output, indent=2, sort_keys=True, allow_nan=False))
+    serialized = json.dumps(output, indent=2, sort_keys=True, allow_nan=False)
+    if arguments.output is not None:
+        try:
+            arguments.output.write_text(serialized + "\n", encoding="utf-8")
+        except OSError as error:
+            parser.exit(2, f"could not write oracle response: {error}\n")
+    else:
+        print(serialized)
     return 0 if passed else 1
 
 
