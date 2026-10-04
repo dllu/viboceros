@@ -215,6 +215,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') in ('circle_fit_grips', 'circle_fit_grips_commands') for op in request.get('operations', [])):
+            from .circle_fit_grips_probe import validate
+            if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
+                raise OracleProtocolError('Circle grip captures require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') in ('circle_fit_grips', 'circle_fit_grips_commands'):
+                    validate(op)
         if any(op.get('op') == 'circle_fit_diagnostics' for op in request.get('operations', [])):
             from .circle_fit_diagnostics import validate
             if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
@@ -568,6 +575,9 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            if any(op.get('op') in ('circle_fit_grips', 'circle_fit_grips_commands') for op in request.get('operations', [])):
+                for name in ('circle_fit_grips_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'circle_fit_selection' for op in request.get('operations', [])):
                 for name in ('circle_fit_selection_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)

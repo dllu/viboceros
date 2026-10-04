@@ -32,6 +32,10 @@ PCA plane with retained native command/SDK evidence. Native basis conventions
 and near-collinear convergence remain unresolved. Circle's
 [point-object input](circle-fit-input.md) adds eight native selection workflows
 and replays the earlier 22 native command loci through the command adapter.
+Sixteen [control-point workflows](control-points.md) add curve, surface and
+mesh grips, mixed point objects, display commands and history. Both input
+families retain EndCommand and final script snapshots to distinguish getter
+cleanup from Undo/Redo; completed fits receive no idle cancellation tokens.
 The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;

@@ -6,7 +6,7 @@ fn point(v: &Value) -> Point3 {
 }
 
 #[test]
-fn circle_fit_points_commands_replay_22_native_circle_loci_and_selection_history() {
+fn circle_fit_points_commands_replay_22_native_circle_loci_and_preserve_preselection() {
     let q: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/circle_fit_points.json"
     ))
@@ -36,9 +36,7 @@ fn circle_fit_points_commands_replay_22_native_circle_loci_and_selection_history
         let before = doc.objects().cloned().collect::<Vec<_>>();
         doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
             .unwrap();
-        registry
-            .execute_postselected(&mut doc, "Circle FitPoints", CommandContext::default())
-            .unwrap();
+        registry.execute(&mut doc, "Circle FitPoints").unwrap();
         assert_eq!(
             doc.selected_object_ids().collect::<Vec<_>>(),
             ids,
@@ -76,11 +74,11 @@ fn circle_fit_points_commands_replay_22_native_circle_loci_and_selection_history
                 before,
                 "{label}"
             );
-            assert_eq!(doc.selected_object_count(), 0);
+            assert_eq!(doc.selected_object_count(), ids.len());
             registry.execute(&mut doc, "Redo").unwrap();
             assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after, "{label}");
         }
-        assert_eq!(doc.selected_object_count(), 0);
+        assert_eq!(doc.selected_object_count(), ids.len());
         compared += 1;
     }
     assert_eq!(compared, 22);

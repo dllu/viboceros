@@ -114,8 +114,10 @@ an axis-normal radius mouse plane with an edge-on construction-plane fallback.
 The [Circle fit foundation](circle-fit.md) adds spatial-distance fitting on a
 PCA plane with retained native command/SDK evidence. Native basis conventions
 and near-collinear convergence remain unresolved. Its
-[point-object command input](circle-fit-input.md) uses the shared filtered
-selection prompt and retains native cancellation/Undo/Redo behavior.
+[point and grip command input](circle-fit-input.md) uses the shared filtered
+selection prompt and retains native cancellation/Undo/Redo behavior. Shared
+[control-point state](control-points.md) retains source identities and immutable
+geometry snapshots for viewport picking and Circle grip input.
 The [Maelstrom foundation](maelstrom-geometry.md) adds cylindrical spiral maps,
 including the measured relative-radius threshold and raw tiny-angle rotations.
 It shares fitting and rigid placement with the other morph kernels. Its

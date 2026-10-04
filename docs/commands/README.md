@@ -65,6 +65,7 @@ Rhino's complete command set is still a work in progress.
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
 - [Circle FitPoints input and limitations](../circle-fit-input.md)
+- [Control-point display and selection](../control-points.md)
 - [Native planar STEP export](export-step.md)
 - [Display modes and drafting controls](interface.md)
 - [Zoom, extents, and border settings](zoom.md)

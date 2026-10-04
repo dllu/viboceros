@@ -139,7 +139,7 @@ fn circle_fit_points_input_replays_eight_native_selection_and_history_workflows(
             assert!(app.active_command.is_none());
             assert_eq!(
                 snapshot(&app, &ids),
-                roles(native["after"].clone()),
+                roles(native["after_script"].clone()),
                 "{} {incremental}: {:?}",
                 op["id"],
                 app.command_log

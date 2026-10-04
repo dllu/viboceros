@@ -1,6 +1,8 @@
 //! In-memory CAD document model.
 
+mod control_points;
 mod duplicate;
+pub use control_points::ControlPointId;
 mod geometry;
 mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
@@ -407,6 +409,7 @@ pub struct Document {
     groups: Vec<Group>,
     selection: BTreeSet<ObjectId>,
     selection_order: Vec<ObjectId>,
+    control_points: BTreeMap<ObjectId, control_points::ControlPoints>,
     previous_selection: BTreeSet<ObjectId>,
     previous_selection_order: Vec<ObjectId>,
     last_changed_objects: BTreeSet<ObjectId>,
@@ -434,6 +437,7 @@ impl Document {
             groups: Vec::new(),
             selection: BTreeSet::new(),
             selection_order: Vec::new(),
+            control_points: BTreeMap::new(),
             previous_selection: BTreeSet::new(),
             previous_selection_order: Vec::new(),
             last_changed_objects: BTreeSet::new(),
@@ -476,6 +480,7 @@ impl Document {
             selection_order_before: self.selection_order.clone(),
             previous_selection_before: self.previous_selection.clone(),
             previous_selection_order_before: self.previous_selection_order.clone(),
+            control_points_before: self.control_points.clone(),
         });
         Ok(())
     }
@@ -558,6 +563,7 @@ impl Document {
         self.selection_order = transaction.selection_order_before;
         self.previous_selection = transaction.previous_selection_before;
         self.previous_selection_order = transaction.previous_selection_order_before;
+        self.control_points = transaction.control_points_before;
         // Successful rollback restores a previously valid selection snapshot,
         // including untouched restricted peers. Eligibility pruning here would
         // turn a rejected command into a selection change.
@@ -578,6 +584,14 @@ impl Document {
         self.ensure_no_transaction()?;
         self.history = History::default();
         self.last_changed_objects.clear();
+        if !self.control_points.is_empty() {
+            let existing = self
+                .objects
+                .iter()
+                .map(|object| object.id)
+                .collect::<BTreeSet<_>>();
+            self.control_points.retain(|id, _| existing.contains(id));
+        }
         Ok(())
     }
 
@@ -614,6 +628,7 @@ impl Document {
         self.history.redo.push(entry);
         self.history.version = Uuid::new_v4();
         self.prune_selection_after_history_preserving(&unchanged_selection);
+        self.synchronize_control_points();
         Ok(Some(label))
     }
 
@@ -637,6 +652,7 @@ impl Document {
         self.update_last_changed_objects(&entry);
         self.push_replayed_undo(entry);
         self.prune_selection_after_history_preserving(&unchanged_selection);
+        self.synchronize_control_points();
         Ok(Some(label))
     }
 
@@ -872,7 +888,7 @@ impl Document {
     }
 
     pub fn clear_selection(&mut self) -> usize {
-        let count = self.selection.len();
+        let count = self.selection.len() + self.clear_control_point_selection();
         self.update_picked_selection(BTreeSet::new());
         count
     }
@@ -884,7 +900,7 @@ impl Document {
             .filter(|object| self.object_is_selectable(object))
             .map(|object| object.id)
             .collect();
-        self.update_picked_selection(selection)
+        self.update_picked_selection(selection) + self.select_all_control_points()
     }
 
     pub fn invert_selection(&mut self) -> usize {
@@ -1811,6 +1827,9 @@ pub enum DocumentError {
 
     #[error("object {0} is hidden or locked and cannot be selected")]
     ObjectNotSelectable(ObjectId),
+
+    #[error("control point {index} on object {object} is unavailable")]
+    InvalidControlPointSelection { object: ObjectId, index: usize },
 
     #[error("object {0} is locked and cannot be edited")]
     ObjectLocked(ObjectId),

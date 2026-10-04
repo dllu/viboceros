@@ -26,7 +26,7 @@ class CircleFitSelectionTests(TestCase):
         for changes in (dict(extra=True), dict(id="x\n_Delete"), dict(points=[[True, 0, 0]]),
                         dict(points=[[float("nan"), 0, 0]]), dict(points=[[101, 0, 0]]),
                         dict(points=[[0, 0, 0]]*65), dict(preselected=[True]),
-                        dict(preselected=[0, 0]), dict(preselected=[3]), dict(line=1),
+                        dict(preselected=[0, 0]), dict(preselected=[3]), dict(preselected=[]), dict(line=1),
                         dict(inputs="all _Exit")):
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 validate(dict(q["operations"][0], **changes))
@@ -54,6 +54,7 @@ class CircleFitSelectionTests(TestCase):
             self.assertEqual(len(events), 1)
             self.assertEqual(v["success"], events[0]["result"] == "Success")
             self.assertEqual(events[0]["objects"], v["after"])
+            final = v["after_script"]
             circles = [o for o in v["after"] if o["kind"] == "circle"]
             self.assertEqual(len(circles), int(i in (0, 1, 4, 6)))
             for phase in ("before", "after", "redo"):
@@ -61,12 +62,15 @@ class CircleFitSelectionTests(TestCase):
             if circles:
                 self.assertFalse(circles[0]["selected"])
                 self.assertAlmostEqual(circles[0]["circle"]["radius"], 2., places=13)
-                self.assertEqual(v["undo"], [dict(o, selected=False) for o in v["before"]])
-                self.assertEqual(v["redo"], [dict(o, selected=False) for o in v["after"]])
+                expected = v["before"] if op["inputs"] == "auto" else [dict(o, selected=False) for o in v["before"]]
+                self.assertEqual(v["undo"], expected)
+                self.assertEqual(v["redo"], final)
                 self.assertTrue(all(o["selected"] for o in v["after"] if o["kind"] == "point"))
             else:
                 self.assertEqual(v["undo"], [])
-                self.assertEqual(v["redo"], [dict(o, selected=False) for o in v["before"]])
+                self.assertEqual(v["redo"], final)
+            expected_final = [dict(o, selected=False) for o in v["after"]] if op["inputs"] == "all" else v["after"]
+            self.assertEqual(final, expected_final)
             if not v["success"]:
                 self.assertTrue(all(not o["selected"] for o in v["after"]))
             if i in (0, 4, 7):

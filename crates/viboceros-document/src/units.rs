@@ -76,6 +76,9 @@ impl Document {
                 geometries,
             },
         );
+        if scale != 1.0 {
+            self.synchronize_control_points();
+        }
         Ok(true)
     }
 }

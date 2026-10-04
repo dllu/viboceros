@@ -73,6 +73,8 @@ mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
 mod component_picking;
+mod control_points;
+pub use control_points::ControlPointSelection;
 mod curve_sampling;
 mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
@@ -333,6 +335,7 @@ pub struct ViewportInput<'a> {
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
     pub component_preselection: bool,
+    pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
     pub edge_highlights: &'a [EdgePick],
@@ -394,6 +397,7 @@ impl Default for ViewportInput<'_> {
             face_pick: None,
             edge_pick: false,
             component_preselection: false,
+            control_point_pick: false,
             component_pick: None,
             component_highlights: &[],
             edge_highlights: &[],
@@ -421,6 +425,7 @@ pub struct ViewportOutput {
     pub face_hit_point: Option<Point3>,
     pub component_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
+    pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
@@ -1382,6 +1387,7 @@ impl Viewport {
         } else {
             None
         };
+        let mut control_point_selection = None;
         let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
             self.selection_drag_start.take().and_then(|start| {
                 let end = selection_pointer?;
@@ -1397,6 +1403,17 @@ impl Viewport {
                 };
                 let crossing = resolved_mode.crossing(false);
                 let selection_rect = Rect::from_two_pos(start, end);
+                if input.control_point_pick {
+                    control_point_selection = Some(ControlPointSelection {
+                        picks: self.control_points_in_window(
+                            rect,
+                            selection_rect,
+                            resolved_mode.inverted(),
+                            document,
+                        ),
+                        mode: selection_mode(modifiers),
+                    });
+                }
                 Some(SelectionWindow {
                     object_ids: self.objects_in_selection_mode_preview(
                         rect,
@@ -1661,7 +1678,19 @@ impl Viewport {
         ) && !input.zoom_window
             && input.zoom_target.is_none()
             && !drafting.active;
-        let selection_pick = if component_mode.is_none()
+        if input.control_point_pick
+            && selecting
+            && response.clicked_by(PointerButton::Primary)
+            && let Some(pointer) = response.interact_pointer_pos()
+            && let Some(pick) = self.pick_control_point(pointer, rect, document)
+        {
+            control_point_selection = Some(ControlPointSelection {
+                picks: vec![pick],
+                mode: selection_mode(modifiers),
+            });
+        }
+        let selection_pick = if control_point_selection.is_none()
+            && component_mode.is_none()
             && (selecting || object_prompt_selecting)
             && input.rect_selection_mode.is_none()
             && response.clicked_by(PointerButton::Primary)
@@ -1712,6 +1741,7 @@ impl Viewport {
             object_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        self.paint_control_points(&painter, rect, document);
         if let Some((filter, _)) = component_hover_mode
             && let Some(pointer) = response.hover_pos()
         {
@@ -2031,6 +2061,7 @@ impl Viewport {
             face_hit_point,
             component_click,
             component_window,
+            control_point_selection,
             picked_point: (response.clicked_by(PointerButton::Primary)
                 && component_mode.is_none()
                 && (input.face_pick.is_none() || face_point_fallback))

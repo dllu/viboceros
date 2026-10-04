@@ -25,14 +25,16 @@ restores source selection on Undo and clears it on bare Redo. Explicit picking
 after Undo, including repeating the same selected set, overrides that release.
 The marker records only its source IDs and preserves unrelated selections.
 
-[Circle FitPoints](circle-fit-input.md) retains definition picks at completion,
-but releases them on both Undo and Redo. A degenerate no-output fit adds no
-model history entry. An ordinary transaction containing only command-pick
+[Circle FitPoints](circle-fit-input.md) retains preselected definition picks
+through completion and Undo/Redo. Picks accepted during the command are
+deselected when its getter finishes, while control-point displays remain
+enabled. A degenerate no-output fit adds no model history entry.
+An ordinary transaction containing only command-pick
 release markers folds those markers into the preceding Undo entry; repeated
 markers merge their IDs. This retains the existing label, changed-object set,
 history version and Redo stack, while preventing restored source insertions
 from reselecting the definition points. Rollback still restores the original
-selection snapshot.
+selection snapshot, including control-point display and index picks.
 Internal eligibility pruning never counts as a new pick. A retained 39-step
 native workflow checks this behavior alongside command option memory and
 accepted Copy cancellation.

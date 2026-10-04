@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleCircleFitGripsCommands_20261004",
+  "native_recipes": 16,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public SDK and command outputs were inspected in an owned private Rhino document.",
+    "Thirteen bounded SDK grip setups and three native PointsOn/SelAll/PointsOff workflows cover curves, rational controls, surfaces, meshes and mixed point objects.",
+    "Preselected grips remain selected through fitting and Undo/Redo. Postselected grips are deselected by getter cleanup after EndCommand, with their display retained.",
+    "Captures retain EndCommand and post-macro snapshots. Completed fits receive no idle cancellation tokens; earlier trailing Escape tokens had confounded history observations.",
+    "Global SelAll selects both displayed grips and their parents. FitPoints uses grips as definition inputs and retains unsupported preselected parents as peers.",
+    "Duplicate mesh vertices remain distinct inputs; rational control weights do not weight Euclidean grip coordinates.",
+    "PointsOff hides grips and clears their selection without adding a model Undo entry. Parent and ordinary point-object selection is retained, including through subsequent Circle Undo/Redo.",
+    "Application replay checks final script state, selection, source preservation, Circle center/radius and history through direct and incremental command paths. Mouse click/window tests are independent implementation tests, not native mouse captures.",
+    "Editing grips, idle Escape display cleanup, overlap menus, full periodic/composite behavior, native oriented Circle frames and full performance remain incomplete."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/circle_fit_grips_probe.py": "615397ed96a39aba2fa49f3490e76c35ce2ec338e1037f6a1fbab95e2b120daf",
+    "tools/rhino_oracle/fixtures/circle_fit_grips.json": "19611248f7c5881bbe066cc26a7dbe2b10d8c83fcb9e38581f460408a69c19cf",
+    "tools/rhino_oracle/observations/circle_fit_grips.json": "279c2add4188817d2f7edb21644b548c87c3c00ebbe3b22b5f00ed3bd261408d",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

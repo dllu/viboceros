@@ -1,0 +1,615 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-0",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-1",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [],
+      "points": [],
+      "selected_points": [],
+      "inputs": "all",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-2",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        2
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "all",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-3",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        2
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "enter",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-4",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [
+        1.0,
+        2.0,
+        0.5,
+        1.0
+      ],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-5",
+      "source": "surface",
+      "controls": [
+        [
+          -2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-6",
+      "source": "surface",
+      "controls": [
+        [
+          -2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [],
+      "points": [],
+      "selected_points": [],
+      "inputs": "all",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-7",
+      "source": "mesh",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-8",
+      "source": "mesh",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [],
+      "points": [],
+      "selected_points": [],
+      "inputs": "all",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-9",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0
+      ],
+      "points": [
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "selected_points": [
+        0,
+        1
+      ],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-10",
+      "source": "curve",
+      "controls": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-11",
+      "source": "mesh",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [],
+      "points": [],
+      "selected_points": [],
+      "inputs": "all",
+      "off": false
+    },
+    {
+      "op": "circle_fit_grips_commands",
+      "id": "circle-fit-grip-commands-curve",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": true
+    },
+    {
+      "op": "circle_fit_grips_commands",
+      "id": "circle-fit-grip-commands-surface",
+      "source": "surface",
+      "controls": [
+        [
+          -2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          2.0,
+          0.0
+        ],
+        [
+          2.0,
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": true
+    },
+    {
+      "op": "circle_fit_grips_commands",
+      "id": "circle-fit-grip-commands-mesh",
+      "source": "mesh",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "points": [],
+      "selected_points": [],
+      "inputs": "auto",
+      "off": true
+    },
+    {
+      "op": "circle_fit_grips",
+      "id": "circle-fit-grips-mixed-points-off",
+      "source": "curve",
+      "controls": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "weights": [],
+      "selected": [
+        0
+      ],
+      "points": [
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "selected_points": [
+        0,
+        1
+      ],
+      "inputs": "auto",
+      "off": true
+    }
+  ]
+}

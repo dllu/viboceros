@@ -83,6 +83,7 @@ impl Document {
         if owns_transaction {
             self.commit_transaction()?;
         }
+        self.synchronize_control_points();
         Ok(count)
     }
 }

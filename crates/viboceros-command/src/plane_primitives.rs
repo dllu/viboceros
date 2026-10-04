@@ -76,6 +76,26 @@ impl Command for CircleCommand {
         self.run_in_context(document, arguments, CommandContext::default())
     }
 
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "FitPoints"))
+        {
+            require_consumed(
+                arguments,
+                1,
+                "Circle FitPoints (select points or control points)",
+            )?;
+            return circle_fit_points::run(document, true);
+        }
+        self.run_in_context(document, arguments, context)
+    }
+
     fn run_in_context(
         &self,
         document: &mut Document,
@@ -86,8 +106,12 @@ impl Command for CircleCommand {
             .first()
             .is_some_and(|option| option_name_eq(option, "FitPoints"))
         {
-            require_consumed(arguments, 1, "Circle FitPoints (select point objects)")?;
-            return circle_fit_points::run(document);
+            require_consumed(
+                arguments,
+                1,
+                "Circle FitPoints (select points or control points)",
+            )?;
+            return circle_fit_points::run(document, false);
         }
         let plane = context.construction_plane;
         let circle = if arguments

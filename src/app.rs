@@ -8072,7 +8072,62 @@ impl VibocerosApp {
         }
     }
 
-    fn handle_viewport_action(&mut self, output: ViewportOutput) -> bool {
+    fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(selection) = output.control_point_selection.take() {
+            let fit_prompt = self
+                .object_prompt
+                .as_ref()
+                .is_some_and(|prompt| prompt.description.command == "Circle FitPoints");
+            let mode = if fit_prompt && selection.mode == SelectionMode::Replace {
+                SelectionMode::Add
+            } else {
+                selection.mode
+            };
+            // Validate grip identities before clearing or selecting either set.
+            if let Some(pick) = selection.picks.iter().find(|pick| {
+                self.document
+                    .control_point_locations(pick.object)
+                    .is_none_or(|points| pick.index >= points.len())
+            }) {
+                self.push_log(format!(
+                    "Error: control point {} on object {} is unavailable",
+                    pick.index, pick.object
+                ));
+                return true;
+            }
+            if output.selection_window.as_ref().is_some_and(|window| {
+                window
+                    .object_ids
+                    .iter()
+                    .any(|&id| !self.document.is_object_selectable(id))
+            }) {
+                self.push_log("Error: window selection source is unavailable".into());
+                return true;
+            }
+            if mode == SelectionMode::Replace {
+                self.document.clear_selection();
+            }
+            if let Some(mut window) = output.selection_window.take() {
+                window.mode = if mode == SelectionMode::Replace {
+                    SelectionMode::Add
+                } else {
+                    mode
+                };
+                self.apply_selection_window(window);
+            }
+            match self.document.select_control_points(
+                selection.picks,
+                if mode == SelectionMode::Replace {
+                    SelectionMode::Add
+                } else {
+                    mode
+                },
+            ) {
+                Ok(count) => self.push_log(format!("{count} control point(s) selected")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            }
+            return true;
+        }
         if output.source_viewport_click && self.copy_cplane_source.is_some() {
             self.accept_copy_cplane_source(self.active_viewport);
         } else if output.zoom_target_cancelled {
@@ -8160,6 +8215,16 @@ impl VibocerosApp {
             return false;
         }
         true
+    }
+
+    fn control_point_picking_available(&self) -> bool {
+        self.plane_prompt.is_none()
+            && self.set_view_prompt.is_none()
+            && (self.component_preselection_available()
+                || self.object_prompt.as_ref().is_some_and(|prompt| {
+                    prompt.description.command == "Circle FitPoints"
+                        && prompt.phase == object_selection::ObjectPromptPhase::Selecting
+                }))
     }
 
     fn show_layers(&mut self, root: &mut egui::Ui) {
@@ -8624,6 +8689,7 @@ impl eframe::App for VibocerosApp {
         }
         let component_highlights = self.component_selection.highlights(&self.document);
         let component_preselection = self.component_preselection_available();
+        let control_point_pick = model_input_active && self.control_point_picking_available();
         let component_pick = self
             .hole_prompt
             .as_ref()
@@ -8884,6 +8950,7 @@ impl eframe::App for VibocerosApp {
                             maelstrom_preview,
                             face_pick,
                             component_preselection,
+                            control_point_pick,
                             component_pick,
                             component_highlights: &component_highlights,
                             edge_pick,
@@ -9066,6 +9133,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod circle_fit_grips;
     mod circle_fit_points;
     mod command_line;
     mod construction_plane;

@@ -27,6 +27,9 @@ circles, short arcs, radial and axial noise, translated centers, repeated points
 collinear/coincident inputs, and a nearly collinear diagnostic. Native command
 frames and radii equal the public SDK outputs for all retained constructed
 circles. Snapshots retain command-end selection and Undo/Redo.
+Those original macros include trailing idle Escape tokens. Selection/history
+comparisons use the later [point and grip captures](circle-fit-input.md), whose
+completed fits omit those tokens and retain final script snapshots.
 
 The spatial-distance objective is an inference from those controlled outputs.
 For the axial-noise examples, fitting only projected distances differs in
@@ -74,16 +77,17 @@ cargo run --release -p viboceros-geometry --example profile_circle_fit
 
 ## Remaining compatibility work
 
-The [point-object input](circle-fit-input.md) now supports immediate
+The [point and grip input](circle-fit-input.md) now supports immediate
 preselection and filtered picking, cancellation, and native selection/history
-replay. Its command adapter creates an analytic Circle from the checked fitter.
+replay for the retained recipes. Its command adapter creates an analytic Circle
+from the checked fitter.
 
 This is a fitting foundation, and **full native parity remains incomplete**.
 Native fitted normals can flip with the input data, and seams depend on the
 resulting plane basis. Solver bases are not yet a compatible substitute for
-those conventions. Circle control-point/mesh vertex picking and Maelstrom's
-FitPoints input remain incomplete; the point-object path still has the native
-parameterization limitations.
+those conventions. [Complete grip editing and selection behavior](control-points.md)
+and Maelstrom's FitPoints input remain incomplete; Circle's point and grip input
+paths still have the native parameterization limitations.
 
 The diagnostic with a `1e-6` departure from collinearity retains a roughly
 `2.35e-6` difference in both center and radius. It remains an explicit failing

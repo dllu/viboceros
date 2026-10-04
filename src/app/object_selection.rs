@@ -52,7 +52,7 @@ impl PendingObjectCommand {
 
     pub(super) fn hint(&self) -> &'static str {
         if self.description.command == "Circle FitPoints" {
-            return "Select at least three point objects; Enter fits the circle, Esc cancels";
+            return "Select at least three points or control points; Enter fits the circle, Esc cancels";
         }
         if self.description.command == "ShrinkTrimmedSrf"
             && self.phase == ObjectPromptPhase::Selecting
@@ -364,13 +364,21 @@ impl VibocerosApp {
         } else {
             1
         };
-        let preselected = self
+        let selected_objects = self
             .document
             .selected_objects()
             .filter(|o| description.filter.accepts_object(o))
             .take(required)
-            .count()
-            == required;
+            .count();
+        let selected_grips = if description.command == "Circle FitPoints" {
+            self.document
+                .selected_control_points()
+                .take(required)
+                .count()
+        } else {
+            0
+        };
+        let preselected = selected_objects + selected_grips >= required;
         if preselected {
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 return false;
@@ -565,10 +573,12 @@ impl VibocerosApp {
                 return true;
             }
             if pending.phase == ObjectPromptPhase::Selecting {
-                if !self.document.selected_objects().any(|o| {
+                let has_eligible_picks = self.document.selected_objects().any(|o| {
                     Some(o.id()) != pending.excluded_object
                         && pending.description.filter.accepts_object(o)
-                }) {
+                }) || (pending.description.command == "Circle FitPoints"
+                    && self.document.selected_control_points().next().is_some());
+                if !has_eligible_picks {
                     if self
                         .commands
                         .cancel_empty_object_selection(&pending.description)
@@ -741,6 +751,9 @@ impl VibocerosApp {
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
                 self.select_prompt_objects(ids, SelectionMode::Add);
+                if pending.description.command == "Circle FitPoints" {
+                    self.document.select_all_control_points();
+                }
             }
             self.command_input.clear();
             return true;

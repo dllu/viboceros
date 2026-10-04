@@ -29,6 +29,8 @@ pub(super) struct PendingTransaction {
     pub selection_order_before: Vec<ObjectId>,
     pub previous_selection_before: BTreeSet<ObjectId>,
     pub previous_selection_order_before: Vec<ObjectId>,
+    pub control_points_before:
+        std::collections::BTreeMap<ObjectId, super::control_points::ControlPoints>,
 }
 
 #[derive(Clone, Debug)]

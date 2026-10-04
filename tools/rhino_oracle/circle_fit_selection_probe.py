@@ -15,6 +15,8 @@ def validate(op):
             or len(set(op["preselected"])) != len(op["preselected"])
             or type(op["line"]) is not bool or op["inputs"] not in ("auto", "all", "enter")):
         raise ValueError("invalid bounded Circle FitPoints selection capture")
+    if ((op["inputs"] == "auto") != (len(op["preselected"]) >= 3)):
+        raise ValueError("Circle selection macro must match preselection count")
 
 
 def request():
@@ -82,17 +84,20 @@ def run(op, host):
         before = snapshot()
         marker = "Viboceros Circle FitPoints selection "+str(System.Guid.NewGuid())
         Rhino.RhinoApp.WriteLine(marker)
-        tokens = {"auto": "", "all": "_SelAll _Enter ", "enter": "_Enter "}[op["inputs"]]
-        macro = "_Circle _FitPoints "+tokens+"_Cancel _Cancel"
+        tokens = {"auto": "", "all": "_SelAll _Enter", "enter": "_Enter"}[op["inputs"]]
+        macro = "_Circle _FitPoints "+tokens
+        if op["inputs"] == "enter" or (op["inputs"] == "all" and len(op["points"]) < 3):
+            macro += " _Cancel _Cancel"
         host["_record_progress"](op["id"]+" "+macro)
         success, after, events = observe_command(Rhino.Commands.Command, "Circle",
             lambda: Rhino.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
+        after_script = snapshot()
         history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)[1].strip()
         Rhino.RhinoApp.RunScript("_Undo", False)
         undo = snapshot()
         Rhino.RhinoApp.RunScript("_Redo", False)
         redo = snapshot()
-        return dict(before=before, after=after, undo=undo, redo=redo,
+        return dict(before=before, after=after, after_script=after_script, undo=undo, redo=redo,
                     success=success, events=events, history=history, script_macro=macro), 0
     finally:
         for obj in list(doc.Objects):

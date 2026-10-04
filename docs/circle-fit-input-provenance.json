@@ -9,15 +9,16 @@
   "scope_notes": [
     "Only public command and SDK outputs were inspected.",
     "Three preselected point objects accept immediately; insufficient preselection is cleared before point picking.",
-    "Completed Circle fits retain all accepted selection, including irrelevant preselected peers. Undo and Redo clear it.",
+    "Completed Circle fits retain preselected points and irrelevant peers through Undo/Redo. Postselected points are deselected after EndCommand, before the final script snapshot.",
+    "Captures retain both EndCommand and final script snapshots. Completed fits receive no trailing idle Escape tokens; these had confounded the earlier selection/history observations.",
     "Collinear/coincident fits finish without output or an Undo entry. Cancellation clears picking without geometry changes.",
-    "Application replay covers both direct Circle FitPoints and the center prompt option. Command replay compares the earlier 22 native circle loci and history.",
-    "Point-object input only. Native plane orientation/seam, control-point and mesh-vertex selection, near-collinear convergence and full performance remain incomplete."
+    "Application replay covers both direct Circle FitPoints and the center prompt option. Command replay compares the earlier 22 native circle loci and independently checks preselection lifecycle.",
+    "These captures cover point-object input. Additional control-point and mesh-vertex evidence is retained in circle-fit-grips-provenance.json. Native plane orientation/seam, near-collinear convergence and full performance remain incomplete."
   ],
   "sha256": {
-    "tools/rhino_oracle/circle_fit_selection_probe.py": "e688ed0c291787f627fe2edad20fa9a4baefeb9d2035bc38f57818082c867068",
+    "tools/rhino_oracle/circle_fit_selection_probe.py": "c1ef108324d939b01bfc4d67452a9c7a76cc542c1b1c016887599b3f5d940411",
     "tools/rhino_oracle/fixtures/circle_fit_selection.json": "ffc1bb6570bd796e3d51b120092c8bf1ceed6be6627ad96996e315833375f65e",
-    "tools/rhino_oracle/observations/circle_fit_selection.json": "0094d3a45c6ff61f8fc598a0b723613b4a1ce12afa0347853c372c45ade6c448",
+    "tools/rhino_oracle/observations/circle_fit_selection.json": "1d6f4465f0038e7833a557c383bc6591a0b88340682a3718afada50a5b949312",
     "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
     "tools/rhino_oracle/fixtures/circle_fit_points.json": "2a99fb059791d42534e62b35f2c80b66317da89d77c6a1f3b37ec33286ec4742",
     "tools/rhino_oracle/observations/circle_fit_points.json": "4a791cacb4bf09c89d81b6f7055ba91055a8150c20a02dd22c429d6d3e152a65",

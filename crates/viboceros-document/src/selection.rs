@@ -104,6 +104,7 @@ impl Document {
     /// Attribute/layer changes prune individual objects, without group expansion.
     /// History replay has a separate group-aware cleanup policy below.
     pub(super) fn prune_selection(&mut self) {
+        self.prune_control_point_selection();
         let selection = self.selectable_recorded_objects(&self.selection);
         self.update_selection(selection);
     }

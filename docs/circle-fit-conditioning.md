@@ -90,9 +90,10 @@ sets return no Circle, and one case remains an explicit compatibility gap:
 Native radius is `1999999.999997051`; the independent estimate differs by about
 `2.35e-6` in both radius and center. The test retains that disagreement and does
 not enlarge the regular comparison bound to absorb it. Native oriented frames,
-this convergence detail, arbitrary thin/noisy inputs, Circle control-point/mesh
-vertex selection and Maelstrom FitPoints picking remain incomplete. Circle's
-[point-object input](circle-fit-input.md) now replays native selection/history.
+this convergence detail, arbitrary thin/noisy inputs and Maelstrom FitPoints
+picking remain incomplete. Circle's [point and grip input](circle-fit-input.md)
+now replays native selection/history for the retained recipes;
+[complete grip editing and selection behavior](control-points.md) remains pending.
 
 The current 10,000-point benchmark produced medians of `2.228` and `1.225` ms
 in two invocations, versus the earlier retained translated SDK median of
