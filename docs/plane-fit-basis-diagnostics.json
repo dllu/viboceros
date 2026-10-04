@@ -1,0 +1,4910 @@
+{
+  "basis_epsilon": 1e-12,
+  "centroid": "sequential arithmetic mean",
+  "input_scaling": "none",
+  "measurements": [
+    {
+      "id": "circle-fit-diag-0",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-1",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-2",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.7653668647301795,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.9194016867619659
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.7653668647301795,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.9194016867619659
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.5773502691896261,
+            -0.5773502691896255,
+            -0.5773502691896257
+          ],
+          "normal_error": 1.9999999999999998
+        },
+        "faer_true_3": {
+          "basis_error": 1.7320508075688774,
+          "normal": [
+            -0.5773502691896257,
+            -0.5773502691896257,
+            -0.5773502691896257
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.9999999999999998,
+          "normal": [
+            0.5773502691896257,
+            0.5773502691896258,
+            0.5773502691896256
+          ],
+          "normal_error": 3.3306690738754696e-16
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.5773502691896257,
+            -0.5773502691896256,
+            -0.5773502691896258
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.7653668647301795,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.9194016867619659
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.7653668647301795,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.9194016867619659
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.7320508075688772,
+          "normal": [
+            -0.5773502691896257,
+            -0.5773502691896258,
+            -0.5773502691896255
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.7320508075688772,
+          "normal": [
+            0.5773502691896258,
+            0.5773502691896256,
+            0.5773502691896255
+          ],
+          "normal_error": 4.002966042486721e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-3",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.5832459223617912,
+          "normal": [
+            -0.41569911365938966,
+            0.5542654848791885,
+            0.7210991742988171
+          ],
+          "normal_error": 1.8553162395121847
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.5832459223617912,
+          "normal": [
+            0.4156991136593897,
+            -0.5542654848791885,
+            -0.721099174298817
+          ],
+          "normal_error": 0.7468611995560928
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            1.827411898212214e-16,
+            -2.7950276943721036e-16,
+            -1.0
+          ],
+          "normal_error": 3.3394032487908084e-16
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            0.415699113659391,
+            -0.5542654848791877,
+            -0.721099174298817
+          ],
+          "normal_error": 0.7468611995560929
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.4156991136593909,
+            0.5542654848791876,
+            0.721099174298817
+          ],
+          "normal_error": 1.8553162395121845
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.2726400319339226e-16,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.220446049250313e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-4",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.4156991136593903,
+            0.554265484879188,
+            0.7210991742988171
+          ],
+          "normal_error": 0.7468611995560926
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            0.4156991136593903,
+            -0.554265484879188,
+            -0.7210991742988171
+          ],
+          "normal_error": 1.8553162395121847
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -5.205363494785399e-16,
+            4.710350389226791e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.37089208099413e-17,
+            1.0
+          ],
+          "normal_error": 1.37089208099413e-17
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            0.4156991136593907,
+            -0.5542654848791876,
+            -0.7210991742988171
+          ],
+          "normal_error": 1.8553162395121845
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.4156991136593908,
+            0.5542654848791876,
+            0.7210991742988172
+          ],
+          "normal_error": 0.7468611995560926
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.163488054287664e-15,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.1102230246251562e-16,
+            1.0
+          ],
+          "normal_error": 1.1102230246251562e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-5",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.41569911365939083,
+            0.5542654848791877,
+            0.7210991742988171
+          ],
+          "normal_error": 0.7468611995560928
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.5832459223617918,
+          "normal": [
+            0.415699113659391,
+            -0.5542654848791875,
+            -0.721099174298817
+          ],
+          "normal_error": 1.8553162395121845
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            1.6358879225349648e-16,
+            5.712624491391943e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            0.4156991136593909,
+            -0.5542654848791876,
+            -0.721099174298817
+          ],
+          "normal_error": 1.8553162395121845
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.4156991136593909,
+            0.5542654848791877,
+            0.7210991742988171
+          ],
+          "normal_error": 0.7468611995560928
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.545280063867844e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-6",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.5832459223617912,
+          "normal": [
+            -0.4156991136593898,
+            0.5542654848791884,
+            0.7210991742988171
+          ],
+          "normal_error": 1.8553162395121847
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            0.4156991136593897,
+            -0.5542654848791886,
+            -0.721099174298817
+          ],
+          "normal_error": 0.7468611995560929
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            2.181183896713283e-16,
+            5.3392453079763075e-16,
+            -1.0
+          ],
+          "normal_error": 5.767590801194928e-16
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            8.74903441163914e-21,
+            -1.0
+          ],
+          "normal_error": 8.74903441163914e-21
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.5832459223617918,
+          "normal": [
+            0.415699113659391,
+            -0.5542654848791876,
+            -0.7210991742988171
+          ],
+          "normal_error": 0.7468611995560928
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.5832459223617916,
+          "normal": [
+            -0.4156991136593909,
+            0.5542654848791877,
+            0.721099174298817
+          ],
+          "normal_error": 1.8553162395121845
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.545280063867844e-16,
+            -1.0
+          ],
+          "normal_error": 2.545280063867844e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.1807110278181796e-16,
+            -1.0
+          ],
+          "normal_error": 2.1807110278181796e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-7",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            8.628096437211982e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.1175927064579858e-29,
+            1.0
+          ],
+          "normal_error": 1.1175927064579858e-29
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-8",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            6.481095608355749e-17,
+            -1.0
+          ],
+          "normal_error": 6.481095608355749e-17
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            3.2756004965118223e-31,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-9",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            5.877977711059675e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.569204979449767e-31,
+            1.0
+          ],
+          "normal_error": 1.569204979449767e-31
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-10",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.004924603561493e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 4.2809206589492714e-30
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-11",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.0049472899438807e-16,
+            -1.0
+          ],
+          "normal_error": 1.0049472899438807e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -8.687435663256465e-31,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-12",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.0060329862344326e-16,
+            -1.0
+          ],
+          "normal_error": 1.0060329862344326e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.378497385603877e-30,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-13",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.0090412434602322e-16,
+            -1.0
+          ],
+          "normal_error": 1.0090412434602322e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -6.529459895579452e-31,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-14",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.00003016512277526833,
+          "normal": [
+            0.00021238835597678235,
+            3.3807956544312143e-6,
+            -0.9999999774398781
+          ],
+          "normal_error": 0.000033925497912795756
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.9999999999397489,
+          "normal": [
+            -0.00021238835597678235,
+            -3.3807956544310923e-6,
+            0.9999999774398781
+          ],
+          "normal_error": 1.999999999712265
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.00019686247992862905,
+            0.000026787334556908913,
+            0.9999999802638011
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.00019686402769135915,
+            0.000026784327119111495,
+            0.9999999802635771
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.6566341879073988e-17,
+          "normal": [
+            0.00019686402769135772,
+            -0.000026784327119107006,
+            -0.9999999802635771
+          ],
+          "normal_error": 2.6595583926884312e-17
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.00019686402769135902,
+            0.000026784327119125373,
+            0.9999999802635771
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.00003016512277526813,
+          "normal": [
+            0.00021238835597678252,
+            3.3807956544310123e-6,
+            -0.9999999774398781
+          ],
+          "normal_error": 0.000033925497912795654
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.00003016512277526798,
+          "normal": [
+            0.00021238835597678254,
+            3.3807956544308615e-6,
+            -0.9999999774398781
+          ],
+          "normal_error": 0.00003392549791279553
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0001968624799286144,
+            0.00002678733455686862,
+            0.9999999802638011
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.2248096653665651e-17,
+          "normal": [
+            0.00019686402769135915,
+            -0.000026784327119121324,
+            -0.9999999802635771
+          ],
+          "normal_error": 1.2249565925448216e-17
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.00019686402769135915,
+            0.0000267843271191204,
+            0.9999999802635771
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 4.209076202873675e-17,
+          "normal": [
+            0.00019686402769135931,
+            -0.00002678432711909148,
+            -0.9999999802635771
+          ],
+          "normal_error": 4.2092236116006535e-17
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-15",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.000601842642974455,
+          "normal": [
+            0.004262943227744878,
+            0.00006398793593686766,
+            -0.9999909115689909
+          ],
+          "normal_error": 0.0006768521103032894
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.999999976021444,
+          "normal": [
+            -0.004262943227744877,
+            -0.0000639879359368681,
+            0.9999909115689909
+          ],
+          "normal_error": 1.999999885467802
+        },
+        "faer_false_4": {
+          "basis_error": 1.9999999999584481,
+          "normal": [
+            -0.003940352968355666,
+            0.0005629080758726274,
+            0.9999920783451153
+          ],
+          "normal_error": 1.9999999998015305
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.003953245063122694,
+            0.0005378546928869187,
+            0.9999920412512293
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0468199700104547e-16,
+          "normal": [
+            0.0039532450631227034,
+            -0.0005378546928868798,
+            -0.9999920412512293
+          ],
+          "normal_error": 2.0931406766377492e-16
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.003953245063122692,
+            0.0005378546928869186,
+            0.9999920412512293
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0006018426429744505,
+          "normal": [
+            0.004262943227744882,
+            0.00006398793593686308,
+            -0.9999909115689909
+          ],
+          "normal_error": 0.0006768521103032874
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0006018426429744527,
+          "normal": [
+            0.00426294322774488,
+            0.00006398793593686529,
+            -0.9999909115689909
+          ],
+          "normal_error": 0.0006768521103032886
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.9999999999584481,
+          "normal": [
+            -0.003940352968355636,
+            0.0005629080758726773,
+            0.9999920783451153
+          ],
+          "normal_error": 1.9999999998015305
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.1606129787721124e-16,
+          "normal": [
+            0.003953245063122693,
+            -0.0005378546928870699,
+            -0.9999920412512293
+          ],
+          "normal_error": 1.1721830114293187e-16
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.003953245063122694,
+            0.0005378546928872784,
+            0.9999920412512293
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.8230726925562715e-16,
+          "normal": [
+            0.00395324506312269,
+            -0.0005378546928873113,
+            -0.9999920412512293
+          ],
+          "normal_error": 2.8383379593142594e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-16",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0027869028262327952,
+          "normal": [
+            0.023330843842882216,
+            -0.00019229886445870645,
+            -0.9997277803215862
+          ],
+          "normal_error": 0.0031322140696822764
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.9999994890129613,
+          "normal": [
+            -0.023330843842882237,
+            0.0001922988644587083,
+            0.9997277803215862
+          ],
+          "normal_error": 1.9999975473072513
+        },
+        "faer_false_4": {
+          "basis_error": 1.5701225439659525,
+          "normal": [
+            -0.32864990133816174,
+            -0.6707125289911969,
+            -0.664931534674548
+          ],
+          "normal_error": 0.8251431797301335
+        },
+        "faer_true_3": {
+          "basis_error": 2.837575616010763e-16,
+          "normal": [
+            0.0219014457005293,
+            -0.002979197976628267,
+            -0.9997556956855224
+          ],
+          "normal_error": 2.621158705221274e-16
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0000000000000004,
+          "normal": [
+            -0.021901445700529234,
+            0.0029791979766283154,
+            0.9997556956855224
+          ],
+          "normal_error": 1.9999999999999998
+        },
+        "faer_true_4": {
+          "basis_error": 2.0000000000000004,
+          "normal": [
+            -0.021901445700529314,
+            0.0029791979766283783,
+            0.9997556956855224
+          ],
+          "normal_error": 1.9999999999999998
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0027869028262327974,
+          "normal": [
+            0.02333084384288222,
+            -0.00019229886445870452,
+            -0.9997277803215862
+          ],
+          "normal_error": 0.0031322140696822794
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0027869028262328143,
+          "normal": [
+            0.02333084384288222,
+            -0.00019229886445868734,
+            -0.9997277803215862
+          ],
+          "normal_error": 0.003132214069682295
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.5701225439659567,
+          "normal": [
+            0.3286499013381665,
+            0.6707125289912048,
+            0.6649315346745374
+          ],
+          "normal_error": 1.8218503596467035
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.021901445700540506,
+            0.0029791979766297222,
+            0.9997556956855221
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.021901445700540433,
+            0.0029791979766300896,
+            0.9997556956855221
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.02190144570052181,
+            0.0029791979766270738,
+            0.9997556956855226
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-17",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-18",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.220446049250313e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.220446049250313e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-19",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-20",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 1.4142135623730951
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-21",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-22",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            -5.519542418997168e-20,
+            4.292929737778395e-22,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204337135417255e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-23",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            4.312564714174632e-22,
+            -3.354216996172445e-26,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -7.579195966066916e-34,
+            7.579195966066913e-29,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204460480167318e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-24",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            3.3691912822273e-24,
+            -2.6204821074586546e-30,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204460492501898e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-25",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-26",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-27",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204460492503126e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-28",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204460492503126e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-29",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -2.2204460492379768e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -1.614941353332092e-26,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-30",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            -0.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -1.0,
+            -0.0,
+            0.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-31",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            1.0571472302580279e-7,
+            -0.9999999999999944,
+            -5.664512547860887e-17
+          ],
+          "normal_error": 1.0571472302580293e-7
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            1.4211440769568674e-9,
+            1.0,
+            0.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -1.4211440769568671e-9,
+            -1.0,
+            1.4211440769568678e-18
+          ],
+          "normal_error": 1.4211440769568674e-9
+        },
+        "faer_true_4": {
+          "basis_error": 1.654291327432858e-17,
+          "normal": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "normal_error": 1.654291327432858e-17
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            2.2204460492503126e-16
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            -2.2204460492503126e-16
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -1.7735281977773224e-8,
+            -1.0,
+            2.3760213385114544e-17
+          ],
+          "normal_error": 1.7735281977773224e-8
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            2.2204460492503126e-16
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            -2.2204460492503126e-16
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            1.4333552948916584e-8,
+            1.0,
+            7.041310691282382e-18
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-32",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-33",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-34",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "faer_true_4": {
+          "basis_error": 2.3939183968479943e-16,
+          "normal": [
+            0.0,
+            1.3877787807814454e-17,
+            1.0
+          ],
+          "normal_error": 2.3939183968479943e-16
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.2551405187698497e-16
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.412207290351148e-16,
+          "normal": [
+            0.0,
+            1.570667715812984e-17,
+            1.0
+          ],
+          "normal_error": 2.412207290351148e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 4.475586568020162e-16,
+          "normal": [
+            0.0,
+            2.2204460492503126e-16,
+            1.0
+          ],
+          "normal_error": 4.475586568020162e-16
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 3.469446951953713e-18,
+          "normal": [
+            0.0,
+            -2.2204460492503126e-16,
+            1.0
+          ],
+          "normal_error": 3.469446951953713e-18
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.25509125338071e-16,
+          "normal": [
+            0.0,
+            -4.926538913983864e-21,
+            1.0
+          ],
+          "normal_error": 2.25509125338071e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-35",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "normal_error": 1.4142135623730951
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.3206039630295833e-15
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.3206039630295833e-15
+        },
+        "faer_true_4": {
+          "basis_error": 0.7232338058414234,
+          "normal": [
+            0.0,
+            0.6742902418254637,
+            0.7384664310440643
+          ],
+          "normal_error": 0.7232338058414234
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 1.414213562373094
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 1.414213562373094
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            4.1489413944913573e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.3206039630295833e-15
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 1.3206039630295833e-15
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_error": 1.414213562373094
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-36",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-diag-37",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.220446049250313e-16
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            2.220446049250313e-16,
+            -1.0
+          ],
+          "normal_error": 2.220446049250313e-16
+        }
+      }
+    },
+    {
+      "id": "circle-fit-arc-0",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            9.365161107209464e-17,
+            -1.0
+          ],
+          "normal_error": 9.365161107209464e-17
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            1.0203079706073307e-28,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-arc-1",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            9.640000018559021e-17,
+            -1.0
+          ],
+          "normal_error": 9.640000018559021e-17
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            9.28470000324653e-28,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-arc-2",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            9.812222948203082e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.462373216569613e-28
+        },
+        "nalgebra_true_4": {
+          "basis_error": 3.102587123320253e-26,
+          "normal": [
+            0.0,
+            3.0779633911545567e-26,
+            1.0
+          ],
+          "normal_error": 3.102587123320253e-26
+        }
+      }
+    },
+    {
+      "id": "circle-fit-noisy-0",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 4.650950408346115e-30
+        },
+        "faer_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 4.650950408346115e-30
+        },
+        "faer_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 4.650950408346115e-30
+        },
+        "nalgebra_false_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 4.650950408346115e-30
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 4.650950408346115e-30
+        },
+        "nalgebra_false_4": {
+          "basis_error": 9.365160705766092e-17,
+          "normal": [
+            0.0,
+            9.365160705766557e-17,
+            -1.0
+          ],
+          "normal_error": 9.365160705766092e-17
+        },
+        "nalgebra_true_3": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            1.164099600752698e-28,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-noisy-1",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_false_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            9.365156682851217e-17,
+            -1.0
+          ],
+          "normal_error": 9.365156682851217e-17
+        },
+        "nalgebra_true_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            4.3557636774407704e-29,
+            1.0
+          ],
+          "normal_error": 2.0
+        }
+      }
+    },
+    {
+      "id": "circle-fit-noisy-2",
+      "variants": {
+        "faer_false_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_false_4": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "faer_true_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "faer_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_false_3": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_3_cross": {
+          "basis_error": 2.0,
+          "normal": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_false_4": {
+          "basis_error": 1.4142135623730951,
+          "normal": [
+            0.0,
+            9.365115605182958e-17,
+            -1.0
+          ],
+          "normal_error": 2.0
+        },
+        "nalgebra_true_3": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_3_cross": {
+          "basis_error": 0.0,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        },
+        "nalgebra_true_4": {
+          "basis_error": 0.0,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "normal_error": 0.0
+        }
+      }
+    }
+  ],
+  "native_records": 44,
+  "normal_epsilon": 1e-12,
+  "schema_version": 1
+}

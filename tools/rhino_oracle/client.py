@@ -239,7 +239,8 @@ class OracleClient:
         for family, module in [('maelstrom_geometry_command', 'maelstrom_command_probe'),
                                ('maelstrom_options_command', 'maelstrom_options_probe'),
                                ('maelstrom_input_command', 'maelstrom_input_probe'),
-                               ('maelstrom_circle_command', 'maelstrom_circle_probe')]:
+                               ('maelstrom_circle_command', 'maelstrom_circle_probe'),
+                               ('maelstrom_fit_points_command', 'maelstrom_fit_points_probe')]:
             if any(op.get('op') == family for op in request.get('operations', [])):
                 from importlib import import_module
                 validate = import_module('.'+module, __package__).validate
@@ -560,6 +561,9 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            if any(op.get('op') == 'maelstrom_fit_points_command' for op in request.get('operations', [])):
+                for name in ('maelstrom_fit_points_probe.py', 'number_token.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'circle_fit_diagnostics' for op in request.get('operations', [])):
                 for name in ('circle_fit_diagnostics.py', 'circle_fit_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)

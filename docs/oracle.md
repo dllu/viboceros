@@ -24,6 +24,9 @@ retained separately. All were captured using private Xvfb settings schemes.
 The [Maelstrom Circle input captures](maelstrom-circle-input.md) compare public
 Circle definitions, command point maps, size memory, selection and history in
 private Xvfb sessions.
+The [Maelstrom FitPoints workflows](maelstrom-fit-points.md) add 17 completed
+commands and 250 point/curve-end maps. The retained
+[plane-basis experiments](plane-fit-basis.md) leave native orientation unresolved.
 The [Circle fit foundation](circle-fit.md) adds spatial-distance fitting on a
 PCA plane with retained native command/SDK evidence. Native basis conventions
 and near-collinear convergence remain unresolved before input integration.

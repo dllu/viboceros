@@ -17,6 +17,45 @@ fn point(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[Real; 3]>(v.clone()).unwrap()).unwrap()
 }
 
+fn assert_native_locus(fit: Circle3, native: &Value, epsilon: Real, label: &Value) {
+    let normal = fit.normal().unwrap().as_vector();
+    let native_normal = point(&native["normal"]).to_array();
+    let normal_error = [-1., 1.]
+        .into_iter()
+        .map(|sign| {
+            normal
+                .to_array()
+                .into_iter()
+                .zip(native_normal)
+                .fold(0.0_f64, |distance, (a, b)| distance.hypot(a - sign * b))
+        })
+        .fold(Real::INFINITY, Real::min);
+    assert!(normal_error <= 1e-12, "{label}: normal {normal_error}");
+    // Native seams/directions are measured separately, never assumed equal.
+    // Boundary witnesses also catch normal errors amplified by a large radius.
+    for i in 0..64 {
+        let theta = std::f64::consts::TAU * i as Real / 64.;
+        let p = point(&native["origin"])
+            .translated(
+                Vector3::try_from(std::array::from_fn(|j| {
+                    native["radius"].as_f64().unwrap()
+                        * (theta.cos() * native["x"][j].as_f64().unwrap()
+                            + theta.sin() * native["y"][j].as_f64().unwrap())
+                }))
+                .unwrap(),
+            )
+            .unwrap();
+        let v = fit.center().vector_to(p).unwrap();
+        let height = v.dot(normal).unwrap();
+        let radial = v.cross(normal).unwrap().length().unwrap();
+        let distance = height.hypot(radial - fit.radius());
+        assert!(
+            distance <= epsilon,
+            "{label}: boundary {distance} > {epsilon}"
+        );
+    }
+}
+
 #[test]
 fn regular_native_fits_match_geometric_circles_and_keep_duplicate_weights() {
     let (fixture, observed) = inputs();
@@ -47,31 +86,7 @@ fn regular_native_fits_match_geometric_circles_and_keep_duplicate_weights() {
             "{}: center {center_error} radius {radius_error}",
             op["id"]
         );
-        let normal = fit.normal().unwrap().as_vector();
-        let native_normal = Vector3::try_from(point(&c["normal"]).to_array()).unwrap();
-        assert!((normal.dot(native_normal).unwrap().abs() - 1.).abs() < 1e-12);
-        // Native seams/directions are measured separately, never assumed equal.
-        for i in 0..64 {
-            let theta = std::f64::consts::TAU * i as Real / 64.;
-            let p = point(&c["origin"])
-                .translated(
-                    Vector3::try_from(std::array::from_fn(|j| {
-                        c["radius"].as_f64().unwrap()
-                            * (theta.cos() * c["x"][j].as_f64().unwrap()
-                                + theta.sin() * c["y"][j].as_f64().unwrap())
-                    }))
-                    .unwrap(),
-                )
-                .unwrap();
-            let v = fit.center().vector_to(p).unwrap();
-            let height = v.dot(normal).unwrap();
-            let radial = v.length().unwrap().hypot(0.).powi(2) - height * height;
-            assert!(
-                height.hypot(radial.max(0.).sqrt() - fit.radius()) < 1e-7,
-                "{}",
-                op["id"]
-            );
-        }
+        assert_native_locus(fit, c, 1e-7, &op["id"]);
     }
 }
 
@@ -126,6 +141,7 @@ fn near_collinear_native_circle_is_recovered_within_sixteen_radius_ulps() {
             <= epsilon
     );
     assert!(fit.radius().is_finite() && fit.radius() > 0.);
+    assert_native_locus(fit, native, epsilon, &q["operations"][21]["id"]);
 }
 
 #[test]
@@ -181,9 +197,7 @@ fn circle_fit_diagnostics_cover_center_witnesses_thin_arcs_and_large_circles() {
                 "{}: error {error} epsilon {epsilon}",
                 op["id"]
             );
-            let normal = fit.normal().unwrap().as_vector();
-            let native_normal = Vector3::try_from(point(&native["normal"]).to_array()).unwrap();
-            assert!((normal.dot(native_normal).unwrap().abs() - 1.).abs() < 1e-12);
+            assert_native_locus(fit, native, epsilon, &op["id"]);
         }
     }
 }

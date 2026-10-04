@@ -75,6 +75,10 @@ large circles use the larger of `1e-7` and **sixteen ULPs of native radius**.
 This accounts for binary64 coordinate spacing; at radius `2e12`, one ULP is
 `0.000244140625`. Normal comparisons remain unoriented. These bounds validate
 geometric circles, not native seams, directions or command integration.
+The [plane-basis diagnostics](plane-fit-basis.md) retain twelve independent
+decomposition variants, and stricter vector/boundary tests guard the locus.
+The [Maelstrom FitPoints captures](maelstrom-fit-points.md) verify that its
+command maps use the fitted Circle frame, including reversed/tilted CPlanes.
 
 Of the 44 API recipes, 41 positive-radius fits meet those bounds, two degenerate
 sets return no Circle, and one case remains an explicit compatibility gap:

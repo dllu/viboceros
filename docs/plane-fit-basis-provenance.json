@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "private_xvfb_native_inputs": true,
+  "engine_version": "8.32.26160.13001",
+  "native_records": 44,
+  "native_provenance": "docs/circle-fit-diagnostics-provenance.json",
+  "full_native_orientation_parity": false,
+  "centroid": "sequential arithmetic mean",
+  "input_scaling": "none",
+  "normal_epsilon": 1e-12,
+  "basis_epsilon": 1e-12,
+  "variants": {
+    "faer_false_3": {
+      "available_records": 44,
+      "oriented_normal_matches": 23,
+      "complete_basis_matches": 20
+    },
+    "faer_false_3_cross": {
+      "available_records": 44,
+      "oriented_normal_matches": 24,
+      "complete_basis_matches": 22
+    },
+    "faer_false_4": {
+      "available_records": 44,
+      "oriented_normal_matches": 22,
+      "complete_basis_matches": 17
+    },
+    "faer_true_3": {
+      "available_records": 44,
+      "oriented_normal_matches": 27,
+      "complete_basis_matches": 23
+    },
+    "faer_true_3_cross": {
+      "available_records": 44,
+      "oriented_normal_matches": 29,
+      "complete_basis_matches": 24
+    },
+    "faer_true_4": {
+      "available_records": 44,
+      "oriented_normal_matches": 28,
+      "complete_basis_matches": 24
+    },
+    "nalgebra_false_3": {
+      "available_records": 44,
+      "oriented_normal_matches": 17,
+      "complete_basis_matches": 15
+    },
+    "nalgebra_false_3_cross": {
+      "available_records": 44,
+      "oriented_normal_matches": 16,
+      "complete_basis_matches": 14
+    },
+    "nalgebra_false_4": {
+      "available_records": 40,
+      "oriented_normal_matches": 13,
+      "complete_basis_matches": 3
+    },
+    "nalgebra_true_3": {
+      "available_records": 44,
+      "oriented_normal_matches": 18,
+      "complete_basis_matches": 15
+    },
+    "nalgebra_true_3_cross": {
+      "available_records": 44,
+      "oriented_normal_matches": 16,
+      "complete_basis_matches": 12
+    },
+    "nalgebra_true_4": {
+      "available_records": 40,
+      "oriented_normal_matches": 16,
+      "complete_basis_matches": 8
+    }
+  },
+  "scope_notes": [
+    "Independent unscaled matrix decomposition experiments only; not a production fitted-plane algorithm.",
+    "Complete basis matches require oriented normal and both in-plane axes within Euclidean epsilon.",
+    "nalgebra four-column variants skip four three-point records. Zero XYZ normals are retained as null.",
+    "Includes two degenerate circle inputs whose public Plane status is Success; no claim of a unique plane.",
+    "No variant matches all available native outputs. No proprietary implementation or source is inferred from match counts."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/examples/inspect_plane_basis.rs": "ecdaf4a3652090c4453ff19ff5d7d349ac559892d1ce2c84d6a89475f99ccf79",
+    "docs/plane-fit-basis-diagnostics.json": "7ba90dde699b76885ca338e410788575c5d96a64dd007f4465916086ca2c2bab",
+    "tools/rhino_oracle/circle_fit_diagnostics.py": "d9a96ebaa40ec476e86b3dee76322dc5ddfdf77b6ef458f8fd7a9207868dfde6",
+    "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/circle_fit_diagnostics.json": "72d1490b11dd73190d540b6298fb9392f2a2f1c2a3d78b90531e4eee06efe67c",
+    "tools/rhino_oracle/observations/circle_fit_diagnostics.json": "ba74ce7d012e45c57168263581ba500103effa9288d64317c8ec1c126b7ad93e",
+    "tools/rhino_oracle/fixtures/circle_fit_distant_arcs.json": "6fa60e2c182ccaafe70d231777db98c80becefe741519777846c89532defb5d7",
+    "tools/rhino_oracle/observations/circle_fit_distant_arcs.json": "6cd757949ed93ae9713314e4f10b2ca421a07be0e966400df46dee3a9eb6a45b",
+    "tools/rhino_oracle/fixtures/circle_fit_distant_noisy.json": "33f7ec88621d8ddbac1ab964cdec41a30998c5c20bc83c3ed64e7b682e61ed7d",
+    "tools/rhino_oracle/observations/circle_fit_distant_noisy.json": "f2fb4d1154d14bb1fcc690a8dadd37f19dceead19a777ecbd3c6f2f9e00b39fe"
+  }
+}

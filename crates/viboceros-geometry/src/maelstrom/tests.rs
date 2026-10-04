@@ -68,6 +68,71 @@ fn captures() -> Vec<(Value, Value)> {
 }
 
 #[test]
+fn maelstrom_fit_points_maps_match_17_native_commands_given_the_captured_frame() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/maelstrom_fit_points.json"
+    ))
+    .unwrap();
+    let r: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/maelstrom_fit_points.json"
+    ))
+    .unwrap();
+    let operations = q["operations"].as_array().unwrap();
+    let results = r["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 17);
+    assert_eq!(results.len(), operations.len());
+    let mut maps = 0;
+    for (op, row) in operations.iter().zip(results) {
+        assert_eq!(op["id"], row["id"]);
+        let label = op["id"].as_str().unwrap();
+        let v = &row["value"];
+        assert_eq!(v["success"], true, "{label}");
+        assert!(
+            v["history"].as_str().unwrap().contains("Morphed "),
+            "{label}"
+        );
+        let c = &v["sdk_circle"];
+        assert_eq!(c, &v["circle_command"], "{label}");
+        // This verifies the morph, not our unresolved fitted-plane orientation.
+        let frame = Frame3::try_from_directions(
+            p(&c["origin"]),
+            Vector3::try_from(p(&c["x"]).to_array()).unwrap(),
+            Vector3::try_from(p(&c["y"]).to_array()).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap();
+        let m = MaelstromPointMorph::try_new(
+            frame,
+            c["radius"].as_f64().unwrap(),
+            op["target"].as_f64().unwrap(),
+            op["degrees"].as_f64().unwrap().to_radians(),
+        )
+        .unwrap();
+        for source in v["before"].as_array().unwrap() {
+            let Some(index) = source["target"].as_u64() else {
+                continue;
+            };
+            let after = v["after"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|object| object["target"].as_u64() == Some(index))
+                .unwrap();
+            for (key, sdk_key) in [("point", "sdk_points"), ("end", "sdk_ends")] {
+                if source[key].is_null() {
+                    continue;
+                }
+                let mapped = m.morph_point(p(&source[key])).unwrap();
+                near(mapped, p(&after[key]), 1e-11, 0., label);
+                near(mapped, p(&v[sdk_key][index as usize]), 1e-11, 0., label);
+                maps += 1;
+            }
+        }
+    }
+    assert_eq!(maps, 250);
+}
+
+#[test]
 fn maelstrom_maps_match_108_sdk_cases_including_relative_thresholds_and_tiny_normals() {
     let mut count = 0;
     for (op, row) in captures() {

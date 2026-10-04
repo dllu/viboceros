@@ -58,7 +58,11 @@ repeating an already current Radius/Diameter keyword invokes Rhino's transparent
 measurement command. Verified recipes omit that unavailable option; their actual
 input tokens are retained as `resolved_inputs`.
 
-Tangent, AroundCurve, FitPoints, transparent measurement commands, ProjectOsnap
+The [FitPoints workflows](maelstrom-fit-points.md) now retain 17 completed
+native commands, point selection/history behavior and 250 deformation maps.
+Interactive integration still needs a compatible fitted-plane orientation.
+
+Tangent, AroundCurve, transparent measurement commands, ProjectOsnap
 behavior on actual snapped picks and native guide pixels for these construction
 modes remain to verify. The two ProjectOsnap recipes establish only that typed
 world points produce the same circle. Pending three-point construction aids,
