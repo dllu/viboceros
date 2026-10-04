@@ -45,6 +45,14 @@ impl RigidLayout {
         let mut units = Vec::<Vec<ObjectId>>::new();
         let mut group_bounds = BTreeMap::new();
         let mut object_bounds = BTreeMap::new();
+        // Placement amplifies center errors by the scale factor. Resolve
+        // bounds more closely than modelling predicates; the bounds kernel
+        // retains its coordinate-dependent rounding floor and work budget.
+        let center_tolerance = Tolerance::try_new(
+            document.tolerance().absolute().min(1e-12),
+            document.tolerance().relative().min(1e-15),
+            document.tolerance().angular(),
+        )?;
         for id in &ids {
             let object = document
                 .object(*id)
@@ -59,7 +67,7 @@ impl RigidLayout {
                 units.len() - 1
             });
             units[slot].push(*id);
-            let bounds = object.geometry().tight_bounds(document.tolerance())?;
+            let bounds = object.geometry().tight_bounds(center_tolerance)?;
             object_bounds.insert(*id, bounds);
             // Every selected membership contributes to that group's center,
             // even when an overlapping member has a different top group.
@@ -183,4 +191,47 @@ pub(super) fn apply(
         document.select_command_results(sources.ids.iter().copied())?;
     }
     Ok((layout.sources.len(), if copy { count } else { 0 }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use viboceros_geometry::{NurbsCurve, WeightedPoint3};
+
+    #[test]
+    fn rigid_centers_resolve_analytic_rational_extrema_before_scaling() {
+        let controls = [[2., 0., 0.], [0., 2., 0.], [-2., 0., 0.], [0., -2., 0.]]
+            .into_iter()
+            .zip([1., 2., 0.5, 1.])
+            .map(|(p, w)| WeightedPoint3::try_new(Point3::try_from(p).unwrap(), w).unwrap())
+            .collect();
+        let curve =
+            NurbsCurve::try_new_rational(2, controls, vec![0., 0., 0., 1., 2., 2., 2.]).unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+        // First span: y(t)=(8t-6t²)/(1+2t-7t²/4), whose maximum
+        // is at t=3-sqrt(5). The second span has xmin=(1-sqrt(17))/4.
+        // These equations do not use the bounds implementation or oracle.
+        let t = 3. - 5_f64.sqrt();
+        let ymax = (8. * t - 6. * t * t) / (1. + 2. * t - 1.75 * t * t);
+        let expected = Point3::try_new((9. - 17_f64.sqrt()) / 8., (ymax - 2.) / 2., 0.).unwrap();
+        let origin = Point3::try_new(0., 0., 0.).unwrap();
+        let map = AffineTransform3::try_uniform_scale(origin, 9.).unwrap();
+        for layout in [
+            RigidLayout::try_individual(&document, &[id]).unwrap(),
+            RigidLayout::try_new(&document, &[id], &[]).unwrap(),
+        ] {
+            let center = layout.center(id).unwrap();
+            assert!(center.distance_to(expected).unwrap() < 1e-12);
+            let actual = rigid_map(center, map)
+                .unwrap()
+                .transform_point(origin)
+                .unwrap();
+            let expected = rigid_map(expected, map)
+                .unwrap()
+                .transform_point(origin)
+                .unwrap();
+            assert!(actual.distance_to(expected).unwrap() < 1e-11);
+        }
+    }
 }

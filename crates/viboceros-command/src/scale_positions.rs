@@ -163,6 +163,12 @@ impl Command for ScalePositionsCommand {
             }
         };
         require_consumed(tail, count, USAGE)?;
+        if options.copy && factor == 0. {
+            return Err(GeometryError::Degenerate {
+                context: "ScalePositions copy reference factor",
+            }
+            .into());
+        }
         let map = scale_map(
             options.mode,
             context.construction_plane,
@@ -172,14 +178,20 @@ impl Command for ScalePositionsCommand {
             document.tolerance(),
         )?;
         let Some(map) = map else {
-            if factor != 0. {
-                self.factor.set(factor);
-            }
             self.mode.set(options.mode);
             return Ok("Scaled positions of 0 object(s)".into());
         };
+        if sources.postselected && (options.copy || map != AffineTransform3::identity()) {
+            document.release_command_selection_on_history_replay(sources.ids.iter().copied())?;
+        }
         let count = apply(document, &sources.ids, map, options.copy)?;
-        self.factor.set(factor);
+        if sources.postselected && !options.copy && map != AffineTransform3::identity() {
+            document.move_objects_to_end_in_order(sources.ids.iter().copied())?;
+            document.clear_selection();
+        }
+        if options.mode == ScaleMode::OneDimensional || factor != 1. {
+            self.factor.set(factor);
+        }
         self.mode.set(options.mode);
         Ok(format!(
             "Scaled positions of {count} object(s) in {} by {factor:.6}",
@@ -395,6 +407,7 @@ mod tests {
             "ScalePositions 0,0,0 2 Mode=4D",
             "ScalePositions 0,0,0 2 0,0,0 Mode=1D",
             "ScalePositions 0,0,0 0,0,0 2,0,0",
+            "ScalePositions 0,0,0 1,0,0 0,0,0 Copy=Yes",
             "ScalePositions 0,0,0 1e308 Mode=2D",
         ] {
             assert!(registry.execute(&mut doc, input).is_err(), "{input}");
@@ -418,6 +431,10 @@ mod tests {
         assert_eq!(
             registry.scale_mode_default("ScalePositions"),
             Some(ScaleMode::OneDimensional)
+        );
+        assert_eq!(
+            registry.transform_scalar_default("ScalePositions"),
+            Some(1.)
         );
     }
 }

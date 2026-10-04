@@ -45,7 +45,7 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if prompt.reference.is_some() || prompt.factor.is_some() {
+        if prompt.factor.is_some() {
             return false;
         }
         let value = if enter {
@@ -63,7 +63,9 @@ impl VibocerosApp {
             self.push_log("Pick an origin before entering a factor".into());
         } else {
             prompt.factor = Some(value);
-            if prompt.getter_mode == ScaleMode::OneDimensional {
+            if prompt.reference.is_some() {
+                self.apply_position_scale(prompt, None, None);
+            } else if prompt.getter_mode == ScaleMode::OneDimensional {
                 self.active_command = Some(InteractiveCommand::ScalePositions(prompt));
                 self.push_log(prompt.prompt().into());
             } else {

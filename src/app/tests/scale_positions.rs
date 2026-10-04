@@ -8,6 +8,18 @@ fn scale_positions_native_modes_groups_grips_repetition_and_memory_match() {
         include_str!("../../../tools/rhino_oracle/observations/scale_positions.json"),
         57,
         "ScalePositions",
+        99,
+    );
+}
+
+#[test]
+fn scale_positions_native_source_order_reference_numbers_copy_retry_and_defaults_match() {
+    super::scale_nu::replay_scale_nu_options(
+        include_str!("../../../tools/rhino_oracle/fixtures/scale_positions_input.json"),
+        include_str!("../../../tools/rhino_oracle/observations/scale_positions_input.json"),
+        64,
+        "ScalePositions",
+        64,
     );
 }
 

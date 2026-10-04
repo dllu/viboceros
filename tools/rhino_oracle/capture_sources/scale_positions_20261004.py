@@ -13,19 +13,7 @@ INPUTS = {'numeric':'w1,2,3 2 w3,6,5','negative':'w1,2,3 -2 w3,6,5',
           'remember_scalar_cancel':'w1,2,3 _Enter w3,6,5',
           'remember_mode_cancel':'w1,2,3 2 w3,6,5',
           'change_mode_from_3d':'w1,2,3 2',
-          'change_mode_from_1d':'w1,2,3 2 w3,6,5',
-          'repeat_reference':'w1,2,3 w3,6,5 w5,10,7 w7,2,3 _Cancel',
-          'reference_zero_retry':'w1,2,3 w3,6,5 w1,2,3 w5,10,7 _Cancel',
-          'reference_numeric':'w1,2,3 w3,6,5 9 _Cancel',
-          'reference_numeric_negative':'w1,2,3 w3,6,5 -9 _Cancel',
-          'reference_numeric_zero':'w1,2,3 w3,6,5 0 _Cancel',
-          'remember_reference_numeric':'w1,2,3 _Enter w3,6,5 _Cancel',
-          'remember_repeat_switch_mode':'w1,2,3 _Enter _Cancel',
-          'zero_reference_copy_cancel':'w1,2,3 w3,6,5 w1,2,3 _Cancel',
-          'remember_reference_cancel_mode':'w1,2,3 _Enter _Cancel',
-          'remember_numeric_cancel_mode':'w1,2,3 _Cancel',
-          'cancel_origin':'_Cancel', 'cancel_sources':'_Cancel',
-          'repeat_switch_mode':'w1,2,3 2 _Mode=_1D 4 _Cancel'}
+          'change_mode_from_1d':'w1,2,3 2 w3,6,5'}
 
 
 def validate_request(request):
@@ -41,24 +29,16 @@ def validate_request(request):
                 or re.match(r'^[A-Za-z0-9_-]{1,80}\Z',op['id']) is None or op['id'] in seen
                 or op['source'] not in SOURCES or op['plane'] not in ('world','rotated','tilted')
                 or op['mode'] not in ('1d','2d','3d') or not isinstance(op['input'],str) or op['input'] not in INPUTS
-                or type(op['copy']) is not bool or op['selection'] not in ('objects','grips','parent','post_forward','post_reverse')
+                or type(op['copy']) is not bool or op['selection'] not in ('objects','grips','parent')
                 or op['groups'] not in ('none','pair','overlap')
                 or op['groups'] != 'none' and op['source'] != 'mixed'
-                or op['selection'] in ('grips','parent') and op['source'] not in ('rational','surface','mesh','mixed')
-                or op['selection'].startswith('post_') and op['source']!='mixed'
+                or op['selection'] != 'objects' and op['source'] not in ('rational','surface','mesh','mixed')
                 or op['input']=='repeat_direction' and (op['mode']!='1d' or not op['copy'])
                 or op['input']=='repeat_factor' and (op['mode']=='1d' or not op['copy'])
                 or op['input'] in ('remember_scalar_cancel','remember_mode_cancel') and op['mode']!='1d'
                 or op['input']=='change_mode_from_3d' and op['mode']!='1d'
                 or op['input']=='change_mode_from_1d' and op['mode']=='1d'
-                or op['input'] in ('zero_cancel','zero_reference_cancel','remember_zero_reference') and op['copy']
-                or op['input'] in ('repeat_reference','reference_zero_retry') and not op['copy']
-                or op['input']=='repeat_switch_mode' and (op['mode']=='1d' or not op['copy'])
-                or op['input']=='remember_repeat_switch_mode' and op['mode']=='1d'
-                or op['input']=='zero_reference_copy_cancel' and not op['copy']
-                or op['input']=='remember_reference_cancel_mode' and (op['mode']=='3d' or op['copy'])
-                or op['input']=='remember_numeric_cancel_mode' and op['mode']=='1d'
-                or op['input']=='cancel_sources' and not op['selection'].startswith('post_')):
+                or op['input'] in ('zero_cancel','zero_reference_cancel','remember_zero_reference') and op['copy']):
             raise ValueError('invalid ScalePositions recipe')
         seen.add(op['id'])
 
@@ -84,24 +64,6 @@ def request():
     rows += [('rational','world',m,'zero_reference_cancel',False,'objects','none') for m in ('1d','2d','3d')]
     rows += [('rational','world',m,'remember_zero_reference',False,'objects','none') for m in ('1d','2d','3d')]
     return dict(protocol_version=1,iterations=1,operations=[dict(op='scale_positions',id='scale-positions-'+str(i),source=s,plane=p,mode=m,input=t,copy=c,selection=k,groups=g) for i,(s,p,m,t,c,k,g) in enumerate(rows)])
-
-
-def input_request():
-    rows = [('mixed',p,m,'repeat_reference',True,'objects','overlap') for p in ('world','tilted') for m in ('1d','2d','3d')]
-    rows += [('mixed','tilted',m,'reference_zero_retry',True,'objects','pair') for m in ('1d','2d','3d')]
-    rows += [('rational','tilted',m,t,False,'objects','none') for t in ('reference_numeric','reference_numeric_negative','reference_numeric_zero') for m in ('1d','2d','3d')]
-    rows += [('mixed',p,m,'numeric',c,'post_reverse','overlap') for p in ('world','tilted') for m in ('1d','2d','3d') for c in (False,True)]
-    rows += [('mixed','world',m,'numeric',True,'post_forward','none') for m in ('1d','2d','3d')]
-    rows += [('mixed','tilted','3d',t,False,k,'overlap') for t in ('cancel_origin','cancel_sources') for k in ('post_forward','post_reverse')]
-    rows += [('mixed','world',m,'identity',c,'post_reverse','overlap') for m in ('1d','2d','3d') for c in (False,True)]
-    rows += [('mixed','world',m,'repeat_switch_mode',True,'objects','pair') for m in ('2d','3d')]
-    rows += [('mixed','world',m,t,True,'objects','overlap') for t in ('reference_numeric','reference_numeric_negative') for m in ('1d','2d','3d')]
-    rows += [('rational','world',m,'remember_reference_numeric',False,'objects','none') for m in ('1d','2d','3d')]
-    rows += [('rational','world',m,'remember_repeat_switch_mode',False,'objects','none') for m in ('2d','3d')]
-    rows += [('rational','world',m,'zero_reference_copy_cancel',True,'objects','none') for m in ('1d','2d','3d')]
-    rows += [('rational','world',m,'remember_reference_cancel_mode',False,'objects','none') for m in ('1d','2d')]
-    rows += [('rational','world',m,'remember_numeric_cancel_mode',c,'objects','none') for m,c in (('2d',False),('3d',False),('3d',True))]
-    return dict(protocol_version=1,iterations=1,operations=[dict(op='scale_positions',id='scale-positions-input-'+str(i),source=s,plane=p,mode=m,input=t,copy=c,selection=k,groups=g) for i,(s,p,m,t,c,k,g) in enumerate(rows)])
 
 
 def run(op, host):
@@ -161,7 +123,7 @@ def run(op, host):
         vp.SetConstructionPlane(plane)
         seed = doc.Objects.AddPoint(host['_point']([1.,1.,1.]))
         doc.Objects.Select(seed)
-        seed_mode = '3d' if op['input'] in ('change_mode_from_3d','remember_zero_reference','remember_reference_cancel_mode') else '1d' if op['input'] in ('change_mode_from_1d','remember_numeric_cancel_mode') else op['mode']
+        seed_mode = '3d' if op['input'] in ('change_mode_from_3d','remember_zero_reference') else '1d' if op['input']=='change_mode_from_1d' else op['mode']
         seed_macros = ['_ScalePositions _Copy=_No _Mode=_'+seed_mode.upper()+' w0,0,0 w1,0,0 w2,0,0']
         if op['input']=='remember_scalar_cancel':
             seed_macros.append('_ScalePositions _Copy=_No w0,0,0 7 _Cancel')
@@ -169,16 +131,7 @@ def run(op, host):
             seed_macros.append('_ScalePositions _Copy=_No _Mode=_3D _Cancel')
         elif op['input']=='remember_zero_reference':
             seed_macros.append('_ScalePositions _Copy=_No _Mode=_'+op['mode'].upper()+' w0,0,0 w1,0,0 w0,0,0')
-        elif op['input']=='remember_reference_numeric':
-            seed_macros.append('_ScalePositions _Copy=_No w0,0,0 w1,0,0 9')
-        elif op['input']=='remember_repeat_switch_mode':
-            seed_macros.append('_ScalePositions _Copy=_Yes w0,0,0 2 _Mode=_1D 4 _Cancel')
-        elif op['input']=='remember_reference_cancel_mode':
-            seed_macros.append('_ScalePositions _Copy=_No _Mode=_'+op['mode'].upper()+' w0,0,0 w1,0,0 _Cancel')
-        elif op['input']=='remember_numeric_cancel_mode':
-            seed_macros.append('_ScalePositions _Copy=_'+('Yes' if op['copy'] else 'No')+' _Mode=_'+op['mode'].upper()+' w0,0,0 7 _Cancel')
-        seed_marker = 'Viboceros ScalePositions seed '+str(System.Guid.NewGuid())
-        Rhino.RhinoApp.WriteLine(seed_marker)
+        seed_history = Rhino.RhinoApp.CommandHistoryWindowText
         seed_success = []
         seed_events = []
         for seed_macro in seed_macros:
@@ -186,9 +139,9 @@ def run(op, host):
             seed_success.append(succeeded)
             seed_events.append(events)
             if '_Cancel' not in seed_macro and not succeeded or Rhino.Commands.Command.InCommand():
-                raise ValueError('ScalePositions seeding failed: '+Rhino.RhinoApp.CommandHistoryWindowText.split(seed_marker,1)[-1])
-        seed_history = Rhino.RhinoApp.CommandHistoryWindowText.split(seed_marker,1)[-1]
-        for obj in list(doc.Objects): doc.Objects.Delete(obj.Id,True)
+                raise ValueError('ScalePositions seeding failed: '+Rhino.RhinoApp.CommandHistoryWindowText[len(seed_history):])
+        seed_history = Rhino.RhinoApp.CommandHistoryWindowText[len(seed_history):]
+        doc.Objects.Delete(seed,True)
         serial = doc.BeginUndoRecord('ScalePositions sources')
         try:
             kinds = ['rational','surface','mesh','point'] if op['source'] == 'mixed' else [op['source']]
@@ -211,13 +164,13 @@ def run(op, host):
                 group_indices.append(index)
         finally:
             doc.EndUndoRecord(serial)
-        if op['selection'] in ('grips','parent'):
+        if op['selection'] != 'objects':
             owner = doc.Objects.FindId(ids[0])
             owner.GripsOn = True
             for i in (0,2): owner.GetGrips()[i].Select(True)
             if op['selection'] == 'parent': doc.Objects.Select(ids[0])
             for object_id in ids[1:]: doc.Objects.Select(object_id)
-        elif op['selection']=='objects':
+        else:
             for object_id in ids: doc.Objects.Select(object_id)
         bounds = []
         for object_id in ids:
@@ -230,26 +183,15 @@ def run(op, host):
         arguments = INPUTS[op['input']]
         if op['mode']!='1d' and op['input'] in ('numeric','negative','identity'):
             arguments = arguments.rsplit(' ',1)[0]
-        if op['mode']!='1d' and op['input']=='remember_reference_numeric':
-            arguments = 'w1,2,3 _Enter _Cancel'
-        mode_option = '' if op['input'] in ('remember_mode_cancel','remember_zero_reference','remember_repeat_switch_mode','remember_reference_cancel_mode','remember_numeric_cancel_mode') else '_Mode=_'+op['mode'].upper()+' '
-        copy_option = '' if op['input']=='remember_numeric_cancel_mode' else '_Copy=_'+('Yes ' if op['copy'] else 'No ')
-        source_selection = []
-        if op['selection'].startswith('post_'):
-            source_selection = list(range(len(ids)))
-            if op['selection']=='post_reverse': source_selection.reverse()
-        selection_macro = ''.join('_SelID '+str(ids[i])+' ' for i in source_selection)
-        if source_selection and op['input']!='cancel_sources': selection_macro += '_Enter '
-        macro = '_ScalePositions '+selection_macro+copy_option+mode_option+arguments+(' _Enter' if op['copy'] and not arguments.endswith('_Cancel') else '')
-        if op['input']=='cancel_sources': macro = '_ScalePositions '+selection_macro+'_Cancel'
+        mode_option = '' if op['input'] in ('remember_mode_cancel','remember_zero_reference') else '_Mode=_'+op['mode'].upper()+' '
+        macro = '_ScalePositions _Copy=_'+('Yes ' if op['copy'] else 'No ')+mode_option+arguments+(' _Enter' if op['copy'] else '')
         if op['selection']=='grips' and op['source']!='mixed':
             macro = '_ScalePositions _Cancel'
-        marker = 'Viboceros ScalePositions command '+str(System.Guid.NewGuid())
-        Rhino.RhinoApp.WriteLine(marker)
+        history = Rhino.RhinoApp.CommandHistoryWindowText
         host['_record_progress'](op['id']+' '+macro)
         success,after,events = observe_command(Rhino.Commands.Command,'ScalePositions',lambda:Rhino.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
         after_script = snapshot()
-        history = Rhino.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1]
+        history = Rhino.RhinoApp.CommandHistoryWindowText[len(history):]
         Rhino.RhinoApp.RunScript('_Undo',False)
         undo = snapshot()
         Rhino.RhinoApp.RunScript('_Redo',False)
@@ -258,37 +200,6 @@ def run(op, host):
                     events=events,success=success,history=history,macro=macro,seed_macros=seed_macros,seed_success=seed_success,seed_events=seed_events,seed_history=seed_history,
                     bounds=bounds,kinds=kinds,
                     plane=dict(origin=host['_xyz'](plane.Origin),x_axis=host['_xyz'](plane.XAxis),y_axis=host['_xyz'](plane.YAxis)))
-        if source_selection:
-            result['source_selection'] = source_selection
-            result['source_ids'] = [str(i) for i in ids]
-        doc.Objects.UnselectAll()
-        doc.Objects.Select(ids[0])
-        preference_marker = 'Viboceros ScalePositions preferences '+str(System.Guid.NewGuid())
-        Rhino.RhinoApp.WriteLine(preference_marker)
-        preference_macro = '_ScalePositions w0,0,0 _Cancel'
-        preference_success,_,preference_events = observe_command(Rhino.Commands.Command,'ScalePositions',lambda:Rhino.RhinoApp.RunScript(preference_macro,True),snapshot,lambda:[],True)
-        preference_history = Rhino.RhinoApp.CommandHistoryWindowText.split(preference_marker,1)[-1]
-        choice = re.search(r'Origin point \( Copy=(Yes|No)  Mode=(1D|2D|3D) \)',preference_history)
-        scalar = re.search(r'Scale factor or first reference point <([^>]+)>',preference_history)
-        if choice is None or scalar is None or Rhino.Commands.Command.InCommand():
-            raise ValueError('ScalePositions preference query failed: '+preference_history)
-        result.update(preference_macro=preference_macro,preference_history=preference_history,
-                      preference_success=preference_success,preference_events=preference_events,
-                      preferences=dict(copy=choice.group(1)=='Yes',mode=choice.group(2),factor=float(scalar.group(1)),factor_text=scalar.group(1)))
-        # The prompt rounds noninteger defaults. A fresh point command
-        # witnesses the stored full-precision factor without setting it.
-        doc.Objects.UnselectAll()
-        witness_before = [2.,3.,4.]
-        witness_id = doc.Objects.AddPoint(host['_point'](witness_before))
-        doc.Objects.Select(witness_id)
-        witness_marker = 'Viboceros ScalePositions witness '+str(System.Guid.NewGuid())
-        Rhino.RhinoApp.WriteLine(witness_marker)
-        witness_macro = '_ScalePositions _Copy=_No w0,0,0 _Enter'+(' w3,6,5' if choice.group(2)=='1D' else '')
-        witness_success = Rhino.RhinoApp.RunScript(witness_macro,True)
-        if not witness_success or Rhino.Commands.Command.InCommand():
-            raise ValueError('ScalePositions default witness failed')
-        result['default_witness'] = dict(before=witness_before,after=host['_xyz'](doc.Objects.FindId(witness_id).Geometry.Location),macro=witness_macro,success=witness_success,
-                                         history=Rhino.RhinoApp.CommandHistoryWindowText.split(witness_marker,1)[-1])
         return result,0
     finally:
         for obj in list(doc.Objects):

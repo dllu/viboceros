@@ -18,10 +18,11 @@
     "Numeric getter shape follows startup mode. Changing 3D to 1D before numeric input finishes without a direction or edit; changing 1D to 2D or 3D still requests a direction.",
     "Zero-length second references finish successfully without an edit, save Mode and retain the previous positive factor. Trailing idle Cancel separately clears selection; EndCommand and post-script states are both retained.",
     "Application tests make 57 incremental and 42 complete-invocation replays, including repeated copies, canceled defaults and Undo/Redo. Closed cancellation and repeated-input workflows are replayed incrementally only.",
-    "Real mouse picks, native preview appearance, reference distance locks, calculator expressions, repeated reference copies, all trimmed/subcomponent sources, cross-viewport input, command-first pick order and history, restart persistence, performance and full parity remain unverified."
+    "Real mouse picks, native preview appearance, reference distance locks, calculator expressions, all trimmed/subcomponent sources, cross-viewport input, restart persistence, performance and full parity remain unverified. Repeated-reference copies and command-first pick order/history have additional evidence in scale-positions-input-provenance.json.",
+    "This original capture retains its exact probe source under capture_sources/scale_positions_20261004.py. Later public preference and point-witness queries use the extended current probe. A 57-case refresh is retained as diagnostic evidence under observations/scale_positions_defaults_diagnostic.json because a standalone 1D point has inconsistent native Undo behavior between captures. The original 57 regression and 99 application replays are not replaced by that diagnostic."
   ],
   "sha256": {
-    "tools/rhino_oracle/scale_positions_probe.py": "5ceed41ea848cc9a4e8d5012377df97f5738868108d85abcc0b609948068e12c",
+    "tools/rhino_oracle/capture_sources/scale_positions_20261004.py": "5ceed41ea848cc9a4e8d5012377df97f5738868108d85abcc0b609948068e12c",
     "tools/rhino_oracle/fixtures/scale_positions.json": "5be488f413298a8b2e1b1968e3f6af039a7c60109fc5f88e97c46d8932532911",
     "tools/rhino_oracle/observations/scale_positions.json": "6b62fedce21b4def4faeb800b93e4a8f54033f8496c786fffc8a8be9499962b5",
     "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",

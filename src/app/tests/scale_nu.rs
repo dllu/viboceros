@@ -20,6 +20,7 @@ fn scale_nu_options_rigid_groups_grip_exclusion_and_cancel_memory_match_native()
         include_str!("../../../tools/rhino_oracle/observations/scale_nu_options.json"),
         36,
         "ScaleNU",
+        72,
     );
 }
 
@@ -30,10 +31,17 @@ fn scale_nu_temporary_grip_positions_are_discarded_by_move_and_history_like_nati
         include_str!("../../../tools/rhino_oracle/observations/scale_nu_pending_grips.json"),
         3,
         "ScaleNU",
+        6,
     );
 }
 
-pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usize, command: &str) {
+pub(super) fn replay_scale_nu_options(
+    fixture: &str,
+    observed: &str,
+    count: usize,
+    command: &str,
+    expected_replays: usize,
+) {
     use serde_json::json;
     let fixture: Value = serde_json::from_str(fixture).unwrap();
     let observed: Value = serde_json::from_str(observed).unwrap();
@@ -48,7 +56,8 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
         for incremental in [false, true] {
             if command == "ScalePositions"
                 && !incremental
-                && (native["macro"].as_str().unwrap().contains("_Cancel")
+                && (native.get("source_selection").is_some()
+                    || native["macro"].as_str().unwrap().contains("_Cancel")
                     || matches!(
                         op["input"].as_str(),
                         Some("repeat_direction" | "repeat_factor" | "remember_scalar_cancel")
@@ -74,10 +83,18 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
                     enter(&mut app, token);
                 }
             }
+            enter(&mut app, "SelAll");
             enter(&mut app, "Delete");
             app.document.clear_history().unwrap();
+            // Public SDK source construction retains empty group table
+            // definitions when its object Undo record is replayed.
+            let mut source_history = app
+                .document
+                .begin_history_group(format!("{command} option sources"))
+                .unwrap();
+            source_history.keep_created_group_definitions();
             app.document
-                .begin_transaction(format!("{command} option sources"))
+                .begin_group_transaction(&source_history)
                 .unwrap();
             let mut sources = Vec::new();
             for (i, source) in native["before"]["objects"]
@@ -88,7 +105,7 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
             {
                 let kind = native["kinds"][i].as_str().unwrap();
                 let geom = if kind == "point" {
-                    Geometry::Point(point(8., 0., 0.))
+                    Geometry::Point(Point3::try_from(coords(&source["point"])).unwrap())
                 } else {
                     geometry(&json!({"source":kind}), source)
                 };
@@ -122,8 +139,10 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
                     )
                     .unwrap();
             }
-            app.document.commit_transaction().unwrap();
-            if op["selection"] != "objects" {
+            app.document
+                .commit_group_transaction(&mut source_history)
+                .unwrap();
+            if matches!(op["selection"].as_str(), Some("grips" | "parent")) {
                 app.document.enable_control_points([sources[0]]).unwrap();
                 app.document
                     .select_control_points(
@@ -142,7 +161,7 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
                 app.document
                     .select_objects_direct(sources[1..].iter().copied(), SelectionMode::Add)
                     .unwrap();
-            } else {
+            } else if op["selection"] == "objects" {
                 app.document
                     .select_objects_direct(sources.iter().copied(), SelectionMode::Replace)
                     .unwrap();
@@ -195,16 +214,36 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
                 || op["mode"] == "rigid_repeat"
                 || op["mode"] == "remember_factors_cancel"
             {
-                for (i, token) in tokens.iter().enumerate() {
+                let mut i = 0;
+                while i < tokens.len() {
+                    let token = tokens[i];
                     if command == "ScalePositions"
-                        && *token == "_Cancel"
+                        && token == "_Cancel"
                         && i + 1 == tokens.len()
                         && app.active_command.is_none()
                         && app.object_prompt.is_none()
                     {
                         compare(&state(&app), &native["after"], &label);
                     }
-                    enter(&mut app, token);
+                    if token.eq_ignore_ascii_case("_SelID") {
+                        i += 1;
+                        let index = native["source_ids"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .position(|id| id.as_str() == Some(tokens[i]))
+                            .unwrap();
+                        enter(&mut app, &format!("SelID {}", sources[index]));
+                    } else if let Some(index) = native
+                        .get("source_ids")
+                        .and_then(Value::as_array)
+                        .and_then(|ids| ids.iter().position(|id| id.as_str() == Some(token)))
+                    {
+                        enter(&mut app, &sources[index].to_string());
+                    } else {
+                        enter(&mut app, token);
+                    }
+                    i += 1;
                 }
             } else {
                 let args = tokens[1..]
@@ -219,7 +258,33 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
                 "{label}: {:?}",
                 app.command_log
             );
+            let label = format!("{label}: {:?}", app.command_log);
             compare(&state(&app), &native["after_script"], &label);
+            let check_preferences = |app: &VibocerosApp| {
+                if let Some(preferences) = native.get("preferences") {
+                    assert_eq!(
+                        app.commands.scale_mode_default(command).unwrap().name(),
+                        preferences["mode"].as_str().unwrap(),
+                        "{label} Mode"
+                    );
+                    assert_eq!(
+                        app.commands.copy_default(command),
+                        preferences["copy"].as_bool(),
+                        "{label} Copy"
+                    );
+                    // Native prompt text rounds noninteger defaults. The
+                    // point witness below separately checks full precision.
+                    assert!(
+                        (app.commands.transform_scalar_default(command).unwrap()
+                            - preferences["factor"].as_f64().unwrap())
+                        .abs()
+                            <= 5e-6,
+                        "{label} factor: {:?} vs {preferences}",
+                        app.commands.transform_scalar_default(command)
+                    );
+                }
+            };
+            check_preferences(&app);
             if let Some(followup) = native.get("followup") {
                 assert_eq!(followup["macro"], "_Move w0,0,0 w1,2,3");
                 if incremental {
@@ -233,14 +298,47 @@ pub(super) fn replay_scale_nu_options(fixture: &str, observed: &str, count: usiz
             }
             enter(&mut app, "Undo");
             compare(&state(&app), &native["undo"], &format!("Undo {label}"));
+            check_preferences(&app);
             enter(&mut app, "Redo");
             compare(&state(&app), &native["redo"], &format!("Redo {label}"));
+            check_preferences(&app);
+            if let Some(witness) = native.get("default_witness")
+                && native["preferences"]["mode"] != "1D"
+            {
+                // Replay Enter with the registry's own default, never an
+                // observed factor. Native 1D witness diagnostics are not
+                // reproducible and remain outside this precision check.
+                app.document.clear_selection();
+                let id = app
+                    .document
+                    .add_geometry(Geometry::Point(
+                        Point3::try_from(coords(&witness["before"])).unwrap(),
+                    ))
+                    .unwrap();
+                app.document
+                    .select_objects_direct([id], SelectionMode::Replace)
+                    .unwrap();
+                for token in witness["macro"].as_str().unwrap().split_whitespace() {
+                    enter(&mut app, token);
+                }
+                assert!(
+                    app.active_command.is_none(),
+                    "{label} witness: {:?}",
+                    app.command_log
+                );
+                let Geometry::Point(actual) = app.document.object(id).unwrap().geometry() else {
+                    panic!("{label} witness point");
+                };
+                compare(
+                    &json!(actual.to_array()),
+                    &witness["after"],
+                    &format!("default witness {label}"),
+                );
+            }
             replays += 1;
         }
     }
-    if command == "ScalePositions" {
-        assert_eq!(replays, 99);
-    }
+    assert_eq!(replays, expected_replays);
 }
 
 #[test]

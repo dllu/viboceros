@@ -715,8 +715,24 @@ impl VibocerosApp {
     /// Accepted edits already belong to ordinary history; dropping the token
     /// finishes the batch without rolling them back.
     pub(super) fn finish_transform_session(&mut self) -> bool {
-        self.transform_session
-            .take()
-            .is_some_and(|session| session.applied)
+        let Some(session) = self.transform_session.take() else {
+            return false;
+        };
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ScalePositions(prompt)) if prompt.reference.is_some()
+        ) {
+            self.commands
+                .complete_copy_options("ScalePositions", session.copy);
+        }
+        if session.postselected
+            && matches!(
+                self.active_command,
+                Some(InteractiveCommand::ScalePositions(_))
+            )
+        {
+            self.document.clear_selection();
+        }
+        session.applied
     }
 }

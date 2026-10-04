@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleScalePositionsInputFinal_20261004",
+  "native_recipes": 64,
+  "application_replays": 64,
+  "geometry_absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Closed protocol 1 recipes use public commands and SDK snapshots in an empty owned document on a dedicated private Xvfb; shared desktop DISPLAY :1 is never used.",
+    "Raw macros, public command histories, seeded defaults, terminal events, EndCommand, post-script, external Undo and Redo states are retained. Native GUID selection tokens map to locally constructed source GUIDs by input index; geometry, order or group outputs are not normalized.",
+    "All 64 workflows are replayed incrementally. Repeated reference copies, Copy zero-reference rejection/retry, second-reference positive/negative/zero numbers, forward/reverse command-first picks, identity copies, source/origin cancellation, repeated numeric mode changes and canceled option lifetimes are covered.",
+    "Complete source/output coordinates, rational weights, knots, domains, mesh records, metadata, original group membership and source/output ordering are compared at absolute epsilon 1e-9. Independent Python equations use per-object native tight centers; an independent analytic Rust test checks a rational center before amplification by factor 9.",
+    "Command-first in-place nonidentity edits renew object table order in pick order. Copy outputs follow pick order and join original groups. EndCommand can still show picked sources selected; getter cleanup clears them after the script and on Undo/Redo. Identity in-place operations retain table order.",
+    "SDK source construction retains empty group table definitions when its object Undo record is replayed. The application test setup uses its existing history-group retention policy to reproduce that SDK construction rather than changing user Group command history.",
+    "Public default queries occur after Undo/Redo. Reference numeric input without a 1D direction and completed numeric mode switches with no 1D direction retain the last accepted factor; 2D/3D identity input retains the last factor even for Copy. Reference cancellation saves Copy but retains Mode and factor; unfinished numeric-direction cancellation retains all prior options.",
+    "Mode and Copy are compared exactly. The native prompt rounds noninteger factors; full-precision 2D/3D defaults are additionally witnessed on a fresh point using Enter without a supplied factor. Raw 1D point witness results were inconsistent across captures and are diagnostic only, outside the precision comparison.",
+    "Source selection is instrumented through public SelID commands rather than native mouse picks. Native preview appearance, distance locks, calculator expressions, all trimmed/subcomponent sources, cross-viewport input, restart persistence, performance and full parity remain unverified.",
+    "A separate 57-case refresh of the original recipe set retains public preference queries and raw point witnesses. It is diagnostic only: a standalone point on the 1D invariant plane retains coordinates within epsilon but native Undo entry presence differs from the original capture. No diagnostic refresh recipe is counted as an application parity replay; this discrepancy remains unresolved."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_positions_probe.py": "9b6214d71cb371f7974f3160fbacf16695a552080e600e483d41fd7be7956c7e",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/scale_positions_input.json": "b4e76122b23bb4c7e69556cf9489013d9232caeaf685508154d774cf797b4ee9",
+    "tools/rhino_oracle/observations/scale_positions_input.json": "220888a5cfaa457c101eadbea4a7d3e2068bdd81b95610d979367cb540ff3868",
+    "tools/rhino_oracle/observations/scale_positions_defaults_diagnostic.json": "0e535989cc1c7903b7372aaed28d9b864946d93ce00d8e32f5190f6eb2471896"
+  },
+  "diagnostic_settings_scheme": "VibocerosOracleScalePositionsRefresh_20261004",
+  "diagnostic_recipes": 57,
+  "diagnostic_application_replays": 0
+}

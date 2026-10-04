@@ -2,8 +2,8 @@
 
 [Project overview](../README.md)
 
-The [ScalePositions guide](commands/scale-positions.md) adds 57 bounded native
-recipes from private Xvfb and 99 application replays. Complete geometry, tight
+The [ScalePositions guide](commands/scale-positions.md) covers 121 bounded native
+recipes from private Xvfb and 163 application replays. Complete geometry, tight
 center translations, overlapping groups, metadata, grip display, numeric getter
 phases, defaults and external Undo/Redo are compared at `1e-9`. Real mouse input,
 native preview appearance and performance comparisons remain unverified.
