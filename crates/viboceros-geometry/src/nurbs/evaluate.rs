@@ -87,6 +87,27 @@ impl NurbsCurve {
         self.jet_on_side(parameter, side, 2)
     }
 
+    /// Evaluates the nearest nonempty endpoint span's rational continuation.
+    /// Interior parameters use the ordinary right-hand jet. Exterior parameters
+    /// do not wrap periodic curves or clamp their interpolation coefficients.
+    pub fn evaluate_extended_with_second_derivative(
+        &self,
+        parameter: Real,
+    ) -> Result<CurveJet, GeometryError> {
+        require_finite([parameter], "NURBS curve continuation parameter")?;
+        if self.domain().contains(&parameter) {
+            return self.jet_on_side(parameter, ParameterSide::Right, 2);
+        }
+        let span = self.find_span(parameter);
+        self.with_evaluation_controls(
+            span,
+            |origin, active| {
+                FloatJet::new(origin, active).evaluate_extended(self, span, parameter, 2)
+            },
+            || self.exact_jet(span, parameter, 2),
+        )
+    }
+
     fn jet_on_side(
         &self,
         parameter: Real,

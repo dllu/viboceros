@@ -10,8 +10,8 @@ The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
-vertices in fixed World/CPlane axes, with native grip and seam replays. Its
-document command and Object-coordinate implementation are still in progress.
+vertices in World, CPlane, and Object axes, with 304 native geometry replays.
+Its document command and interactive workflow are still in progress.
 The mesh containment query validates closed manifold topology once, classifies
 surface boundary points, and uses retried ray parity for interior tests. Volume
 object selection uses that query for mesh and tessellated B-rep sources.

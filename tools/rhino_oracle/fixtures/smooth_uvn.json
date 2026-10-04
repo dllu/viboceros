@@ -1,0 +1,538 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_uvn",
+      "id": "raw_curve_x",
+      "source": "curve",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_curve_y",
+      "source": "curve",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_curve_z",
+      "source": "curve",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_curve_steps",
+      "source": "curve",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_rational_x",
+      "source": "rational",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_rational_y",
+      "source": "rational",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_rational_z",
+      "source": "rational",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_rational_steps",
+      "source": "rational",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_closed_x",
+      "source": "closed",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_closed_y",
+      "source": "closed",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_closed_z",
+      "source": "closed",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_closed_steps",
+      "source": "closed",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_x",
+      "source": "periodic",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_y",
+      "source": "periodic",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_z",
+      "source": "periodic",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_steps",
+      "source": "periodic",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_line_x",
+      "source": "line",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_line_y",
+      "source": "line",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_line_z",
+      "source": "line",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_line_steps",
+      "source": "line",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_polyline_x",
+      "source": "polyline",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_polyline_y",
+      "source": "polyline",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_polyline_z",
+      "source": "polyline",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_polyline_steps",
+      "source": "polyline",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_circle_x",
+      "source": "circle",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_circle_y",
+      "source": "circle",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_circle_z",
+      "source": "circle",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_circle_steps",
+      "source": "circle",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_arc_x",
+      "source": "arc",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_arc_y",
+      "source": "arc",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_arc_z",
+      "source": "arc",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_arc_steps",
+      "source": "arc",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_x",
+      "source": "surface",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_y",
+      "source": "surface",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_z",
+      "source": "surface",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_steps",
+      "source": "surface",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_x",
+      "source": "surface_closed",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_y",
+      "source": "surface_closed",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_z",
+      "source": "surface_closed",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_steps",
+      "source": "surface_closed",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_cubic_x",
+      "source": "periodic_cubic",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_cubic_y",
+      "source": "periodic_cubic",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_cubic_z",
+      "source": "periodic_cubic",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_periodic_cubic_steps",
+      "source": "periodic_cubic",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_grid_x",
+      "source": "mesh_grid",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_grid_y",
+      "source": "mesh_grid",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_grid_z",
+      "source": "mesh_grid",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_grid_steps",
+      "source": "mesh_grid",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_triangles_x",
+      "source": "mesh_triangles",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_triangles_y",
+      "source": "mesh_triangles",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_triangles_z",
+      "source": "mesh_triangles",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_triangles_steps",
+      "source": "mesh_triangles",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_unwelded_x",
+      "source": "mesh_unwelded",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_unwelded_y",
+      "source": "mesh_unwelded",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_unwelded_z",
+      "source": "mesh_unwelded",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_mesh_unwelded_steps",
+      "source": "mesh_unwelded",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_periodic_x",
+      "source": "surface_periodic",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_periodic_y",
+      "source": "surface_periodic",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_periodic_z",
+      "source": "surface_periodic",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_periodic_steps",
+      "source": "surface_periodic",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_both_x",
+      "source": "surface_closed_both",
+      "mode": "x",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_both_y",
+      "source": "surface_closed_both",
+      "mode": "y",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_both_z",
+      "source": "surface_closed_both",
+      "mode": "z",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "raw_surface_closed_both_steps",
+      "source": "surface_closed_both",
+      "mode": "steps",
+      "graph": "raw_initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_closed_steps",
+      "source": "closed",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_periodic_steps",
+      "source": "periodic",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_periodic_cubic_steps",
+      "source": "periodic_cubic",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_surface_closed_steps",
+      "source": "surface_closed",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_surface_periodic_steps",
+      "source": "surface_periodic",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "initial_surface_closed_both_steps",
+      "source": "surface_closed_both",
+      "mode": "steps",
+      "graph": "initial"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_closed_steps",
+      "source": "closed",
+      "mode": "steps",
+      "graph": "step"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_periodic_steps",
+      "source": "periodic",
+      "mode": "steps",
+      "graph": "step"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_periodic_cubic_steps",
+      "source": "periodic_cubic",
+      "mode": "steps",
+      "graph": "step"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_surface_closed_steps",
+      "source": "surface_closed",
+      "mode": "steps",
+      "graph": "step"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_surface_periodic_steps",
+      "source": "surface_periodic",
+      "mode": "steps",
+      "graph": "step"
+    },
+    {
+      "op": "smooth_uvn",
+      "id": "step_surface_closed_both_steps",
+      "source": "surface_closed_both",
+      "mode": "steps",
+      "graph": "step"
+    }
+  ]
+}

@@ -5,29 +5,33 @@
   "settings_schemes": [
     "VibocerosOracleSmoothFixedFinal_20261004",
     "VibocerosOracleSmoothSelectedFinal_20261004",
-    "VibocerosOracleSmoothObjectFinal_20261004"
+    "VibocerosOracleSmoothObjectFinal_20261004",
+    "VibocerosOracleSmoothObjectSelected_20261004"
   ],
   "sdk_settings_schemes": [
-    "VibocerosOracleSmoothDirectionsPilotF_20261004"
+    "VibocerosOracleSmoothDirectionsPilotF_20261004",
+    "VibocerosOracleSmoothUVNRaw_20261004"
   ],
-  "native_recipes": 208,
+  "native_recipes": 304,
   "fixed_coordinate_recipes": 128,
-  "object_coordinate_recipes": 80,
-  "sdk_witnesses": 18,
+  "object_coordinate_recipes": 176,
+  "sdk_witnesses": 94,
   "accepted_object_x_sdk_predictions": 10,
   "rejected_alternative_sdk_predictions": 8,
-  "kernel_replays": 128,
+  "kernel_replays": 304,
   "application_replays": 0,
   "comparison_absolute_epsilon": 2e-12,
   "command_registered_in_viboceros": false,
   "full_native_parity": false,
   "scope_notes": [
     "Live captures used public Rhino commands and SDK calls at idle in empty owned documents on private Xvfb. No proprietary implementation was inspected.",
-    "All command options are explicitly seeded. The 96 fixed and 32 selected recipes retain command-end, post-macro, Undo, and Redo snapshots.",
-    "128 geometry-kernel replays compare complete controls, weights, knots, degrees, domains, and stored mesh faces. They do not replay document selection, metadata, history, prompts, or primitive promotion in Viboceros.",
-    "80 Object-coordinate command observations are retained for research. Object coordinates are not yet implemented in the kernel.",
+    "All command options are explicitly seeded. All 304 recipes retain command-end, post-macro, Undo, and Redo snapshots.",
+    "304 geometry-kernel replays compare complete controls, weights, knots, degrees, domains, and stored mesh faces in 128 World/CPlane and 176 Object cases, including 96 Object selected-grip cases. They do not replay document selection, metadata, history, prompts, or primitive promotion in Viboceros.",
+    "Object coordinates use progressively edited curve/surface frames, frozen raw interior adjacency with original end wrapping, and initial mesh frames for every step. Degree-one curves use World axes. Native Object edits can separate periodic control aliases.",
     "18 public SDK witnesses test single-pass Object X hypotheses. Ten predictions agree with the matching native Object X observations. Eight alternative surface traversal/frame or mesh normal hypotheses disagree.",
+    "76 further public SDK witnesses cover separate Object X/Y/Z axes and three steps on all 16 source families. All 64 predictions using original raw neighbors agree with native commands. Twelve alternatives using canonical aliases or rebuilding closure/periodicity each step disagree.",
     "Curve TangentAt supplies public endpoint-span extrapolation when UVNDirectionsAt returns false at exterior periodic Greville parameters. Native Object edits can separate periodic control aliases.",
+    "36 selected Object recipes reopen closed/periodic aliases, increasing the displayed grip count and clearing selected grips at command end. Grips remain enabled; Undo restores the original geometry and grip selection. This is retained native document behavior, not a Viboceros application replay.",
     "No performance comparison, native extreme-range capture, singular-direction matrix, SubD workflow, general trimmed B-rep replay, or full native parity is claimed."
   ],
   "sha256": {
@@ -45,10 +49,23 @@
     "tools/rhino_oracle/observations/smooth_fixed.json": "51912b9960d7a1fae311ea6ba410758fa808536b7ef5dbca0026dd96ab5ddfc8",
     "tools/rhino_oracle/observations/smooth_selected.json": "8a630d81938efdaca76d041464366bc361a61deae4bbe0b79a05f17f4e25ceb5",
     "tools/rhino_oracle/observations/smooth_object.json": "342cda99b74704b4c3e413f0f591a30ce4d5a2e7f8627f0fa10c5160b97fd031",
-    "tools/rhino_oracle/observations/smooth_frames.json": "1b56db290ba5f2d212c7d5375a55cf36268c72a3e79f3a5d3a1fc38c2ba622ab"
+    "tools/rhino_oracle/observations/smooth_frames.json": "1b56db290ba5f2d212c7d5375a55cf36268c72a3e79f3a5d3a1fc38c2ba622ab",
+    "tools/rhino_oracle/smooth_uvn_probe.py": "e0428dcf58e262872817026f81a287210f03bb0abb5360a3ac17b2f7e39b4126",
+    "tools/rhino_oracle/fixtures/smooth_uvn.json": "2604f80db1bbfdbdebf3575f51323011bc79cf94d4132e232141d060b98fbb44",
+    "tools/rhino_oracle/observations/smooth_uvn.json": "4371d811937ef8d6fb689bbe23ba85a7e892b5ef21e5c705245a0b128de6c246",
+    "tools/rhino_oracle/fixtures/smooth_object_selected.json": "1659a16a8482e564785de5cf215e5b03983da867c8e101b78fe09a6ca1b663ed",
+    "tools/rhino_oracle/observations/smooth_object_selected.json": "1bcd4cc508de0613347b8f892c932c1917f1fc6496196030129648cd9ac269db"
   },
   "historical_dispatch_sha256": {
     "tools/rhino_oracle/client.py": "69fc941c9b232d9c0c44a707a2df62042888c68a358b568862927cb5ecff2a70",
     "tools/rhino_oracle/rhino_worker.py": "3dd98f578f2c49f9f470e3d8877e6e299290ab81778e114db54e8fa31008412e"
-  }
+  },
+  "uvn_sdk_witnesses": 76,
+  "accepted_uvn_sdk_predictions": 64,
+  "rejected_uvn_neighbor_predictions": 12,
+  "uvn_historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "30bab883b7f36b60d7bfa0e6ad82f28a3e0137a389c0b4793e720a0f701bf39c",
+    "tools/rhino_oracle/rhino_worker.py": "14dc0a035792aba80ad101674e033b0360a62d3a301dc8739d05bb533609064a"
+  },
+  "object_selected_recipes": 96
 }

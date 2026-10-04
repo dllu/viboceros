@@ -1,0 +1,678 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_grips_object_x",
+      "source": "curve",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_grips_object_steps",
+      "source": "curve",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_parent_object_x",
+      "source": "curve",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_parent_object_steps",
+      "source": "curve",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_allgrips_object_x",
+      "source": "curve",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_curve_allgrips_object_steps",
+      "source": "curve",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_grips_object_x",
+      "source": "rational",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_grips_object_steps",
+      "source": "rational",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_parent_object_x",
+      "source": "rational",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_parent_object_steps",
+      "source": "rational",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_allgrips_object_x",
+      "source": "rational",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_rational_allgrips_object_steps",
+      "source": "rational",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_grips_object_x",
+      "source": "closed",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_grips_object_steps",
+      "source": "closed",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_parent_object_x",
+      "source": "closed",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_parent_object_steps",
+      "source": "closed",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_allgrips_object_x",
+      "source": "closed",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_closed_allgrips_object_steps",
+      "source": "closed",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_grips_object_x",
+      "source": "periodic",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_grips_object_steps",
+      "source": "periodic",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_parent_object_x",
+      "source": "periodic",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_parent_object_steps",
+      "source": "periodic",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_allgrips_object_x",
+      "source": "periodic",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_allgrips_object_steps",
+      "source": "periodic",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_grips_object_x",
+      "source": "line",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_grips_object_steps",
+      "source": "line",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_parent_object_x",
+      "source": "line",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_parent_object_steps",
+      "source": "line",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_allgrips_object_x",
+      "source": "line",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_line_allgrips_object_steps",
+      "source": "line",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_grips_object_x",
+      "source": "polyline",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_grips_object_steps",
+      "source": "polyline",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_parent_object_x",
+      "source": "polyline",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_parent_object_steps",
+      "source": "polyline",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_allgrips_object_x",
+      "source": "polyline",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_polyline_allgrips_object_steps",
+      "source": "polyline",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_grips_object_x",
+      "source": "circle",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_grips_object_steps",
+      "source": "circle",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_parent_object_x",
+      "source": "circle",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_parent_object_steps",
+      "source": "circle",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_allgrips_object_x",
+      "source": "circle",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_circle_allgrips_object_steps",
+      "source": "circle",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_grips_object_x",
+      "source": "arc",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_grips_object_steps",
+      "source": "arc",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_parent_object_x",
+      "source": "arc",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_parent_object_steps",
+      "source": "arc",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_allgrips_object_x",
+      "source": "arc",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_arc_allgrips_object_steps",
+      "source": "arc",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_grips_object_x",
+      "source": "surface",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_grips_object_steps",
+      "source": "surface",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_parent_object_x",
+      "source": "surface",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_parent_object_steps",
+      "source": "surface",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_allgrips_object_x",
+      "source": "surface",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_allgrips_object_steps",
+      "source": "surface",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_grips_object_x",
+      "source": "surface_closed",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_grips_object_steps",
+      "source": "surface_closed",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_parent_object_x",
+      "source": "surface_closed",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_parent_object_steps",
+      "source": "surface_closed",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_allgrips_object_x",
+      "source": "surface_closed",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_allgrips_object_steps",
+      "source": "surface_closed",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_grips_object_x",
+      "source": "periodic_cubic",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_grips_object_steps",
+      "source": "periodic_cubic",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_parent_object_x",
+      "source": "periodic_cubic",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_parent_object_steps",
+      "source": "periodic_cubic",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_allgrips_object_x",
+      "source": "periodic_cubic",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_periodic_cubic_allgrips_object_steps",
+      "source": "periodic_cubic",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_grips_object_x",
+      "source": "mesh_grid",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_grips_object_steps",
+      "source": "mesh_grid",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_parent_object_x",
+      "source": "mesh_grid",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_parent_object_steps",
+      "source": "mesh_grid",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_allgrips_object_x",
+      "source": "mesh_grid",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_grid_allgrips_object_steps",
+      "source": "mesh_grid",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_grips_object_x",
+      "source": "mesh_triangles",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_grips_object_steps",
+      "source": "mesh_triangles",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_parent_object_x",
+      "source": "mesh_triangles",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_parent_object_steps",
+      "source": "mesh_triangles",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_allgrips_object_x",
+      "source": "mesh_triangles",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_triangles_allgrips_object_steps",
+      "source": "mesh_triangles",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_grips_object_x",
+      "source": "mesh_unwelded",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_grips_object_steps",
+      "source": "mesh_unwelded",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_parent_object_x",
+      "source": "mesh_unwelded",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_parent_object_steps",
+      "source": "mesh_unwelded",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_allgrips_object_x",
+      "source": "mesh_unwelded",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_mesh_unwelded_allgrips_object_steps",
+      "source": "mesh_unwelded",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_grips_object_x",
+      "source": "surface_periodic",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_grips_object_steps",
+      "source": "surface_periodic",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_parent_object_x",
+      "source": "surface_periodic",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_parent_object_steps",
+      "source": "surface_periodic",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_allgrips_object_x",
+      "source": "surface_periodic",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_periodic_allgrips_object_steps",
+      "source": "surface_periodic",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_grips_object_x",
+      "source": "surface_closed_both",
+      "selection": "grips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_grips_object_steps",
+      "source": "surface_closed_both",
+      "selection": "grips",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_parent_object_x",
+      "source": "surface_closed_both",
+      "selection": "parent",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_parent_object_steps",
+      "source": "surface_closed_both",
+      "selection": "parent",
+      "mode": "object_steps"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_allgrips_object_x",
+      "source": "surface_closed_both",
+      "selection": "allgrips",
+      "mode": "object_x"
+    },
+    {
+      "op": "smooth_command",
+      "id": "object_selected_surface_closed_both_allgrips_object_steps",
+      "source": "surface_closed_both",
+      "selection": "allgrips",
+      "mode": "object_steps"
+    }
+  ]
+}

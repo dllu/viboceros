@@ -30,7 +30,28 @@ impl FloatJet {
         parameter: Real,
         order: u8,
     ) -> Result<CurveJet, GeometryError> {
-        let h = evaluate_net(curve, span, parameter, 0, &self.controls, &mut self.scratch)?;
+        self.evaluate_mode::<false>(curve, span, parameter, order)
+    }
+
+    pub(super) fn evaluate_extended(
+        &mut self,
+        curve: &NurbsCurve,
+        span: usize,
+        parameter: Real,
+        order: u8,
+    ) -> Result<CurveJet, GeometryError> {
+        self.evaluate_mode::<true>(curve, span, parameter, order)
+    }
+
+    fn evaluate_mode<const EXTENDED: bool>(
+        &mut self,
+        curve: &NurbsCurve,
+        span: usize,
+        parameter: Real,
+        order: u8,
+    ) -> Result<CurveJet, GeometryError> {
+        let h =
+            evaluate_net::<EXTENDED>(curve, span, parameter, 0, &self.controls, &mut self.scratch)?;
         let point = project_homogeneous(h)?;
         let zero = Vector3::try_new(0., 0., 0.)?;
         if order == 0 {
@@ -44,7 +65,7 @@ impl FloatJet {
             .first
             .get_or_insert_with(|| curve.derivative_controls(span, 1, &self.controls));
         let first = first.as_ref().map_err(Clone::clone)?;
-        let h1 = evaluate_net(curve, span, parameter, 1, first, &mut self.scratch)?;
+        let h1 = evaluate_net::<EXTENDED>(curve, span, parameter, 1, first, &mut self.scratch)?;
         let weight = h[3];
         let weight_derivative = h1[3];
         let coordinates = point.to_array();
@@ -70,7 +91,8 @@ impl FloatJet {
                 .second
                 .get_or_insert_with(|| curve.derivative_controls(span, 2, first));
             let second = second.as_ref().map_err(Clone::clone)?;
-            let h2 = evaluate_net(curve, span, parameter, 2, second, &mut self.scratch)?;
+            let h2 =
+                evaluate_net::<EXTENDED>(curve, span, parameter, 2, second, &mut self.scratch)?;
             let first_coordinates = derivative.to_array();
             Vector3::try_from(std::array::from_fn(|i| {
                 let quotient_terms =
@@ -86,7 +108,7 @@ impl FloatJet {
     }
 }
 
-fn evaluate_net(
+fn evaluate_net<const EXTENDED: bool>(
     curve: &NurbsCurve,
     span: usize,
     parameter: Real,
@@ -98,7 +120,7 @@ fn evaluate_net(
     // are shorter than the point net, which establishes maximum capacity.
     scratch.clear();
     scratch.extend_from_slice(net);
-    de_boor_impl::<4, false, false>(
+    de_boor_impl::<4, EXTENDED, false>(
         &curve.knots[order..curve.knots.len() - order],
         curve.degree - order,
         span - order,

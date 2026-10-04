@@ -1,10 +1,40 @@
 //! Scale-safe directions for stored polygons and triangulated facets.
 use super::{GeometryError, MeshFace, TriangleMesh, UnitVector3};
+use crate::{Real, Vector3};
 
 #[cfg(test)]
 mod tests;
 
 impl TriangleMesh {
+    /// Initial float normals following the owned OffsetMesh normal path.
+    pub(super) fn raw_vertex_normals(&self) -> Result<Vec<Vector3>, GeometryError> {
+        let normals = self.polygon_face_normals()?;
+        let mut sums = vec![[0.0_f32; 3]; self.vertices.len()];
+        for (face, normal) in self.faces.iter().zip(normals).rev() {
+            for &index in face.indices() {
+                let index = index as usize;
+                for (sum, coordinate) in sums[index].iter_mut().zip(normal.as_vector().to_array()) {
+                    *sum += coordinate as f32;
+                }
+            }
+        }
+        let world_z = Vector3::try_new(0.0, 0.0, 1.0)?;
+        sums.iter()
+            .map(|&sum| {
+                let vector = Vector3::try_new(sum[0] as Real, sum[1] as Real, sum[2] as Real)?;
+                let normalized = vector
+                    .normalized_nonzero()
+                    .map(UnitVector3::as_vector)
+                    .unwrap_or(world_z);
+                Vector3::try_from(
+                    normalized
+                        .to_array()
+                        .map(|coordinate| coordinate as f32 as Real),
+                )
+            })
+            .collect::<Result<Vec<Vector3>, GeometryError>>()
+    }
+
     /// Unit normal of a stored triangle or quad, indexed in polygon-face order.
     pub fn polygon_face_normal(&self, index: usize) -> Result<UnitVector3, GeometryError> {
         let face =

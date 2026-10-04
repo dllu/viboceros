@@ -2,6 +2,24 @@
 use crate::{Frame3, GeometryError, Point3, Real, require_finite};
 use std::collections::BTreeSet;
 
+/// Coordinates used to restrict an averaging displacement.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum SmoothingCoordinates {
+    World,
+    CPlane(Frame3),
+    Object,
+}
+
+pub(crate) fn world_frame() -> Frame3 {
+    Frame3::try_from_directions(
+        Point3::try_from([0.; 3]).unwrap(),
+        crate::Vector3::try_from([1., 0., 0.]).unwrap(),
+        crate::Vector3::try_from([0., 1., 0.]).unwrap(),
+        crate::Tolerance::MESH_VALIDATION,
+    )
+    .unwrap()
+}
+
 #[cfg(test)]
 mod tests;
 
@@ -91,7 +109,7 @@ pub(crate) fn mean(points: &[Point3], indices: &[usize]) -> Result<Point3, Geome
     Point3::try_from(coordinates)
 }
 
-fn projection_matrix(axes: [bool; 3], frame: Frame3) -> [[Real; 3]; 3] {
+pub(crate) fn projection_matrix(axes: [bool; 3], frame: Frame3) -> [[Real; 3]; 3] {
     if axes == [true; 3] {
         [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     } else {

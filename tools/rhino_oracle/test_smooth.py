@@ -8,6 +8,7 @@ from unittest import TestCase, mock
 from .client import OracleClient, OracleError, OracleProtocolError
 from .smooth_probe import request, run, validate_request
 from .smooth_frames_probe import validate_request as validate_frames
+from .smooth_uvn_probe import validate_request as validate_uvn, run as run_uvn
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -47,8 +48,31 @@ class SmoothTests(TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 validate_frames(dict(q, operations=[dict(q['operations'][0], **change)]))
 
+    def test_uvn_witness_schema_and_owned_document_guards(self):
+        q = dict(protocol_version=1, iterations=1, operations=[dict(
+            op='smooth_uvn', id='witness', source='curve', mode='steps', graph='raw_initial')])
+        validate_uvn(q)
+        for change in (dict(extra=True), dict(id='bad\n_SelAll'), dict(id=[]),
+                       dict(mode='script'), dict(mode=[]), dict(source='script'),
+                       dict(source=[]), dict(graph='script'), dict(graph=[])):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                validate_uvn(dict(q, operations=[dict(q['operations'][0], **change)]))
+        for change in (dict(protocol_version=True), dict(iterations=True),
+                       dict(iterations=2), dict(operations=[]),
+                       dict(operations=q['operations']*2), dict(operations=q['operations']*97)):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                validate_uvn(dict(q, **change))
+        rhino = mock.Mock()
+        rhino.Commands.Command.InCommand.return_value = 1
+        with self.assertRaisesRegex(ValueError, 'idle execution'):
+            run_uvn(q['operations'][0], dict(Rhino=rhino))
+        rhino.Commands.Command.InCommand.return_value = 0
+        rhino.RhinoDoc.ActiveDoc.Objects = [object()]
+        with self.assertRaisesRegex(ValueError, 'empty owned document'):
+            run_uvn(q['operations'][0], dict(Rhino=rhino))
+
     def test_private_settings_display_and_iterations_precede_launch(self):
-        for kind in ('smooth_command', 'smooth_frames'):
+        for kind in ('smooth_command', 'smooth_frames', 'smooth_uvn'):
             for scheme, count, display, headless in ((None, 1, ':301', ':301'),
                     ('VibocerosOracleSmooth', True, ':301', ':301'),
                     ('VibocerosOracleSmooth', 2, ':301', ':301'),
@@ -56,6 +80,7 @@ class SmoothTests(TestCase):
                     ('VibocerosOracleSmooth', 1, ':301', ':302')):
                 op = dict(op=kind, id='guard', source='curve', mode='curve' if kind=='smooth_frames' else 'free')
                 if kind=='smooth_command': op['selection'] = 'objects'
+                if kind=='smooth_uvn': op.update(mode='steps', graph='raw_initial')
                 q = dict(protocol_version=1, iterations=count, operations=[op])
                 env = dict(DISPLAY=display)
                 if headless: env['VIBOCEROS_ORACLE_HEADLESS'] = headless
@@ -68,7 +93,8 @@ class SmoothTests(TestCase):
 
     def test_native_command_end_history_promotions_and_grip_precedence(self):
         total = 0
-        for name, count in (('smooth_fixed', 96), ('smooth_selected', 32)):
+        for name, count in (('smooth_fixed', 96), ('smooth_selected', 32),
+                            ('smooth_object', 80), ('smooth_object_selected', 96)):
             q, r = read('fixtures', name), read('observations', name)
             self.assertEqual(r['engine_version'], '8.32.26160.13001')
             self.assertEqual(len(r['results']), count)
@@ -89,7 +115,17 @@ class SmoothTests(TestCase):
                     before, after = v['before'][0], v['after'][0]
                     self.assertEqual(after['name'], 'smooth source')
                     self.assertEqual(after['grips_on'], before['grips_on'])
-                    self.assertEqual([g['index'] for g in before['grips'] if g['selected']],
+                    reopened_grips = dict(closed=5, periodic=6, periodic_cubic=7,
+                                          surface_closed=15, surface_periodic=18,
+                                          surface_closed_both=25)
+                    expected_selected = [g['index'] for g in before['grips'] if g['selected']]
+                    if (op['mode'].startswith('object') and op['source'] in reopened_grips
+                            and op['selection'] in ('grips','parent','allgrips')):
+                        self.assertEqual(len(after['grips']), reopened_grips[op['source']])
+                        expected_selected = []
+                    else:
+                        self.assertEqual(len(after['grips']), len(before['grips']))
+                    self.assertEqual(expected_selected,
                                      [g['index'] for g in after['grips'] if g['selected']])
                     key = 'curve' if 'curve' in before else 'surface' if 'surface' in before else 'mesh'
                     if key=='mesh':
@@ -111,7 +147,35 @@ class SmoothTests(TestCase):
                     a, b = selections['grips']['after'][0], selections['parent']['after'][0]
                     for key in ('curve','surface','mesh'):
                         if key in a: self.assertEqual(a[key], b[key])
-        self.assertEqual(total, 128)
+        self.assertEqual(total, 304)
+
+    def test_object_all_axes_and_steps_sdk_predictions_and_neighbor_counterexamples(self):
+        q, r = read('fixtures', 'smooth_object'), read('observations', 'smooth_object')
+        actual = {(op['source'], op['mode']): row['value']['after'][0]
+                  for op, row in zip(q['operations'], r['results'])}
+        q, r = read('fixtures', 'smooth_uvn'), read('observations', 'smooth_uvn')
+        validate_uvn(q)
+        self.assertEqual(r['engine_version'], '8.32.26160.13001')
+        self.assertEqual(len(q['operations']), 76)
+        self.assertEqual(len(r['results']), 76)
+        accepted, alternatives = 0, 0
+        for op, row in zip(q['operations'], r['results']):
+            self.assertEqual(op['id'], row['id'])
+            a = actual[op['source'], 'object_'+op['mode']]
+            key = 'curve' if 'curve' in a else 'surface' if 'surface' in a else 'mesh'
+            field = 'vertices' if key=='mesh' else 'control_points'
+            x, y = a[key][field], row['value']['predicted'][field]
+            if key!='mesh': x, y = [p['point'] for p in x], [p['point'] for p in y]
+            self.assertEqual(len(x), len(y))
+            error = max(abs(c-d) for p,q in zip(x,y) for c,d in zip(p,q))
+            with self.subTest(source=op['source'], mode=op['mode'], graph=op['graph']):
+                if op['graph']=='raw_initial':
+                    accepted += 1
+                    self.assertLessEqual(error, 2e-12)
+                else:
+                    alternatives += 1
+                    self.assertGreater(error, 1e-4)
+        self.assertEqual((accepted, alternatives), (64, 12))
 
     def test_object_x_sdk_predictions_and_alternative_counterexamples(self):
         q, r = read('fixtures','smooth_object'), read('observations','smooth_object')
@@ -170,11 +234,15 @@ class SmoothTests(TestCase):
         self.assertTrue(record['private_xvfb'])
         self.assertFalse(record['full_native_parity'])
         self.assertFalse(record['command_registered_in_viboceros'])
-        self.assertEqual(record['native_recipes'], 208)
+        self.assertEqual(record['native_recipes'], 304)
         self.assertEqual(record['fixed_coordinate_recipes'], 128)
-        self.assertEqual(record['object_coordinate_recipes'],80)
-        self.assertEqual(record['sdk_witnesses'],18)
-        self.assertEqual(record['kernel_replays'], 128)
+        self.assertEqual(record['object_coordinate_recipes'],176)
+        self.assertEqual(record['object_selected_recipes'],96)
+        self.assertEqual(record['sdk_witnesses'],94)
+        self.assertEqual(record['uvn_sdk_witnesses'],76)
+        self.assertEqual(record['accepted_uvn_sdk_predictions'],64)
+        self.assertEqual(record['rejected_uvn_neighbor_predictions'],12)
+        self.assertEqual(record['kernel_replays'], 304)
         self.assertEqual(record['application_replays'], 0)
         for path, expected in record['sha256'].items():
             self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)

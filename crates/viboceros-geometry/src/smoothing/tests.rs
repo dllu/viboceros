@@ -46,15 +46,21 @@ fn frame(value: Option<&Value>) -> Frame3 {
 fn settings(mode: &str) -> SmoothingOptions {
     SmoothingOptions {
         factor: match mode {
-            "steps" => 0.25,
+            "steps" | "object_steps" => 0.25,
             "negative" => -0.3,
             "overshoot" => 1.2,
             "zero" => 0.,
             _ => 0.2,
         },
-        steps: if mode == "steps" { 3 } else { 1 },
+        steps: if matches!(mode, "steps" | "object_steps") {
+            3
+        } else {
+            1
+        },
         axes: match mode {
-            "cplane" | "x" => [true, false, false],
+            "cplane" | "x" | "object_x" | "object_steps" => [true, false, false],
+            "object_y" => [false, true, false],
+            "object_z" => [false, false, true],
             "none" => [false; 3],
             _ => [true; 3],
         },
@@ -77,7 +83,9 @@ fn check_points(
         for (a, b) in a.to_array().into_iter().zip(b.to_array()) {
             let error = (a - b).abs();
             largest = largest.max(error);
-            assert!(error <= 2e-12, "{id} control {i}: {a} != {b} ({error:e})");
+            if error > 2e-12 {
+                eprintln!("{id} control {i}: {a} != {b} ({error:e})");
+            }
         }
     }
     largest
@@ -109,6 +117,13 @@ fn replay(q: &Value, r: &Value) {
         } else {
             None
         });
+        let coordinates = if op["mode"].as_str().unwrap().starts_with("object") {
+            crate::SmoothingCoordinates::Object
+        } else if op["mode"] == "cplane" {
+            crate::SmoothingCoordinates::CPlane(frame)
+        } else {
+            crate::SmoothingCoordinates::World
+        };
         let picks: Option<BTreeSet<usize>> = matches!(
             op["selection"].as_str().unwrap(),
             "grips" | "parent" | "allgrips"
@@ -129,7 +144,9 @@ fn replay(q: &Value, r: &Value) {
                 reals(&b["knots"]),
             )
             .unwrap();
-            let result = source.try_smoothed(options, frame, picks.as_ref()).unwrap();
+            let result = source
+                .try_smoothed_in(options, coordinates, picks.as_ref())
+                .unwrap();
             let a = &after["curve"];
             assert_eq!(result.degree(), source.degree(), "{id}");
             assert_eq!(result.knots(), reals(&a["knots"]), "{id}");
@@ -164,7 +181,9 @@ fn replay(q: &Value, r: &Value) {
                 reals(&b["knots_v"]),
             )
             .unwrap();
-            let result = source.try_smoothed(options, frame, picks.as_ref()).unwrap();
+            let result = source
+                .try_smoothed_in(options, coordinates, picks.as_ref())
+                .unwrap();
             let a = &after["surface"];
             assert_eq!(result.degree_u(), source.degree_u());
             assert_eq!(result.degree_v(), source.degree_v());
@@ -231,7 +250,9 @@ fn replay(q: &Value, r: &Value) {
                 faces,
             )
             .unwrap();
-            let result = source.try_smoothed(options, frame, picks.as_ref()).unwrap();
+            let result = source
+                .try_smoothed_in(options, coordinates, picks.as_ref())
+                .unwrap();
             assert_eq!(result.faces(), source.faces(), "{id}");
             assert_eq!(b["faces"], after["mesh"]["faces"], "{id}");
             largest = largest.max(check_points(
@@ -242,7 +263,8 @@ fn replay(q: &Value, r: &Value) {
             ));
         }
     }
-    eprintln!("Smooth fixed-coordinate largest control error: {largest:e}");
+    eprintln!("Smooth largest control error: {largest:e}");
+    assert!(largest <= 2e-12, "native control error {largest:e}");
 }
 
 fn point_domain(value: &Value) -> [Real; 2] {
@@ -270,6 +292,32 @@ fn smooth_kernel_replays_native_selected_boundaries_and_iterations() {
     .unwrap();
     let r = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/observations/smooth_selected.json"
+    ))
+    .unwrap();
+    replay(&q, &r);
+}
+
+#[test]
+fn smooth_kernel_replays_native_object_coordinates() {
+    let q = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/smooth_object.json"
+    ))
+    .unwrap();
+    let r = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/smooth_object.json"
+    ))
+    .unwrap();
+    replay(&q, &r);
+}
+
+#[test]
+fn smooth_kernel_replays_native_object_coordinates_with_selected_grips() {
+    let q = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/fixtures/smooth_object_selected.json"
+    ))
+    .unwrap();
+    let r = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/smooth_object_selected.json"
     ))
     .unwrap();
     replay(&q, &r);

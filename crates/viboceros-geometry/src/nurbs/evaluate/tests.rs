@@ -1,5 +1,6 @@
 use super::*;
 
+mod continuation;
 mod range;
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {

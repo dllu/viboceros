@@ -135,32 +135,7 @@ impl TriangleMesh {
         // algorithm in third_party/opennurbs/opennurbs_mesh.cpp: compute
         // float vertex normals, then average them for each exact-location
         // topology vertex before displacing all its raw copies.
-        let normals = self.polygon_face_normals()?;
-        let mut sums = vec![[0.0_f32; 3]; self.vertices.len()];
-        for (face, normal) in self.faces.iter().zip(normals).rev() {
-            for &index in face.indices() {
-                let index = index as usize;
-                for (sum, coordinate) in sums[index].iter_mut().zip(normal.as_vector().to_array()) {
-                    *sum += coordinate as f32;
-                }
-            }
-        }
-        let world_z = Vector3::try_new(0.0, 0.0, 1.0)?;
-        let raw_normals = sums
-            .iter()
-            .map(|&sum| {
-                let vector = Vector3::try_new(sum[0] as Real, sum[1] as Real, sum[2] as Real)?;
-                let normalized = vector
-                    .normalized_nonzero()
-                    .map(UnitVector3::as_vector)
-                    .unwrap_or(world_z);
-                Vector3::try_from(
-                    normalized
-                        .to_array()
-                        .map(|coordinate| coordinate as f32 as Real),
-                )
-            })
-            .collect::<Result<Vec<Vector3>, GeometryError>>()?;
+        let raw_normals = self.raw_vertex_normals()?;
         match direction {
             MeshOffsetDirection::VertexNormals => {
                 let topology = self.topology_data();
