@@ -13,7 +13,9 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod boolean;
 mod borders;
+pub use boolean::BrepBooleanOperation;
 mod cap;
 mod combine;
 mod components;

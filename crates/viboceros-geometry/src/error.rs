@@ -5,6 +5,14 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("convex B-rep Boolean input is unsupported: {context}")]
+    UnsupportedConvexBrepBoolean { context: &'static str },
+    #[error("convex B-rep Boolean exceeded its exact arithmetic or topology work budget")]
+    BrepBooleanWorkLimit,
+    #[error(
+        "convex B-rep Boolean boundary cannot be represented as a closed manifold at the requested tolerance"
+    )]
+    UnrepresentableBrepBoolean,
     #[error("control point {index} is outside the {count} available grips")]
     InvalidControlPointIndex { index: usize, count: usize },
     #[error("control-point editing is unsupported for {context}")]

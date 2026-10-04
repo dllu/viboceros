@@ -1,0 +1,222 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_corner_union",
+      "case": "corner",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_corner_intersection",
+      "case": "corner",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_corner_difference",
+      "case": "corner",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_pierce_union",
+      "case": "pierce",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_pierce_intersection",
+      "case": "pierce",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_pierce_difference",
+      "case": "pierce",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_disjoint_union",
+      "case": "disjoint",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_disjoint_intersection",
+      "case": "disjoint",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_disjoint_difference",
+      "case": "disjoint",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contained_union",
+      "case": "contained",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contained_intersection",
+      "case": "contained",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contained_difference",
+      "case": "contained",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contains_union",
+      "case": "contains",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contains_intersection",
+      "case": "contains",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_contains_difference",
+      "case": "contains",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_equal_union",
+      "case": "equal",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_equal_intersection",
+      "case": "equal",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_equal_difference",
+      "case": "equal",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_touch_face_union",
+      "case": "touch_face",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_touch_face_intersection",
+      "case": "touch_face",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_touch_face_difference",
+      "case": "touch_face",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_boundary_contained_union",
+      "case": "boundary_contained",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_boundary_contained_intersection",
+      "case": "boundary_contained",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_boundary_contained_difference",
+      "case": "boundary_contained",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_partial_coplanar_union",
+      "case": "partial_coplanar",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_partial_coplanar_intersection",
+      "case": "partial_coplanar",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_partial_coplanar_difference",
+      "case": "partial_coplanar",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_sheared_union",
+      "case": "sheared",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_sheared_intersection",
+      "case": "sheared",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_sheared_difference",
+      "case": "sheared",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_box_union",
+      "case": "tetra_box",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_box_intersection",
+      "case": "tetra_box",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_box_difference",
+      "case": "tetra_box",
+      "operation": "difference"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_tetra_union",
+      "case": "tetra_tetra",
+      "operation": "union"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_tetra_intersection",
+      "case": "tetra_tetra",
+      "operation": "intersection"
+    },
+    {
+      "op": "convex_boolean",
+      "id": "convex_boolean_tetra_tetra_difference",
+      "case": "tetra_tetra",
+      "operation": "difference"
+    }
+  ]
+}

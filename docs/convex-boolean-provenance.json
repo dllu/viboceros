@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleConvexBooleanFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "sdk_witnesses": 36,
+  "nonempty_geometry_replays": 26,
+  "no_result_with_nonempty_set": 6,
+  "commands_registered": false,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Public SDK recipes ran at idle in an empty owned document on private Xvfb. No proprietary implementation was inspected.",
+    "The 26 nonempty SDK outputs are compared using volume, area, centroid, tight polygon bounds and finite bidirectional boundary witnesses, allowing different face partitions and parameterizations.",
+    "Six retained SDK no-result cases differ from the independent kernel mathematical set result. Null and empty-array responses are recorded separately.",
+    "This kernel capability supports exact affine convex polygonal single-shell operands. It does not establish general curved or interactive Boolean command parity, continuous boundary error, or kernel speed."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/convex_boolean_probe.py": "867ecd30fe4df9166df27f43589196673512db709e582f9ee0072c1686bfaebf",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/convex_boolean.json": "01a1fc8703c3aff038459461a95332e3770d2928fc32f38cf9f58bef3d2c023b",
+    "tools/rhino_oracle/observations/convex_boolean.json": "d75b86c098ed5464c8d6363e189ac7a548da464f8314387bf388ba041999bc87"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "b68763dcc74746e1775779d9bad7654b5b09e9cac33fd71ea9f1662092d84d85",
+    "tools/rhino_oracle/rhino_worker.py": "ac1a3e1fb9e57859c9d13b9d89dcb3f1657d79c8cfc72875180af36dd59362ed"
+  }
+}

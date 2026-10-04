@@ -1,7 +1,7 @@
 //! Conservative spatial orientation witnesses; never a signed-volume heuristic.
 use super::*;
 mod convex;
-mod planar;
+pub(super) mod planar;
 mod rectangle;
 mod trim;
 

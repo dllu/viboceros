@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'convex_boolean' for op in request.get('operations', [])):
+            from .convex_boolean_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Convex Boolean probes require a private Rhino settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):
             from .grip_alias_probe import validate_request
             if self.settings_scheme is None:
@@ -696,6 +701,9 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'convex_boolean' for op in request.get('operations', [])):
+                for name in ('convex_boolean_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path/name)
             if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):
                 for name in ('grip_alias_probe.py','smooth_probe.py','join_probe.py','merge_edges_probe.py','grip_transform_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

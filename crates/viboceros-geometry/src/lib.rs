@@ -93,9 +93,9 @@ pub use units::{LengthUnitSystem, UnitError};
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
-    Brep, BrepBoundaryRestoration, BrepEdge, BrepEdgeMergeScope, BrepFace, BrepHoleRemoval,
-    BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepSolidOrientation,
-    BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, BrepWireCage,
+    Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepEdge, BrepEdgeMergeScope, BrepFace,
+    BrepHoleRemoval, BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType,
+    BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, BrepWireCage,
     RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, join_breps,
     join_breps_with_report,
 };
