@@ -21,9 +21,9 @@
     "Axis defaults are seeded through public ScaleNU command input on a disposable point before source construction.",
     "Complete numeric maps, signed/zero factors, CPlane/world axes, selected grips and parent precedence, mixed peer copy order, repeated copies, command-first selection and collapsed mesh records match in 20 recipes.",
     "Four second-reference distance-constrained recipes match, including a negative Z target and an off-axis target. A bare second-reference number awaits a point instead of completing the command.",
-    "Six unconstrained coordinate-reference macros produce native scales that differ from the projected-axis ratios. Top/Perspective, history, before/after cameras and raw geometry are retained without normalization. Their cause and native mouse fidelity remain unresolved.",
+    "Six unconstrained coordinate-reference macros produce native scales that differ from projected-axis ratios. Their raw histories, cameras and geometry remain retained. A separate capture establishes a cursor-input dependency for twelve controlled macros; the original six cursor locations were not captured and their compatibility gaps remain.",
     "Application tests replay each recipe twice. Twenty matching workflows provide 40 comparisons at absolute tolerance 1e-9; six incompatible workflows assert the independent axis map and retain their discrepancies. Command-first and repeated-copy recipes use incremental input in both runs.",
-    "Rigid/SubCrv options, all singular analytic and trimmed shapes, cross-viewport picks, calculator expressions, mouse-preview parity, performance and full parity remain unproven."
+    "Rigid/SubCrv options, all singular analytic and trimmed shapes, cross-viewport picks, calculator expressions, preview appearance, scripted cursor-dependent inputs, performance and full parity remain unproven. Twenty additional real cursor/keyboard point workflows are verified separately."
   ],
   "sha256": {
     "tools/rhino_oracle/scale_nu_probe.py": "ee9340f0603ba701e2a4ae0f7d34dae74bd6af0bc8b3c5debdbfd2d0ca4bc2b7",
@@ -34,5 +34,6 @@
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
-  }
+  },
+  "reference_input_provenance": "docs/scale-nu-reference-provenance.json"
 }

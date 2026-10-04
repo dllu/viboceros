@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleScaleNUReference_20261004",
+  "native_recipes": 32,
+  "positive_application_replays": 20,
+  "scripted_cursor_diagnostics": 12,
+  "absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK outputs were inspected, in an empty owned Rhino document on private Xvfb. Runs occur at idle outside RunPythonScript Undo.",
+    "Twenty real reference workflows cover eleven mouse clicks and nine keyboard targets: X/Y/Z axes, Top/Front/Perspective views, two cursor distances, an off-axis cursor, a negative cursor and off-axis first references. Pending cameras and integer viewing rays are captured independently of output geometry.",
+    "Each pending observation captures the second-reference prompt and unchanged source geometry before its input. Native EndCommand, post-macro, Undo and Redo states are retained. Application replays compare point geometry and selection within 1e-9; mouse preview maps agree with the final clicked result.",
+    "Twelve separate complete macros follow a public line-constrained GetPoint calibration. Their prescribed coordinate target is 6, but output follows the preceding calibrated cursor coordinate. These are retained diagnostics and are not counted as successful application replays.",
+    "The original six bare-coordinate macro discrepancies remain in scale_nu.json. Their cursor locations were not captured, so the new controlled evidence cannot reconstruct each original input context. Viboceros does not currently emulate the scripted cursor dependency.",
+    "Sources are single points with Copy=No and WorldXY directions. Preview appearance, Copy reference loops, non-world CPlane cursor inputs, mixed geometry under reference picking, option changes, cross-viewport picks, performance and full native parity remain unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_nu_reference_probe.py": "6b677c0ef891228b6c740a04de6dd8b162dec0e5d4d8f5dc0b85f6a1c9ab9ce1",
+    "tools/rhino_oracle/scale_nu_reference_input.py": "82cf35757a2b26489875b1e281bda8ec68864837a100fdc18e69edcefdf829ac",
+    "tools/rhino_oracle/fixtures/scale_nu_reference.json": "a78cec94986ef791b3e1792ff1dc8ac655954b7c2465cd3891b664e8bec2f217",
+    "tools/rhino_oracle/observations/scale_nu_reference.json": "66ea0fa624ec32a99df720bcfd5cdf54476d569e81442788fb5795e997f7afd3",
+    "tools/rhino_oracle/viewport_capture.py": "453e14cb13ce8a61ed04faeae394db8990f1eb48d490c37610bc7deb9781e6c5",
+    "tools/rhino_oracle/named_view_policy_probe.py": "88df5448ece8fa9b0aeddfda26be5229907c67e5ebf588098f2cfbcbc8e7af78",
+    "tools/rhino_oracle/view_camera_probe.py": "8e1ea7c2f82087639954fe873937844171ec4e863871ba6e885748995b96c931",
+    "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "tools/rhino_oracle/shrink_face_input.py": "bb3842f6ba6929f43d770c00e40ad5184e0bb2f88e8c5d9e8f94eb0c33ffa51f",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

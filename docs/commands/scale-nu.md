@@ -53,9 +53,32 @@ their axis-distance ratios, and Top/Perspective differ. These raw outputs,
 command histories and camera settings are retained. Distance-constrained
 reference recipes match. Viboceros's unconstrained typed targets use their
 projected axis coordinates; no native discrepancy is silently substituted into
-the map. The cause of the native scripted behavior remains unresolved.
+the map.
 
-Rigid and SubCrv options, native mouse-preview fidelity, per-axis viewport
+### Controlled cursor and keyboard input
+
+A [second capture](../scale-nu-reference-provenance.json) records 32 prescribed
+inputs, including complete camera settings, integer cursor positions, viewing
+rays, prompt phases, geometry, command completion and Undo/Redo. Twenty real
+mouse and keyboard workflows match application replay within `1e-9`. They
+exercise all three axes, Top/Front/Perspective views, positive and negative
+cursor locations, off-axis references and cursor positions away from typed targets.
+
+Twelve additional recipes calibrate a cursor point through the public `GetPoint`
+API, then run complete `ScaleNU` macros with a different coordinate target. In
+these captures the resulting scale follows the preceding cursor calibration,
+despite the target appearing in command history. For example, with an X reference
+of 2 and a target of 6, a cursor coordinate of `3.9948849104859336` produces that
+X coordinate on a source at `[2,3,4]`. Typing the same target at the reference
+prompt produces `[6,3,4]` at either tested cursor location. This establishes the
+observed input-context dependency; the native implementation was not inspected.
+These twelve macros remain diagnostics, not passing application comparisons.
+
+The original six discrepancies remain recorded. Their captures did not include
+cursor coordinates, so the new evidence cannot reconstruct each original input
+context. Viboceros does not currently emulate this native scripted behavior.
+
+Rigid and SubCrv options, native preview appearance, per-axis viewport
 changes, general calculator input, all singular analytic/B-rep shapes and
 performance parity are unproven or incomplete. Geometry that cannot preserve
 its representation under a singular map can still reject the edit atomically.
@@ -65,6 +88,8 @@ its representation under a singular map can still reject the edit atomically.
 ```sh
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/scale_nu.json --scheme VibocerosOracleScaleNU --output tools/rhino_oracle/observations/scale_nu.json --timeout 240
 python3 -m unittest tools.rhino_oracle.test_scale_nu
+tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/scale_nu_reference.json --scheme VibocerosOracleScaleNUReference --output tools/rhino_oracle/observations/scale_nu_reference.json --timeout 300
+python3 -m unittest tools.rhino_oracle.test_scale_nu_reference
 cargo test -p viboceros scale_nu --bin viboceros
 cargo test -p viboceros-command scale_nu --lib
 ```

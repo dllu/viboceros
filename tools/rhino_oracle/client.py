@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'scale_nu_reference' for op in request.get('operations', [])):
+            from .scale_nu_reference_input import ScaleNuReferencePicker
+            if self.settings_scheme is None:
+                raise OracleProtocolError('ScaleNU references require a private settings scheme')
+            interaction = ScaleNuReferencePicker(request)
         if any(op.get('op') == 'maelstrom_preview' for op in request.get('operations', [])):
             from .maelstrom_preview_input import MaelstromPreviewPicker
             if self.settings_scheme is None:
@@ -617,6 +622,9 @@ class OracleClient:
                 shutil.copyfile(worker_source.with_name('circle_fit_benchmark.py'), job_path / 'circle_fit_benchmark.py')
             if any(op.get('op') == 'circle_fit_points' for op in request.get('operations', [])):
                 for name in ('circle_fit_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
+            if any(op.get('op') == 'scale_nu_reference' for op in request.get('operations', [])):
+                for name in ('scale_nu_reference_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'shrink_face_input.py', 'snap_environment.py', 'viewport_capture.py', 'named_view_policy_probe.py', 'view_camera_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
             if any(op.get('op') == 'scale_nu' for op in request.get('operations', [])):
@@ -911,7 +919,7 @@ class OracleClient:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
-        if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview','maelstrom_preview') for op in request.get('operations', [])):
+        if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview','maelstrom_preview','scale_nu_reference') for op in request.get('operations', [])):
             interaction.record_diagnostics(response)
         if any(op.get("op") == "point_snap" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)

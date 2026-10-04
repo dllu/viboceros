@@ -14,6 +14,132 @@ fn coords(value: &Value) -> [f64; 3] {
 }
 
 #[test]
+fn scale_nu_cursor_and_keyboard_reference_inputs_match_20_native_captures() {
+    use crate::viewport::{DraftingInput, ViewportInput};
+    use serde_json::json;
+    let fixture: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/scale_nu_reference.json"
+    ))
+    .unwrap();
+    let observed: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/scale_nu_reference.json"
+    ))
+    .unwrap();
+    let operations = fixture["operations"].as_array().unwrap();
+    let results = observed["results"].as_array().unwrap();
+    assert_eq!(operations.len(), 32);
+    assert_eq!(results.len(), operations.len());
+    let mut matched = 0;
+    for (op, row) in operations.iter().zip(results) {
+        let label = op["id"].as_str().unwrap();
+        let native = &row["value"];
+        assert_eq!(row["id"], label);
+        // Scripted native coordinates depend on preceding cursor input. Keep
+        // those twelve raw diagnostics separate from these real UI replays.
+        if op["finish"] == "Scripted" {
+            continue;
+        }
+        matched += 1;
+        let axis = op["axis"].as_u64().unwrap() as usize;
+        let mut app = test_app();
+        app.active_viewport = 1;
+        app.viewports[1] = crate::viewport::clip_tests::captured_view(&native["pending"]["camera"]);
+        let source = app
+            .document
+            .add_geometry(Geometry::Point(point(2., 3., 4.)))
+            .unwrap();
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        let objects = |app: &VibocerosApp| {
+            json!(app.document.objects().map(|object| {
+            let Geometry::Point(p) = object.geometry() else { panic!("point source") };
+            json!({"point": p.to_array(), "selected": app.document.is_selected(object.id())})
+        }).collect::<Vec<_>>())
+        };
+        compare(&objects(&app), &native["before"], label);
+        enter(&mut app, "ScaleNU Copy=No");
+        enter(&mut app, "w0,0,0");
+        for _ in 0..axis {
+            enter(&mut app, "1");
+        }
+        let mut reference = [0.; 3];
+        reference[axis] = 2.;
+        if op["reference"] == "OffAxis" {
+            reference = [1.; 3];
+        }
+        enter(
+            &mut app,
+            &format!("w{},{},{}", reference[0], reference[1], reference[2]),
+        );
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        let defaults = app.commands.axis_scale_defaults("ScaleNU");
+        let (destination, map) = crate::viewport::affine_preview::tests::captured_destination(
+            &app.document,
+            &native["pending"],
+            ViewportInput {
+                drafting: DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::NONE,
+                    ..Default::default()
+                },
+                affine_preview: Some(app.affine_preview().unwrap()),
+                ..Default::default()
+            },
+        );
+        app.update_affine_preview(Some(map));
+        assert_eq!(
+            app.document.objects().cloned().collect::<Vec<_>>(),
+            before,
+            "{label}"
+        );
+        assert_eq!(
+            app.commands.axis_scale_defaults("ScaleNU"),
+            defaults,
+            "{label}"
+        );
+        compare(&objects(&app), &native["pending"]["objects"], label);
+        if op["finish"] == "Click" {
+            assert!(
+                app.accept_filtered_drafting_point(destination, false),
+                "{label}: {:?}",
+                app.command_log
+            );
+        } else {
+            let mut target = [0.; 3];
+            target[axis] = 6.;
+            enter(
+                &mut app,
+                &format!("w{},{},{}", target[0], target[1], target[2]),
+            );
+        }
+        for _ in axis + 1..3 {
+            enter(&mut app, "1");
+        }
+        assert!(
+            app.active_command.is_none(),
+            "{label}: {:?}",
+            app.command_log
+        );
+        compare(&objects(&app), &native["after"], label);
+        if op["finish"] == "Click" {
+            compare(
+                &json!(map.transform_point(point(2., 3., 4.)).unwrap().to_array()),
+                &native["after"][0]["point"],
+                label,
+            );
+        }
+        assert_eq!(app.document.undo_label(), Some("ScaleNU"));
+        enter(&mut app, "Undo");
+        compare(&objects(&app), &native["undo"], label);
+        enter(&mut app, "Redo");
+        compare(&objects(&app), &native["redo"], label);
+    }
+    assert_eq!(matched, 20);
+}
+
+#[test]
 fn scale_nu_native_replays_numeric_reference_distance_grips_copy_and_history() {
     let q: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/scale_nu.json"

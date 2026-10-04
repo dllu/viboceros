@@ -1,0 +1,294 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-0",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-1",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-2",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-3",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-4",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-5",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-6",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-7",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-8",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Near",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-9",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Near",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-10",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Far",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-11",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Far",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-12",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Near",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-13",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Near",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-14",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Far",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-15",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Far",
+      "finish": "Typed",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-16",
+      "axis": 0,
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-17",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Negative",
+      "finish": "Click",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-18",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Click",
+      "reference": "OffAxis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-19",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Typed",
+      "reference": "OffAxis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-20",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-21",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-22",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-23",
+      "axis": 1,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-24",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Near",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-25",
+      "axis": 2,
+      "view": "Front",
+      "aim": "Far",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-26",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Near",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-27",
+      "axis": 0,
+      "view": "Perspective",
+      "aim": "Far",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-28",
+      "axis": 0,
+      "view": "Top",
+      "aim": "OffAxis",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-29",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Negative",
+      "finish": "Scripted",
+      "reference": "Axis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-30",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Near",
+      "finish": "Scripted",
+      "reference": "OffAxis"
+    },
+    {
+      "op": "scale_nu_reference",
+      "id": "scale-nu-reference-31",
+      "axis": 0,
+      "view": "Top",
+      "aim": "Far",
+      "finish": "Scripted",
+      "reference": "OffAxis"
+    }
+  ]
+}
