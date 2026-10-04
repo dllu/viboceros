@@ -18,6 +18,7 @@ impl TransformSession {
         &self,
         command: Option<InteractiveCommand>,
         plane: Frame3,
+        tolerance: Tolerance,
     ) -> Option<crate::viewport::AffinePreview<'_>> {
         use viboceros_command::point_transform::PointTransform;
         let definition = match command? {
@@ -42,6 +43,18 @@ impl TransformSession {
                 center,
                 factor: self.factor?,
             },
+            InteractiveCommand::ScaleNu(prompt) => PointTransform::ScaleNU {
+                origin: prompt.origin?,
+                reference: prompt.reference,
+                distance: prompt.distance,
+                factors: prompt.factors.map(|f| f.unwrap_or(1.)),
+                axis: prompt.axis()?,
+                plane: if prompt.world {
+                    viboceros_command::CommandContext::default().construction_plane
+                } else {
+                    plane
+                },
+            },
             InteractiveCommand::Rotate {
                 center: Some(center),
                 reference: Some(reference),
@@ -59,13 +72,29 @@ impl TransformSession {
             } => PointTransform::Shear { origin, reference },
             _ => return None,
         };
+        let last_transform = match definition {
+            PointTransform::ScaleNU {
+                origin,
+                reference: None,
+                ..
+            }
+            | PointTransform::ScaleNU {
+                origin,
+                distance: Some(_),
+                ..
+            } => definition
+                .transform_at(plane, origin, tolerance)
+                .ok()
+                .or(self.preview),
+            _ => self.preview,
+        };
         Some(crate::viewport::AffinePreview {
             sources: &self.sources,
             grips: &self.grips,
             definition,
             frame: (!matches!(definition, PointTransform::Scale2D { .. })).then_some(plane),
             copy: self.copy,
-            last_transform: self.preview,
+            last_transform,
         })
     }
     pub(super) fn mirror_preview(
@@ -96,6 +125,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
     matches!(
         command,
         InteractiveCommand::Scale { .. }
+            | InteractiveCommand::ScaleNu(_)
             | InteractiveCommand::Rotate { .. }
             | InteractiveCommand::Rotate3D { .. }
             | InteractiveCommand::Mirror { .. }
@@ -108,7 +138,7 @@ pub(super) fn supports(command: InteractiveCommand) -> bool {
 pub(super) fn supports_name(name: &str) -> bool {
     matches!(
         name,
-        "scale" | "scale1d" | "scale2d" | "rotate" | "rotate3d" | "mirror" | "shear"
+        "scale" | "scale1d" | "scale2d" | "scalenu" | "rotate" | "rotate3d" | "mirror" | "shear"
     )
 }
 
@@ -137,6 +167,10 @@ pub(super) fn start_copy_option(name: &str, arguments: &[&str], default: bool) -
         viboceros_command::mirror::start_options(arguments, default)
             .ok()
             .map(|(_, copy)| copy)
+    } else if name == "scalenu" {
+        viboceros_command::nonuniform_scale::start_options(arguments, default)
+            .ok()
+            .map(|(_, copy)| copy)
     } else {
         copy_option(arguments, default)
     }
@@ -148,6 +182,7 @@ impl VibocerosApp {
             self.active_command,
             self.drafting_plane
                 .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane()),
+            self.document.tolerance(),
         )
     }
 
@@ -261,7 +296,9 @@ impl VibocerosApp {
         let context = viboceros_command::CommandContext {
             construction_plane: if matches!(
                 continuation,
-                InteractiveCommand::Rotate { .. } | InteractiveCommand::Shear { .. }
+                InteractiveCommand::Rotate { .. }
+                    | InteractiveCommand::Shear { .. }
+                    | InteractiveCommand::ScaleNu(_)
             ) {
                 self.drafting_plane
                     .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane())
@@ -289,6 +326,7 @@ impl VibocerosApp {
                 {
                     self.active_command = Some(continuation);
                     let action = match continuation {
+                        InteractiveCommand::ScaleNu(_) => "Type an X factor or pick a reference",
                         InteractiveCommand::Scale {
                             kind: InteractiveScaleKind::OneDimensional,
                             ..
@@ -382,6 +420,7 @@ impl VibocerosApp {
         if word.eq_ignore_ascii_case("Cancel")
             || ((input.is_empty() || word.eq_ignore_ascii_case("Enter"))
                 && (session.applied
+                    && !matches!(command, InteractiveCommand::ScaleNu(prompt) if prompt.factors != [None; 3] || prompt.reference.is_some())
                     || matches!(
                         command,
                         InteractiveCommand::Mirror { .. }
@@ -435,6 +474,10 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if self.try_continue_scale_nu(input) {
+            return true;
+        }
+        let session = self.transform_session.as_ref().unwrap();
         let ready_for_scalar = matches!(
             command,
             InteractiveCommand::Scale {
@@ -521,6 +564,14 @@ impl VibocerosApp {
     pub(super) fn transform_default_hint(&self) -> Option<String> {
         let command = self.active_command?;
         let session = self.transform_session.as_ref()?;
+        if let InteractiveCommand::ScaleNu(prompt) = command {
+            if prompt.origin.is_some() && prompt.reference.is_none() {
+                let axis = prompt.axis()?;
+                let value = self.commands.axis_scale_defaults("ScaleNU")?[axis];
+                return Some(format!("{} factor default: {value}", ["X", "Y", "Z"][axis]));
+            }
+            return None;
+        }
         if session.applied || session.factor.is_some() {
             return None;
         }

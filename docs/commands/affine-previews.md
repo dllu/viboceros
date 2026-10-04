@@ -21,6 +21,9 @@ instead previews its collapsed directional map. Committing still checks model
 geometry validity independently. If transforming a source bounding-box corner
 would overflow, the whole source batch retains its previous preview.
 
+[ScaleNU](scale-nu.md) previews staged axis factors and its current reference distance.
+Its native mouse-preview fidelity is unproven.
+
 ## Input geometry
 
 - Scale1D free mouse picks follow the closest point on its reference line to

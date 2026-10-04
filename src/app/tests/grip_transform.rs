@@ -21,7 +21,7 @@ fn controls(value: &Value) -> Vec<WeightedPoint3> {
 fn floats(value: &Value) -> Vec<f64> {
     serde_json::from_value(value.clone()).unwrap()
 }
-fn geometry(op: &Value, native: &Value) -> Geometry {
+pub(super) fn geometry(op: &Value, native: &Value) -> Geometry {
     let kind = op["source"].as_str().unwrap();
     if kind == "circle" || kind == "arc" {
         let circle = Circle3::try_new(
@@ -127,7 +127,7 @@ fn control_json(points: &[WeightedPoint3]) -> Value {
             .collect::<Vec<_>>()
     )
 }
-fn snapshot(app: &VibocerosApp, source: ObjectId, extra: Option<ObjectId>) -> Value {
+pub(super) fn snapshot(app: &VibocerosApp, source: ObjectId, extra: Option<ObjectId>) -> Value {
     json!(app.document.objects().map(|o| {
         let locations = app.document.control_point_locations(o.id());
         let mut row = json!({"role":if o.id()==source {"source"} else if Some(o.id())==extra {"point"} else {"output"},
@@ -155,7 +155,7 @@ fn snapshot(app: &VibocerosApp, source: ObjectId, extra: Option<ObjectId>) -> Va
         row
     }).collect::<Vec<_>>())
 }
-fn compare(actual: &Value, expected: &Value, context: &str) {
+pub(super) fn compare(actual: &Value, expected: &Value, context: &str) {
     match (actual, expected) {
         (Value::Number(a), Value::Number(b)) => assert!(
             (a.as_f64().unwrap() - b.as_f64().unwrap()).abs() < 1e-9,

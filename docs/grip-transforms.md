@@ -3,7 +3,7 @@
 [Control-point selection](control-points.md) · [Transforms](commands/transforms.md)
 
 Run `PointsOn`, select control points, and use Move, Copy, Scale, Scale1D,
-Scale2D, Rotate, Rotate3D, Mirror or Shear. The command acts on the selected
+Scale2D, [ScaleNU](commands/scale-nu.md), Rotate, Rotate3D, Mirror or Shear. The command acts on the selected
 controls. Other controls on the same object retain their positions. If the
 parent is also selected, its selected grips determine the edit. Ordinary
 selected objects can be transformed alongside grip owners.
@@ -73,7 +73,7 @@ matching the native face records, grip picks and Undo/Redo. Additional bounded
 colors, normals, area and closest points. Coincident peers remain independent.
 
 Arbitrary nonrectangular trimmed single-face B-reps and composite PolyCurve
-grip editing are unsupported. ScaleNU, other affine commands, Delete grips,
+grip editing are unsupported. Other affine commands, Delete grips,
 grip-specific snapping, grouped grip copy policy, native overlap menus, idle
 Escape display cleanup, native mouse-preview fidelity and large control-net performance still need
 implementation or verification. General closed/periodic, trimmed and composite

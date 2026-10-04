@@ -58,7 +58,9 @@ impl Document {
                         .geometry
                         .with_transformed_grips(selected, transform, self.tolerance)?
                 } else {
-                    source.geometry.transformed(transform, self.tolerance)?
+                    source
+                        .geometry
+                        .transformed_for_edit(transform, self.tolerance)?
                 };
                 Ok((index, geometry))
             })

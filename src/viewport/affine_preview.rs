@@ -35,6 +35,7 @@ impl<'a> AffinePreview<'a> {
                     matches!(
                         self.definition,
                         PointTransform::Scale1DDirection { factor: 0., .. }
+                            | PointTransform::ScaleNU { .. }
                     ) || map.orientation_reversing().is_ok()
                 })
                 .unwrap_or_else(AffineTransform3::identity)
@@ -47,10 +48,7 @@ impl<'a> AffinePreview<'a> {
                 copy: self.copy,
                 reference_sources: !self.copy,
                 draw_source_faces: false,
-                reversing: !matches!(
-                    self.definition,
-                    PointTransform::Scale1DDirection { factor: 0., .. }
-                ) && transform.orientation_reversing().unwrap_or(false),
+                reversing: transform.orientation_reversing().unwrap_or(false),
                 reference: None,
                 transform,
             }),

@@ -136,6 +136,25 @@ impl Geometry {
         })
     }
 
+    /// User edits retain mesh face records when a scale flattens their vertices.
+    /// Unit conversion and geometry construction keep the stricter transform.
+    pub fn transformed_for_edit(
+        &self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if let Self::Mesh(mesh) = self {
+            let vertices = mesh
+                .vertices()
+                .iter()
+                .map(|point| transform.transform_point(*point))
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(Self::Mesh(mesh.try_with_edited_vertices(vertices)?))
+        } else {
+            self.transformed(transform, tolerance)
+        }
+    }
+
     /// Applies a non-affine point morph while retaining the richest geometry
     /// representation supported by the kernel. Linear primitives become
     /// cubic NURBS curves so their interiors follow the morph.

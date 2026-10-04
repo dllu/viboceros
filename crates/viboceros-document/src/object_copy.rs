@@ -91,7 +91,7 @@ impl Document {
                     *source_index,
                     self.objects[*source_index]
                         .geometry
-                        .transformed(*transform, self.tolerance)?,
+                        .transformed_for_edit(*transform, self.tolerance)?,
                 ));
             }
         }

@@ -168,6 +168,19 @@ impl Frame3 {
         Ok(coordinates)
     }
 
+    /// One coordinate, independent of whether the other projections fit in
+    /// binary64. Accumulate translation and projection before rounding.
+    pub fn coordinate_of(self, axis: usize, point: Point3) -> Result<f64, GeometryError> {
+        let direction = *self.axes().get(axis).ok_or(GeometryError::Degenerate {
+            context: "frame coordinate axis",
+        })?;
+        let value = direction
+            .as_vector()
+            .dot_point_difference(point, self.origin);
+        crate::require_finite([value], "frame coordinate")?;
+        Ok(value)
+    }
+
     /// First two coordinates relative to the frame origin. This remains usable
     /// when the normal coordinate is too large to represent in binary64.
     pub fn projected_coordinates_of(self, point: Point3) -> Result<[f64; 2], GeometryError> {
@@ -335,6 +348,10 @@ mod tests {
         let sample = point(1.0, 2.0, f64::MAX);
         assert_eq!(frame.projected_coordinates_of(sample).unwrap(), [1.0, 2.0]);
         assert!(frame.coordinates_of(sample).is_err());
+        assert_eq!(frame.coordinate_of(0, sample).unwrap(), 1.);
+        assert_eq!(frame.coordinate_of(1, sample).unwrap(), 2.);
+        assert!(frame.coordinate_of(2, sample).is_err());
+        assert!(frame.coordinate_of(3, sample).is_err());
     }
 
     #[test]

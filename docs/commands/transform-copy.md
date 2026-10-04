@@ -89,7 +89,7 @@ center comparisons here cover points only. Existing
 The separate [scalar-default session](transform-defaults.md) verifies Enter
 before the first edit. This capture does not measure viewport mouse picks,
 general calculator expressions, or every invalid input. Those workflows remain
-incomplete. ScaleNU and orientation
+incomplete. [ScaleNU](scale-nu.md) has a separate repeated per-axis workflow. Orientation
 prompts do not yet support this repeated target session, and other transform
 commands retain their separate history policies. Shared Copy preferences are
 currently session-only.

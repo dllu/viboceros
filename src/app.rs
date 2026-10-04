@@ -164,6 +164,7 @@ mod point_input;
 mod points;
 mod preferences;
 mod radius;
+mod scale_nu;
 mod set_point;
 mod set_view;
 mod snapping;
@@ -612,6 +613,7 @@ enum InteractiveCommand {
         rotate: bool,
         z_offset: f64,
     },
+    ScaleNu(viboceros_command::nonuniform_scale::ScaleNuPrompt),
     Scale {
         kind: InteractiveScaleKind,
         center: Option<Point3>,
@@ -763,6 +765,7 @@ impl InteractiveCommand {
             Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
+            Self::ScaleNu(_) => "ScaleNU",
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Twist { .. } => "Twist",
@@ -779,6 +782,7 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::ScaleNu(prompt) => prompt.prompt(),
             Self::Angle {
                 points: [None, _, _],
             } => "Angle: pick the first direction's start (TwoObjects; Esc cancels)",
@@ -1507,6 +1511,7 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::ScaleNu(prompt) => prompt.origin,
             Self::Angle {
                 points: [start, None, _],
             } => start,
@@ -1812,6 +1817,7 @@ impl InteractiveCommand {
 
     const fn reference(self) -> Option<Point3> {
         match self {
+            Self::ScaleNu(prompt) => prompt.reference,
             Self::Scale { reference, .. }
             | Self::Rotate { reference, .. }
             | Self::Shear { reference, .. } => reference,
@@ -4715,6 +4721,13 @@ impl VibocerosApp {
                     center: None,
                     reference: None,
                 },
+                "scalenu" => InteractiveCommand::ScaleNu(
+                    viboceros_command::nonuniform_scale::ScaleNuPrompt::new(
+                        viboceros_command::nonuniform_scale::start_options(&arguments, false)
+                            .unwrap()
+                            .0,
+                    ),
+                ),
                 "rotate" => InteractiveCommand::Rotate {
                     center: None,
                     reference: None,
@@ -4771,6 +4784,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Distribute { .. }
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
+                | InteractiveCommand::ScaleNu(_)
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Twist { .. }
@@ -4954,6 +4968,9 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::ScaleNu(prompt) => {
+                return self.accept_scale_nu_point(prompt, point);
+            }
             InteractiveCommand::Angle { mut points } => {
                 let index = points.iter().position(Option::is_none).unwrap_or(3);
                 if index == 1 || index == 3 {
@@ -8567,6 +8584,7 @@ impl eframe::App for VibocerosApp {
                     self.drafting_plane.unwrap_or_else(|| {
                         self.viewports[self.active_viewport].construction_plane()
                     }),
+                    self.document.tolerance(),
                 )
             })
             .filter(|_| model_input_active && self.plane_prompt.is_none());
@@ -9173,6 +9191,7 @@ mod tests {
     mod points;
     mod radius;
     mod rhino_curve_prompt;
+    mod scale_nu;
     mod set_point;
     mod set_view;
     mod shrink_trimmed;

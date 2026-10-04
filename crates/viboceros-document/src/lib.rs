@@ -1437,7 +1437,7 @@ impl Document {
         history: ReplacementHistory,
     ) -> Result<usize, DocumentError> {
         let staged = self.stage_object_geometries(ids, |geometry| {
-            geometry.transformed(transform, self.tolerance)
+            geometry.transformed_for_edit(transform, self.tolerance)
         })?;
         self.commit_object_geometries(
             staged,

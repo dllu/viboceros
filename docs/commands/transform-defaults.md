@@ -22,6 +22,9 @@ With Copy=Yes, Enter at the first scalar prompt accepts the default and makes
 a copy. Enter after an accepted edit finishes the batch. Canceling a repeated
 session retains defaults from its accepted inputs and keeps accepted copies.
 
+[ScaleNU](scale-nu.md) remembers independent X/Y/Z factors and accepts their
+defaults separately.
+
 ## Verification and limits
 
 The [80 ordered recipes](../../tools/rhino_oracle/fixtures/transform_copy_default.json)

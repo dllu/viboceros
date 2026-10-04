@@ -16,6 +16,14 @@ pub enum PointTransform {
         center: Point3,
         reference: Point3,
     },
+    ScaleNU {
+        origin: Point3,
+        reference: Option<Point3>,
+        distance: Option<Real>,
+        factors: [Real; 3],
+        axis: usize,
+        plane: Frame3,
+    },
     Rotate {
         center: Point3,
         reference: Point3,
@@ -45,6 +53,24 @@ impl PointTransform {
         tolerance: Tolerance,
     ) -> Result<AffineTransform3, CommandError> {
         match self {
+            Self::ScaleNU {
+                origin,
+                reference,
+                distance,
+                mut factors,
+                axis,
+                plane,
+            } => {
+                if let Some(reference) = reference {
+                    *factors
+                        .get_mut(axis)
+                        .ok_or(CommandError::Usage(nonuniform_scale::USAGE))? =
+                        nonuniform_scale::constrained_reference_factor(
+                            plane, origin, axis, reference, target, distance, tolerance,
+                        )?;
+                }
+                Ok(nonuniform_scale::scale_map(plane, origin, factors)?)
+            }
             Self::Scale { center, reference } => AffineTransform3::try_uniform_scale(
                 center,
                 scale_factor_from_reference_allow_zero(center, reference, target, tolerance)?,
@@ -104,7 +130,20 @@ impl PointTransform {
     /// Free Scale1D mouse targets follow the reference line; typed point
     /// targets use the same projected distance when constructing the map.
     pub fn mouse_line(self, tolerance: Tolerance) -> Option<translation::DestinationConstraint> {
-        if let Self::Scale1D { center, reference } = self {
+        if let Self::ScaleNU {
+            origin,
+            axis,
+            plane,
+            distance,
+            ..
+        } = self
+        {
+            Some(translation::DestinationConstraint {
+                anchor: origin,
+                direction: Some(*plane.axes().get(axis)?),
+                distance,
+            })
+        } else if let Self::Scale1D { center, reference } = self {
             Some(translation::DestinationConstraint {
                 anchor: center,
                 direction: Some(

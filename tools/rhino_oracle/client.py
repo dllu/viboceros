@@ -215,6 +215,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'scale_nu' for op in request.get('operations', [])):
+            from .scale_nu_probe import validate
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('ScaleNU probes require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'scale_nu':
+                    validate(op)
         if any(op.get('op') == 'mesh_edit_records' for op in request.get('operations', [])):
             from .mesh_edit_records_probe import validate
             if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
@@ -612,6 +619,9 @@ class OracleClient:
                 for name in ('circle_fit_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'scale_nu' for op in request.get('operations', [])):
+                for name in ('scale_nu_probe.py', 'grip_transform_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
             shutil.copyfile(worker_source, worker_path)

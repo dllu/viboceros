@@ -18,20 +18,20 @@ picks, construction-plane orientation and repeated copies.
 [Twist](twist.md) supports axis-angle or reference-direction deformation and
 live object previews.
 
-Move, Copy, Scale, Scale1D, Scale2D, Rotate, Rotate3D, Mirror, and Shear can start with
+Move, Copy, Scale, Scale1D, Scale2D, ScaleNU, Rotate, Rotate3D, Mirror, and Shear can start with
 no objects selected: [pick sources first, then Enter](transform-sources.md).
 
 With objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
 `Rotate` to pick center/reference/target points, `Mirror` to pick a two-point
-axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
-independent world x/y/z factors; all scale variants accept `Copy=Yes`.
+axis, or `ArrayLinear 4` to pick its two spacing references. [`ScaleNU`](scale-nu.md) accepts
+independent CPlane or world X/Y/Z factors and per-axis references; all scale variants accept `Copy=Yes`.
 At the initial Scale, Scale1D, or Scale2D base-point prompt, Enter uses the
 combined World bounding-box center of the selected geometry.
 At the first factor or angle prompt, Enter accepts the
 [remembered scalar default](transform-defaults.md), when available.
 
-Scale, Scale1D, Scale2D, Rotate, Rotate3D, and Shear support
+Scale, Scale1D, Scale2D, ScaleNU, Rotate, Rotate3D, and Shear support
 [repeated interactive copies](transform-copy.md): edit `Copy=Yes` at the prompt,
 keep entering targets, and finish with Enter or Escape. Accepted edits share
 one Undo entry. Mirror supports Copy editing and finishes after one result.
@@ -67,7 +67,7 @@ target in a viewport; the same options can be given when starting the prompt
 or changed at the prompt. With `Copy=Yes`, keep picking targets and press Enter
 to finish.
 
-Rotate, Mirror, Scale2D, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
+Rotate, Mirror, Scale2D, ScaleNU, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
 Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)
 for geometry policy, viewport changes, verification, and remaining limitations.
 

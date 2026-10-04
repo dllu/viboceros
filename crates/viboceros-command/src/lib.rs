@@ -100,6 +100,7 @@ use extract_mesh_part::ExtractMeshPartCommand;
 mod copy_options;
 #[cfg(test)]
 mod mesh_decomposition_tests;
+pub mod nonuniform_scale;
 mod remembered;
 mod single_spans;
 mod split_disjoint_mesh;
@@ -403,6 +404,15 @@ pub trait Command: Send + Sync {
     /// Accept a scalar before a required direction pick. Most commands accept
     /// their scalar as part of the complete invocation instead.
     fn remember_pending_scalar(&self, _value: Real) -> bool {
+        false
+    }
+
+    /// Independent ScaleNU axis defaults, outside model history.
+    fn axis_scale_defaults(&self) -> Option<[Real; 3]> {
+        None
+    }
+
+    fn remember_axis_scale(&self, _axis: usize, _value: Real) -> bool {
         false
     }
 
@@ -1259,7 +1269,7 @@ impl CommandRegistry {
             )))
             .expect("unique built-in command");
         registry
-            .register(ScaleNonUniformCommand)
+            .register(nonuniform_scale::ScaleNonUniformCommand::default())
             .expect("unique built-in command");
         registry
             .register(RotateCommand::default())
@@ -1511,6 +1521,22 @@ impl CommandRegistry {
                 .lookup
                 .get(&normalize_command_name(name))
                 .is_some_and(|index| self.commands[*index].remember_pending_scalar(value))
+    }
+
+    /// Read independent axis defaults without starting a command or history.
+    pub fn axis_scale_defaults(&self, name: &str) -> Option<[Real; 3]> {
+        self.commands
+            .get(*self.lookup.get(&normalize_command_name(name))?)?
+            .axis_scale_defaults()
+    }
+
+    /// Accept one finite axis factor while later axis input is still pending.
+    pub fn remember_axis_scale(&self, name: &str, axis: usize, value: Real) -> bool {
+        value.is_finite()
+            && self
+                .lookup
+                .get(&normalize_command_name(name))
+                .is_some_and(|index| self.commands[*index].remember_axis_scale(axis, value))
     }
 
     /// Start an interactive command, including the reset when remembering is off.
@@ -16490,7 +16516,6 @@ const SCALE_USAGE: &str = "Scale center factor | center reference target [Copy=Y
 const SCALE_1D_USAGE: &str =
     "Scale1D origin factor direction | origin reference target [Copy=Yes|No]";
 const SCALE_2D_USAGE: &str = "Scale2D center factor | center reference target [Copy=Yes|No]";
-const SCALE_NU_USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [Copy=Yes|No]";
 
 struct ScaleCommand(remembered::Remembered<Option<Real>>);
 
@@ -16602,39 +16627,6 @@ impl Command for ScaleOneDimensionalCommand {
             apply_transform_with_renewal(document, &selected, transform, copy)?;
         Ok(format!(
             "Scaled {transformed} object(s) in one direction by {factor:.6}, creating {copied} copy object(s)"
-        ))
-    }
-}
-
-struct ScaleNonUniformCommand;
-
-impl Command for ScaleNonUniformCommand {
-    fn copy_option_default(&self) -> Option<bool> {
-        Some(false)
-    }
-
-    fn name(&self) -> &'static str {
-        "ScaleNU"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_NU_USAGE)?;
-        let (origin, consumed) = parse_point(&positional)?;
-        let [x_factor, y_factor, z_factor] = positional[consumed..] else {
-            return Err(CommandError::Usage(SCALE_NU_USAGE));
-        };
-        let factors = [
-            parse_nonzero_scale(x_factor)?,
-            parse_nonzero_scale(y_factor)?,
-            parse_nonzero_scale(z_factor)?,
-        ];
-        let transform = AffineTransform3::try_nonuniform_scale(origin, factors)?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Scaled {transformed} object(s) non-uniformly by {:.6},{:.6},{:.6}, creating {copied} copy object(s)",
-            factors[0], factors[1], factors[2]
         ))
     }
 }
@@ -44411,7 +44403,7 @@ mod tests {
         for command in [
             "Scale1D 0,0,0 2 0,0,0",
             "Scale2D 0,0,0 0",
-            "ScaleNU 0,0,0 1 0 1",
+            "ScaleNU 0,0,0 1 NaN 1",
             "ScaleNU 0,0,0 1 2 3 Copy=Yes Copy=No",
         ] {
             assert!(

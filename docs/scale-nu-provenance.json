@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleScaleNUFinal_20261004",
+  "native_recipes": 26,
+  "positive_workflows": 20,
+  "application_replays": 40,
+  "known_incompatible_ids": [
+    "scale-nu-5",
+    "scale-nu-10",
+    "scale-nu-11",
+    "scale-nu-12",
+    "scale-nu-20",
+    "scale-nu-22"
+  ],
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public commands and SDK outputs were inspected in an empty owned document on private Xvfb.",
+    "Native commands run at idle, outside RunPythonScript Undo; complete EndCommand, post-macro, Undo and Redo snapshots are retained.",
+    "Axis defaults are seeded through public ScaleNU command input on a disposable point before source construction.",
+    "Complete numeric maps, signed/zero factors, CPlane/world axes, selected grips and parent precedence, mixed peer copy order, repeated copies, command-first selection and collapsed mesh records match in 20 recipes.",
+    "Four second-reference distance-constrained recipes match, including a negative Z target and an off-axis target. A bare second-reference number awaits a point instead of completing the command.",
+    "Six unconstrained coordinate-reference macros produce native scales that differ from the projected-axis ratios. Top/Perspective, history, before/after cameras and raw geometry are retained without normalization. Their cause and native mouse fidelity remain unresolved.",
+    "Application tests replay each recipe twice. Twenty matching workflows provide 40 comparisons at absolute tolerance 1e-9; six incompatible workflows assert the independent axis map and retain their discrepancies. Command-first and repeated-copy recipes use incremental input in both runs.",
+    "Rigid/SubCrv options, all singular analytic and trimmed shapes, cross-viewport picks, calculator expressions, mouse-preview parity, performance and full parity remain unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_nu_probe.py": "ee9340f0603ba701e2a4ae0f7d34dae74bd6af0bc8b3c5debdbfd2d0ca4bc2b7",
+    "tools/rhino_oracle/fixtures/scale_nu.json": "4d68839bf95c3558b7ba0c6eb1802dceecc1bfc8a2541b0be59e4356d64eb86a",
+    "tools/rhino_oracle/observations/scale_nu.json": "5bb7b2cf9ea1741f954f8d4c5dc03ebb062cda00d7e2c8323a0f0980da296995",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}
