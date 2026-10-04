@@ -111,6 +111,9 @@ and retains sources for repeated copies. All flags save on successful outer
 completion, outside document history. Its [live preview](taper-preview.md) shares
 prepared morph cages, preserves pending isocurves in all display modes and uses
 an axis-normal radius mouse plane with an edge-on construction-plane fallback.
+The [Circle fit foundation](circle-fit.md) adds spatial-distance fitting on a
+PCA plane with retained native command/SDK evidence. Native basis conventions
+and near-collinear convergence remain unresolved before input integration.
 The [Maelstrom foundation](maelstrom-geometry.md) adds cylindrical spiral maps,
 including the measured relative-radius threshold and raw tiny-angle rotations.
 It shares fitting and rigid placement with the other morph kernels. Its

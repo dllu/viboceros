@@ -15,6 +15,8 @@ mod bounds;
 mod brep;
 mod catenary;
 mod circle_curve;
+mod circle_fit;
+pub use circle_fit::MAX_CIRCLE_FIT_POINTS;
 mod circular;
 mod curve;
 mod curve_blend_pair;

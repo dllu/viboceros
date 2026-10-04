@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "platform": "NVIDIA DGX Spark ARM64 Linux",
+  "input": "100 and 10000 generated points with radial and axial noise",
+  "method": "Prebuilt point arrays, 10 warmups, median of 3 whole fitter calls; native public SDK on licensed Rhino under FEX in private Xvfb.",
+  "kernel": [
+    {
+      "count": 100,
+      "median_ms": 0.0332,
+      "radius": 3.0034698354396925,
+      "origin": [
+        1.000249622522344,
+        1.999956070682636,
+        0.001365247311034458
+      ]
+    },
+    {
+      "count": 10000,
+      "median_ms": 1.205586,
+      "radius": 3.0033330915200556,
+      "origin": [
+        1.0000008511766343,
+        1.9999984221450213,
+        1.2497111361466534e-05
+      ]
+    }
+  ],
+  "native_record": "tools/rhino_oracle/observations/circle_fit_benchmark.json",
+  "initial_kernel_10000_ms": 2.218661,
+  "full_native_performance_parity": false,
+  "notes": [
+    "Native 100-point timing shows large outliers; retain all raw times and do not infer an original native kernel comparison.",
+    "The 10000-point kernel call beats this translated SDK measurement; original native Rhino performance remains unmeasured."
+  ]
+}

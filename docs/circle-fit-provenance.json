@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "command": "Circle FitPoints",
+  "native_recipes": 22,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleCircleFitPoints_20261004",
+  "full_native_parity": false,
+  "comparison": {
+    "regular_geometric_locus_epsilon": 1e-07,
+    "regular_positive_radius_recipes": 19,
+    "degenerate_no_output_recipes": 2,
+    "near_collinear_diagnostics": 1
+  },
+  "scope_notes": [
+    "Public owned command and API measurements only.",
+    "Native degeneracies can return SDK success with radius zero, and command Success without geometry or Undo.",
+    "Normals/seams and near-collinear convergence remain compatibility gaps. The Circle and Maelstrom user interfaces are not yet wired to this fitter."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/circle_fit_points.json": "2a99fb059791d42534e62b35f2c80b66317da89d77c6a1f3b37ec33286ec4742",
+    "tools/rhino_oracle/observations/circle_fit_points.json": "4a791cacb4bf09c89d81b6f7055ba91055a8150c20a02dd22c429d6d3e152a65",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/circle_fit_benchmark.py": "d241ab2a6ffa225e77505fe56889ba6735b2f51804dd9366161e9ce7a240a34c",
+    "tools/rhino_oracle/fixtures/circle_fit_benchmark.json": "bb374608577d5aacc968b9d90650810beee29a357bac10ca42e6a081f7b17d73",
+    "tools/rhino_oracle/observations/circle_fit_benchmark.json": "0b3f6ac47abf7a2dfe1e198392e0c9ecae45edbdefda67a6ce192adf2c36a058",
+    "docs/circle-fit-performance.json": "6604384ffeb827010220a079012fe5a0816d5c0f20946118366bd23698f64eac"
+  },
+  "performance_settings_scheme": "VibocerosOracleCircleFitPerformanceWarm_20261004"
+}

@@ -24,6 +24,9 @@ retained separately. All were captured using private Xvfb settings schemes.
 The [Maelstrom Circle input captures](maelstrom-circle-input.md) compare public
 Circle definitions, command point maps, size memory, selection and history in
 private Xvfb sessions.
+The [Circle fit foundation](circle-fit.md) adds spatial-distance fitting on a
+PCA plane with retained native command/SDK evidence. Native basis conventions
+and near-collinear convergence remain unresolved before input integration.
 The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;

@@ -1,0 +1,14 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_fit_benchmark",
+      "id": "circle-fit-benchmark",
+      "counts": [
+        100,
+        10000
+      ]
+    }
+  ]
+}

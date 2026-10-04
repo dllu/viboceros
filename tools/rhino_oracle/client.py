@@ -215,6 +215,20 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'circle_fit_benchmark' for op in request.get('operations', [])):
+            from .circle_fit_benchmark import validate
+            if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
+                raise OracleProtocolError('Circle benchmarks require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'circle_fit_benchmark':
+                    validate(op)
+        if any(op.get('op') == 'circle_fit_points' for op in request.get('operations', [])):
+            from .circle_fit_probe import validate
+            if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
+                raise OracleProtocolError('Circle fit commands require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'circle_fit_points':
+                    validate(op)
         for family, module in [('maelstrom_geometry_command', 'maelstrom_command_probe'),
                                ('maelstrom_options_command', 'maelstrom_options_probe'),
                                ('maelstrom_input_command', 'maelstrom_input_probe'),
@@ -539,6 +553,11 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            if any(op.get('op') == 'circle_fit_benchmark' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('circle_fit_benchmark.py'), job_path / 'circle_fit_benchmark.py')
+            if any(op.get('op') == 'circle_fit_points' for op in request.get('operations', [])):
+                for name in ('circle_fit_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)

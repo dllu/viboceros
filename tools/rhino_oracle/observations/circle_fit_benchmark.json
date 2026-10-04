@@ -1,0 +1,46 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "id": "circle-fit-benchmark",
+      "value": {
+        "records": [
+          {
+            "origin": [
+              1.0002496291508183,
+              1.9999560654741002,
+              0.0013652473075704274
+            ],
+            "median_ms": 0.4835,
+            "count": 100,
+            "milliseconds": [
+              0.8186,
+              0.4835,
+              0.0443
+            ],
+            "radius": 3.003469835475911
+          },
+          {
+            "origin": [
+              1.0000008618270122,
+              1.9999984252497307,
+              1.2497111333751623e-05
+            ],
+            "median_ms": 2.017,
+            "count": 10000,
+            "milliseconds": [
+              2.017,
+              2.0314,
+              1.9911
+            ],
+            "radius": 3.003333091518936
+          }
+        ]
+      },
+      "elapsed_ns": 0
+    }
+  ],
+  "engine": "rhino"
+}
