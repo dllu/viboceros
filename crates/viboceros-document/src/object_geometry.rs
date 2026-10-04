@@ -64,11 +64,28 @@ impl Document {
     // is allowed here: all fallible geometry work precedes document mutation.
     pub(super) fn commit_object_geometries(
         &mut self,
-        mut staged: Vec<(usize, Geometry)>,
+        staged: Vec<(usize, Geometry)>,
         transaction_label: &'static str,
         edit_label: &'static str,
         history: ReplacementHistory,
         preserve_geometry_user_text: bool,
+    ) -> Result<usize, DocumentError> {
+        self.commit_object_geometries_with_text_policy(
+            staged,
+            transaction_label,
+            edit_label,
+            history,
+            |_, _| preserve_geometry_user_text,
+        )
+    }
+
+    pub(super) fn commit_object_geometries_with_text_policy(
+        &mut self,
+        mut staged: Vec<(usize, Geometry)>,
+        transaction_label: &'static str,
+        edit_label: &'static str,
+        history: ReplacementHistory,
+        mut preserve_geometry_user_text: impl FnMut(&Object, &Geometry) -> bool,
     ) -> Result<usize, DocumentError> {
         if history == ReplacementHistory::ChangesOnly {
             staged.retain(|(index, geometry)| *self.objects[*index].geometry != *geometry);
@@ -83,10 +100,11 @@ impl Document {
         }
         for (index, geometry) in staged {
             let source = &self.objects[index];
+            let preserve_text = preserve_geometry_user_text(source, &geometry);
             let after = Object {
                 id: source.id,
                 geometry: geometry.into(),
-                geometry_user_text: if preserve_geometry_user_text {
+                geometry_user_text: if preserve_text {
                     source.geometry_user_text.clone()
                 } else {
                     BTreeMap::new()

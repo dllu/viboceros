@@ -10,6 +10,8 @@ pub(super) enum ObjectPromptPhase {
     Options,
     Menu(usize),
     Choice(usize),
+    SmoothFactor,
+    SmoothSteps,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -46,11 +48,27 @@ impl PendingObjectCommand {
         match self.phase {
             ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
             ObjectPromptPhase::Choice(index) => self.description.choices[index].name,
+            ObjectPromptPhase::SmoothFactor => "SmoothFactor",
+            ObjectPromptPhase::SmoothSteps => "Steps",
             _ => self.description.command,
         }
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "Smooth" {
+            return match self.phase {
+                ObjectPromptPhase::Selecting => {
+                    "Select curves, surfaces, meshes, or control points; Enter opens options, Esc cancels"
+                }
+                ObjectPromptPhase::SmoothFactor => {
+                    "Enter a smoothing factor; Enter keeps the shown value, Esc cancels"
+                }
+                ObjectPromptPhase::SmoothSteps => {
+                    "Enter a positive step count; Enter keeps the shown value, Esc cancels"
+                }
+                _ => "Choose Smooth options; Enter applies, Esc cancels",
+            };
+        }
         if self.description.command == "Circle FitPoints" {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
         }
@@ -130,6 +148,9 @@ impl PendingObjectCommand {
             }
             ObjectPromptPhase::Choice(_) => {
                 "Choose a value; Enter keeps the shown choice, Esc cancels"
+            }
+            ObjectPromptPhase::SmoothFactor | ObjectPromptPhase::SmoothSteps => {
+                unreachable!("Smooth hints handled above")
             }
         }
     }
@@ -373,15 +394,30 @@ impl VibocerosApp {
             .filter(|o| description.filter.accepts_object(o))
             .take(required)
             .count();
-        let selected_grips = if description.command == "Circle FitPoints" {
+        let selected_grips = if matches!(description.command, "Circle FitPoints" | "Smooth") {
             self.document
                 .selected_control_points()
+                .filter(|(p, _)| {
+                    description.command != "Smooth"
+                        || self
+                            .document
+                            .object(p.object)
+                            .is_some_and(|o| o.geometry().supports_smoothing())
+                })
                 .take(required)
                 .count()
         } else {
             0
         };
         let preselected = selected_objects + selected_grips >= required;
+        if description.command == "Smooth"
+            && preselected
+            && words
+                .last()
+                .is_some_and(|v| v.trim_start_matches('_').eq_ignore_ascii_case("Enter"))
+        {
+            return false;
+        }
         if preselected {
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 return false;
@@ -452,6 +488,7 @@ impl VibocerosApp {
             });
         }
         self.command_input.clear();
+        self.initialize_smooth_options(input, preselected);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -483,6 +520,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_smooth_options(input) {
+            return true;
+        }
         if self.try_continue_transform_source_prompt(input) {
             return true;
         }
@@ -576,11 +616,12 @@ impl VibocerosApp {
                 return true;
             }
             if pending.phase == ObjectPromptPhase::Selecting {
-                let has_eligible_picks = self.document.selected_objects().any(|o| {
-                    Some(o.id()) != pending.excluded_object
-                        && pending.description.filter.accepts_object(o)
-                }) || (pending.description.command == "Circle FitPoints"
-                    && self.document.selected_control_points().next().is_some());
+                let has_eligible_picks =
+                    self.document.selected_objects().any(|o| {
+                        Some(o.id()) != pending.excluded_object
+                            && pending.description.filter.accepts_object(o)
+                    }) || (matches!(pending.description.command, "Circle FitPoints" | "Smooth")
+                        && self.document.selected_control_points().next().is_some());
                 if !has_eligible_picks {
                     if self
                         .commands

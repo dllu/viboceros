@@ -1319,23 +1319,37 @@ impl NurbsCurve {
     /// curves omit an exactly duplicated final seam control, while
     /// near-coincident controls remain distinct.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        let count = if self.is_periodic() {
+            self.control_points.len() - self.degree
+        } else if self.is_closed()?
+            && self.control_points.first().map(|p| p.point)
+                == self.control_points.last().map(|p| p.point)
+        {
+            self.control_points.len() - 1
+        } else {
+            self.control_points.len()
+        };
         Ok(self
             .control_points
             .iter()
-            .take(self.grip_count()?)
+            .take(count)
             .map(|control_point| control_point.point)
             .collect())
     }
 
     /// Number of distinct editable controls, excluding repeated seam controls.
+    /// Closed seam grips use point coincidence; ExtractPt retains distinct
+    /// endpoint controls even when their difference is within that predicate.
     pub fn grip_count(&self) -> Result<usize, GeometryError> {
         let count = self.control_points.len();
         if self.is_periodic() {
             Ok(count - self.degree)
         } else if self.is_closed()?
             && count > 1
-            && self.control_points.first().map(|p| p.point)
-                == self.control_points.last().map(|p| p.point)
+            && curve_points_coincident(
+                self.control_points[0].point,
+                self.control_points[count - 1].point,
+            )
         {
             Ok(count - 1)
         } else {

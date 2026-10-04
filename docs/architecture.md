@@ -11,7 +11,8 @@ exact fallbacks for difficult binary64 inputs. See [numerical robustness](numeri
 for implementation boundaries, regression evidence, and focused test commands.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
-Its document command and interactive workflow are still in progress.
+The registered command supports atomic object/grip edits, remembered options,
+selection prompts, and Undo/Redo; application tests replay those 304 cases.
 The mesh containment query validates closed manifold topology once, classifies
 surface boundary points, and uses retried ray parity for interior tests. Volume
 object selection uses that query for mesh and tessellated B-rep sources.

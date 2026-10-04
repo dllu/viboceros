@@ -1,6 +1,6 @@
-# Smooth kernel and native evidence
+# Smooth implementation and native evidence
 
-[Architecture](architecture.md) · [Oracle testing](oracle.md)
+[Command reference](commands/smooth.md) · [Architecture](architecture.md) · [Oracle testing](oracle.md)
 
 The geometry crate implements synchronous control-point and mesh-vertex
 averaging through `NurbsCurve::try_smoothed_in`,
@@ -8,9 +8,9 @@ averaging through `NurbsCurve::try_smoothed_in`,
 These immutable methods accept `SmoothingOptions`, `SmoothingCoordinates`
 (World, CPlane with an orthonormal `Frame3`, or Object), and an optional set of
 selected grip indices. `try_smoothed` accepts a fixed frame directly.
-**Smooth is not yet registered as
-a Viboceros command.** Document transactions and the interactive workflow remain
-to be implemented.
+The registered `Smooth` command uses atomic document replacements and the
+shared object/grip selection flow. Numeric and coordinate options are local to
+the prompt until the command completes; canceled choices are discarded.
 
 ## Averaging rules
 
@@ -68,12 +68,17 @@ Smooth options, so it does not depend on remembered preferences.
   domains and retained mesh faces in all 304 cases. The absolute comparison
   limit is `2e-12` in the captured units.
 - Python checks verify native command-end, post-macro, Undo and Redo snapshots,
-  primitive promotion, selection and parent/grip precedence. These are retained
-  Rhino observations; the geometry replays do not establish Viboceros document
-  or application behavior.
+  primitive promotion, selection and parent/grip precedence. Application replays
+  exercise all 304 through selection, options, Enter, post-macro Cancel, Undo,
+  and Redo, comparing geometry definitions, names, selection and grip display.
   In 36 selected Object recipes, separating closed/periodic aliases increases
   the displayed grip count and clears grip selection at command end. Grips
   remain enabled, and Undo restores the original controls and selection.
+
+Seven further [public SDK grip witnesses](grip-alias-provenance.json) distinguish
+editable closed-seam grouping from exact `ExtractPt` control extraction. Native
+grips remain grouped across small endpoint differences and after display is
+rebuilt; the read-only extraction API retains distinct endpoint controls.
 
 The source and observation hashes, capture schemes, and replay scope are in
 [`smooth-provenance.json`](smooth-provenance.json).
@@ -114,11 +119,37 @@ and [mesh smoothing](https://developer.rhino3d.com/api/rhinocommon/rhino.geometr
 The user-facing options are described in the
 [official Smooth help](https://docs.mcneel.com/rhino/8/help/en-us/commands/smooth.htm).
 
+## Document and workflow evidence
+
+`smooth_workflow.json` retains 26 additional native cases for option getters,
+preferences, cancellation, admission, object metadata, curve promotion, and
+circularly trimmed surfaces. Three cases send a real Escape to the newly owned
+Rhino window on the private display. The captures distinguish keyboard Escape
+from scripted `_Cancel` and macro interruption: Escape cancels geometry and
+pending preferences, while `_Cancel` at the main options getter accepts the
+edit. Cancel at a numeric or coordinate subprompt cancels it. Completed options
+survive Undo.
+
+Single-face B-reps edit the underlying control net. Rectangular boundaries use
+exact isocurves and rebuild seam/pole topology. Other boundaries retain UV trims
+and fit new spatial images with the existing bounded, sampled curve fitter,
+allowing up to 4096 controls per image.
+Assembled B-reps must pass ordinary boundary validation; component tolerances
+are not enlarged to hide disagreement. The circular-trim capture compares
+underlying control definitions and UV curves at `2e-12`, and 33 samples per
+spatial edge, using bidirectional nearest-point witnesses at the document
+tolerance `1e-7`. Native refitting can change parameterization. Spatial edge control equality or
+a continuous fitting error certificate is not claimed.
+
+The application replays all 26 cases, including metadata, admission, getters,
+cancellation, remembered settings, followup invocations, and retained history.
+Together with the 304 geometry cases, this makes 330 application replays.
+
+See [workflow provenance](smooth-workflow-provenance.json) for the private
+settings scheme, capture source hashes, and replay scope.
+
 ## Remaining work
 
 The retained families do not establish singular-frame or extreme-range native
-behavior, general geometry, or application behavior.
-Analytic/polycurve promotion in the document, general trimmed
-B-rep reconstruction, SubD, edit-point and subobject workflows, command option
-memory/cancellation, UI integration, and performance comparisons remain open.
-Full Rhino parity is unproven.
+behavior, complete general trimmed topology, SubD, edit-point and subobject
+workflows, or performance parity. Full Rhino parity is unproven.

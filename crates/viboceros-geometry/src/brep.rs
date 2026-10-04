@@ -47,6 +47,7 @@ pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;
+mod surface_edit;
 mod trim_image;
 mod trim_iso;
 mod trim_region;

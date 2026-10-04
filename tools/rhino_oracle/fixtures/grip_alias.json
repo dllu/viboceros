@@ -1,0 +1,41 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_exact",
+      "case": "exact"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_roundoff",
+      "case": "roundoff"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_small",
+      "case": "small"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_near",
+      "case": "near"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_outside",
+      "case": "outside"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_open",
+      "case": "open"
+    },
+    {
+      "op": "grip_alias",
+      "id": "grip_alias_smoothed_circle",
+      "case": "smoothed_circle"
+    }
+  ]
+}

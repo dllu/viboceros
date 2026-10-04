@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleSmoothWorkflowFinalD_20261004",
+  "native_recipes": 26,
+  "real_escape_deliveries": 3,
+  "application_replays": 26,
+  "full_native_parity": false,
+  "comparison_absolute_epsilon": 2e-12,
+  "trim_edge_sample_epsilon": 1e-07,
+  "scope_notes": [
+    "Public command and SDK observations in an empty owned document at idle, with a private settings scheme and private Xvfb. No proprietary implementation was inspected.",
+    "Three keyboard cases send one real Escape to the owned Rhino window, after the command begins and the fixed macro reaches its sole Pause. EndCommand results and command history retain the getter and cancellation outcome.",
+    "Scripted Cancel at the main options getter accepts Smooth. Numeric or coordinate subprompt Cancel, keyboard Escape, and macro interruption cancel geometry and discard pending preferences. Completed preferences survive Undo.",
+    "Whole or selected-grip curves and untrimmed surfaces drop geometry user text; meshes and the retained circular-trim surface preserve it. Object attributes are retained.",
+    "Trim captures retain complete UV curves and underlying control nets plus 33 samples per spatial edge. Independent edge fitting is compared geometrically at document tolerance, without claiming identical edge controls or a continuous error certificate.",
+    "No complete Rhino parity, SubD, general singular topology, performance, or extreme-range native behavior is claimed.",
+    "26 application replays compare object order, identities, geometry, metadata, object/grip selection, successful and canceled options, followup defaults, and retained Undo/Redo. Spatial edges use bidirectional sampled nearest-point witnesses because native refitting can change parameterization."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/smooth_workflow_probe.py": "117ac18d5295b43ead3f8e9daceb78d09ac3a09b3f427c62518ff7e005060001",
+    "tools/rhino_oracle/smooth_workflow_input.py": "f668a29ec82c2b359266d986a071f522621e42d910fb7e5ba3da274b0d6f76de",
+    "tools/rhino_oracle/smooth_probe.py": "6596eb7c3fa6108059b1b1fc6f977f6fe63567c63444c5bf337bc1ea435d3e7d",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/smooth_workflow.json": "9ac1d64e65dd41994681986355f39737b168787ce6e2c1a39ad5c231fecbcabd",
+    "tools/rhino_oracle/observations/smooth_workflow.json": "14c3d1ecaa484feced4054e9bb2b765bbac6af6b1958d2a99c5ee06e9e110438"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "1d7b95a1a023f60ee0e72c73301f4a6a8765b323a6672fd574e232bd7224372b",
+    "tools/rhino_oracle/rhino_worker.py": "efab0511a39b5005af28a13ed8c0e739c4db02c3d6065366436628e07e8c47f4"
+  }
+}

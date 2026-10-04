@@ -152,6 +152,15 @@ pub(crate) fn fit_curve(
     curve_fit::fit(morph, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
 }
 
+pub(crate) fn fit_curve_with_control_limit(
+    morph: &(impl PointMorph + ?Sized),
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+    maximum: usize,
+) -> Result<NurbsCurve, GeometryError> {
+    curve_fit::fit(morph, curve, tolerance, maximum)
+}
+
 pub(crate) fn fit_surface(
     morph: &(impl PointMorph + ?Sized),
     surface: &NurbsSurface,

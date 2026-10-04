@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_accepted",
+      "case": "accepted"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_cancelled",
+      "case": "cancelled"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_numeric_prompt",
+      "case": "numeric_prompt"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_toggles",
+      "case": "toggles"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_undo_redo",
+      "case": "undo_redo"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_unsupported",
+      "case": "unsupported"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_mixed",
+      "case": "mixed"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_trimmed_free",
+      "case": "trimmed_free"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_trimmed_fixed",
+      "case": "trimmed_fixed"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_polycurve",
+      "case": "polycurve"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_cancel_factor",
+      "case": "cancel_factor"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_cancel_steps",
+      "case": "cancel_steps"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_cancel_coordinates",
+      "case": "cancel_coordinates"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_after_undo",
+      "case": "after_undo"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_mesh",
+      "case": "mesh"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_grips_curve",
+      "case": "grips_curve"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_grips_surface",
+      "case": "grips_surface"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_grips_mesh",
+      "case": "grips_mesh"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_line",
+      "case": "line"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_replace",
+      "case": "replace"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_partial_cancel",
+      "case": "partial_cancel"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_surface",
+      "case": "surface"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_grips_trimmed",
+      "case": "grips_trimmed"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_keyboard_escape",
+      "case": "keyboard_escape"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_keyboard_factor",
+      "case": "keyboard_factor"
+    },
+    {
+      "op": "smooth_workflow",
+      "id": "smooth_workflow_keyboard_selection",
+      "case": "keyboard_selection"
+    }
+  ]
+}

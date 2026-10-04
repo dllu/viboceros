@@ -19,6 +19,16 @@ pub(super) struct ControlPoints {
     display_override: bool,
 }
 
+impl ControlPoints {
+    pub(super) fn retain_selection_if_count_unchanged(&mut self, original: &Self) {
+        self.selected = if self.points.len() == original.points.len() {
+            original.selected.clone()
+        } else {
+            Arc::default()
+        };
+    }
+}
+
 impl Geometry {
     pub fn supports_control_points(&self) -> bool {
         !matches!(self, Self::Point(_) | Self::PointCloud(_))
@@ -27,6 +37,12 @@ impl Geometry {
 
     fn grip_locations(&self) -> Result<Vec<Point3>, GeometryError> {
         match self {
+            Self::NurbsCurve(curve) => Ok(curve
+                .control_points()
+                .iter()
+                .take(curve.grip_count()?)
+                .map(|p| p.point())
+                .collect()),
             Self::Brep(brep) if brep.faces().len() == 1 => {
                 Ok(brep.faces()[0].surface().extract_point_locations())
             }

@@ -19,20 +19,20 @@
   "accepted_object_x_sdk_predictions": 10,
   "rejected_alternative_sdk_predictions": 8,
   "kernel_replays": 304,
-  "application_replays": 0,
+  "application_replays": 304,
   "comparison_absolute_epsilon": 2e-12,
-  "command_registered_in_viboceros": false,
+  "command_registered_in_viboceros": true,
   "full_native_parity": false,
   "scope_notes": [
     "Live captures used public Rhino commands and SDK calls at idle in empty owned documents on private Xvfb. No proprietary implementation was inspected.",
     "All command options are explicitly seeded. All 304 recipes retain command-end, post-macro, Undo, and Redo snapshots.",
-    "304 geometry-kernel replays compare complete controls, weights, knots, degrees, domains, and stored mesh faces in 128 World/CPlane and 176 Object cases, including 96 Object selected-grip cases. They do not replay document selection, metadata, history, prompts, or primitive promotion in Viboceros.",
+    "304 geometry-kernel and application replays compare complete controls, weights, knots, degrees, domains, and stored mesh faces in 128 World/CPlane and 176 Object cases, including 96 Object selected-grip cases. Application replays also compare primitive promotion, names, object/grip selection, grip display, and single-record Undo/Redo.",
     "Object coordinates use progressively edited curve/surface frames, frozen raw interior adjacency with original end wrapping, and initial mesh frames for every step. Degree-one curves use World axes. Native Object edits can separate periodic control aliases.",
     "18 public SDK witnesses test single-pass Object X hypotheses. Ten predictions agree with the matching native Object X observations. Eight alternative surface traversal/frame or mesh normal hypotheses disagree.",
     "76 further public SDK witnesses cover separate Object X/Y/Z axes and three steps on all 16 source families. All 64 predictions using original raw neighbors agree with native commands. Twelve alternatives using canonical aliases or rebuilding closure/periodicity each step disagree.",
     "Curve TangentAt supplies public endpoint-span extrapolation when UVNDirectionsAt returns false at exterior periodic Greville parameters. Native Object edits can separate periodic control aliases.",
-    "36 selected Object recipes reopen closed/periodic aliases, increasing the displayed grip count and clearing selected grips at command end. Grips remain enabled; Undo restores the original geometry and grip selection. This is retained native document behavior, not a Viboceros application replay.",
-    "No performance comparison, native extreme-range capture, singular-direction matrix, SubD workflow, general trimmed B-rep replay, or full native parity is claimed."
+    "36 selected Object recipes reopen closed/periodic aliases, increasing the displayed grip count and clearing selected grips at command end. Grips remain enabled at command end; trailing Cancel turns them off. Application replays verify both stages and Undo/Redo.",
+    "No performance comparison, native extreme-range capture, singular-direction matrix, SubD workflow, or full native parity is claimed. Separate workflow provenance retains circular-trim and metadata evidence."
   ],
   "sha256": {
     "tools/rhino_oracle/smooth_probe.py": "6596eb7c3fa6108059b1b1fc6f977f6fe63567c63444c5bf337bc1ea435d3e7d",

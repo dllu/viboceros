@@ -169,6 +169,7 @@ mod scale_nu;
 mod scale_positions;
 mod set_point;
 mod set_view;
+mod smooth;
 mod snapping;
 mod taper_prompt;
 mod toolbar;
@@ -8181,7 +8182,7 @@ impl VibocerosApp {
         }
         if let Some(selection) = output.control_point_selection.take() {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
-                prompt.description.command == "Circle FitPoints"
+                matches!(prompt.description.command, "Circle FitPoints" | "Smooth")
                     || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                         && transform_sources::allows_grips(prompt.description.command))
@@ -8330,7 +8331,7 @@ impl VibocerosApp {
             && self.set_view_prompt.is_none()
             && (self.component_preselection_available()
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
-                    (prompt.description.command == "Circle FitPoints"
+                    (matches!(prompt.description.command, "Circle FitPoints" | "Smooth")
                         || (prompt.description.workflow
                             == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                             && transform_sources::allows_grips(prompt.description.command)))
@@ -8493,6 +8494,11 @@ impl VibocerosApp {
             let count = self.document.clear_selection() + components;
             if count > 0 {
                 self.push_log(format!("Deselected {count} object(s)"));
+            } else {
+                let owners = self.document.disable_control_points();
+                if owners > 0 {
+                    self.push_log(format!("Turned off grips on {owners} object(s)"));
+                }
             }
         }
     }
@@ -9296,6 +9302,7 @@ mod tests {
     mod set_view;
     mod shrink_trimmed;
     mod single_span_selection;
+    mod smooth;
     mod split_edge;
     mod taper;
     mod transform_copy;

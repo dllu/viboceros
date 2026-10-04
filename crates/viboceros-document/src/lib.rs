@@ -22,6 +22,7 @@ mod object_properties;
 use object_properties::ObjectProperties;
 mod selection;
 mod settings;
+mod smoothing;
 mod units;
 mod wildcard;
 use wildcard::CaseInsensitiveWildcard;

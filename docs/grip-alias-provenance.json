@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleGripAliasesFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "sdk_witnesses": 7,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Public SDK grip display observations at idle in an empty owned document on private Xvfb. No proprietary implementation was inspected.",
+    "Exact, 1e-16, 1e-12, and 1e-10 endpoint gaps yield three editable grips on the tested closed quadratic; 1e-9 and 1e-6 gaps yield four. Counts agree after turning grips off and on.",
+    "Selected Object X smoothing of a circle retains eight grips despite roundoff differences in the seam controls, including after grip display is rebuilt. ExtractPt retains its separate exact-control extraction rule.",
+    "The tested gap bands do not establish a native threshold for all scales, degrees, or periodic weight cases."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/grip_alias_probe.py": "1dacf05e8b1e680f9e1a95e612f9122bb954cc5824b2626fbef6372b0cbcf760",
+    "tools/rhino_oracle/smooth_probe.py": "6596eb7c3fa6108059b1b1fc6f977f6fe63567c63444c5bf337bc1ea435d3e7d",
+    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/grip_alias.json": "5eccbca39c31992dea2d049cd819bda004d532a2798b2af519a26d7cd23eca71",
+    "tools/rhino_oracle/observations/grip_alias.json": "a83e7f154ddc13c617b1e7f86fc960a8252f49029338b0b8172f6bb6fcddb255"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "247058bf8b668ea7fa7e29eddc5b946f5e551b433292b3a3e888e02b7826f3a8",
+    "tools/rhino_oracle/rhino_worker.py": "0918a3484204e2ac7b93b9176a81107d97c21a3e2b2942977041257504516162"
+  }
+}

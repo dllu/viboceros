@@ -233,7 +233,7 @@ class SmoothTests(TestCase):
         record = json.loads((ROOT / 'docs/smooth-provenance.json').read_text())
         self.assertTrue(record['private_xvfb'])
         self.assertFalse(record['full_native_parity'])
-        self.assertFalse(record['command_registered_in_viboceros'])
+        self.assertTrue(record['command_registered_in_viboceros'])
         self.assertEqual(record['native_recipes'], 304)
         self.assertEqual(record['fixed_coordinate_recipes'], 128)
         self.assertEqual(record['object_coordinate_recipes'],176)
@@ -243,6 +243,6 @@ class SmoothTests(TestCase):
         self.assertEqual(record['accepted_uvn_sdk_predictions'],64)
         self.assertEqual(record['rejected_uvn_neighbor_predictions'],12)
         self.assertEqual(record['kernel_replays'], 304)
-        self.assertEqual(record['application_replays'], 0)
+        self.assertEqual(record['application_replays'], 304)
         for path, expected in record['sha256'].items():
             self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)
